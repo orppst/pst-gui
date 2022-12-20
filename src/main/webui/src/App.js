@@ -23,7 +23,6 @@ export default function App() {
             <Link to="/help">Help</Link>
           </li>
         </ul>
-
         <Switch>
           <Route path="/proposal/add">
             <Add />
@@ -86,3 +85,4 @@ function Topic() {
   let { topicId } = useParams();
   return <h3>Requested topic ID: {topicId}</h3>;
 }
+
