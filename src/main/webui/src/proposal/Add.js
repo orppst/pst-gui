@@ -100,13 +100,12 @@ const log = (type) => console.log.bind(console, type);
 
 export default function AddProposal () {
     return (
-        <div className="Prop-form-container chakra-ui-light">
-            <Form className="Prop-form"
-                schema={schema}
-                validator={validator}
-                onChange={log("changed")}
-                onSubmit={log("submitted")}
-                onError={log("errors")} />
+        <div className="Prop-form-container">
+        <Form className="Prop-form"
+          schema={schema}
+          validator={validator}
+          onChange={log("changed")}
+          onSubmit={log("submitted")}
+          onError={log("errors")} />
         </div>
-    );
-}
+  )};

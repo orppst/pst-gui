@@ -27,11 +27,7 @@ export default function (props) {
               Submit
             </button>
           </div>
-<<<<<<< HEAD
           <p className="forgot-password text-right mt-2 h4">
-=======
-          <p className="forgot-password text-right mt-2">
->>>>>>> d256985 (Complete rehash.  Remove class from App.js to enable use of hooks, add some altered examples to show routing and a login form)
             Forgot <a href="#">password?</a>
           </p>
         </div>
