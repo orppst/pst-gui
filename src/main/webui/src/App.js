@@ -1,5 +1,8 @@
 import "bootstrap/dist/css/bootstrap.css";
+<<<<<<< HEAD
 import "./App.css";
+=======
+>>>>>>> 0d3f8bc (Cleanup)
 import React, {Component} from 'react';
 import { BrowserRouter as Router, Switch, Route, Link, useRouteMatch, useParams } from "react-router-dom";
 import { useHistory } from 'react-router-dom';
