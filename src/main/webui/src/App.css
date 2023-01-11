@@ -96,3 +96,23 @@ label {
   font-weight: 600;
   color: rgb(34, 34, 34);
 }
+
+.Prop-form-container {
+  display: flex;
+
+  justify-content: center;
+  border: 100px;
+  width: 100vw;
+  height: 100vh;
+}
+
+.Prop-form {
+  width: 80%;
+  box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+  padding-top: 30px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 8px;
+  background-color: white;
+}
