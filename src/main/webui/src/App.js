@@ -149,6 +149,64 @@ function Welcome() {
     return (<div><React.Fragment><h3>Welcome!</h3> <h4>To add a new proposal, please select from the menu above</h4></React.Fragment></div>);
 }
 
+
+
+function Auth() {
+    const [username, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleSubmit = async e => {
+
+        e.preventDefault();
+
+        console.log("Login user: " + username + " password " + password);
+        loggedIn = true;
+
+        return (<Redirect to="/help" />);
+
+        };
+
+    return (
+        <div className="Auth-form-container">
+          <form className="Auth-form" onSubmit={handleSubmit}>
+            <div className="Auth-form-content">
+              <h3 className="Auth-form-title">Please login</h3>
+              <div className="form-group mt-3">
+                <label>Email address</label>
+                <input
+                  type="email"
+                  className="form-control mt-1"
+                  placeholder="Enter email"
+                  name="username"
+                  value={username}
+                  onChange={e => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="form-group mt-3">
+                <label>Password</label>
+                <input
+                  type="password"
+                  className="form-control mt-1"
+                  placeholder="Enter password"
+                  name="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="d-grid gap-2 mt-3">
+                <button type="submit" className="btn btn-primary">
+                  Submit
+                </button>
+              </div>
+              <p className="forgot-password text-right mt-2 h4">
+                Forgot <a href="#">password?</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      );
+}
+
 function Help() {
     return (
         <div>
