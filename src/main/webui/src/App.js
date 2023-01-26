@@ -1,10 +1,8 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
-import React, {useState} from 'react';
-import { BrowserRouter as Router, Switch, Route, Link, useRouteMatch, useParams, useNavigate} from "react-router-dom";
+import React, {useState, useEffect} from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useMatch, useParams, useNavigate } from "react-router-dom";
 import { Redirect } from 'react-router-dom';
-//import Auth from "./Auth";
-import Menu from "./Menu";
 import AddProposal from "./proposal/Add"
 
 export default function App() {
@@ -39,6 +37,14 @@ export default function App() {
   );
 }
 
+function Logout() {
+  window.loggedIn = false;
+  const navigate = useNavigate();
+  useEffect(() => {
+  navigate('/');
+  }, []);
+}
+
 function Login() {
   return <h2><Auth /></h2>;
 }
@@ -47,22 +53,21 @@ function Add() {
   return <h2><AddProposal /></h2>;
 }
 
-
+function Welcome() {
+    return <h3>Welcome! To add a new proposal, please select from the menu above</h3>;
+}
 
 function Auth() {
     const [username, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
-    const handleSubmit = async e => {
-
-        e.preventDefault();
-
+    const handleSubmit = event => {
+        event.preventDefault();
         console.log("Login user: " + username + " password " + password);
-        loggedIn = true;
-
-        return (<Redirect to="/help" />);
-
-        };
+        window.loggedIn = true;
+        navigate('/welcome');
+    };
 
     return (
         <div className="Auth-form-container">
@@ -106,35 +111,10 @@ function Auth() {
 }
 
 function Help() {
-  let match = useRouteMatch();
-
   return (
     <div>
       <h3>Help</h3>
-
-      <ul>
-        <li>
-          <Link to={`${match.url}/proposals`}>Proposals</Link>
-        </li>
-        <li>
-          <Link to={`${match.url}/authentication`}>
-            Authentication
-          </Link>
-        </li>
-      </ul>
-
-      {/* The Topics page has its own <Switch> with more routes
-          that build on the /topics URL path. You can think of the
-          2nd <Route> here as an "index" page for all topics, or
-          the page that is shown when no topic is selected */}
-      <Switch>
-        <Route path={`${match.path}/:topicId`}>
-          <Help />
-        </Route>
-        <Route path={match.path}>
-          <h3>Please select a help topic.</h3>
-        </Route>
-      </Switch>
+        This is where the help will reside
     </div>
   );
 }
