@@ -7,6 +7,21 @@ import Form from "@rjsf/core";
 const schema: RJSFSchema = {
     title: "Sample Proposal form",
     type: "object",
+    "definitions": {
+        "target": {
+            type: "object",
+            properties: {
+                target_sourceName: {type:"string", title:"Source Name"},
+                sourceCoordinates: {type: "string", title: "Source CoOrdinate System",
+                    enum: ["J2000"]},
+
+                sourceLat: {type: "number", title: "Lat", default: 60.0},
+                sourceLon: {type: "number", title: "Lon", default: 45.0},
+                positionEpoch: {type: "string", title: "Position Epoch", default: "J2013.123"}
+            },
+            required: ["target_sourceName"]
+        },
+    },
     required: ["title"],
     properties: {
         title: {type: "string", title: "Title", default: "My new proposal"},
@@ -17,22 +32,26 @@ const schema: RJSFSchema = {
         person_fullName: {type: "string", title: "PI full name"},
         person_eMail: {type: "string", title: "PI email"},
         source: {type: "array",
+          title: "Targets",
           items: {
-            type: "object",
-            title: "Source",
-            properties: {
-              target_sourceName: {type:"string", title:"Source Name"},
-              sourceCoordinates: {type: "string", title: "Source CoOrdinate System",
-                    enum: ["J2000"]},
-
-              sourceLat: {type: "number", title: "Lat", default: 60.0},
-              sourceLon: {type: "number", title: "Lon", default: 45.0},
+                properties: {
+                "Target": {"$ref": "#/definitions/target"}
+                }
             }
+          },
+          technicalGoal: {type: "object", title:"Technical Goal",
+              "properties": {
+                  "desiredAngularResolution": {
+                    "type": "number", title: "Desired Angular Resolution arcsec", default: 25.0
+                  },
+                  "desiredLargestScale": {
+                    "type": "number", title: "Desired Largest Scale degrees", default: 0.1
+                  },
+              }
           },
           readyToSubmit: {type: "boolean", title: "Ready to submit?", default: false}
         },
-    required: [ "title", "organization_name", "target_sourceName" ],
-    }
+    required: [ "title", "organization_name"]
 };
 
 schema.properties.organization_name.enum = ["University of Manchester", "Another organisation", "Another organisation2", "Another organisation3"];

@@ -50,11 +50,17 @@ function Login() {
 }
 
 function Add() {
-  return <h2><AddProposal /></h2>;
+    if(window.loggedIn == false)
+        return <Login />;
+    else
+        return <h2><AddProposal /></h2>;
 }
 
 function Welcome() {
-    return <h3>Welcome! To add a new proposal, please select from the menu above</h3>;
+    if(window.loggedIn == false)
+        return <Login />;
+    else
+        return <h3>Welcome! To add a new proposal, please select from the menu above</h3>;
 }
 
 function Auth() {
@@ -111,12 +117,15 @@ function Auth() {
 }
 
 function Help() {
-  return (
-    <div>
-      <h3>Help</h3>
-        This is where the help will reside
-    </div>
-  );
+    if(window.loggedIn == false)
+        return <Login />;
+    else
+        return (
+            <div>
+              <h3>Help</h3>
+                This is where the help will reside
+            </div>
+          );
 }
 
 function Topic() {
