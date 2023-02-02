@@ -149,10 +149,6 @@ function Welcome() {
     return (<div><React.Fragment><h3>Welcome!</h3> <h4>To add a new proposal, please select from the menu above</h4></React.Fragment></div>);
 }
 
-function Welcome() {
-    return <h3>Welcome! To add a new proposal, please select from the menu above</h3>;
-}
-
 function Auth() {
     const [username, setEmail] = useState("");
     const [password, setPassword] = useState("");
