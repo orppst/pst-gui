@@ -26,7 +26,7 @@ const schema: RJSFSchema = {
     properties: {
         title: {type: "string", title: "Title", default: "My new proposal"},
         organization_name: {type: "string", title: "Organization Name",
-            enum: ["Organization name"],
+            enum: ["Please choose one"],
             },
         organization_address: {type: "string", title: "Organization Address", default: "ToDo: pre-populate this"},
         person_fullName: {type: "string", title: "PI full name"},
@@ -54,24 +54,39 @@ const schema: RJSFSchema = {
     required: [ "title", "organization_name"]
 };
 
-schema.properties.organization_name.enum = ["University of Manchester", "Another organisation", "Another organisation2", "Another organisation3"];
-
 const log = (type) => console.log.bind(console, type);
 
 class AddProposal extends Component {
+    state = {
+        organisations: []
+    }
 
-  render() {
-    return (
-        <div className="Prop-form-container">
-        <Form className="Prop-form"
-          schema={schema}
-          validator={validator}
-          onChange={log("changed")}
-          onSubmit={log("submitted")}
-          onError={log("errors")} />
-        </div>
-  )};
+    constructor(props){
+        super(props);
+    }
 
+    componentDidMount() {
+        fetch('/organisations')
+            .then(res => res.json())
+            .then((data) => {
+                this.setState({organisations :data});
+                schema.properties.organization_name.enum = data;
+        })
+        .catch(console.log)
+    }
+
+    render() {
+        return (
+            <div className="Prop-form-container">
+                <Form className="Prop-form"
+                    schema={schema}
+                    validator={validator}
+                    onChange={log("changed")}
+                    onSubmit={log("submitted")}
+                    onError={log("errors")} />
+            </div>
+        )
+    };
 }
 
 export default AddProposal;
