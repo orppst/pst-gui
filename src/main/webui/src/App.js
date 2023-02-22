@@ -6,7 +6,6 @@ import { Dropdown, Menu } from 'semantic-ui-react';
 import {confirmAlert} from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
-
 export default function App() {
     const [loggedIn, setLoggedIn] = React.useState(false);
     const [activeItem, setActiveItem] = React.useState("logout");
