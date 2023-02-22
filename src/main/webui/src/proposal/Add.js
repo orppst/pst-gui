@@ -1,5 +1,4 @@
 import React, {useState, useEffect}  from 'react';
-import { useNavigate } from "react-router-dom";
 
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
@@ -56,30 +55,26 @@ const schema: RJSFSchema = {
 };
 
 fetch('/proposalSchema')
-.then((data) => {console.log(data);})
-.catch(console.log);
+    .then((data) => {console.log(data);})
+    .catch(console.log);
+fetch('/organisations')
+    .then(res => res.json())
+    .then((data) => {
+        schema.properties.organization_name.enum = data;
+    })
+    .catch(console.log);
 
 const log = (type) => console.log.bind(console, type);
 
-export default function  AddProposal () {
-    let [orgs, setOrgs] = useState([]);
-
-    fetch('/organisations')
-            .then(res => res.json())
-            .then((data) => {
-                schema.properties.organization_name.enum = data;
-                setOrgs(data);
-        })
-        .catch(console.log)
-
-        return (
-            <div className="Prop-form-container">
-                <Form className="Prop-form"
-                    schema={schema}
-                    validator={validator}
-                    onChange={log("changed")}
-                    onSubmit={log("submitted") }
-                    onError={log("errors")} />
-            </div>
-        );
+export default function AddProposal () {
+    return (
+        <div className="Prop-form-container">
+            <Form className="Prop-form"
+                schema={schema}
+                validator={validator}
+                onChange={log("changed")}
+                onSubmit={log("submitted")}
+                onError={log("errors")} />
+        </div>
+    );
 }

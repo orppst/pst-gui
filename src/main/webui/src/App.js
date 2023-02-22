@@ -1,7 +1,6 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
 import React, {useState, useEffect} from 'react';
-import { Redirect } from 'react-router-dom';
 import AddProposal from "./proposal/Add"
 import { Dropdown, Menu } from 'semantic-ui-react';
 import {confirmAlert} from 'react-confirm-alert';
@@ -137,16 +136,16 @@ export default function App() {
 }
 
 function Add() {
-    return ( <h2><AddProposal /></h2> );
+    return (<AddProposal />);
 }
 
 function Search() {
-    return ( <h4>This is where the search will live</h4> );
+    return (<div><h4>This is where the search will live</h4></div>);
 }
 
 
 function Welcome() {
-    return (<React.Fragment><h3>Welcome!</h3> <h4>To add a new proposal, please select from the menu above</h4></React.Fragment>);
+    return (<div><React.Fragment><h3>Welcome!</h3> <h4>To add a new proposal, please select from the menu above</h4></React.Fragment></div>);
 }
 
 function Help() {
