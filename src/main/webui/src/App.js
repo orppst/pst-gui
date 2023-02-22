@@ -1,129 +1,164 @@
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
 import React, {useState, useEffect} from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useMatch, useParams, useNavigate } from "react-router-dom";
 import { Redirect } from 'react-router-dom';
 import AddProposal from "./proposal/Add"
+import { Dropdown, Menu } from 'semantic-ui-react';
+import {confirmAlert} from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 export default function App() {
-  return (
-    <Router>
-      <div>
-        <h2>Main menu</h2>
-        <ul>
-          <li>
-            <Link to="/">Login</Link>
-          </li>
-          <li>
-            <Link to="/proposal/add">New proposal</Link>
-          </li>
-          <li>
-            <Link to="/help">Help</Link>
-          </li>
-        </ul>
-        <Switch>
-          <Route path="/proposal/add">
-            <Add />
-          </Route>
-          <Route path="/help">
-            <Help />
-          </Route>
-          <Route path="/">
-            <Login />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
-  );
-}
+    const [loggedIn, setLoggedIn] = React.useState(false);
+    const [activeItem, setActiveItem] = React.useState("logout");
+    const [username, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-function Logout() {
-    window.loggedIn = false;
-    const navigate = useNavigate();
-    useEffect(() => {
-        navigate('/');
-    }, []);
-}
+    const handleItemClick= (e,  {name} ) => {  e.preventDefault(); setActiveItem(name); }
+    const handleAuthSubmit = event => {
+            event.preventDefault();
+            console.log("Login user: " + username + " password " + password);
+            setLoggedIn(true);
+            setActiveItem('welcome');
+        };
 
-function Login() {
-    return <h2><Auth /></h2>;
+    const logoutConfirm = () => {
+        const options = {
+            title: 'Logout',
+            message: 'Are you sure?',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => {setLoggedIn(false); setActiveItem('login');}
+                },
+                {
+                    label: 'No'
+                }
+            ],
+            closeOnEscape: true,
+            closeOnClickOutside: true,
+            keyCodeForClose: [8, 32],
+            willUnmount: () => {},
+            afterClose: () => {},
+            onClickOutside: () => {},
+            onKeypress: () => {},
+            onKeypressEscape: () => {},
+            overlayClassName: "overlay-custom-class-name"
+        };
+
+        confirmAlert(options);
+    }
+
+    const auth = () => {
+        return (
+            <div className="Auth-form-container">
+                <form className="Auth-form" onSubmit={handleAuthSubmit}>
+                    <div className="Auth-form-content">
+                        <h3 className="Auth-form-title">New login</h3>
+                        <div className="form-group mt-3">
+                            <label>Email address</label>
+                            <input
+                                type="email"
+                                className="form-control mt-1"
+                                placeholder="Enter new email"
+                                name="username"
+                                value={username}
+                                onChange={e => setEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group mt-3">
+                            <label>Password</label>
+                            <input
+                                type="password"
+                                className="form-control mt-1"
+                                placeholder="Enter new password"
+                                name="password"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="d-grid gap-2 mt-3">
+                            <button type="submit" className="btn btn-primary">
+                            Submit
+                            </button>
+                        </div>
+                        <p className="forgot-password text-right mt-2 h4">
+                            Forgot <a href="#">password?</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+          );
+    }
+
+    return (
+        <div>
+        <Menu>
+                {!loggedIn &&
+                <Menu.Item name='login'
+                    active={activeItem === 'login'}
+                    onClick={handleItemClick}/>
+                }
+                {!loggedIn &&
+                <Menu.Item name='signup'
+                    active={activeItem === 'signup'}
+                    onClick={handleItemClick}/>
+                }
+
+                {loggedIn &&
+                <Menu.Item name='logout'
+                    active={activeItem === 'logout'}
+                    onClick={logoutConfirm}/>}
+                {loggedIn &&
+                <Dropdown item text='Proposals'>
+                    <Dropdown.Menu>
+                        <Dropdown.Header>Manage Proposals</Dropdown.Header>
+                        <Dropdown.Item name='add' onClick={handleItemClick}>
+                        Add
+                        </Dropdown.Item>
+                        <Dropdown.Item name='search' onClick={handleItemClick}>
+                            Search my proposals
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+                }
+                <Menu.Item name='help'
+                    active={activeItem === 'help'}
+                    onClick={handleItemClick}/>
+        </Menu>
+
+        {activeItem==='login' && auth()}
+        {activeItem==='help' && Help()}
+        {activeItem==='add' && Add()}
+        {activeItem==='welcome' && Welcome()}
+        {activeItem==='search' && Search()}
+        {activeItem==='signup' && Signup()}
+        </div>
+    );
 }
 
 function Add() {
-    if(window.loggedIn == false)
-        return <Login />;
-    else
-        return <h2><AddProposal /></h2>;
+    return ( <h2><AddProposal /></h2> );
 }
+
+function Search() {
+    return ( <h4>This is where the search will live</h4> );
+}
+
 
 function Welcome() {
-    if(window.loggedIn == false)
-        return <Login />;
-    else
-        return <h3>Welcome! To add a new proposal, please select from the menu above</h3>;
-}
-
-function Auth() {
-    const [username, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const navigate = useNavigate();
-
-    const handleSubmit = event => {
-        event.preventDefault();
-        console.log("Login user: " + username + " password " + password);
-        window.loggedIn = true;
-        navigate('/welcome');
-    };
-
-    return (
-        <div className="Auth-form-container">
-            <form className="Auth-form" onSubmit={handleSubmit}>
-                <div className="Auth-form-content">
-                    <h3 className="Auth-form-title">Please login</h3>
-                    <div className="form-group mt-3">
-                        <label>Email address</label>
-                        <input
-                            type="email"
-                            className="form-control mt-1"
-                            placeholder="Enter email"
-                            name="username"
-                            value={username}
-                            onChange={e => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group mt-3">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            className="form-control mt-1"
-                            placeholder="Enter password"
-                            name="password"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="d-grid gap-2 mt-3">
-                        <button type="submit" className="btn btn-primary">
-                        Submit
-                        </button>
-                    </div>
-                    <p className="forgot-password text-right mt-2 h4">
-                        Forgot <a href="#">password?</a>
-                    </p>
-                </div>
-            </form>
-        </div>
-      );
+    return (<React.Fragment><h3>Welcome!</h3> <h4>To add a new proposal, please select from the menu above</h4></React.Fragment>);
 }
 
 function Help() {
-    if(window.loggedIn == false)
-        return <Login />;
-    else
-        return (
-            <div>
-                <h3>Help</h3>
-                This is where the help will reside
-            </div>
-        );
+    return (
+        <div>
+            <h3>Help</h3>
+            This is where the help will reside
+        </div>
+    );
 }
+
+function Signup() {
+    return(<div><h4>In a future release, you'll be able to signup to this propsal service online</h4></div>);
+}
+

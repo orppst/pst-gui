@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect}  from 'react';
+import { useNavigate } from "react-router-dom";
 
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
@@ -54,39 +55,31 @@ const schema: RJSFSchema = {
     required: [ "title", "organization_name"]
 };
 
+fetch('/proposalSchema')
+.then((data) => {console.log(data);})
+.catch(console.log);
+
 const log = (type) => console.log.bind(console, type);
 
-class AddProposal extends Component {
-    state = {
-        organisations: []
-    }
+export default function  AddProposal () {
+    let [orgs, setOrgs] = useState([]);
 
-    constructor(props){
-        super(props);
-    }
-
-    componentDidMount() {
-        fetch('/organisations')
+    fetch('/organisations')
             .then(res => res.json())
             .then((data) => {
-                this.setState({organisations :data});
                 schema.properties.organization_name.enum = data;
+                setOrgs(data);
         })
         .catch(console.log)
-    }
 
-    render() {
         return (
             <div className="Prop-form-container">
                 <Form className="Prop-form"
                     schema={schema}
                     validator={validator}
                     onChange={log("changed")}
-                    onSubmit={log("submitted")}
+                    onSubmit={log("submitted") }
                     onError={log("errors")} />
             </div>
-        )
-    };
+        );
 }
-
-export default AddProposal;
