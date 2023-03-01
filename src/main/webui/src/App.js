@@ -151,8 +151,7 @@ function Welcome() {
 function Help() {
     return (
         <div>
-            <h3>Help</h3>
-            This is where the help will reside
+            <h4>This is where the help will live</h4>
         </div>
     );
 }

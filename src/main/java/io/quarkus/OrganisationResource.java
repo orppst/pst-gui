@@ -16,7 +16,6 @@ public class OrganisationResource {
         orgList.add(new String("Another organisation"));
         orgList.add(new String("Another organisation2"));
         orgList.add(new String("Another organisation3"));
-        orgList.add(new String("This list created in OrganisationResource.java"));
         return orgList;
     }
 }
