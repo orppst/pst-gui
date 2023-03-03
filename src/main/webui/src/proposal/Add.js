@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, {useState, useEffect}  from 'react';
+=======
+import React, {Component} from 'react';
+>>>>>>> ebe890d (React app with rjsf forms and browser router)
 
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
