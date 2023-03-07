@@ -151,13 +151,11 @@ function Welcome() {
 function Auth() {
     const [username, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate();
 
     const handleSubmit = event => {
         event.preventDefault();
         console.log("Login user: " + username + " password " + password);
         window.loggedIn = true;
-        navigate('/welcome');
     };
 
     return (
