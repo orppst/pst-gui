@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
 import React, {useState, useEffect} from 'react';
 import AddProposal from "./proposal/Add"
+import ListProposals from "./proposal/List"
 import { Dropdown, Menu } from 'semantic-ui-react';
 import {confirmAlert} from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -140,7 +141,7 @@ function Add() {
 }
 
 function Search() {
-    return (<div><h4>This is where the search will live</h4></div>);
+    return (<ListProposals />);
 }
 
 
