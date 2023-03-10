@@ -84,11 +84,11 @@ const schema: RJSFSchema = {
         },
     required: [ "title", "organization_name"]
 };
-
-fetch('/proposalSchema')
+//FIXME the
+fetch('./proposalSchema')
     .then((data) => {console.log(data);})
     .catch(console.log);
-fetch('/organisations')
+fetch('./organisations')
     .then(res => res.json())
     .then((data) => {
         schema.properties.organization_name.enum = data;
