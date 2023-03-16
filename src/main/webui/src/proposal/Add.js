@@ -85,10 +85,10 @@ const schema: RJSFSchema = {
     required: [ "title", "organization_name"]
 };
 //FIXME the
-fetch('./proposalSchema')
-    .then((data) => {console.log(data);})
+fetch(window.location.pathname + '/proposalSchema')
+    .then((data) => {console.log("fetch test proposal schema success"); })
     .catch(console.log);
-fetch('./organisations')
+fetch(window.location.pathname + '/organisations')
     .then(res => res.json())
     .then((data) => {
         schema.properties.organization_name.enum = data;
