@@ -88,7 +88,7 @@ const schema: RJSFSchema = {
 fetch(window.location.pathname + '/proposalSchema')
     .then((data) => {console.log("fetch test proposal schema success"); })
     .catch(console.log);
-fetch(window.location.pathname + '/proposalapi/organisations')
+fetch(window.location.pathname + '/proposalapi/observatories')
     .then(res => res.json())
     .then((data) => {
         schema.properties.organization_name.enum = data;
