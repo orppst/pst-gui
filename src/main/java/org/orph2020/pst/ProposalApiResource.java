@@ -6,10 +6,13 @@ import org.orph2020.pst.rest.client.ApiService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+@Produces(MediaType.APPLICATION_JSON)
 @Path("/proposalapi")
 public class ProposalApiResource {
 
