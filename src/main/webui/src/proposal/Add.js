@@ -91,7 +91,7 @@ fetch(window.location.pathname + '/proposalSchema')
 fetch(window.location.pathname + '/proposalapi/observatories')
     .then(res => res.json())
     .then((data) => {
-        schema.properties.organization_name.enum = data;
+        schema.properties.organization_name.enum = data.map(function(x){return x.name});
     })
     .catch(console.log);
 
