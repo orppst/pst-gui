@@ -43,68 +43,38 @@ const schema: RJSFSchema = {
         },
 
     },
-    required: ["title"],
-    properties: {
-        title: {type: "string", title: "Title", default: "My new proposal"},
-        organization_name: {type: "string", title: "Organization Name",
-            enum: ["Please choose one"],
-            },
-        organization_address: {type: "string", title: "Organization Address", default: "ToDo: pre-populate this"},
-        person_fullName: {type: "string", title: "PI full name"},
-        person_eMail: {type: "string", title: "PI email"},
-        source: {type: "array",
-          title: "Targets",
-          items: {
-                properties: {
-                "Target": {"$ref": "#/definitions/target"}
-                }
-            }
-          },
-          technicalGoal: {type: "object", title:"Technical Goal",
-              properties: {
-                  performance: {type: "object", title:"Performance",
-                      "properties": {
-                          "desiredAngularResolution": {
-                            "type": "number", title: "Desired Angular Resolution arcsec", default: 25.0
-                          },
-                          "desiredLargestScale": {
-                            "type": "number", title: "Desired Largest Scale degrees", default: 0.1
-                          },
-                          "spectralWindow": {
-                            "type": "array", title: "Spectral Window(s)",
-                            items: {
-                                properties: { "Window": {"$ref": "#/definitions/spectral_window"} }
-                            }
-                          }
-                      }
-                  },
-              },
-          },
-          readyToSubmit: {type: "boolean", title: "Ready to submit?", default: false}
-        },
     required: [ "title", "organization_name"]
 };
+const uiSchema = { hidden_person_id: {"ui:widget": "hidden"}};
+
 //FIXME the
 fetch(window.location.pathname + '/proposalSchema')
-    .then((data) => {console.log("fetch test proposal schema success"); })
+    .then(res => res.json())
+    .then((data) => {console.log(data); schema.properties = data;})
     .catch(console.log);
 fetch(window.location.pathname + '/proposalapi/observatories')
     .then(res => res.json())
     .then((data) => {
+        console.log(data);
         schema.properties.organization_name.enum = data.map(function(x){return x.name});
     })
     .catch(console.log);
 
 const log = (type) => console.log.bind(console, type);
 
+const onSubmit = ({formData}, e) => {
+    console.log("Data submitted: ",  formData);
+    console.log("Match back to original schema: ", schema.properties);
+}
+
 export default function AddProposal () {
     return (
         <div className="Prop-form-container">
         <Form className="Prop-form"
           schema={schema}
+          uiSchema={uiSchema}
           validator={validator}
-          onChange={log("changed")}
-          onSubmit={log("submitted")}
+          onSubmit={onSubmit}
           onError={log("errors")} />
         </div>
   )};
