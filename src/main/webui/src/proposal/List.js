@@ -82,6 +82,15 @@ function Table({ columns, data }) {
 }
 
 export default function ListProposals() {
+
+   fetch(window.location.pathname + '/proposalapi/proposals')
+       .then(res => res.json())
+       .then((data) => {
+           console.log(data)
+       })
+       .catch(console.log);
+
+
   const columns = React.useMemo(
     () => [
       {

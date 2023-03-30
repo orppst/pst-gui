@@ -5,6 +5,7 @@ package org.orph2020.pst.rest.client;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.ivoa.dm.proposal.prop.Observatory;
+import org.ivoa.dm.proposal.prop.ObservingProposal;
 import org.ivoa.dm.proposal.prop.Organization;
 import org.orph2020.pst.common.json.ObjectIdentifier;
 
@@ -19,5 +20,9 @@ public interface ApiService {
    @Path("observatories")
    @GET
    Set<ObjectIdentifier> getObservatories();
+
+   @Path("proposals")
+   @GET
+   Set<ObservingProposal> getProposals();
 
 }

@@ -46,25 +46,32 @@ const schema: RJSFSchema = {
     required: [ "title", "organization_name"]
 };
 const uiSchema = { hidden_person_id: {"ui:widget": "hidden"}};
+var databaseLists = {observatories: [{}]};
 
 //FIXME the
 fetch(window.location.pathname + '/proposalSchema')
     .then(res => res.json())
-    .then((data) => {console.log(data); schema.properties = data;})
+    .then((data) => {schema.properties = data;})
     .catch(console.log);
 fetch(window.location.pathname + '/proposalapi/observatories')
     .then(res => res.json())
     .then((data) => {
-        console.log(data);
+        databaseLists.observatories = data;
         schema.properties.organization_name.enum = data.map(function(x){return x.name});
     })
     .catch(console.log);
 
 const log = (type) => console.log.bind(console, type);
 
+function findArrayElementByName(array, name) {
+  return array.find((element) => {
+    return element.name === name;
+  })
+}
+
 const onSubmit = ({formData}, e) => {
     console.log("Data submitted: ",  formData);
-    console.log("Match back to original schema: ", schema.properties);
+    console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
 }
 
 export default function AddProposal () {

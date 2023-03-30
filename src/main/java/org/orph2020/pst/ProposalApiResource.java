@@ -3,6 +3,7 @@ package org.orph2020.pst;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.ivoa.dm.proposal.prop.Observatory;
 import org.ivoa.dm.proposal.prop.Organization;
+import org.ivoa.dm.proposal.prop.ObservingProposal;
 import org.orph2020.pst.common.json.ObjectIdentifier;
 import org.orph2020.pst.rest.client.ApiService;
 
@@ -25,5 +26,11 @@ public class ProposalApiResource {
     public Set<ObjectIdentifier> getObservatories() {
 
         return apiService.getObservatories();
+    }
+
+    @GET
+    @Path("proposals")
+    public Set<ObservingProposal> getProposals() {
+        return apiService.getProposals();
     }
 }
