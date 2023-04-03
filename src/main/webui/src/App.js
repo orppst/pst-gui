@@ -3,6 +3,7 @@ import "./App.css";
 import React, {useState, useEffect} from 'react';
 import AddProposal from "./proposal/Add"
 import ListProposals from "./proposal/List"
+import UserEdit from "./user/Edit"
 import { Dropdown, Menu } from 'semantic-ui-react';
 import {confirmAlert} from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -105,9 +106,17 @@ export default function App() {
                 }
 
                 {loggedIn &&
-                <Menu.Item name='logout'
-                    active={activeItem === 'logout'}
-                    onClick={logoutConfirm}/>}
+                <Dropdown item text='User'>
+                    <Dropdown.Menu>
+                        <Dropdown.Item name='userEdit'  onClick={handleItemClick}>
+                        My details
+                        </Dropdown.Item>
+                        <Dropdown.Item name='logout' onClick={logoutConfirm}>
+                        Logout
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+                }
                 {loggedIn &&
                 <Dropdown item text='Proposals'>
                     <Dropdown.Menu>
@@ -132,6 +141,7 @@ export default function App() {
         {activeItem==='welcome' && Welcome()}
         {activeItem==='search' && Search()}
         {activeItem==='signup' && Signup()}
+        {activeItem==='userEdit' && UserEdit()}
         </div>
     );
 }

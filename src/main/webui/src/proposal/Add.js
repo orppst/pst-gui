@@ -48,7 +48,7 @@ const schema: RJSFSchema = {
 const uiSchema = { hidden_person_id: {"ui:widget": "hidden"}};
 var databaseLists = {observatories: [{}]};
 
-//FIXME the
+//FIXME load these only when required
 fetch(window.location.pathname + '/proposalSchema')
     .then(res => res.json())
     .then((data) => {schema.properties = data;})

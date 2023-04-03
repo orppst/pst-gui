@@ -4,14 +4,13 @@ package org.orph2020.pst.rest.client;
  */
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.ivoa.dm.proposal.prop.Observatory;
 import org.ivoa.dm.proposal.prop.ObservingProposal;
-import org.ivoa.dm.proposal.prop.Organization;
 import org.orph2020.pst.common.json.ObjectIdentifier;
+import org.ivoa.dm.proposal.prop.Person;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Set;
 
 @RegisterRestClient(configKey="proposal-api")
@@ -24,5 +23,23 @@ public interface ApiService {
    @Path("proposals")
    @GET
    Set<ObservingProposal> getProposals();
+
+   @Path("people")
+   @GET
+   Set<ObjectIdentifier> getPeople();
+
+   @Path("people/{id}")
+   @GET
+   Person getPerson(@PathParam("id") long id);
+
+   @Path("people/{id}/fullName")
+   @PUT
+   @Consumes(MediaType.TEXT_PLAIN)
+   Response updateFullName(@PathParam("id") long id, String replacementFullName);
+
+   @Path("people/{id}/eMail")
+   @PUT
+   @Consumes(MediaType.TEXT_PLAIN)
+   Response updateEMail(@PathParam("id") long id, String replacementEMail);
 
 }
