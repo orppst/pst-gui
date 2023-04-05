@@ -24,30 +24,31 @@ const schema: RJSFSchema = {
 
 const uiSchema = { };
 
-var person = {};
-const response = fetch(window.location.pathname + '/proposalapi/people/37').then(res=> res.json()).then((data) => {person = data;});
+var person = {"_id": 45};
+const response = fetch(window.location.pathname + '/proposalapi/people/' + person._id).then(res=> res.json()).then((data) => {person = data;});
 
-const onSubmit = ({formData}, e) => {
-    console.log("Data submitted: ",  formData);
 
-    //Map back into person object
-    if(person.fullName != formData.fullName) {
-        person.fullName = formData.fullName;
-        //Update name
-        const requestOptions = { method: 'PUT', body: person.fullName };
-        fetch(window.location.pathname + '/proposalapi/people/37/fullName', requestOptions);
+export default function EditUser(nav) {
+    const onSubmit = ({formData}, e) => {
+        console.log("Data submitted: ",  formData);
+
+        //Map back into person object
+        if(person.fullName != formData.fullName) {
+            person.fullName = formData.fullName;
+            //Update name
+            const requestOptions = { method: 'PUT', body: person.fullName };
+            fetch(window.location.pathname + '/proposalapi/people/' +  person._id + '/fullName', requestOptions);
+        }
+
+        if(person.eMail !=   formData.eMail) {
+            person.eMail = formData.eMail;
+            //Update email
+            const requestOptsEmail = { method: 'PUT', body: person.eMail };
+            fetch(window.location.pathname + '/proposalapi/people/' + person._id + '/eMail', requestOptsEmail);
+        }
+
+        nav('welcome');
     }
-
-    if(person.eMail !=   formData.eMail) {
-        person.eMail = formData.eMail;
-        //Update email
-        const requestOptsEmail = { method: 'PUT', body: person.eMail };
-        fetch(window.location.pathname + '/proposalapi/people/37/eMail', requestOptsEmail);
-    }
-
-}
-
-export default function EditUser() {
 
     schema.properties.fullName.default = person.fullName;
     schema.properties.eMail.default = person.eMail;

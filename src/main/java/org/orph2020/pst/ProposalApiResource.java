@@ -1,7 +1,6 @@
 package org.orph2020.pst;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.ivoa.dm.proposal.prop.ObservingProposal;
 import org.ivoa.dm.proposal.prop.Person;
 import org.orph2020.pst.common.json.ObjectIdentifier;
 import org.orph2020.pst.rest.client.ApiService;
@@ -26,7 +25,7 @@ public class ProposalApiResource {
 
     @GET
     @Path("proposals")
-    public Set<ObservingProposal> getProposals() {
+    public Set<ObjectIdentifier> getProposals() {
         return apiService.getProposals();
     }
 

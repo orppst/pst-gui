@@ -137,18 +137,15 @@ export default function App() {
 
         {activeItem==='login' && auth()}
         {activeItem==='help' && Help()}
-        {activeItem==='add' && Add()}
+        {activeItem==='add' && AddProposal(setActiveItem)}
         {activeItem==='welcome' && Welcome()}
         {activeItem==='search' && Search()}
         {activeItem==='signup' && Signup()}
-        {activeItem==='userEdit' && UserEdit()}
+        {activeItem==='userEdit' && UserEdit(setActiveItem)}
         </div>
     );
 }
 
-function Add() {
-    return (<AddProposal />);
-}
 
 function Search() {
     return (<ListProposals />);

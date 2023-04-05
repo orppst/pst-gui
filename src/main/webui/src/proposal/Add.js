@@ -69,12 +69,15 @@ function findArrayElementByName(array, name) {
   })
 }
 
-const onSubmit = ({formData}, e) => {
-    console.log("Data submitted: ",  formData);
-    console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
-}
 
-export default function AddProposal () {
+
+export default function AddProposal (nav) {
+    const onSubmit = ({formData}, e) => {
+        console.log("Data submitted: ",  formData);
+        console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
+        nav('welcome');
+    }
+
     return (
         <div className="Prop-form-container">
         <Form className="Prop-form"
