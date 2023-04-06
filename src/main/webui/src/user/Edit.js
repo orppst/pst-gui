@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react';
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import Form from "@rjsf/core";
@@ -25,31 +25,56 @@ const schema: RJSFSchema = {
 const uiSchema = { };
 
 var person = {"_id": 45};
-const response = fetch(window.location.pathname + '/proposalapi/people/' + person._id).then(res=> res.json()).then((data) => {person = data;});
 
+const response = fetch(window.location.pathname + '/proposalapi/people/' + 47).then(res=> res.json()).then((data) => {person = data;});
 
 export default function EditUser(nav) {
+
+    const fetchUserData = () => {
+        console.log("EditUser useEffect()");
+        fetch(window.location.pathname + '/proposalapi/people/' + person._id, { method: 'GET'})
+            .then(res => res.json())
+            .then(data => {
+                person = data;
+            })
+        console.log("Got new person data... how to refresh?");
+        };
+
+    useEffect(() => {
+       fetchUserData();
+        },[]);
+
     const onSubmit = ({formData}, e) => {
         console.log("Data submitted: ",  formData);
+        var promises = [];
 
-        //Map back into person object
         if(person.fullName != formData.fullName) {
             person.fullName = formData.fullName;
-            //Update name
-            const requestOptions = { method: 'PUT', body: person.fullName };
-            fetch(window.location.pathname + '/proposalapi/people/' +  person._id + '/fullName', requestOptions);
+            promises.push(fetch(window.location.pathname + '/proposalapi/people/' +  person._id + '/fullName',
+                { method: 'PUT', body: person.fullName }));
         }
 
-        if(person.eMail !=   formData.eMail) {
+        if(person.eMail != formData.eMail) {
             person.eMail = formData.eMail;
-            //Update email
-            const requestOptsEmail = { method: 'PUT', body: person.eMail };
-            fetch(window.location.pathname + '/proposalapi/people/' + person._id + '/eMail', requestOptsEmail);
-        }
+            promises.push(fetch(window.location.pathname + '/proposalapi/people/' + person._id + '/eMail',
+                { method: 'PUT', body: person.eMail }));
+        };
 
-        nav('welcome');
+/*
+        person.fullName = formData.fullName;
+        person.eMail = formData.eMail;
+        const requestOptsEmail = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: {fullName: person.fullName, eMail: person.eMail}
+            };
+        fetch(window.location.pathname + '/proposalapi/people/' + person._id + '/nameEMail', requestOptsEmail);
+
+*/
+        Promise.all(promises).then(nav('welcome'));
     }
 
+    console.log("DEBUG a person " + person);
     schema.properties.fullName.default = person.fullName;
     schema.properties.eMail.default = person.eMail;
     schema.properties.homeInstitute.properties.instituteName.default = person.homeInstitute.name;

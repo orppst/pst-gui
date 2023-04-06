@@ -53,6 +53,7 @@ fetch(window.location.pathname + '/proposalSchema')
     .then(res => res.json())
     .then((data) => {schema.properties = data;})
     .catch(console.log);
+/*
 fetch(window.location.pathname + '/proposalapi/observatories')
     .then(res => res.json())
     .then((data) => {
@@ -60,7 +61,7 @@ fetch(window.location.pathname + '/proposalapi/observatories')
         schema.properties.organization_name.enum = data.map(function(x){return x.name});
     })
     .catch(console.log);
-
+*/
 const log = (type) => console.log.bind(console, type);
 
 function findArrayElementByName(array, name) {
@@ -72,6 +73,23 @@ function findArrayElementByName(array, name) {
 
 
 export default function AddProposal (nav) {
+
+    //useEffect(() => {
+        // fetch data
+        const dataFetch = async () => {
+          const data = await (
+            await fetch(
+              window.location.pathname + '/proposalapi/observatories'
+            )
+          ).json();
+
+          // set state when the data received
+          schema.properties.organization_name.enum = data.map(function(x){return x.name});
+        };
+
+        dataFetch();
+      //}, []);
+
     const onSubmit = ({formData}, e) => {
         console.log("Data submitted: ",  formData);
         console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));

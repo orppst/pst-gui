@@ -14,6 +14,10 @@ export default function App() {
     const [username, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    useEffect(() => {
+       console.log("App() useEffect");
+        },[]);
+
     const handleItemClick= (e,  {name} ) => {  e.preventDefault(); setActiveItem(name); }
     const handleAuthSubmit = event => {
             event.preventDefault();
@@ -141,7 +145,7 @@ export default function App() {
         {activeItem==='welcome' && Welcome()}
         {activeItem==='search' && Search()}
         {activeItem==='signup' && Signup()}
-        {activeItem==='userEdit' && UserEdit(setActiveItem)}
+        {activeItem==='userEdit' && Edit(setActiveItem)}
         </div>
     );
 }
@@ -149,6 +153,10 @@ export default function App() {
 
 function Search() {
     return (<ListProposals />);
+}
+
+function Edit(setActiveItem) {
+    return <UserEdit />;
 }
 
 
