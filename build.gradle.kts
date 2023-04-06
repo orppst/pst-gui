@@ -10,6 +10,7 @@ dependencies {
     implementation("io.quarkiverse.quinoa:quarkus-quinoa:1.2.5")
     implementation("io.quarkus:quarkus-websockets")
     implementation("io.quarkus:quarkus-smallrye-jwt")
+    implementation("io.quarkus:quarkus-oidc")
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-resteasy-reactive")
 //    implementation("io.quarkus:quarkus-oidc")
