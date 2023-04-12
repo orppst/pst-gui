@@ -12,9 +12,8 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-jwt")
     implementation("io.quarkus:quarkus-oidc")
     implementation("io.quarkus:quarkus-oidc-client-reactive-filter")  // https://quarkus.io/guides/security-openid-connect-client
-//    implementation("io.quarkus:quarkus-oidc-token-propagation") { // https://quarkus.io/guides/security-openid-connect
-// //       exclude(group = "io.quarkus", module = "quarkus-rest-client") // need the reactive version... - this still causes problems though
-//    }
+    implementation("io.quarkus:quarkus-oidc-token-propagation-reactive")  // https://quarkus.io/guides/security-openid-connect
+
 
 //    implementation("io.quarkus:quarkus-keycloak-admin-client") // https://quarkus.io/guides/security-keycloak-admin-client
     implementation("io.quarkus:quarkus-arc")
