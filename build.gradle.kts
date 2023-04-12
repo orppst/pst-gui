@@ -7,17 +7,20 @@ version = "0.1"
 dependencies {
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
     implementation("io.quarkus:quarkus-rest-client-reactive-jackson")
-    implementation("io.quarkiverse.quinoa:quarkus-quinoa:1.2.5")
+    implementation("io.quarkiverse.quinoa:quarkus-quinoa:1.2.6")
     implementation("io.quarkus:quarkus-websockets")
     implementation("io.quarkus:quarkus-smallrye-jwt")
     implementation("io.quarkus:quarkus-oidc")
     implementation("io.quarkus:quarkus-oidc-client-reactive-filter")  // https://quarkus.io/guides/security-openid-connect-client
-    implementation("io.quarkus:quarkus-oidc-token-propagation")  // https://quarkus.io/guides/security-openid-connect
+//    implementation("io.quarkus:quarkus-oidc-token-propagation") { // https://quarkus.io/guides/security-openid-connect
+// //       exclude(group = "io.quarkus", module = "quarkus-rest-client") // need the reactive version... - this still causes problems though
+//    }
+
 //    implementation("io.quarkus:quarkus-keycloak-admin-client") // https://quarkus.io/guides/security-keycloak-admin-client
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-resteasy-reactive")
 //    implementation("io.quarkus:quarkus-oidc")
     testImplementation("io.rest-assured:rest-assured")
-    testImplementation("io.quarkiverse.quinoa:quarkus-quinoa-testing:1.2.5")
+    testImplementation("io.quarkiverse.quinoa:quarkus-quinoa-testing:1.2.6")
 }
 

@@ -7,6 +7,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import io.quarkus.security.Authenticated;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.oidc.IdToken;
@@ -15,6 +16,7 @@ import io.quarkus.oidc.RefreshToken;
 import java.util.Set;
 
 @Path("/aai/protected/tokens")
+@Authenticated
 public class TokenResource {
 
     /**
