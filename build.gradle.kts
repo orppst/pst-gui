@@ -11,6 +11,9 @@ dependencies {
     implementation("io.quarkus:quarkus-websockets")
     implementation("io.quarkus:quarkus-smallrye-jwt")
     implementation("io.quarkus:quarkus-oidc")
+    implementation("io.quarkus:quarkus-oidc-client-reactive-filter")  // https://quarkus.io/guides/security-openid-connect-client
+    implementation("io.quarkus:quarkus-oidc-token-propagation")  // https://quarkus.io/guides/security-openid-connect
+//    implementation("io.quarkus:quarkus-keycloak-admin-client") // https://quarkus.io/guides/security-keycloak-admin-client
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-resteasy-reactive")
 //    implementation("io.quarkus:quarkus-oidc")

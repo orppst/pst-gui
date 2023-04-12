@@ -12,6 +12,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import io.quarkus.oidc.IdToken;
 import io.quarkus.oidc.RefreshToken;
 
+import java.util.Set;
+
 @Path("/aai/protected/tokens")
 public class TokenResource {
 
@@ -53,10 +55,17 @@ public class TokenResource {
             response.append("<li>username: ").append(userName.toString()).append("</li>");
         }
 
-        Object scopes = this.accessToken.getClaim("scope");
+        Set<String> claims = this.idToken.getClaimNames();
 
-        if (scopes != null) {
-            response.append("<li>scopes: ").append(scopes.toString()).append("</li>");
+        for (String s : claims) {
+            response.append("<li>id claim: ").append(s).append("=").append(this.idToken.claim(s)).append("</li>");
+        }
+
+
+        claims = this.accessToken.getClaimNames();
+
+        for (String s : claims) {
+            response.append("<li>ac claim: ").append(s).append("=").append(this.accessToken.claim(s)).append("</li>");
         }
 
         response.append("<li>refresh_token: ").append(refreshToken.getToken() != null).append("</li>");
