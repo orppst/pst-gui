@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import java.util.Set;
 
 @RegisterRestClient(configKey="proposal-api")
-@Path("api")
+@Path("../api")
 public interface ApiService {
    @Path("observatories")
    @GET

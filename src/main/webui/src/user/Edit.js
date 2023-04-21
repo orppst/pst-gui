@@ -24,9 +24,23 @@ const schema: RJSFSchema = {
 
 const uiSchema = { };
 
-var person = {"_id": 45};
+var person = {"_id": 46};
+const thisUserResponse = fetch(window.location.pathname + '/proposalapi/people/' + person._id)
+                        .then(res=> res.json())
+                        .then((data) => {person = data;});
 
-const response = fetch(window.location.pathname + '/proposalapi/people/' + 47).then(res=> res.json()).then((data) => {person = data;});
+const allUsersResponse = fetch(window.location.pathname + '/proposalapi/people/')
+            .then(res => res.json())
+            .then((data) => {data.map((item) => {
+                if(item.name ===  "PI"){
+                    person._id = item.dbid;
+                    console.log("Found the PI! " + person._id);
+                    const thisUserResponse = fetch(window.location.pathname + '/proposalapi/people/' + person._id)
+                        .then(res=> res.json())
+                        .then((data) => {person = data;});
+                    return
+                }
+            })});
 
 export default function EditUser(nav) {
 
