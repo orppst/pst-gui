@@ -15,8 +15,8 @@ const schema: RJSFSchema = {
             type: "object",
             title: "Home institute",
                 "properties": {
-                    instituteName: { type: "string", title: "Name", default: "none", readOnly: true },
-                    instituteAddr: { type: "string", title: "Address", default: "none", readOnly: true },
+                    name: { type: "string", title: "Name", default: "none", readOnly: true },
+                    address: { type: "string", title: "Address", default: "none", readOnly: true },
                 }
             }
         }
@@ -24,42 +24,34 @@ const schema: RJSFSchema = {
 
 const uiSchema = { };
 
-var person = {"_id": 46};
-const thisUserResponse = fetch(window.location.pathname + '/proposalapi/people/' + person._id)
-                        .then(res=> res.json())
-                        .then((data) => {person = data;});
+var person = {"_id": 46, fullName: "blank", eMail: "none", homeInstitute: {name: "none", address: "nowhere"} };
+
+const fetchUserData = () => {
+        fetch(window.location.pathname + '/proposalapi/people/' + person._id, { method: 'GET'})
+            .then(res => res.json())
+            .then(data => {
+                person = data;
+            })
+        };
 
 const allUsersResponse = fetch(window.location.pathname + '/proposalapi/people/')
             .then(res => res.json())
             .then((data) => {data.map((item) => {
                 if(item.name ===  "PI"){
                     person._id = item.dbid;
-                    console.log("Found the PI! " + person._id);
-                    const thisUserResponse = fetch(window.location.pathname + '/proposalapi/people/' + person._id)
-                        .then(res=> res.json())
-                        .then((data) => {person = data;});
+                    fetchUserData();
                     return
                 }
             })});
 
+
+
 export default function EditUser(nav) {
-
-    const fetchUserData = () => {
-        console.log("EditUser useEffect()");
-        fetch(window.location.pathname + '/proposalapi/people/' + person._id, { method: 'GET'})
-            .then(res => res.json())
-            .then(data => {
-                person = data;
-            })
-        console.log("Got new person data... how to refresh?");
-        };
-
-    useEffect(() => {
-       fetchUserData();
-        },[]);
+    fetchUserData();
 
     const onSubmit = ({formData}, e) => {
         console.log("Data submitted: ",  formData);
+
         var promises = [];
 
         if(person.fullName != formData.fullName) {
@@ -85,20 +77,16 @@ export default function EditUser(nav) {
         fetch(window.location.pathname + '/proposalapi/people/' + person._id + '/nameEMail', requestOptsEmail);
 
 */
+        person = formData;
         Promise.all(promises).then(nav('welcome'));
     }
-
-    console.log("DEBUG a person " + person);
-    schema.properties.fullName.default = person.fullName;
-    schema.properties.eMail.default = person.eMail;
-    schema.properties.homeInstitute.properties.instituteName.default = person.homeInstitute.name;
-    schema.properties.homeInstitute.properties.instituteAddr.default = person.homeInstitute.address;
 
     return (
            <div className="Prop-form-container">
                 <Form className="Prop-form"
                      schema={schema}
                      uiSchema={uiSchema}
+                     formData={person}
                      validator={validator}
                      onSubmit={onSubmit}
                      onError={log("errors")} />

@@ -14,10 +14,6 @@ export default function App() {
     const [username, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    useEffect(() => {
-       console.log("App() useEffect");
-        },[]);
-
     const handleItemClick= (e,  {name} ) => {  e.preventDefault(); setActiveItem(name); }
     const handleAuthSubmit = event => {
             event.preventDefault();
@@ -156,7 +152,7 @@ function Search() {
 }
 
 function Edit(setActiveItem) {
-    return <UserEdit />;
+    return <div> {UserEdit(setActiveItem)} </div>;
 }
 
 
