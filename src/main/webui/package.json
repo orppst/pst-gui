@@ -7,6 +7,8 @@
     "@babel/core": "^7.0.0-0",
     "@babel/plugin-syntax-flow": "^7.14.5",
     "@babel/plugin-transform-react-jsx": "^7.14.9",
+    "@openapi-codegen/cli": "^2.0.0",
+    "@openapi-codegen/typescript": "^6.2.1",
     "@rjsf/core": "^5.0.0-beta.15",
     "@rjsf/utils": "^5.0.0-beta.15",
     "@rjsf/validator-ajv8": "^5.0.0-beta.15",
@@ -20,6 +22,7 @@
     "crypto-browserify": "^3.12.0",
     "fs": "^0.0.1-security",
     "namor": "^3.0.1",
+    "openapi-codegen": "^2.2.2",
     "path": "path-browserify",
     "path-browserify": "^1.0.1",
     "react": "^18.2.0",
@@ -31,14 +34,15 @@
     "semantic-ui-react": "^2.1.4",
     "stream": "stream-browserify",
     "stream-browserify": "^3.0.0",
-    "typescript": "^2.7",
+    "typescript": "^5.0.4",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "gen": "openapi-codegen"
   },
   "eslintConfig": {
     "extends": [
