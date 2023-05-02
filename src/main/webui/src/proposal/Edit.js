@@ -2,10 +2,10 @@ import React, {useState, useEffect}  from 'react';
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import Form from "@rjsf/core";
-import {JSONToModel, ModelToJSON, findArrayElementByName, uiSchemaCore, schemaCore} from "./Common";
+import { findArrayElementByName, uiSchemaCore, schemaCore} from "./Common";
 
 const schema: RJSFSchema = schemaCore();
-const uiSchema = uiSchemaCore;
+const uiSchema = uiSchemaCore();
 var databaseLists = {observatories: [{}]};
 const log = (type) => console.log.bind(console, type);
 
@@ -23,29 +23,30 @@ fetch(window.location.pathname + '/proposalapi/observatories')
     })
     .catch(log);
 
-/*
-        const dataFetch = async () => {
-          const data = await (
-            await fetch(
-              window.location.pathname + '/proposalapi/observatories'
-            )
-          ).json();
+export default function EditProposal (nav) {
 
-          // set state when the data received
-          schema.properties.organization_name.enum = data.map(function(x){return x.name});
-        };
-*/
+//An example proposal to edit
+const formData = {title: "Sample proposal to edit",
+    organization_address: "Cheshire",
+    organization_name: "Jodrell Bank",
+    person_eMail: "pi@does.not.exist",
+    person_fullName: "PI",
+    source: [ {Target: {targetCoordinates: {sourceLat: 57.009, sourceLon: 48.876}, positionEpoch: "J2013.123", target_sourceName: "Ketchup", coordinateSystem: "J2000"}}],
+    technicalGoal: {
+        performance: {
+            desiredAngularResolution: 21,
+            desiredLargestScale: 0.1,
+            spectralWindow: [
+                {Window: {start: 2.8, end: 3.3, spectral_resolution: 1, polarization: "RR", expected_spectral_line: {expected: "Yes", spectral_line: {start: 3, description: "Hello"}}}}
+                ]
+            }
+        }
+    };
 
-
-export default function AddProposal (nav) {
-
-    // fetch data
 
     const onSubmit = ({formData}, e) => {
         console.log("Data submitted: ",  formData);
         console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
-        fetch(window.location.pathname + '/proposalapi/createObservingProposal', { method: 'POST', body: formData })
-            .then(nav('welcome'))
 
         nav('welcome');
     }
@@ -54,9 +55,11 @@ export default function AddProposal (nav) {
         <div className="Prop-form-container">
         <Form className="Prop-form"
           schema={schema}
+          formData={formData}
           uiSchema={uiSchema}
           validator={validator}
           onSubmit={onSubmit}
           onError={log("errors")} />
         </div>
   )};
+

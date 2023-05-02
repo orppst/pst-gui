@@ -4,6 +4,8 @@ package org.orph2020.pst.rest.client;
  */
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.ivoa.dm.proposal.prop.ObservingProposal;
+import org.ivoa.dm.proposal.prop.ProposalModel;
 import org.orph2020.pst.common.json.ObjectIdentifier;
 import org.ivoa.dm.proposal.prop.Person;
 
@@ -22,6 +24,10 @@ public interface ApiService {
    @Path("proposals")
    @GET
    Set<ObjectIdentifier> getProposals();
+
+   @Path("proposals/{id}")
+   @GET
+   ObservingProposal getObservingProposal(@PathParam("id") long id);
 
    @Path("people")
    @GET

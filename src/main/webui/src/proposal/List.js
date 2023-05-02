@@ -1,6 +1,27 @@
 import React, {useEffect} from 'react'
 import { useTable } from 'react-table'
 
+var proposalList = [{}];
+var proposals = [{investigators: [{type: "none", person: {fullName: "", eMail: ""}}]}];
+
+const fetchProposalData = () => {
+    fetch(window.location.pathname + '/proposalapi/proposals')
+        .then(res => res.json())
+        .then((data) => {
+            proposalList = data;
+            proposals.splice();
+            proposalList.forEach(prop => {
+                fetch(window.location.pathname + '/proposalapi/proposals/' + prop.dbid)
+                    .then(res => res.json())
+                    .then((data) => {
+                        proposals.push(data);
+                    })
+                    .catch(console.log);
+                })
+        })
+        .catch(console.log);
+    }
+
 const range = len => {
   const arr = []
   for (let i = 0; i < len; i++) {
@@ -9,21 +30,24 @@ const range = len => {
   return arr
 }
 
-const newProposal = () => {
-  const statusChance = Math.random()
-  return {
-    title: "Dr",
-    firstName: "Fred",
-    lastName: "Bloggs",
-    poposalTitle: "Propsal Name #" + Math.floor(Math.random() * 100),
-    progress: Math.floor(Math.random() * 100),
-    status:
-      statusChance > 0.66
-        ? 'Approved'
-        : statusChance > 0.33
-        ? 'Submitted'
-        : 'Draft',
-  }
+const getProposal = () => {
+    //Find PI
+    var index = proposals.length-1;
+    var investigator = {person: {fullName: "", eMail: ""}};
+    investigator = proposals[index].investigators.find(inv => {return inv.type==='PI';});
+    if(investigator === undefined) {
+        console.log("undefined investigator");
+        console.log(proposals);
+        investigator = {person: {fullName: "Unknown", eMail: "Unknown"}};
+    }
+
+    return {
+        fullName: investigator.person.fullName,
+        eMail: investigator.person.eMail,
+        proposalTitle: proposals[index].title,
+        kind: proposals[index].kind,
+        submitted: proposals[index].submitted
+    }
 }
 
 function makeData(...lens) {
@@ -31,7 +55,7 @@ function makeData(...lens) {
     const len = lens[depth]
     return range(len).map(d => {
       return {
-        ...newProposal(),
+        ...getProposal(),
         subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined,
       }
     })
@@ -81,24 +105,11 @@ function Table({ columns, data }) {
   )
 }
 
+fetchProposalData();
+
 export default function ListProposals() {
 
-    const init=() => {
-        fetch(window.location.pathname + '/proposalapi/proposals')
-              .then(res => res.json())
-              .then((data) => {
-                  console.log(data)
-              })
-              .catch(console.log);
-    }
-
-    useEffect(() => {
-       init();
-        },[]);
-
-
-
-
+  //fetchProposalData();
 
   const columns = React.useMemo(
     () => [
@@ -106,33 +117,29 @@ export default function ListProposals() {
         Header: 'Principal Investigator',
         columns: [
           {
-            Header: 'Title',
-            accessor: 'title',
+            Header: 'Name',
+            accessor: 'fullName',
           },
           {
-            Header: 'First Name',
-            accessor: 'firstName',
-          },
-          {
-            Header: 'Last Name',
-            accessor: 'lastName',
+            Header: 'email',
+            accessor: 'eMail',
           },
         ],
       },
       {
-        Header: 'Propsal Info',
+        Header: 'Proposal Info',
         columns: [
           {
             Header: 'Title',
-            accessor: 'poposalTitle',
+            accessor: 'proposalTitle',
           },
           {
-            Header: 'Status',
-            accessor: 'status',
+            Header: 'Kind',
+            accessor: 'kind',
           },
           {
-            Header: 'Progress',
-            accessor: 'progress',
+            Header: 'Submitted',
+            accessor: 'submitted',
           },
         ],
       },
@@ -140,7 +147,7 @@ export default function ListProposals() {
     []
   )
 
-  const data = React.useMemo(() => makeData(20), [])
+  const data = React.useMemo(() => makeData(proposalList.length), [])
 
   return (
     <div>

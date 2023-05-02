@@ -3,7 +3,9 @@ package org.orph2020.pst;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.ivoa.dm.proposal.prop.ObservingProposal;
 import org.ivoa.dm.proposal.prop.Person;
+import org.ivoa.dm.proposal.prop.ProposalModel;
 import org.orph2020.pst.common.json.ObjectIdentifier;
 import org.orph2020.pst.rest.client.ApiService;
 
@@ -30,6 +32,12 @@ public class ProposalApiResource {
     @Path("proposals")
     public Set<ObjectIdentifier> getProposals() {
         return apiService.getProposals();
+    }
+
+    @GET
+    @Path("proposals/{id}")
+    public ObservingProposal getObservingProposal(@PathParam("id") long id) {
+        return apiService.getObservingProposal(id);
     }
 
     @GET
