@@ -31,7 +31,7 @@ const formData = {title: "Sample proposal to edit",
     organization_name: "Jodrell Bank",
     person_eMail: "pi@does.not.exist",
     person_fullName: "PI",
-    source: [ {Target: {targetCoordinates: {sourceLat: 57.009, sourceLon: 48.876}, positionEpoch: "J2013.123", target_sourceName: "Ketchup", coordinateSystem: "J2000"}}],
+    source: [ {Target: {targetCoordinates: {lat: 57.009, lon: 48.876}, positionEpoch: "J2013.123", target_sourceName: "Ketchup", coordinateSystem: "J2000"}}],
     technicalGoal: {
         performance: {
             desiredAngularResolution: 21,

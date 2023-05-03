@@ -43,8 +43,8 @@ export function schemaCore () {
                                type: "object",
                                required: ["lat", "lon"],
                                properties: {
-                                   lat: {type: "number"},
-                                   lon: {type: "number"}
+                                   lat: {type: "number", title: "Lat", default: 60.0},
+                                   lon: {type: "number", title: "Lon", default: 45.0}
                                    }
                            },
                            positionEpoch: {type: "string", title: "Position Epoch", default: "J2013.123"}
