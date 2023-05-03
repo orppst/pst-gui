@@ -23,7 +23,7 @@ export function findArrayElementByName(array, name) {
 export function uiSchemaCore() {
     return {
         hidden_person_id: {"ui:widget": "hidden"},
-        "definitions": {"target": {"targetCoordinates": {"ui:field": "geo"}}}
+        "source":  {"Target": {"ui:field": "geo"}}
         };
 }
 
@@ -41,10 +41,10 @@ export function schemaCore () {
                            targetCoordinates: {
                                title: "Coordinates",
                                type: "object",
-                               required: ["sourceLat", "sourceLon"],
+                               required: ["lat", "lon"],
                                properties: {
-                                   sourceLat: {type: "number", title: "Lat", default: 60.0},
-                                   sourceLon: {type: "number", title: "Lon", default: 45.0}
+                                   lat: {type: "number"},
+                                   lon: {type: "number"}
                                    }
                            },
                            positionEpoch: {type: "string", title: "Position Epoch", default: "J2013.123"}
@@ -61,9 +61,9 @@ export function schemaCore () {
                    "spectral_window": {
                        type: "object", title: "Spectral Window",
                        properties: {
-                           start: { type: "number", title: "Start GHz", default: "1.2"},
-                           end: { type: "number", title: "End GHz", default: "1.7"},
-                           spectral_resolution: { type: "number", title: "Spectral Resolution GHz", default: "0.5"},
+                           start: { type: "number", title: "Start GHz", default: 1.2},
+                           end: { type: "number", title: "End GHz", default: 1.7},
+                           spectral_resolution: { type: "number", title: "Spectral Resolution GHz", default: 0.5},
                            polarization: { type: "string", title: "Polarization", enum: ["LL","RR","LR","RL"], default: "LL"},
                            expected_spectral_line: {type: "object", title: "Spectral line", properties: {expected: {type: "string", "enum": ["Yes", "No"], default: "No"}},
                                allOf: [{
