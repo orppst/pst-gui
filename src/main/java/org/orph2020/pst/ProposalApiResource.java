@@ -42,7 +42,7 @@ public class ProposalApiResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("propsals/{id}")
+    @Path("proposals/{id}")
     public ObservingProposal updateObservingProposal(@PathParam("id") long id, byte[] formData) {
         //Cycle through original proposal and edited one, for each change call the
         //appropriate add/update/delete in the API
