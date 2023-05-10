@@ -27,6 +27,7 @@ export default function EditProposal (nav) {
 
 //An example proposal to edit
 const formData = {title: "Sample proposal to edit",
+    _id: 0,
     organization_address: "Cheshire",
     organization_name: "Jodrell Bank",
     person_eMail: "pi@does.not.exist",
@@ -43,12 +44,21 @@ const formData = {title: "Sample proposal to edit",
         }
     };
 
+    const originalFormData = formData;
 
     const onSubmit = ({formData}, e) => {
         console.log("Data submitted: ",  formData);
+        console.log("Original data : ", originalFormData);
         console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
 
-        nav('welcome');
+        const requestOpts = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: {original : originalFormData, new: formData}
+        };
+        fetch(window.location.pathname + '/proposalapi/proposals/' + originalFormData._id, requestOpts)
+            .then( nav('welcome') )
+            .catch(log);
     }
 
     return (

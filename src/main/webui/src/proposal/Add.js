@@ -44,8 +44,9 @@ export default function AddProposal (nav) {
     const onSubmit = ({formData}, e) => {
         console.log("Data submitted: ",  formData);
         console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
-        fetch(window.location.pathname + '/proposalapi/createObservingProposal', { method: 'POST', body: formData })
+        fetch(window.location.pathname + '/proposalapi/proposals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: formData })
             .then(nav('welcome'))
+            .catch(log);
 
         nav('welcome');
     }

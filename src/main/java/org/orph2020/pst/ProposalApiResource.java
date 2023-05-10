@@ -40,6 +40,23 @@ public class ProposalApiResource {
         return apiService.getObservingProposal(id);
     }
 
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("propsals/{id}")
+    public ObservingProposal updateObservingProposal(@PathParam("id") long id, byte[] formData) {
+        //Cycle through original proposal and edited one, for each change call the
+        //appropriate add/update/delete in the API
+        return new ObservingProposal();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("proposals")
+    public ObservingProposal createObservingProposal(byte[] formData) {
+        //Once data is processed, need to call api createObservingProposal()
+        return new ObservingProposal();
+    }
+
     @GET
     @Path("people")
     public Set<ObjectIdentifier> getPeople() {
@@ -90,4 +107,6 @@ public class ProposalApiResource {
     }
 
      */
+
+
 }
