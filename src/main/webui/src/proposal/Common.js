@@ -6,12 +6,18 @@ export function ModelToJSON(model) {
     return jsonString;
 }
 
-export function JSONToModel(jsonString) {
-    var model = {};
+export function JSONToObservingProposal(jsonString) {
+    var proposal = {
+        "proposal:ObservingProposal": {
+            "code": "",
+            "title": "",
+            "summary": "",
+        },
+    };
 
-    model.title = jsonString.title;
+    proposal["proposal:ObservingProposal"].title = jsonString.title;
 
-    return model;
+    return proposal;
 }
 
 export function findArrayElementByName(array, name) {

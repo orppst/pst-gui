@@ -2,7 +2,14 @@ import React, {useState, useEffect}  from 'react';
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import Form from "@rjsf/core";
-import {JSONToModel, ModelToJSON, findArrayElementByName, uiSchemaCore, schemaCore} from "./Common";
+import {
+    JSONToModel,
+    ModelToJSON,
+    findArrayElementByName,
+    uiSchemaCore,
+    schemaCore,
+    JSONToObservingProposal
+} from "./Common";
 
 const schema: RJSFSchema = schemaCore();
 const uiSchema = uiSchemaCore;
@@ -43,8 +50,9 @@ export default function AddProposal (nav) {
 
     const onSubmit = ({formData}, e) => {
         console.log("Data submitted: ",  formData);
-        console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
-        fetch(window.location.pathname + '/proposalapi/proposals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: formData })
+        //console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
+        const observingProposal = JSONToObservingProposal(formData);
+        fetch(window.location.pathname + '/proposalapi/proposals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(observingProposal) })
             .then(nav('welcome'))
             .catch(log);
 

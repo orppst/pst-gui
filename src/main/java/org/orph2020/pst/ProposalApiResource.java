@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.ivoa.dm.proposal.prop.ObservingProposal;
 import org.ivoa.dm.proposal.prop.Person;
+import org.ivoa.dm.proposal.prop.ProposalKind;
 import org.ivoa.dm.proposal.prop.ProposalModel;
 import org.orph2020.pst.common.json.ObjectIdentifier;
 import org.orph2020.pst.rest.client.ApiService;
@@ -52,9 +53,30 @@ public class ProposalApiResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("proposals")
-    public ObservingProposal createObservingProposal(byte[] formData) {
-        //Once data is processed, need to call api createObservingProposal()
-        return new ObservingProposal();
+    public ObservingProposal createObservingProposal(byte[] formData) throws IOException {
+        //Convert from byte array to observingProposal object
+        //inal ObjectMapper mapper = new ObjectMapper();
+        //ObservingProposal newProposal  = mapper.reader().readValue(formData, ObservingProposal.class);
+
+        ObservingProposal newProposal = new ObservingProposal();
+        newProposal.setTitle("Example title, please complete me");
+        newProposal.setKind(ProposalKind.STANDARD);
+        newProposal.setSummary("This will be the summary");
+
+        //Create observing proposal
+        ObservingProposal proposal = apiService.createObservingProposal(newProposal);
+
+        //Add PI to proposal as investigator
+        //Add any Co-I's to proposal as investigator
+        //Add any supporting documents
+        //Add observations
+            //Create target
+            //Create technical goal
+            //Create array of spectral windows
+            //Create target observation from these
+            //Add to the proposal
+
+        return newProposal;
     }
 
     @GET

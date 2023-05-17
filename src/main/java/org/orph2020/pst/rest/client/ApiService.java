@@ -29,6 +29,11 @@ public interface ApiService {
    @GET
    ObservingProposal getObservingProposal(@PathParam("id") long id);
 
+   @Path("proposals")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   ObservingProposal createObservingProposal(ObservingProposal newProposal);
+
    @Path("people")
    @GET
    Set<ObjectIdentifier> getPeople();

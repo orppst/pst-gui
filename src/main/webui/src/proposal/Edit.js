@@ -54,7 +54,7 @@ const formData = {title: "Sample proposal to edit",
         const requestOpts = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: {original : originalFormData, new: formData}
+            body: JSON.stringify({original : originalFormData, new: formData})
         };
         fetch(window.location.pathname + '/proposalapi/proposals/' + originalFormData._id, requestOpts)
             .then( nav('welcome') )
