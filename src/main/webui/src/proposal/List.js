@@ -1,26 +1,8 @@
-import React, {useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import { useTable } from 'react-table'
 
 var proposalList = [{}];
 var proposals = [{investigators: [{type: "none", person: {fullName: "", eMail: ""}}]}];
-
-const fetchProposalData = () => {
-    fetch(window.location.pathname + '/proposalapi/proposals')
-        .then(res => res.json())
-        .then((data) => {
-            proposalList = data;
-            proposals.splice();
-            proposalList.forEach(prop => {
-                fetch(window.location.pathname + '/proposalapi/proposals/' + prop.dbid)
-                    .then(res => res.json())
-                    .then((data) => {
-                        proposals.push(data);
-                    })
-                    .catch(console.log);
-                })
-        })
-        .catch(console.log);
-    }
 
 const getProposal = (index) => {
     //Find PI
@@ -37,6 +19,15 @@ const getProposal = (index) => {
         kind: proposals[index].kind,
         submitted: proposals[index].submitted
     }
+}
+
+const getAllProposals = () => {
+    var allProps = [{}];
+    for (let i = 0; i < proposals.length; i++) {
+        allProps.push(getProposal(i));
+    }
+
+    return allProps;
 }
 
 function Table({ columns, data }) {
@@ -79,11 +70,33 @@ function Table({ columns, data }) {
   )
 }
 
-fetchProposalData();
-
 export default function ListProposals() {
+  const [isLoading, setIsLoading] = React.useState(true);
+  //const [data, setData] = React.useState([]);
 
-  //fetchProposalData();
+  useEffect(() => {
+
+        async function fetchProposalData (){
+          setIsLoading(true);
+          fetch(window.location.pathname + '/proposalapi/proposals')
+              .then(res => res.json())
+              .then((data) => {
+                  proposalList = data;
+                  proposals.length = 0;
+                  proposalList.forEach(prop => {
+                      fetch(window.location.pathname + '/proposalapi/proposals/' + prop.dbid)
+                          .then(res => res.json())
+                          .then((data) => {
+                              proposals.push(data);
+                          })
+                          .catch(console.log);
+                  })
+              })
+              .then(setIsLoading(false))
+              .catch(console.log);
+        }
+        fetchProposalData();
+      },[]);
 
   const columns = React.useMemo(
     () => [
@@ -118,19 +131,15 @@ export default function ListProposals() {
         ],
       },
     ],
-    []
+    [isLoading]
   )
 
-  const data = [];//React.useMemo(() => makeData(proposalList.length), [])
-
-    for (let i = 0; i < proposals.length; i++) {
-        data.push(getProposal(i));
-    }
-
+  const newData = React.useMemo(() => getAllProposals(), [isLoading]);
+  //setData(getAllProposals());
 
   return (
     <div>
-      <Table columns={columns} data={data} />
+      <Table columns={columns} data={newData} />
     </div>
   )
 }
