@@ -22,22 +22,11 @@ const fetchProposalData = () => {
         .catch(console.log);
     }
 
-const range = len => {
-  const arr = []
-  for (let i = 0; i < len; i++) {
-    arr.push(i)
-  }
-  return arr
-}
-
-const getProposal = () => {
+const getProposal = (index) => {
     //Find PI
-    var index = proposals.length-1;
     var investigator = {person: {fullName: "", eMail: ""}};
     investigator = proposals[index].investigators.find(inv => {return inv.type==='PI';});
     if(investigator === undefined) {
-        console.log("undefined investigator");
-        console.log(proposals);
         investigator = {person: {fullName: "Unknown", eMail: "Unknown"}};
     }
 
@@ -49,21 +38,6 @@ const getProposal = () => {
         submitted: proposals[index].submitted
     }
 }
-
-function makeData(...lens) {
-  const makeDataLevel = (depth = 0) => {
-    const len = lens[depth]
-    return range(len).map(d => {
-      return {
-        ...getProposal(),
-        subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined,
-      }
-    })
-  }
-
-  return makeDataLevel()
-}
-
 
 function Table({ columns, data }) {
   const {
@@ -147,7 +121,12 @@ export default function ListProposals() {
     []
   )
 
-  const data = React.useMemo(() => makeData(proposalList.length), [])
+  const data = [];//React.useMemo(() => makeData(proposalList.length), [])
+
+    for (let i = 0; i < proposals.length; i++) {
+        data.push(getProposal(i));
+    }
+
 
   return (
     <div>
