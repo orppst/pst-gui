@@ -1,5 +1,5 @@
 {
-  "name": "webui",
+  "name": "pst-webui",
   "version": "0.1.0",
   "private": true,
   "homepage": "https://kilburn.jb.man.ac.uk/pst/app",
@@ -7,8 +7,6 @@
     "@babel/core": "^7.0.0-0",
     "@babel/plugin-syntax-flow": "^7.14.5",
     "@babel/plugin-transform-react-jsx": "^7.14.9",
-    "@openapi-codegen/cli": "^2.0.0",
-    "@openapi-codegen/typescript": "^6.2.1",
     "@rjsf/core": "^5.0.0-beta.15",
     "@rjsf/utils": "^5.0.0-beta.15",
     "@rjsf/validator-ajv8": "^5.0.0-beta.15",
@@ -34,12 +32,24 @@
     "semantic-ui-react": "^2.1.4",
     "stream": "stream-browserify",
     "stream-browserify": "^3.0.0",
-    "typescript": "^5.0.4",
     "web-vitals": "^2.1.0"
+  },
+  "devDependencies": {
+    "@openapi-codegen/cli": "^2.0.0",
+    "@openapi-codegen/typescript": "^6.2.1",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^8.38.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.3.4",
+    "typescript": "^5.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "tsc && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "gen": "openapi-codegen"

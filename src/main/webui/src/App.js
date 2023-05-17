@@ -38,11 +38,20 @@ export default function App() {
             closeOnEscape: true,
             closeOnClickOutside: true,
             keyCodeForClose: [8, 32],
-            willUnmount: () => {},
-            afterClose: () => {},
-            onClickOutside: () => {},
-            onKeypress: () => {},
-            onKeypressEscape: () => {},
+            willUnmount: () => {//do nothing
+                 },
+            afterClose: () => {
+                //do nothing
+            },
+            onClickOutside: () => {
+                //do nothing
+            },
+            onKeypress: () => {
+                //do nothing
+            },
+            onKeypressEscape: () => {
+                //do nothing
+            },
             overlayClassName: "overlay-custom-class-name"
         };
 

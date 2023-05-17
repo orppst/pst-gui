@@ -105,4 +105,4 @@ export default function AddProposal (nav) {
           onSubmit={onSubmit}
           onError={log("errors")} />
         </div>
-  )};
+  )}

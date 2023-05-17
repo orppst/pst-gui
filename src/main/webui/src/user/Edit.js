@@ -64,7 +64,7 @@ export default function EditUser(nav) {
             person.eMail = formData.eMail;
             promises.push(fetch(window.location.pathname + '/proposalapi/people/' + person._id + '/eMail',
                 { method: 'PUT', body: person.eMail }));
-        };
+        }
 
 /*
         person.fullName = formData.fullName;
