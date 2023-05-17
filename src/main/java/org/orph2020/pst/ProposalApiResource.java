@@ -54,18 +54,19 @@ public class ProposalApiResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("proposals")
     public ObservingProposal createObservingProposal(byte[] formData) throws IOException {
-        //Convert from byte array to observingProposal object
-        //inal ObjectMapper mapper = new ObjectMapper();
-        //ObservingProposal newProposal  = mapper.reader().readValue(formData, ObservingProposal.class);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode proposalJson = mapper.readTree(formData);
+            ObservingProposal newProposal = new ObservingProposal()
+                    .withTitle(proposalJson.get("title").textValue())
+                    .withKind(ProposalKind.STANDARD)
+                    .withSummary(proposalJson.get("summary").textValue());
+            return apiService.createObservingProposal(newProposal);
 
-        ObservingProposal newProposal = new ObservingProposal();
-        newProposal.setTitle("Example title, please complete me");
-        newProposal.setKind(ProposalKind.STANDARD);
-        newProposal.setSummary("This will be the summary");
-
-        //Create observing proposal
-        ObservingProposal proposal = apiService.createObservingProposal(newProposal);
-
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+/*
         //Add PI to proposal as investigator
         //Add any Co-I's to proposal as investigator
         //Add any supporting documents
@@ -77,6 +78,7 @@ public class ProposalApiResource {
             //Add to the proposal
 
         return newProposal;
+*/
     }
 
     @GET

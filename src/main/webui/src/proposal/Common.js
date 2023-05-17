@@ -8,15 +8,14 @@ export function ModelToJSON(model) {
 
 export function JSONToObservingProposal(jsonString) {
     var proposal = {
-        "proposal:ObservingProposal": {
             "code": "",
             "title": "",
-            "summary": "",
-        },
+            "summary": "An example summary",
+            "kind": "Standard"
     };
 
-    proposal["proposal:ObservingProposal"].title = jsonString.title;
-
+    //proposal["proposal:ObservingProposal"].title = jsonString.title;
+    proposal.title = jsonString.title;
     return proposal;
 }
 
