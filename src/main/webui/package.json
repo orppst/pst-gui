@@ -16,9 +16,6 @@
     "bootstrap": "3",
     "buffer": "^6.0.3",
     "namor": "^3.0.1",
-    "openapi-codegen": "^2.2.2",
-    "path": "path-browserify",
-    "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-confirm-alert": "^3.0.6",
     "react-dom": "^18.2.0",
@@ -45,11 +42,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "start": "vite --host 0.0.0.0",
+    "start": "vite --host 0.0.0.0  --base=/pst/app",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "gen": "openapi-codegen proposalTool"
+    "gen": "openapi-codegen gen proposalTool"
   },
   "eslintConfig": {
     "extends": [
