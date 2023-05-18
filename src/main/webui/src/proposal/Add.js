@@ -12,7 +12,8 @@ import {
 } from "./Common";
 
 const schema: RJSFSchema = schemaCore();
-const uiSchema = uiSchemaCore;
+
+const uiSchema = uiSchemaCore();
 var databaseLists = {observatories: [{}]};
 const log = (type) => console.log.bind(console, type);
 
@@ -47,11 +48,22 @@ fetch(window.location.pathname + '/proposalapi/observatories')
 export default function AddProposal (nav) {
 
     // fetch data
+/*    const [isLoading, setIsLoading] = React.useState(false);
 
+    useEffect( () => {
+        async function fetchData() {
+            setIsLoading(false);
+        }
+        setIsLoading(true);
+        fetchData();
+
+    },[]);
+*/
     const onSubmit = ({formData}, e) => {
-        console.log("Data submitted: ",  formData);
+        //console.log("Data submitted: ",  formData);
         //console.log("Matched back to original observatories list: ", findArrayElementByName(databaseLists.observatories, formData.organization_name));
         const observingProposal = JSONToObservingProposal(formData);
+        console.log("This string to be used: " + JSON.stringify(observingProposal));
         fetch(window.location.pathname + '/proposalapi/proposals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(observingProposal) })
             .then(nav('welcome'))
             .catch(log);

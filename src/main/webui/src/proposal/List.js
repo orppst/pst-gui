@@ -17,7 +17,7 @@ const getProposal = (index) => {
         eMail: investigator.person.eMail,
         proposalTitle: proposals[index].title,
         kind: proposals[index].kind,
-        submitted: proposals[index].submitted
+        summary: proposals[index].summary
     }
 }
 
@@ -125,8 +125,8 @@ export default function ListProposals() {
             accessor: 'kind',
           },
           {
-            Header: 'Submitted',
-            accessor: 'submitted',
+            Header: 'Summary',
+            accessor: 'summary',
           },
         ],
       },

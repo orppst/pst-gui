@@ -3,10 +3,8 @@ package org.orph2020.pst;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.ivoa.dm.proposal.prop.ObservingProposal;
-import org.ivoa.dm.proposal.prop.Person;
-import org.ivoa.dm.proposal.prop.ProposalKind;
-import org.ivoa.dm.proposal.prop.ProposalModel;
+import org.ivoa.dm.ivoa.RealQuantity;
+import org.ivoa.dm.proposal.prop.*;
 import org.orph2020.pst.common.json.ObjectIdentifier;
 import org.orph2020.pst.rest.client.ApiService;
 
@@ -57,10 +55,14 @@ public class ProposalApiResource {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode proposalJson = mapper.readTree(formData);
+            String title = proposalJson.get("title").textValue();
+            if(title.isEmpty()) title = "empty";
+            String summary = proposalJson.get("summary").textValue();
+            if(summary.isEmpty()) summary = "empty";
             ObservingProposal newProposal = new ObservingProposal()
-                    .withTitle(proposalJson.get("title").textValue())
+                    .withTitle(title)
                     .withKind(ProposalKind.STANDARD)
-                    .withSummary(proposalJson.get("summary").textValue());
+                    .withSummary(summary);
             return apiService.createObservingProposal(newProposal);
 
         } catch (IOException e) {
@@ -68,11 +70,21 @@ public class ProposalApiResource {
         }
 /*
         //Add PI to proposal as investigator
+        Investigator pi = new Investigator().withType(InvestigatorKind.PI);
         //Add any Co-I's to proposal as investigator
+        Investigator pi = new Investigator().withType(InvestigatorKind.COI);
         //Add any supporting documents
         //Add observations
             //Create target
+            Target target = new Target().withSourceName("");
             //Create technical goal
+            TechnicalGoal goal = new TechnicalGoal()
+                .withPerformance(new PerformanceParameters()
+                        .withDesiredAngularResolution()
+                        .withDesiredDynamicRange()
+                        .withDesiredLargestScale()
+                        .withDesiredSensitivity()
+                        .withRepresentativeSpectralPoint(new RealQuantity().withValue()));
             //Create array of spectral windows
             //Create target observation from these
             //Add to the proposal

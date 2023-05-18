@@ -9,13 +9,14 @@ export function ModelToJSON(model) {
 export function JSONToObservingProposal(jsonString) {
     var proposal = {
             "code": "",
-            "title": "",
-            "summary": "An example summary",
+            "title": "empty",
+            "summary": "empty",
             "kind": "Standard"
     };
 
     //proposal["proposal:ObservingProposal"].title = jsonString.title;
-    proposal.title = jsonString.title;
+    if(jsonString.title !== "") proposal.title = jsonString.title;
+    if(jsonString.summary !== "")proposal.summary = jsonString.summary;
     return proposal;
 }
 
@@ -27,7 +28,9 @@ export function findArrayElementByName(array, name) {
 
 export function uiSchemaCore() {
     return {
-        hidden_person_id: {"ui:widget": "hidden"},
+        "summary": {"ui:widget": "textarea", "ui:placeholder": "Write a brief summary of your proposal"},
+        "organization_name": {"ui:placeholder": "Please choose one"},
+        "hidden_person_id": {"ui:widget": "hidden"},
         "source":  {"Target": {"ui:field": "geo"}}
         };
 }
@@ -79,6 +82,6 @@ export function schemaCore () {
                    },
 
                },
-               required: [ "title", "organization_name"]
+               required: [ "title", "summary", "organization_name"]
            };
 }
