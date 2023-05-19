@@ -1,6 +1,6 @@
 import { ProposalToolContext } from "./proposalToolContext";
 
-const baseUrl = ""; // TODO add your baseUrl
+const baseUrl = "http://localhost:8084"; // TODO need to set from config somehow...
 
 export type ErrorWrapper<TError> =
   | TError

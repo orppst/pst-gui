@@ -1,6 +1,8 @@
 /* is this necessary as not doing server side? */
 {
   "compilerOptions": {
+    "jsx": "react",
+    "jsx": "react",
     "composite": true,
     "skipLibCheck": true,
     "module": "ESNext",

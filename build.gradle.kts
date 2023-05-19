@@ -20,6 +20,6 @@ dependencies {
     implementation("io.quarkus:quarkus-resteasy-reactive")
 //    implementation("io.quarkus:quarkus-oidc")
     testImplementation("io.rest-assured:rest-assured")
-    testImplementation("io.quarkiverse.quinoa:quarkus-quinoa-testing:1.2.6")
+    testImplementation("io.quarkiverse.quinoa:quarkus-quinoa-testing:1.2.9")
 }
 

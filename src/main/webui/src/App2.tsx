@@ -1,23 +1,60 @@
+import React from 'react';
 import { useState } from 'react'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+//import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import {useGetProposals} from './generated/proposalToolComponents'
 import './App.css'
+import {ObjectIdentifier} from "./generated/proposalToolSchemas";
 
 function App2() {
-  const [count, setCount] = useState(0)
-
+    const queryClient = new QueryClient()
   return (
     <>
-      <h1>React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <h1>Proposals</h1>
+      <div >
+          <QueryClientProvider client={queryClient}>
+             <Proposals/>
+          </QueryClientProvider>
+
       </div>
 
     </>
-  )
+  );
+
+    function Proposals() {
+        const { data , error, isLoading } = useGetProposals(
+            {
+                queryParams: { title: "%" },
+            },
+            {
+                enabled: true,
+            }
+        );
+
+        if (error) {
+            return (
+                <div>
+                    <pre>{JSON.stringify(error, null, 2)}</pre>
+                </div>
+            );
+        }
+
+        return (
+            <div>
+               {/*<input value={query} onChange={(e) => setQuery(e.target.value)} />*/}
+                {isLoading ? (
+                    <div>Loading…</div>
+                ) : (
+                    <ul>
+                        {data?.items.map((item) => (
+                            <li key={item.dbid}>{item.name}</li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+        );
+    }
+
 }
 
 export default App2
