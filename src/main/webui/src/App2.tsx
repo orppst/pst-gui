@@ -6,8 +6,9 @@ import {useGetProposals} from './generated/proposalToolComponents'
 import './App.css'
 import {ObjectIdentifier} from "./generated/proposalToolSchemas";
 
+const queryClient = new QueryClient()
+
 function App2() {
-    const queryClient = new QueryClient()
   return (
     <>
       <h1>Proposals</h1>
@@ -46,7 +47,7 @@ function App2() {
                     <div>Loading…</div>
                 ) : (
                     <ul>
-                        {data?.items.map((item) => (
+                        {data?.map((item) => (
                             <li key={item.dbid}>{item.name}</li>
                         ))}
                     </ul>
