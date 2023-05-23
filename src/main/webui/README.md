@@ -15,8 +15,15 @@ yarn run gen
 will regenerate the code in [src/generated](src/generated) - this will require the API component to be up and running at the time. The code is checked in to version control as parts of it are expected to be hand edited anyway.
 
 
-the generated code uses 
+the generated code uses https://github.com/tanstack/query
 
 
-see https://github.com/quarkiverse/quarkus-quinoa/issues/299 for issues regarding serving 
+
+## Misc
+
+* see https://github.com/quarkiverse/quarkus-quinoa/issues/299 for issues regarding serving 
 off non-root deployment url
+
+* https://github.com/brillout/awesome-react-components
+
+

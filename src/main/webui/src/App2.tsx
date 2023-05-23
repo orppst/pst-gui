@@ -23,12 +23,13 @@ function App2() {
   );
 
     function Proposals() {
+        const [query, setQuery] = useState("%");
         const { data , error, isLoading } = useGetProposals(
             {
-                queryParams: { title: "%" },
+                queryParams: { title: query },
             },
             {
-                enabled: true,
+                enabled: Boolean(query),
             }
         );
 
@@ -42,7 +43,7 @@ function App2() {
 
         return (
             <div>
-               {/*<input value={query} onChange={(e) => setQuery(e.target.value)} />*/}
+               <input value={query} onChange={(e) => setQuery(e.target.value)} />
                 {isLoading ? (
                     <div>Loading…</div>
                 ) : (
