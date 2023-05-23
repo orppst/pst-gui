@@ -1,45 +1,34 @@
-import React, {useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import { useTable } from 'react-table'
 
-const range = len => {
-  const arr = []
-  for (let i = 0; i < len; i++) {
-    arr.push(i)
-  }
-  return arr
+var proposalList = [{}];
+var proposals = [{investigators: [{type: "none", person: {fullName: "", eMail: ""}}]}];
+
+const getProposal = (index) => {
+    //Find PI
+    var investigator = {person: {fullName: "", eMail: ""}};
+    investigator = proposals[index].investigators.find(inv => {return inv.type==='PI';});
+    if(investigator === undefined) {
+        investigator = {person: {fullName: "Unknown", eMail: "Unknown"}};
+    }
+
+    return {
+        fullName: investigator.person.fullName,
+        eMail: investigator.person.eMail,
+        proposalTitle: proposals[index].title,
+        kind: proposals[index].kind,
+        summary: proposals[index].summary
+    }
 }
 
-const newProposal = () => {
-  const statusChance = Math.random()
-  return {
-    title: "Dr",
-    firstName: "Fred",
-    lastName: "Bloggs",
-    poposalTitle: "Propsal Name #" + Math.floor(Math.random() * 100),
-    progress: Math.floor(Math.random() * 100),
-    status:
-      statusChance > 0.66
-        ? 'Approved'
-        : statusChance > 0.33
-        ? 'Submitted'
-        : 'Draft',
-  }
+const getAllProposals = () => {
+    var allProps = [{}];
+    for (let i = 0; i < proposals.length; i++) {
+        allProps.push(getProposal(i));
+    }
+
+    return allProps;
 }
-
-function makeData(...lens) {
-  const makeDataLevel = (depth = 0) => {
-    const len = lens[depth]
-    return range(len).map(d => {
-      return {
-        ...newProposal(),
-        subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined,
-      }
-    })
-  }
-
-  return makeDataLevel()
-}
-
 
 function Table({ columns, data }) {
   const {
@@ -82,23 +71,32 @@ function Table({ columns, data }) {
 }
 
 export default function ListProposals() {
+  const [isLoading, setIsLoading] = React.useState(true);
+  //const [data, setData] = React.useState([]);
 
-    const init=() => {
-        fetch(window.location.pathname + '/proposalapi/proposals')
+  useEffect(() => {
+
+        async function fetchProposalData (){
+          setIsLoading(true);
+          fetch(window.location.pathname + '/proposalapi/proposals')
               .then(res => res.json())
               .then((data) => {
-                  console.log(data)
+                  proposalList = data;
+                  proposals.length = 0;
+                  proposalList.forEach(prop => {
+                      fetch(window.location.pathname + '/proposalapi/proposals/' + prop.dbid)
+                          .then(res => res.json())
+                          .then((data) => {
+                              proposals.push(data);
+                          })
+                          .catch(console.log);
+                  })
               })
+              .then(setIsLoading(false))
               .catch(console.log);
-    }
-
-    useEffect(() => {
-       init();
-        },[]);
-
-
-
-
+        }
+        fetchProposalData();
+      },[]);
 
   const columns = React.useMemo(
     () => [
@@ -106,45 +104,42 @@ export default function ListProposals() {
         Header: 'Principal Investigator',
         columns: [
           {
-            Header: 'Title',
-            accessor: 'title',
+            Header: 'Name',
+            accessor: 'fullName',
           },
           {
-            Header: 'First Name',
-            accessor: 'firstName',
-          },
-          {
-            Header: 'Last Name',
-            accessor: 'lastName',
+            Header: 'email',
+            accessor: 'eMail',
           },
         ],
       },
       {
-        Header: 'Propsal Info',
+        Header: 'Proposal Info',
         columns: [
           {
             Header: 'Title',
-            accessor: 'poposalTitle',
+            accessor: 'proposalTitle',
           },
           {
-            Header: 'Status',
-            accessor: 'status',
+            Header: 'Kind',
+            accessor: 'kind',
           },
           {
-            Header: 'Progress',
-            accessor: 'progress',
+            Header: 'Summary',
+            accessor: 'summary',
           },
         ],
       },
     ],
-    []
+    [isLoading]
   )
 
-  const data = React.useMemo(() => makeData(20), [])
+  const newData = React.useMemo(() => getAllProposals(), [isLoading]);
+  //setData(getAllProposals());
 
   return (
     <div>
-      <Table columns={columns} data={data} />
+      <Table columns={columns} data={newData} />
     </div>
   )
 }

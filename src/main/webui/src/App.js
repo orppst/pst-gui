@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
 import React, {useState, useEffect} from 'react';
 import AddProposal from "./proposal/Add"
+import EditProposal from "./proposal/Edit"
 import ListProposals from "./proposal/List"
 import UserEdit from "./user/Edit"
 import { Dropdown, Menu } from 'semantic-ui-react';
@@ -9,8 +10,8 @@ import {confirmAlert} from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
 export default function App() {
-    const [loggedIn, setLoggedIn] = React.useState(false);
-    const [activeItem, setActiveItem] = React.useState("logout");
+    const [loggedIn, setLoggedIn] = React.useState(true);
+    const [activeItem, setActiveItem] = React.useState("welcome");
     const [username, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -136,6 +137,9 @@ export default function App() {
                         <Dropdown.Item name='search' onClick={handleItemClick}>
                             Search my proposals
                         </Dropdown.Item>
+                        <Dropdown.Item name='edit' onClick={handleItemClick}>
+                        Edit example proposal
+                        </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
                 }
@@ -147,6 +151,7 @@ export default function App() {
         {activeItem==='login' && auth()}
         {activeItem==='help' && Help()}
         {activeItem==='add' && AddProposal(setActiveItem)}
+        {activeItem==='edit' && EditProposal(setActiveItem)}
         {activeItem==='welcome' && Welcome()}
         {activeItem==='search' && Search()}
         {activeItem==='signup' && Signup()}

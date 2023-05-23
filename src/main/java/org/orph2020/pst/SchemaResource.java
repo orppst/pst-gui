@@ -20,6 +20,10 @@ public class SchemaResource {
         ObjectNode titleNode = mapper.createObjectNode();
         titleNode.put("type", "string").put("title", "Title").put("default", "My new proposal");
 
+        ObjectNode summaryNode = mapper.createObjectNode();
+        summaryNode.put("type", "string").put("title", "Summary");
+
+
         ObjectNode organisationNode = mapper.createObjectNode();
         organisationNode.put("type","string").put("title", "Organiszation Name");
         ArrayNode orgList = mapper.createArrayNode().add("Please choose one");
@@ -72,6 +76,7 @@ public class SchemaResource {
                 .set("properties", mapper.createObjectNode().set("performance", technicalGoalPerformance));
 
         schemaProperties.set("title", titleNode);
+        schemaProperties.set("summary", summaryNode);
         schemaProperties.set("organization_name", organisationNode);
         schemaProperties.set("organization_address", orgAddr);
         schemaProperties.set("person_fullName", piName);

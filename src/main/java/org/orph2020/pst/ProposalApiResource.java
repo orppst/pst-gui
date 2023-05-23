@@ -3,7 +3,8 @@ package org.orph2020.pst;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.ivoa.dm.proposal.prop.Person;
+import org.ivoa.dm.ivoa.RealQuantity;
+import org.ivoa.dm.proposal.prop.*;
 import org.orph2020.pst.common.json.ObjectIdentifier;
 import org.orph2020.pst.rest.client.ApiService;
 
@@ -30,6 +31,66 @@ public class ProposalApiResource {
     @Path("proposals")
     public Set<ObjectIdentifier> getProposals() {
         return apiService.getProposals();
+    }
+
+    @GET
+    @Path("proposals/{id}")
+    public ObservingProposal getObservingProposal(@PathParam("id") long id) {
+        return apiService.getObservingProposal(id);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("proposals/{id}")
+    public ObservingProposal updateObservingProposal(@PathParam("id") long id, byte[] formData) {
+        //Cycle through original proposal and edited one, for each change call the
+        //appropriate add/update/delete in the API
+        return new ObservingProposal();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("proposals")
+    public ObservingProposal createObservingProposal(byte[] formData) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode proposalJson = mapper.readTree(formData);
+            String title = proposalJson.get("title").textValue();
+            if(title.isEmpty()) title = "empty";
+            String summary = proposalJson.get("summary").textValue();
+            if(summary.isEmpty()) summary = "empty";
+            ObservingProposal newProposal = new ObservingProposal()
+                    .withTitle(title)
+                    .withKind(ProposalKind.STANDARD)
+                    .withSummary(summary);
+            return apiService.createObservingProposal(newProposal);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+/*
+        //Add PI to proposal as investigator
+        Investigator pi = new Investigator().withType(InvestigatorKind.PI);
+        //Add any Co-I's to proposal as investigator
+        Investigator pi = new Investigator().withType(InvestigatorKind.COI);
+        //Add any supporting documents
+        //Add observations
+            //Create target
+            Target target = new Target().withSourceName("");
+            //Create technical goal
+            TechnicalGoal goal = new TechnicalGoal()
+                .withPerformance(new PerformanceParameters()
+                        .withDesiredAngularResolution()
+                        .withDesiredDynamicRange()
+                        .withDesiredLargestScale()
+                        .withDesiredSensitivity()
+                        .withRepresentativeSpectralPoint(new RealQuantity().withValue()));
+            //Create array of spectral windows
+            //Create target observation from these
+            //Add to the proposal
+
+        return newProposal;
+*/
     }
 
     @GET
@@ -82,4 +143,6 @@ public class ProposalApiResource {
     }
 
      */
+
+
 }

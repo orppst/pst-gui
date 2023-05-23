@@ -50,7 +50,7 @@ export default function EditUser(nav) {
     fetchUserData();
 
     const onSubmit = ({formData}, e) => {
-        console.log("Data submitted: ",  formData);
+        log("Data submitted: ",  formData);
 
         var promises = [];
 
