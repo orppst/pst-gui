@@ -138,3 +138,37 @@ td {
         border-right: 0;
     }
 }
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 19px;
+  font-stretch: normal;
+  font-style: normal;
+  font-variant-caps: normal;
+  font-weight: 300;
+}
+
+.left-nav {
+  margin: 10px;
+  padding: 10px;
+  background-color: rgb(123, 159, 223);
+  color: rgb(255, 255, 255);
+  background-clip: border-box;
+}
+
+.main-forms {
+  margin: 10px;
+  padding: 10px;
+}
+
+.button {
+  padding: 10px;
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 18px;
+  font-stretch: normal;
+  font-style: normal;
+  font-variant-caps: normal;
+  font-weight: 300;
+}
