@@ -482,7 +482,7 @@ export type IntIdentifier = {
  */
 export type IntegerQuantity = {
   /**
-   * The unit of this quantity.
+   * Must conform to definition of unit in VOUnit spec.
    */
   unit?: Unit;
   /**
@@ -560,6 +560,8 @@ export type ObjectIdentifier = {
   code?: string;
   name?: string;
 };
+
+export type ObsType = "TargetObservation" | "CalibrationObservation";
 
 export type Observation = {
   /**
@@ -1022,12 +1024,23 @@ export type ProposalReview = {
   reviewer?: Reviewer;
 };
 
+export type ProposalSynopsis = {
+  /**
+   * @format int64
+   */
+  code?: number;
+  title?: string;
+  summary?: string;
+  kind?: ProposalKind;
+  submitted?: boolean;
+};
+
 /**
  * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
  */
 export type Quantity = {
   /**
-   * The unit of this quantity.
+   * Must conform to definition of unit in VOUnit spec.
    */
   unit?: Unit;
 };
@@ -1037,7 +1050,7 @@ export type Quantity = {
  */
 export type RealQuantity = {
   /**
-   * The unit of this quantity.
+   * Must conform to definition of unit in VOUnit spec.
    */
   unit?: Unit;
   /**
@@ -1488,14 +1501,10 @@ export type TimingWindow = {
   endTime?: Date;
 };
 
-export type Unit = {
-  value?: string;
-};
-
 /**
  * Must conform to definition of unit in VOUnit spec.
  */
-export type Unit1 = {
+export type Unit = {
   value?: string;
 };
 

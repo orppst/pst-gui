@@ -12,37 +12,41 @@ import type * as Fetcher from "./proposalToolFetcher";
 import { proposalToolFetch } from "./proposalToolFetcher";
 import type * as Schemas from "./proposalToolSchemas";
 
-export type GetObservatoriesQueryParams = {
+export type ObservatoryResourceGetObservatoriesQueryParams = {
   name?: string;
 };
 
-export type GetObservatoriesError = Fetcher.ErrorWrapper<undefined>;
+export type ObservatoryResourceGetObservatoriesError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type GetObservatoriesResponse = Schemas.ObjectIdentifier[];
+export type ObservatoryResourceGetObservatoriesResponse =
+  Schemas.ObjectIdentifier[];
 
-export type GetObservatoriesVariables = {
-  queryParams?: GetObservatoriesQueryParams;
+export type ObservatoryResourceGetObservatoriesVariables = {
+  queryParams?: ObservatoryResourceGetObservatoriesQueryParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchGetObservatories = (
-  variables: GetObservatoriesVariables,
+export const fetchObservatoryResourceGetObservatories = (
+  variables: ObservatoryResourceGetObservatoriesVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    GetObservatoriesResponse,
-    GetObservatoriesError,
+    ObservatoryResourceGetObservatoriesResponse,
+    ObservatoryResourceGetObservatoriesError,
     undefined,
     {},
-    GetObservatoriesQueryParams,
+    ObservatoryResourceGetObservatoriesQueryParams,
     {}
   >({ url: "/pst/api/observatories", method: "get", ...variables, signal });
 
-export const useGetObservatories = <TData = GetObservatoriesResponse>(
-  variables: GetObservatoriesVariables,
+export const useObservatoryResourceGetObservatories = <
+  TData = ObservatoryResourceGetObservatoriesResponse
+>(
+  variables: ObservatoryResourceGetObservatoriesVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      GetObservatoriesResponse,
-      GetObservatoriesError,
+      ObservatoryResourceGetObservatoriesResponse,
+      ObservatoryResourceGetObservatoriesError,
       TData
     >,
     "queryKey" | "queryFn"
@@ -51,3958 +55,17 @@ export const useGetObservatories = <TData = GetObservatoriesResponse>(
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    GetObservatoriesResponse,
-    GetObservatoriesError,
+    ObservatoryResourceGetObservatoriesResponse,
+    ObservatoryResourceGetObservatoriesError,
     TData
   >(
     queryKeyFn({
       path: "/pst/api/observatories",
-      operationId: "getObservatories",
+      operationId: "observatoryResourceGetObservatories",
       variables,
     }),
     ({ signal }) =>
-      fetchGetObservatories({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type CreateObservatoryError = Fetcher.ErrorWrapper<undefined>;
-
-export type CreateObservatoryVariables = {
-  body?: Schemas.Observatory;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchCreateObservatory = (
-  variables: CreateObservatoryVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    CreateObservatoryError,
-    Schemas.Observatory,
-    {},
-    {},
-    {}
-  >({ url: "/pst/api/observatories", method: "post", ...variables, signal });
-
-export const useCreateObservatory = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      CreateObservatoryError,
-      CreateObservatoryVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    CreateObservatoryError,
-    CreateObservatoryVariables
-  >(
-    (variables: CreateObservatoryVariables) =>
-      fetchCreateObservatory({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetObservatoryPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type GetObservatoryError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetObservatoryVariables = {
-  pathParams: GetObservatoryPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetObservatory = (
-  variables: GetObservatoryVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Observatory,
-    GetObservatoryError,
-    undefined,
-    {},
-    {},
-    GetObservatoryPathParams
-  >({
-    url: "/pst/api/observatories/{id}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetObservatory = <TData = Schemas.Observatory>(
-  variables: GetObservatoryVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.Observatory, GetObservatoryError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.Observatory, GetObservatoryError, TData>(
-    queryKeyFn({
-      path: "/pst/api/observatories/{id}",
-      operationId: "getObservatory",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetObservatory({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type DeleteObservatoryPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type DeleteObservatoryError = Fetcher.ErrorWrapper<undefined>;
-
-export type DeleteObservatoryVariables = {
-  pathParams: DeleteObservatoryPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchDeleteObservatory = (
-  variables: DeleteObservatoryVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    DeleteObservatoryError,
-    undefined,
-    {},
-    {},
-    DeleteObservatoryPathParams
-  >({
-    url: "/pst/api/observatories/{id}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useDeleteObservatory = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      DeleteObservatoryError,
-      DeleteObservatoryVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    DeleteObservatoryError,
-    DeleteObservatoryVariables
-  >(
-    (variables: DeleteObservatoryVariables) =>
-      fetchDeleteObservatory({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateAddressPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateAddressError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateAddressVariables = {
-  pathParams: UpdateAddressPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateAddress = (
-  variables: UpdateAddressVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateAddressError,
-    undefined,
-    {},
-    {},
-    UpdateAddressPathParams
-  >({
-    url: "/pst/api/observatories/{id}/address",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateAddress = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateAddressError,
-      UpdateAddressVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateAddressError,
-    UpdateAddressVariables
-  >(
-    (variables: UpdateAddressVariables) =>
-      fetchUpdateAddress({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type AddArrayPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type AddArrayError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddArrayVariables = {
-  pathParams: AddArrayPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddArray = (
-  variables: AddArrayVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    AddArrayError,
-    undefined,
-    {},
-    {},
-    AddArrayPathParams
-  >({
-    url: "/pst/api/observatories/{id}/array",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useAddArray = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<undefined, AddArrayError, AddArrayVariables>,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<undefined, AddArrayError, AddArrayVariables>(
-    (variables: AddArrayVariables) =>
-      fetchAddArray({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type CreateAndAddArrayPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type CreateAndAddArrayError = Fetcher.ErrorWrapper<undefined>;
-
-export type CreateAndAddArrayVariables = {
-  body?: Schemas.TelescopeArray;
-  pathParams: CreateAndAddArrayPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchCreateAndAddArray = (
-  variables: CreateAndAddArrayVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    CreateAndAddArrayError,
-    Schemas.TelescopeArray,
-    {},
-    {},
-    CreateAndAddArrayPathParams
-  >({
-    url: "/pst/api/observatories/{id}/array",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useCreateAndAddArray = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      CreateAndAddArrayError,
-      CreateAndAddArrayVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    CreateAndAddArrayError,
-    CreateAndAddArrayVariables
-  >(
-    (variables: CreateAndAddArrayVariables) =>
-      fetchCreateAndAddArray({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetObservatoryBackendsPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type GetObservatoryBackendsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetObservatoryBackendsResponse = Schemas.Backend[];
-
-export type GetObservatoryBackendsVariables = {
-  pathParams: GetObservatoryBackendsPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetObservatoryBackends = (
-  variables: GetObservatoryBackendsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetObservatoryBackendsResponse,
-    GetObservatoryBackendsError,
-    undefined,
-    {},
-    {},
-    GetObservatoryBackendsPathParams
-  >({
-    url: "/pst/api/observatories/{id}/backend",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetObservatoryBackends = <
-  TData = GetObservatoryBackendsResponse
->(
-  variables: GetObservatoryBackendsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetObservatoryBackendsResponse,
-      GetObservatoryBackendsError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetObservatoryBackendsResponse,
-    GetObservatoryBackendsError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/observatories/{id}/backend",
-      operationId: "getObservatoryBackends",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetObservatoryBackends({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type AddBackendPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type AddBackendError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddBackendVariables = {
-  pathParams: AddBackendPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddBackend = (
-  variables: AddBackendVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    AddBackendError,
-    undefined,
-    {},
-    {},
-    AddBackendPathParams
-  >({
-    url: "/pst/api/observatories/{id}/backend",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useAddBackend = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      AddBackendError,
-      AddBackendVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    AddBackendError,
-    AddBackendVariables
-  >(
-    (variables: AddBackendVariables) =>
-      fetchAddBackend({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type CreateAndAddBackendPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type CreateAndAddBackendError = Fetcher.ErrorWrapper<undefined>;
-
-export type CreateAndAddBackendVariables = {
-  body?: Schemas.Backend;
-  pathParams: CreateAndAddBackendPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchCreateAndAddBackend = (
-  variables: CreateAndAddBackendVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    CreateAndAddBackendError,
-    Schemas.Backend,
-    {},
-    {},
-    CreateAndAddBackendPathParams
-  >({
-    url: "/pst/api/observatories/{id}/backend",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useCreateAndAddBackend = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      CreateAndAddBackendError,
-      CreateAndAddBackendVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    CreateAndAddBackendError,
-    CreateAndAddBackendVariables
-  >(
-    (variables: CreateAndAddBackendVariables) =>
-      fetchCreateAndAddBackend({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetObservatoryBackendPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type GetObservatoryBackendError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetObservatoryBackendVariables = {
-  pathParams: GetObservatoryBackendPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetObservatoryBackend = (
-  variables: GetObservatoryBackendVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Backend,
-    GetObservatoryBackendError,
-    undefined,
-    {},
-    {},
-    GetObservatoryBackendPathParams
-  >({
-    url: "/pst/api/observatories/{id}/backend/{subId}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetObservatoryBackend = <TData = Schemas.Backend>(
-  variables: GetObservatoryBackendVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.Backend,
-      GetObservatoryBackendError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    Schemas.Backend,
-    GetObservatoryBackendError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/observatories/{id}/backend/{subId}",
-      operationId: "getObservatoryBackend",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetObservatoryBackend({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type ReplaceBackendNamePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceBackendNameError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceBackendNameVariables = {
-  pathParams: ReplaceBackendNamePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceBackendName = (
-  variables: ReplaceBackendNameVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceBackendNameError,
-    undefined,
-    {},
-    {},
-    ReplaceBackendNamePathParams
-  >({
-    url: "/pst/api/observatories/{id}/backend/{subId}/name",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceBackendName = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceBackendNameError,
-      ReplaceBackendNameVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceBackendNameError,
-    ReplaceBackendNameVariables
-  >(
-    (variables: ReplaceBackendNameVariables) =>
-      fetchReplaceBackendName({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateBackendParallelPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type UpdateBackendParallelError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateBackendParallelVariables = {
-  body?: boolean;
-  pathParams: UpdateBackendParallelPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateBackendParallel = (
-  variables: UpdateBackendParallelVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateBackendParallelError,
-    boolean,
-    {},
-    {},
-    UpdateBackendParallelPathParams
-  >({
-    url: "/pst/api/observatories/{id}/backend/{subId}/parallel",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateBackendParallel = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateBackendParallelError,
-      UpdateBackendParallelVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateBackendParallelError,
-    UpdateBackendParallelVariables
-  >(
-    (variables: UpdateBackendParallelVariables) =>
-      fetchUpdateBackendParallel({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type AddInstrumentPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type AddInstrumentError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddInstrumentVariables = {
-  pathParams: AddInstrumentPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddInstrument = (
-  variables: AddInstrumentVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    AddInstrumentError,
-    undefined,
-    {},
-    {},
-    AddInstrumentPathParams
-  >({
-    url: "/pst/api/observatories/{id}/instrument",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useAddInstrument = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      AddInstrumentError,
-      AddInstrumentVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    AddInstrumentError,
-    AddInstrumentVariables
-  >(
-    (variables: AddInstrumentVariables) =>
-      fetchAddInstrument({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type CreateAndAddInstrumentPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type CreateAndAddInstrumentError = Fetcher.ErrorWrapper<undefined>;
-
-export type CreateAndAddInstrumentVariables = {
-  body?: Schemas.Instrument;
-  pathParams: CreateAndAddInstrumentPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchCreateAndAddInstrument = (
-  variables: CreateAndAddInstrumentVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    CreateAndAddInstrumentError,
-    Schemas.Instrument,
-    {},
-    {},
-    CreateAndAddInstrumentPathParams
-  >({
-    url: "/pst/api/observatories/{id}/instrument",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useCreateAndAddInstrument = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      CreateAndAddInstrumentError,
-      CreateAndAddInstrumentVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    CreateAndAddInstrumentError,
-    CreateAndAddInstrumentVariables
-  >(
-    (variables: CreateAndAddInstrumentVariables) =>
-      fetchCreateAndAddInstrument({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceInstrumentDescriptionPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceInstrumentDescriptionError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceInstrumentDescriptionVariables = {
-  pathParams: ReplaceInstrumentDescriptionPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceInstrumentDescription = (
-  variables: ReplaceInstrumentDescriptionVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceInstrumentDescriptionError,
-    undefined,
-    {},
-    {},
-    ReplaceInstrumentDescriptionPathParams
-  >({
-    url: "/pst/api/observatories/{id}/instrument/{subId}/description",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceInstrumentDescription = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceInstrumentDescriptionError,
-      ReplaceInstrumentDescriptionVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceInstrumentDescriptionError,
-    ReplaceInstrumentDescriptionVariables
-  >(
-    (variables: ReplaceInstrumentDescriptionVariables) =>
-      fetchReplaceInstrumentDescription({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceInstrumentFrequencyCoveragePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceInstrumentFrequencyCoverageError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceInstrumentFrequencyCoverageVariables = {
-  body?: Schemas.SpectralWindowSetup;
-  pathParams: ReplaceInstrumentFrequencyCoveragePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceInstrumentFrequencyCoverage = (
-  variables: ReplaceInstrumentFrequencyCoverageVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceInstrumentFrequencyCoverageError,
-    Schemas.SpectralWindowSetup,
-    {},
-    {},
-    ReplaceInstrumentFrequencyCoveragePathParams
-  >({
-    url: "/pst/api/observatories/{id}/instrument/{subId}/frequencyCoverage",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceInstrumentFrequencyCoverage = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceInstrumentFrequencyCoverageError,
-      ReplaceInstrumentFrequencyCoverageVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceInstrumentFrequencyCoverageError,
-    ReplaceInstrumentFrequencyCoverageVariables
-  >(
-    (variables: ReplaceInstrumentFrequencyCoverageVariables) =>
-      fetchReplaceInstrumentFrequencyCoverage({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    options
-  );
-};
-
-export type ReplaceInstrumentKindPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceInstrumentKindError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceInstrumentKindVariables = {
-  pathParams: ReplaceInstrumentKindPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceInstrumentKind = (
-  variables: ReplaceInstrumentKindVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceInstrumentKindError,
-    undefined,
-    {},
-    {},
-    ReplaceInstrumentKindPathParams
-  >({
-    url: "/pst/api/observatories/{id}/instrument/{subId}/kind",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceInstrumentKind = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceInstrumentKindError,
-      ReplaceInstrumentKindVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceInstrumentKindError,
-    ReplaceInstrumentKindVariables
-  >(
-    (variables: ReplaceInstrumentKindVariables) =>
-      fetchReplaceInstrumentKind({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceInstrumentNamePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceInstrumentNameError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceInstrumentNameVariables = {
-  pathParams: ReplaceInstrumentNamePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceInstrumentName = (
-  variables: ReplaceInstrumentNameVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceInstrumentNameError,
-    undefined,
-    {},
-    {},
-    ReplaceInstrumentNamePathParams
-  >({
-    url: "/pst/api/observatories/{id}/instrument/{subId}/name",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceInstrumentName = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceInstrumentNameError,
-      ReplaceInstrumentNameVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceInstrumentNameError,
-    ReplaceInstrumentNameVariables
-  >(
-    (variables: ReplaceInstrumentNameVariables) =>
-      fetchReplaceInstrumentName({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceInstrumentReferencePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceInstrumentReferenceError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceInstrumentReferenceVariables = {
-  pathParams: ReplaceInstrumentReferencePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceInstrumentReference = (
-  variables: ReplaceInstrumentReferenceVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceInstrumentReferenceError,
-    undefined,
-    {},
-    {},
-    ReplaceInstrumentReferencePathParams
-  >({
-    url: "/pst/api/observatories/{id}/instrument/{subId}/reference",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceInstrumentReference = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceInstrumentReferenceError,
-      ReplaceInstrumentReferenceVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceInstrumentReferenceError,
-    ReplaceInstrumentReferenceVariables
-  >(
-    (variables: ReplaceInstrumentReferenceVariables) =>
-      fetchReplaceInstrumentReference({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceInstrumentWikiIdPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceInstrumentWikiIdError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceInstrumentWikiIdVariables = {
-  pathParams: ReplaceInstrumentWikiIdPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceInstrumentWikiId = (
-  variables: ReplaceInstrumentWikiIdVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceInstrumentWikiIdError,
-    undefined,
-    {},
-    {},
-    ReplaceInstrumentWikiIdPathParams
-  >({
-    url: "/pst/api/observatories/{id}/instrument/{subId}/wikiId",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceInstrumentWikiId = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceInstrumentWikiIdError,
-      ReplaceInstrumentWikiIdVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceInstrumentWikiIdError,
-    ReplaceInstrumentWikiIdVariables
-  >(
-    (variables: ReplaceInstrumentWikiIdVariables) =>
-      fetchReplaceInstrumentWikiId({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateObservatoryIvoIdPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateObservatoryIvoIdError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateObservatoryIvoIdVariables = {
-  pathParams: UpdateObservatoryIvoIdPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateObservatoryIvoId = (
-  variables: UpdateObservatoryIvoIdVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateObservatoryIvoIdError,
-    undefined,
-    {},
-    {},
-    UpdateObservatoryIvoIdPathParams
-  >({
-    url: "/pst/api/observatories/{id}/ivoId",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateObservatoryIvoId = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateObservatoryIvoIdError,
-      UpdateObservatoryIvoIdVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateObservatoryIvoIdError,
-    UpdateObservatoryIvoIdVariables
-  >(
-    (variables: UpdateObservatoryIvoIdVariables) =>
-      fetchUpdateObservatoryIvoId({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateObservatoryNamePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateObservatoryNameError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateObservatoryNameVariables = {
-  pathParams: UpdateObservatoryNamePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateObservatoryName = (
-  variables: UpdateObservatoryNameVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateObservatoryNameError,
-    undefined,
-    {},
-    {},
-    UpdateObservatoryNamePathParams
-  >({
-    url: "/pst/api/observatories/{id}/name",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateObservatoryName = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateObservatoryNameError,
-      UpdateObservatoryNameVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateObservatoryNameError,
-    UpdateObservatoryNameVariables
-  >(
-    (variables: UpdateObservatoryNameVariables) =>
-      fetchUpdateObservatoryName({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type AddTelescopePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type AddTelescopeError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddTelescopeVariables = {
-  pathParams: AddTelescopePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddTelescope = (
-  variables: AddTelescopeVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    AddTelescopeError,
-    undefined,
-    {},
-    {},
-    AddTelescopePathParams
-  >({
-    url: "/pst/api/observatories/{id}/telescope",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useAddTelescope = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      AddTelescopeError,
-      AddTelescopeVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    AddTelescopeError,
-    AddTelescopeVariables
-  >(
-    (variables: AddTelescopeVariables) =>
-      fetchAddTelescope({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type CreateAndAddTelescopePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type CreateAndAddTelescopeError = Fetcher.ErrorWrapper<undefined>;
-
-export type CreateAndAddTelescopeVariables = {
-  body?: Schemas.Telescope;
-  pathParams: CreateAndAddTelescopePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchCreateAndAddTelescope = (
-  variables: CreateAndAddTelescopeVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    CreateAndAddTelescopeError,
-    Schemas.Telescope,
-    {},
-    {},
-    CreateAndAddTelescopePathParams
-  >({
-    url: "/pst/api/observatories/{id}/telescope",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useCreateAndAddTelescope = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      CreateAndAddTelescopeError,
-      CreateAndAddTelescopeVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    CreateAndAddTelescopeError,
-    CreateAndAddTelescopeVariables
-  >(
-    (variables: CreateAndAddTelescopeVariables) =>
-      fetchCreateAndAddTelescope({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceTelescopeXPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceTelescopeXError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceTelescopeXVariables = {
-  pathParams: ReplaceTelescopeXPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceTelescopeX = (
-  variables: ReplaceTelescopeXVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceTelescopeXError,
-    undefined,
-    {},
-    {},
-    ReplaceTelescopeXPathParams
-  >({
-    url: "/pst/api/observatories/{id}/telescope/{subId}/location/x",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceTelescopeX = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceTelescopeXError,
-      ReplaceTelescopeXVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceTelescopeXError,
-    ReplaceTelescopeXVariables
-  >(
-    (variables: ReplaceTelescopeXVariables) =>
-      fetchReplaceTelescopeX({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceTelescopeXYZPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceTelescopeXYZError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceTelescopeXYZVariables = {
-  pathParams: ReplaceTelescopeXYZPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceTelescopeXYZ = (
-  variables: ReplaceTelescopeXYZVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceTelescopeXYZError,
-    undefined,
-    {},
-    {},
-    ReplaceTelescopeXYZPathParams
-  >({
-    url: "/pst/api/observatories/{id}/telescope/{subId}/location/xyz",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceTelescopeXYZ = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceTelescopeXYZError,
-      ReplaceTelescopeXYZVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceTelescopeXYZError,
-    ReplaceTelescopeXYZVariables
-  >(
-    (variables: ReplaceTelescopeXYZVariables) =>
-      fetchReplaceTelescopeXYZ({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceTelescopeYPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceTelescopeYError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceTelescopeYVariables = {
-  pathParams: ReplaceTelescopeYPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceTelescopeY = (
-  variables: ReplaceTelescopeYVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceTelescopeYError,
-    undefined,
-    {},
-    {},
-    ReplaceTelescopeYPathParams
-  >({
-    url: "/pst/api/observatories/{id}/telescope/{subId}/location/y",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceTelescopeY = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceTelescopeYError,
-      ReplaceTelescopeYVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceTelescopeYError,
-    ReplaceTelescopeYVariables
-  >(
-    (variables: ReplaceTelescopeYVariables) =>
-      fetchReplaceTelescopeY({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceTelescopeZPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceTelescopeZError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceTelescopeZVariables = {
-  pathParams: ReplaceTelescopeZPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceTelescopeZ = (
-  variables: ReplaceTelescopeZVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceTelescopeZError,
-    undefined,
-    {},
-    {},
-    ReplaceTelescopeZPathParams
-  >({
-    url: "/pst/api/observatories/{id}/telescope/{subId}/location/z",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceTelescopeZ = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceTelescopeZError,
-      ReplaceTelescopeZVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceTelescopeZError,
-    ReplaceTelescopeZVariables
-  >(
-    (variables: ReplaceTelescopeZVariables) =>
-      fetchReplaceTelescopeZ({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceTelescopeNamePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  subId: number;
-};
-
-export type ReplaceTelescopeNameError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceTelescopeNameVariables = {
-  pathParams: ReplaceTelescopeNamePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceTelescopeName = (
-  variables: ReplaceTelescopeNameVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceTelescopeNameError,
-    undefined,
-    {},
-    {},
-    ReplaceTelescopeNamePathParams
-  >({
-    url: "/pst/api/observatories/{id}/telescope/{subId}/name",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceTelescopeName = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceTelescopeNameError,
-      ReplaceTelescopeNameVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceTelescopeNameError,
-    ReplaceTelescopeNameVariables
-  >(
-    (variables: ReplaceTelescopeNameVariables) =>
-      fetchReplaceTelescopeName({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateObservatoryWikiIdPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateObservatoryWikiIdError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateObservatoryWikiIdVariables = {
-  pathParams: UpdateObservatoryWikiIdPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateObservatoryWikiId = (
-  variables: UpdateObservatoryWikiIdVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateObservatoryWikiIdError,
-    undefined,
-    {},
-    {},
-    UpdateObservatoryWikiIdPathParams
-  >({
-    url: "/pst/api/observatories/{id}/wikiId",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateObservatoryWikiId = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateObservatoryWikiIdError,
-      UpdateObservatoryWikiIdVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateObservatoryWikiIdError,
-    UpdateObservatoryWikiIdVariables
-  >(
-    (variables: UpdateObservatoryWikiIdVariables) =>
-      fetchUpdateObservatoryWikiId({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetOrganizationsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetOrganizationsResponse = Schemas.ObjectIdentifier[];
-
-export type GetOrganizationsVariables = ProposalToolContext["fetcherOptions"];
-
-export const fetchGetOrganizations = (
-  variables: GetOrganizationsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetOrganizationsResponse,
-    GetOrganizationsError,
-    undefined,
-    {},
-    {},
-    {}
-  >({ url: "/pst/api/organizations", method: "get", ...variables, signal });
-
-export const useGetOrganizations = <TData = GetOrganizationsResponse>(
-  variables: GetOrganizationsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetOrganizationsResponse,
-      GetOrganizationsError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetOrganizationsResponse,
-    GetOrganizationsError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/organizations",
-      operationId: "getOrganizations",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetOrganizations({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type CreateOrganizationError = Fetcher.ErrorWrapper<undefined>;
-
-export type CreateOrganizationVariables = {
-  body?: Schemas.Organization;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchCreateOrganization = (
-  variables: CreateOrganizationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    CreateOrganizationError,
-    Schemas.Organization,
-    {},
-    {},
-    {}
-  >({ url: "/pst/api/organizations", method: "post", ...variables, signal });
-
-export const useCreateOrganization = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      CreateOrganizationError,
-      CreateOrganizationVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    CreateOrganizationError,
-    CreateOrganizationVariables
-  >(
-    (variables: CreateOrganizationVariables) =>
-      fetchCreateOrganization({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetOrganizationPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type GetOrganizationError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetOrganizationVariables = {
-  pathParams: GetOrganizationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetOrganization = (
-  variables: GetOrganizationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Organization,
-    GetOrganizationError,
-    undefined,
-    {},
-    {},
-    GetOrganizationPathParams
-  >({
-    url: "/pst/api/organizations/{id}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetOrganization = <TData = Schemas.Organization>(
-  variables: GetOrganizationVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.Organization,
-      GetOrganizationError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.Organization, GetOrganizationError, TData>(
-    queryKeyFn({
-      path: "/pst/api/organizations/{id}",
-      operationId: "getOrganization",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetOrganization({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type DeleteOrganizationPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type DeleteOrganizationError = Fetcher.ErrorWrapper<undefined>;
-
-export type DeleteOrganizationVariables = {
-  pathParams: DeleteOrganizationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchDeleteOrganization = (
-  variables: DeleteOrganizationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    DeleteOrganizationError,
-    undefined,
-    {},
-    {},
-    DeleteOrganizationPathParams
-  >({
-    url: "/pst/api/organizations/{id}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useDeleteOrganization = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      DeleteOrganizationError,
-      DeleteOrganizationVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    DeleteOrganizationError,
-    DeleteOrganizationVariables
-  >(
-    (variables: DeleteOrganizationVariables) =>
-      fetchDeleteOrganization({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateOrganisationAddressPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateOrganisationAddressError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateOrganisationAddressVariables = {
-  pathParams: UpdateOrganisationAddressPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateOrganisationAddress = (
-  variables: UpdateOrganisationAddressVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateOrganisationAddressError,
-    undefined,
-    {},
-    {},
-    UpdateOrganisationAddressPathParams
-  >({
-    url: "/pst/api/organizations/{id}/address",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateOrganisationAddress = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateOrganisationAddressError,
-      UpdateOrganisationAddressVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateOrganisationAddressError,
-    UpdateOrganisationAddressVariables
-  >(
-    (variables: UpdateOrganisationAddressVariables) =>
-      fetchUpdateOrganisationAddress({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateOrganisationIvoIdPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateOrganisationIvoIdError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateOrganisationIvoIdVariables = {
-  pathParams: UpdateOrganisationIvoIdPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateOrganisationIvoId = (
-  variables: UpdateOrganisationIvoIdVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateOrganisationIvoIdError,
-    undefined,
-    {},
-    {},
-    UpdateOrganisationIvoIdPathParams
-  >({
-    url: "/pst/api/organizations/{id}/ivoId",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateOrganisationIvoId = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateOrganisationIvoIdError,
-      UpdateOrganisationIvoIdVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateOrganisationIvoIdError,
-    UpdateOrganisationIvoIdVariables
-  >(
-    (variables: UpdateOrganisationIvoIdVariables) =>
-      fetchUpdateOrganisationIvoId({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateOrganisationNamePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateOrganisationNameError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateOrganisationNameVariables = {
-  pathParams: UpdateOrganisationNamePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateOrganisationName = (
-  variables: UpdateOrganisationNameVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateOrganisationNameError,
-    undefined,
-    {},
-    {},
-    UpdateOrganisationNamePathParams
-  >({
-    url: "/pst/api/organizations/{id}/name",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateOrganisationName = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateOrganisationNameError,
-      UpdateOrganisationNameVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateOrganisationNameError,
-    UpdateOrganisationNameVariables
-  >(
-    (variables: UpdateOrganisationNameVariables) =>
-      fetchUpdateOrganisationName({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateOrganisationWikiIdPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateOrganisationWikiIdError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateOrganisationWikiIdVariables = {
-  pathParams: UpdateOrganisationWikiIdPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateOrganisationWikiId = (
-  variables: UpdateOrganisationWikiIdVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateOrganisationWikiIdError,
-    undefined,
-    {},
-    {},
-    UpdateOrganisationWikiIdPathParams
-  >({
-    url: "/pst/api/organizations/{id}/wikiId",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateOrganisationWikiId = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateOrganisationWikiIdError,
-      UpdateOrganisationWikiIdVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateOrganisationWikiIdError,
-    UpdateOrganisationWikiIdVariables
-  >(
-    (variables: UpdateOrganisationWikiIdVariables) =>
-      fetchUpdateOrganisationWikiId({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetPeopleQueryParams = {
-  name?: string;
-};
-
-export type GetPeopleError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetPeopleResponse = Schemas.ObjectIdentifier[];
-
-export type GetPeopleVariables = {
-  queryParams?: GetPeopleQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetPeople = (
-  variables: GetPeopleVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetPeopleResponse,
-    GetPeopleError,
-    undefined,
-    {},
-    GetPeopleQueryParams,
-    {}
-  >({ url: "/pst/api/people", method: "get", ...variables, signal });
-
-export const useGetPeople = <TData = GetPeopleResponse>(
-  variables: GetPeopleVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<GetPeopleResponse, GetPeopleError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<GetPeopleResponse, GetPeopleError, TData>(
-    queryKeyFn({
-      path: "/pst/api/people",
-      operationId: "getPeople",
-      variables,
-    }),
-    ({ signal }) => fetchGetPeople({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type CreatePersonError = Fetcher.ErrorWrapper<undefined>;
-
-export type CreatePersonVariables = {
-  body?: Schemas.Person;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchCreatePerson = (
-  variables: CreatePersonVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<undefined, CreatePersonError, Schemas.Person, {}, {}, {}>({
-    url: "/pst/api/people",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useCreatePerson = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      CreatePersonError,
-      CreatePersonVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    CreatePersonError,
-    CreatePersonVariables
-  >(
-    (variables: CreatePersonVariables) =>
-      fetchCreatePerson({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetPersonPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type GetPersonError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetPersonVariables = {
-  pathParams: GetPersonPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetPerson = (
-  variables: GetPersonVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Person,
-    GetPersonError,
-    undefined,
-    {},
-    {},
-    GetPersonPathParams
-  >({ url: "/pst/api/people/{id}", method: "get", ...variables, signal });
-
-export const useGetPerson = <TData = Schemas.Person>(
-  variables: GetPersonVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.Person, GetPersonError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.Person, GetPersonError, TData>(
-    queryKeyFn({
-      path: "/pst/api/people/{id}",
-      operationId: "getPerson",
-      variables,
-    }),
-    ({ signal }) => fetchGetPerson({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type DeletePersonPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type DeletePersonError = Fetcher.ErrorWrapper<undefined>;
-
-export type DeletePersonVariables = {
-  pathParams: DeletePersonPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchDeletePerson = (
-  variables: DeletePersonVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    DeletePersonError,
-    undefined,
-    {},
-    {},
-    DeletePersonPathParams
-  >({ url: "/pst/api/people/{id}", method: "delete", ...variables, signal });
-
-export const useDeletePerson = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      DeletePersonError,
-      DeletePersonVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    DeletePersonError,
-    DeletePersonVariables
-  >(
-    (variables: DeletePersonVariables) =>
-      fetchDeletePerson({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateEMailPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateEMailError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateEMailVariables = {
-  pathParams: UpdateEMailPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateEMail = (
-  variables: UpdateEMailVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateEMailError,
-    undefined,
-    {},
-    {},
-    UpdateEMailPathParams
-  >({ url: "/pst/api/people/{id}/eMail", method: "put", ...variables, signal });
-
-export const useUpdateEMail = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateEMailError,
-      UpdateEMailVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateEMailError,
-    UpdateEMailVariables
-  >(
-    (variables: UpdateEMailVariables) =>
-      fetchUpdateEMail({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateFullNamePathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateFullNameError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateFullNameVariables = {
-  pathParams: UpdateFullNamePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateFullName = (
-  variables: UpdateFullNameVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateFullNameError,
-    undefined,
-    {},
-    {},
-    UpdateFullNamePathParams
-  >({
-    url: "/pst/api/people/{id}/fullName",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateFullName = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateFullNameError,
-      UpdateFullNameVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateFullNameError,
-    UpdateFullNameVariables
-  >(
-    (variables: UpdateFullNameVariables) =>
-      fetchUpdateFullName({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateOrcidIdPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateOrcidIdError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateOrcidIdVariables = {
-  pathParams: UpdateOrcidIdPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateOrcidId = (
-  variables: UpdateOrcidIdVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateOrcidIdError,
-    undefined,
-    {},
-    {},
-    UpdateOrcidIdPathParams
-  >({
-    url: "/pst/api/people/{id}/orcidId",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateOrcidId = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateOrcidIdError,
-      UpdateOrcidIdVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateOrcidIdError,
-    UpdateOrcidIdVariables
-  >(
-    (variables: UpdateOrcidIdVariables) =>
-      fetchUpdateOrcidId({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetProposalCyclessQueryParams = {
-  includeClosed?: boolean;
-};
-
-export type GetProposalCyclessError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetProposalCyclessResponse = Schemas.ObjectIdentifier[];
-
-export type GetProposalCyclessVariables = {
-  queryParams?: GetProposalCyclessQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetProposalCycless = (
-  variables: GetProposalCyclessVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetProposalCyclessResponse,
-    GetProposalCyclessError,
-    undefined,
-    {},
-    GetProposalCyclessQueryParams,
-    {}
-  >({ url: "/pst/api/proposalCycles", method: "get", ...variables, signal });
-
-export const useGetProposalCycless = <TData = GetProposalCyclessResponse>(
-  variables: GetProposalCyclessVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetProposalCyclessResponse,
-      GetProposalCyclessError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetProposalCyclessResponse,
-    GetProposalCyclessError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposalCycles",
-      operationId: "getProposalCycless",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetProposalCycless({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type GetProposalCyclePathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type GetProposalCycleError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetProposalCycleVariables = {
-  pathParams: GetProposalCyclePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetProposalCycle = (
-  variables: GetProposalCycleVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.ProposalCycle,
-    GetProposalCycleError,
-    undefined,
-    {},
-    {},
-    GetProposalCyclePathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetProposalCycle = <TData = Schemas.ProposalCycle>(
-  variables: GetProposalCycleVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.ProposalCycle,
-      GetProposalCycleError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    Schemas.ProposalCycle,
-    GetProposalCycleError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposalCycles/{cycleCode}",
-      operationId: "getProposalCycle",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetProposalCycle({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type GetTACPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type GetTACError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetTACVariables = {
-  pathParams: GetTACPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetTAC = (variables: GetTACVariables, signal?: AbortSignal) =>
-  proposalToolFetch<
-    Schemas.Tac,
-    GetTACError,
-    undefined,
-    {},
-    {},
-    GetTACPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/TAC",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetTAC = <TData = Schemas.Tac>(
-  variables: GetTACVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.Tac, GetTACError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.Tac, GetTACError, TData>(
-    queryKeyFn({
-      path: "/pst/api/proposalCycles/{cycleCode}/TAC",
-      operationId: "getTAC",
-      variables,
-    }),
-    ({ signal }) => fetchGetTAC({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type GetReviewedProposalsPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type GetReviewedProposalsQueryParams = {
-  title?: string;
-};
-
-export type GetReviewedProposalsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetReviewedProposalsResponse = Schemas.ObjectIdentifier[];
-
-export type GetReviewedProposalsVariables = {
-  pathParams: GetReviewedProposalsPathParams;
-  queryParams?: GetReviewedProposalsQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetReviewedProposals = (
-  variables: GetReviewedProposalsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetReviewedProposalsResponse,
-    GetReviewedProposalsError,
-    undefined,
-    {},
-    GetReviewedProposalsQueryParams,
-    GetReviewedProposalsPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetReviewedProposals = <TData = GetReviewedProposalsResponse>(
-  variables: GetReviewedProposalsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetReviewedProposalsResponse,
-      GetReviewedProposalsError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetReviewedProposalsResponse,
-    GetReviewedProposalsError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
-      operationId: "getReviewedProposals",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetReviewedProposals({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type SubmitProposalForReviewPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type SubmitProposalForReviewError = Fetcher.ErrorWrapper<undefined>;
-
-export type SubmitProposalForReviewVariables = {
-  body?: Schemas.ReviewedProposal;
-  pathParams: SubmitProposalForReviewPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchSubmitProposalForReview = (
-  variables: SubmitProposalForReviewVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    SubmitProposalForReviewError,
-    Schemas.ReviewedProposal,
-    {},
-    {},
-    SubmitProposalForReviewPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useSubmitProposalForReview = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      SubmitProposalForReviewError,
-      SubmitProposalForReviewVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    SubmitProposalForReviewError,
-    SubmitProposalForReviewVariables
-  >(
-    (variables: SubmitProposalForReviewVariables) =>
-      fetchSubmitProposalForReview({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetReviewedProposalPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-  /**
-   * @format int64
-   */
-  reviewCode: number;
-};
-
-export type GetReviewedProposalError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetReviewedProposalVariables = {
-  pathParams: GetReviewedProposalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetReviewedProposal = (
-  variables: GetReviewedProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.ReviewedProposal,
-    GetReviewedProposalError,
-    undefined,
-    {},
-    {},
-    GetReviewedProposalPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetReviewedProposal = <TData = Schemas.ReviewedProposal>(
-  variables: GetReviewedProposalVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.ReviewedProposal,
-      GetReviewedProposalError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    Schemas.ReviewedProposal,
-    GetReviewedProposalError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}",
-      operationId: "getReviewedProposal",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetReviewedProposal({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type SubmitReviewOfProposalPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-  /**
-   * @format int64
-   */
-  reviewCode: number;
-};
-
-export type SubmitReviewOfProposalError = Fetcher.ErrorWrapper<undefined>;
-
-export type SubmitReviewOfProposalVariables = {
-  body?: Schemas.ProposalReview;
-  pathParams: SubmitReviewOfProposalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchSubmitReviewOfProposal = (
-  variables: SubmitReviewOfProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    SubmitReviewOfProposalError,
-    Schemas.ProposalReview,
-    {},
-    {},
-    SubmitReviewOfProposalPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}/reviews",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useSubmitReviewOfProposal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      SubmitReviewOfProposalError,
-      SubmitReviewOfProposalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    SubmitReviewOfProposalError,
-    SubmitReviewOfProposalVariables
-  >(
-    (variables: SubmitReviewOfProposalVariables) =>
-      fetchSubmitReviewOfProposal({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetSubmittedProposalsPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type GetSubmittedProposalsQueryParams = {
-  title?: string;
-};
-
-export type GetSubmittedProposalsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetSubmittedProposalsResponse = Schemas.ObjectIdentifier[];
-
-export type GetSubmittedProposalsVariables = {
-  pathParams: GetSubmittedProposalsPathParams;
-  queryParams?: GetSubmittedProposalsQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetSubmittedProposals = (
-  variables: GetSubmittedProposalsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetSubmittedProposalsResponse,
-    GetSubmittedProposalsError,
-    undefined,
-    {},
-    GetSubmittedProposalsQueryParams,
-    GetSubmittedProposalsPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetSubmittedProposals = <TData = GetSubmittedProposalsResponse>(
-  variables: GetSubmittedProposalsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetSubmittedProposalsResponse,
-      GetSubmittedProposalsError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetSubmittedProposalsResponse,
-    GetSubmittedProposalsError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals",
-      operationId: "getSubmittedProposals",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetSubmittedProposals({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type SubmitProposalPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type SubmitProposalError = Fetcher.ErrorWrapper<undefined>;
-
-export type SubmitProposalVariables = {
-  pathParams: SubmitProposalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchSubmitProposal = (
-  variables: SubmitProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    SubmitProposalError,
-    undefined,
-    {},
-    {},
-    SubmitProposalPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useSubmitProposal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      SubmitProposalError,
-      SubmitProposalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    SubmitProposalError,
-    SubmitProposalVariables
-  >(
-    (variables: SubmitProposalVariables) =>
-      fetchSubmitProposal({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetProposalsQueryParams = {
-  title?: string;
-};
-
-export type GetProposalsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetProposalsResponse = Schemas.ObjectIdentifier[];
-
-export type GetProposalsVariables = {
-  queryParams?: GetProposalsQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetProposals = (
-  variables: GetProposalsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetProposalsResponse,
-    GetProposalsError,
-    undefined,
-    {},
-    GetProposalsQueryParams,
-    {}
-  >({ url: "/pst/api/proposals", method: "get", ...variables, signal });
-
-export const useGetProposals = <TData = GetProposalsResponse>(
-  variables: GetProposalsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<GetProposalsResponse, GetProposalsError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<GetProposalsResponse, GetProposalsError, TData>(
-    queryKeyFn({
-      path: "/pst/api/proposals",
-      operationId: "getProposals",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetProposals({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type CreateObservingProposalError = Fetcher.ErrorWrapper<undefined>;
-
-export type CreateObservingProposalVariables = {
-  body?: Schemas.ObservingProposal;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchCreateObservingProposal = (
-  variables: CreateObservingProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    CreateObservingProposalError,
-    Schemas.ObservingProposal,
-    {},
-    {},
-    {}
-  >({ url: "/pst/api/proposals", method: "post", ...variables, signal });
-
-export const useCreateObservingProposal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      CreateObservingProposalError,
-      CreateObservingProposalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    CreateObservingProposalError,
-    CreateObservingProposalVariables
-  >(
-    (variables: CreateObservingProposalVariables) =>
-      fetchCreateObservingProposal({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetObservingProposalPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type GetObservingProposalError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetObservingProposalVariables = {
-  pathParams: GetObservingProposalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetObservingProposal = (
-  variables: GetObservingProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.ObservingProposal,
-    GetObservingProposalError,
-    undefined,
-    {},
-    {},
-    GetObservingProposalPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetObservingProposal = <TData = Schemas.ObservingProposal>(
-  variables: GetObservingProposalVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.ObservingProposal,
-      GetObservingProposalError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    Schemas.ObservingProposal,
-    GetObservingProposalError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}",
-      operationId: "getObservingProposal",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetObservingProposal({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type DeleteObservingProposalPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type DeleteObservingProposalError = Fetcher.ErrorWrapper<undefined>;
-
-export type DeleteObservingProposalVariables = {
-  pathParams: DeleteObservingProposalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchDeleteObservingProposal = (
-  variables: DeleteObservingProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    DeleteObservingProposalError,
-    undefined,
-    {},
-    {},
-    DeleteObservingProposalPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useDeleteObservingProposal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      DeleteObservingProposalError,
-      DeleteObservingProposalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    DeleteObservingProposalError,
-    DeleteObservingProposalVariables
-  >(
-    (variables: DeleteObservingProposalVariables) =>
-      fetchDeleteObservingProposal({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetInvestigatorsPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type GetInvestigatorsQueryParams = {
-  fullName?: string;
-};
-
-export type GetInvestigatorsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetInvestigatorsResponse = Schemas.ObjectIdentifier[];
-
-export type GetInvestigatorsVariables = {
-  pathParams: GetInvestigatorsPathParams;
-  queryParams?: GetInvestigatorsQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetInvestigators = (
-  variables: GetInvestigatorsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetInvestigatorsResponse,
-    GetInvestigatorsError,
-    undefined,
-    {},
-    GetInvestigatorsQueryParams,
-    GetInvestigatorsPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/investigators",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetInvestigators = <TData = GetInvestigatorsResponse>(
-  variables: GetInvestigatorsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetInvestigatorsResponse,
-      GetInvestigatorsError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetInvestigatorsResponse,
-    GetInvestigatorsError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/investigators",
-      operationId: "getInvestigators",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetInvestigators({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type AddPersonAsInvestigatorPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type AddPersonAsInvestigatorError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddPersonAsInvestigatorVariables = {
-  body?: Schemas.Investigator;
-  pathParams: AddPersonAsInvestigatorPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddPersonAsInvestigator = (
-  variables: AddPersonAsInvestigatorVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Investigator,
-    AddPersonAsInvestigatorError,
-    Schemas.Investigator,
-    {},
-    {},
-    AddPersonAsInvestigatorPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/investigators",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useAddPersonAsInvestigator = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.Investigator,
-      AddPersonAsInvestigatorError,
-      AddPersonAsInvestigatorVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.Investigator,
-    AddPersonAsInvestigatorError,
-    AddPersonAsInvestigatorVariables
-  >(
-    (variables: AddPersonAsInvestigatorVariables) =>
-      fetchAddPersonAsInvestigator({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetInvestigatorPathParams = {
-  /**
-   * @format int64
-   */
-  investigatorId: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type GetInvestigatorError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetInvestigatorVariables = {
-  pathParams: GetInvestigatorPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetInvestigator = (
-  variables: GetInvestigatorVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Investigator,
-    GetInvestigatorError,
-    undefined,
-    {},
-    {},
-    GetInvestigatorPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetInvestigator = <TData = Schemas.Investigator>(
-  variables: GetInvestigatorVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.Investigator,
-      GetInvestigatorError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.Investigator, GetInvestigatorError, TData>(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}",
-      operationId: "getInvestigator",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetInvestigator({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type RemoveInvestigatorPathParams = {
-  /**
-   * @format int64
-   */
-  investigatorId: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type RemoveInvestigatorError = Fetcher.ErrorWrapper<undefined>;
-
-export type RemoveInvestigatorVariables = {
-  pathParams: RemoveInvestigatorPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchRemoveInvestigator = (
-  variables: RemoveInvestigatorVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    RemoveInvestigatorError,
-    undefined,
-    {},
-    {},
-    RemoveInvestigatorPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useRemoveInvestigator = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      RemoveInvestigatorError,
-      RemoveInvestigatorVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    RemoveInvestigatorError,
-    RemoveInvestigatorVariables
-  >(
-    (variables: RemoveInvestigatorVariables) =>
-      fetchRemoveInvestigator({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ChangeInvestigatorForPhDPathParams = {
-  /**
-   * @format int64
-   */
-  investigatorId: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ChangeInvestigatorForPhDError = Fetcher.ErrorWrapper<undefined>;
-
-export type ChangeInvestigatorForPhDVariables = {
-  body?: boolean;
-  pathParams: ChangeInvestigatorForPhDPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchChangeInvestigatorForPhD = (
-  variables: ChangeInvestigatorForPhDVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ChangeInvestigatorForPhDError,
-    boolean,
-    {},
-    {},
-    ChangeInvestigatorForPhDPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}/forPhD",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useChangeInvestigatorForPhD = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ChangeInvestigatorForPhDError,
-      ChangeInvestigatorForPhDVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ChangeInvestigatorForPhDError,
-    ChangeInvestigatorForPhDVariables
-  >(
-    (variables: ChangeInvestigatorForPhDVariables) =>
-      fetchChangeInvestigatorForPhD({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ChangeInvestigatorKindPathParams = {
-  /**
-   * @format int64
-   */
-  investigatorId: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ChangeInvestigatorKindError = Fetcher.ErrorWrapper<undefined>;
-
-export type ChangeInvestigatorKindVariables = {
-  body?: Schemas.InvestigatorKind;
-  pathParams: ChangeInvestigatorKindPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchChangeInvestigatorKind = (
-  variables: ChangeInvestigatorKindVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ChangeInvestigatorKindError,
-    Schemas.InvestigatorKind,
-    {},
-    {},
-    ChangeInvestigatorKindPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}/kind",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useChangeInvestigatorKind = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ChangeInvestigatorKindError,
-      ChangeInvestigatorKindVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ChangeInvestigatorKindError,
-    ChangeInvestigatorKindVariables
-  >(
-    (variables: ChangeInvestigatorKindVariables) =>
-      fetchChangeInvestigatorKind({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetJustificationPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type GetJustificationError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetJustificationVariables = {
-  pathParams: GetJustificationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetJustification = (
-  variables: GetJustificationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Justification,
-    GetJustificationError,
-    undefined,
-    {},
-    {},
-    GetJustificationPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetJustification = <TData = Schemas.Justification>(
-  variables: GetJustificationVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.Justification,
-      GetJustificationError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    Schemas.Justification,
-    GetJustificationError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}",
-      operationId: "getJustification",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetJustification({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type UpdateJustificationPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type UpdateJustificationError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateJustificationVariables = {
-  body?: Schemas.Justification;
-  pathParams: UpdateJustificationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateJustification = (
-  variables: UpdateJustificationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateJustificationError,
-    Schemas.Justification,
-    {},
-    {},
-    UpdateJustificationPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateJustification = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateJustificationError,
-      UpdateJustificationVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateJustificationError,
-    UpdateJustificationVariables
-  >(
-    (variables: UpdateJustificationVariables) =>
-      fetchUpdateJustification({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ChangeKindPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ChangeKindError = Fetcher.ErrorWrapper<undefined>;
-
-export type ChangeKindVariables = {
-  pathParams: ChangeKindPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchChangeKind = (
-  variables: ChangeKindVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ChangeKindError,
-    undefined,
-    {},
-    {},
-    ChangeKindPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/kind",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useChangeKind = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ChangeKindError,
-      ChangeKindVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ChangeKindError,
-    ChangeKindVariables
-  >(
-    (variables: ChangeKindVariables) =>
-      fetchChangeKind({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetObservationsPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type GetObservationsQueryParams = {
-  fieldName?: string;
-};
-
-export type GetObservationsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetObservationsResponse = Schemas.ObjectIdentifier[];
-
-export type GetObservationsVariables = {
-  pathParams: GetObservationsPathParams;
-  queryParams?: GetObservationsQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetObservations = (
-  variables: GetObservationsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetObservationsResponse,
-    GetObservationsError,
-    undefined,
-    {},
-    GetObservationsQueryParams,
-    GetObservationsPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetObservations = <TData = GetObservationsResponse>(
-  variables: GetObservationsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetObservationsResponse,
-      GetObservationsError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetObservationsResponse,
-    GetObservationsError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/observations",
-      operationId: "getObservations",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetObservations({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type AddObservationPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type AddObservationError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddObservationVariables = {
-  pathParams: AddObservationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddObservation = (
-  variables: AddObservationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    AddObservationError,
-    undefined,
-    {},
-    {},
-    AddObservationPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useAddObservation = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      AddObservationError,
-      AddObservationVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    AddObservationError,
-    AddObservationVariables
-  >(
-    (variables: AddObservationVariables) =>
-      fetchAddObservation({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type AddNewObservationPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type AddNewObservationError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddNewObservationVariables = {
-  body?: Schemas.Observation;
-  pathParams: AddNewObservationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddNewObservation = (
-  variables: AddNewObservationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Observation,
-    AddNewObservationError,
-    Schemas.Observation,
-    {},
-    {},
-    AddNewObservationPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useAddNewObservation = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.Observation,
-      AddNewObservationError,
-      AddNewObservationVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.Observation,
-    AddNewObservationError,
-    AddNewObservationVariables
-  >(
-    (variables: AddNewObservationVariables) =>
-      fetchAddNewObservation({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetCalibrationObservationsPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type GetCalibrationObservationsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetCalibrationObservationsResponse = Schemas.ObjectIdentifier[];
-
-export type GetCalibrationObservationsVariables = {
-  pathParams: GetCalibrationObservationsPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetCalibrationObservations = (
-  variables: GetCalibrationObservationsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetCalibrationObservationsResponse,
-    GetCalibrationObservationsError,
-    undefined,
-    {},
-    {},
-    GetCalibrationObservationsPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations/calibrationObservations",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetCalibrationObservations = <
-  TData = GetCalibrationObservationsResponse
->(
-  variables: GetCalibrationObservationsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetCalibrationObservationsResponse,
-      GetCalibrationObservationsError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetCalibrationObservationsResponse,
-    GetCalibrationObservationsError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/observations/calibrationObservations",
-      operationId: "getCalibrationObservations",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetCalibrationObservations(
+      fetchObservatoryResourceGetObservatories(
         { ...fetcherOptions, ...variables },
         signal
       ),
@@ -4013,60 +76,113 @@ export const useGetCalibrationObservations = <
   );
 };
 
-export type GetFieldsPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
+export type ObservatoryResourceCreateObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type GetFieldsQueryParams = {
-  fieldName?: string;
-};
-
-export type GetFieldsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetFieldsResponse = Schemas.ObjectIdentifier[];
-
-export type GetFieldsVariables = {
-  pathParams: GetFieldsPathParams;
-  queryParams?: GetFieldsQueryParams;
+export type ObservatoryResourceCreateObservatoryVariables = {
+  body?: Schemas.Observatory;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchGetFields = (
-  variables: GetFieldsVariables,
+export const fetchObservatoryResourceCreateObservatory = (
+  variables: ObservatoryResourceCreateObservatoryVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    GetFieldsResponse,
-    GetFieldsError,
+    undefined,
+    ObservatoryResourceCreateObservatoryError,
+    Schemas.Observatory,
+    {},
+    {},
+    {}
+  >({ url: "/pst/api/observatories", method: "post", ...variables, signal });
+
+export const useObservatoryResourceCreateObservatory = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceCreateObservatoryError,
+      ObservatoryResourceCreateObservatoryVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceCreateObservatoryError,
+    ObservatoryResourceCreateObservatoryVariables
+  >(
+    (variables: ObservatoryResourceCreateObservatoryVariables) =>
+      fetchObservatoryResourceCreateObservatory({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceGetObservatoryPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceGetObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetObservatoryVariables = {
+  pathParams: ObservatoryResourceGetObservatoryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetObservatory = (
+  variables: ObservatoryResourceGetObservatoryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Observatory,
+    ObservatoryResourceGetObservatoryError,
     undefined,
     {},
-    GetFieldsQueryParams,
-    GetFieldsPathParams
+    {},
+    ObservatoryResourceGetObservatoryPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/observations/fields",
+    url: "/pst/api/observatories/{id}",
     method: "get",
     ...variables,
     signal,
   });
 
-export const useGetFields = <TData = GetFieldsResponse>(
-  variables: GetFieldsVariables,
+export const useObservatoryResourceGetObservatory = <
+  TData = Schemas.Observatory
+>(
+  variables: ObservatoryResourceGetObservatoryVariables,
   options?: Omit<
-    reactQuery.UseQueryOptions<GetFieldsResponse, GetFieldsError, TData>,
+    reactQuery.UseQueryOptions<
+      Schemas.Observatory,
+      ObservatoryResourceGetObservatoryError,
+      TData
+    >,
     "queryKey" | "queryFn"
   >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
-  return reactQuery.useQuery<GetFieldsResponse, GetFieldsError, TData>(
+  return reactQuery.useQuery<
+    Schemas.Observatory,
+    ObservatoryResourceGetObservatoryError,
+    TData
+  >(
     queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/observations/fields",
-      operationId: "getFields",
+      path: "/pst/api/observatories/{id}",
+      operationId: "observatoryResourceGetObservatory",
       variables,
     }),
-    ({ signal }) => fetchGetFields({ ...fetcherOptions, ...variables }, signal),
+    ({ signal }) =>
+      fetchObservatoryResourceGetObservatory(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
     {
       ...options,
       ...queryOptions,
@@ -4074,44 +190,3883 @@ export const useGetFields = <TData = GetFieldsResponse>(
   );
 };
 
-export type AddNewFieldPathParams = {
+export type ObservatoryResourceDeleteObservatoryPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceDeleteObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceDeleteObservatoryVariables = {
+  pathParams: ObservatoryResourceDeleteObservatoryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceDeleteObservatory = (
+  variables: ObservatoryResourceDeleteObservatoryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceDeleteObservatoryError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceDeleteObservatoryPathParams
+  >({
+    url: "/pst/api/observatories/{id}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceDeleteObservatory = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceDeleteObservatoryError,
+      ObservatoryResourceDeleteObservatoryVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceDeleteObservatoryError,
+    ObservatoryResourceDeleteObservatoryVariables
+  >(
+    (variables: ObservatoryResourceDeleteObservatoryVariables) =>
+      fetchObservatoryResourceDeleteObservatory({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceUpdateAddressPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceUpdateAddressError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateAddressVariables = {
+  pathParams: ObservatoryResourceUpdateAddressPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateAddress = (
+  variables: ObservatoryResourceUpdateAddressVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateAddressError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceUpdateAddressPathParams
+  >({
+    url: "/pst/api/observatories/{id}/address",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateAddress = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateAddressError,
+      ObservatoryResourceUpdateAddressVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateAddressError,
+    ObservatoryResourceUpdateAddressVariables
+  >(
+    (variables: ObservatoryResourceUpdateAddressVariables) =>
+      fetchObservatoryResourceUpdateAddress({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceAddArrayPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceAddArrayError = Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceAddArrayVariables = {
+  pathParams: ObservatoryResourceAddArrayPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceAddArray = (
+  variables: ObservatoryResourceAddArrayVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceAddArrayError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceAddArrayPathParams
+  >({
+    url: "/pst/api/observatories/{id}/array",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceAddArray = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceAddArrayError,
+      ObservatoryResourceAddArrayVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceAddArrayError,
+    ObservatoryResourceAddArrayVariables
+  >(
+    (variables: ObservatoryResourceAddArrayVariables) =>
+      fetchObservatoryResourceAddArray({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type ObservatoryResourceCreateAndAddArrayPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceCreateAndAddArrayError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceCreateAndAddArrayVariables = {
+  body?: Schemas.TelescopeArray;
+  pathParams: ObservatoryResourceCreateAndAddArrayPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceCreateAndAddArray = (
+  variables: ObservatoryResourceCreateAndAddArrayVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceCreateAndAddArrayError,
+    Schemas.TelescopeArray,
+    {},
+    {},
+    ObservatoryResourceCreateAndAddArrayPathParams
+  >({
+    url: "/pst/api/observatories/{id}/array",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceCreateAndAddArray = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceCreateAndAddArrayError,
+      ObservatoryResourceCreateAndAddArrayVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceCreateAndAddArrayError,
+    ObservatoryResourceCreateAndAddArrayVariables
+  >(
+    (variables: ObservatoryResourceCreateAndAddArrayVariables) =>
+      fetchObservatoryResourceCreateAndAddArray({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceGetObservatoryBackendsPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceGetObservatoryBackendsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetObservatoryBackendsResponse =
+  Schemas.Backend[];
+
+export type ObservatoryResourceGetObservatoryBackendsVariables = {
+  pathParams: ObservatoryResourceGetObservatoryBackendsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetObservatoryBackends = (
+  variables: ObservatoryResourceGetObservatoryBackendsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ObservatoryResourceGetObservatoryBackendsResponse,
+    ObservatoryResourceGetObservatoryBackendsError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetObservatoryBackendsPathParams
+  >({
+    url: "/pst/api/observatories/{id}/backend",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetObservatoryBackends = <
+  TData = ObservatoryResourceGetObservatoryBackendsResponse
+>(
+  variables: ObservatoryResourceGetObservatoryBackendsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservatoryResourceGetObservatoryBackendsResponse,
+      ObservatoryResourceGetObservatoryBackendsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservatoryResourceGetObservatoryBackendsResponse,
+    ObservatoryResourceGetObservatoryBackendsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/observatories/{id}/backend",
+      operationId: "observatoryResourceGetObservatoryBackends",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchObservatoryResourceGetObservatoryBackends(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ObservatoryResourceAddBackendPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceAddBackendError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceAddBackendVariables = {
+  pathParams: ObservatoryResourceAddBackendPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceAddBackend = (
+  variables: ObservatoryResourceAddBackendVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceAddBackendError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceAddBackendPathParams
+  >({
+    url: "/pst/api/observatories/{id}/backend",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceAddBackend = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceAddBackendError,
+      ObservatoryResourceAddBackendVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceAddBackendError,
+    ObservatoryResourceAddBackendVariables
+  >(
+    (variables: ObservatoryResourceAddBackendVariables) =>
+      fetchObservatoryResourceAddBackend({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type ObservatoryResourceCreateAndAddBackendPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceCreateAndAddBackendError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceCreateAndAddBackendVariables = {
+  body?: Schemas.Backend;
+  pathParams: ObservatoryResourceCreateAndAddBackendPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceCreateAndAddBackend = (
+  variables: ObservatoryResourceCreateAndAddBackendVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Backend,
+    ObservatoryResourceCreateAndAddBackendError,
+    Schemas.Backend,
+    {},
+    {},
+    ObservatoryResourceCreateAndAddBackendPathParams
+  >({
+    url: "/pst/api/observatories/{id}/backend",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceCreateAndAddBackend = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Backend,
+      ObservatoryResourceCreateAndAddBackendError,
+      ObservatoryResourceCreateAndAddBackendVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Backend,
+    ObservatoryResourceCreateAndAddBackendError,
+    ObservatoryResourceCreateAndAddBackendVariables
+  >(
+    (variables: ObservatoryResourceCreateAndAddBackendVariables) =>
+      fetchObservatoryResourceCreateAndAddBackend({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceGetObservatoryBackendPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+  /**
+   * @format int64
+   */
+  subId: number;
+};
+
+export type ObservatoryResourceGetObservatoryBackendError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetObservatoryBackendVariables = {
+  pathParams: ObservatoryResourceGetObservatoryBackendPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetObservatoryBackend = (
+  variables: ObservatoryResourceGetObservatoryBackendVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Backend,
+    ObservatoryResourceGetObservatoryBackendError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetObservatoryBackendPathParams
+  >({
+    url: "/pst/api/observatories/{id}/backend/{subId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetObservatoryBackend = <
+  TData = Schemas.Backend
+>(
+  variables: ObservatoryResourceGetObservatoryBackendVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Backend,
+      ObservatoryResourceGetObservatoryBackendError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Backend,
+    ObservatoryResourceGetObservatoryBackendError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/observatories/{id}/backend/{subId}",
+      operationId: "observatoryResourceGetObservatoryBackend",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchObservatoryResourceGetObservatoryBackend(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ObservatoryResourceUpdateBackendParallelPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+  /**
+   * @format int64
+   */
+  subId: number;
+};
+
+export type ObservatoryResourceUpdateBackendParallelError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateBackendParallelVariables = {
+  body?: boolean;
+  pathParams: ObservatoryResourceUpdateBackendParallelPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateBackendParallel = (
+  variables: ObservatoryResourceUpdateBackendParallelVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateBackendParallelError,
+    boolean,
+    {},
+    {},
+    ObservatoryResourceUpdateBackendParallelPathParams
+  >({
+    url: "/pst/api/observatories/{id}/backend/{subId}/parallel",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateBackendParallel = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateBackendParallelError,
+      ObservatoryResourceUpdateBackendParallelVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateBackendParallelError,
+    ObservatoryResourceUpdateBackendParallelVariables
+  >(
+    (variables: ObservatoryResourceUpdateBackendParallelVariables) =>
+      fetchObservatoryResourceUpdateBackendParallel({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceUpdateObservatoryIvoIdPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceUpdateObservatoryIvoIdError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateObservatoryIvoIdVariables = {
+  pathParams: ObservatoryResourceUpdateObservatoryIvoIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateObservatoryIvoId = (
+  variables: ObservatoryResourceUpdateObservatoryIvoIdVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateObservatoryIvoIdError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceUpdateObservatoryIvoIdPathParams
+  >({
+    url: "/pst/api/observatories/{id}/ivoId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateObservatoryIvoId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateObservatoryIvoIdError,
+      ObservatoryResourceUpdateObservatoryIvoIdVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateObservatoryIvoIdError,
+    ObservatoryResourceUpdateObservatoryIvoIdVariables
+  >(
+    (variables: ObservatoryResourceUpdateObservatoryIvoIdVariables) =>
+      fetchObservatoryResourceUpdateObservatoryIvoId({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceUpdateObservatoryNamePathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceUpdateObservatoryNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateObservatoryNameVariables = {
+  pathParams: ObservatoryResourceUpdateObservatoryNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateObservatoryName = (
+  variables: ObservatoryResourceUpdateObservatoryNameVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateObservatoryNameError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceUpdateObservatoryNamePathParams
+  >({
+    url: "/pst/api/observatories/{id}/name",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateObservatoryName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateObservatoryNameError,
+      ObservatoryResourceUpdateObservatoryNameVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateObservatoryNameError,
+    ObservatoryResourceUpdateObservatoryNameVariables
+  >(
+    (variables: ObservatoryResourceUpdateObservatoryNameVariables) =>
+      fetchObservatoryResourceUpdateObservatoryName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceUpdateObservatoryWikiIdPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceUpdateObservatoryWikiIdError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateObservatoryWikiIdVariables = {
+  pathParams: ObservatoryResourceUpdateObservatoryWikiIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateObservatoryWikiId = (
+  variables: ObservatoryResourceUpdateObservatoryWikiIdVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateObservatoryWikiIdError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceUpdateObservatoryWikiIdPathParams
+  >({
+    url: "/pst/api/observatories/{id}/wikiId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateObservatoryWikiId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateObservatoryWikiIdError,
+      ObservatoryResourceUpdateObservatoryWikiIdVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateObservatoryWikiIdError,
+    ObservatoryResourceUpdateObservatoryWikiIdVariables
+  >(
+    (variables: ObservatoryResourceUpdateObservatoryWikiIdVariables) =>
+      fetchObservatoryResourceUpdateObservatoryWikiId({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservatoryResourceReplaceBackendNamePathParams = {
+  /**
+   * @format int64
+   */
+  backendId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type ObservatoryResourceReplaceBackendNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceReplaceBackendNameVariables = {
+  pathParams: ObservatoryResourceReplaceBackendNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceReplaceBackendName = (
+  variables: ObservatoryResourceReplaceBackendNameVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceReplaceBackendNameError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceReplaceBackendNamePathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/backend/{backendId}/name",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceReplaceBackendName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceReplaceBackendNameError,
+      ObservatoryResourceReplaceBackendNameVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceReplaceBackendNameError,
+    ObservatoryResourceReplaceBackendNameVariables
+  >(
+    (variables: ObservatoryResourceReplaceBackendNameVariables) =>
+      fetchObservatoryResourceReplaceBackendName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InstrumentResourceGetObservatoryInstrumentsPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceGetObservatoryInstrumentsQueryParams = {
+  name?: string;
+};
+
+export type InstrumentResourceGetObservatoryInstrumentsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceGetObservatoryInstrumentsResponse =
+  Schemas.ObjectIdentifier[];
+
+export type InstrumentResourceGetObservatoryInstrumentsVariables = {
+  pathParams: InstrumentResourceGetObservatoryInstrumentsPathParams;
+  queryParams?: InstrumentResourceGetObservatoryInstrumentsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceGetObservatoryInstruments = (
+  variables: InstrumentResourceGetObservatoryInstrumentsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    InstrumentResourceGetObservatoryInstrumentsResponse,
+    InstrumentResourceGetObservatoryInstrumentsError,
+    undefined,
+    {},
+    InstrumentResourceGetObservatoryInstrumentsQueryParams,
+    InstrumentResourceGetObservatoryInstrumentsPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceGetObservatoryInstruments = <
+  TData = InstrumentResourceGetObservatoryInstrumentsResponse
+>(
+  variables: InstrumentResourceGetObservatoryInstrumentsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      InstrumentResourceGetObservatoryInstrumentsResponse,
+      InstrumentResourceGetObservatoryInstrumentsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    InstrumentResourceGetObservatoryInstrumentsResponse,
+    InstrumentResourceGetObservatoryInstrumentsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/instruments",
+      operationId: "instrumentResourceGetObservatoryInstruments",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchInstrumentResourceGetObservatoryInstruments(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type InstrumentResourceCreateAndAddInstrumentToObservatoryPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceCreateAndAddInstrumentToObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceCreateAndAddInstrumentToObservatoryVariables = {
+  body?: Schemas.Instrument;
+  pathParams: InstrumentResourceCreateAndAddInstrumentToObservatoryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceCreateAndAddInstrumentToObservatory = (
+  variables: InstrumentResourceCreateAndAddInstrumentToObservatoryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Instrument,
+    InstrumentResourceCreateAndAddInstrumentToObservatoryError,
+    Schemas.Instrument,
+    {},
+    {},
+    InstrumentResourceCreateAndAddInstrumentToObservatoryPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceCreateAndAddInstrumentToObservatory = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Instrument,
+      InstrumentResourceCreateAndAddInstrumentToObservatoryError,
+      InstrumentResourceCreateAndAddInstrumentToObservatoryVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Instrument,
+    InstrumentResourceCreateAndAddInstrumentToObservatoryError,
+    InstrumentResourceCreateAndAddInstrumentToObservatoryVariables
+  >(
+    (
+      variables: InstrumentResourceCreateAndAddInstrumentToObservatoryVariables
+    ) =>
+      fetchInstrumentResourceCreateAndAddInstrumentToObservatory({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InstrumentResourceRemoveInstrumentFromObservatoryPathParams = {
+  /**
+   * @format int64
+   */
+  instrumentId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceRemoveInstrumentFromObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceRemoveInstrumentFromObservatoryVariables = {
+  pathParams: InstrumentResourceRemoveInstrumentFromObservatoryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceRemoveInstrumentFromObservatory = (
+  variables: InstrumentResourceRemoveInstrumentFromObservatoryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InstrumentResourceRemoveInstrumentFromObservatoryError,
+    undefined,
+    {},
+    {},
+    InstrumentResourceRemoveInstrumentFromObservatoryPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceRemoveInstrumentFromObservatory = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InstrumentResourceRemoveInstrumentFromObservatoryError,
+      InstrumentResourceRemoveInstrumentFromObservatoryVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InstrumentResourceRemoveInstrumentFromObservatoryError,
+    InstrumentResourceRemoveInstrumentFromObservatoryVariables
+  >(
+    (variables: InstrumentResourceRemoveInstrumentFromObservatoryVariables) =>
+      fetchInstrumentResourceRemoveInstrumentFromObservatory({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InstrumentResourceReplaceInstrumentDescriptionPathParams = {
+  /**
+   * @format int64
+   */
+  instrumentId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceReplaceInstrumentDescriptionError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceReplaceInstrumentDescriptionVariables = {
+  pathParams: InstrumentResourceReplaceInstrumentDescriptionPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceReplaceInstrumentDescription = (
+  variables: InstrumentResourceReplaceInstrumentDescriptionVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InstrumentResourceReplaceInstrumentDescriptionError,
+    undefined,
+    {},
+    {},
+    InstrumentResourceReplaceInstrumentDescriptionPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}/description",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceReplaceInstrumentDescription = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InstrumentResourceReplaceInstrumentDescriptionError,
+      InstrumentResourceReplaceInstrumentDescriptionVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InstrumentResourceReplaceInstrumentDescriptionError,
+    InstrumentResourceReplaceInstrumentDescriptionVariables
+  >(
+    (variables: InstrumentResourceReplaceInstrumentDescriptionVariables) =>
+      fetchInstrumentResourceReplaceInstrumentDescription({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams = {
+  /**
+   * @format int64
+   */
+  instrumentId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceReplaceInstrumentFrequencyCoverageError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceReplaceInstrumentFrequencyCoverageVariables = {
+  body?: Schemas.SpectralWindowSetup;
+  pathParams: InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceReplaceInstrumentFrequencyCoverage = (
+  variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InstrumentResourceReplaceInstrumentFrequencyCoverageError,
+    Schemas.SpectralWindowSetup,
+    {},
+    {},
+    InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}/frequencyCoverage",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceReplaceInstrumentFrequencyCoverage = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InstrumentResourceReplaceInstrumentFrequencyCoverageError,
+      InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InstrumentResourceReplaceInstrumentFrequencyCoverageError,
+    InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
+  >(
+    (
+      variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
+    ) =>
+      fetchInstrumentResourceReplaceInstrumentFrequencyCoverage({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InstrumentResourceReplaceInstrumentKindPathParams = {
+  /**
+   * @format int64
+   */
+  instrumentId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceReplaceInstrumentKindError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceReplaceInstrumentKindVariables = {
+  pathParams: InstrumentResourceReplaceInstrumentKindPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceReplaceInstrumentKind = (
+  variables: InstrumentResourceReplaceInstrumentKindVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InstrumentResourceReplaceInstrumentKindError,
+    undefined,
+    {},
+    {},
+    InstrumentResourceReplaceInstrumentKindPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}/kind",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceReplaceInstrumentKind = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InstrumentResourceReplaceInstrumentKindError,
+      InstrumentResourceReplaceInstrumentKindVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InstrumentResourceReplaceInstrumentKindError,
+    InstrumentResourceReplaceInstrumentKindVariables
+  >(
+    (variables: InstrumentResourceReplaceInstrumentKindVariables) =>
+      fetchInstrumentResourceReplaceInstrumentKind({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InstrumentResourceReplaceInstrumentNamePathParams = {
+  /**
+   * @format int64
+   */
+  instrumentId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceReplaceInstrumentNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceReplaceInstrumentNameVariables = {
+  pathParams: InstrumentResourceReplaceInstrumentNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceReplaceInstrumentName = (
+  variables: InstrumentResourceReplaceInstrumentNameVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InstrumentResourceReplaceInstrumentNameError,
+    undefined,
+    {},
+    {},
+    InstrumentResourceReplaceInstrumentNamePathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}/name",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceReplaceInstrumentName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InstrumentResourceReplaceInstrumentNameError,
+      InstrumentResourceReplaceInstrumentNameVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InstrumentResourceReplaceInstrumentNameError,
+    InstrumentResourceReplaceInstrumentNameVariables
+  >(
+    (variables: InstrumentResourceReplaceInstrumentNameVariables) =>
+      fetchInstrumentResourceReplaceInstrumentName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InstrumentResourceReplaceInstrumentReferencePathParams = {
+  /**
+   * @format int64
+   */
+  instrumentId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceReplaceInstrumentReferenceError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceReplaceInstrumentReferenceVariables = {
+  pathParams: InstrumentResourceReplaceInstrumentReferencePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceReplaceInstrumentReference = (
+  variables: InstrumentResourceReplaceInstrumentReferenceVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InstrumentResourceReplaceInstrumentReferenceError,
+    undefined,
+    {},
+    {},
+    InstrumentResourceReplaceInstrumentReferencePathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}/reference",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceReplaceInstrumentReference = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InstrumentResourceReplaceInstrumentReferenceError,
+      InstrumentResourceReplaceInstrumentReferenceVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InstrumentResourceReplaceInstrumentReferenceError,
+    InstrumentResourceReplaceInstrumentReferenceVariables
+  >(
+    (variables: InstrumentResourceReplaceInstrumentReferenceVariables) =>
+      fetchInstrumentResourceReplaceInstrumentReference({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InstrumentResourceReplaceInstrumentWikiIdPathParams = {
+  /**
+   * @format int64
+   */
+  instrumentId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceReplaceInstrumentWikiIdError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceReplaceInstrumentWikiIdVariables = {
+  pathParams: InstrumentResourceReplaceInstrumentWikiIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceReplaceInstrumentWikiId = (
+  variables: InstrumentResourceReplaceInstrumentWikiIdVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InstrumentResourceReplaceInstrumentWikiIdError,
+    undefined,
+    {},
+    {},
+    InstrumentResourceReplaceInstrumentWikiIdPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}/wikiId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceReplaceInstrumentWikiId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InstrumentResourceReplaceInstrumentWikiIdError,
+      InstrumentResourceReplaceInstrumentWikiIdVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InstrumentResourceReplaceInstrumentWikiIdError,
+    InstrumentResourceReplaceInstrumentWikiIdVariables
+  >(
+    (variables: InstrumentResourceReplaceInstrumentWikiIdVariables) =>
+      fetchInstrumentResourceReplaceInstrumentWikiId({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceGetObservatoryTelescopesPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type TelescopeResourceGetObservatoryTelescopesQueryParams = {
+  name?: string;
+};
+
+export type TelescopeResourceGetObservatoryTelescopesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceGetObservatoryTelescopesResponse =
+  Schemas.ObjectIdentifier[];
+
+export type TelescopeResourceGetObservatoryTelescopesVariables = {
+  pathParams: TelescopeResourceGetObservatoryTelescopesPathParams;
+  queryParams?: TelescopeResourceGetObservatoryTelescopesQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceGetObservatoryTelescopes = (
+  variables: TelescopeResourceGetObservatoryTelescopesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    TelescopeResourceGetObservatoryTelescopesResponse,
+    TelescopeResourceGetObservatoryTelescopesError,
+    undefined,
+    {},
+    TelescopeResourceGetObservatoryTelescopesQueryParams,
+    TelescopeResourceGetObservatoryTelescopesPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceGetObservatoryTelescopes = <
+  TData = TelescopeResourceGetObservatoryTelescopesResponse
+>(
+  variables: TelescopeResourceGetObservatoryTelescopesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      TelescopeResourceGetObservatoryTelescopesResponse,
+      TelescopeResourceGetObservatoryTelescopesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    TelescopeResourceGetObservatoryTelescopesResponse,
+    TelescopeResourceGetObservatoryTelescopesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/telescopes",
+      operationId: "telescopeResourceGetObservatoryTelescopes",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchTelescopeResourceGetObservatoryTelescopes(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type TelescopeResourceCreateAndAddTelescopeToObservatoryPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type TelescopeResourceCreateAndAddTelescopeToObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceCreateAndAddTelescopeToObservatoryVariables = {
+  body?: Schemas.Telescope;
+  pathParams: TelescopeResourceCreateAndAddTelescopeToObservatoryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceCreateAndAddTelescopeToObservatory = (
+  variables: TelescopeResourceCreateAndAddTelescopeToObservatoryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Telescope,
+    TelescopeResourceCreateAndAddTelescopeToObservatoryError,
+    Schemas.Telescope,
+    {},
+    {},
+    TelescopeResourceCreateAndAddTelescopeToObservatoryPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceCreateAndAddTelescopeToObservatory = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Telescope,
+      TelescopeResourceCreateAndAddTelescopeToObservatoryError,
+      TelescopeResourceCreateAndAddTelescopeToObservatoryVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Telescope,
+    TelescopeResourceCreateAndAddTelescopeToObservatoryError,
+    TelescopeResourceCreateAndAddTelescopeToObservatoryVariables
+  >(
+    (variables: TelescopeResourceCreateAndAddTelescopeToObservatoryVariables) =>
+      fetchTelescopeResourceCreateAndAddTelescopeToObservatory({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceGetTelescopePathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceGetTelescopeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceGetTelescopeVariables = {
+  pathParams: TelescopeResourceGetTelescopePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceGetTelescope = (
+  variables: TelescopeResourceGetTelescopeVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Telescope,
+    TelescopeResourceGetTelescopeError,
+    undefined,
+    {},
+    {},
+    TelescopeResourceGetTelescopePathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceGetTelescope = <TData = Schemas.Telescope>(
+  variables: TelescopeResourceGetTelescopeVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Telescope,
+      TelescopeResourceGetTelescopeError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Telescope,
+    TelescopeResourceGetTelescopeError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}",
+      operationId: "telescopeResourceGetTelescope",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchTelescopeResourceGetTelescope(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type TelescopeResourceRemoveTelescopeFromObservatoryPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceRemoveTelescopeFromObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceRemoveTelescopeFromObservatoryVariables = {
+  pathParams: TelescopeResourceRemoveTelescopeFromObservatoryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceRemoveTelescopeFromObservatory = (
+  variables: TelescopeResourceRemoveTelescopeFromObservatoryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceRemoveTelescopeFromObservatoryError,
+    undefined,
+    {},
+    {},
+    TelescopeResourceRemoveTelescopeFromObservatoryPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceRemoveTelescopeFromObservatory = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceRemoveTelescopeFromObservatoryError,
+      TelescopeResourceRemoveTelescopeFromObservatoryVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceRemoveTelescopeFromObservatoryError,
+    TelescopeResourceRemoveTelescopeFromObservatoryVariables
+  >(
+    (variables: TelescopeResourceRemoveTelescopeFromObservatoryVariables) =>
+      fetchTelescopeResourceRemoveTelescopeFromObservatory({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceUpdateTelescopeLocationPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceUpdateTelescopeLocationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceUpdateTelescopeLocationVariables = {
+  body?: Schemas.GeocentricPoint;
+  pathParams: TelescopeResourceUpdateTelescopeLocationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceUpdateTelescopeLocation = (
+  variables: TelescopeResourceUpdateTelescopeLocationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationError,
+    Schemas.GeocentricPoint,
+    {},
+    {},
+    TelescopeResourceUpdateTelescopeLocationPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}/location",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceUpdateTelescopeLocation = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceUpdateTelescopeLocationError,
+      TelescopeResourceUpdateTelescopeLocationVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationError,
+    TelescopeResourceUpdateTelescopeLocationVariables
+  >(
+    (variables: TelescopeResourceUpdateTelescopeLocationVariables) =>
+      fetchTelescopeResourceUpdateTelescopeLocation({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceUpdateTelescopeLocationCoordinateSystemPathParams =
+  {
+    /**
+     * @format int64
+     */
+    observatoryId: number;
+    /**
+     * @format int64
+     */
+    telescopeId: number;
+  };
+
+export type TelescopeResourceUpdateTelescopeLocationCoordinateSystemError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables =
+  {
+    pathParams: TelescopeResourceUpdateTelescopeLocationCoordinateSystemPathParams;
+  } & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceUpdateTelescopeLocationCoordinateSystem = (
+  variables: TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationCoordinateSystemError,
+    undefined,
+    {},
+    {},
+    TelescopeResourceUpdateTelescopeLocationCoordinateSystemPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}/location/coordinateSystem",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceUpdateTelescopeLocationCoordinateSystem = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceUpdateTelescopeLocationCoordinateSystemError,
+      TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationCoordinateSystemError,
+    TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables
+  >(
+    (
+      variables: TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables
+    ) =>
+      fetchTelescopeResourceUpdateTelescopeLocationCoordinateSystem({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceUpdateTelescopeLocationXPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceUpdateTelescopeLocationXError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceUpdateTelescopeLocationXVariables = {
+  body?: Schemas.RealQuantity;
+  pathParams: TelescopeResourceUpdateTelescopeLocationXPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceUpdateTelescopeLocationX = (
+  variables: TelescopeResourceUpdateTelescopeLocationXVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationXError,
+    Schemas.RealQuantity,
+    {},
+    {},
+    TelescopeResourceUpdateTelescopeLocationXPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}/location/x",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceUpdateTelescopeLocationX = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceUpdateTelescopeLocationXError,
+      TelescopeResourceUpdateTelescopeLocationXVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationXError,
+    TelescopeResourceUpdateTelescopeLocationXVariables
+  >(
+    (variables: TelescopeResourceUpdateTelescopeLocationXVariables) =>
+      fetchTelescopeResourceUpdateTelescopeLocationX({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceUpdateTelescopeLocationXYZPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceUpdateTelescopeLocationXYZError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceUpdateTelescopeLocationXYZRequestBody =
+  Schemas.RealQuantity[];
+
+export type TelescopeResourceUpdateTelescopeLocationXYZVariables = {
+  body?: TelescopeResourceUpdateTelescopeLocationXYZRequestBody;
+  pathParams: TelescopeResourceUpdateTelescopeLocationXYZPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceUpdateTelescopeLocationXYZ = (
+  variables: TelescopeResourceUpdateTelescopeLocationXYZVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationXYZError,
+    TelescopeResourceUpdateTelescopeLocationXYZRequestBody,
+    {},
+    {},
+    TelescopeResourceUpdateTelescopeLocationXYZPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}/location/xyz",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceUpdateTelescopeLocationXYZ = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceUpdateTelescopeLocationXYZError,
+      TelescopeResourceUpdateTelescopeLocationXYZVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationXYZError,
+    TelescopeResourceUpdateTelescopeLocationXYZVariables
+  >(
+    (variables: TelescopeResourceUpdateTelescopeLocationXYZVariables) =>
+      fetchTelescopeResourceUpdateTelescopeLocationXYZ({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceUpdateTelescopeLocationYPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceUpdateTelescopeLocationYError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceUpdateTelescopeLocationYVariables = {
+  body?: Schemas.RealQuantity;
+  pathParams: TelescopeResourceUpdateTelescopeLocationYPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceUpdateTelescopeLocationY = (
+  variables: TelescopeResourceUpdateTelescopeLocationYVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationYError,
+    Schemas.RealQuantity,
+    {},
+    {},
+    TelescopeResourceUpdateTelescopeLocationYPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}/location/y",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceUpdateTelescopeLocationY = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceUpdateTelescopeLocationYError,
+      TelescopeResourceUpdateTelescopeLocationYVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationYError,
+    TelescopeResourceUpdateTelescopeLocationYVariables
+  >(
+    (variables: TelescopeResourceUpdateTelescopeLocationYVariables) =>
+      fetchTelescopeResourceUpdateTelescopeLocationY({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceUpdateTelescopeLocationZPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceUpdateTelescopeLocationZError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceUpdateTelescopeLocationZVariables = {
+  body?: Schemas.RealQuantity;
+  pathParams: TelescopeResourceUpdateTelescopeLocationZPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceUpdateTelescopeLocationZ = (
+  variables: TelescopeResourceUpdateTelescopeLocationZVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationZError,
+    Schemas.RealQuantity,
+    {},
+    {},
+    TelescopeResourceUpdateTelescopeLocationZPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}/location/z",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceUpdateTelescopeLocationZ = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceUpdateTelescopeLocationZError,
+      TelescopeResourceUpdateTelescopeLocationZVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceUpdateTelescopeLocationZError,
+    TelescopeResourceUpdateTelescopeLocationZVariables
+  >(
+    (variables: TelescopeResourceUpdateTelescopeLocationZVariables) =>
+      fetchTelescopeResourceUpdateTelescopeLocationZ({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceUpdateTelescopeNamePathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceUpdateTelescopeNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceUpdateTelescopeNameVariables = {
+  pathParams: TelescopeResourceUpdateTelescopeNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceUpdateTelescopeName = (
+  variables: TelescopeResourceUpdateTelescopeNameVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceUpdateTelescopeNameError,
+    undefined,
+    {},
+    {},
+    TelescopeResourceUpdateTelescopeNamePathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}/name",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceUpdateTelescopeName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceUpdateTelescopeNameError,
+      TelescopeResourceUpdateTelescopeNameVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceUpdateTelescopeNameError,
+    TelescopeResourceUpdateTelescopeNameVariables
+  >(
+    (variables: TelescopeResourceUpdateTelescopeNameVariables) =>
+      fetchTelescopeResourceUpdateTelescopeName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TelescopeResourceUpdateTelescopeWikiIdPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+  /**
+   * @format int64
+   */
+  telescopeId: number;
+};
+
+export type TelescopeResourceUpdateTelescopeWikiIdError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TelescopeResourceUpdateTelescopeWikiIdVariables = {
+  pathParams: TelescopeResourceUpdateTelescopeWikiIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTelescopeResourceUpdateTelescopeWikiId = (
+  variables: TelescopeResourceUpdateTelescopeWikiIdVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TelescopeResourceUpdateTelescopeWikiIdError,
+    undefined,
+    {},
+    {},
+    TelescopeResourceUpdateTelescopeWikiIdPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}/wikiId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTelescopeResourceUpdateTelescopeWikiId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TelescopeResourceUpdateTelescopeWikiIdError,
+      TelescopeResourceUpdateTelescopeWikiIdVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TelescopeResourceUpdateTelescopeWikiIdError,
+    TelescopeResourceUpdateTelescopeWikiIdVariables
+  >(
+    (variables: TelescopeResourceUpdateTelescopeWikiIdVariables) =>
+      fetchTelescopeResourceUpdateTelescopeWikiId({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type OrganizationResourceGetOrganizationsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type OrganizationResourceGetOrganizationsResponse =
+  Schemas.ObjectIdentifier[];
+
+export type OrganizationResourceGetOrganizationsVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchOrganizationResourceGetOrganizations = (
+  variables: OrganizationResourceGetOrganizationsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    OrganizationResourceGetOrganizationsResponse,
+    OrganizationResourceGetOrganizationsError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: "/pst/api/organizations", method: "get", ...variables, signal });
+
+export const useOrganizationResourceGetOrganizations = <
+  TData = OrganizationResourceGetOrganizationsResponse
+>(
+  variables: OrganizationResourceGetOrganizationsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      OrganizationResourceGetOrganizationsResponse,
+      OrganizationResourceGetOrganizationsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    OrganizationResourceGetOrganizationsResponse,
+    OrganizationResourceGetOrganizationsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/organizations",
+      operationId: "organizationResourceGetOrganizations",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchOrganizationResourceGetOrganizations(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type OrganizationResourceCreateOrganizationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type OrganizationResourceCreateOrganizationVariables = {
+  body?: Schemas.Organization;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchOrganizationResourceCreateOrganization = (
+  variables: OrganizationResourceCreateOrganizationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    OrganizationResourceCreateOrganizationError,
+    Schemas.Organization,
+    {},
+    {},
+    {}
+  >({ url: "/pst/api/organizations", method: "post", ...variables, signal });
+
+export const useOrganizationResourceCreateOrganization = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      OrganizationResourceCreateOrganizationError,
+      OrganizationResourceCreateOrganizationVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    OrganizationResourceCreateOrganizationError,
+    OrganizationResourceCreateOrganizationVariables
+  >(
+    (variables: OrganizationResourceCreateOrganizationVariables) =>
+      fetchOrganizationResourceCreateOrganization({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type OrganizationResourceGetOrganizationPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type OrganizationResourceGetOrganizationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type OrganizationResourceGetOrganizationVariables = {
+  pathParams: OrganizationResourceGetOrganizationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchOrganizationResourceGetOrganization = (
+  variables: OrganizationResourceGetOrganizationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Organization,
+    OrganizationResourceGetOrganizationError,
+    undefined,
+    {},
+    {},
+    OrganizationResourceGetOrganizationPathParams
+  >({
+    url: "/pst/api/organizations/{id}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useOrganizationResourceGetOrganization = <
+  TData = Schemas.Organization
+>(
+  variables: OrganizationResourceGetOrganizationVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Organization,
+      OrganizationResourceGetOrganizationError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Organization,
+    OrganizationResourceGetOrganizationError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/organizations/{id}",
+      operationId: "organizationResourceGetOrganization",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchOrganizationResourceGetOrganization(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type OrganizationResourceDeleteOrganizationPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type OrganizationResourceDeleteOrganizationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type OrganizationResourceDeleteOrganizationVariables = {
+  pathParams: OrganizationResourceDeleteOrganizationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchOrganizationResourceDeleteOrganization = (
+  variables: OrganizationResourceDeleteOrganizationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    OrganizationResourceDeleteOrganizationError,
+    undefined,
+    {},
+    {},
+    OrganizationResourceDeleteOrganizationPathParams
+  >({
+    url: "/pst/api/organizations/{id}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useOrganizationResourceDeleteOrganization = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      OrganizationResourceDeleteOrganizationError,
+      OrganizationResourceDeleteOrganizationVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    OrganizationResourceDeleteOrganizationError,
+    OrganizationResourceDeleteOrganizationVariables
+  >(
+    (variables: OrganizationResourceDeleteOrganizationVariables) =>
+      fetchOrganizationResourceDeleteOrganization({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type OrganizationResourceUpdateOrganisationAddressPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type OrganizationResourceUpdateOrganisationAddressError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type OrganizationResourceUpdateOrganisationAddressVariables = {
+  pathParams: OrganizationResourceUpdateOrganisationAddressPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchOrganizationResourceUpdateOrganisationAddress = (
+  variables: OrganizationResourceUpdateOrganisationAddressVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    OrganizationResourceUpdateOrganisationAddressError,
+    undefined,
+    {},
+    {},
+    OrganizationResourceUpdateOrganisationAddressPathParams
+  >({
+    url: "/pst/api/organizations/{id}/address",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useOrganizationResourceUpdateOrganisationAddress = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      OrganizationResourceUpdateOrganisationAddressError,
+      OrganizationResourceUpdateOrganisationAddressVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    OrganizationResourceUpdateOrganisationAddressError,
+    OrganizationResourceUpdateOrganisationAddressVariables
+  >(
+    (variables: OrganizationResourceUpdateOrganisationAddressVariables) =>
+      fetchOrganizationResourceUpdateOrganisationAddress({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type OrganizationResourceUpdateOrganisationIvoIdPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type OrganizationResourceUpdateOrganisationIvoIdError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type OrganizationResourceUpdateOrganisationIvoIdVariables = {
+  pathParams: OrganizationResourceUpdateOrganisationIvoIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchOrganizationResourceUpdateOrganisationIvoId = (
+  variables: OrganizationResourceUpdateOrganisationIvoIdVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    OrganizationResourceUpdateOrganisationIvoIdError,
+    undefined,
+    {},
+    {},
+    OrganizationResourceUpdateOrganisationIvoIdPathParams
+  >({
+    url: "/pst/api/organizations/{id}/ivoId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useOrganizationResourceUpdateOrganisationIvoId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      OrganizationResourceUpdateOrganisationIvoIdError,
+      OrganizationResourceUpdateOrganisationIvoIdVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    OrganizationResourceUpdateOrganisationIvoIdError,
+    OrganizationResourceUpdateOrganisationIvoIdVariables
+  >(
+    (variables: OrganizationResourceUpdateOrganisationIvoIdVariables) =>
+      fetchOrganizationResourceUpdateOrganisationIvoId({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type OrganizationResourceUpdateOrganisationNamePathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type OrganizationResourceUpdateOrganisationNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type OrganizationResourceUpdateOrganisationNameVariables = {
+  pathParams: OrganizationResourceUpdateOrganisationNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchOrganizationResourceUpdateOrganisationName = (
+  variables: OrganizationResourceUpdateOrganisationNameVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    OrganizationResourceUpdateOrganisationNameError,
+    undefined,
+    {},
+    {},
+    OrganizationResourceUpdateOrganisationNamePathParams
+  >({
+    url: "/pst/api/organizations/{id}/name",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useOrganizationResourceUpdateOrganisationName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      OrganizationResourceUpdateOrganisationNameError,
+      OrganizationResourceUpdateOrganisationNameVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    OrganizationResourceUpdateOrganisationNameError,
+    OrganizationResourceUpdateOrganisationNameVariables
+  >(
+    (variables: OrganizationResourceUpdateOrganisationNameVariables) =>
+      fetchOrganizationResourceUpdateOrganisationName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type OrganizationResourceUpdateOrganisationWikiIdPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type OrganizationResourceUpdateOrganisationWikiIdError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type OrganizationResourceUpdateOrganisationWikiIdVariables = {
+  pathParams: OrganizationResourceUpdateOrganisationWikiIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchOrganizationResourceUpdateOrganisationWikiId = (
+  variables: OrganizationResourceUpdateOrganisationWikiIdVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    OrganizationResourceUpdateOrganisationWikiIdError,
+    undefined,
+    {},
+    {},
+    OrganizationResourceUpdateOrganisationWikiIdPathParams
+  >({
+    url: "/pst/api/organizations/{id}/wikiId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useOrganizationResourceUpdateOrganisationWikiId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      OrganizationResourceUpdateOrganisationWikiIdError,
+      OrganizationResourceUpdateOrganisationWikiIdVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    OrganizationResourceUpdateOrganisationWikiIdError,
+    OrganizationResourceUpdateOrganisationWikiIdVariables
+  >(
+    (variables: OrganizationResourceUpdateOrganisationWikiIdVariables) =>
+      fetchOrganizationResourceUpdateOrganisationWikiId({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type PersonResourceGetPeopleQueryParams = {
+  name?: string;
+};
+
+export type PersonResourceGetPeopleError = Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceGetPeopleResponse = Schemas.ObjectIdentifier[];
+
+export type PersonResourceGetPeopleVariables = {
+  queryParams?: PersonResourceGetPeopleQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceGetPeople = (
+  variables: PersonResourceGetPeopleVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    PersonResourceGetPeopleResponse,
+    PersonResourceGetPeopleError,
+    undefined,
+    {},
+    PersonResourceGetPeopleQueryParams,
+    {}
+  >({ url: "/pst/api/people", method: "get", ...variables, signal });
+
+export const usePersonResourceGetPeople = <
+  TData = PersonResourceGetPeopleResponse
+>(
+  variables: PersonResourceGetPeopleVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      PersonResourceGetPeopleResponse,
+      PersonResourceGetPeopleError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    PersonResourceGetPeopleResponse,
+    PersonResourceGetPeopleError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/people",
+      operationId: "personResourceGetPeople",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchPersonResourceGetPeople({ ...fetcherOptions, ...variables }, signal),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type PersonResourceCreatePersonError = Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceCreatePersonVariables = {
+  body?: Schemas.Person;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceCreatePerson = (
+  variables: PersonResourceCreatePersonVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    PersonResourceCreatePersonError,
+    Schemas.Person,
+    {},
+    {},
+    {}
+  >({ url: "/pst/api/people", method: "post", ...variables, signal });
+
+export const usePersonResourceCreatePerson = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      PersonResourceCreatePersonError,
+      PersonResourceCreatePersonVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    PersonResourceCreatePersonError,
+    PersonResourceCreatePersonVariables
+  >(
+    (variables: PersonResourceCreatePersonVariables) =>
+      fetchPersonResourceCreatePerson({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type PersonResourceGetPersonPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type PersonResourceGetPersonError = Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceGetPersonVariables = {
+  pathParams: PersonResourceGetPersonPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceGetPerson = (
+  variables: PersonResourceGetPersonVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Person,
+    PersonResourceGetPersonError,
+    undefined,
+    {},
+    {},
+    PersonResourceGetPersonPathParams
+  >({ url: "/pst/api/people/{id}", method: "get", ...variables, signal });
+
+export const usePersonResourceGetPerson = <TData = Schemas.Person>(
+  variables: PersonResourceGetPersonVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Person,
+      PersonResourceGetPersonError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Person,
+    PersonResourceGetPersonError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/people/{id}",
+      operationId: "personResourceGetPerson",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchPersonResourceGetPerson({ ...fetcherOptions, ...variables }, signal),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type PersonResourceDeletePersonPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type PersonResourceDeletePersonError = Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceDeletePersonVariables = {
+  pathParams: PersonResourceDeletePersonPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceDeletePerson = (
+  variables: PersonResourceDeletePersonVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    PersonResourceDeletePersonError,
+    undefined,
+    {},
+    {},
+    PersonResourceDeletePersonPathParams
+  >({ url: "/pst/api/people/{id}", method: "delete", ...variables, signal });
+
+export const usePersonResourceDeletePerson = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      PersonResourceDeletePersonError,
+      PersonResourceDeletePersonVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    PersonResourceDeletePersonError,
+    PersonResourceDeletePersonVariables
+  >(
+    (variables: PersonResourceDeletePersonVariables) =>
+      fetchPersonResourceDeletePerson({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type PersonResourceUpdateEMailPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type PersonResourceUpdateEMailError = Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceUpdateEMailVariables = {
+  pathParams: PersonResourceUpdateEMailPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceUpdateEMail = (
+  variables: PersonResourceUpdateEMailVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    PersonResourceUpdateEMailError,
+    undefined,
+    {},
+    {},
+    PersonResourceUpdateEMailPathParams
+  >({ url: "/pst/api/people/{id}/eMail", method: "put", ...variables, signal });
+
+export const usePersonResourceUpdateEMail = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      PersonResourceUpdateEMailError,
+      PersonResourceUpdateEMailVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    PersonResourceUpdateEMailError,
+    PersonResourceUpdateEMailVariables
+  >(
+    (variables: PersonResourceUpdateEMailVariables) =>
+      fetchPersonResourceUpdateEMail({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type PersonResourceUpdateFullNamePathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type PersonResourceUpdateFullNameError = Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceUpdateFullNameVariables = {
+  pathParams: PersonResourceUpdateFullNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceUpdateFullName = (
+  variables: PersonResourceUpdateFullNameVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    PersonResourceUpdateFullNameError,
+    undefined,
+    {},
+    {},
+    PersonResourceUpdateFullNamePathParams
+  >({
+    url: "/pst/api/people/{id}/fullName",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const usePersonResourceUpdateFullName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      PersonResourceUpdateFullNameError,
+      PersonResourceUpdateFullNameVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    PersonResourceUpdateFullNameError,
+    PersonResourceUpdateFullNameVariables
+  >(
+    (variables: PersonResourceUpdateFullNameVariables) =>
+      fetchPersonResourceUpdateFullName({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type PersonResourceUpdateOrcidIdPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type PersonResourceUpdateOrcidIdError = Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceUpdateOrcidIdVariables = {
+  pathParams: PersonResourceUpdateOrcidIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceUpdateOrcidId = (
+  variables: PersonResourceUpdateOrcidIdVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    PersonResourceUpdateOrcidIdError,
+    undefined,
+    {},
+    {},
+    PersonResourceUpdateOrcidIdPathParams
+  >({
+    url: "/pst/api/people/{id}/orcidId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const usePersonResourceUpdateOrcidId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      PersonResourceUpdateOrcidIdError,
+      PersonResourceUpdateOrcidIdVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    PersonResourceUpdateOrcidIdError,
+    PersonResourceUpdateOrcidIdVariables
+  >(
+    (variables: PersonResourceUpdateOrcidIdVariables) =>
+      fetchPersonResourceUpdateOrcidId({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type ProposalCyclesResourceGetProposalCyclesQueryParams = {
+  includeClosed?: boolean;
+};
+
+export type ProposalCyclesResourceGetProposalCyclesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetProposalCyclesResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ProposalCyclesResourceGetProposalCyclesVariables = {
+  queryParams?: ProposalCyclesResourceGetProposalCyclesQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetProposalCycles = (
+  variables: ProposalCyclesResourceGetProposalCyclesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetProposalCyclesResponse,
+    ProposalCyclesResourceGetProposalCyclesError,
+    undefined,
+    {},
+    ProposalCyclesResourceGetProposalCyclesQueryParams,
+    {}
+  >({ url: "/pst/api/proposalCycles", method: "get", ...variables, signal });
+
+export const useProposalCyclesResourceGetProposalCycles = <
+  TData = ProposalCyclesResourceGetProposalCyclesResponse
+>(
+  variables: ProposalCyclesResourceGetProposalCyclesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetProposalCyclesResponse,
+      ProposalCyclesResourceGetProposalCyclesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetProposalCyclesResponse,
+    ProposalCyclesResourceGetProposalCyclesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles",
+      operationId: "proposalCyclesResourceGetProposalCycles",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetProposalCycles(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalCyclesResourceGetProposalCyclePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetProposalCycleError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetProposalCycleVariables = {
+  pathParams: ProposalCyclesResourceGetProposalCyclePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetProposalCycle = (
+  variables: ProposalCyclesResourceGetProposalCycleVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ProposalCycle,
+    ProposalCyclesResourceGetProposalCycleError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetProposalCyclePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetProposalCycle = <
+  TData = Schemas.ProposalCycle
+>(
+  variables: ProposalCyclesResourceGetProposalCycleVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ProposalCycle,
+      ProposalCyclesResourceGetProposalCycleError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ProposalCycle,
+    ProposalCyclesResourceGetProposalCycleError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}",
+      operationId: "proposalCyclesResourceGetProposalCycle",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetProposalCycle(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalCyclesResourceGetTACPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetTACError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetTACVariables = {
+  pathParams: ProposalCyclesResourceGetTACPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetTAC = (
+  variables: ProposalCyclesResourceGetTACVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Tac,
+    ProposalCyclesResourceGetTACError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetTACPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/TAC",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetTAC = <TData = Schemas.Tac>(
+  variables: ProposalCyclesResourceGetTACVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Tac,
+      ProposalCyclesResourceGetTACError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Tac,
+    ProposalCyclesResourceGetTACError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/TAC",
+      operationId: "proposalCyclesResourceGetTAC",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetTAC(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalCyclesResourceGetReviewedProposalsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetReviewedProposalsQueryParams = {
+  title?: string;
+};
+
+export type ProposalCyclesResourceGetReviewedProposalsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetReviewedProposalsResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ProposalCyclesResourceGetReviewedProposalsVariables = {
+  pathParams: ProposalCyclesResourceGetReviewedProposalsPathParams;
+  queryParams?: ProposalCyclesResourceGetReviewedProposalsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetReviewedProposals = (
+  variables: ProposalCyclesResourceGetReviewedProposalsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetReviewedProposalsResponse,
+    ProposalCyclesResourceGetReviewedProposalsError,
+    undefined,
+    {},
+    ProposalCyclesResourceGetReviewedProposalsQueryParams,
+    ProposalCyclesResourceGetReviewedProposalsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetReviewedProposals = <
+  TData = ProposalCyclesResourceGetReviewedProposalsResponse
+>(
+  variables: ProposalCyclesResourceGetReviewedProposalsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetReviewedProposalsResponse,
+      ProposalCyclesResourceGetReviewedProposalsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetReviewedProposalsResponse,
+    ProposalCyclesResourceGetReviewedProposalsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
+      operationId: "proposalCyclesResourceGetReviewedProposals",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetReviewedProposals(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalCyclesResourceSubmitProposalForReviewPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceSubmitProposalForReviewError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceSubmitProposalForReviewVariables = {
+  body?: Schemas.ReviewedProposal;
+  pathParams: ProposalCyclesResourceSubmitProposalForReviewPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceSubmitProposalForReview = (
+  variables: ProposalCyclesResourceSubmitProposalForReviewVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceSubmitProposalForReviewError,
+    Schemas.ReviewedProposal,
+    {},
+    {},
+    ProposalCyclesResourceSubmitProposalForReviewPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceSubmitProposalForReview = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalCyclesResourceSubmitProposalForReviewError,
+      ProposalCyclesResourceSubmitProposalForReviewVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalCyclesResourceSubmitProposalForReviewError,
+    ProposalCyclesResourceSubmitProposalForReviewVariables
+  >(
+    (variables: ProposalCyclesResourceSubmitProposalForReviewVariables) =>
+      fetchProposalCyclesResourceSubmitProposalForReview({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalCyclesResourceGetReviewedProposalPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  reviewCode: number;
+};
+
+export type ProposalCyclesResourceGetReviewedProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetReviewedProposalVariables = {
+  pathParams: ProposalCyclesResourceGetReviewedProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetReviewedProposal = (
+  variables: ProposalCyclesResourceGetReviewedProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ReviewedProposal,
+    ProposalCyclesResourceGetReviewedProposalError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetReviewedProposalPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetReviewedProposal = <
+  TData = Schemas.ReviewedProposal
+>(
+  variables: ProposalCyclesResourceGetReviewedProposalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ReviewedProposal,
+      ProposalCyclesResourceGetReviewedProposalError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ReviewedProposal,
+    ProposalCyclesResourceGetReviewedProposalError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}",
+      operationId: "proposalCyclesResourceGetReviewedProposal",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetReviewedProposal(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalCyclesResourceSubmitReviewOfProposalPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  reviewCode: number;
+};
+
+export type ProposalCyclesResourceSubmitReviewOfProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceSubmitReviewOfProposalVariables = {
+  body?: Schemas.ProposalReview;
+  pathParams: ProposalCyclesResourceSubmitReviewOfProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceSubmitReviewOfProposal = (
+  variables: ProposalCyclesResourceSubmitReviewOfProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceSubmitReviewOfProposalError,
+    Schemas.ProposalReview,
+    {},
+    {},
+    ProposalCyclesResourceSubmitReviewOfProposalPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}/reviews",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceSubmitReviewOfProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalCyclesResourceSubmitReviewOfProposalError,
+      ProposalCyclesResourceSubmitReviewOfProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalCyclesResourceSubmitReviewOfProposalError,
+    ProposalCyclesResourceSubmitReviewOfProposalVariables
+  >(
+    (variables: ProposalCyclesResourceSubmitReviewOfProposalVariables) =>
+      fetchProposalCyclesResourceSubmitReviewOfProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalCyclesResourceGetSubmittedProposalsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetSubmittedProposalsQueryParams = {
+  title?: string;
+};
+
+export type ProposalCyclesResourceGetSubmittedProposalsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetSubmittedProposalsResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ProposalCyclesResourceGetSubmittedProposalsVariables = {
+  pathParams: ProposalCyclesResourceGetSubmittedProposalsPathParams;
+  queryParams?: ProposalCyclesResourceGetSubmittedProposalsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetSubmittedProposals = (
+  variables: ProposalCyclesResourceGetSubmittedProposalsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetSubmittedProposalsResponse,
+    ProposalCyclesResourceGetSubmittedProposalsError,
+    undefined,
+    {},
+    ProposalCyclesResourceGetSubmittedProposalsQueryParams,
+    ProposalCyclesResourceGetSubmittedProposalsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetSubmittedProposals = <
+  TData = ProposalCyclesResourceGetSubmittedProposalsResponse
+>(
+  variables: ProposalCyclesResourceGetSubmittedProposalsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetSubmittedProposalsResponse,
+      ProposalCyclesResourceGetSubmittedProposalsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetSubmittedProposalsResponse,
+    ProposalCyclesResourceGetSubmittedProposalsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals",
+      operationId: "proposalCyclesResourceGetSubmittedProposals",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetSubmittedProposals(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalCyclesResourceSubmitProposalPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceSubmitProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceSubmitProposalVariables = {
+  pathParams: ProposalCyclesResourceSubmitProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceSubmitProposal = (
+  variables: ProposalCyclesResourceSubmitProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceSubmitProposalError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceSubmitProposalPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceSubmitProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalCyclesResourceSubmitProposalError,
+      ProposalCyclesResourceSubmitProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalCyclesResourceSubmitProposalError,
+    ProposalCyclesResourceSubmitProposalVariables
+  >(
+    (variables: ProposalCyclesResourceSubmitProposalVariables) =>
+      fetchProposalCyclesResourceSubmitProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalResourceGetProposalsQueryParams = {
+  investigatorName?: string;
+};
+
+export type ProposalResourceGetProposalsError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceGetProposalsResponse = Schemas.ProposalSynopsis[];
+
+export type ProposalResourceGetProposalsVariables = {
+  queryParams?: ProposalResourceGetProposalsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceGetProposals = (
+  variables: ProposalResourceGetProposalsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ProposalResourceGetProposalsResponse,
+    ProposalResourceGetProposalsError,
+    undefined,
+    {},
+    ProposalResourceGetProposalsQueryParams,
+    {}
+  >({ url: "/pst/api/proposals", method: "get", ...variables, signal });
+
+export const useProposalResourceGetProposals = <
+  TData = ProposalResourceGetProposalsResponse
+>(
+  variables: ProposalResourceGetProposalsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalResourceGetProposalsResponse,
+      ProposalResourceGetProposalsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalResourceGetProposalsResponse,
+    ProposalResourceGetProposalsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals",
+      operationId: "proposalResourceGetProposals",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetProposals(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalResourceCreateObservingProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceCreateObservingProposalVariables = {
+  body?: Schemas.ObservingProposal;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceCreateObservingProposal = (
+  variables: ProposalResourceCreateObservingProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceCreateObservingProposalError,
+    Schemas.ObservingProposal,
+    {},
+    {},
+    {}
+  >({ url: "/pst/api/proposals", method: "post", ...variables, signal });
+
+export const useProposalResourceCreateObservingProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalResourceCreateObservingProposalError,
+      ProposalResourceCreateObservingProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalResourceCreateObservingProposalError,
+    ProposalResourceCreateObservingProposalVariables
+  >(
+    (variables: ProposalResourceCreateObservingProposalVariables) =>
+      fetchProposalResourceCreateObservingProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalResourceGetObservingProposalPathParams = {
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type AddNewFieldError = Fetcher.ErrorWrapper<undefined>;
+export type ProposalResourceGetObservingProposalError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type AddNewFieldVariables = {
-  body?: Schemas.Field;
-  pathParams: AddNewFieldPathParams;
+export type ProposalResourceGetObservingProposalVariables = {
+  pathParams: ProposalResourceGetObservingProposalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchAddNewField = (
-  variables: AddNewFieldVariables,
+export const fetchProposalResourceGetObservingProposal = (
+  variables: ProposalResourceGetObservingProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ObservingProposal,
+    ProposalResourceGetObservingProposalError,
+    undefined,
+    {},
+    {},
+    ProposalResourceGetObservingProposalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceGetObservingProposal = <
+  TData = Schemas.ObservingProposal
+>(
+  variables: ProposalResourceGetObservingProposalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ObservingProposal,
+      ProposalResourceGetObservingProposalError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ObservingProposal,
+    ProposalResourceGetObservingProposalError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}",
+      operationId: "proposalResourceGetObservingProposal",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetObservingProposal(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalResourceDeleteObservingProposalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceDeleteObservingProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceDeleteObservingProposalVariables = {
+  pathParams: ProposalResourceDeleteObservingProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceDeleteObservingProposal = (
+  variables: ProposalResourceDeleteObservingProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceDeleteObservingProposalError,
+    undefined,
+    {},
+    {},
+    ProposalResourceDeleteObservingProposalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceDeleteObservingProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalResourceDeleteObservingProposalError,
+      ProposalResourceDeleteObservingProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalResourceDeleteObservingProposalError,
+    ProposalResourceDeleteObservingProposalVariables
+  >(
+    (variables: ProposalResourceDeleteObservingProposalVariables) =>
+      fetchProposalResourceDeleteObservingProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalResourceGetFieldsPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceGetFieldsQueryParams = {
+  fieldName?: string;
+};
+
+export type ProposalResourceGetFieldsError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceGetFieldsResponse = Schemas.ObjectIdentifier[];
+
+export type ProposalResourceGetFieldsVariables = {
+  pathParams: ProposalResourceGetFieldsPathParams;
+  queryParams?: ProposalResourceGetFieldsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceGetFields = (
+  variables: ProposalResourceGetFieldsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ProposalResourceGetFieldsResponse,
+    ProposalResourceGetFieldsError,
+    undefined,
+    {},
+    ProposalResourceGetFieldsQueryParams,
+    ProposalResourceGetFieldsPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/fields",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceGetFields = <
+  TData = ProposalResourceGetFieldsResponse
+>(
+  variables: ProposalResourceGetFieldsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalResourceGetFieldsResponse,
+      ProposalResourceGetFieldsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalResourceGetFieldsResponse,
+    ProposalResourceGetFieldsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/fields",
+      operationId: "proposalResourceGetFields",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetFields(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalResourceAddNewFieldPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceAddNewFieldError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceAddNewFieldVariables = {
+  body?: Schemas.Field;
+  pathParams: ProposalResourceAddNewFieldPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceAddNewField = (
+  variables: ProposalResourceAddNewFieldVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     Schemas.Field,
-    AddNewFieldError,
+    ProposalResourceAddNewFieldError,
     Schemas.Field,
     {},
     {},
-    AddNewFieldPathParams
+    ProposalResourceAddNewFieldPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/observations/fields",
+    url: "/pst/api/proposals/{proposalCode}/fields",
     method: "post",
     ...variables,
     signal,
   });
 
-export const useAddNewField = (
+export const useProposalResourceAddNewField = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       Schemas.Field,
-      AddNewFieldError,
-      AddNewFieldVariables
+      ProposalResourceAddNewFieldError,
+      ProposalResourceAddNewFieldVariables
     >,
     "mutationFn"
   >
@@ -4119,16 +4074,16 @@ export const useAddNewField = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     Schemas.Field,
-    AddNewFieldError,
-    AddNewFieldVariables
+    ProposalResourceAddNewFieldError,
+    ProposalResourceAddNewFieldVariables
   >(
-    (variables: AddNewFieldVariables) =>
-      fetchAddNewField({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceAddNewFieldVariables) =>
+      fetchProposalResourceAddNewField({ ...fetcherOptions, ...variables }),
     options
   );
 };
 
-export type RemoveFieldPathParams = {
+export type ProposalResourceRemoveFieldPathParams = {
   /**
    * @format int64
    */
@@ -4139,36 +4094,36 @@ export type RemoveFieldPathParams = {
   proposalCode: number;
 };
 
-export type RemoveFieldError = Fetcher.ErrorWrapper<undefined>;
+export type ProposalResourceRemoveFieldError = Fetcher.ErrorWrapper<undefined>;
 
-export type RemoveFieldVariables = {
-  pathParams: RemoveFieldPathParams;
+export type ProposalResourceRemoveFieldVariables = {
+  pathParams: ProposalResourceRemoveFieldPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchRemoveField = (
-  variables: RemoveFieldVariables,
+export const fetchProposalResourceRemoveField = (
+  variables: ProposalResourceRemoveFieldVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    RemoveFieldError,
+    ProposalResourceRemoveFieldError,
     undefined,
     {},
     {},
-    RemoveFieldPathParams
+    ProposalResourceRemoveFieldPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/observations/fields/{fieldId}",
+    url: "/pst/api/proposals/{proposalCode}/fields/{fieldId}",
     method: "delete",
     ...variables,
     signal,
   });
 
-export const useRemoveField = (
+export const useProposalResourceRemoveField = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      RemoveFieldError,
-      RemoveFieldVariables
+      ProposalResourceRemoveFieldError,
+      ProposalResourceRemoveFieldVariables
     >,
     "mutationFn"
   >
@@ -4176,54 +4131,63 @@ export const useRemoveField = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    RemoveFieldError,
-    RemoveFieldVariables
+    ProposalResourceRemoveFieldError,
+    ProposalResourceRemoveFieldVariables
   >(
-    (variables: RemoveFieldVariables) =>
-      fetchRemoveField({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceRemoveFieldVariables) =>
+      fetchProposalResourceRemoveField({ ...fetcherOptions, ...variables }),
     options
   );
 };
 
-export type GetTargetObservationsPathParams = {
+export type InvestigatorResourceGetInvestigatorsPathParams = {
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type GetTargetObservationsError = Fetcher.ErrorWrapper<undefined>;
+export type InvestigatorResourceGetInvestigatorsQueryParams = {
+  fullName?: string;
+};
 
-export type GetTargetObservationsResponse = Schemas.ObjectIdentifier[];
+export type InvestigatorResourceGetInvestigatorsError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type GetTargetObservationsVariables = {
-  pathParams: GetTargetObservationsPathParams;
+export type InvestigatorResourceGetInvestigatorsResponse =
+  Schemas.ObjectIdentifier[];
+
+export type InvestigatorResourceGetInvestigatorsVariables = {
+  pathParams: InvestigatorResourceGetInvestigatorsPathParams;
+  queryParams?: InvestigatorResourceGetInvestigatorsQueryParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchGetTargetObservations = (
-  variables: GetTargetObservationsVariables,
+export const fetchInvestigatorResourceGetInvestigators = (
+  variables: InvestigatorResourceGetInvestigatorsVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    GetTargetObservationsResponse,
-    GetTargetObservationsError,
+    InvestigatorResourceGetInvestigatorsResponse,
+    InvestigatorResourceGetInvestigatorsError,
     undefined,
     {},
-    {},
-    GetTargetObservationsPathParams
+    InvestigatorResourceGetInvestigatorsQueryParams,
+    InvestigatorResourceGetInvestigatorsPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/observations/targetObservations",
+    url: "/pst/api/proposals/{proposalCode}/investigators",
     method: "get",
     ...variables,
     signal,
   });
 
-export const useGetTargetObservations = <TData = GetTargetObservationsResponse>(
-  variables: GetTargetObservationsVariables,
+export const useInvestigatorResourceGetInvestigators = <
+  TData = InvestigatorResourceGetInvestigatorsResponse
+>(
+  variables: InvestigatorResourceGetInvestigatorsVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      GetTargetObservationsResponse,
-      GetTargetObservationsError,
+      InvestigatorResourceGetInvestigatorsResponse,
+      InvestigatorResourceGetInvestigatorsError,
       TData
     >,
     "queryKey" | "queryFn"
@@ -4232,17 +4196,20 @@ export const useGetTargetObservations = <TData = GetTargetObservationsResponse>(
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    GetTargetObservationsResponse,
-    GetTargetObservationsError,
+    InvestigatorResourceGetInvestigatorsResponse,
+    InvestigatorResourceGetInvestigatorsError,
     TData
   >(
     queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/observations/targetObservations",
-      operationId: "getTargetObservations",
+      path: "/pst/api/proposals/{proposalCode}/investigators",
+      operationId: "investigatorResourceGetInvestigators",
       variables,
     }),
     ({ signal }) =>
-      fetchGetTargetObservations({ ...fetcherOptions, ...variables }, signal),
+      fetchInvestigatorResourceGetInvestigators(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
     {
       ...options,
       ...queryOptions,
@@ -4250,229 +4217,130 @@ export const useGetTargetObservations = <TData = GetTargetObservationsResponse>(
   );
 };
 
-export type GetTargetsPathParams = {
+export type InvestigatorResourceAddPersonAsInvestigatorPathParams = {
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type GetTargetsQueryParams = {
-  sourceName?: string;
-};
+export type InvestigatorResourceAddPersonAsInvestigatorError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type GetTargetsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetTargetsResponse = Schemas.ObjectIdentifier[];
-
-export type GetTargetsVariables = {
-  pathParams: GetTargetsPathParams;
-  queryParams?: GetTargetsQueryParams;
+export type InvestigatorResourceAddPersonAsInvestigatorVariables = {
+  body?: Schemas.Investigator;
+  pathParams: InvestigatorResourceAddPersonAsInvestigatorPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchGetTargets = (
-  variables: GetTargetsVariables,
+export const fetchInvestigatorResourceAddPersonAsInvestigator = (
+  variables: InvestigatorResourceAddPersonAsInvestigatorVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    GetTargetsResponse,
-    GetTargetsError,
-    undefined,
+    Schemas.Investigator,
+    InvestigatorResourceAddPersonAsInvestigatorError,
+    Schemas.Investigator,
     {},
-    GetTargetsQueryParams,
-    GetTargetsPathParams
+    {},
+    InvestigatorResourceAddPersonAsInvestigatorPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/observations/targets",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetTargets = <TData = GetTargetsResponse>(
-  variables: GetTargetsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<GetTargetsResponse, GetTargetsError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<GetTargetsResponse, GetTargetsError, TData>(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/observations/targets",
-      operationId: "getTargets",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetTargets({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type AddNewTargetPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type AddNewTargetError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddNewTargetVariables = {
-  body?: Schemas.Target;
-  pathParams: AddNewTargetPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddNewTarget = (
-  variables: AddNewTargetVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Target,
-    AddNewTargetError,
-    Schemas.Target,
-    {},
-    {},
-    AddNewTargetPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations/targets",
+    url: "/pst/api/proposals/{proposalCode}/investigators",
     method: "post",
     ...variables,
     signal,
   });
 
-export const useAddNewTarget = (
+export const useInvestigatorResourceAddPersonAsInvestigator = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.Target,
-      AddNewTargetError,
-      AddNewTargetVariables
+      Schemas.Investigator,
+      InvestigatorResourceAddPersonAsInvestigatorError,
+      InvestigatorResourceAddPersonAsInvestigatorVariables
     >,
     "mutationFn"
   >
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    Schemas.Target,
-    AddNewTargetError,
-    AddNewTargetVariables
+    Schemas.Investigator,
+    InvestigatorResourceAddPersonAsInvestigatorError,
+    InvestigatorResourceAddPersonAsInvestigatorVariables
   >(
-    (variables: AddNewTargetVariables) =>
-      fetchAddNewTarget({ ...fetcherOptions, ...variables }),
+    (variables: InvestigatorResourceAddPersonAsInvestigatorVariables) =>
+      fetchInvestigatorResourceAddPersonAsInvestigator({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type RemoveTargetPathParams = {
+export type InvestigatorResourceGetInvestigatorPathParams = {
   /**
    * @format int64
    */
-  proposalCode: number;
-  /**
-   * @format int64
-   */
-  targetId: number;
-};
-
-export type RemoveTargetError = Fetcher.ErrorWrapper<undefined>;
-
-export type RemoveTargetVariables = {
-  pathParams: RemoveTargetPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchRemoveTarget = (
-  variables: RemoveTargetVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    RemoveTargetError,
-    undefined,
-    {},
-    {},
-    RemoveTargetPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations/targets/{targetId}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useRemoveTarget = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      RemoveTargetError,
-      RemoveTargetVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    RemoveTargetError,
-    RemoveTargetVariables
-  >(
-    (variables: RemoveTargetVariables) =>
-      fetchRemoveTarget({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetTechGoalsPathParams = {
+  investigatorId: number;
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type GetTechGoalsError = Fetcher.ErrorWrapper<undefined>;
+export type InvestigatorResourceGetInvestigatorError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type GetTechGoalsResponse = Schemas.TechnicalGoal[];
-
-export type GetTechGoalsVariables = {
-  pathParams: GetTechGoalsPathParams;
+export type InvestigatorResourceGetInvestigatorVariables = {
+  pathParams: InvestigatorResourceGetInvestigatorPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchGetTechGoals = (
-  variables: GetTechGoalsVariables,
+export const fetchInvestigatorResourceGetInvestigator = (
+  variables: InvestigatorResourceGetInvestigatorVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    GetTechGoalsResponse,
-    GetTechGoalsError,
+    Schemas.Investigator,
+    InvestigatorResourceGetInvestigatorError,
     undefined,
     {},
     {},
-    GetTechGoalsPathParams
+    InvestigatorResourceGetInvestigatorPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/observations/technicalGoals",
+    url: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}",
     method: "get",
     ...variables,
     signal,
   });
 
-export const useGetTechGoals = <TData = GetTechGoalsResponse>(
-  variables: GetTechGoalsVariables,
+export const useInvestigatorResourceGetInvestigator = <
+  TData = Schemas.Investigator
+>(
+  variables: InvestigatorResourceGetInvestigatorVariables,
   options?: Omit<
-    reactQuery.UseQueryOptions<GetTechGoalsResponse, GetTechGoalsError, TData>,
+    reactQuery.UseQueryOptions<
+      Schemas.Investigator,
+      InvestigatorResourceGetInvestigatorError,
+      TData
+    >,
     "queryKey" | "queryFn"
   >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
-  return reactQuery.useQuery<GetTechGoalsResponse, GetTechGoalsError, TData>(
+  return reactQuery.useQuery<
+    Schemas.Investigator,
+    InvestigatorResourceGetInvestigatorError,
+    TData
+  >(
     queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/observations/technicalGoals",
-      operationId: "getTechGoals",
+      path: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}",
+      operationId: "investigatorResourceGetInvestigator",
       variables,
     }),
     ({ signal }) =>
-      fetchGetTechGoals({ ...fetcherOptions, ...variables }, signal),
+      fetchInvestigatorResourceGetInvestigator(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
     {
       ...options,
       ...queryOptions,
@@ -4480,101 +4348,48 @@ export const useGetTechGoals = <TData = GetTechGoalsResponse>(
   );
 };
 
-export type AddNewTechGoalPathParams = {
+export type InvestigatorResourceRemoveInvestigatorPathParams = {
+  /**
+   * @format int64
+   */
+  investigatorId: number;
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type AddNewTechGoalError = Fetcher.ErrorWrapper<undefined>;
+export type InvestigatorResourceRemoveInvestigatorError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type AddNewTechGoalVariables = {
-  body?: Schemas.TechnicalGoal;
-  pathParams: AddNewTechGoalPathParams;
+export type InvestigatorResourceRemoveInvestigatorVariables = {
+  pathParams: InvestigatorResourceRemoveInvestigatorPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchAddNewTechGoal = (
-  variables: AddNewTechGoalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.TechnicalGoal,
-    AddNewTechGoalError,
-    Schemas.TechnicalGoal,
-    {},
-    {},
-    AddNewTechGoalPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations/technicalGoals",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useAddNewTechGoal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.TechnicalGoal,
-      AddNewTechGoalError,
-      AddNewTechGoalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.TechnicalGoal,
-    AddNewTechGoalError,
-    AddNewTechGoalVariables
-  >(
-    (variables: AddNewTechGoalVariables) =>
-      fetchAddNewTechGoal({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type RemoveTechGoalPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  /**
-   * @format int64
-   */
-  techGoalId: number;
-};
-
-export type RemoveTechGoalError = Fetcher.ErrorWrapper<undefined>;
-
-export type RemoveTechGoalVariables = {
-  pathParams: RemoveTechGoalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchRemoveTechGoal = (
-  variables: RemoveTechGoalVariables,
+export const fetchInvestigatorResourceRemoveInvestigator = (
+  variables: InvestigatorResourceRemoveInvestigatorVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    RemoveTechGoalError,
+    InvestigatorResourceRemoveInvestigatorError,
     undefined,
     {},
     {},
-    RemoveTechGoalPathParams
+    InvestigatorResourceRemoveInvestigatorPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/observations/technicalGoals/{techGoalId}",
+    url: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}",
     method: "delete",
     ...variables,
     signal,
   });
 
-export const useRemoveTechGoal = (
+export const useInvestigatorResourceRemoveInvestigator = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      RemoveTechGoalError,
-      RemoveTechGoalVariables
+      InvestigatorResourceRemoveInvestigatorError,
+      InvestigatorResourceRemoveInvestigatorVariables
     >,
     "mutationFn"
   >
@@ -4582,16 +4397,587 @@ export const useRemoveTechGoal = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    RemoveTechGoalError,
-    RemoveTechGoalVariables
+    InvestigatorResourceRemoveInvestigatorError,
+    InvestigatorResourceRemoveInvestigatorVariables
   >(
-    (variables: RemoveTechGoalVariables) =>
-      fetchRemoveTechGoal({ ...fetcherOptions, ...variables }),
+    (variables: InvestigatorResourceRemoveInvestigatorVariables) =>
+      fetchInvestigatorResourceRemoveInvestigator({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type RemoveObservationPathParams = {
+export type InvestigatorResourceChangeInvestigatorForPhDPathParams = {
+  /**
+   * @format int64
+   */
+  investigatorId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type InvestigatorResourceChangeInvestigatorForPhDError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InvestigatorResourceChangeInvestigatorForPhDVariables = {
+  body?: boolean;
+  pathParams: InvestigatorResourceChangeInvestigatorForPhDPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInvestigatorResourceChangeInvestigatorForPhD = (
+  variables: InvestigatorResourceChangeInvestigatorForPhDVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InvestigatorResourceChangeInvestigatorForPhDError,
+    boolean,
+    {},
+    {},
+    InvestigatorResourceChangeInvestigatorForPhDPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}/forPhD",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInvestigatorResourceChangeInvestigatorForPhD = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InvestigatorResourceChangeInvestigatorForPhDError,
+      InvestigatorResourceChangeInvestigatorForPhDVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InvestigatorResourceChangeInvestigatorForPhDError,
+    InvestigatorResourceChangeInvestigatorForPhDVariables
+  >(
+    (variables: InvestigatorResourceChangeInvestigatorForPhDVariables) =>
+      fetchInvestigatorResourceChangeInvestigatorForPhD({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type InvestigatorResourceChangeInvestigatorKindPathParams = {
+  /**
+   * @format int64
+   */
+  investigatorId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type InvestigatorResourceChangeInvestigatorKindError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InvestigatorResourceChangeInvestigatorKindVariables = {
+  body?: Schemas.InvestigatorKind;
+  pathParams: InvestigatorResourceChangeInvestigatorKindPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInvestigatorResourceChangeInvestigatorKind = (
+  variables: InvestigatorResourceChangeInvestigatorKindVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    InvestigatorResourceChangeInvestigatorKindError,
+    Schemas.InvestigatorKind,
+    {},
+    {},
+    InvestigatorResourceChangeInvestigatorKindPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}/kind",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInvestigatorResourceChangeInvestigatorKind = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InvestigatorResourceChangeInvestigatorKindError,
+      InvestigatorResourceChangeInvestigatorKindVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InvestigatorResourceChangeInvestigatorKindError,
+    InvestigatorResourceChangeInvestigatorKindVariables
+  >(
+    (variables: InvestigatorResourceChangeInvestigatorKindVariables) =>
+      fetchInvestigatorResourceChangeInvestigatorKind({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalResourceGetJustificationPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type ProposalResourceGetJustificationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceGetJustificationVariables = {
+  pathParams: ProposalResourceGetJustificationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceGetJustification = (
+  variables: ProposalResourceGetJustificationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Justification,
+    ProposalResourceGetJustificationError,
+    undefined,
+    {},
+    {},
+    ProposalResourceGetJustificationPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceGetJustification = <
+  TData = Schemas.Justification
+>(
+  variables: ProposalResourceGetJustificationVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Justification,
+      ProposalResourceGetJustificationError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Justification,
+    ProposalResourceGetJustificationError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}",
+      operationId: "proposalResourceGetJustification",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetJustification(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalResourceUpdateJustificationPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type ProposalResourceUpdateJustificationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceUpdateJustificationVariables = {
+  body?: Schemas.Justification;
+  pathParams: ProposalResourceUpdateJustificationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceUpdateJustification = (
+  variables: ProposalResourceUpdateJustificationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Justification,
+    ProposalResourceUpdateJustificationError,
+    Schemas.Justification,
+    {},
+    {},
+    ProposalResourceUpdateJustificationPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceUpdateJustification = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Justification,
+      ProposalResourceUpdateJustificationError,
+      ProposalResourceUpdateJustificationVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Justification,
+    ProposalResourceUpdateJustificationError,
+    ProposalResourceUpdateJustificationVariables
+  >(
+    (variables: ProposalResourceUpdateJustificationVariables) =>
+      fetchProposalResourceUpdateJustification({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalResourceGetObservingProposalKindPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceGetObservingProposalKindError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceGetObservingProposalKindVariables = {
+  pathParams: ProposalResourceGetObservingProposalKindPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceGetObservingProposalKind = (
+  variables: ProposalResourceGetObservingProposalKindVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ProposalKind,
+    ProposalResourceGetObservingProposalKindError,
+    undefined,
+    {},
+    {},
+    ProposalResourceGetObservingProposalKindPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/kind",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceGetObservingProposalKind = <
+  TData = Schemas.ProposalKind
+>(
+  variables: ProposalResourceGetObservingProposalKindVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ProposalKind,
+      ProposalResourceGetObservingProposalKindError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ProposalKind,
+    ProposalResourceGetObservingProposalKindError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/kind",
+      operationId: "proposalResourceGetObservingProposalKind",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetObservingProposalKind(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalResourceChangeKindPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceChangeKindError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceChangeKindVariables = {
+  pathParams: ProposalResourceChangeKindPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceChangeKind = (
+  variables: ProposalResourceChangeKindVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceChangeKindError,
+    undefined,
+    {},
+    {},
+    ProposalResourceChangeKindPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/kind",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceChangeKind = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalResourceChangeKindError,
+      ProposalResourceChangeKindVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalResourceChangeKindError,
+    ProposalResourceChangeKindVariables
+  >(
+    (variables: ProposalResourceChangeKindVariables) =>
+      fetchProposalResourceChangeKind({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type ObservationResourceGetObservationsPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ObservationResourceGetObservationsQueryParams = {
+  srcName?: string;
+  type?: Schemas.ObsType;
+};
+
+export type ObservationResourceGetObservationsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservationResourceGetObservationsResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ObservationResourceGetObservationsVariables = {
+  pathParams: ObservationResourceGetObservationsPathParams;
+  queryParams?: ObservationResourceGetObservationsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservationResourceGetObservations = (
+  variables: ObservationResourceGetObservationsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ObservationResourceGetObservationsResponse,
+    ObservationResourceGetObservationsError,
+    undefined,
+    {},
+    ObservationResourceGetObservationsQueryParams,
+    ObservationResourceGetObservationsPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/observations",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservationResourceGetObservations = <
+  TData = ObservationResourceGetObservationsResponse
+>(
+  variables: ObservationResourceGetObservationsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservationResourceGetObservationsResponse,
+      ObservationResourceGetObservationsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservationResourceGetObservationsResponse,
+    ObservationResourceGetObservationsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/observations",
+      operationId: "observationResourceGetObservations",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchObservationResourceGetObservations(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ObservationResourceAddObservationPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ObservationResourceAddObservationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservationResourceAddObservationVariables = {
+  pathParams: ObservationResourceAddObservationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservationResourceAddObservation = (
+  variables: ObservationResourceAddObservationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservationResourceAddObservationError,
+    undefined,
+    {},
+    {},
+    ObservationResourceAddObservationPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/observations",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservationResourceAddObservation = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservationResourceAddObservationError,
+      ObservationResourceAddObservationVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservationResourceAddObservationError,
+    ObservationResourceAddObservationVariables
+  >(
+    (variables: ObservationResourceAddObservationVariables) =>
+      fetchObservationResourceAddObservation({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservationResourceAddNewObservationPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ObservationResourceAddNewObservationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservationResourceAddNewObservationVariables = {
+  body?: Schemas.Observation;
+  pathParams: ObservationResourceAddNewObservationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservationResourceAddNewObservation = (
+  variables: ObservationResourceAddNewObservationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Observation,
+    ObservationResourceAddNewObservationError,
+    Schemas.Observation,
+    {},
+    {},
+    ObservationResourceAddNewObservationPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/observations",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useObservationResourceAddNewObservation = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Observation,
+      ObservationResourceAddNewObservationError,
+      ObservationResourceAddNewObservationVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Observation,
+    ObservationResourceAddNewObservationError,
+    ObservationResourceAddNewObservationVariables
+  >(
+    (variables: ObservationResourceAddNewObservationVariables) =>
+      fetchObservationResourceAddNewObservation({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservationResourceRemoveObservationPathParams = {
   /**
    * @format int64
    */
@@ -4602,23 +4988,24 @@ export type RemoveObservationPathParams = {
   proposalCode: number;
 };
 
-export type RemoveObservationError = Fetcher.ErrorWrapper<undefined>;
+export type ObservationResourceRemoveObservationError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type RemoveObservationVariables = {
-  pathParams: RemoveObservationPathParams;
+export type ObservationResourceRemoveObservationVariables = {
+  pathParams: ObservationResourceRemoveObservationPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchRemoveObservation = (
-  variables: RemoveObservationVariables,
+export const fetchObservationResourceRemoveObservation = (
+  variables: ObservationResourceRemoveObservationVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    RemoveObservationError,
+    ObservationResourceRemoveObservationError,
     undefined,
     {},
     {},
-    RemoveObservationPathParams
+    ObservationResourceRemoveObservationPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/observations/{observationId}",
     method: "delete",
@@ -4626,12 +5013,12 @@ export const fetchRemoveObservation = (
     signal,
   });
 
-export const useRemoveObservation = (
+export const useObservationResourceRemoveObservation = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      RemoveObservationError,
-      RemoveObservationVariables
+      ObservationResourceRemoveObservationError,
+      ObservationResourceRemoveObservationVariables
     >,
     "mutationFn"
   >
@@ -4639,16 +5026,19 @@ export const useRemoveObservation = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    RemoveObservationError,
-    RemoveObservationVariables
+    ObservationResourceRemoveObservationError,
+    ObservationResourceRemoveObservationVariables
   >(
-    (variables: RemoveObservationVariables) =>
-      fetchRemoveObservation({ ...fetcherOptions, ...variables }),
+    (variables: ObservationResourceRemoveObservationVariables) =>
+      fetchObservationResourceRemoveObservation({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type GetConstraintsPathParams = {
+export type ObservationResourceGetConstraintsPathParams = {
   /**
    * @format int64
    */
@@ -4659,25 +5049,26 @@ export type GetConstraintsPathParams = {
   proposalCode: number;
 };
 
-export type GetConstraintsError = Fetcher.ErrorWrapper<undefined>;
+export type ObservationResourceGetConstraintsError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type GetConstraintsResponse = Schemas.Constraint[];
+export type ObservationResourceGetConstraintsResponse = Schemas.Constraint[];
 
-export type GetConstraintsVariables = {
-  pathParams: GetConstraintsPathParams;
+export type ObservationResourceGetConstraintsVariables = {
+  pathParams: ObservationResourceGetConstraintsPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchGetConstraints = (
-  variables: GetConstraintsVariables,
+export const fetchObservationResourceGetConstraints = (
+  variables: ObservationResourceGetConstraintsVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    GetConstraintsResponse,
-    GetConstraintsError,
+    ObservationResourceGetConstraintsResponse,
+    ObservationResourceGetConstraintsError,
     undefined,
     {},
     {},
-    GetConstraintsPathParams
+    ObservationResourceGetConstraintsPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints",
     method: "get",
@@ -4685,12 +5076,14 @@ export const fetchGetConstraints = (
     signal,
   });
 
-export const useGetConstraints = <TData = GetConstraintsResponse>(
-  variables: GetConstraintsVariables,
+export const useObservationResourceGetConstraints = <
+  TData = ObservationResourceGetConstraintsResponse
+>(
+  variables: ObservationResourceGetConstraintsVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      GetConstraintsResponse,
-      GetConstraintsError,
+      ObservationResourceGetConstraintsResponse,
+      ObservationResourceGetConstraintsError,
       TData
     >,
     "queryKey" | "queryFn"
@@ -4699,17 +5092,20 @@ export const useGetConstraints = <TData = GetConstraintsResponse>(
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    GetConstraintsResponse,
-    GetConstraintsError,
+    ObservationResourceGetConstraintsResponse,
+    ObservationResourceGetConstraintsError,
     TData
   >(
     queryKeyFn({
       path: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints",
-      operationId: "getConstraints",
+      operationId: "observationResourceGetConstraints",
       variables,
     }),
     ({ signal }) =>
-      fetchGetConstraints({ ...fetcherOptions, ...variables }, signal),
+      fetchObservationResourceGetConstraints(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
     {
       ...options,
       ...queryOptions,
@@ -4717,7 +5113,7 @@ export const useGetConstraints = <TData = GetConstraintsResponse>(
   );
 };
 
-export type AddNewConstraintPathParams = {
+export type ObservationResourceAddNewConstraintPathParams = {
   /**
    * @format int64
    */
@@ -4728,24 +5124,25 @@ export type AddNewConstraintPathParams = {
   proposalCode: number;
 };
 
-export type AddNewConstraintError = Fetcher.ErrorWrapper<undefined>;
+export type ObservationResourceAddNewConstraintError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type AddNewConstraintVariables = {
+export type ObservationResourceAddNewConstraintVariables = {
   body?: Schemas.Constraint;
-  pathParams: AddNewConstraintPathParams;
+  pathParams: ObservationResourceAddNewConstraintPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchAddNewConstraint = (
-  variables: AddNewConstraintVariables,
+export const fetchObservationResourceAddNewConstraint = (
+  variables: ObservationResourceAddNewConstraintVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    AddNewConstraintError,
+    ObservationResourceAddNewConstraintError,
     Schemas.Constraint,
     {},
     {},
-    AddNewConstraintPathParams
+    ObservationResourceAddNewConstraintPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints",
     method: "post",
@@ -4753,12 +5150,12 @@ export const fetchAddNewConstraint = (
     signal,
   });
 
-export const useAddNewConstraint = (
+export const useObservationResourceAddNewConstraint = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      AddNewConstraintError,
-      AddNewConstraintVariables
+      ObservationResourceAddNewConstraintError,
+      ObservationResourceAddNewConstraintVariables
     >,
     "mutationFn"
   >
@@ -4766,16 +5163,19 @@ export const useAddNewConstraint = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    AddNewConstraintError,
-    AddNewConstraintVariables
+    ObservationResourceAddNewConstraintError,
+    ObservationResourceAddNewConstraintVariables
   >(
-    (variables: AddNewConstraintVariables) =>
-      fetchAddNewConstraint({ ...fetcherOptions, ...variables }),
+    (variables: ObservationResourceAddNewConstraintVariables) =>
+      fetchObservationResourceAddNewConstraint({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type RemoveConstraintPathParams = {
+export type ObservationResourceRemoveConstraintPathParams = {
   /**
    * @format int64
    */
@@ -4790,23 +5190,24 @@ export type RemoveConstraintPathParams = {
   proposalCode: number;
 };
 
-export type RemoveConstraintError = Fetcher.ErrorWrapper<undefined>;
+export type ObservationResourceRemoveConstraintError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type RemoveConstraintVariables = {
-  pathParams: RemoveConstraintPathParams;
+export type ObservationResourceRemoveConstraintVariables = {
+  pathParams: ObservationResourceRemoveConstraintPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchRemoveConstraint = (
-  variables: RemoveConstraintVariables,
+export const fetchObservationResourceRemoveConstraint = (
+  variables: ObservationResourceRemoveConstraintVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    RemoveConstraintError,
+    ObservationResourceRemoveConstraintError,
     undefined,
     {},
     {},
-    RemoveConstraintPathParams
+    ObservationResourceRemoveConstraintPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints/{constraintId}",
     method: "delete",
@@ -4814,12 +5215,12 @@ export const fetchRemoveConstraint = (
     signal,
   });
 
-export const useRemoveConstraint = (
+export const useObservationResourceRemoveConstraint = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      RemoveConstraintError,
-      RemoveConstraintVariables
+      ObservationResourceRemoveConstraintError,
+      ObservationResourceRemoveConstraintVariables
     >,
     "mutationFn"
   >
@@ -4827,599 +5228,11 @@ export const useRemoveConstraint = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    RemoveConstraintError,
-    RemoveConstraintVariables
+    ObservationResourceRemoveConstraintError,
+    ObservationResourceRemoveConstraintVariables
   >(
-    (variables: RemoveConstraintVariables) =>
-      fetchRemoveConstraint({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceFieldPathParams = {
-  /**
-   * @format int64
-   */
-  observationId: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ReplaceFieldError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceFieldVariables = {
-  body?: Schemas.Field;
-  pathParams: ReplaceFieldPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceField = (
-  variables: ReplaceFieldVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceFieldError,
-    Schemas.Field,
-    {},
-    {},
-    ReplaceFieldPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/field",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceField = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceFieldError,
-      ReplaceFieldVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceFieldError,
-    ReplaceFieldVariables
-  >(
-    (variables: ReplaceFieldVariables) =>
-      fetchReplaceField({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceTargetPathParams = {
-  /**
-   * @format int64
-   */
-  observationId: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ReplaceTargetError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceTargetVariables = {
-  body?: Schemas.Target;
-  pathParams: ReplaceTargetPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceTarget = (
-  variables: ReplaceTargetVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceTargetError,
-    Schemas.Target,
-    {},
-    {},
-    ReplaceTargetPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/target",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceTarget = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceTargetError,
-      ReplaceTargetVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceTargetError,
-    ReplaceTargetVariables
-  >(
-    (variables: ReplaceTargetVariables) =>
-      fetchReplaceTarget({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceTechnicalGoalPathParams = {
-  /**
-   * @format int64
-   */
-  observationId: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ReplaceTechnicalGoalError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceTechnicalGoalVariables = {
-  body?: Schemas.TechnicalGoal;
-  pathParams: ReplaceTechnicalGoalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceTechnicalGoal = (
-  variables: ReplaceTechnicalGoalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceTechnicalGoalError,
-    Schemas.TechnicalGoal,
-    {},
-    {},
-    ReplaceTechnicalGoalPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/technicalGoal",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceTechnicalGoal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceTechnicalGoalError,
-      ReplaceTechnicalGoalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceTechnicalGoalError,
-    ReplaceTechnicalGoalVariables
-  >(
-    (variables: ReplaceTechnicalGoalVariables) =>
-      fetchReplaceTechnicalGoal({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type AddRelatedProposalPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type AddRelatedProposalError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddRelatedProposalVariables = {
-  pathParams: AddRelatedProposalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddRelatedProposal = (
-  variables: AddRelatedProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    AddRelatedProposalError,
-    undefined,
-    {},
-    {},
-    AddRelatedProposalPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/relatedProposals",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useAddRelatedProposal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      AddRelatedProposalError,
-      AddRelatedProposalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    AddRelatedProposalError,
-    AddRelatedProposalVariables
-  >(
-    (variables: AddRelatedProposalVariables) =>
-      fetchAddRelatedProposal({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceSummaryPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ReplaceSummaryError = Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceSummaryVariables = {
-  pathParams: ReplaceSummaryPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceSummary = (
-  variables: ReplaceSummaryVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceSummaryError,
-    undefined,
-    {},
-    {},
-    ReplaceSummaryPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/summary",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceSummary = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceSummaryError,
-      ReplaceSummaryVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceSummaryError,
-    ReplaceSummaryVariables
-  >(
-    (variables: ReplaceSummaryVariables) =>
-      fetchReplaceSummary({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetSupportingDocumentsPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type GetSupportingDocumentsQueryParams = {
-  title?: string;
-};
-
-export type GetSupportingDocumentsError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetSupportingDocumentsResponse = Schemas.ObjectIdentifier[];
-
-export type GetSupportingDocumentsVariables = {
-  pathParams: GetSupportingDocumentsPathParams;
-  queryParams?: GetSupportingDocumentsQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetSupportingDocuments = (
-  variables: GetSupportingDocumentsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetSupportingDocumentsResponse,
-    GetSupportingDocumentsError,
-    undefined,
-    {},
-    GetSupportingDocumentsQueryParams,
-    GetSupportingDocumentsPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/supportingDocuments",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetSupportingDocuments = <
-  TData = GetSupportingDocumentsResponse
->(
-  variables: GetSupportingDocumentsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      GetSupportingDocumentsResponse,
-      GetSupportingDocumentsError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    GetSupportingDocumentsResponse,
-    GetSupportingDocumentsError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/supportingDocuments",
-      operationId: "getSupportingDocuments",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetSupportingDocuments({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type AddNewSupportingDocumentPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type AddNewSupportingDocumentError = Fetcher.ErrorWrapper<undefined>;
-
-export type AddNewSupportingDocumentVariables = {
-  body?: Schemas.SupportingDocument;
-  pathParams: AddNewSupportingDocumentPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAddNewSupportingDocument = (
-  variables: AddNewSupportingDocumentVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    AddNewSupportingDocumentError,
-    Schemas.SupportingDocument,
-    {},
-    {},
-    AddNewSupportingDocumentPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/supportingDocuments",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useAddNewSupportingDocument = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      AddNewSupportingDocumentError,
-      AddNewSupportingDocumentVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    AddNewSupportingDocumentError,
-    AddNewSupportingDocumentVariables
-  >(
-    (variables: AddNewSupportingDocumentVariables) =>
-      fetchAddNewSupportingDocument({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type GetSupportingDocumentPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type GetSupportingDocumentError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetSupportingDocumentVariables = {
-  pathParams: GetSupportingDocumentPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetSupportingDocument = (
-  variables: GetSupportingDocumentVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.SupportingDocument,
-    GetSupportingDocumentError,
-    undefined,
-    {},
-    {},
-    GetSupportingDocumentPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetSupportingDocument = <TData = Schemas.SupportingDocument>(
-  variables: GetSupportingDocumentVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.SupportingDocument,
-      GetSupportingDocumentError,
-      TData
-    >,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    Schemas.SupportingDocument,
-    GetSupportingDocumentError,
-    TData
-  >(
-    queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}",
-      operationId: "getSupportingDocument",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetSupportingDocument({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type RemoveSupportingDocumentPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type RemoveSupportingDocumentError = Fetcher.ErrorWrapper<undefined>;
-
-export type RemoveSupportingDocumentVariables = {
-  pathParams: RemoveSupportingDocumentPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchRemoveSupportingDocument = (
-  variables: RemoveSupportingDocumentVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    RemoveSupportingDocumentError,
-    undefined,
-    {},
-    {},
-    RemoveSupportingDocumentPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useRemoveSupportingDocument = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      RemoveSupportingDocumentError,
-      RemoveSupportingDocumentVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    RemoveSupportingDocumentError,
-    RemoveSupportingDocumentVariables
-  >(
-    (variables: RemoveSupportingDocumentVariables) =>
-      fetchRemoveSupportingDocument({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type ReplaceSupportingDocumentLocationPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ReplaceSupportingDocumentLocationError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ReplaceSupportingDocumentLocationVariables = {
-  pathParams: ReplaceSupportingDocumentLocationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReplaceSupportingDocumentLocation = (
-  variables: ReplaceSupportingDocumentLocationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReplaceSupportingDocumentLocationError,
-    undefined,
-    {},
-    {},
-    ReplaceSupportingDocumentLocationPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}/location",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReplaceSupportingDocumentLocation = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReplaceSupportingDocumentLocationError,
-      ReplaceSupportingDocumentLocationVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReplaceSupportingDocumentLocationError,
-    ReplaceSupportingDocumentLocationVariables
-  >(
-    (variables: ReplaceSupportingDocumentLocationVariables) =>
-      fetchReplaceSupportingDocumentLocation({
+    (variables: ObservationResourceRemoveConstraintVariables) =>
+      fetchObservationResourceRemoveConstraint({
         ...fetcherOptions,
         ...variables,
       }),
@@ -5427,48 +5240,49 @@ export const useReplaceSupportingDocumentLocation = (
   );
 };
 
-export type ReplaceSupportingDocumentTitlePathParams = {
+export type ObservationResourceReplaceFieldPathParams = {
   /**
    * @format int64
    */
-  id: number;
+  observationId: number;
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type ReplaceSupportingDocumentTitleError =
+export type ObservationResourceReplaceFieldError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ReplaceSupportingDocumentTitleVariables = {
-  pathParams: ReplaceSupportingDocumentTitlePathParams;
+export type ObservationResourceReplaceFieldVariables = {
+  body?: Schemas.Field;
+  pathParams: ObservationResourceReplaceFieldPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchReplaceSupportingDocumentTitle = (
-  variables: ReplaceSupportingDocumentTitleVariables,
+export const fetchObservationResourceReplaceField = (
+  variables: ObservationResourceReplaceFieldVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    ReplaceSupportingDocumentTitleError,
-    undefined,
+    ObservationResourceReplaceFieldError,
+    Schemas.Field,
     {},
     {},
-    ReplaceSupportingDocumentTitlePathParams
+    ObservationResourceReplaceFieldPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}/title",
+    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/field",
     method: "put",
     ...variables,
     signal,
   });
 
-export const useReplaceSupportingDocumentTitle = (
+export const useObservationResourceReplaceField = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      ReplaceSupportingDocumentTitleError,
-      ReplaceSupportingDocumentTitleVariables
+      ObservationResourceReplaceFieldError,
+      ObservationResourceReplaceFieldVariables
     >,
     "mutationFn"
   >
@@ -5476,52 +5290,58 @@ export const useReplaceSupportingDocumentTitle = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    ReplaceSupportingDocumentTitleError,
-    ReplaceSupportingDocumentTitleVariables
+    ObservationResourceReplaceFieldError,
+    ObservationResourceReplaceFieldVariables
   >(
-    (variables: ReplaceSupportingDocumentTitleVariables) =>
-      fetchReplaceSupportingDocumentTitle({ ...fetcherOptions, ...variables }),
+    (variables: ObservationResourceReplaceFieldVariables) =>
+      fetchObservationResourceReplaceField({ ...fetcherOptions, ...variables }),
     options
   );
 };
 
-export type ReplaceTitlePathParams = {
+export type ObservationResourceReplaceTargetPathParams = {
+  /**
+   * @format int64
+   */
+  observationId: number;
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type ReplaceTitleError = Fetcher.ErrorWrapper<undefined>;
+export type ObservationResourceReplaceTargetError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type ReplaceTitleVariables = {
-  pathParams: ReplaceTitlePathParams;
+export type ObservationResourceReplaceTargetVariables = {
+  body?: Schemas.Target;
+  pathParams: ObservationResourceReplaceTargetPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchReplaceTitle = (
-  variables: ReplaceTitleVariables,
+export const fetchObservationResourceReplaceTarget = (
+  variables: ObservationResourceReplaceTargetVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    ReplaceTitleError,
-    undefined,
+    ObservationResourceReplaceTargetError,
+    Schemas.Target,
     {},
     {},
-    ReplaceTitlePathParams
+    ObservationResourceReplaceTargetPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/title",
+    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/target",
     method: "put",
     ...variables,
     signal,
   });
 
-export const useReplaceTitle = (
+export const useObservationResourceReplaceTarget = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      ReplaceTitleError,
-      ReplaceTitleVariables
+      ObservationResourceReplaceTargetError,
+      ObservationResourceReplaceTargetVariables
     >,
     "mutationFn"
   >
@@ -5529,197 +5349,239 @@ export const useReplaceTitle = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    ReplaceTitleError,
-    ReplaceTitleVariables
+    ObservationResourceReplaceTargetError,
+    ObservationResourceReplaceTargetVariables
   >(
-    (variables: ReplaceTitleVariables) =>
-      fetchReplaceTitle({ ...fetcherOptions, ...variables }),
+    (variables: ObservationResourceReplaceTargetVariables) =>
+      fetchObservationResourceReplaceTarget({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type GetSpaceFramePathParams = {
-  frameCode: string;
+export type ObservationResourceReplaceTechnicalGoalPathParams = {
+  /**
+   * @format int64
+   */
+  observationId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
 };
 
-export type GetSpaceFrameError = Fetcher.ErrorWrapper<undefined>;
+export type ObservationResourceReplaceTechnicalGoalError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type GetSpaceFrameVariables = {
-  pathParams: GetSpaceFramePathParams;
+export type ObservationResourceReplaceTechnicalGoalVariables = {
+  body?: Schemas.TechnicalGoal;
+  pathParams: ObservationResourceReplaceTechnicalGoalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchGetSpaceFrame = (
-  variables: GetSpaceFrameVariables,
+export const fetchObservationResourceReplaceTechnicalGoal = (
+  variables: ObservationResourceReplaceTechnicalGoalVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    Schemas.SpaceFrame,
-    GetSpaceFrameError,
+    undefined,
+    ObservationResourceReplaceTechnicalGoalError,
+    Schemas.TechnicalGoal,
+    {},
+    {},
+    ObservationResourceReplaceTechnicalGoalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/technicalGoal",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservationResourceReplaceTechnicalGoal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservationResourceReplaceTechnicalGoalError,
+      ObservationResourceReplaceTechnicalGoalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservationResourceReplaceTechnicalGoalError,
+    ObservationResourceReplaceTechnicalGoalVariables
+  >(
+    (variables: ObservationResourceReplaceTechnicalGoalVariables) =>
+      fetchObservationResourceReplaceTechnicalGoal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalResourceAddRelatedProposalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceAddRelatedProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceAddRelatedProposalVariables = {
+  pathParams: ProposalResourceAddRelatedProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceAddRelatedProposal = (
+  variables: ProposalResourceAddRelatedProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceAddRelatedProposalError,
     undefined,
     {},
     {},
-    GetSpaceFramePathParams
+    ProposalResourceAddRelatedProposalPathParams
   >({
-    url: "/pst/api/spaceFrames/{frameCode}",
+    url: "/pst/api/proposals/{proposalCode}/relatedProposals",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceAddRelatedProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalResourceAddRelatedProposalError,
+      ProposalResourceAddRelatedProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalResourceAddRelatedProposalError,
+    ProposalResourceAddRelatedProposalVariables
+  >(
+    (variables: ProposalResourceAddRelatedProposalVariables) =>
+      fetchProposalResourceAddRelatedProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalResourceReplaceSummaryPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceReplaceSummaryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceReplaceSummaryVariables = {
+  pathParams: ProposalResourceReplaceSummaryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceReplaceSummary = (
+  variables: ProposalResourceReplaceSummaryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceReplaceSummaryError,
+    undefined,
+    {},
+    {},
+    ProposalResourceReplaceSummaryPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/summary",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceReplaceSummary = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalResourceReplaceSummaryError,
+      ProposalResourceReplaceSummaryVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalResourceReplaceSummaryError,
+    ProposalResourceReplaceSummaryVariables
+  >(
+    (variables: ProposalResourceReplaceSummaryVariables) =>
+      fetchProposalResourceReplaceSummary({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type SupportingDocumentResourceGetSupportingDocumentsPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type SupportingDocumentResourceGetSupportingDocumentsQueryParams = {
+  title?: string;
+};
+
+export type SupportingDocumentResourceGetSupportingDocumentsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SupportingDocumentResourceGetSupportingDocumentsResponse =
+  Schemas.ObjectIdentifier[];
+
+export type SupportingDocumentResourceGetSupportingDocumentsVariables = {
+  pathParams: SupportingDocumentResourceGetSupportingDocumentsPathParams;
+  queryParams?: SupportingDocumentResourceGetSupportingDocumentsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSupportingDocumentResourceGetSupportingDocuments = (
+  variables: SupportingDocumentResourceGetSupportingDocumentsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    SupportingDocumentResourceGetSupportingDocumentsResponse,
+    SupportingDocumentResourceGetSupportingDocumentsError,
+    undefined,
+    {},
+    SupportingDocumentResourceGetSupportingDocumentsQueryParams,
+    SupportingDocumentResourceGetSupportingDocumentsPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/supportingDocuments",
     method: "get",
     ...variables,
     signal,
   });
 
-export const useGetSpaceFrame = <TData = Schemas.SpaceFrame>(
-  variables: GetSpaceFrameVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.SpaceFrame, GetSpaceFrameError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.SpaceFrame, GetSpaceFrameError, TData>(
-    queryKeyFn({
-      path: "/pst/api/spaceFrames/{frameCode}",
-      operationId: "getSpaceFrame",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetSpaceFrame({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type GetSpaceSystemPathParams = {
-  frameCode: string;
-};
-
-export type GetSpaceSystemError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetSpaceSystemVariables = {
-  pathParams: GetSpaceSystemPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetSpaceSystem = (
-  variables: GetSpaceSystemVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.SpaceSys,
-    GetSpaceSystemError,
-    undefined,
-    {},
-    {},
-    GetSpaceSystemPathParams
-  >({
-    url: "/pst/api/spaceSystems/{frameCode}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useGetSpaceSystem = <TData = Schemas.SpaceSys>(
-  variables: GetSpaceSystemVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.SpaceSys, GetSpaceSystemError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.SpaceSys, GetSpaceSystemError, TData>(
-    queryKeyFn({
-      path: "/pst/api/spaceSystems/{frameCode}",
-      operationId: "getSpaceSystem",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchGetSpaceSystem({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type SubjectMapPathParams = {
-  id: string;
-};
-
-export type SubjectMapError = Fetcher.ErrorWrapper<undefined>;
-
-export type SubjectMapVariables = {
-  pathParams: SubjectMapPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchSubjectMap = (
-  variables: SubjectMapVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.SubjectMap,
-    SubjectMapError,
-    undefined,
-    {},
-    {},
-    SubjectMapPathParams
-  >({ url: "/pst/api/subjectMap/{id}", method: "get", ...variables, signal });
-
-export const useSubjectMap = <TData = Schemas.SubjectMap>(
-  variables: SubjectMapVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.SubjectMap, SubjectMapError, TData>,
-    "queryKey" | "queryFn"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.SubjectMap, SubjectMapError, TData>(
-    queryKeyFn({
-      path: "/pst/api/subjectMap/{id}",
-      operationId: "subjectMap",
-      variables,
-    }),
-    ({ signal }) =>
-      fetchSubjectMap({ ...fetcherOptions, ...variables }, signal),
-    {
-      ...options,
-      ...queryOptions,
-    }
-  );
-};
-
-export type GetTelescopesQueryParams = {
-  name?: string;
-};
-
-export type GetTelescopesError = Fetcher.ErrorWrapper<undefined>;
-
-export type GetTelescopesResponse = Schemas.ObjectIdentifier[];
-
-export type GetTelescopesVariables = {
-  queryParams?: GetTelescopesQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchGetTelescopes = (
-  variables: GetTelescopesVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    GetTelescopesResponse,
-    GetTelescopesError,
-    undefined,
-    {},
-    GetTelescopesQueryParams,
-    {}
-  >({ url: "/pst/api/telescopes", method: "get", ...variables, signal });
-
-export const useGetTelescopes = <TData = GetTelescopesResponse>(
-  variables: GetTelescopesVariables,
+export const useSupportingDocumentResourceGetSupportingDocuments = <
+  TData = SupportingDocumentResourceGetSupportingDocumentsResponse
+>(
+  variables: SupportingDocumentResourceGetSupportingDocumentsVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      GetTelescopesResponse,
-      GetTelescopesError,
+      SupportingDocumentResourceGetSupportingDocumentsResponse,
+      SupportingDocumentResourceGetSupportingDocumentsError,
       TData
     >,
     "queryKey" | "queryFn"
@@ -5727,14 +5589,21 @@ export const useGetTelescopes = <TData = GetTelescopesResponse>(
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
-  return reactQuery.useQuery<GetTelescopesResponse, GetTelescopesError, TData>(
+  return reactQuery.useQuery<
+    SupportingDocumentResourceGetSupportingDocumentsResponse,
+    SupportingDocumentResourceGetSupportingDocumentsError,
+    TData
+  >(
     queryKeyFn({
-      path: "/pst/api/telescopes",
-      operationId: "getTelescopes",
+      path: "/pst/api/proposals/{proposalCode}/supportingDocuments",
+      operationId: "supportingDocumentResourceGetSupportingDocuments",
       variables,
     }),
     ({ signal }) =>
-      fetchGetTelescopes({ ...fetcherOptions, ...variables }, signal),
+      fetchSupportingDocumentResourceGetSupportingDocuments(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
     {
       ...options,
       ...queryOptions,
@@ -5742,31 +5611,45 @@ export const useGetTelescopes = <TData = GetTelescopesResponse>(
   );
 };
 
-export type CreateTelescopeError = Fetcher.ErrorWrapper<undefined>;
+export type SupportingDocumentResourceAddNewSupportingDocumentPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
 
-export type CreateTelescopeVariables = {
-  body?: Schemas.Telescope;
+export type SupportingDocumentResourceAddNewSupportingDocumentError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SupportingDocumentResourceAddNewSupportingDocumentVariables = {
+  body?: Schemas.SupportingDocument;
+  pathParams: SupportingDocumentResourceAddNewSupportingDocumentPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchCreateTelescope = (
-  variables: CreateTelescopeVariables,
+export const fetchSupportingDocumentResourceAddNewSupportingDocument = (
+  variables: SupportingDocumentResourceAddNewSupportingDocumentVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    CreateTelescopeError,
-    Schemas.Telescope,
+    SupportingDocumentResourceAddNewSupportingDocumentError,
+    Schemas.SupportingDocument,
     {},
     {},
-    {}
-  >({ url: "/pst/api/telescopes", method: "post", ...variables, signal });
+    SupportingDocumentResourceAddNewSupportingDocumentPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/supportingDocuments",
+    method: "post",
+    ...variables,
+    signal,
+  });
 
-export const useCreateTelescope = (
+export const useSupportingDocumentResourceAddNewSupportingDocument = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      CreateTelescopeError,
-      CreateTelescopeVariables
+      SupportingDocumentResourceAddNewSupportingDocumentError,
+      SupportingDocumentResourceAddNewSupportingDocumentVariables
     >,
     "mutationFn"
   >
@@ -5774,58 +5657,84 @@ export const useCreateTelescope = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    CreateTelescopeError,
-    CreateTelescopeVariables
+    SupportingDocumentResourceAddNewSupportingDocumentError,
+    SupportingDocumentResourceAddNewSupportingDocumentVariables
   >(
-    (variables: CreateTelescopeVariables) =>
-      fetchCreateTelescope({ ...fetcherOptions, ...variables }),
+    (variables: SupportingDocumentResourceAddNewSupportingDocumentVariables) =>
+      fetchSupportingDocumentResourceAddNewSupportingDocument({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type GetTelescopePathParams = {
+export type SupportingDocumentResourceGetSupportingDocumentPathParams = {
   /**
    * @format int64
    */
   id: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
 };
 
-export type GetTelescopeError = Fetcher.ErrorWrapper<undefined>;
+export type SupportingDocumentResourceGetSupportingDocumentError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type GetTelescopeVariables = {
-  pathParams: GetTelescopePathParams;
+export type SupportingDocumentResourceGetSupportingDocumentVariables = {
+  pathParams: SupportingDocumentResourceGetSupportingDocumentPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchGetTelescope = (
-  variables: GetTelescopeVariables,
+export const fetchSupportingDocumentResourceGetSupportingDocument = (
+  variables: SupportingDocumentResourceGetSupportingDocumentVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    Schemas.Telescope,
-    GetTelescopeError,
+    Schemas.SupportingDocument,
+    SupportingDocumentResourceGetSupportingDocumentError,
     undefined,
     {},
     {},
-    GetTelescopePathParams
-  >({ url: "/pst/api/telescopes/{id}", method: "get", ...variables, signal });
+    SupportingDocumentResourceGetSupportingDocumentPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}",
+    method: "get",
+    ...variables,
+    signal,
+  });
 
-export const useGetTelescope = <TData = Schemas.Telescope>(
-  variables: GetTelescopeVariables,
+export const useSupportingDocumentResourceGetSupportingDocument = <
+  TData = Schemas.SupportingDocument
+>(
+  variables: SupportingDocumentResourceGetSupportingDocumentVariables,
   options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.Telescope, GetTelescopeError, TData>,
+    reactQuery.UseQueryOptions<
+      Schemas.SupportingDocument,
+      SupportingDocumentResourceGetSupportingDocumentError,
+      TData
+    >,
     "queryKey" | "queryFn"
   >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
-  return reactQuery.useQuery<Schemas.Telescope, GetTelescopeError, TData>(
+  return reactQuery.useQuery<
+    Schemas.SupportingDocument,
+    SupportingDocumentResourceGetSupportingDocumentError,
+    TData
+  >(
     queryKeyFn({
-      path: "/pst/api/telescopes/{id}",
-      operationId: "getTelescope",
+      path: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}",
+      operationId: "supportingDocumentResourceGetSupportingDocument",
       variables,
     }),
     ({ signal }) =>
-      fetchGetTelescope({ ...fetcherOptions, ...variables }, signal),
+      fetchSupportingDocumentResourceGetSupportingDocument(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
     {
       ...options,
       ...queryOptions,
@@ -5833,43 +5742,48 @@ export const useGetTelescope = <TData = Schemas.Telescope>(
   );
 };
 
-export type DeleteTelescopePathParams = {
+export type SupportingDocumentResourceRemoveSupportingDocumentPathParams = {
   /**
    * @format int64
    */
   id: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
 };
 
-export type DeleteTelescopeError = Fetcher.ErrorWrapper<undefined>;
+export type SupportingDocumentResourceRemoveSupportingDocumentError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type DeleteTelescopeVariables = {
-  pathParams: DeleteTelescopePathParams;
+export type SupportingDocumentResourceRemoveSupportingDocumentVariables = {
+  pathParams: SupportingDocumentResourceRemoveSupportingDocumentPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchDeleteTelescope = (
-  variables: DeleteTelescopeVariables,
+export const fetchSupportingDocumentResourceRemoveSupportingDocument = (
+  variables: SupportingDocumentResourceRemoveSupportingDocumentVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    DeleteTelescopeError,
+    SupportingDocumentResourceRemoveSupportingDocumentError,
     undefined,
     {},
     {},
-    DeleteTelescopePathParams
+    SupportingDocumentResourceRemoveSupportingDocumentPathParams
   >({
-    url: "/pst/api/telescopes/{id}",
+    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}",
     method: "delete",
     ...variables,
     signal,
   });
 
-export const useDeleteTelescope = (
+export const useSupportingDocumentResourceRemoveSupportingDocument = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      DeleteTelescopeError,
-      DeleteTelescopeVariables
+      SupportingDocumentResourceRemoveSupportingDocumentError,
+      SupportingDocumentResourceRemoveSupportingDocumentVariables
     >,
     "mutationFn"
   >
@@ -5877,107 +5791,63 @@ export const useDeleteTelescope = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    DeleteTelescopeError,
-    DeleteTelescopeVariables
+    SupportingDocumentResourceRemoveSupportingDocumentError,
+    SupportingDocumentResourceRemoveSupportingDocumentVariables
   >(
-    (variables: DeleteTelescopeVariables) =>
-      fetchDeleteTelescope({ ...fetcherOptions, ...variables }),
+    (variables: SupportingDocumentResourceRemoveSupportingDocumentVariables) =>
+      fetchSupportingDocumentResourceRemoveSupportingDocument({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type UpdateLocationPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
+export type SupportingDocumentResourceReplaceSupportingDocumentLocationPathParams =
+  {
+    /**
+     * @format int64
+     */
+    id: number;
+    /**
+     * @format int64
+     */
+    proposalCode: number;
+  };
 
-export type UpdateLocationError = Fetcher.ErrorWrapper<undefined>;
-
-export type UpdateLocationVariables = {
-  body?: Schemas.GeocentricPoint;
-  pathParams: UpdateLocationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchUpdateLocation = (
-  variables: UpdateLocationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateLocationError,
-    Schemas.GeocentricPoint,
-    {},
-    {},
-    UpdateLocationPathParams
-  >({
-    url: "/pst/api/telescopes/{id}/location",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useUpdateLocation = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      UpdateLocationError,
-      UpdateLocationVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    UpdateLocationError,
-    UpdateLocationVariables
-  >(
-    (variables: UpdateLocationVariables) =>
-      fetchUpdateLocation({ ...fetcherOptions, ...variables }),
-    options
-  );
-};
-
-export type UpdateLocationCoordinateSystemPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
-
-export type UpdateLocationCoordinateSystemError =
+export type SupportingDocumentResourceReplaceSupportingDocumentLocationError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type UpdateLocationCoordinateSystemVariables = {
-  pathParams: UpdateLocationCoordinateSystemPathParams;
-} & ProposalToolContext["fetcherOptions"];
+export type SupportingDocumentResourceReplaceSupportingDocumentLocationVariables =
+  {
+    pathParams: SupportingDocumentResourceReplaceSupportingDocumentLocationPathParams;
+  } & ProposalToolContext["fetcherOptions"];
 
-export const fetchUpdateLocationCoordinateSystem = (
-  variables: UpdateLocationCoordinateSystemVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    UpdateLocationCoordinateSystemError,
-    undefined,
-    {},
-    {},
-    UpdateLocationCoordinateSystemPathParams
-  >({
-    url: "/pst/api/telescopes/{id}/location/coordinateSystem",
-    method: "put",
-    ...variables,
-    signal,
-  });
+export const fetchSupportingDocumentResourceReplaceSupportingDocumentLocation =
+  (
+    variables: SupportingDocumentResourceReplaceSupportingDocumentLocationVariables,
+    signal?: AbortSignal
+  ) =>
+    proposalToolFetch<
+      undefined,
+      SupportingDocumentResourceReplaceSupportingDocumentLocationError,
+      undefined,
+      {},
+      {},
+      SupportingDocumentResourceReplaceSupportingDocumentLocationPathParams
+    >({
+      url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}/location",
+      method: "put",
+      ...variables,
+      signal,
+    });
 
-export const useUpdateLocationCoordinateSystem = (
+export const useSupportingDocumentResourceReplaceSupportingDocumentLocation = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      UpdateLocationCoordinateSystemError,
-      UpdateLocationCoordinateSystemVariables
+      SupportingDocumentResourceReplaceSupportingDocumentLocationError,
+      SupportingDocumentResourceReplaceSupportingDocumentLocationVariables
     >,
     "mutationFn"
   >
@@ -5985,53 +5855,64 @@ export const useUpdateLocationCoordinateSystem = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    UpdateLocationCoordinateSystemError,
-    UpdateLocationCoordinateSystemVariables
+    SupportingDocumentResourceReplaceSupportingDocumentLocationError,
+    SupportingDocumentResourceReplaceSupportingDocumentLocationVariables
   >(
-    (variables: UpdateLocationCoordinateSystemVariables) =>
-      fetchUpdateLocationCoordinateSystem({ ...fetcherOptions, ...variables }),
+    (
+      variables: SupportingDocumentResourceReplaceSupportingDocumentLocationVariables
+    ) =>
+      fetchSupportingDocumentResourceReplaceSupportingDocumentLocation({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type UpdateLocationXPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-};
+export type SupportingDocumentResourceReplaceSupportingDocumentTitlePathParams =
+  {
+    /**
+     * @format int64
+     */
+    id: number;
+    /**
+     * @format int64
+     */
+    proposalCode: number;
+  };
 
-export type UpdateLocationXError = Fetcher.ErrorWrapper<undefined>;
+export type SupportingDocumentResourceReplaceSupportingDocumentTitleError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type UpdateLocationXVariables = {
-  body?: Schemas.RealQuantity;
-  pathParams: UpdateLocationXPathParams;
-} & ProposalToolContext["fetcherOptions"];
+export type SupportingDocumentResourceReplaceSupportingDocumentTitleVariables =
+  {
+    pathParams: SupportingDocumentResourceReplaceSupportingDocumentTitlePathParams;
+  } & ProposalToolContext["fetcherOptions"];
 
-export const fetchUpdateLocationX = (
-  variables: UpdateLocationXVariables,
+export const fetchSupportingDocumentResourceReplaceSupportingDocumentTitle = (
+  variables: SupportingDocumentResourceReplaceSupportingDocumentTitleVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    UpdateLocationXError,
-    Schemas.RealQuantity,
+    SupportingDocumentResourceReplaceSupportingDocumentTitleError,
+    undefined,
     {},
     {},
-    UpdateLocationXPathParams
+    SupportingDocumentResourceReplaceSupportingDocumentTitlePathParams
   >({
-    url: "/pst/api/telescopes/{id}/location/x",
+    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}/title",
     method: "put",
     ...variables,
     signal,
   });
 
-export const useUpdateLocationX = (
+export const useSupportingDocumentResourceReplaceSupportingDocumentTitle = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      UpdateLocationXError,
-      UpdateLocationXVariables
+      SupportingDocumentResourceReplaceSupportingDocumentTitleError,
+      SupportingDocumentResourceReplaceSupportingDocumentTitleVariables
     >,
     "mutationFn"
   >
@@ -6039,109 +5920,190 @@ export const useUpdateLocationX = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    UpdateLocationXError,
-    UpdateLocationXVariables
+    SupportingDocumentResourceReplaceSupportingDocumentTitleError,
+    SupportingDocumentResourceReplaceSupportingDocumentTitleVariables
   >(
-    (variables: UpdateLocationXVariables) =>
-      fetchUpdateLocationX({ ...fetcherOptions, ...variables }),
+    (
+      variables: SupportingDocumentResourceReplaceSupportingDocumentTitleVariables
+    ) =>
+      fetchSupportingDocumentResourceReplaceSupportingDocumentTitle({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type UpdateLocationXYZPathParams = {
+export type ProposalResourceGetTargetsPathParams = {
   /**
    * @format int64
    */
-  id: number;
+  proposalCode: number;
 };
 
-export type UpdateLocationXYZError = Fetcher.ErrorWrapper<undefined>;
+export type ProposalResourceGetTargetsQueryParams = {
+  sourceName?: string;
+};
 
-export type UpdateLocationXYZRequestBody = Schemas.RealQuantity[];
+export type ProposalResourceGetTargetsError = Fetcher.ErrorWrapper<undefined>;
 
-export type UpdateLocationXYZVariables = {
-  body?: UpdateLocationXYZRequestBody;
-  pathParams: UpdateLocationXYZPathParams;
+export type ProposalResourceGetTargetsResponse = Schemas.ObjectIdentifier[];
+
+export type ProposalResourceGetTargetsVariables = {
+  pathParams: ProposalResourceGetTargetsPathParams;
+  queryParams?: ProposalResourceGetTargetsQueryParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchUpdateLocationXYZ = (
-  variables: UpdateLocationXYZVariables,
+export const fetchProposalResourceGetTargets = (
+  variables: ProposalResourceGetTargetsVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
+    ProposalResourceGetTargetsResponse,
+    ProposalResourceGetTargetsError,
     undefined,
-    UpdateLocationXYZError,
-    UpdateLocationXYZRequestBody,
     {},
-    {},
-    UpdateLocationXYZPathParams
+    ProposalResourceGetTargetsQueryParams,
+    ProposalResourceGetTargetsPathParams
   >({
-    url: "/pst/api/telescopes/{id}/location/xyz",
-    method: "put",
+    url: "/pst/api/proposals/{proposalCode}/targets",
+    method: "get",
     ...variables,
     signal,
   });
 
-export const useUpdateLocationXYZ = (
+export const useProposalResourceGetTargets = <
+  TData = ProposalResourceGetTargetsResponse
+>(
+  variables: ProposalResourceGetTargetsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalResourceGetTargetsResponse,
+      ProposalResourceGetTargetsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalResourceGetTargetsResponse,
+    ProposalResourceGetTargetsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/targets",
+      operationId: "proposalResourceGetTargets",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetTargets(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalResourceAddNewTargetPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceAddNewTargetError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceAddNewTargetVariables = {
+  body?: Schemas.Target;
+  pathParams: ProposalResourceAddNewTargetPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceAddNewTarget = (
+  variables: ProposalResourceAddNewTargetVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Target,
+    ProposalResourceAddNewTargetError,
+    Schemas.Target,
+    {},
+    {},
+    ProposalResourceAddNewTargetPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/targets",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceAddNewTarget = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
-      UpdateLocationXYZError,
-      UpdateLocationXYZVariables
+      Schemas.Target,
+      ProposalResourceAddNewTargetError,
+      ProposalResourceAddNewTargetVariables
     >,
     "mutationFn"
   >
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
-    UpdateLocationXYZError,
-    UpdateLocationXYZVariables
+    Schemas.Target,
+    ProposalResourceAddNewTargetError,
+    ProposalResourceAddNewTargetVariables
   >(
-    (variables: UpdateLocationXYZVariables) =>
-      fetchUpdateLocationXYZ({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceAddNewTargetVariables) =>
+      fetchProposalResourceAddNewTarget({ ...fetcherOptions, ...variables }),
     options
   );
 };
 
-export type UpdateLocationYPathParams = {
+export type ProposalResourceRemoveTargetPathParams = {
   /**
    * @format int64
    */
-  id: number;
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  targetId: number;
 };
 
-export type UpdateLocationYError = Fetcher.ErrorWrapper<undefined>;
+export type ProposalResourceRemoveTargetError = Fetcher.ErrorWrapper<undefined>;
 
-export type UpdateLocationYVariables = {
-  body?: Schemas.RealQuantity;
-  pathParams: UpdateLocationYPathParams;
+export type ProposalResourceRemoveTargetVariables = {
+  pathParams: ProposalResourceRemoveTargetPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchUpdateLocationY = (
-  variables: UpdateLocationYVariables,
+export const fetchProposalResourceRemoveTarget = (
+  variables: ProposalResourceRemoveTargetVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    UpdateLocationYError,
-    Schemas.RealQuantity,
+    ProposalResourceRemoveTargetError,
+    undefined,
     {},
     {},
-    UpdateLocationYPathParams
+    ProposalResourceRemoveTargetPathParams
   >({
-    url: "/pst/api/telescopes/{id}/location/y",
-    method: "put",
+    url: "/pst/api/proposals/{proposalCode}/targets/{targetId}",
+    method: "delete",
     ...variables,
     signal,
   });
 
-export const useUpdateLocationY = (
+export const useProposalResourceRemoveTarget = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      UpdateLocationYError,
-      UpdateLocationYVariables
+      ProposalResourceRemoveTargetError,
+      ProposalResourceRemoveTargetVariables
     >,
     "mutationFn"
   >
@@ -6149,106 +6111,182 @@ export const useUpdateLocationY = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    UpdateLocationYError,
-    UpdateLocationYVariables
+    ProposalResourceRemoveTargetError,
+    ProposalResourceRemoveTargetVariables
   >(
-    (variables: UpdateLocationYVariables) =>
-      fetchUpdateLocationY({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceRemoveTargetVariables) =>
+      fetchProposalResourceRemoveTarget({ ...fetcherOptions, ...variables }),
     options
   );
 };
 
-export type UpdateLocationZPathParams = {
+export type ProposalResourceGetTechGoalsPathParams = {
   /**
    * @format int64
    */
-  id: number;
+  proposalCode: number;
 };
 
-export type UpdateLocationZError = Fetcher.ErrorWrapper<undefined>;
+export type ProposalResourceGetTechGoalsError = Fetcher.ErrorWrapper<undefined>;
 
-export type UpdateLocationZVariables = {
-  body?: Schemas.RealQuantity;
-  pathParams: UpdateLocationZPathParams;
+export type ProposalResourceGetTechGoalsResponse = Schemas.TechnicalGoal[];
+
+export type ProposalResourceGetTechGoalsVariables = {
+  pathParams: ProposalResourceGetTechGoalsPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchUpdateLocationZ = (
-  variables: UpdateLocationZVariables,
+export const fetchProposalResourceGetTechGoals = (
+  variables: ProposalResourceGetTechGoalsVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
+    ProposalResourceGetTechGoalsResponse,
+    ProposalResourceGetTechGoalsError,
     undefined,
-    UpdateLocationZError,
-    Schemas.RealQuantity,
     {},
     {},
-    UpdateLocationZPathParams
+    ProposalResourceGetTechGoalsPathParams
   >({
-    url: "/pst/api/telescopes/{id}/location/z",
-    method: "put",
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals",
+    method: "get",
     ...variables,
     signal,
   });
 
-export const useUpdateLocationZ = (
+export const useProposalResourceGetTechGoals = <
+  TData = ProposalResourceGetTechGoalsResponse
+>(
+  variables: ProposalResourceGetTechGoalsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalResourceGetTechGoalsResponse,
+      ProposalResourceGetTechGoalsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalResourceGetTechGoalsResponse,
+    ProposalResourceGetTechGoalsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/technicalGoals",
+      operationId: "proposalResourceGetTechGoals",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetTechGoals(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalResourceAddNewTechGoalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceAddNewTechGoalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceAddNewTechGoalVariables = {
+  body?: Schemas.TechnicalGoal;
+  pathParams: ProposalResourceAddNewTechGoalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceAddNewTechGoal = (
+  variables: ProposalResourceAddNewTechGoalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.TechnicalGoal,
+    ProposalResourceAddNewTechGoalError,
+    Schemas.TechnicalGoal,
+    {},
+    {},
+    ProposalResourceAddNewTechGoalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceAddNewTechGoal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
-      UpdateLocationZError,
-      UpdateLocationZVariables
+      Schemas.TechnicalGoal,
+      ProposalResourceAddNewTechGoalError,
+      ProposalResourceAddNewTechGoalVariables
     >,
     "mutationFn"
   >
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
-    UpdateLocationZError,
-    UpdateLocationZVariables
+    Schemas.TechnicalGoal,
+    ProposalResourceAddNewTechGoalError,
+    ProposalResourceAddNewTechGoalVariables
   >(
-    (variables: UpdateLocationZVariables) =>
-      fetchUpdateLocationZ({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceAddNewTechGoalVariables) =>
+      fetchProposalResourceAddNewTechGoal({ ...fetcherOptions, ...variables }),
     options
   );
 };
 
-export type UpdateTelescopeNamePathParams = {
+export type ProposalResourceRemoveTechGoalPathParams = {
   /**
    * @format int64
    */
-  id: number;
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  techGoalId: number;
 };
 
-export type UpdateTelescopeNameError = Fetcher.ErrorWrapper<undefined>;
+export type ProposalResourceRemoveTechGoalError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type UpdateTelescopeNameVariables = {
-  pathParams: UpdateTelescopeNamePathParams;
+export type ProposalResourceRemoveTechGoalVariables = {
+  pathParams: ProposalResourceRemoveTechGoalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchUpdateTelescopeName = (
-  variables: UpdateTelescopeNameVariables,
+export const fetchProposalResourceRemoveTechGoal = (
+  variables: ProposalResourceRemoveTechGoalVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    UpdateTelescopeNameError,
+    ProposalResourceRemoveTechGoalError,
     undefined,
     {},
     {},
-    UpdateTelescopeNamePathParams
+    ProposalResourceRemoveTechGoalPathParams
   >({
-    url: "/pst/api/telescopes/{id}/name",
-    method: "put",
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{techGoalId}",
+    method: "delete",
     ...variables,
     signal,
   });
 
-export const useUpdateTelescopeName = (
+export const useProposalResourceRemoveTechGoal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      UpdateTelescopeNameError,
-      UpdateTelescopeNameVariables
+      ProposalResourceRemoveTechGoalError,
+      ProposalResourceRemoveTechGoalVariables
     >,
     "mutationFn"
   >
@@ -6256,52 +6294,119 @@ export const useUpdateTelescopeName = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    UpdateTelescopeNameError,
-    UpdateTelescopeNameVariables
+    ProposalResourceRemoveTechGoalError,
+    ProposalResourceRemoveTechGoalVariables
   >(
-    (variables: UpdateTelescopeNameVariables) =>
-      fetchUpdateTelescopeName({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceRemoveTechGoalVariables) =>
+      fetchProposalResourceRemoveTechGoal({ ...fetcherOptions, ...variables }),
     options
   );
 };
 
-export type UpdateTelescopeWikiIdPathParams = {
+export type ProposalResourceGetObservingProposalTitlePathParams = {
   /**
    * @format int64
    */
-  id: number;
+  proposalCode: number;
 };
 
-export type UpdateTelescopeWikiIdError = Fetcher.ErrorWrapper<undefined>;
+export type ProposalResourceGetObservingProposalTitleError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type UpdateTelescopeWikiIdVariables = {
-  pathParams: UpdateTelescopeWikiIdPathParams;
+export type ProposalResourceGetObservingProposalTitleVariables = {
+  pathParams: ProposalResourceGetObservingProposalTitlePathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchUpdateTelescopeWikiId = (
-  variables: UpdateTelescopeWikiIdVariables,
+export const fetchProposalResourceGetObservingProposalTitle = (
+  variables: ProposalResourceGetObservingProposalTitleVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    string,
+    ProposalResourceGetObservingProposalTitleError,
+    undefined,
+    {},
+    {},
+    ProposalResourceGetObservingProposalTitlePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/title",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceGetObservingProposalTitle = <TData = string>(
+  variables: ProposalResourceGetObservingProposalTitleVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      string,
+      ProposalResourceGetObservingProposalTitleError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    string,
+    ProposalResourceGetObservingProposalTitleError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/title",
+      operationId: "proposalResourceGetObservingProposalTitle",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetObservingProposalTitle(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalResourceReplaceTitlePathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceReplaceTitleError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceReplaceTitleVariables = {
+  pathParams: ProposalResourceReplaceTitlePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceReplaceTitle = (
+  variables: ProposalResourceReplaceTitleVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    UpdateTelescopeWikiIdError,
+    ProposalResourceReplaceTitleError,
     undefined,
     {},
     {},
-    UpdateTelescopeWikiIdPathParams
+    ProposalResourceReplaceTitlePathParams
   >({
-    url: "/pst/api/telescopes/{id}/wikiId",
+    url: "/pst/api/proposals/{proposalCode}/title",
     method: "put",
     ...variables,
     signal,
   });
 
-export const useUpdateTelescopeWikiId = (
+export const useProposalResourceReplaceTitle = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      UpdateTelescopeWikiIdError,
-      UpdateTelescopeWikiIdVariables
+      ProposalResourceReplaceTitleError,
+      ProposalResourceReplaceTitleVariables
     >,
     "mutationFn"
   >
@@ -6309,178 +6414,369 @@ export const useUpdateTelescopeWikiId = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    UpdateTelescopeWikiIdError,
-    UpdateTelescopeWikiIdVariables
+    ProposalResourceReplaceTitleError,
+    ProposalResourceReplaceTitleVariables
   >(
-    (variables: UpdateTelescopeWikiIdVariables) =>
-      fetchUpdateTelescopeWikiId({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceReplaceTitleVariables) =>
+      fetchProposalResourceReplaceTitle({ ...fetcherOptions, ...variables }),
     options
+  );
+};
+
+export type SpaceFrameResourceGetSpaceFramePathParams = {
+  frameCode: string;
+};
+
+export type SpaceFrameResourceGetSpaceFrameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SpaceFrameResourceGetSpaceFrameVariables = {
+  pathParams: SpaceFrameResourceGetSpaceFramePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSpaceFrameResourceGetSpaceFrame = (
+  variables: SpaceFrameResourceGetSpaceFrameVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.SpaceFrame,
+    SpaceFrameResourceGetSpaceFrameError,
+    undefined,
+    {},
+    {},
+    SpaceFrameResourceGetSpaceFramePathParams
+  >({
+    url: "/pst/api/spaceFrames/{frameCode}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSpaceFrameResourceGetSpaceFrame = <TData = Schemas.SpaceFrame>(
+  variables: SpaceFrameResourceGetSpaceFrameVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.SpaceFrame,
+      SpaceFrameResourceGetSpaceFrameError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.SpaceFrame,
+    SpaceFrameResourceGetSpaceFrameError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/spaceFrames/{frameCode}",
+      operationId: "spaceFrameResourceGetSpaceFrame",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchSpaceFrameResourceGetSpaceFrame(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type SpaceSystemResourceGetSpaceSystemPathParams = {
+  frameCode: string;
+};
+
+export type SpaceSystemResourceGetSpaceSystemError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SpaceSystemResourceGetSpaceSystemVariables = {
+  pathParams: SpaceSystemResourceGetSpaceSystemPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSpaceSystemResourceGetSpaceSystem = (
+  variables: SpaceSystemResourceGetSpaceSystemVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.SpaceSys,
+    SpaceSystemResourceGetSpaceSystemError,
+    undefined,
+    {},
+    {},
+    SpaceSystemResourceGetSpaceSystemPathParams
+  >({
+    url: "/pst/api/spaceSystems/{frameCode}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSpaceSystemResourceGetSpaceSystem = <TData = Schemas.SpaceSys>(
+  variables: SpaceSystemResourceGetSpaceSystemVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.SpaceSys,
+      SpaceSystemResourceGetSpaceSystemError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.SpaceSys,
+    SpaceSystemResourceGetSpaceSystemError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/spaceSystems/{frameCode}",
+      operationId: "spaceSystemResourceGetSpaceSystem",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchSpaceSystemResourceGetSpaceSystem(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type SubjectMapResourceSubjectMapPathParams = {
+  id: string;
+};
+
+export type SubjectMapResourceSubjectMapError = Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceSubjectMapVariables = {
+  pathParams: SubjectMapResourceSubjectMapPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceSubjectMap = (
+  variables: SubjectMapResourceSubjectMapVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.SubjectMap,
+    SubjectMapResourceSubjectMapError,
+    undefined,
+    {},
+    {},
+    SubjectMapResourceSubjectMapPathParams
+  >({ url: "/pst/api/subjectMap/{id}", method: "get", ...variables, signal });
+
+export const useSubjectMapResourceSubjectMap = <TData = Schemas.SubjectMap>(
+  variables: SubjectMapResourceSubjectMapVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.SubjectMap,
+      SubjectMapResourceSubjectMapError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.SubjectMap,
+    SubjectMapResourceSubjectMapError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/subjectMap/{id}",
+      operationId: "subjectMapResourceSubjectMap",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchSubjectMapResourceSubjectMap(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
   );
 };
 
 export type QueryOperation =
   | {
       path: "/pst/api/observatories";
-      operationId: "getObservatories";
-      variables: GetObservatoriesVariables;
+      operationId: "observatoryResourceGetObservatories";
+      variables: ObservatoryResourceGetObservatoriesVariables;
     }
   | {
       path: "/pst/api/observatories/{id}";
-      operationId: "getObservatory";
-      variables: GetObservatoryVariables;
+      operationId: "observatoryResourceGetObservatory";
+      variables: ObservatoryResourceGetObservatoryVariables;
     }
   | {
       path: "/pst/api/observatories/{id}/backend";
-      operationId: "getObservatoryBackends";
-      variables: GetObservatoryBackendsVariables;
+      operationId: "observatoryResourceGetObservatoryBackends";
+      variables: ObservatoryResourceGetObservatoryBackendsVariables;
     }
   | {
       path: "/pst/api/observatories/{id}/backend/{subId}";
-      operationId: "getObservatoryBackend";
-      variables: GetObservatoryBackendVariables;
+      operationId: "observatoryResourceGetObservatoryBackend";
+      variables: ObservatoryResourceGetObservatoryBackendVariables;
+    }
+  | {
+      path: "/pst/api/observatories/{observatoryId}/instruments";
+      operationId: "instrumentResourceGetObservatoryInstruments";
+      variables: InstrumentResourceGetObservatoryInstrumentsVariables;
+    }
+  | {
+      path: "/pst/api/observatories/{observatoryId}/telescopes";
+      operationId: "telescopeResourceGetObservatoryTelescopes";
+      variables: TelescopeResourceGetObservatoryTelescopesVariables;
+    }
+  | {
+      path: "/pst/api/observatories/{observatoryId}/telescopes/{telescopeId}";
+      operationId: "telescopeResourceGetTelescope";
+      variables: TelescopeResourceGetTelescopeVariables;
     }
   | {
       path: "/pst/api/organizations";
-      operationId: "getOrganizations";
-      variables: GetOrganizationsVariables;
+      operationId: "organizationResourceGetOrganizations";
+      variables: OrganizationResourceGetOrganizationsVariables;
     }
   | {
       path: "/pst/api/organizations/{id}";
-      operationId: "getOrganization";
-      variables: GetOrganizationVariables;
+      operationId: "organizationResourceGetOrganization";
+      variables: OrganizationResourceGetOrganizationVariables;
     }
   | {
       path: "/pst/api/people";
-      operationId: "getPeople";
-      variables: GetPeopleVariables;
+      operationId: "personResourceGetPeople";
+      variables: PersonResourceGetPeopleVariables;
     }
   | {
       path: "/pst/api/people/{id}";
-      operationId: "getPerson";
-      variables: GetPersonVariables;
+      operationId: "personResourceGetPerson";
+      variables: PersonResourceGetPersonVariables;
     }
   | {
       path: "/pst/api/proposalCycles";
-      operationId: "getProposalCycless";
-      variables: GetProposalCyclessVariables;
+      operationId: "proposalCyclesResourceGetProposalCycles";
+      variables: ProposalCyclesResourceGetProposalCyclesVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}";
-      operationId: "getProposalCycle";
-      variables: GetProposalCycleVariables;
+      operationId: "proposalCyclesResourceGetProposalCycle";
+      variables: ProposalCyclesResourceGetProposalCycleVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/TAC";
-      operationId: "getTAC";
-      variables: GetTACVariables;
+      operationId: "proposalCyclesResourceGetTAC";
+      variables: ProposalCyclesResourceGetTACVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview";
-      operationId: "getReviewedProposals";
-      variables: GetReviewedProposalsVariables;
+      operationId: "proposalCyclesResourceGetReviewedProposals";
+      variables: ProposalCyclesResourceGetReviewedProposalsVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}";
-      operationId: "getReviewedProposal";
-      variables: GetReviewedProposalVariables;
+      operationId: "proposalCyclesResourceGetReviewedProposal";
+      variables: ProposalCyclesResourceGetReviewedProposalVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals";
-      operationId: "getSubmittedProposals";
-      variables: GetSubmittedProposalsVariables;
+      operationId: "proposalCyclesResourceGetSubmittedProposals";
+      variables: ProposalCyclesResourceGetSubmittedProposalsVariables;
     }
   | {
       path: "/pst/api/proposals";
-      operationId: "getProposals";
-      variables: GetProposalsVariables;
+      operationId: "proposalResourceGetProposals";
+      variables: ProposalResourceGetProposalsVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}";
-      operationId: "getObservingProposal";
-      variables: GetObservingProposalVariables;
+      operationId: "proposalResourceGetObservingProposal";
+      variables: ProposalResourceGetObservingProposalVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/fields";
+      operationId: "proposalResourceGetFields";
+      variables: ProposalResourceGetFieldsVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/investigators";
-      operationId: "getInvestigators";
-      variables: GetInvestigatorsVariables;
+      operationId: "investigatorResourceGetInvestigators";
+      variables: InvestigatorResourceGetInvestigatorsVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}";
-      operationId: "getInvestigator";
-      variables: GetInvestigatorVariables;
+      operationId: "investigatorResourceGetInvestigator";
+      variables: InvestigatorResourceGetInvestigatorVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/justifications/{which}";
-      operationId: "getJustification";
-      variables: GetJustificationVariables;
+      operationId: "proposalResourceGetJustification";
+      variables: ProposalResourceGetJustificationVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/kind";
+      operationId: "proposalResourceGetObservingProposalKind";
+      variables: ProposalResourceGetObservingProposalKindVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/observations";
-      operationId: "getObservations";
-      variables: GetObservationsVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/observations/calibrationObservations";
-      operationId: "getCalibrationObservations";
-      variables: GetCalibrationObservationsVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/observations/fields";
-      operationId: "getFields";
-      variables: GetFieldsVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/observations/targetObservations";
-      operationId: "getTargetObservations";
-      variables: GetTargetObservationsVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/observations/targets";
-      operationId: "getTargets";
-      variables: GetTargetsVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/observations/technicalGoals";
-      operationId: "getTechGoals";
-      variables: GetTechGoalsVariables;
+      operationId: "observationResourceGetObservations";
+      variables: ObservationResourceGetObservationsVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints";
-      operationId: "getConstraints";
-      variables: GetConstraintsVariables;
+      operationId: "observationResourceGetConstraints";
+      variables: ObservationResourceGetConstraintsVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/supportingDocuments";
-      operationId: "getSupportingDocuments";
-      variables: GetSupportingDocumentsVariables;
+      operationId: "supportingDocumentResourceGetSupportingDocuments";
+      variables: SupportingDocumentResourceGetSupportingDocumentsVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}";
-      operationId: "getSupportingDocument";
-      variables: GetSupportingDocumentVariables;
+      operationId: "supportingDocumentResourceGetSupportingDocument";
+      variables: SupportingDocumentResourceGetSupportingDocumentVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/targets";
+      operationId: "proposalResourceGetTargets";
+      variables: ProposalResourceGetTargetsVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/technicalGoals";
+      operationId: "proposalResourceGetTechGoals";
+      variables: ProposalResourceGetTechGoalsVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/title";
+      operationId: "proposalResourceGetObservingProposalTitle";
+      variables: ProposalResourceGetObservingProposalTitleVariables;
     }
   | {
       path: "/pst/api/spaceFrames/{frameCode}";
-      operationId: "getSpaceFrame";
-      variables: GetSpaceFrameVariables;
+      operationId: "spaceFrameResourceGetSpaceFrame";
+      variables: SpaceFrameResourceGetSpaceFrameVariables;
     }
   | {
       path: "/pst/api/spaceSystems/{frameCode}";
-      operationId: "getSpaceSystem";
-      variables: GetSpaceSystemVariables;
+      operationId: "spaceSystemResourceGetSpaceSystem";
+      variables: SpaceSystemResourceGetSpaceSystemVariables;
     }
   | {
       path: "/pst/api/subjectMap/{id}";
-      operationId: "subjectMap";
-      variables: SubjectMapVariables;
-    }
-  | {
-      path: "/pst/api/telescopes";
-      operationId: "getTelescopes";
-      variables: GetTelescopesVariables;
-    }
-  | {
-      path: "/pst/api/telescopes/{id}";
-      operationId: "getTelescope";
-      variables: GetTelescopeVariables;
+      operationId: "subjectMapResourceSubjectMap";
+      variables: SubjectMapResourceSubjectMapVariables;
     };

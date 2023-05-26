@@ -3,9 +3,8 @@ import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {confirmAlert} from 'react-confirm-alert';
 //import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import {useGetProposals} from './generated/proposalToolComponents'
+import {useProposalResourceGetProposals} from './generated/proposalToolComponents'
 import './App.css'
-import {ObjectIdentifier} from "./generated/proposalToolSchemas";
 
 const queryClient = new QueryClient()
 
@@ -63,9 +62,9 @@ function App2() {
 
     function Proposals() {
         const [query, setQuery] = useState("");
-        const { data , error, isLoading } = useGetProposals(
+        const { data , error, isLoading } = useProposalResourceGetProposals(
             {
-                queryParams: { title: '%' + query + '%'},
+                queryParams: { investigatorName: '%' + query + '%'},
             },
             {
                 enabled: true,
@@ -88,7 +87,7 @@ function App2() {
                 ) : (
                     <ul>
                         {data?.map((item) => (
-                            <li key={item.dbid}>{item.name}</li>
+                            <li key={item.code}>{item.title}</li>
                         ))}
                     </ul>
                 )}
