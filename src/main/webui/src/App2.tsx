@@ -5,12 +5,13 @@ import {confirmAlert} from 'react-confirm-alert';
 //import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {useProposalResourceGetProposals} from './generated/proposalToolComponents'
 import './App.css'
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const queryClient = new QueryClient()
 
 function App2() {
     const comingSoon = () => {
-        /*const options = {
+        const options = {
             title: 'Create new proposal',
             message: 'Coming soon!',
             buttons: [
@@ -20,30 +21,17 @@ function App2() {
             ],
             closeOnEscape: true,
             closeOnClickOutside: true,
-            willUnmount: () => {//do nothing
-            },
-            afterClose: () => {
-                //do nothing
-            },
-            onClickOutside: () => {
-                //do nothing
-            },
-            onKeypress: () => {
-                //do nothing
-            },
-            onKeypressEscape: () => {
-                //do nothing
-            }
+            overlayClassName: "overlay-custom-class-name",
         };
 
-        confirmAlert(options);*/
+        confirmAlert(options);
     }
 
   return (
     <>
-      <h1>Proposals</h1>
+      <nav className="nav-bar">Proposals</nav>
       <div className="flex-container">
-          <div className="left-nav">
+          <div className="nav-bar">
               <button className="button" onClick={comingSoon}>Create New Proposal</button><br/>
           <QueryClientProvider client={queryClient}>
               Search and filter your proposals
