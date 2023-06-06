@@ -3721,8 +3721,234 @@ export const useProposalCyclesResourceSubmitProposal = (
   );
 };
 
+export type AvailableResourcesResourceGetCycleAvailableResourcesPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+};
+
+export type AvailableResourcesResourceGetCycleAvailableResourcesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceGetCycleAvailableResourcesResponse =
+  Schemas.Resource[];
+
+export type AvailableResourcesResourceGetCycleAvailableResourcesVariables = {
+  pathParams: AvailableResourcesResourceGetCycleAvailableResourcesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceGetCycleAvailableResources = (
+  variables: AvailableResourcesResourceGetCycleAvailableResourcesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    AvailableResourcesResourceGetCycleAvailableResourcesResponse,
+    AvailableResourcesResourceGetCycleAvailableResourcesError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceGetCycleAvailableResourcesPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/availableResources",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceGetCycleAvailableResources = <
+  TData = AvailableResourcesResourceGetCycleAvailableResourcesResponse
+>(
+  variables: AvailableResourcesResourceGetCycleAvailableResourcesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      AvailableResourcesResourceGetCycleAvailableResourcesResponse,
+      AvailableResourcesResourceGetCycleAvailableResourcesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    AvailableResourcesResourceGetCycleAvailableResourcesResponse,
+    AvailableResourcesResourceGetCycleAvailableResourcesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/availableResources",
+      operationId: "availableResourcesResourceGetCycleAvailableResources",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchAvailableResourcesResourceGetCycleAvailableResources(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ObservingModeResourceGetCycleObservingModesPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+};
+
+export type ObservingModeResourceGetCycleObservingModesQueryParams = {
+  modeName?: string;
+};
+
+export type ObservingModeResourceGetCycleObservingModesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceGetCycleObservingModesResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ObservingModeResourceGetCycleObservingModesVariables = {
+  pathParams: ObservingModeResourceGetCycleObservingModesPathParams;
+  queryParams?: ObservingModeResourceGetCycleObservingModesQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceGetCycleObservingModes = (
+  variables: ObservingModeResourceGetCycleObservingModesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ObservingModeResourceGetCycleObservingModesResponse,
+    ObservingModeResourceGetCycleObservingModesError,
+    undefined,
+    {},
+    ObservingModeResourceGetCycleObservingModesQueryParams,
+    ObservingModeResourceGetCycleObservingModesPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceGetCycleObservingModes = <
+  TData = ObservingModeResourceGetCycleObservingModesResponse
+>(
+  variables: ObservingModeResourceGetCycleObservingModesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservingModeResourceGetCycleObservingModesResponse,
+      ObservingModeResourceGetCycleObservingModesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservingModeResourceGetCycleObservingModesResponse,
+    ObservingModeResourceGetCycleObservingModesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes",
+      operationId: "observingModeResourceGetCycleObservingModes",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchObservingModeResourceGetCycleObservingModes(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ObservingModeResourceGetCycleObservingModePathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+  /**
+   * @format int64
+   */
+  modeId: number;
+};
+
+export type ObservingModeResourceGetCycleObservingModeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceGetCycleObservingModeResponse =
+  Schemas.ObservingConfigurationSynopsis[];
+
+export type ObservingModeResourceGetCycleObservingModeVariables = {
+  pathParams: ObservingModeResourceGetCycleObservingModePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceGetCycleObservingMode = (
+  variables: ObservingModeResourceGetCycleObservingModeVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ObservingModeResourceGetCycleObservingModeResponse,
+    ObservingModeResourceGetCycleObservingModeError,
+    undefined,
+    {},
+    {},
+    ObservingModeResourceGetCycleObservingModePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceGetCycleObservingMode = <
+  TData = ObservingModeResourceGetCycleObservingModeResponse
+>(
+  variables: ObservingModeResourceGetCycleObservingModeVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservingModeResourceGetCycleObservingModeResponse,
+      ObservingModeResourceGetCycleObservingModeError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservingModeResourceGetCycleObservingModeResponse,
+    ObservingModeResourceGetCycleObservingModeError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}",
+      operationId: "observingModeResourceGetCycleObservingMode",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchObservingModeResourceGetCycleObservingMode(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type ProposalResourceGetProposalsQueryParams = {
   investigatorName?: string;
+  title?: string;
 };
 
 export type ProposalResourceGetProposalsError = Fetcher.ErrorWrapper<undefined>;
@@ -6694,6 +6920,21 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals";
       operationId: "proposalCyclesResourceGetSubmittedProposals";
       variables: ProposalCyclesResourceGetSubmittedProposalsVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/availableResources";
+      operationId: "availableResourcesResourceGetCycleAvailableResources";
+      variables: AvailableResourcesResourceGetCycleAvailableResourcesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes";
+      operationId: "observingModeResourceGetCycleObservingModes";
+      variables: ObservingModeResourceGetCycleObservingModesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}";
+      operationId: "observingModeResourceGetCycleObservingMode";
+      variables: ObservingModeResourceGetCycleObservingModeVariables;
     }
   | {
       path: "/pst/api/proposals";

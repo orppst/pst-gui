@@ -632,6 +632,16 @@ export type ObservingConfiguration = {
   backend?: Backend;
 };
 
+export type ObservingConfigurationSynopsis = {
+  /**
+   * @format int64
+   */
+  id?: number;
+  telescopeName?: string;
+  instrumentName?: string;
+  backendName?: string;
+};
+
 /**
  * a collection of configs that can be chosen to observe with.
  */
