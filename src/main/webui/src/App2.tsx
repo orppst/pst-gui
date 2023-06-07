@@ -6,6 +6,7 @@ import {useProposalResourceGetProposals} from './generated/proposalToolComponent
 import './App.css'
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import TestPanel from './proposal/test';
+import TitlePanel from './proposal/Title';
 
 const queryClient = new QueryClient()
 
@@ -13,8 +14,10 @@ export const UserContext = createContext();
 
 function App2() {
     const [user, setUser] = useState("PI");
+    const [selectedProposal, setSelectedProposal] = useState(0);
+    const values = {user, selectedProposal};
     const comingSoon = () => {
-        setUser("ComingSoon!");
+        setSelectedProposal(0);
         const options = {
             title: 'Create new proposal',
             message: 'Coming soon! ',
@@ -32,7 +35,7 @@ function App2() {
 
   return (
     <>
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={values}>
       <nav className="nav-bar">{`Proposals for `}
           {`${user}`}
       </nav>
@@ -48,7 +51,11 @@ function App2() {
             </QueryClientProvider>
         </div>
         <div className="main-forms">
+            {selectedProposal === 0 ? (
             <TestPanel />
+                ) : (
+                    <TitlePanel />
+                )}
         </div>
       </div>
     </UserContext.Provider>
@@ -84,7 +91,7 @@ function App2() {
                 ) : (
                     <ul>
                         {data?.map((item) => (
-                            <li key={item.code}>{item.title}</li>
+                            <li key={item.code} onClick={(e) => {setSelectedProposal(item.code)}}>{item.title}</li>
                         ))}
                     </ul>
                 )}
