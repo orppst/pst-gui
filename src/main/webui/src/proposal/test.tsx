@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { UserContext } from '../App2'
 import { useProposalResourceGetObservingProposal } from "../generated/proposalToolComponents.ts";
-import * as Schemas from "../generated/proposalToolSchemas.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const queryClient = new QueryClient()
 
