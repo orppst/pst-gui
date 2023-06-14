@@ -1,6 +1,7 @@
 import { useReducer, useContext, useState } from "react";
 import { UserContext } from '../App2'
 import {
+    fetchProposalResourceCreateObservingProposal,
     fetchProposalResourceReplaceTitle,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents.ts";
@@ -14,29 +15,20 @@ function formReducer(state, event) {
         [event.name]: event.value
     }
 }
-function TitlePanel() {
+function NewProposalPanel() {
 
     return (
         <>
             <QueryClientProvider client={queryClient}>
-                <DisplayTitle />
+                <DisplayNewProposal />
             </QueryClientProvider>
         </>
     );
 
-    function DisplayTitle() {
-        const { user, selectedProposal, setSelectedProposal } = useContext(UserContext);
-        const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
-        const [formData, setFormData] = useReducer(formReducer, {title: data});
+    function DisplayNewProposal() {
+        const { user, selectedProposal, setSelectedProposal, setNavPanel } = useContext(UserContext);
+        const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
-
-        if (error) {
-            return (
-                <div>
-                    <pre>{JSON.stringify(error, null, 2)}</pre>
-                </div>
-            );
-        }
 
         function handleSubmit(event) {
             event.preventDefault();
@@ -44,13 +36,13 @@ function TitlePanel() {
             setSubmitting(true);
             //Don't allow a blank title
             if(formData.value === "") {
-                setFormData({name: "title", value: data});
+                setFormData({name: "title", value: 'empty'});
             }
 
-            //FIXME: perhaps this should accept application/json as the content type? End up with quotation marks surrounding the new title
-            fetchProposalResourceReplaceTitle({pathParams: {proposalCode: selectedProposal}, body: formData.title, headers: {"Content-Type": "text/plain"}})
+            fetchProposalResourceCreateObservingProposal({ body: formData})
                 .then(setSubmitting(false))
-                .then(setSelectedProposal(selectedProposal))
+                .then(setSelectedProposal(0))
+                .then(setNavPanel('welcome'))
                 .catch(console.log);
         }
 
@@ -63,18 +55,24 @@ function TitlePanel() {
 
         return (
             <div>
-                <h3>Update title</h3>
+                <h3>Create Proposal</h3>
                 {submitting &&
                     <div>Submitting request</div>
                 }
                 <form onSubmit={handleSubmit}>
                     <fieldset>
                         <label>
-                            {isLoading ? (`Loading...`)
-                                : (
-                                <input name="title" defaultValue={`${data}`} onChange={handleChange} />
-                                )}
-                            <button type="submit" >Update</button>
+                            <p>Title</p>
+                            <input name="title" onChange={handleChange} />
+                            <p>Summary</p>
+                            <input name="summary" onChange={handleChange} />
+                            <p>Kind</p>
+                            <select name="kind" onChange={handleChange}>
+                                <option value="">--Please choose an option--</option>
+                                <option value="Standard">Standard</option>
+                            </select>
+                            <br />
+                            <button type="submit" >Create</button>
                         </label>
                     </fieldset>
                 </form>
@@ -84,4 +82,4 @@ function TitlePanel() {
 
 }
 
-export default TitlePanel
+export default NewProposalPanel

@@ -7,6 +7,7 @@ import './App.css'
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import TestPanel from './proposal/test';
 import TitlePanel from './proposal/Title';
+import NewProposalPanel from './proposal/New.tsx';
 
 const queryClient = new QueryClient()
 
@@ -15,22 +16,12 @@ export const UserContext = createContext();
 function App2() {
     const [user, setUser] = useState("PI");
     const [selectedProposal, setSelectedProposal] = useState(0);
-    const values = {user, selectedProposal};
+    const [navPanel, setNavPanel] = useState("welcome");
+    const [selectedTitle, setSelectedTitle] = useState("");
+    const values = {user, selectedProposal, setSelectedProposal, setNavPanel};
     const comingSoon = () => {
         setSelectedProposal(0);
-        const options = {
-            title: 'Create new proposal',
-            message: 'Coming soon! ',
-            buttons: [
-                {
-                    label: 'Ok'
-                }
-            ],
-            closeOnEscape: true,
-            overlayClassName: "overlay-custom-class-name",
-        };
-
-        confirmAlert(options);
+        setNavPanel("newProposal");
     }
 
   return (
@@ -51,11 +42,9 @@ function App2() {
             </QueryClientProvider>
         </div>
         <div className="main-forms">
-            {selectedProposal === 0 ? (
-            <TestPanel />
-                ) : (
-                    <TitlePanel />
-                )}
+            {navPanel==='welcome' && !selectedProposal && (<TestPanel />)}
+            {navPanel==='welcome' && selectedProposal>0 && (<TitlePanel />)}
+            {navPanel==='newProposal' && (<NewProposalPanel />)}
         </div>
       </div>
     </UserContext.Provider>
@@ -91,7 +80,7 @@ function App2() {
                 ) : (
                     <ul>
                         {data?.map((item) => (
-                            <li key={item.code} onClick={(e) => {setSelectedProposal(item.code)}}>{item.title}</li>
+                            <li key={item.code} onClick={(e) => {setNavPanel('welcome'); setSelectedProposal(item.code)}}>{item.title}</li>
                         ))}
                     </ul>
                 )}
