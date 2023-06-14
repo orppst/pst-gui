@@ -26,8 +26,8 @@ function App2() {
 
     useEffect(() => {
            fetchPersonResourceGetPeople({queryParams: {name: "PI"}})
-               .then(
-                   fetchPersonResourceGetPerson({ pathParams: {id: 46} }).then((data) => setUser(data))
+               .then((data) =>
+                   fetchPersonResourceGetPerson({ pathParams: {id: data[0].dbid} }).then((data) => setUser(data))
                )
                .catch(console.log)
 
