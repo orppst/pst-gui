@@ -4,9 +4,6 @@ import {
     fetchProposalResourceReplaceTitle,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents.ts";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient()
 
 function formReducer(state, event) {
     return {
@@ -18,9 +15,7 @@ function TitlePanel() {
 
     return (
         <>
-            <QueryClientProvider client={queryClient}>
-                <DisplayTitle />
-            </QueryClientProvider>
+            <DisplayTitle />
         </>
     );
 

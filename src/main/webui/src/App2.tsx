@@ -1,8 +1,11 @@
-import {useState, createContext, useContext} from 'react';
+import {useState, createContext, useContext, useEffect} from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { confirmAlert } from 'react-confirm-alert';
 //import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import {useProposalResourceGetProposals} from './generated/proposalToolComponents'
+import {
+    fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
+    useProposalResourceGetProposals
+} from './generated/proposalToolComponents'
 import './App.css'
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import TestPanel from './proposal/test';
@@ -13,12 +16,23 @@ const queryClient = new QueryClient()
 
 export const UserContext = createContext();
 
+
 function App2() {
-    const [user, setUser] = useState("PI");
+    const [user, setUser] = useState({"_id":"0", fullName: "Loading..."});
     const [selectedProposal, setSelectedProposal] = useState(0);
     const [navPanel, setNavPanel] = useState("welcome");
     const [selectedTitle, setSelectedTitle] = useState("");
     const values = {user, selectedProposal, setSelectedProposal, setNavPanel};
+
+    useEffect(() => {
+           fetchPersonResourceGetPeople({queryParams: {name: "PI"}})
+               .then(
+                   fetchPersonResourceGetPerson({ pathParams: {id: 46} }).then((data) => setUser(data))
+               )
+               .catch(console.log)
+
+       },[]);
+
     const comingSoon = () => {
         setSelectedProposal(0);
         setNavPanel("newProposal");
@@ -27,8 +41,9 @@ function App2() {
   return (
     <>
     <UserContext.Provider value={values}>
+        <QueryClientProvider client={queryClient}>
       <nav className="nav-bar">{`Proposals for `}
-          {`${user}`}
+          {`${user.fullName}`}
       </nav>
       <div className="flex-container">
         <div className="nav-bar">
@@ -36,10 +51,9 @@ function App2() {
                 Create New Proposal
             </button>
             <br/>
-            <QueryClientProvider client={queryClient}>
+
                 Search and filter your proposals
                 <Proposals/>
-            </QueryClientProvider>
         </div>
         <div className="main-forms">
             {navPanel==='welcome' && !selectedProposal && (<TestPanel />)}
@@ -47,10 +61,11 @@ function App2() {
             {navPanel==='newProposal' && (<NewProposalPanel />)}
         </div>
       </div>
+        </QueryClientProvider>
+
     </UserContext.Provider>
     </>
   );
-
 
 
     function Proposals() {

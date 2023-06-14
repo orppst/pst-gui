@@ -1,13 +1,8 @@
-import { useReducer, useContext, useState } from "react";
+import {useReducer, useContext, useState, useEffect} from "react";
 import { UserContext } from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
-    fetchProposalResourceReplaceTitle,
-    useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents.ts";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient()
 
 function formReducer(state, event) {
     return {
@@ -19,9 +14,7 @@ function NewProposalPanel() {
 
     return (
         <>
-            <QueryClientProvider client={queryClient}>
-                <DisplayNewProposal />
-            </QueryClientProvider>
+            <DisplayNewProposal />
         </>
     );
 
@@ -39,7 +32,15 @@ function NewProposalPanel() {
                 setFormData({name: "title", value: 'empty'});
             }
 
-            fetchProposalResourceCreateObservingProposal({ body: formData})
+            //Add the current user as the PI
+            var investigator = {
+                "@type": "proposal:Investigator",
+                "type": "PI",
+                "forPhD": false,
+                "person": user
+            };
+
+            fetchProposalResourceCreateObservingProposal({ body: {"@type": "ObservingProposal", ...formData, "investigators": [investigator]}})
                 .then(setSubmitting(false))
                 .then(setSelectedProposal(0))
                 .then(setNavPanel('welcome'))
@@ -69,7 +70,7 @@ function NewProposalPanel() {
                             <p>Kind</p>
                             <select name="kind" onChange={handleChange}>
                                 <option value="">--Please choose an option--</option>
-                                <option value="Standard">Standard</option>
+                                <option value="STANDARD">Standard</option>
                             </select>
                             <br />
                             <button type="submit" >Create</button>
