@@ -68,6 +68,7 @@ function NewProposalPanel() {
                         <textarea rows="3" name="summary" onChange={handleChange} />
                         <label>Kind<br/></label>
                         <select name="kind" onChange={handleChange}>
+                            <option value="">--Please choose an option--</option>
                             <option value="STANDARD">Standard</option>
                         </select>
                         <br />
