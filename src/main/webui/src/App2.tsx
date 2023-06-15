@@ -9,6 +9,9 @@ import {
 import './App.css'
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import TitlePanel from './proposal/Title';
+import TargetPanel from './proposal/Targets';
+import InvestigatorsPanel from "./proposal/Investigators";
+import SummaryPanel from "./proposal/Summary";
 import NewProposalPanel from './proposal/New';
 
 const queryClient = new QueryClient()
@@ -56,9 +59,9 @@ function App2() {
                 <div className="main-forms">
                     {navPanel==='welcome' && !selectedProposal && (<div>Please select or create a proposal</div>)}
                     {navPanel==='pleaseSelect' && (<div>Please select an action</div>)}
-                    {navPanel==='summary' && (<div>This is where the summary will go</div>)}
-                    {navPanel==='investigators' && (<div>This is where you will be able to edit the list of investigators</div>)}
-                    {navPanel==='targets' && (<div>Coming soon!</div>)}
+                    {navPanel==='summary' && (<SummaryPanel />)}
+                    {navPanel==='investigators' && (<InvestigatorsPanel />)}
+                    {navPanel==='targets' && (<TargetPanel />)}
                     {navPanel==='title' && (<TitlePanel />)}
                     {navPanel==='newProposal' && (<NewProposalPanel />)}
                 </div>
