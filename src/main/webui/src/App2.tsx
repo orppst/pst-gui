@@ -8,9 +8,8 @@ import {
 } from './generated/proposalToolComponents'
 import './App.css'
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import TestPanel from './proposal/test';
 import TitlePanel from './proposal/Title';
-import NewProposalPanel from './proposal/New.tsx';
+import NewProposalPanel from './proposal/New';
 
 const queryClient = new QueryClient()
 
@@ -33,7 +32,7 @@ function App2() {
 
        },[]);
 
-    const comingSoon = () => {
+    const createNew = () => {
         setSelectedProposal(0);
         setNavPanel("newProposal");
     }
@@ -42,27 +41,29 @@ function App2() {
     <>
     <UserContext.Provider value={values}>
         <QueryClientProvider client={queryClient}>
-      <nav className="nav-bar">{`Proposals for `}
-          {`${user.fullName}`}
-      </nav>
-      <div className="flex-container">
-        <div className="nav-bar">
-            <button className="button" onClick={comingSoon}>
-                Create New Proposal
-            </button>
-            <br/>
-
-                Search and filter your proposals
-                <Proposals/>
-        </div>
-        <div className="main-forms">
-            {navPanel==='welcome' && !selectedProposal && (<TestPanel />)}
-            {navPanel==='welcome' && selectedProposal>0 && (<TitlePanel />)}
-            {navPanel==='newProposal' && (<NewProposalPanel />)}
-        </div>
-      </div>
+            <nav className="nav-bar">{`Proposals for `}
+                {`${user.fullName}`}
+            </nav>
+            <div className="flex-container">
+                <div className="nav-bar">
+                    <button className="nav-button" onClick={createNew}>
+                        Create New Proposal
+                    </button>
+                        <br/>
+                        Search and filter your proposals
+                    <Proposals/>
+                </div>
+                <div className="main-forms">
+                    {navPanel==='welcome' && !selectedProposal && (<div>Please select or create a proposal</div>)}
+                    {navPanel==='pleaseSelect' && (<div>Please select an action</div>)}
+                    {navPanel==='summary' && (<div>This is where the summary will go</div>)}
+                    {navPanel==='investigators' && (<div>This is where you will be able to edit the list of investigators</div>)}
+                    {navPanel==='targets' && (<div>Coming soon!</div>)}
+                    {navPanel==='title' && (<TitlePanel />)}
+                    {navPanel==='newProposal' && (<NewProposalPanel />)}
+                </div>
+            </div>
         </QueryClientProvider>
-
     </UserContext.Provider>
     </>
   );
@@ -95,11 +96,21 @@ function App2() {
                 ) : (
                     <ul>
                         {data?.map((item) => (
-                            <li key={item.code} onClick={(e) => {setNavPanel('welcome'); setSelectedProposal(item.code)}}>{item.title}</li>
+                            <li key={item.code} onClick={(e) => {setSelectedProposal(item.code)}}>{item.title} {selectedProposal===item.code && ChildList(item.code)}</li>
                         ))}
                     </ul>
                 )}
             </div>
+        );
+    }
+
+    function ChildList() {
+        return (<ul>
+            <li onClick={(e)=>{setNavPanel('summary'); console.log(navPanel)}}>Summary</li>
+            <li onClick={(e)=>{setNavPanel('title')}}>Title</li>
+            <li onClick={(e)=>{setNavPanel('investigators')}}>Investigators</li>
+            <li onClick={(e)=>{setNavPanel('targets')}}>Targets</li>
+            </ul>
         );
     }
 

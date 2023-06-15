@@ -64,13 +64,11 @@ function TitlePanel() {
                 }
                 <form onSubmit={handleSubmit}>
                     <fieldset>
-                        <label>
-                            {isLoading ? (`Loading...`)
-                                : (
-                                <input name="title" defaultValue={`${data}`} onChange={handleChange} />
-                                )}
-                            <button type="submit" >Update</button>
-                        </label>
+                        {isLoading ? (`Loading...`)
+                            : (
+                            <input name="title" defaultValue={`${data}`} onChange={handleChange} />
+                            )}
+                        <button type="submit" >Update</button>
                     </fieldset>
                 </form>
             </div>

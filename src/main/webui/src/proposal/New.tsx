@@ -1,4 +1,4 @@
-import {useReducer, useContext, useState, useEffect} from "react";
+import {useReducer, useContext, useState} from "react";
 import { UserContext } from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
@@ -55,26 +55,23 @@ function NewProposalPanel() {
         }
 
         return (
-            <div>
-                <h3>Create Proposal</h3>
+            <div className="main-forms">
+                Create Proposal
                 {submitting &&
                     <div>Submitting request</div>
                 }
                 <form onSubmit={handleSubmit}>
                     <fieldset>
-                        <label>
-                            <p>Title</p>
-                            <input name="title" onChange={handleChange} />
-                            <p>Summary</p>
-                            <input name="summary" onChange={handleChange} />
-                            <p>Kind</p>
-                            <select name="kind" onChange={handleChange}>
-                                <option value="">--Please choose an option--</option>
-                                <option value="STANDARD">Standard</option>
-                            </select>
-                            <br />
-                            <button type="submit" >Create</button>
-                        </label>
+                        <label>Title</label>
+                        <input name="title" onChange={handleChange} />
+                        <label>Summary</label>
+                        <textarea rows="3" name="summary" onChange={handleChange} />
+                        <label>Kind<br/></label>
+                        <select name="kind" onChange={handleChange}>
+                            <option value="STANDARD">Standard</option>
+                        </select>
+                        <br />
+                        <button type="submit" >Create</button>
                     </fieldset>
                 </form>
             </div>
