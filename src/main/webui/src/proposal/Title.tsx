@@ -1,11 +1,11 @@
-import { useReducer, useContext, useState } from "react";
+import React, { useReducer, useContext, useState } from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
     fetchProposalResourceReplaceTitle,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
 
-function formReducer(state, event) {
+function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
         ...state,
         [event.name]: event.value
@@ -33,7 +33,7 @@ function TitlePanel() {
             );
         }
 
-        function handleSubmit(event) {
+        function handleSubmit(event : React.SyntheticEvent<HTMLFormElement>) {
             event.preventDefault();
 
             setSubmitting(true);
@@ -49,7 +49,7 @@ function TitlePanel() {
                 .catch(console.log);
         }
 
-        function handleChange(event) {
+        function handleChange(event : React.SyntheticEvent<HTMLFormElement>) {
             setFormData({
                 name: event.target.name,
                 value: event.target.value,

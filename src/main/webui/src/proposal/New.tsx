@@ -1,11 +1,11 @@
-import {useReducer, useContext, useState} from "react";
+import React, {useReducer, useContext, useState} from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas.ts";
 
-function formReducer(state, event) {
+function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
         ...state,
         [event.name]: event.value
@@ -24,7 +24,7 @@ function NewProposalPanel() {
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
 
-        function handleSubmit(event) {
+        function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
             event.preventDefault();
 
             setSubmitting(true);
@@ -40,15 +40,20 @@ function NewProposalPanel() {
                 "person": user
             };
 
-            console.log("Create new proposal with " + JSON.stringify(formData));
-            fetchProposalResourceCreateObservingProposal({ body: {"@type": "ObservingProposal", ...formData, "investigators": [investigator]}})
+            const newProposal :ObservingProposal = {
+                "@type": "ObservingProposal",
+                ...formData,
+                "investigators": [investigator]
+            };
+
+            fetchProposalResourceCreateObservingProposal({ body: newProposal})
                 .then(setSubmitting(false))
                 .then((data : ObservingProposal) => setSelectedProposal(data._id))
                 .then(setNavPanel('summary'))
                 .catch(console.log);
         }
 
-        function handleChange(event) {
+        function handleChange(event: React.SyntheticEvent<HTMLFormElement>) {
             setFormData({
                 name: event.target.name,
                 value: event.target.value,
