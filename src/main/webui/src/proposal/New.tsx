@@ -1,8 +1,9 @@
 import {useReducer, useContext, useState} from "react";
-import { UserContext } from '../App2'
+import {AppContextType, UserContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
-} from "../generated/proposalToolComponents.ts";
+} from "../generated/proposalToolComponents";
+import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas.ts";
 
 function formReducer(state, event) {
     return {
@@ -19,7 +20,7 @@ function NewProposalPanel() {
     );
 
     function DisplayNewProposal() {
-        const { user, selectedProposal, setSelectedProposal, setNavPanel } = useContext(UserContext);
+        const { user, setSelectedProposal, setNavPanel } = useContext(UserContext) as AppContextType;
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
 
@@ -33,17 +34,17 @@ function NewProposalPanel() {
             }
 
             //Add the current user as the PI
-            var investigator = {
+            const investigator : Investigator = {
                 "@type": "proposal:Investigator",
                 "type": "PI",
-                "forPhD": false,
                 "person": user
             };
 
+            console.log("Create new proposal with " + JSON.stringify(formData));
             fetchProposalResourceCreateObservingProposal({ body: {"@type": "ObservingProposal", ...formData, "investigators": [investigator]}})
                 .then(setSubmitting(false))
-                .then(setSelectedProposal(0))
-                .then(setNavPanel('welcome'))
+                .then((data : ObservingProposal) => setSelectedProposal(data._id))
+                .then(setNavPanel('summary'))
                 .catch(console.log);
         }
 

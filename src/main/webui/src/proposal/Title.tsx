@@ -1,9 +1,9 @@
 import { useReducer, useContext, useState } from "react";
-import { UserContext } from '../App2'
+import {AppContextType, UserContext} from '../App2'
 import {
     fetchProposalResourceReplaceTitle,
     useProposalResourceGetObservingProposalTitle,
-} from "../generated/proposalToolComponents.ts";
+} from "../generated/proposalToolComponents";
 
 function formReducer(state, event) {
     return {
@@ -20,7 +20,7 @@ function TitlePanel() {
     );
 
     function DisplayTitle() {
-        const { user, selectedProposal, setSelectedProposal } = useContext(UserContext);
+        const { user, selectedProposal, setSelectedProposal } = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {title: data});
         const [submitting, setSubmitting] = useState(false);

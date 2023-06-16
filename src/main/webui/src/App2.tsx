@@ -1,4 +1,4 @@
-import {useState, createContext, useContext, useEffect} from 'react';
+import React, {useState, createContext, useContext, useEffect} from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { confirmAlert } from 'react-confirm-alert';
 //import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -6,6 +6,7 @@ import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
+import {Person} from "./generated/proposalToolSchemas";
 import './App.css'
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import TitlePanel from './proposal/Title';
@@ -16,14 +17,20 @@ import NewProposalPanel from './proposal/New';
 
 const queryClient = new QueryClient()
 
-export const UserContext = createContext();
-
+//TODO: Put context definitions in separate file
+export type AppContextType = {
+    user: Person;
+    selectedProposal: number;
+    setSelectedProposal: React.SetStateAction<number> ;
+    setNavPanel: React.SetStateAction<string>;
+}
+export const UserContext = createContext<AppContextType|null>(null);
 
 function App2() {
-    const [user, setUser] = useState({"_id":"0", fullName: "Loading..."});
+    const blankUser : Person = {fullName: "Loading..."};
+    const [user, setUser] = useState(blankUser);
     const [selectedProposal, setSelectedProposal] = useState(0);
     const [navPanel, setNavPanel] = useState("welcome");
-    const [selectedTitle, setSelectedTitle] = useState("");
     const values = {user, selectedProposal, setSelectedProposal, setNavPanel};
 
     useEffect(() => {

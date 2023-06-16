@@ -1,8 +1,8 @@
 import { useReducer, useContext, useState } from "react";
-import { UserContext } from '../App2'
+import {AppContextType, UserContext} from '../App2'
 import {
     useProposalResourceGetTargets,
-} from "../generated/proposalToolComponents.ts";
+} from "../generated/proposalToolComponents";
 
 function formReducer(state, event) {
     return {
@@ -19,7 +19,7 @@ function TargetPanel() {
     );
 
     function DisplayTargets() {
-        const { user, selectedProposal, setSelectedProposal } = useContext(UserContext);
+        const { selectedProposal} = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {title: data});
         const [submitting, setSubmitting] = useState(false);
