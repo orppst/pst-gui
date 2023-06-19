@@ -1,6 +1,7 @@
 import React, { useReducer, useContext, useState } from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
+    useProposalResourceGetTarget,
     useProposalResourceGetTargets,
 } from "../generated/proposalToolComponents";
 
@@ -54,17 +55,30 @@ function TargetPanel() {
                     <div>Submitting request</div>
                 }
                 <form onSubmit={handleSubmit}>
-                    <fieldset>
+                    <div>
                         {isLoading ? (`Loading...`)
-                            : (
-                                <div>
-                                    {`${JSON.stringify(data)}`}
-                                </div>
-                            )}
-                    </fieldset>
+                            : data.map((item) => {
+                                    return (<li key={item.dbid}><RenderTarget prop={selectedProposal} row={item}/></li>)
+                                } )
+                        }
+                    </div>
                 </form>
             </div>
         );
+    }
+
+    function RenderTarget(proposal :any) {
+        const {data, error, isLoading} = useProposalResourceGetTarget(
+            {pathParams:
+                    {
+                        proposalCode: proposal.prop,
+                        targetId: proposal.row.dbid,
+                    },
+            });
+        if(error) {
+            return <div>Error loading target</div>
+        }
+        return (<div>{isLoading? (`Loading...`): JSON.stringify(data)}</div>);
     }
 
 }
