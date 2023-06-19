@@ -106,7 +106,7 @@ function App2() {
                 ) : (
                     <ul>
                         {data?.map((item) => (
-                            <li key={item.code} onClick={(e) => {setSelectedProposal(item.code)}}>{item.title} {selectedProposal===item.code && ChildList(item.code)}</li>
+                            <li key={item.code} onClick={() => {setSelectedProposal(item.code)}}>{item.title} {selectedProposal===item.code && ChildList(item.code)}</li>
                         ))}
                     </ul>
                 )}
@@ -116,10 +116,10 @@ function App2() {
 
     function ChildList() {
         return (<ul>
-            <li onClick={(e)=>{setNavPanel('summary'); console.log(navPanel)}}>Summary</li>
-            <li onClick={(e)=>{setNavPanel('title')}}>Title</li>
-            <li onClick={(e)=>{setNavPanel('investigators')}}>Investigators</li>
-            <li onClick={(e)=>{setNavPanel('targets')}}>Targets</li>
+            <li onClick={()=>{setNavPanel('summary'); console.log(navPanel)}}>Summary</li>
+            <li onClick={()=>{setNavPanel('title')}}>Title</li>
+            <li onClick={()=>{setNavPanel('investigators')}}>Investigators</li>
+            <li onClick={()=>{setNavPanel('targets')}}>Targets</li>
             </ul>
         );
     }

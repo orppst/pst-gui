@@ -3317,6 +3317,351 @@ export const useProposalCyclesResourceGetTAC = <TData = Schemas.Tac>(
   );
 };
 
+export type ProposalCyclesResourceGetAllocatedProposalsFromCyclePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetAllocatedProposalsFromCycleQueryParams = {
+  title?: string;
+};
+
+export type ProposalCyclesResourceGetAllocatedProposalsFromCycleError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetAllocatedProposalsFromCycleResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ProposalCyclesResourceGetAllocatedProposalsFromCycleVariables = {
+  pathParams: ProposalCyclesResourceGetAllocatedProposalsFromCyclePathParams;
+  queryParams?: ProposalCyclesResourceGetAllocatedProposalsFromCycleQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetAllocatedProposalsFromCycle = (
+  variables: ProposalCyclesResourceGetAllocatedProposalsFromCycleVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetAllocatedProposalsFromCycleResponse,
+    ProposalCyclesResourceGetAllocatedProposalsFromCycleError,
+    undefined,
+    {},
+    ProposalCyclesResourceGetAllocatedProposalsFromCycleQueryParams,
+    ProposalCyclesResourceGetAllocatedProposalsFromCyclePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetAllocatedProposalsFromCycle = <
+  TData = ProposalCyclesResourceGetAllocatedProposalsFromCycleResponse
+>(
+  variables: ProposalCyclesResourceGetAllocatedProposalsFromCycleVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetAllocatedProposalsFromCycleResponse,
+      ProposalCyclesResourceGetAllocatedProposalsFromCycleError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetAllocatedProposalsFromCycleResponse,
+    ProposalCyclesResourceGetAllocatedProposalsFromCycleError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals",
+      operationId: "proposalCyclesResourceGetAllocatedProposalsFromCycle",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetAllocatedProposalsFromCycle(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalCyclesResourceAllocatedProposalToCyclePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceAllocatedProposalToCycleError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceAllocatedProposalToCycleVariables = {
+  pathParams: ProposalCyclesResourceAllocatedProposalToCyclePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceAllocatedProposalToCycle = (
+  variables: ProposalCyclesResourceAllocatedProposalToCycleVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceAllocatedProposalToCycleError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceAllocatedProposalToCyclePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceAllocatedProposalToCycle = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalCyclesResourceAllocatedProposalToCycleError,
+      ProposalCyclesResourceAllocatedProposalToCycleVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalCyclesResourceAllocatedProposalToCycleError,
+    ProposalCyclesResourceAllocatedProposalToCycleVariables
+  >(
+    (variables: ProposalCyclesResourceAllocatedProposalToCycleVariables) =>
+      fetchProposalCyclesResourceAllocatedProposalToCycle({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalPathParams =
+  {
+    /**
+     * @format int64
+     */
+    allocatedId: number;
+    /**
+     * @format int64
+     */
+    cycleCode: number;
+  };
+
+export type ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalVariables =
+  {
+    body?: Schemas.AllocatedBlock;
+    pathParams: ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalPathParams;
+  } & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceAddAllocatedBlockToAllocatedProposal = (
+  variables: ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.AllocatedBlock,
+    ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalError,
+    Schemas.AllocatedBlock,
+    {},
+    {},
+    ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceAddAllocatedBlockToAllocatedProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.AllocatedBlock,
+      ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalError,
+      ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.AllocatedBlock,
+    ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalError,
+    ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalVariables
+  >(
+    (
+      variables: ProposalCyclesResourceAddAllocatedBlockToAllocatedProposalVariables
+    ) =>
+      fetchProposalCyclesResourceAddAllocatedBlockToAllocatedProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ProposalCyclesResourceGetCycleAllocationGradesPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetCycleAllocationGradesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetCycleAllocationGradesResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ProposalCyclesResourceGetCycleAllocationGradesVariables = {
+  pathParams: ProposalCyclesResourceGetCycleAllocationGradesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetCycleAllocationGrades = (
+  variables: ProposalCyclesResourceGetCycleAllocationGradesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetCycleAllocationGradesResponse,
+    ProposalCyclesResourceGetCycleAllocationGradesError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetCycleAllocationGradesPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/grades",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetCycleAllocationGrades = <
+  TData = ProposalCyclesResourceGetCycleAllocationGradesResponse
+>(
+  variables: ProposalCyclesResourceGetCycleAllocationGradesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetCycleAllocationGradesResponse,
+      ProposalCyclesResourceGetCycleAllocationGradesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetCycleAllocationGradesResponse,
+    ProposalCyclesResourceGetCycleAllocationGradesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/grades",
+      operationId: "proposalCyclesResourceGetCycleAllocationGrades",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetCycleAllocationGrades(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ProposalCyclesResourceGetCycleAllocatedGradePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  gradeId: number;
+};
+
+export type ProposalCyclesResourceGetCycleAllocatedGradeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetCycleAllocatedGradeVariables = {
+  pathParams: ProposalCyclesResourceGetCycleAllocatedGradePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetCycleAllocatedGrade = (
+  variables: ProposalCyclesResourceGetCycleAllocatedGradeVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.AllocationGrade,
+    ProposalCyclesResourceGetCycleAllocatedGradeError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetCycleAllocatedGradePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/grades/{gradeId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetCycleAllocatedGrade = <
+  TData = Schemas.AllocationGrade
+>(
+  variables: ProposalCyclesResourceGetCycleAllocatedGradeVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.AllocationGrade,
+      ProposalCyclesResourceGetCycleAllocatedGradeError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.AllocationGrade,
+    ProposalCyclesResourceGetCycleAllocatedGradeError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/grades/{gradeId}",
+      operationId: "proposalCyclesResourceGetCycleAllocatedGrade",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetCycleAllocatedGrade(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type ProposalCyclesResourceGetReviewedProposalsPathParams = {
   /**
    * @format int64
@@ -3422,7 +3767,7 @@ export const fetchProposalCyclesResourceSubmitProposalForReview = (
     ProposalCyclesResourceSubmitProposalForReviewPathParams
   >({
     url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
-    method: "put",
+    method: "post",
     ...variables,
     signal,
   });
@@ -3549,14 +3894,14 @@ export const fetchProposalCyclesResourceSubmitReviewOfProposal = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
+    Schemas.ProposalReview,
     ProposalCyclesResourceSubmitReviewOfProposalError,
     Schemas.ProposalReview,
     {},
     {},
     ProposalCyclesResourceSubmitReviewOfProposalPathParams
   >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}/reviews",
+    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewCode}",
     method: "post",
     ...variables,
     signal,
@@ -3565,7 +3910,7 @@ export const fetchProposalCyclesResourceSubmitReviewOfProposal = (
 export const useProposalCyclesResourceSubmitReviewOfProposal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      Schemas.ProposalReview,
       ProposalCyclesResourceSubmitReviewOfProposalError,
       ProposalCyclesResourceSubmitReviewOfProposalVariables
     >,
@@ -3574,7 +3919,7 @@ export const useProposalCyclesResourceSubmitReviewOfProposal = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
+    Schemas.ProposalReview,
     ProposalCyclesResourceSubmitReviewOfProposalError,
     ProposalCyclesResourceSubmitReviewOfProposalVariables
   >(
@@ -3793,15 +4138,156 @@ export const useAvailableResourcesResourceGetCycleAvailableResources = <
   );
 };
 
-export type ObservingModeResourceGetCycleObservingModesPathParams = {
+export type AvailableResourcesResourceGetCycleResourceTypesPathParams = {
   /**
    * @format int64
    */
   cycleId: number;
 };
 
-export type ObservingModeResourceGetCycleObservingModesQueryParams = {
-  modeName?: string;
+export type AvailableResourcesResourceGetCycleResourceTypesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceGetCycleResourceTypesResponse =
+  Schemas.ObjectIdentifier[];
+
+export type AvailableResourcesResourceGetCycleResourceTypesVariables = {
+  pathParams: AvailableResourcesResourceGetCycleResourceTypesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceGetCycleResourceTypes = (
+  variables: AvailableResourcesResourceGetCycleResourceTypesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    AvailableResourcesResourceGetCycleResourceTypesResponse,
+    AvailableResourcesResourceGetCycleResourceTypesError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceGetCycleResourceTypesPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/availableResources/types",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceGetCycleResourceTypes = <
+  TData = AvailableResourcesResourceGetCycleResourceTypesResponse
+>(
+  variables: AvailableResourcesResourceGetCycleResourceTypesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      AvailableResourcesResourceGetCycleResourceTypesResponse,
+      AvailableResourcesResourceGetCycleResourceTypesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    AvailableResourcesResourceGetCycleResourceTypesResponse,
+    AvailableResourcesResourceGetCycleResourceTypesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/availableResources/types",
+      operationId: "availableResourcesResourceGetCycleResourceTypes",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchAvailableResourcesResourceGetCycleResourceTypes(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type AvailableResourcesResourceGetCycleResourceTypePathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+  /**
+   * @format int64
+   */
+  typeId: number;
+};
+
+export type AvailableResourcesResourceGetCycleResourceTypeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceGetCycleResourceTypeVariables = {
+  pathParams: AvailableResourcesResourceGetCycleResourceTypePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceGetCycleResourceType = (
+  variables: AvailableResourcesResourceGetCycleResourceTypeVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ResourceType,
+    AvailableResourcesResourceGetCycleResourceTypeError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceGetCycleResourceTypePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/availableResources/types/{typeId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceGetCycleResourceType = <
+  TData = Schemas.ResourceType
+>(
+  variables: AvailableResourcesResourceGetCycleResourceTypeVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ResourceType,
+      AvailableResourcesResourceGetCycleResourceTypeError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ResourceType,
+    AvailableResourcesResourceGetCycleResourceTypeError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/availableResources/types/{typeId}",
+      operationId: "availableResourcesResourceGetCycleResourceType",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchAvailableResourcesResourceGetCycleResourceType(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type ObservingModeResourceGetCycleObservingModesPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
 };
 
 export type ObservingModeResourceGetCycleObservingModesError =
@@ -3812,7 +4298,6 @@ export type ObservingModeResourceGetCycleObservingModesResponse =
 
 export type ObservingModeResourceGetCycleObservingModesVariables = {
   pathParams: ObservingModeResourceGetCycleObservingModesPathParams;
-  queryParams?: ObservingModeResourceGetCycleObservingModesQueryParams;
 } & ProposalToolContext["fetcherOptions"];
 
 export const fetchObservingModeResourceGetCycleObservingModes = (
@@ -3824,7 +4309,7 @@ export const fetchObservingModeResourceGetCycleObservingModes = (
     ObservingModeResourceGetCycleObservingModesError,
     undefined,
     {},
-    ObservingModeResourceGetCycleObservingModesQueryParams,
+    {},
     ObservingModeResourceGetCycleObservingModesPathParams
   >({
     url: "/pst/api/proposalCycles/{cycleId}/observingModes",
@@ -3884,9 +4369,6 @@ export type ObservingModeResourceGetCycleObservingModePathParams = {
 export type ObservingModeResourceGetCycleObservingModeError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ObservingModeResourceGetCycleObservingModeResponse =
-  Schemas.ObservingConfigurationSynopsis[];
-
 export type ObservingModeResourceGetCycleObservingModeVariables = {
   pathParams: ObservingModeResourceGetCycleObservingModePathParams;
 } & ProposalToolContext["fetcherOptions"];
@@ -3896,7 +4378,7 @@ export const fetchObservingModeResourceGetCycleObservingMode = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    ObservingModeResourceGetCycleObservingModeResponse,
+    Schemas.ObservingMode,
     ObservingModeResourceGetCycleObservingModeError,
     undefined,
     {},
@@ -3910,12 +4392,12 @@ export const fetchObservingModeResourceGetCycleObservingMode = (
   });
 
 export const useObservingModeResourceGetCycleObservingMode = <
-  TData = ObservingModeResourceGetCycleObservingModeResponse
+  TData = Schemas.ObservingMode
 >(
   variables: ObservingModeResourceGetCycleObservingModeVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      ObservingModeResourceGetCycleObservingModeResponse,
+      Schemas.ObservingMode,
       ObservingModeResourceGetCycleObservingModeError,
       TData
     >,
@@ -3925,7 +4407,7 @@ export const useObservingModeResourceGetCycleObservingMode = <
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    ObservingModeResourceGetCycleObservingModeResponse,
+    Schemas.ObservingMode,
     ObservingModeResourceGetCycleObservingModeError,
     TData
   >(
@@ -6289,6 +6771,76 @@ export const useProposalResourceAddNewTarget = (
   );
 };
 
+export type ProposalResourceGetTargetPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  targetId: number;
+};
+
+export type ProposalResourceGetTargetError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceGetTargetVariables = {
+  pathParams: ProposalResourceGetTargetPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceGetTarget = (
+  variables: ProposalResourceGetTargetVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Target,
+    ProposalResourceGetTargetError,
+    undefined,
+    {},
+    {},
+    ProposalResourceGetTargetPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/targets/{targetId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceGetTarget = <TData = Schemas.Target>(
+  variables: ProposalResourceGetTargetVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Target,
+      ProposalResourceGetTargetError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Target,
+    ProposalResourceGetTargetError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/targets/{targetId}",
+      operationId: "proposalResourceGetTarget",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetTarget(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type ProposalResourceRemoveTargetPathParams = {
   /**
    * @format int64
@@ -6346,32 +6898,33 @@ export const useProposalResourceRemoveTarget = (
   );
 };
 
-export type ProposalResourceGetTechGoalsPathParams = {
+export type ProposalResourceGetTechnicalGoalsPathParams = {
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type ProposalResourceGetTechGoalsError = Fetcher.ErrorWrapper<undefined>;
+export type ProposalResourceGetTechnicalGoalsError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceGetTechGoalsResponse = Schemas.TechnicalGoal[];
+export type ProposalResourceGetTechnicalGoalsResponse = Schemas.TechnicalGoal[];
 
-export type ProposalResourceGetTechGoalsVariables = {
-  pathParams: ProposalResourceGetTechGoalsPathParams;
+export type ProposalResourceGetTechnicalGoalsVariables = {
+  pathParams: ProposalResourceGetTechnicalGoalsPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceGetTechGoals = (
-  variables: ProposalResourceGetTechGoalsVariables,
+export const fetchProposalResourceGetTechnicalGoals = (
+  variables: ProposalResourceGetTechnicalGoalsVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    ProposalResourceGetTechGoalsResponse,
-    ProposalResourceGetTechGoalsError,
+    ProposalResourceGetTechnicalGoalsResponse,
+    ProposalResourceGetTechnicalGoalsError,
     undefined,
     {},
     {},
-    ProposalResourceGetTechGoalsPathParams
+    ProposalResourceGetTechnicalGoalsPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/technicalGoals",
     method: "get",
@@ -6379,14 +6932,14 @@ export const fetchProposalResourceGetTechGoals = (
     signal,
   });
 
-export const useProposalResourceGetTechGoals = <
-  TData = ProposalResourceGetTechGoalsResponse
+export const useProposalResourceGetTechnicalGoals = <
+  TData = ProposalResourceGetTechnicalGoalsResponse
 >(
-  variables: ProposalResourceGetTechGoalsVariables,
+  variables: ProposalResourceGetTechnicalGoalsVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      ProposalResourceGetTechGoalsResponse,
-      ProposalResourceGetTechGoalsError,
+      ProposalResourceGetTechnicalGoalsResponse,
+      ProposalResourceGetTechnicalGoalsError,
       TData
     >,
     "queryKey" | "queryFn"
@@ -6395,17 +6948,17 @@ export const useProposalResourceGetTechGoals = <
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    ProposalResourceGetTechGoalsResponse,
-    ProposalResourceGetTechGoalsError,
+    ProposalResourceGetTechnicalGoalsResponse,
+    ProposalResourceGetTechnicalGoalsError,
     TData
   >(
     queryKeyFn({
       path: "/pst/api/proposals/{proposalCode}/technicalGoals",
-      operationId: "proposalResourceGetTechGoals",
+      operationId: "proposalResourceGetTechnicalGoals",
       variables,
     }),
     ({ signal }) =>
-      fetchProposalResourceGetTechGoals(
+      fetchProposalResourceGetTechnicalGoals(
         { ...fetcherOptions, ...variables },
         signal
       ),
@@ -6416,32 +6969,32 @@ export const useProposalResourceGetTechGoals = <
   );
 };
 
-export type ProposalResourceAddNewTechGoalPathParams = {
+export type ProposalResourceAddNewTechnicalGoalPathParams = {
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type ProposalResourceAddNewTechGoalError =
+export type ProposalResourceAddNewTechnicalGoalError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceAddNewTechGoalVariables = {
+export type ProposalResourceAddNewTechnicalGoalVariables = {
   body?: Schemas.TechnicalGoal;
-  pathParams: ProposalResourceAddNewTechGoalPathParams;
+  pathParams: ProposalResourceAddNewTechnicalGoalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceAddNewTechGoal = (
-  variables: ProposalResourceAddNewTechGoalVariables,
+export const fetchProposalResourceAddNewTechnicalGoal = (
+  variables: ProposalResourceAddNewTechnicalGoalVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     Schemas.TechnicalGoal,
-    ProposalResourceAddNewTechGoalError,
+    ProposalResourceAddNewTechnicalGoalError,
     Schemas.TechnicalGoal,
     {},
     {},
-    ProposalResourceAddNewTechGoalPathParams
+    ProposalResourceAddNewTechnicalGoalPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/technicalGoals",
     method: "post",
@@ -6449,12 +7002,12 @@ export const fetchProposalResourceAddNewTechGoal = (
     signal,
   });
 
-export const useProposalResourceAddNewTechGoal = (
+export const useProposalResourceAddNewTechnicalGoal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       Schemas.TechnicalGoal,
-      ProposalResourceAddNewTechGoalError,
-      ProposalResourceAddNewTechGoalVariables
+      ProposalResourceAddNewTechnicalGoalError,
+      ProposalResourceAddNewTechnicalGoalVariables
     >,
     "mutationFn"
   >
@@ -6462,16 +7015,19 @@ export const useProposalResourceAddNewTechGoal = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     Schemas.TechnicalGoal,
-    ProposalResourceAddNewTechGoalError,
-    ProposalResourceAddNewTechGoalVariables
+    ProposalResourceAddNewTechnicalGoalError,
+    ProposalResourceAddNewTechnicalGoalVariables
   >(
-    (variables: ProposalResourceAddNewTechGoalVariables) =>
-      fetchProposalResourceAddNewTechGoal({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceAddNewTechnicalGoalVariables) =>
+      fetchProposalResourceAddNewTechnicalGoal({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
 
-export type ProposalResourceRemoveTechGoalPathParams = {
+export type ProposalResourceRemoveTechnicalGoalPathParams = {
   /**
    * @format int64
    */
@@ -6482,24 +7038,24 @@ export type ProposalResourceRemoveTechGoalPathParams = {
   techGoalId: number;
 };
 
-export type ProposalResourceRemoveTechGoalError =
+export type ProposalResourceRemoveTechnicalGoalError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceRemoveTechGoalVariables = {
-  pathParams: ProposalResourceRemoveTechGoalPathParams;
+export type ProposalResourceRemoveTechnicalGoalVariables = {
+  pathParams: ProposalResourceRemoveTechnicalGoalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceRemoveTechGoal = (
-  variables: ProposalResourceRemoveTechGoalVariables,
+export const fetchProposalResourceRemoveTechnicalGoal = (
+  variables: ProposalResourceRemoveTechnicalGoalVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    ProposalResourceRemoveTechGoalError,
+    ProposalResourceRemoveTechnicalGoalError,
     undefined,
     {},
     {},
-    ProposalResourceRemoveTechGoalPathParams
+    ProposalResourceRemoveTechnicalGoalPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/technicalGoals/{techGoalId}",
     method: "delete",
@@ -6507,12 +7063,12 @@ export const fetchProposalResourceRemoveTechGoal = (
     signal,
   });
 
-export const useProposalResourceRemoveTechGoal = (
+export const useProposalResourceRemoveTechnicalGoal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      ProposalResourceRemoveTechGoalError,
-      ProposalResourceRemoveTechGoalVariables
+      ProposalResourceRemoveTechnicalGoalError,
+      ProposalResourceRemoveTechnicalGoalVariables
     >,
     "mutationFn"
   >
@@ -6520,12 +7076,88 @@ export const useProposalResourceRemoveTechGoal = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    ProposalResourceRemoveTechGoalError,
-    ProposalResourceRemoveTechGoalVariables
+    ProposalResourceRemoveTechnicalGoalError,
+    ProposalResourceRemoveTechnicalGoalVariables
   >(
-    (variables: ProposalResourceRemoveTechGoalVariables) =>
-      fetchProposalResourceRemoveTechGoal({ ...fetcherOptions, ...variables }),
+    (variables: ProposalResourceRemoveTechnicalGoalVariables) =>
+      fetchProposalResourceRemoveTechnicalGoal({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
+  );
+};
+
+export type ProposalResourceGetTechnicalGoalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  technicalGoalId: number;
+};
+
+export type ProposalResourceGetTechnicalGoalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceGetTechnicalGoalVariables = {
+  pathParams: ProposalResourceGetTechnicalGoalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceGetTechnicalGoal = (
+  variables: ProposalResourceGetTechnicalGoalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.TechnicalGoal,
+    ProposalResourceGetTechnicalGoalError,
+    undefined,
+    {},
+    {},
+    ProposalResourceGetTechnicalGoalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceGetTechnicalGoal = <
+  TData = Schemas.TechnicalGoal
+>(
+  variables: ProposalResourceGetTechnicalGoalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.TechnicalGoal,
+      ProposalResourceGetTechnicalGoalError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.TechnicalGoal,
+    ProposalResourceGetTechnicalGoalError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}",
+      operationId: "proposalResourceGetTechnicalGoal",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceGetTechnicalGoal(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
   );
 };
 
@@ -6548,7 +7180,7 @@ export const fetchProposalResourceGetObservingProposalTitle = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    string,
+    undefined,
     ProposalResourceGetObservingProposalTitleError,
     undefined,
     {},
@@ -6561,11 +7193,11 @@ export const fetchProposalResourceGetObservingProposalTitle = (
     signal,
   });
 
-export const useProposalResourceGetObservingProposalTitle = <TData = string>(
+export const useProposalResourceGetObservingProposalTitle = <TData = undefined>(
   variables: ProposalResourceGetObservingProposalTitleVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      string,
+      undefined,
       ProposalResourceGetObservingProposalTitleError,
       TData
     >,
@@ -6575,7 +7207,7 @@ export const useProposalResourceGetObservingProposalTitle = <TData = string>(
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    string,
+    undefined,
     ProposalResourceGetObservingProposalTitleError,
     TData
   >(
@@ -6907,6 +7539,21 @@ export type QueryOperation =
       variables: ProposalCyclesResourceGetTACVariables;
     }
   | {
+      path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals";
+      operationId: "proposalCyclesResourceGetAllocatedProposalsFromCycle";
+      variables: ProposalCyclesResourceGetAllocatedProposalsFromCycleVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/grades";
+      operationId: "proposalCyclesResourceGetCycleAllocationGrades";
+      variables: ProposalCyclesResourceGetCycleAllocationGradesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/grades/{gradeId}";
+      operationId: "proposalCyclesResourceGetCycleAllocatedGrade";
+      variables: ProposalCyclesResourceGetCycleAllocatedGradeVariables;
+    }
+  | {
       path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview";
       operationId: "proposalCyclesResourceGetReviewedProposals";
       variables: ProposalCyclesResourceGetReviewedProposalsVariables;
@@ -6925,6 +7572,16 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleId}/availableResources";
       operationId: "availableResourcesResourceGetCycleAvailableResources";
       variables: AvailableResourcesResourceGetCycleAvailableResourcesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/availableResources/types";
+      operationId: "availableResourcesResourceGetCycleResourceTypes";
+      variables: AvailableResourcesResourceGetCycleResourceTypesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/availableResources/types/{typeId}";
+      operationId: "availableResourcesResourceGetCycleResourceType";
+      variables: AvailableResourcesResourceGetCycleResourceTypeVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleId}/observingModes";
@@ -6997,9 +7654,19 @@ export type QueryOperation =
       variables: ProposalResourceGetTargetsVariables;
     }
   | {
+      path: "/pst/api/proposals/{proposalCode}/targets/{targetId}";
+      operationId: "proposalResourceGetTarget";
+      variables: ProposalResourceGetTargetVariables;
+    }
+  | {
       path: "/pst/api/proposals/{proposalCode}/technicalGoals";
-      operationId: "proposalResourceGetTechGoals";
-      variables: ProposalResourceGetTechGoalsVariables;
+      operationId: "proposalResourceGetTechnicalGoals";
+      variables: ProposalResourceGetTechnicalGoalsVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}";
+      operationId: "proposalResourceGetTechnicalGoal";
+      variables: ProposalResourceGetTechnicalGoalVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/title";

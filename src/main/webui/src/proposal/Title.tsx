@@ -1,7 +1,7 @@
 import React, { useReducer, useContext, useState } from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
-    fetchProposalResourceReplaceTitle,
+    fetchProposalResourceReplaceTitle, ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
 
@@ -20,7 +20,7 @@ function TitlePanel() {
     );
 
     function DisplayTitle() {
-        const { user, selectedProposal, setSelectedProposal } = useContext(UserContext) as AppContextType;
+        const { user, selectedProposal, setSelectedProposal,setNavPanel } = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {title: data});
         const [submitting, setSubmitting] = useState(false);
@@ -42,10 +42,16 @@ function TitlePanel() {
                 setFormData({name: "title", value: data});
             }
 
+            const newTitle : ProposalResourceReplaceTitleVariables = {
+                pathParams: {proposalCode: selectedProposal},
+                body: formData.title,
+                headers: {"Content-Type": "text/plain"}
+            }
             //FIXME: perhaps this should accept application/json as the content type? End up with quotation marks surrounding the new title
-            fetchProposalResourceReplaceTitle({pathParams: {proposalCode: selectedProposal}, body: formData.title, headers: {"Content-Type": "text/plain"}})
+            fetchProposalResourceReplaceTitle(newTitle)
                 .then(setSubmitting(false))
                 .then(setSelectedProposal(selectedProposal))
+                .then(setNavPanel('summary'))
                 .catch(console.log);
         }
 
