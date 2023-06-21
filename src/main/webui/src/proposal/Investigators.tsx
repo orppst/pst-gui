@@ -37,7 +37,7 @@ function InvestigatorsPanel() {
                 <div>
                     {isLoading ? (`Loading...`)
                         : data?.investigators?.map((item) => {
-                            return (<RenderPerson item={item}/>)
+                            return (<RenderPerson item={item} key={item?.person?._id}/>)
                         } )
                     }
                     <button>Add New</button>
@@ -56,7 +56,7 @@ function InvestigatorsPanel() {
             event.preventDefault();
 
             setSubmitting(true);
-
+6
             setSubmitting(false);
         }
 
@@ -72,13 +72,12 @@ function InvestigatorsPanel() {
             <form>
                 <fieldset>
                     <label>Name</label>
-                    <input title="Full Name" name="fullname" value={person?.fullName} onChange={handleChange} />
+                    <input title="Full Name" name="fullName" value={person?.fullName} onChange={handleChange} />
                     <label>Email</label>
                     <input title="email" name="email" value={person?.eMail} onChange={handleChange} />
                     <label>Institute</label>
                     <input title="institute" name="institute" value={person?.homeInstitute?.name} onChange={handleChange} />
-                    <button type="reset" >Remove</button>
-                    <button type="submit" >Update</button>
+                    <button type="submit" >Remove</button>
                 </fieldset>
             </form>
             </div>
