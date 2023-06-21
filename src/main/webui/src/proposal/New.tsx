@@ -41,7 +41,6 @@ function NewProposalPanel() {
             };
 
             const newProposal :ObservingProposal = {
-                "@type": "ObservingProposal",
                 ...formData,
                 "investigators": [investigator]
             };
