@@ -98,4 +98,10 @@ button {
   margin: 2.5%;
   float: none ;
   padding: 10px;
+  color: black;
+}
+
+span {
+    display: inline-block;
+    width: 100px;
 }

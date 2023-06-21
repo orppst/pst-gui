@@ -1,6 +1,5 @@
 import React, {useState, createContext, useContext, useEffect} from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { confirmAlert } from 'react-confirm-alert';
 //import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
@@ -8,12 +7,12 @@ import {
 } from './generated/proposalToolComponents'
 import {Person} from "./generated/proposalToolSchemas";
 import './App.css'
-import 'react-confirm-alert/src/react-confirm-alert.css';
 import TitlePanel from './proposal/Title';
 import TargetPanel from './proposal/Targets';
-import InvestigatorsPanel from "./proposal/Investigators";
 import SummaryPanel from "./proposal/Summary";
 import NewProposalPanel from './proposal/New';
+import InvestigatorsPanel from "./Investigators/List";
+import AddInvestigatorPanel from "./Investigators/New";
 
 const queryClient = new QueryClient()
 
@@ -68,6 +67,7 @@ function App2() {
                     {navPanel==='pleaseSelect' && (<div>Please select an action</div>)}
                     {navPanel==='summary' && (<SummaryPanel />)}
                     {navPanel==='investigators' && (<InvestigatorsPanel />)}
+                    {navPanel==='newInvestigator' && (<AddInvestigatorPanel />)}
                     {navPanel==='targets' && (<TargetPanel />)}
                     {navPanel==='title' && (<TitlePanel />)}
                     {navPanel==='newProposal' && (<NewProposalPanel />)}

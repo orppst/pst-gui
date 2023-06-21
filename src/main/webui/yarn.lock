@@ -2895,11 +2895,6 @@ quick-lru@^5.1.1:
   resolved "http://metis.ast.man.ac.uk:8081/repository/npm-all/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
 
-react-confirm-alert@^3.0.6:
-  version "3.0.6"
-  resolved "http://metis.ast.man.ac.uk:8081/repository/npm-all/react-confirm-alert/-/react-confirm-alert-3.0.6.tgz#f7552ec839c1e189370cef02ffed3035e7ca2e22"
-  integrity sha512-rplP6Ed9ZSNd0KFV5BUzk4EPQ77BxsrayllBXGFuA8xPXc7sbBjgU5KUrNpl7aWFmP7mXRlVXfuy1IT5DbffYw==
-
 react-devtools-core@^4.19.1:
   version "4.27.7"
   resolved "http://metis.ast.man.ac.uk:8081/repository/npm-all/react-devtools-core/-/react-devtools-core-4.27.7.tgz#458a6541483078d60a036c75bf88f54c478086ec"
