@@ -35,12 +35,12 @@ function InvestigatorsPanel() {
             <div>
                 <h3>Investigators linked to this proposal</h3>
                 <div>
+                    <button className={"btn btn-primary"} onClick={handleAddNew}>Add New</button>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
                             return (<RenderPerson dbid={item?.dbid} key={item?.dbid}/>)
                         } )
                     }
-                    <button onClick={handleAddNew}>Add New</button>
                 </div>
             </div>
         );
@@ -49,6 +49,7 @@ function InvestigatorsPanel() {
     function RenderPerson(dbid: any) {
         const { selectedProposal} = useContext(UserContext) as AppContextType;
         const [submitting, setSubmitting] = useState(false);
+        const tdClass: string = "col-lg-1 col-md-1";
         const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
             {pathParams:
                         {
@@ -85,13 +86,13 @@ function InvestigatorsPanel() {
                         submitting?(`Removing...`):
                             (
                                 <>
-                                <table className="table">
+                                <table className={"table"}>
                                     <tbody>
-                                    <tr className="row"><td className="col-lg-1 col-md-1">Type</td><td>{data?.type}</td></tr>
-                                    <tr className="row"><td className="col-lg-1 col-md-1">Name</td><td>{data?.person?.fullName}</td></tr>
-                                    <tr className="row"><td className="col-lg-1 col-md-1">Email</td><td>{data?.person?.eMail}</td></tr>
-                                    <tr className="row"><td className="col-lg-1 col-md-1">Institute</td><td>{data?.person?.homeInstitute?.name}</td></tr>
-                                    <tr className="row"><td className="col-lg-1 col-md-1"></td><td><button onClick={handleRemove}>Remove</button></td></tr>
+                                    <tr className={"row"}><td className={tdClass}>Type</td><td>{data?.type}</td></tr>
+                                    <tr className={"row"}><td className={tdClass}>Name</td><td>{data?.person?.fullName}</td></tr>
+                                    <tr className={"row"}><td className={tdClass}>Email</td><td>{data?.person?.eMail}</td></tr>
+                                    <tr className={"row"}><td className={tdClass}>Institute</td><td>{data?.person?.homeInstitute?.name}</td></tr>
+                                    <tr className={"row"}><td className={tdClass}></td><td><button className={"btn btn-danger"} onClick={handleRemove}>Remove</button></td></tr>
                                     </tbody>
                                 </table>
                                 </>

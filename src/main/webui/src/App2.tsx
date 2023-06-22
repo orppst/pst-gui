@@ -51,30 +51,30 @@ function App2() {
     <>
     <UserContext.Provider value={values}>
         <QueryClientProvider client={queryClient}>
-            <nav className="navbar navbar-inverse">
-                <div className="container-fluid">
-                    <div className="navbar-header">
-                        <a className="navbar-brand" href="#">Proposals for {user.fullName}</a>
+            <nav className={"navbar navbar-inverse"}>
+                <div className={"container-fluid"}>
+                    <div className={"navbar-header"}>
+                        <a className={"navbar-brand"} href="#">Proposals for {user.fullName}</a>
                     </div>
-                    <ul className="nav navbar-nav">
-                        <li className="active"><a href="#">Home</a></li>
+                    <ul className={"nav navbar-nav"}>
+                        <li className={"active"}><a href="#">Home</a></li>
                     </ul>
-                    <ul className="nav navbar-nav navbar-right">
-                        <li><a href="#"><span className="glyphicon glyphicon-user"></span> Account</a></li>
-                        <li><a href="#"><span className="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    <ul className={"nav navbar-nav navbar-right"}>
+                        <li><a href="#"><span className={"glyphicon glyphicon-user"}></span> Account</a></li>
+                        <li><a href="#"><span className={"glyphicon glyphicon-log-out"}></span> Logout</a></li>
                     </ul>
                 </div>
             </nav>
-            <div className="row">
-                <div id="sidebar" className="col-lg-2 col-md-2 col-sm-3 col-xs-4">
-                    <button onClick={createNew}>
+            <div className={"row"}>
+                <div id={"sidebar"} className={"col-lg-2 col-md-2 col-sm-3 col-xs-4"}>
+                    <button onClick={createNew} className={"btn"}>
                         Create New Proposal
                     </button>
                         <br/>
                         Search and filter your proposals
                     <Proposals/>
                 </div>
-                <div className="col-lg-10 col-md-10 col-sm-9 col-xs-8">
+                <div className={"col-lg-9 col-md-9 col-sm-8 col-xs-7"}>
                     {navPanel==='welcome' && !selectedProposal && (<div>Please select or create a proposal</div>)}
                     {navPanel==='pleaseSelect' && (<div>Please select an action</div>)}
                     {navPanel==='summary' && (<SummaryPanel />)}
@@ -114,9 +114,9 @@ function App2() {
             <div>
                <input value={query} onChange={(e) => setQuery(e.target.value)} />
                 {isLoading ? (
-                    <div className="">Loading…</div>
+                    <div className={""}>Loading…</div>
                 ) : (
-                    <ul className="">
+                    <ul className={""}>
                         {data?.map((item) => (
                             <li key={item.code} onClick={() => {setSelectedProposal(item.code)}}>{item.title} {selectedProposal===item.code && ChildList(item.code)}</li>
                         ))}

@@ -26,7 +26,7 @@ function SummaryPanel() {
 
         return (
             <div>
-                <h3>This to become nicely formatted summary of the selected proposal</h3>
+                <h3>This will become nicely formatted summary of the selected proposal</h3>
                 <fieldset>
                     {isLoading ? (`Loading...`)
                         : (

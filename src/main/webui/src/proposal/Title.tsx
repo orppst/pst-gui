@@ -74,7 +74,7 @@ function TitlePanel() {
                             : (
                             <input name="title" defaultValue={`${data}`} onChange={handleChange} />
                             )}
-                        <button type="submit" >Update</button>
+                        <button type="submit" className="btn btn-primary">Update</button>
                     </fieldset>
                 </form>
             </div>

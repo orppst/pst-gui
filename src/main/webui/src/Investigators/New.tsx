@@ -70,30 +70,28 @@ function AddInvestigatorPanel() {
 
         return (
                 <div>
-                    <h3>Add and remove investigators    </h3>
+                    <h3>Add and new investigator</h3>
                     <form>
-                        <fieldset>
-                        <legend>Type</legend>
-                        <select name="type" onChange={handleChange}>
-                            <option value="">--Please choose a type--</option>
-                            <option value="PI">PI</option>
-                            <option value="COI">CO-I</option>
-                        </select>
-                        </fieldset>
-                        <fieldset>
-                            <legend>Is this for a PHD?</legend>
-                            <div>
-                                <input type="checkbox" id="forPhD" name="forPhD" value="true" onChange={handleChange}/>
-                                <label htmlFor="forPhD">Yes</label>
-                            </div>
-                        </fieldset>
+                        <div className={"form-group"}>
+                            <label>Type</label>
+                            <select className={"form-control"} name="type" onChange={handleChange}>
+                                <option value="">--Please choose a type--</option>
+                                <option value="PI">PI</option>
+                                <option value="COI">CO-I</option>
+                            </select>
+                        </div>
+                        <div className={"form-group"}>
+                            <label>Is this for a PHD?</label>
+                            <input className={"form-control"} type="checkbox" id="forPhD" name="forPhD" value="true" onChange={handleChange}/>
+                            <label htmlFor="forPhD">Yes</label>
+                        </div>
 
-                        <fieldset>
+                        <div className={"form-group"}>
                             <legend>Select an investigator</legend>
                             <label>Filter names</label>
-                            <input value={query} onChange={(e) => setQuery(e.target.value)}/>
+                            <input className={"form-control"} value={query} onChange={(e) => setQuery(e.target.value)}/>
                             <label>Investigators</label>
-                            <select name="investigator" onChange={handleChange}>
+                            <select className={"form-control"} name="investigator" onChange={handleChange}>
                                 <option value="">--Please choose one--</option>
                             {isLoading ? (
                                 <option>Loading…</option>
@@ -103,10 +101,10 @@ function AddInvestigatorPanel() {
                                 )
                             )}
                             </select>
-                        </fieldset>
-                <button onClick={handleAdd}>Add</button>
+                        </div>
+                <button className={"btn btn-primary"} onClick={handleAdd}>Add</button>
                 </form>
-            <button onClick={handleCancel}>Cancel</button>
+            <button className={"btn"} onClick={handleCancel}>Cancel</button>
             </div>
         )
     }

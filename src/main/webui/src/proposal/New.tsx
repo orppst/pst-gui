@@ -60,24 +60,29 @@ function NewProposalPanel() {
         }
 
         return (
-            <div className="main-forms">
-                Create Proposal
+            <div className={""}>
+                <h3>Create Proposal</h3>
                 {submitting &&
                     <div>Submitting request</div>
                 }
                 <form onSubmit={handleSubmit}>
                     <fieldset>
-                        <label>Title</label>
-                        <input name="title" onChange={handleChange} />
-                        <label>Summary</label>
-                        <textarea rows="3" name="summary" onChange={handleChange} />
-                        <label>Kind<br/></label>
-                        <select name="kind" onChange={handleChange}>
-                            <option value="">--Please choose an option--</option>
-                            <option value="STANDARD">Standard</option>
-                        </select>
-                        <br />
-                        <button type="submit" >Create</button>
+                        <div className={"form-group"}>
+                            <label>Title</label>
+                            <input className={"form-control"} name="title" onChange={handleChange} />
+                        </div>
+                        <div className={"form-group"}>
+                            <label>Summary</label>
+                            <textarea className={"form-control"} rows="3" name="summary" onChange={handleChange} />
+                        </div>
+                        <div className={"form-group"}>
+                            <label>Kind<br/></label>
+                            <select className={"form-control"} name="kind" onChange={handleChange}>
+                                <option value="">--Please choose an option--</option>
+                                <option value="STANDARD">Standard</option>
+                         </select>
+                        </div>
+                        <button className={"btn btn-primary"} type="submit" >Create</button>
                     </fieldset>
                 </form>
             </div>
