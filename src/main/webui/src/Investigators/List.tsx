@@ -1,11 +1,10 @@
 import React, { useReducer, useContext, useState } from "react";
-import {AppContextType, UserContext} from '../App2.tsx'
+import {AppContextType, UserContext} from '../App2'
 import {
     fetchInvestigatorResourceRemoveInvestigator,
     useInvestigatorResourceGetInvestigator,
     useInvestigatorResourceGetInvestigators,
-} from "../generated/proposalToolComponents.ts";
-import {Investigator, Person} from "../generated/proposalToolSchemas.ts";
+} from "../generated/proposalToolComponents";
 
 function InvestigatorsPanel() {
 

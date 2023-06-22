@@ -1,11 +1,10 @@
-import React, {useContext, useReducer, useState} from "react";
-import {AppContextType, UserContext} from "../App2.tsx";
+import {React, useContext, useReducer, useState} from "react";
+import {AppContextType, UserContext} from "../App2";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
     usePersonResourceGetPeople,
-    useProposalResourceGetProposals
-} from "../generated/proposalToolComponents.ts";
+} from "../generated/proposalToolComponents";
 
 function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
