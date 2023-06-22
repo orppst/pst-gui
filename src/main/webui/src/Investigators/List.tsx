@@ -80,23 +80,23 @@ function InvestigatorsPanel() {
 
         return (
             <div>
-            <form>
-                <fieldset>
-                    {isLoading?(`Loading...`):
-                        error?(`Error!`):
-                            submitting?(`Removing...`):
-                                (
-                                    <>
-                                    <p><span>Type</span>{data?.type}</p>
-                                    <span>Name</span>{data?.person?.fullName}<br />
-                                    <span>Email</span>{data?.person?.eMail}<br />
-                                    <span>Institute</span>{data?.person?.homeInstitute?.name} <br />
-                                    <button onClick={handleRemove}>Remove</button>
-                                    </>
-                                )
-                    }
-                </fieldset>
-            </form>
+                {isLoading?(`Loading...`):
+                    error?(`Error!`):
+                        submitting?(`Removing...`):
+                            (
+                                <>
+                                <table className="table">
+                                    <tbody>
+                                    <tr className="row"><td className="col-lg-1 col-md-1">Type</td><td>{data?.type}</td></tr>
+                                    <tr className="row"><td className="col-lg-1 col-md-1">Name</td><td>{data?.person?.fullName}</td></tr>
+                                    <tr className="row"><td className="col-lg-1 col-md-1">Email</td><td>{data?.person?.eMail}</td></tr>
+                                    <tr className="row"><td className="col-lg-1 col-md-1">Institute</td><td>{data?.person?.homeInstitute?.name}</td></tr>
+                                    <tr className="row"><td className="col-lg-1 col-md-1"></td><td><button onClick={handleRemove}>Remove</button></td></tr>
+                                    </tbody>
+                                </table>
+                                </>
+                            )
+                }
             </div>
         );
     }

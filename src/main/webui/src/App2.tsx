@@ -6,7 +6,8 @@ import {
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
 import {Person} from "./generated/proposalToolSchemas";
-import './App.css'
+//import './App.css'
+import 'bootstrap/dist/css/bootstrap.css';
 import TitlePanel from './proposal/Title';
 import TargetPanel from './proposal/Targets';
 import SummaryPanel from "./proposal/Summary";
@@ -50,19 +51,30 @@ function App2() {
     <>
     <UserContext.Provider value={values}>
         <QueryClientProvider client={queryClient}>
-            <nav className="nav-bar">{`Proposals for `}
-                {`${user.fullName}`}
+            <nav className="navbar navbar-inverse">
+                <div className="container-fluid">
+                    <div className="navbar-header">
+                        <a className="navbar-brand" href="#">Proposals for {user.fullName}</a>
+                    </div>
+                    <ul className="nav navbar-nav">
+                        <li className="active"><a href="#">Home</a></li>
+                    </ul>
+                    <ul className="nav navbar-nav navbar-right">
+                        <li><a href="#"><span className="glyphicon glyphicon-user"></span> Account</a></li>
+                        <li><a href="#"><span className="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    </ul>
+                </div>
             </nav>
-            <div className="flex-container">
-                <div className="nav-bar">
-                    <button className="nav-button" onClick={createNew}>
+            <div className="row">
+                <div id="sidebar" className="col-lg-2 col-md-2 col-sm-3 col-xs-4">
+                    <button onClick={createNew}>
                         Create New Proposal
                     </button>
                         <br/>
                         Search and filter your proposals
                     <Proposals/>
                 </div>
-                <div className="main-forms">
+                <div className="col-lg-10 col-md-10 col-sm-9 col-xs-8">
                     {navPanel==='welcome' && !selectedProposal && (<div>Please select or create a proposal</div>)}
                     {navPanel==='pleaseSelect' && (<div>Please select an action</div>)}
                     {navPanel==='summary' && (<SummaryPanel />)}
@@ -102,9 +114,9 @@ function App2() {
             <div>
                <input value={query} onChange={(e) => setQuery(e.target.value)} />
                 {isLoading ? (
-                    <div>Loading…</div>
+                    <div className="">Loading…</div>
                 ) : (
-                    <ul>
+                    <ul className="">
                         {data?.map((item) => (
                             <li key={item.code} onClick={() => {setSelectedProposal(item.code)}}>{item.title} {selectedProposal===item.code && ChildList(item.code)}</li>
                         ))}

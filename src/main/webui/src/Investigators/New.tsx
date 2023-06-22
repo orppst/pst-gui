@@ -69,7 +69,8 @@ function AddInvestigatorPanel() {
         }
 
         return (
-                <div>A form and a list of peoples
+                <div>
+                    <h3>Add and remove investigators    </h3>
                     <form>
                         <fieldset>
                         <legend>Type</legend>
