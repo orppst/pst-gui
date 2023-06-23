@@ -70,7 +70,6 @@ function App2() {
                     <button onClick={createNew} className={"btn"}>
                         Create New Proposal
                     </button>
-                        <br/>
                         Search and filter your proposals
                     <Proposals/>
                 </div>
@@ -92,10 +91,10 @@ function App2() {
 
 
     function Proposals() {
-        const [query, setQuery] = useState("PI");
+        const [query, setQuery] = useState("");
         const { data , error, isLoading } = useProposalResourceGetProposals(
             {
-                queryParams: { investigatorName: '%' + query + '%'},
+                queryParams: { title:  "%" + query + "%" },
             },
             {
                 enabled: true,

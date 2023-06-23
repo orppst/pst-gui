@@ -1,6 +1,7 @@
 import React, { useReducer, useContext, useState } from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
+    fetchProposalResourceGetObservingProposalTitle,
     fetchProposalResourceReplaceTitle, ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
@@ -22,8 +23,9 @@ function TitlePanel() {
     function DisplayTitle() {
         const { user, selectedProposal, setSelectedProposal,setNavPanel } = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
-        const [formData, setFormData] = useReducer(formReducer, {title: data});
+        const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
+
 
         if (error) {
             return (
@@ -37,16 +39,21 @@ function TitlePanel() {
             event.preventDefault();
 
             setSubmitting(true);
+            let title = formData.title;
+
             //Don't allow a blank title
-            if(formData.value === "") {
-                setFormData({name: "title", value: data});
+            if(!title) {
+                title = data;
             }
+
+            title = title.replace(/^"(.*)"$/, '$1');
 
             const newTitle : ProposalResourceReplaceTitleVariables = {
                 pathParams: {proposalCode: selectedProposal},
-                body: formData.title,
+                body: title,
                 headers: {"Content-Type": "text/plain"}
             }
+
             //FIXME: perhaps this should accept application/json as the content type? End up with quotation marks surrounding the new title
             fetchProposalResourceReplaceTitle(newTitle)
                 .then(setSubmitting(false))
@@ -69,13 +76,14 @@ function TitlePanel() {
                     <div>Submitting request</div>
                 }
                 <form onSubmit={handleSubmit}>
-                    <fieldset>
+                    <div className={"form-group"}>
                         {isLoading ? (`Loading...`)
-                            : (
-                            <input name="title" defaultValue={`${data}`} onChange={handleChange} />
+                            : submitting? (`Submitting...`) :
+                            (
+                                <input className={"form-control"} name="title" defaultValue={`${data}`} onChange={handleChange} />
                             )}
                         <button type="submit" className="btn btn-primary">Update</button>
-                    </fieldset>
+                    </div>
                 </form>
             </div>
         );
