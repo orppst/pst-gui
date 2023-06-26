@@ -6,7 +6,6 @@ import {
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
 import {Person} from "./generated/proposalToolSchemas";
-//import './App.css'
 import 'bootstrap/dist/css/bootstrap.css';
 import TitlePanel from './proposal/Title';
 import TargetPanel from './proposal/Targets';

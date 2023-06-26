@@ -1,12 +1,9 @@
 import React, { useReducer, useContext, useState } from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
-    fetchProposalResourceGetObservingProposalTitle, fetchProposalResourceReplaceSummary,
-    fetchProposalResourceReplaceTitle,
+    fetchProposalResourceReplaceSummary,
     ProposalResourceReplaceSummaryVariables,
-    ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposal,
-    useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
 
 function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {

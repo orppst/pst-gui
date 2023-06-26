@@ -3,7 +3,7 @@ import {AppContextType, UserContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
-import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas.ts";
+import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas";
 
 function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {

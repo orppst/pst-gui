@@ -1,8 +1,8 @@
 import React, { useReducer, useContext, useState } from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
-    fetchProposalResourceGetObservingProposalTitle,
-    fetchProposalResourceReplaceTitle, ProposalResourceReplaceTitleVariables,
+    fetchProposalResourceReplaceTitle,
+    ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
 
