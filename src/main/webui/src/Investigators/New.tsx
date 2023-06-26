@@ -93,13 +93,13 @@ function AddInvestigatorPanel() {
                             <label>Investigators</label>
                             <select className={"form-control"} name="investigator" onChange={handleChange}>
                                 <option value="">--Please choose one--</option>
-                            {isLoading ? (
-                                <option>Loading…</option>
-                            ) :
-                                data?.map((item) => (
-                                    <option value={item.dbid}>{item.name}</option>
-                                )
-                            )}
+                                {isLoading ? (
+                                    <option>Loading…</option>
+                                ) :
+                                    data?.map((item) => (
+                                        <option value={item.dbid}>{item.name}</option>
+                                    )
+                                )}
                             </select>
                         </div>
                 <button className={"btn btn-primary"} onClick={handleAdd}>Add</button>

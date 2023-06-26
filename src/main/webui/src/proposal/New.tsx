@@ -48,7 +48,7 @@ function NewProposalPanel() {
             fetchProposalResourceCreateObservingProposal({ body: newProposal})
                 .then(setSubmitting(false))
                 .then((data : ObservingProposal) => setSelectedProposal(data._id))
-                .then(setNavPanel('summary'))
+                .then(setNavPanel('welcome'))
                 .catch(console.log);
         }
 

@@ -10,8 +10,9 @@ import {Person} from "./generated/proposalToolSchemas";
 import 'bootstrap/dist/css/bootstrap.css';
 import TitlePanel from './proposal/Title';
 import TargetPanel from './proposal/Targets';
-import SummaryPanel from "./proposal/Summary";
+import OverviewPanel from "./proposal/Overview";
 import NewProposalPanel from './proposal/New';
+import SummaryPanel from "./proposal/Summary";
 import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
 
@@ -70,17 +71,18 @@ function App2() {
                     <button onClick={createNew} className={"btn"}>
                         Create New Proposal
                     </button>
-                        Search and filter your proposals
+                    <div>Search and filter your proposals</div>
                     <Proposals/>
                 </div>
                 <div className={"col-lg-9 col-md-9 col-sm-8 col-xs-7"}>
                     {navPanel==='welcome' && !selectedProposal && (<div>Please select or create a proposal</div>)}
                     {navPanel==='pleaseSelect' && (<div>Please select an action</div>)}
-                    {navPanel==='summary' && (<SummaryPanel />)}
+                    {navPanel==='overview' && (<OverviewPanel />)}
                     {navPanel==='investigators' && (<InvestigatorsPanel />)}
                     {navPanel==='newInvestigator' && (<AddInvestigatorPanel />)}
                     {navPanel==='targets' && (<TargetPanel />)}
                     {navPanel==='title' && (<TitlePanel />)}
+                    {navPanel==='summary' && (<SummaryPanel />)}
                     {navPanel==='newProposal' && (<NewProposalPanel />)}
                 </div>
             </div>
@@ -89,12 +91,14 @@ function App2() {
     </>
   );
 
-
     function Proposals() {
-        const [query, setQuery] = useState("");
+        const [proposalTitle, setProposalTitle] = useState("");
+        const [investigatorName, setInvestigatorName] = useState("");
         const { data , error, isLoading } = useProposalResourceGetProposals(
             {
-                queryParams: { title:  "%" + query + "%" },
+                queryParams: { title:  "%" + proposalTitle + "%",
+                    investigatorName: "%" + investigatorName + "%"
+                },
             },
             {
                 enabled: true,
@@ -110,8 +114,11 @@ function App2() {
         }
 
         return (
-            <div>
-               <input value={query} onChange={(e) => setQuery(e.target.value)} />
+            <div className={"form-group"}>
+                <label>Title</label>
+                <input className={"form-control"} value={proposalTitle} onChange={(e) => setProposalTitle(e.target.value)} />
+                <label>Investigator name</label>
+                <input className={"form-control"} value={investigatorName} onChange={(e) => setInvestigatorName(e.target.value)} />
                 {isLoading ? (
                     <div className={""}>Loading…</div>
                 ) : (
@@ -127,8 +134,9 @@ function App2() {
 
     function ChildList() {
         return (<ul>
-            <li onClick={()=>{setNavPanel('summary'); console.log(navPanel)}}>Summary</li>
+            <li onClick={()=>{setNavPanel('overview')}}>Overview</li>
             <li onClick={()=>{setNavPanel('title')}}>Title</li>
+            <li onClick={()=>{setNavPanel('summary')}}>Summary</li>
             <li onClick={()=>{setNavPanel('investigators')}}>Investigators</li>
             <li onClick={()=>{setNavPanel('targets')}}>Targets</li>
             </ul>
