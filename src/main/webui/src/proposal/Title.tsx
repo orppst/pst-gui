@@ -1,8 +1,8 @@
 import React, { useReducer, useContext, useState } from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
-    fetchProposalResourceGetObservingProposalTitle,
-    fetchProposalResourceReplaceTitle, ProposalResourceReplaceTitleVariables,
+    fetchProposalResourceReplaceTitle,
+    ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
 
@@ -21,7 +21,7 @@ function TitlePanel() {
     );
 
     function DisplayTitle() {
-        const { user, selectedProposal, setSelectedProposal,setNavPanel } = useContext(UserContext) as AppContextType;
+        const { selectedProposal, setSelectedProposal,setNavPanel } = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
@@ -58,7 +58,7 @@ function TitlePanel() {
             fetchProposalResourceReplaceTitle(newTitle)
                 .then(setSubmitting(false))
                 .then(setSelectedProposal(selectedProposal))
-                .then(setNavPanel('summary'))
+                .then(setNavPanel('welcome'))
                 .catch(console.log);
         }
 

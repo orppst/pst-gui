@@ -3,7 +3,7 @@ import {AppContextType, UserContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
-import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas.ts";
+import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas";
 
 function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
@@ -48,7 +48,7 @@ function NewProposalPanel() {
             fetchProposalResourceCreateObservingProposal({ body: newProposal})
                 .then(setSubmitting(false))
                 .then((data : ObservingProposal) => setSelectedProposal(data._id))
-                .then(setNavPanel('summary'))
+                .then(setNavPanel('welcome'))
                 .catch(console.log);
         }
 
