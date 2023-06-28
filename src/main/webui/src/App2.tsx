@@ -13,6 +13,7 @@ import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
 import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
+import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
 
 const queryClient = new QueryClient()
 
@@ -57,7 +58,11 @@ function App2() {
                         <a className={"navbar-brand"} href="#">Proposals for {user.fullName}</a>
                     </div>
                     <ul className={"nav navbar-nav"}>
-                        <li className={"active"}><a href="#">Home</a></li>
+                        <li>
+                            <ul className={"nav navbar-nav"}>
+                                <li><a href={"newproposal"}>Create New</a></li>
+                            </ul>
+                        </li>
                     </ul>
                     <ul className={"nav navbar-nav navbar-right"}>
                         <li><a href="#"><span className={"glyphicon glyphicon-user"}></span> Account</a></li>
@@ -66,15 +71,23 @@ function App2() {
                 </div>
             </nav>
             <div className={"row"}>
-                <div id={"sidebar"} className={"col-lg-2 col-md-2 col-sm-3 col-xs-4"}>
-                    <button onClick={createNew} className={"btn"}>
-                        Create New Proposal
-                    </button>
-                    <div>Search and filter your proposals</div>
+                <div id={"sidebar"} className={"col-lg-2 col-md-2 col-sm-3 col-xs-4 well well-lg"}>
+
+                    <div>Search and filter by</div>
                     <Proposals/>
                 </div>
                 <div className={"col-lg-9 col-md-9 col-sm-8 col-xs-7"}>
-                    {navPanel==='welcome' && !selectedProposal && (<div>Please select or create a proposal</div>)}
+                <PanelRouter />
+                </div>
+            </div>
+        </QueryClientProvider>
+    </UserContext.Provider>
+    </>
+  );
+
+    function PanelRouter() {
+  /*          return (<>
+                {navPanel==='welcome' && !selectedProposal && (<div>Please select or create a proposal</div>)}
                     {navPanel==='pleaseSelect' && (<div>Please select an action</div>)}
                     {navPanel==='overview' && (<OverviewPanel />)}
                     {navPanel==='investigators' && (<InvestigatorsPanel />)}
@@ -83,12 +96,24 @@ function App2() {
                     {navPanel==='title' && (<TitlePanel />)}
                     {navPanel==='summary' && (<SummaryPanel />)}
                     {navPanel==='newProposal' && (<NewProposalPanel />)}
-                </div>
-            </div>
-        </QueryClientProvider>
-    </UserContext.Provider>
-    </>
-  );
+                </>
+    )
+        */
+        return (
+            <BrowserRouter>
+                <Routes>
+                    <Route path={"/pst/app/newproposal"} element={<NewProposalPanel />} />
+                    <Route path={"/pst/app/overview"} element={<OverviewPanel />} />
+                    <Route path={"/pst/app/title"} element={<TitlePanel />} />
+                    <Route path={"/pst/app/summary"} element={<SummaryPanel />} />
+                    <Route path={"/pst/app/investigators"} element={<InvestigatorsPanel />} />
+                    <Route path={"/pst/app/newinvestigator"} element={<AddInvestigatorPanel />} />
+                    <Route path={"/pst/app/targets"} element={<TargetPanel />} />
+                    <Route path={"*"} element={<div>Please select or create a proposal</div>} />
+                </Routes>
+            </BrowserRouter>
+        )
+    }
 
     function Proposals() {
         const [proposalTitle, setProposalTitle] = useState("");
@@ -132,12 +157,13 @@ function App2() {
     }
 
     function ChildList() {
-        return (<ul>
-            <li onClick={()=>{setNavPanel('overview')}}>Overview</li>
-            <li onClick={()=>{setNavPanel('title')}}>Title</li>
-            <li onClick={()=>{setNavPanel('summary')}}>Summary</li>
-            <li onClick={()=>{setNavPanel('investigators')}}>Investigators</li>
-            <li onClick={()=>{setNavPanel('targets')}}>Targets</li>
+        return (
+            <ul>
+                <li><a href="overview">Overview</a></li>
+                <li><a href="title">Title</a></li>
+                <li><a href="summary">Summary</a></li>
+                <li><a href="investigators">Investigators</a></li>
+                <li><a href="targets">Targets</a></li>
             </ul>
         );
     }

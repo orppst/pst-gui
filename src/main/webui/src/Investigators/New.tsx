@@ -98,7 +98,7 @@ function AddInvestigatorPanel() {
                                     <option>Loading…</option>
                                 ) :
                                     data?.map((item) => (
-                                        <option value={item.dbid}>{item.name}</option>
+                                        <option key={item.dbid} value={item.dbid}>{item.name}</option>
                                     )
                                 )}
                             </select>

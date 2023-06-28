@@ -1,5 +1,6 @@
 import React, { useReducer, useContext, useState } from "react";
 import {AppContextType, UserContext} from '../App2'
+import { useNavigate } from "react-router-dom";
 import {
     fetchInvestigatorResourceRemoveInvestigator,
     useInvestigatorResourceGetInvestigator,
@@ -17,6 +18,7 @@ function InvestigatorsPanel() {
     function DisplayInvestigators() {
         const { selectedProposal, setNavPanel} = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
+        let navigate = useNavigate();
 
         if (error) {
             return (
@@ -28,14 +30,15 @@ function InvestigatorsPanel() {
 
         function handleAddNew(event: React.SyntheticEvent) {
             event.preventDefault();
-            setNavPanel("newInvestigator");
+            navigate("newinvestigator");
+            //setNavPanel("newInvestigator");
         }
 
         return (
             <div>
                 <h3>Investigators linked to this proposal</h3>
                 <div>
-                    <button className={"btn btn-primary"} onClick={handleAddNew}>Add New</button>
+                    <button className={"btn btn-primary"} onClick={handleAddNew} >Add New</button>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
                             return (<RenderPerson dbid={item?.dbid} key={item?.dbid}/>)
