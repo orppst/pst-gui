@@ -1,5 +1,5 @@
 import React, {useState, createContext, useEffect} from 'react';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {QueryClient, QueryClientProvider, QueryClientProviderProps} from "@tanstack/react-query";
 import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
     useProposalResourceGetProposals
@@ -22,6 +22,7 @@ export type AppContextType = {
     selectedProposal: number;
     setSelectedProposal: React.SetStateAction<number> ;
     setNavPanel: React.SetStateAction<string>;
+    queryClient: QueryClientProviderProps;
 }
 export const UserContext = createContext<AppContextType|null>(null);
 
