@@ -5,7 +5,7 @@ import {
     ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation} from "@tanstack/react-query";
 
 function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
@@ -22,11 +22,10 @@ function TitlePanel() {
     );
 
     function DisplayTitle() {
-        const { selectedProposal, setSelectedProposal,setNavPanel } = useContext(UserContext) as AppContextType;
+        const { selectedProposal, setSelectedProposal,setNavPanel, queryClient } = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
-        const queryClient = useQueryClient();
 
         if (error) {
             return (
@@ -59,7 +58,8 @@ function TitlePanel() {
                 console.log("An error occurred trying to update the title")
             },
             onSuccess: () => {
-                queryClient.invalidateQueries().then(()=> setSubmitting(false)).then(setNavPanel('pleaseSelect'));
+                queryClient.invalidateQueries()
+                    .then(()=> setSubmitting(false))
             },
         })
 

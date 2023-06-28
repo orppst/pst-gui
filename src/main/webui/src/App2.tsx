@@ -1,6 +1,5 @@
 import React, {useState, createContext, useEffect} from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-//import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
     useProposalResourceGetProposals
@@ -31,7 +30,7 @@ function App2() {
     const [user, setUser] = useState(blankUser);
     const [selectedProposal, setSelectedProposal] = useState(0);
     const [navPanel, setNavPanel] = useState("welcome");
-    const values = {user, selectedProposal, setSelectedProposal, setNavPanel};
+    const values = {user, selectedProposal, setSelectedProposal, setNavPanel, queryClient};
 
     useEffect(() => {
            fetchPersonResourceGetPeople({queryParams: {name: "PI"}})

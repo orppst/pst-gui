@@ -21,7 +21,7 @@ function AddInvestigatorPanel() {
     function AddInvestigatorForm() {
         const [formData, setFormData] = useReducer(formReducer, {forPhD: false});
         const [query, setQuery] = useState("");
-        const { selectedProposal , setNavPanel } = useContext(UserContext) as AppContextType;
+        const { selectedProposal , setNavPanel, queryClient } = useContext(UserContext) as AppContextType;
         const { data, error, isLoading } = usePersonResourceGetPeople(
             {
                 queryParams: { name: '%' + query + '%'},
@@ -57,6 +57,7 @@ function AddInvestigatorPanel() {
                             forPhD: formData.forPhD,
                             person: data,
                         }})
+                    .then(()=>queryClient.invalidateQueries())
                     .then(setNavPanel("investigators"))
                     .catch(console.log)
                 )
