@@ -22,7 +22,7 @@ export type AppContextType = {
     selectedProposal: number;
     setSelectedProposal: React.SetStateAction<number> ;
     setNavPanel: React.SetStateAction<string>;
-    queryClient: QueryClientProviderProps;
+    queryClient: QueryClient;
 }
 export const UserContext = createContext<AppContextType|null>(null);
 
