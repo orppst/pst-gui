@@ -5,6 +5,7 @@ import {
     ProposalResourceReplaceSummaryVariables,
     useProposalResourceGetObservingProposal,
 } from "../generated/proposalToolComponents";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
@@ -25,7 +26,7 @@ function SummaryPanel() {
         const { data , error, isLoading } = useProposalResourceGetObservingProposal({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
-
+        const queryClient = useQueryClient();
 
         if (error) {
             return (
@@ -35,32 +36,38 @@ function SummaryPanel() {
             );
         }
 
-        function handleSubmit(event : React.SyntheticEvent<HTMLFormElement>) {
-            event.preventDefault();
-
-            setSubmitting(true);
-            let summary = formData.summary;
-
-            //Don't allow a blank title
-            if(!summary) {
-                summary = data?.summary;
-            }
-
-            summary = summary.replace(/^"(.*)"$/, '$1');
-
-            const newSummary : ProposalResourceReplaceSummaryVariables = {
-                pathParams: {proposalCode: selectedProposal},
-                body: summary,
-                headers: {"Content-Type": "text/plain"}
-            }
-
-            //FIXME: perhaps this should accept application/json as the content type? End up with quotation marks surrounding the new title
-            fetchProposalResourceReplaceSummary(newSummary)
-                .then(setSubmitting(false))
-                .then(setSelectedProposal(selectedProposal))
-                .then(setNavPanel('pleaseSelect'))
-                .catch(console.log);
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            mutation.mutate();
         }
+
+        const mutation = useMutation({
+                mutationFn: () => {
+                    let summary = formData.summary;
+                    //Don't allow a blank title
+                    if (!summary) {
+                        summary = data?.summary;
+                    }
+
+                    const newSummary: ProposalResourceReplaceSummaryVariables = {
+                        pathParams: {proposalCode: selectedProposal},
+                        body: summary,
+                        headers: {"Content-Type": "text/plain"}
+                    }
+
+                    return fetchProposalResourceReplaceSummary(newSummary);
+                },
+                onMutate: () => {
+                    setSubmitting(true);
+                },
+                onError: () => {
+                    console.log("An error occurred trying to update the title")
+                },
+                onSuccess: () => {
+                    queryClient.invalidateQueries().then(() => setSubmitting(false)).then(setNavPanel('pleaseSelect'));
+                }
+            }
+        );
 
         function handleChange(event : React.SyntheticEvent<HTMLFormElement>) {
             setFormData({

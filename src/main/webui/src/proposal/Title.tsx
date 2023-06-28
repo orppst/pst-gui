@@ -5,6 +5,7 @@ import {
     ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
@@ -25,7 +26,7 @@ function TitlePanel() {
         const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
-
+        const queryClient = useQueryClient();
 
         if (error) {
             return (
@@ -35,31 +36,36 @@ function TitlePanel() {
             );
         }
 
-        function handleSubmit(event : React.SyntheticEvent<HTMLFormElement>) {
-            event.preventDefault();
+        const mutation = useMutation({
+            mutationFn: () => {
+                let title = formData.title;
+                //Don't allow a blank title
+                if(!title) {
+                    title = data;
+                }
 
-            setSubmitting(true);
-            let title = formData.title;
+                const newTitle : ProposalResourceReplaceTitleVariables = {
+                    pathParams: {proposalCode: selectedProposal},
+                    body: title,
+                    headers: {"Content-Type": "text/plain"}
+                }
 
-            //Don't allow a blank title
-            if(!title) {
-                title = data;
-            }
+                return fetchProposalResourceReplaceTitle(newTitle);
+            },
+            onMutate: () => {
+                setSubmitting(true);
+            },
+            onError: () => {
+                console.log("An error occurred trying to update the title")
+            },
+            onSuccess: () => {
+                queryClient.invalidateQueries().then(()=> setSubmitting(false)).then(setNavPanel('pleaseSelect'));
+            },
+        })
 
-            title = title.replace(/^"(.*)"$/, '$1');
-
-            const newTitle : ProposalResourceReplaceTitleVariables = {
-                pathParams: {proposalCode: selectedProposal},
-                body: title,
-                headers: {"Content-Type": "text/plain"}
-            }
-
-            //FIXME: perhaps this should accept application/json as the content type? End up with quotation marks surrounding the new title
-            fetchProposalResourceReplaceTitle(newTitle)
-                .then(setSubmitting(false))
-                .then(setSelectedProposal(selectedProposal))
-                .then(setNavPanel('welcome'))
-                .catch(console.log);
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            mutation.mutate();
         }
 
         function handleChange(event : React.SyntheticEvent<HTMLFormElement>) {
@@ -82,7 +88,7 @@ function TitlePanel() {
                             (
                                 <input className={"form-control"} name="title" defaultValue={`${data}`} onChange={handleChange} />
                             )}
-                        <button type="submit" className="btn btn-primary">Update</button>
+                        <button type="submit" className={"btn btn-primary"}>Update</button>
                     </div>
                 </form>
             </div>
