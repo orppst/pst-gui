@@ -30,8 +30,7 @@ function InvestigatorsPanel() {
 
         function handleAddNew(event: React.SyntheticEvent) {
             event.preventDefault();
-            navigate("newinvestigator");
-            //setNavPanel("newInvestigator");
+            navigate("/pst/app/newinvestigator");
         }
 
         return (

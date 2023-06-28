@@ -14,6 +14,7 @@ import SummaryPanel from "./proposal/Summary";
 import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
 import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
+import { useHistoryState } from "./useHistoryState";
 
 const queryClient = new QueryClient()
 
@@ -29,8 +30,8 @@ export const UserContext = createContext<AppContextType|null>(null);
 
 function App2() {
     const blankUser : Person = {fullName: "Loading..."};
-    const [user, setUser] = useState(blankUser);
-    const [selectedProposal, setSelectedProposal] = useState(0);
+    const [user, setUser] = useHistoryState("user", blankUser);
+    const [selectedProposal, setSelectedProposal] = useHistoryState("selectedProposal", 0);
     const [navPanel, setNavPanel] = useState("welcome");
     const values = {user, selectedProposal, setSelectedProposal, setNavPanel, queryClient};
 
@@ -49,75 +50,62 @@ function App2() {
     }
 
   return (
-    <>
-    <UserContext.Provider value={values}>
-        <QueryClientProvider client={queryClient}>
-            <nav className={"navbar navbar-inverse"}>
-                <div className={"container-fluid"}>
-                    <div className={"navbar-header"}>
-                        <a className={"navbar-brand"} href="#">Proposals for {user.fullName}</a>
+    <BrowserRouter>
+        <UserContext.Provider value={values}>
+            <QueryClientProvider client={queryClient}>
+                <nav className={"navbar navbar-inverse"}>
+                    <div className={"container-fluid"}>
+                        <div className={"navbar-header"}>
+                            <span className={"navbar-brand"} >Proposals for {user.fullName}</span>
+                        </div>
+                        <ul className={"nav navbar-nav"}>
+                            <li>
+                                <ul className={"nav navbar-nav"}>
+                                    <li>
+                                        <Link to={"/pst/app/newproposal"}>Create New</Link>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul className={"nav navbar-nav navbar-right"}>
+                            <li><a href="#"><span className={"glyphicon glyphicon-user"}></span> Account</a></li>
+                            <li><a href="#"><span className={"glyphicon glyphicon-log-out"}></span> Logout</a></li>
+                        </ul>
                     </div>
-                    <ul className={"nav navbar-nav"}>
-                        <li>
-                            <ul className={"nav navbar-nav"}>
-                                <li><a href={"newproposal"}>Create New</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <ul className={"nav navbar-nav navbar-right"}>
-                        <li><a href="#"><span className={"glyphicon glyphicon-user"}></span> Account</a></li>
-                        <li><a href="#"><span className={"glyphicon glyphicon-log-out"}></span> Logout</a></li>
-                    </ul>
-                </div>
-            </nav>
-            <div className={"row"}>
-                <div id={"sidebar"} className={"col-lg-2 col-md-2 col-sm-3 col-xs-4 well well-lg"}>
+                </nav>
+                <div className={"row"}>
+                    <div id={"sidebar"} className={"col-lg-2 col-md-2 col-sm-3 col-xs-4 well well-lg"}>
 
-                    <div>Search and filter by</div>
-                    <Proposals/>
+                        <div>Search and filter by</div>
+                        <Proposals/>
+                    </div>
+                    <div className={"col-lg-9 col-md-9 col-sm-8 col-xs-7"}>
+                    <PanelRouter />
+                    </div>
                 </div>
-                <div className={"col-lg-9 col-md-9 col-sm-8 col-xs-7"}>
-                <PanelRouter />
-                </div>
-            </div>
-        </QueryClientProvider>
-    </UserContext.Provider>
-    </>
+            </QueryClientProvider>
+        </UserContext.Provider>
+    </BrowserRouter>
   );
 
     function PanelRouter() {
-  /*          return (<>
-                {navPanel==='welcome' && !selectedProposal && (<div>Please select or create a proposal</div>)}
-                    {navPanel==='pleaseSelect' && (<div>Please select an action</div>)}
-                    {navPanel==='overview' && (<OverviewPanel />)}
-                    {navPanel==='investigators' && (<InvestigatorsPanel />)}
-                    {navPanel==='newInvestigator' && (<AddInvestigatorPanel />)}
-                    {navPanel==='targets' && (<TargetPanel />)}
-                    {navPanel==='title' && (<TitlePanel />)}
-                    {navPanel==='summary' && (<SummaryPanel />)}
-                    {navPanel==='newProposal' && (<NewProposalPanel />)}
-                </>
-    )
-        */
         return (
-            <BrowserRouter>
-                <Routes>
-                    <Route path={"/pst/app/newproposal"} element={<NewProposalPanel />} />
-                    <Route path={"/pst/app/overview"} element={<OverviewPanel />} />
-                    <Route path={"/pst/app/title"} element={<TitlePanel />} />
-                    <Route path={"/pst/app/summary"} element={<SummaryPanel />} />
-                    <Route path={"/pst/app/investigators"} element={<InvestigatorsPanel />} />
-                    <Route path={"/pst/app/newinvestigator"} element={<AddInvestigatorPanel />} />
-                    <Route path={"/pst/app/targets"} element={<TargetPanel />} />
-                    <Route path={"*"} element={<div>Please select or create a proposal</div>} />
-                </Routes>
-            </BrowserRouter>
+            <Routes>
+                <Route path={"/pst/app/newproposal"} element={<NewProposalPanel />} />
+                <Route path={"/pst/app/overview"} element={<OverviewPanel />} />
+                <Route path={"/pst/app/title"} element={<TitlePanel />} />
+                <Route path={"/pst/app/summary"} element={<SummaryPanel />} />
+                <Route path={"/pst/app/investigators"} element={<InvestigatorsPanel />} />
+                <Route path={"/pst/app/newinvestigator"} element={<AddInvestigatorPanel />} />
+                <Route path={"/pst/app/targets"} element={<TargetPanel />} />
+                <Route path={"*"} element={<div>Please select or create a proposal</div>} />
+            </Routes>
         )
     }
 
     function Proposals() {
-        const [proposalTitle, setProposalTitle] = useState("");
-        const [investigatorName, setInvestigatorName] = useState("");
+        const [proposalTitle, setProposalTitle] = useHistoryState("proposalTitle", "");
+        const [investigatorName, setInvestigatorName] = useHistoryState("investigatorName", "");
         const { data , error, isLoading } = useProposalResourceGetProposals(
             {
                 queryParams: { title:  "%" + proposalTitle + "%",
@@ -159,11 +147,11 @@ function App2() {
     function ChildList() {
         return (
             <ul>
-                <li><a href="overview">Overview</a></li>
-                <li><a href="title">Title</a></li>
-                <li><a href="summary">Summary</a></li>
-                <li><a href="investigators">Investigators</a></li>
-                <li><a href="targets">Targets</a></li>
+                <li><Link to={"/pst/app/overview"}>Overview</Link></li>
+                <li><Link to={"/pst/app/title"}>Title</Link></li>
+                <li><Link to={"/pst/app/summary"}>Summary</Link></li>
+                <li><Link to={"/pst/app/investigators"}>Investigators</Link></li>
+                <li><Link to={"/pst/app/targets"}>Targets</Link></li>
             </ul>
         );
     }
