@@ -47,7 +47,7 @@ function InvestigatorsPanel() {
     }
 
     function RenderPerson(dbid: any) {
-        const { selectedProposal} = useContext(UserContext) as AppContextType;
+        const { selectedProposal, queryClient} = useContext(UserContext) as AppContextType;
         const [submitting, setSubmitting] = useState(false);
         const tdClass: string = "col-lg-1 col-md-1";
         const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
@@ -72,7 +72,7 @@ function InvestigatorsPanel() {
                             proposalCode: selectedProposal,
                         }})
                     .then(setSubmitting(false))
-                    .then(console.log("Deleted, how to refresh this list?"))
+                    .then(()=>queryClient.invalidateQueries())
                     .catch(console.log);
             } else {
                 console.log("Do not remove this investigator!");

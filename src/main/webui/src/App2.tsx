@@ -1,6 +1,5 @@
 import React, {useState, createContext, useEffect} from 'react';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-//import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import {QueryClient, QueryClientProvider, QueryClientProviderProps} from "@tanstack/react-query";
 import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
     useProposalResourceGetProposals
@@ -23,6 +22,7 @@ export type AppContextType = {
     selectedProposal: number;
     setSelectedProposal: React.SetStateAction<number> ;
     setNavPanel: React.SetStateAction<string>;
+    queryClient: QueryClient;
 }
 export const UserContext = createContext<AppContextType|null>(null);
 
@@ -31,7 +31,7 @@ function App2() {
     const [user, setUser] = useState(blankUser);
     const [selectedProposal, setSelectedProposal] = useState(0);
     const [navPanel, setNavPanel] = useState("welcome");
-    const values = {user, selectedProposal, setSelectedProposal, setNavPanel};
+    const values = {user, selectedProposal, setSelectedProposal, setNavPanel, queryClient};
 
     useEffect(() => {
            fetchPersonResourceGetPeople({queryParams: {name: "PI"}})
