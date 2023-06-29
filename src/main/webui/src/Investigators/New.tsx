@@ -60,7 +60,7 @@ function AddInvestigatorPanel() {
                             person: data,
                         }})
                     .then(()=>queryClient.invalidateQueries())
-                    .then(navigate("/pst/app/investigators"))
+                    .then(navigate("/pst/app/proposal/"+selectedProposal+"/investigators"))
                     .catch(console.log)
                 )
                 .catch(console.log);

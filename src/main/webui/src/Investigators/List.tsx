@@ -30,7 +30,7 @@ function InvestigatorsPanel() {
 
         function handleAddNew(event: React.SyntheticEvent) {
             event.preventDefault();
-            navigate("/pst/app/newinvestigator");
+            navigate("/pst/app/proposal/" + selectedProposal + "/investigators/new");
         }
 
         return (
@@ -67,7 +67,6 @@ function InvestigatorsPanel() {
             )
             if(choice) {
                 setSubmitting(true);
-                console.log("Remove Investigator with person name of " + data?.person?.fullName);
                 fetchInvestigatorResourceRemoveInvestigator({pathParams:
                         {
                             investigatorId: dbid.dbid,
@@ -76,8 +75,6 @@ function InvestigatorsPanel() {
                     .then(setSubmitting(false))
                     .then(()=>queryClient.invalidateQueries())
                     .catch(console.log);
-            } else {
-                console.log("Do not remove this investigator!");
             }
         }
 

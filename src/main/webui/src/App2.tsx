@@ -13,7 +13,7 @@ import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
 import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
-import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Link, NavLink, Route, Routes} from "react-router-dom";
 import { useHistoryState } from "./useHistoryState";
 
 const queryClient = new QueryClient()
@@ -62,7 +62,8 @@ function App2() {
                             <li>
                                 <ul className={"nav navbar-nav"}>
                                     <li>
-                                        <Link to={"/pst/app/newproposal"}>Create New</Link>
+                                        <NavLink to={"/pst/app/proposal/new"} className={({ isActive, isPending }) =>
+                                            isPending ? "pending" : isActive ? "active" : ""}>Create New</NavLink>
                                     </li>
                                 </ul>
                             </li>
@@ -91,13 +92,14 @@ function App2() {
     function PanelRouter() {
         return (
             <Routes>
-                <Route path={"/pst/app/newproposal"} element={<NewProposalPanel />} />
-                <Route path={"/pst/app/overview"} element={<OverviewPanel />} />
-                <Route path={"/pst/app/title"} element={<TitlePanel />} />
-                <Route path={"/pst/app/summary"} element={<SummaryPanel />} />
-                <Route path={"/pst/app/investigators"} element={<InvestigatorsPanel />} />
-                <Route path={"/pst/app/newinvestigator"} element={<AddInvestigatorPanel />} />
-                <Route path={"/pst/app/targets"} element={<TargetPanel />} />
+                <Route path={"/pst/app/proposal/new"} element={<NewProposalPanel />} />
+                <Route path={"/pst/app/proposal/:id"} element={<OverviewPanel />} />
+                <Route path={"/pst/app/proposal/:id/title"} element={<TitlePanel />} />
+                <Route path={"/pst/app/proposal/:id/summary"} element={<SummaryPanel />} />
+                <Route path={"/pst/app/proposal/:id/investigators"} element={<InvestigatorsPanel />} />
+                <Route path={"/pst/app/proposal/:id/investigators/new"} element={<AddInvestigatorPanel />} />
+                <Route path={"/pst/app/proposal/:id/targets"} element={<TargetPanel />} />
+                <Route path={"/pst/app/proposal/:id/goals"} element={<span>Technical Goals Panel to go here</span>} />
                 <Route path={"*"} element={<div>Please select or create a proposal</div>} />
             </Routes>
         )
@@ -136,7 +138,7 @@ function App2() {
                 ) : (
                     <ul className={""}>
                         {data?.map((item) => (
-                            <li key={item.code} onClick={() => {setSelectedProposal(item.code)}}>{item.title} {selectedProposal===item.code && ChildList(item.code)}</li>
+                        <li key={item.code} onClick={()=>{setSelectedProposal(item.code)}}>{item.title}{selectedProposal===item.code && ChildList(item.code)}</li>
                         ))}
                     </ul>
                 )}
@@ -147,11 +149,18 @@ function App2() {
     function ChildList() {
         return (
             <ul>
-                <li><Link to={"/pst/app/overview"}>Overview</Link></li>
-                <li><Link to={"/pst/app/title"}>Title</Link></li>
-                <li><Link to={"/pst/app/summary"}>Summary</Link></li>
-                <li><Link to={"/pst/app/investigators"}>Investigators</Link></li>
-                <li><Link to={"/pst/app/targets"}>Targets</Link></li>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposal} className={({ isActive, isPending }) =>
+                    isPending ? "pending" : isActive ? "active" : ""}>Overview</NavLink></li>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/title"} className={({ isActive, isPending }) =>
+                    isPending ? "pending" : isActive ? "active" : ""}>Title</NavLink></li>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/summary"} className={({ isActive, isPending }) =>
+                    isPending ? "pending" : isActive ? "active" : ""}>Summary</NavLink></li>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/investigators"} className={({ isActive, isPending }) =>
+                    isPending ? "pending" : isActive ? "active" : ""}>Investigators</NavLink></li>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/targets"} className={({ isActive, isPending }) =>
+                    isPending ? "pending" : isActive ? "active" : ""}>Targets</NavLink></li>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/goals"} className={({ isActive, isPending }) =>
+                    isPending ? "pending" : isActive ? "active" : ""}>Technical Goals</NavLink></li>
             </ul>
         );
     }
