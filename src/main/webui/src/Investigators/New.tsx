@@ -5,6 +5,7 @@ import {
     fetchPersonResourceGetPerson,
     usePersonResourceGetPeople,
 } from "../generated/proposalToolComponents";
+import {useNavigate} from "react-router-dom";
 
 function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
@@ -21,6 +22,7 @@ function AddInvestigatorPanel() {
     function AddInvestigatorForm() {
         const [formData, setFormData] = useReducer(formReducer, {forPhD: false});
         const [query, setQuery] = useState("");
+        let navigate = useNavigate();
         const { selectedProposal , setNavPanel, queryClient } = useContext(UserContext) as AppContextType;
         const { data, error, isLoading } = usePersonResourceGetPeople(
             {
@@ -58,7 +60,7 @@ function AddInvestigatorPanel() {
                             person: data,
                         }})
                     .then(()=>queryClient.invalidateQueries())
-                    .then(setNavPanel("investigators"))
+                    .then(navigate("/pst/app/proposal/"+selectedProposal+"/investigators"))
                     .catch(console.log)
                 )
                 .catch(console.log);
@@ -98,7 +100,7 @@ function AddInvestigatorPanel() {
                                     <option>Loading…</option>
                                 ) :
                                     data?.map((item) => (
-                                        <option value={item.dbid}>{item.name}</option>
+                                        <option key={item.dbid} value={item.dbid}>{item.name}</option>
                                     )
                                 )}
                             </select>
