@@ -7,7 +7,7 @@ import {
 } from "../generated/proposalToolComponents";
 import {useMutation} from "@tanstack/react-query";
 
-function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
+function formReducer(state: any, event : React.SyntheticEvent) {
     return {
         ...state,
         [event.name]: event.value
@@ -22,7 +22,7 @@ function TitlePanel() {
     );
 
     function DisplayTitle() {
-        const { selectedProposal, setSelectedProposal,setNavPanel, queryClient } = useContext(UserContext) as AppContextType;
+        const { selectedProposal, queryClient } = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);

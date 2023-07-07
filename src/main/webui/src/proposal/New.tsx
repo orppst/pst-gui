@@ -4,8 +4,9 @@ import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas";
+import {useNavigate} from "react-router-dom";
 
-function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
+function formReducer(state: any, event : React.SyntheticEvent) {
     return {
         ...state,
         [event.name]: event.value
@@ -20,11 +21,12 @@ function NewProposalPanel() {
     );
 
     function DisplayNewProposal() {
-        const { user, setSelectedProposal, setNavPanel } = useContext(UserContext) as AppContextType;
+        const { user, setSelectedProposal, selectedProposal } = useContext(UserContext) as AppContextType;
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
+        let navigate = useNavigate();
 
-        function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
+        function handleSubmit(event: React.SyntheticEvent) {
             event.preventDefault();
 
             setSubmitting(true);
@@ -35,6 +37,7 @@ function NewProposalPanel() {
 
             //Add the current user as the PI
             const investigator : Investigator = {
+                // @ts-ignore
                 "@type": "proposal:Investigator",
                 "type": "PI",
                 "person": user
@@ -46,13 +49,13 @@ function NewProposalPanel() {
             };
 
             fetchProposalResourceCreateObservingProposal({ body: newProposal})
-                .then(setSubmitting(false))
-                .then((data : ObservingProposal) => setSelectedProposal(data._id))
-                .then(setNavPanel('welcome'))
+                .then((data) => setSelectedProposal(data?._id))
+                .then(()=>setSubmitting(false))
+                .then(()=>navigate("/pst/app/proposal/" + selectedProposal))
                 .catch(console.log);
         }
 
-        function handleChange(event: React.SyntheticEvent<HTMLFormElement>) {
+        function handleChange(event: React.SyntheticEvent) {
             setFormData({
                 name: event.target.name,
                 value: event.target.value,
@@ -73,7 +76,7 @@ function NewProposalPanel() {
                         </div>
                         <div className={"form-group"}>
                             <label>Summary</label>
-                            <textarea className={"form-control"} rows="3" name="summary" onChange={handleChange} />
+                            <textarea className={"form-control"} rows={3} name="summary" onChange={handleChange} />
                         </div>
                         <div className={"form-group"}>
                             <label>Kind<br/></label>

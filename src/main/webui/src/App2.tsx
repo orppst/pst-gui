@@ -1,5 +1,5 @@
 import React, {useState, createContext, useEffect} from 'react';
-import {QueryClient, QueryClientProvider, QueryClientProviderProps} from "@tanstack/react-query";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
     useProposalResourceGetProposals
@@ -13,8 +13,11 @@ import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
 import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
-import {BrowserRouter, Link, NavLink, Route, Routes} from "react-router-dom";
+import {BrowserRouter, NavLink, Route, Routes} from "react-router-dom";
 import { useHistoryState } from "./useHistoryState";
+import GoalsPanel from "./proposal/Goals";
+import ObservationsPanel from "./proposal/Observations";
+import DocumentsPanel from "./proposal/Documents";
 
 const queryClient = new QueryClient()
 
@@ -22,8 +25,7 @@ const queryClient = new QueryClient()
 export type AppContextType = {
     user: Person;
     selectedProposal: number;
-    setSelectedProposal: React.SetStateAction<number> ;
-    setNavPanel: React.SetStateAction<string>;
+    setSelectedProposal: any ;
     queryClient: QueryClient;
 }
 export const UserContext = createContext<AppContextType|null>(null);
@@ -32,8 +34,7 @@ function App2() {
     const blankUser : Person = {fullName: "Loading..."};
     const [user, setUser] = useHistoryState("user", blankUser);
     const [selectedProposal, setSelectedProposal] = useHistoryState("selectedProposal", 0);
-    const [navPanel, setNavPanel] = useState("welcome");
-    const values = {user, selectedProposal, setSelectedProposal, setNavPanel, queryClient};
+    const values = {user, selectedProposal, setSelectedProposal, queryClient};
 
     useEffect(() => {
            fetchPersonResourceGetPeople({queryParams: {name: "PI"}})
@@ -43,11 +44,6 @@ function App2() {
                .catch(console.log)
 
        },[]);
-
-    const createNew = () => {
-        setSelectedProposal(0);
-        setNavPanel("newProposal");
-    }
 
   return (
     <BrowserRouter>
@@ -99,7 +95,9 @@ function App2() {
                 <Route path={"/pst/app/proposal/:id/investigators"} element={<InvestigatorsPanel />} />
                 <Route path={"/pst/app/proposal/:id/investigators/new"} element={<AddInvestigatorPanel />} />
                 <Route path={"/pst/app/proposal/:id/targets"} element={<TargetPanel />} />
-                <Route path={"/pst/app/proposal/:id/goals"} element={<span>Technical Goals Panel to go here</span>} />
+                <Route path={"/pst/app/proposal/:id/goals"} element={<GoalsPanel />} />
+                <Route path={"/pst/app/proposal/:id/observations"} element={<ObservationsPanel />} />
+                <Route path={"/pst/app/proposal/:id/documents"} element={<DocumentsPanel />} />
                 <Route path={"*"} element={<div>Please select or create a proposal</div>} />
             </Routes>
         )
@@ -161,6 +159,10 @@ function App2() {
                     isPending ? "pending" : isActive ? "active" : ""}>Targets</NavLink></li>
                 <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/goals"} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Technical Goals</NavLink></li>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/observations"} className={({ isActive, isPending }) =>
+                    isPending ? "pending" : isActive ? "active" : ""}>Observations</NavLink></li>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/documents"} className={({ isActive, isPending }) =>
+                    isPending ? "pending" : isActive ? "active" : ""}>Documents</NavLink></li>
             </ul>
         );
     }
