@@ -1,4 +1,4 @@
-import {React, useContext, useReducer, useState} from "react";
+import React, {useContext, useReducer, useState} from "react";
 import {AppContextType, UserContext} from "../App2";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
@@ -7,7 +7,7 @@ import {
 } from "../generated/proposalToolComponents";
 import {useNavigate} from "react-router-dom";
 
-function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
+function formReducer(state: any, event : React.SyntheticEvent) {
     return {
         ...state,
         [event.name]: event.value
@@ -23,7 +23,7 @@ function AddInvestigatorPanel() {
         const [formData, setFormData] = useReducer(formReducer, {forPhD: false});
         const [query, setQuery] = useState("");
         let navigate = useNavigate();
-        const { selectedProposal , setNavPanel, queryClient } = useContext(UserContext) as AppContextType;
+        const { selectedProposal, queryClient } = useContext(UserContext) as AppContextType;
         const { data, error, isLoading } = usePersonResourceGetPeople(
             {
                 queryParams: { name: '%' + query + '%'},
@@ -60,7 +60,7 @@ function AddInvestigatorPanel() {
                             person: data,
                         }})
                     .then(()=>queryClient.invalidateQueries())
-                    .then(navigate("/pst/app/proposal/"+selectedProposal+"/investigators"))
+                    .then(()=>navigate("/pst/app/proposal/" + selectedProposal + "/investigators"))
                     .catch(console.log)
                 )
                 .catch(console.log);
@@ -68,7 +68,7 @@ function AddInvestigatorPanel() {
 
         function handleCancel(event: React.SyntheticEvent) {
             event.preventDefault();
-            setNavPanel("investigators");
+            navigate("/pst/app/proposal/" + selectedProposal + "/investigators")
         }
 
         return (
@@ -88,7 +88,6 @@ function AddInvestigatorPanel() {
                             <input className={"form-control"} type="checkbox" id="forPhD" name="forPhD" value="true" onChange={handleChange}/>
                             <label htmlFor="forPhD">Yes</label>
                         </div>
-
                         <div className={"form-group"}>
                             <legend>Select an investigator</legend>
                             <label>Filter names</label>

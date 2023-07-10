@@ -7,7 +7,7 @@ import {
 } from "../generated/proposalToolComponents";
 import {useMutation} from "@tanstack/react-query";
 
-function formReducer(state, event : React.SyntheticEvent<HTMLFormElement>) {
+function formReducer(state: any, event : React.SyntheticEvent<HTMLFormElement>) {
     return {
         ...state,
         [event.name]: event.value
@@ -22,7 +22,7 @@ function SummaryPanel() {
     );
 
     function DisplaySummary() {
-        const { selectedProposal, setSelectedProposal,setNavPanel, queryClient } = useContext(UserContext) as AppContextType;
+        const { selectedProposal, queryClient } = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useProposalResourceGetObservingProposal({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
@@ -35,7 +35,7 @@ function SummaryPanel() {
             );
         }
 
-        const handleSubmit = (e) => {
+        const handleSubmit = (e: React.SyntheticEvent) => {
             e.preventDefault();
             mutation.mutate();
         }
@@ -50,6 +50,7 @@ function SummaryPanel() {
 
                     const newSummary: ProposalResourceReplaceSummaryVariables = {
                         pathParams: {proposalCode: selectedProposal},
+                        // @ts-ignore
                         body: summary,
                         headers: {"Content-Type": "text/plain"}
                     }
@@ -69,7 +70,7 @@ function SummaryPanel() {
             }
         );
 
-        function handleChange(event : React.SyntheticEvent<HTMLFormElement>) {
+        function handleChange(event : React.SyntheticEvent) {
             setFormData({
                 name: event.target.name,
                 value: event.target.value,
@@ -87,7 +88,7 @@ function SummaryPanel() {
                         {isLoading ? (`Loading...`)
                             : submitting? (`Submitting...`) :
                             (
-                                <textarea className={"form-control"} rows="3" name="summary" defaultValue={`${data?.summary}`} onChange={handleChange} />
+                                <textarea className={"form-control"} rows={3} name="summary" defaultValue={`${data?.summary}`} onChange={handleChange} />
                             )}
                         <button type="submit" className="btn btn-primary">Update</button>
                     </div>
