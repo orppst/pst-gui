@@ -24,6 +24,7 @@ function DocumentsPanel() {
             );
         }
 
+
         return (
             <div>
                 <h3>This is where upload and download of documents will happen</h3>

@@ -1,16 +1,10 @@
 import React, { useReducer, useContext, useState } from "react";
-import {AppContextType, UserContext} from '../App2'
+import {AppContextType, UserContext, formReducer} from '../App2'
 import {
     useProposalResourceGetTarget,
     useProposalResourceGetTargets,
 } from "../generated/proposalToolComponents";
 
-function formReducer(state: any, event : React.SyntheticEvent) {
-    return {
-        ...state,
-        [event.name]: event.value
-    }
-}
 function TargetPanel() {
 
     return (

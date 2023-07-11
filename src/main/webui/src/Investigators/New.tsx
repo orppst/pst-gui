@@ -1,18 +1,11 @@
 import React, {useContext, useReducer, useState} from "react";
-import {AppContextType, UserContext} from "../App2";
+import {AppContextType, UserContext, formReducer} from "../App2";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
     usePersonResourceGetPeople,
 } from "../generated/proposalToolComponents";
 import {useNavigate} from "react-router-dom";
-
-function formReducer(state: any, event : React.SyntheticEvent) {
-    return {
-        ...state,
-        [event.name]: event.value
-    }
-}
 
 function AddInvestigatorPanel() {
     return (

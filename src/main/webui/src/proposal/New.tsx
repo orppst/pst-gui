@@ -1,17 +1,11 @@
 import React, {useReducer, useContext, useState} from "react";
-import {AppContextType, UserContext} from '../App2'
+import {AppContextType, UserContext, formReducer} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
 
-function formReducer(state: any, event : React.SyntheticEvent) {
-    return {
-        ...state,
-        [event.name]: event.value
-    }
-}
 function NewProposalPanel() {
 
     return (
