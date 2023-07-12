@@ -37,8 +37,10 @@ function TitlePanel() {
                     title = data;
                 }
 
+
                 const newTitle : ProposalResourceReplaceTitleVariables = {
                     pathParams: {proposalCode: selectedProposal},
+                    // @ts-ignore
                     body: title,
                     headers: {"Content-Type": "text/plain"}
                 }

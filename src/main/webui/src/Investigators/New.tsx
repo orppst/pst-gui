@@ -97,10 +97,10 @@ function AddInvestigatorPanel() {
                                 )}
                             </select>
                         </div>
-                <button className={"btn btn-primary"} onClick={handleAdd}>Add</button>
-                </form>
-            <button className={"btn"} onClick={handleCancel}>Cancel</button>
-            </div>
+                        <button className={"btn btn-primary"} onClick={handleAdd}>Add</button>
+                    </form>
+                    <button className={"btn"} onClick={handleCancel}>Cancel</button>
+                </div>
         )
     }
 
