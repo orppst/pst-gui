@@ -1,5 +1,5 @@
 import React, { useReducer, useContext, useState } from "react";
-import {AppContextType, UserContext} from '../App2'
+import {AppContextType, UserContext, formReducer} from '../App2'
 import {
     fetchProposalResourceReplaceTitle,
     ProposalResourceReplaceTitleVariables,
@@ -7,12 +7,6 @@ import {
 } from "../generated/proposalToolComponents";
 import {useMutation} from "@tanstack/react-query";
 
-function formReducer(state: any, event : React.SyntheticEvent) {
-    return {
-        ...state,
-        [event.name]: event.value
-    }
-}
 function TitlePanel() {
 
     return (
@@ -43,8 +37,10 @@ function TitlePanel() {
                     title = data;
                 }
 
+
                 const newTitle : ProposalResourceReplaceTitleVariables = {
                     pathParams: {proposalCode: selectedProposal},
+                    // @ts-ignore
                     body: title,
                     headers: {"Content-Type": "text/plain"}
                 }

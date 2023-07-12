@@ -21,7 +21,7 @@ import DocumentsPanel from "./proposal/Documents";
 
 const queryClient = new QueryClient()
 
-//TODO: Put context definitions in separate file
+//TODO: Put context definitions and formReducer in separate file
 export type AppContextType = {
     user: Person;
     selectedProposal: number;
@@ -29,6 +29,13 @@ export type AppContextType = {
     queryClient: QueryClient;
 }
 export const UserContext = createContext<AppContextType|null>(null);
+
+export function formReducer(state: any, event : React.SyntheticEvent) {
+    return {
+        ...state,
+        [event.name]: event.value
+    }
+}
 
 function App2() {
     const blankUser : Person = {fullName: "Loading..."};

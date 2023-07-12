@@ -1,17 +1,11 @@
 import React, {useReducer, useContext, useState} from "react";
-import {AppContextType, UserContext} from '../App2'
+import {AppContextType, UserContext, formReducer} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
 
-function formReducer(state: any, event : React.SyntheticEvent) {
-    return {
-        ...state,
-        [event.name]: event.value
-    }
-}
 function NewProposalPanel() {
 
     return (
@@ -30,7 +24,7 @@ function NewProposalPanel() {
             event.preventDefault();
 
             setSubmitting(true);
-            //Don't allow a blank title
+            //TODO: Fix this
             if(formData.value === "") {
                 setFormData({name: "title", value: 'empty'});
             }
@@ -49,9 +43,11 @@ function NewProposalPanel() {
             };
 
             fetchProposalResourceCreateObservingProposal({ body: newProposal})
-                .then((data) => setSelectedProposal(data?._id))
-                .then(()=>setSubmitting(false))
-                .then(()=>navigate("/pst/app/proposal/" + selectedProposal))
+                .then((data) => {
+                    setSelectedProposal(data?._id);
+                    setSubmitting(false);
+                    navigate("/pst/app/proposal/" + selectedProposal);
+                })
                 .catch(console.log);
         }
 
@@ -69,24 +65,22 @@ function NewProposalPanel() {
                     <div>Submitting request</div>
                 }
                 <form onSubmit={handleSubmit}>
-                    <fieldset>
-                        <div className={"form-group"}>
-                            <label>Title</label>
-                            <input className={"form-control"} name="title" onChange={handleChange} />
-                        </div>
-                        <div className={"form-group"}>
-                            <label>Summary</label>
-                            <textarea className={"form-control"} rows={3} name="summary" onChange={handleChange} />
-                        </div>
-                        <div className={"form-group"}>
-                            <label>Kind<br/></label>
-                            <select className={"form-control"} name="kind" onChange={handleChange}>
-                                <option value="">--Please choose an option--</option>
-                                <option value="STANDARD">Standard</option>
-                         </select>
-                        </div>
-                        <button className={"btn btn-primary"} type="submit" >Create</button>
-                    </fieldset>
+                    <div className={"form-group"}>
+                        <label>Title</label>
+                        <input className={"form-control"} name="title" onChange={handleChange} />
+                    </div>
+                    <div className={"form-group"}>
+                        <label>Summary</label>
+                        <textarea className={"form-control"} rows={3} name="summary" onChange={handleChange} />
+                    </div>
+                    <div className={"form-group"}>
+                        <label>Kind<br/></label>
+                        <select className={"form-control"} name="kind" onChange={handleChange}>
+                            <option value="">--Please choose an option--</option>
+                            <option value="STANDARD">Standard</option>
+                     </select>
+                    </div>
+                    <button className={"btn btn-primary"} type="submit" >Create</button>
                 </form>
             </div>
         );

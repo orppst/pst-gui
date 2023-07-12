@@ -1,5 +1,5 @@
 import React, { useReducer, useContext, useState } from "react";
-import {AppContextType, UserContext} from '../App2'
+import {AppContextType, UserContext, formReducer} from '../App2'
 import {
     fetchProposalResourceReplaceSummary,
     ProposalResourceReplaceSummaryVariables,
@@ -7,12 +7,6 @@ import {
 } from "../generated/proposalToolComponents";
 import {useMutation} from "@tanstack/react-query";
 
-function formReducer(state: any, event : React.SyntheticEvent<HTMLFormElement>) {
-    return {
-        ...state,
-        [event.name]: event.value
-    }
-}
 function SummaryPanel() {
 
     return (

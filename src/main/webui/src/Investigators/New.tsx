@@ -1,18 +1,11 @@
 import React, {useContext, useReducer, useState} from "react";
-import {AppContextType, UserContext} from "../App2";
+import {AppContextType, UserContext, formReducer} from "../App2";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
     usePersonResourceGetPeople,
 } from "../generated/proposalToolComponents";
 import {useNavigate} from "react-router-dom";
-
-function formReducer(state: any, event : React.SyntheticEvent) {
-    return {
-        ...state,
-        [event.name]: event.value
-    }
-}
 
 function AddInvestigatorPanel() {
     return (
@@ -104,10 +97,10 @@ function AddInvestigatorPanel() {
                                 )}
                             </select>
                         </div>
-                <button className={"btn btn-primary"} onClick={handleAdd}>Add</button>
-                </form>
-            <button className={"btn"} onClick={handleCancel}>Cancel</button>
-            </div>
+                        <button className={"btn btn-primary"} onClick={handleAdd}>Add</button>
+                    </form>
+                    <button className={"btn"} onClick={handleCancel}>Cancel</button>
+                </div>
         )
     }
 
