@@ -16,7 +16,7 @@ function NewProposalPanel() {
 
     function DisplayNewProposal() {
         const { user, setSelectedProposal, selectedProposal } = useContext(UserContext) as AppContextType;
-        const [formData, setFormData] = useReducer(formReducer, {});
+        const [formData, setFormData] = useReducer(formReducer, {title:"Empty", summary:"Empty", kind:"STANDARD"});
         const [submitting, setSubmitting] = useState(false);
         let navigate = useNavigate();
 
@@ -24,10 +24,6 @@ function NewProposalPanel() {
             event.preventDefault();
 
             setSubmitting(true);
-            //TODO: Fix this
-            if(formData.value === "") {
-                setFormData({name: "title", value: 'empty'});
-            }
 
             //Add the current user as the PI
             const investigator : Investigator = {
@@ -76,8 +72,9 @@ function NewProposalPanel() {
                     <div className={"form-group"}>
                         <label>Kind<br/></label>
                         <select className={"form-control"} name="kind" onChange={handleChange}>
-                            <option value="">--Please choose an option--</option>
                             <option value="STANDARD">Standard</option>
+                            <option value="TOO">T.O.O</option>
+                            <option value="SURVEY">Survey</option>
                      </select>
                     </div>
                     <button className={"btn btn-primary"} type="submit" >Create</button>
