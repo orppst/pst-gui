@@ -16,7 +16,8 @@ import AddInvestigatorPanel from "./Investigators/New";
 import {BrowserRouter, NavLink, Route, Routes} from "react-router-dom";
 import { useHistoryState } from "./useHistoryState";
 import GoalsPanel from "./proposal/Goals";
-import ObservationsPanel from "./proposal/Observations";
+import ObservationsPanel from "./observations/List";
+import NewObservationPanel from "./observations/New";
 import DocumentsPanel from "./proposal/Documents";
 
 const queryClient = new QueryClient()
@@ -104,6 +105,7 @@ function App2() {
                 <Route path={"/pst/app/proposal/:id/targets"} element={<TargetPanel />} />
                 <Route path={"/pst/app/proposal/:id/goals"} element={<GoalsPanel />} />
                 <Route path={"/pst/app/proposal/:id/observations"} element={<ObservationsPanel />} />
+                <Route path={"/pst/app/proposal/:id/observations/new"} element={<NewObservationPanel />} />
                 <Route path={"/pst/app/proposal/:id/documents"} element={<DocumentsPanel />} />
                 <Route path={"*"} element={<div>Please select or create a proposal</div>} />
             </Routes>

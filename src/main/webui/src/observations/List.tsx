@@ -1,8 +1,9 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import {AppContextType, UserContext} from '../App2'
 import {
     useObservationResourceGetObservations,
 } from "../generated/proposalToolComponents";
+import {useNavigate} from "react-router-dom";
 
 function ObservationsPanel() {
 
@@ -15,6 +16,8 @@ function ObservationsPanel() {
     function Observations() {
         const { selectedProposal } = useContext(UserContext) as AppContextType;
         const { data , error, isLoading } = useObservationResourceGetObservations({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
+        let navigate = useNavigate();
+
 
         if (error) {
             return (
@@ -24,8 +27,14 @@ function ObservationsPanel() {
             );
         }
 
+        function handleAddNew(event: React.SyntheticEvent) {
+            event.preventDefault();
+            navigate("/pst/app/proposal/" + selectedProposal + "/observations/new");
+        }
+
         return (
             <div>
+                <button className={"btn btn-primary"} onClick={handleAddNew} >Add New</button>
                 <h3>This where observations will be managed</h3>
                 <fieldset>
                     {isLoading ? (`Loading...`)
