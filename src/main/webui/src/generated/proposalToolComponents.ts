@@ -3394,31 +3394,31 @@ export const useProposalCyclesResourceGetAllocatedProposalsFromCycle = <
   );
 };
 
-export type ProposalCyclesResourceAllocatedProposalToCyclePathParams = {
+export type ProposalCyclesResourceAllocateProposalToCyclePathParams = {
   /**
    * @format int64
    */
   cycleCode: number;
 };
 
-export type ProposalCyclesResourceAllocatedProposalToCycleError =
+export type ProposalCyclesResourceAllocateProposalToCycleError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalCyclesResourceAllocatedProposalToCycleVariables = {
-  pathParams: ProposalCyclesResourceAllocatedProposalToCyclePathParams;
+export type ProposalCyclesResourceAllocateProposalToCycleVariables = {
+  pathParams: ProposalCyclesResourceAllocateProposalToCyclePathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalCyclesResourceAllocatedProposalToCycle = (
-  variables: ProposalCyclesResourceAllocatedProposalToCycleVariables,
+export const fetchProposalCyclesResourceAllocateProposalToCycle = (
+  variables: ProposalCyclesResourceAllocateProposalToCycleVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    ProposalCyclesResourceAllocatedProposalToCycleError,
+    ProposalCyclesResourceAllocateProposalToCycleError,
     undefined,
     {},
     {},
-    ProposalCyclesResourceAllocatedProposalToCyclePathParams
+    ProposalCyclesResourceAllocateProposalToCyclePathParams
   >({
     url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals",
     method: "put",
@@ -3426,12 +3426,12 @@ export const fetchProposalCyclesResourceAllocatedProposalToCycle = (
     signal,
   });
 
-export const useProposalCyclesResourceAllocatedProposalToCycle = (
+export const useProposalCyclesResourceAllocateProposalToCycle = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      ProposalCyclesResourceAllocatedProposalToCycleError,
-      ProposalCyclesResourceAllocatedProposalToCycleVariables
+      ProposalCyclesResourceAllocateProposalToCycleError,
+      ProposalCyclesResourceAllocateProposalToCycleVariables
     >,
     "mutationFn"
   >
@@ -3439,11 +3439,11 @@ export const useProposalCyclesResourceAllocatedProposalToCycle = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    ProposalCyclesResourceAllocatedProposalToCycleError,
-    ProposalCyclesResourceAllocatedProposalToCycleVariables
+    ProposalCyclesResourceAllocateProposalToCycleError,
+    ProposalCyclesResourceAllocateProposalToCycleVariables
   >(
-    (variables: ProposalCyclesResourceAllocatedProposalToCycleVariables) =>
-      fetchProposalCyclesResourceAllocatedProposalToCycle({
+    (variables: ProposalCyclesResourceAllocateProposalToCycleVariables) =>
+      fetchProposalCyclesResourceAllocateProposalToCycle({
         ...fetcherOptions,
         ...variables,
       }),

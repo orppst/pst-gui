@@ -1,11 +1,11 @@
 import React, { useReducer, useContext, useState } from "react";
-import {AppContextType, UserContext, formReducer} from '../App2'
+import {UserContext, formReducer} from '../App2'
 import {
     fetchProposalResourceReplaceSummary,
     ProposalResourceReplaceSummaryVariables,
     useProposalResourceGetObservingProposal,
 } from "../generated/proposalToolComponents";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 function SummaryPanel() {
 
@@ -16,11 +16,11 @@ function SummaryPanel() {
     );
 
     function DisplaySummary() {
-        const { selectedProposal, queryClient } = useContext(UserContext) as AppContextType;
+        const { selectedProposal} = useContext(UserContext) ;
         const { data , error, isLoading } = useProposalResourceGetObservingProposal({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
-
+        const queryClient = useQueryClient()
         if (error) {
             return (
                 <div>

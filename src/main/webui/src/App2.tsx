@@ -20,6 +20,8 @@ import ObservationsPanel from "./observations/List";
 import NewObservationPanel from "./observations/New";
 import DocumentsPanel from "./proposal/Documents";
 
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
 const queryClient = new QueryClient()
 
 //TODO: Put context definitions and formReducer in separate file
@@ -27,9 +29,12 @@ export type AppContextType = {
     user: Person;
     selectedProposal: number;
     setSelectedProposal: any ;
-    queryClient: QueryClient;
 }
-export const UserContext = createContext<AppContextType|null>(null);
+export const UserContext = createContext<AppContextType>({
+    selectedProposal: 0,
+    setSelectedProposal: undefined,
+    user: {}
+});
 
 export function formReducer(state: any, event : React.SyntheticEvent) {
     return {
@@ -88,6 +93,7 @@ function App2() {
                     <PanelRouter />
                     </div>
                 </div>
+                <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </UserContext.Provider>
     </BrowserRouter>

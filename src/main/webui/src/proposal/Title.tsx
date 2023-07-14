@@ -1,11 +1,11 @@
 import React, { useReducer, useContext, useState } from "react";
-import {AppContextType, UserContext, formReducer} from '../App2'
+import {UserContext, formReducer} from '../App2'
 import {
     fetchProposalResourceReplaceTitle,
     ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 function TitlePanel() {
 
@@ -16,11 +16,11 @@ function TitlePanel() {
     );
 
     function DisplayTitle() {
-        const { selectedProposal, queryClient } = useContext(UserContext) as AppContextType;
+        const { selectedProposal } = useContext(UserContext) ;
         const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         const [formData, setFormData] = useReducer(formReducer, {});
         const [submitting, setSubmitting] = useState(false);
-
+        const queryClient = useQueryClient()
         if (error) {
             return (
                 <div>

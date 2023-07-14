@@ -1,11 +1,13 @@
 import React, { useContext, useState } from "react";
-import {AppContextType, UserContext} from '../App2'
+import { UserContext } from '../App2'
 import { useNavigate } from "react-router-dom";
 import {
     fetchInvestigatorResourceRemoveInvestigator,
     useInvestigatorResourceGetInvestigator,
     useInvestigatorResourceGetInvestigators,
 } from "../generated/proposalToolComponents";
+import {useQueryClient} from "@tanstack/react-query";
+
 
 function InvestigatorsPanel() {
 
@@ -16,7 +18,7 @@ function InvestigatorsPanel() {
     );
 
     function DisplayInvestigators() {
-        const { selectedProposal} = useContext(UserContext) as AppContextType;
+        const { selectedProposal} = useContext(UserContext) ;
         const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         let navigate = useNavigate();
 
@@ -49,7 +51,7 @@ function InvestigatorsPanel() {
     }
 
     function RenderPerson(dbid: any) {
-        const { selectedProposal, queryClient} = useContext(UserContext) as AppContextType;
+        const { selectedProposal} = useContext(UserContext) ;
         const [submitting, setSubmitting] = useState(false);
         const tdClass: string = "col-lg-1 col-md-1";
         const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
@@ -59,6 +61,7 @@ function InvestigatorsPanel() {
                             proposalCode: selectedProposal,
                         },
                 });
+        const queryClient = useQueryClient();
 
         function handleRemove(event : React.SyntheticEvent<HTMLFormElement>) {
             event.preventDefault();

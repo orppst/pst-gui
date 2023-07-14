@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import {AppContextType, UserContext} from '../App2'
+import {UserContext} from '../App2'
 import {
     useSupportingDocumentResourceGetSupportingDocuments,
 } from "../generated/proposalToolComponents";
@@ -13,7 +13,7 @@ function DocumentsPanel() {
     );
 
     function DocumentsOverview() {
-        const { selectedProposal } = useContext(UserContext) as AppContextType;
+        const { selectedProposal } = useContext(UserContext);
         const { data , error, isLoading } = useSupportingDocumentResourceGetSupportingDocuments({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
 
         if (error) {

@@ -1,5 +1,5 @@
 import React, {useReducer, useContext, useState} from "react";
-import {AppContextType, UserContext, formReducer} from '../App2'
+import {UserContext, formReducer} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
@@ -15,7 +15,7 @@ function NewProposalPanel() {
     );
 
     function DisplayNewProposal() {
-        const { user, setSelectedProposal, selectedProposal } = useContext(UserContext) as AppContextType;
+        const { user, setSelectedProposal, selectedProposal } = useContext(UserContext) ;
         const [formData, setFormData] = useReducer(formReducer, {title:"Empty", summary:"Empty", kind:"STANDARD"});
         const [submitting, setSubmitting] = useState(false);
         let navigate = useNavigate();
