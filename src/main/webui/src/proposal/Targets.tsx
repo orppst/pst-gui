@@ -6,26 +6,18 @@ import {
 } from "../generated/proposalToolComponents";
 
 function TargetPanel() {
+    const { selectedProposal} = useContext(UserContext);
+    const { data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
+
+    if (error) {
+        return (
+            <div>
+                <pre>{JSON.stringify(error, null, 2)}</pre>
+            </div>
+        );
+    }
 
     return (
-        <>
-            <DisplayTargets />
-        </>
-    );
-
-    function DisplayTargets() {
-        const { selectedProposal} = useContext(UserContext);
-        const { data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
-
-        if (error) {
-            return (
-                <div>
-                    <pre>{JSON.stringify(error, null, 2)}</pre>
-                </div>
-            );
-        }
-
-        return (
             <div>
                 <h3>Add and edit targets</h3>
                 <div>
@@ -69,19 +61,14 @@ function TargetPanel() {
             });
         }
 
-        function DrawRow(props: any) {
-            const key = props.key;
-            const value = props.value;
-
-            console.log(key + " : " + value);
-
-            return (
-                <tr><td>GOT SOMETHING!</td></tr>
-            )
-        }
-
         function RenderTable(props: any) {
-            let obj = props.obj;
+            let tableObj = props.obj;
+
+            //console.log("RenderTable passed this tabelObj: " + JSON.stringify(tableObj, null, 2));
+
+            if(tableObj === undefined || tableObj === null) {
+                return (<table><tbody><tr><td>null</td></tr></tbody></table>);
+            }
 
             return (
                 <div>
@@ -90,10 +77,13 @@ function TargetPanel() {
                     : (
                         <table className={"table"}>
                             <tbody>
-                            <tr><th>Stuff goes here</th></tr>
-                            {Object.entries(obj).forEach(([key, value]) =>
-                                (<DrawRow key={key} value={value}/>))
-                            }
+                                {Object.keys(tableObj).map((key) => (
+                                    (typeof tableObj[key] === 'object')?
+                                    (<tr key={key}><td>{key}</td><td><RenderTable obj={tableObj[key]} /></td></tr>)
+                                    :
+                                    (<tr key={key}><td>{key}</td><td>{tableObj[key]}</td></tr>))
+
+                                )}
                             </tbody>
                         </table>
                     )}
@@ -119,7 +109,6 @@ function TargetPanel() {
                     </fieldset>
                 </form>
             </div>);
-    }
 
 }
 

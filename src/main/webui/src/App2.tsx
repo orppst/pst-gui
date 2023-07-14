@@ -36,7 +36,7 @@ export const UserContext = createContext<AppContextType>({
     user: {}
 });
 
-export function formReducer(state: any, event : React.SyntheticEvent) {
+export function formReducer(state: any, event : any) {
     return {
         ...state,
         [event.name]: event.value
