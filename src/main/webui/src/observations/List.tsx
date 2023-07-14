@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import {AppContextType, UserContext} from '../App2'
+import { useContext } from "react";
+import { UserContext} from '../App2'
 import {
     useObservationResourceGetObservations,
 } from "../generated/proposalToolComponents";
@@ -14,7 +14,7 @@ function ObservationsPanel() {
     );
 
     function Observations() {
-        const { selectedProposal } = useContext(UserContext) as AppContextType;
+        const { selectedProposal } = useContext(UserContext) ;
         const { data , error, isLoading } = useObservationResourceGetObservations({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
         let navigate = useNavigate();
 

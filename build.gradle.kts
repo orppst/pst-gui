@@ -9,6 +9,7 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-client-reactive-jackson")
     implementation("io.quarkiverse.quinoa:quarkus-quinoa:1.2.9")
     implementation("io.quarkus:quarkus-websockets")
+    implementation("io.quarkus:quarkus-undertow")
     implementation("io.quarkus:quarkus-smallrye-jwt")
     implementation("io.quarkus:quarkus-oidc")
     implementation("io.quarkus:quarkus-oidc-client-reactive-filter")  // https://quarkus.io/guides/security-openid-connect-client
