@@ -1,5 +1,5 @@
 import React, { useReducer, useContext, useState } from "react";
-import {AppContextType, UserContext, formReducer} from '../App2'
+import { UserContext, formReducer} from '../App2'
 import {
     useProposalResourceGetTarget,
     useProposalResourceGetTargets,
@@ -14,7 +14,7 @@ function TargetPanel() {
     );
 
     function DisplayTargets() {
-        const { selectedProposal} = useContext(UserContext) as AppContextType;
+        const { selectedProposal} = useContext(UserContext);
         const { data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
 
         if (error) {

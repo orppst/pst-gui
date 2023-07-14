@@ -1,11 +1,12 @@
 import React, {useContext, useReducer, useState} from "react";
-import {AppContextType, UserContext, formReducer} from "../App2";
+import { UserContext, formReducer} from "../App2";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
     usePersonResourceGetPeople,
 } from "../generated/proposalToolComponents";
 import {useNavigate} from "react-router-dom";
+import {useQueryClient} from "@tanstack/react-query";
 
 function AddInvestigatorPanel() {
     return (
@@ -15,8 +16,9 @@ function AddInvestigatorPanel() {
     function AddInvestigatorForm() {
         const [formData, setFormData] = useReducer(formReducer, {forPhD: false});
         const [query, setQuery] = useState("");
-        let navigate = useNavigate();
-        const { selectedProposal, queryClient } = useContext(UserContext) as AppContextType;
+        const navigate = useNavigate();
+        const { selectedProposal} = useContext(UserContext) ;
+        const queryClient = useQueryClient();
         const { data, error, isLoading } = usePersonResourceGetPeople(
             {
                 queryParams: { name: '%' + query + '%'},
@@ -52,7 +54,9 @@ function AddInvestigatorPanel() {
                             forPhD: formData.forPhD,
                             person: data,
                         }})
-                    .then(()=>queryClient.invalidateQueries())
+                    .then(()=> {
+                        return queryClient.invalidateQueries();
+                    })
                     .then(()=>navigate("/pst/app/proposal/" + selectedProposal + "/investigators"))
                     .catch(console.log)
                 )
