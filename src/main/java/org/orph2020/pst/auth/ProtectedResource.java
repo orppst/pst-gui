@@ -14,14 +14,19 @@ import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import io.quarkus.oidc.AccessTokenCredential;
 import io.quarkus.security.Authenticated;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.orph2020.pst.apiimpl.entities.SubjectMap;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-@Path("/aai/protected")
+@Path("/aai/")
 @Authenticated
 public class ProtectedResource {
+
+    @RestClient
+    UserInfo userService;
 
     @Inject
     JsonWebToken accessToken;
@@ -29,11 +34,9 @@ public class ProtectedResource {
     @Inject
     SecurityIdentity identity;
 
-    
-
     @GET
-    public User me() {
-        return new User(identity,accessToken);
+    public SubjectMap me() {
+        return userService.getUser(accessToken.claim(Claims.sub).toString()); // the subject is the AAI "unique identifier" - for keycloak anyway....
     }
 
     public static class User {
@@ -59,10 +62,6 @@ public class ProtectedResource {
             this.creds = identity.getCredentials(); // these are the raw tokens...
             this.att =identity.getAttributes().keySet(); // attributes seem to be only internally to quarkus useful.
         
-        }
-
-        public String getUserName() {
-            return userName;
         }
     }
 }
