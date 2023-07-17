@@ -15,7 +15,7 @@ import io.quarkus.oidc.RefreshToken;
 
 import java.util.Set;
 
-@Path("/aai/protected/tokens")
+@Path("/aaii/tokens")
 @Authenticated
 public class TokenResource {
 
