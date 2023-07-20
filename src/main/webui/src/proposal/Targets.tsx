@@ -1,13 +1,13 @@
-import React, { useReducer, useContext, useState } from "react";
-import { UserContext, formReducer} from '../App2'
+import { useReducer, useContext, useState, SyntheticEvent } from "react";
+import {ProposalContext} from '../App2'
 import {
     useProposalResourceGetTarget,
     useProposalResourceGetTargets,
 } from "../generated/proposalToolComponents";
 
 function TargetPanel() {
-    const { selectedProposal} = useContext(UserContext);
-    const { data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
+    const { selectedProposalCode} = useContext(ProposalContext);
+    const { data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
 
     if (error) {
         return (
@@ -23,7 +23,7 @@ function TargetPanel() {
                 <div>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
-                                return (<RenderTarget prop={selectedProposal} row={item} key={item.dbid}/>)
+                                return (<RenderTarget prop={selectedProposalCode} row={item} key={item.dbid}/>)
                             } )
                     }
                 </div>
@@ -46,7 +46,7 @@ function TargetPanel() {
             return <div>Error loading target</div>
         }
 
-        function handleSubmit(event : React.SyntheticEvent) {
+        function handleSubmit(event : SyntheticEvent) {
             event.preventDefault();
 
             setSubmitting(true);
@@ -54,7 +54,7 @@ function TargetPanel() {
             setSubmitting(false);
         }
 
-        function handleChange(event : React.SyntheticEvent) {
+        function handleChange(event : SyntheticEvent) {
             setFormData({
                 name: event.target.name,
                 value: event.target.value,

@@ -1,12 +1,12 @@
 import { useContext } from "react";
-import { UserContext} from '../App2'
+import {ProposalContext} from '../App2'
 import {
     useProposalResourceGetTechnicalGoals,
 } from "../generated/proposalToolComponents";
 
 function GoalsPanel() {
-    const { selectedProposal } = useContext(UserContext);
-    const { data , error, isLoading } = useProposalResourceGetTechnicalGoals({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
+    const { selectedProposalCode } = useContext(ProposalContext);
+    const { data , error, isLoading } = useProposalResourceGetTechnicalGoals({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
 
     if (error) {
         return (

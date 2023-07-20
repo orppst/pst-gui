@@ -1,4 +1,4 @@
-import React from "react";
+import {useState} from "react";
 
 /**
  * Stores the state in the browser history,
@@ -12,7 +12,7 @@ export function useHistoryState<T>(
     key: string,
     defaultTo: T
 ): [T, (value: T) => void] {
-    const [state, rawSetState] = React.useState(() => {
+    const [state, rawSetState] = useState(() => {
         const value = window.history.state && window.history.state[key];
         return value || defaultTo;
     });

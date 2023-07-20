@@ -1,5 +1,5 @@
-import React, {useReducer, useContext, useState} from "react";
-import {UserContext, formReducer} from '../App2'
+import { useContext, useState} from "react";
+import {ProposalContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
@@ -7,8 +7,8 @@ import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas"
 import {useNavigate} from "react-router-dom";
 
 function NewProposalPanel() {
-    const { user, setSelectedProposal, selectedProposal } = useContext(UserContext) ;
-    const [formData, setFormData] = useReducer(formReducer, {title:"Empty", summary:"Empty", kind:"STANDARD"});
+    const { user, selectedProposalCode, selectedProposal } = useContext(ProposalContext) ;
+    const [formData, setFormData] = useContext( {title:"Empty", summary:"Empty", kind:"STANDARD"});
     const [submitting, setSubmitting] = useState(false);
     let navigate = useNavigate();
     const kindOptions = ["Standard", "TOO", "Survey"];

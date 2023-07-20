@@ -1,10 +1,10 @@
-import React, {useState, createContext, useEffect} from 'react';
+import {createContext, useEffect, SyntheticEvent} from 'react';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
-import {Person} from "./generated/proposalToolSchemas";
+import { Person} from "./generated/proposalToolSchemas";
 import 'bootstrap/dist/css/bootstrap.css';
 import TitlePanel from './proposal/Title';
 import TargetPanel from './proposal/Targets';
@@ -24,35 +24,30 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const queryClient = new QueryClient()
 
-//TODO: Put context definitions and formReducer in separate file
-export type AppContextType = {
+export type UserContextType = {
     user: Person;
-    selectedProposal: number;
-    setSelectedProposal: any ;
 }
-export const UserContext = createContext<AppContextType>({
-    selectedProposal: 0,
-    setSelectedProposal: undefined,
-    user: {}
-});
 
-export function formReducer(state: any, event : any) {
-    return {
-        ...state,
-        [event.name]: event.value
-    }
+export type ProposalContextType = {
+    selectedProposalCode: number;
 }
+
+export const ProposalContext = createContext<UserContextType & ProposalContextType>({
+    user: {},
+    selectedProposalCode: 0,
+})
+
 
 function App2() {
     const blankUser : Person = {fullName: "Loading..."};
     const [user, setUser] = useHistoryState("user", blankUser);
-    const [selectedProposal, setSelectedProposal] = useHistoryState("selectedProposal", 0);
-    const values = {user, selectedProposal, setSelectedProposal, queryClient};
+    const [selectedProposalCode, setSelectedProposal] = useHistoryState("selectedProposal", 0);
+    const values = {user, selectedProposalCode  };
 
     useEffect(() => {
            fetchPersonResourceGetPeople({queryParams: {name: "PI"}})
                .then((data) =>
-                   fetchPersonResourceGetPerson({ pathParams: {id: data[0].dbid} }).then((data) => setUser(data))
+                   fetchPersonResourceGetPerson({ pathParams: {id: data[0].dbid!} }).then((data) => setUser(data))
                )
                .catch(console.log)
 
@@ -60,7 +55,7 @@ function App2() {
 
   return (
     <BrowserRouter>
-        <UserContext.Provider value={values}>
+        <ProposalContext.Provider value={values}>
             <QueryClientProvider client={queryClient}>
                 <nav className={"navbar navbar-inverse"}>
                     <div className={"container-fluid"}>
@@ -95,7 +90,7 @@ function App2() {
                 </div>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-        </UserContext.Provider>
+        </ProposalContext.Provider>
     </BrowserRouter>
   );
 
@@ -151,7 +146,7 @@ function App2() {
                 ) : (
                     <ul className={""}>
                         {data?.map((item) => (
-                        <li key={item.code} onClick={()=>{setSelectedProposal(item.code)}}>{item.title}{selectedProposal===item.code && ChildList(item.code)}</li>
+                        <li key={item.code} onClick={()=>{setSelectedProposal(item.code!)}}>{item.title}{selectedProposalCode===item.code && ChildList()}</li>
                         ))}
                     </ul>
                 )}
@@ -162,21 +157,21 @@ function App2() {
     function ChildList() {
         return (
             <ul>
-                <li><NavLink to={"/pst/app/proposal/" + selectedProposal} className={({ isActive, isPending }) =>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposalCode} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Overview</NavLink></li>
-                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/title"} className={({ isActive, isPending }) =>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposalCode + "/title"} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Title</NavLink></li>
-                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/summary"} className={({ isActive, isPending }) =>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposalCode + "/summary"} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Summary</NavLink></li>
-                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/investigators"} className={({ isActive, isPending }) =>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposalCode + "/investigators"} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Investigators</NavLink></li>
-                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/targets"} className={({ isActive, isPending }) =>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposalCode + "/targets"} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Targets</NavLink></li>
-                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/goals"} className={({ isActive, isPending }) =>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposalCode + "/goals"} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Technical Goals</NavLink></li>
-                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/observations"} className={({ isActive, isPending }) =>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposalCode + "/observations"} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Observations</NavLink></li>
-                <li><NavLink to={"/pst/app/proposal/" + selectedProposal + "/documents"} className={({ isActive, isPending }) =>
+                <li><NavLink to={"/pst/app/proposal/" + selectedProposalCode + "/documents"} className={({ isActive, isPending }) =>
                     isPending ? "pending" : isActive ? "active" : ""}>Documents</NavLink></li>
             </ul>
         );

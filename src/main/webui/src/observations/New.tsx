@@ -1,5 +1,4 @@
-import React, {useReducer} from "react";
-import {formReducer} from "../App2";
+import {useReducer, SyntheticEvent} from "react";
 
 function NewObservationPanel() {
 
@@ -14,16 +13,15 @@ function NewObservationPanel() {
             targetPositionEpoch:"placeHolder"
         });
 
-    function handleCreate(event: React.SyntheticEvent) {
+    function handleCreate(event:SyntheticEvent) {
         event.preventDefault();
         console.log(formData) //TODO: call the generated fetch(?) function to the API
     }
 
-    function handleChange(event : React.SyntheticEvent) {
+    function handleChange(event : SyntheticEvent<HTMLInputElement>) {
         setFormData({
-            // @ts-ignore
-            name: event.target.name,
-            value: event.target.value,
+            name: event.currentTarget.name,
+            value: event.currentTarget.value,
         });
     }
 
@@ -39,7 +37,7 @@ function NewObservationPanel() {
     // '+', '++', '-', '--', 'e+', 'e-', '+e+', '-e-', '<N>-<M>-<P>' plus other variations of these.
     //
     // For example, an input of '123-45+678' can be passed but is clearly meaningless in this context.
-    function handleCoordinateChange (event : React.SyntheticEvent) {
+    function handleCoordinateChange (event : SyntheticEvent) {
         const {name, value, min, max} = event.target;
 
         // check for null value such that coordinate isn't set to zero, which prevents the user

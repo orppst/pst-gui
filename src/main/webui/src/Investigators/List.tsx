@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { UserContext } from '../App2'
+import  { useContext, useState, SyntheticEvent } from "react";
+import {ProposalContext} from '../App2'
 import { useNavigate } from "react-router-dom";
 import {
     fetchInvestigatorResourceRemoveInvestigator,
@@ -10,9 +10,9 @@ import {useQueryClient} from "@tanstack/react-query";
 
 
 function InvestigatorsPanel() {
-    const { selectedProposal} = useContext(UserContext);
-    const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
-    let navigate = useNavigate();
+    const { selectedProposalCode} = useContext(ProposalContext) ;
+    const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+    const navigate = useNavigate();
 
     if (error) {
         return (
@@ -24,7 +24,7 @@ function InvestigatorsPanel() {
 
     function handleAddNew(event: React.SyntheticEvent) {
         event.preventDefault();
-        navigate("/pst/app/proposal/" + selectedProposal + "/investigators/new");
+        navigate("/pst/app/proposal/" + selectedProposalCode + "/investigators/new");
     }
 
     return (
@@ -43,14 +43,14 @@ function InvestigatorsPanel() {
 }
 
 function RenderPerson(dbid: any) {
-    const { selectedProposal} = useContext(UserContext);
+    const { selectedProposalCode} = useContext(ProposalContext);
     const [submitting, setSubmitting] = useState(false);
     const tdClass: string = "col-lg-1 col-md-1";
     const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
         {pathParams:
                     {
                         investigatorId: dbid.dbid,
-                        proposalCode: selectedProposal,
+                        proposalCode: selectedProposalCode,
                     },
             });
     const queryClient = useQueryClient();
@@ -65,7 +65,7 @@ function RenderPerson(dbid: any) {
             fetchInvestigatorResourceRemoveInvestigator({pathParams:
                     {
                         investigatorId: dbid.dbid,
-                        proposalCode: selectedProposal,
+                        proposalCode: selectedProposalCode,
                     }})
                 .then(()=>setSubmitting(false))
                 .then(()=>queryClient.invalidateQueries())

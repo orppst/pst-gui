@@ -1,5 +1,5 @@
-import React, {useContext, useReducer, useState} from "react";
-import { UserContext, formReducer} from "../App2";
+import {useContext, useReducer, useState, SyntheticEvent} from "react";
+import {ProposalContext} from "../App2";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
@@ -12,7 +12,7 @@ function AddInvestigatorPanel() {
     const [formData, setFormData] = useReducer(formReducer, {forPhD: false});
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
-    const { selectedProposal} = useContext(UserContext);
+    const { selectedProposalCode} = useContext(ProposalContext);
     const queryClient = useQueryClient();
     const { data, error, isLoading } = usePersonResourceGetPeople(
         {
@@ -31,19 +31,19 @@ function AddInvestigatorPanel() {
         );
     }
 
-    function handleChange(event : React.SyntheticEvent) {
+    function handleChange(event : SyntheticEvent) {
         setFormData({
             name: event.target.name,
             value: event.target.value,
         });
     }
 
-    function handleAdd(event: React.SyntheticEvent) {
+    function handleAdd(event: SyntheticEvent) {
         event.preventDefault();
         //Get full investigator from API and add back to proposal
         fetchPersonResourceGetPerson({pathParams:{id: formData.investigator}})
             .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
-                {pathParams:{proposalCode: selectedProposal},
+                {pathParams:{proposalCode: selectedProposalCode},
                     body:{
                         type: formData.type,
                         forPhD: formData.forPhD,
@@ -52,15 +52,15 @@ function AddInvestigatorPanel() {
                 .then(()=> {
                     return queryClient.invalidateQueries();
                 })
-                .then(()=>navigate("/pst/app/proposal/" + selectedProposal + "/investigators"))
+                .then(()=>navigate("/pst/app/proposal/" + selectedProposalCode + "/investigators"))
                 .catch(console.log)
             )
             .catch(console.log);
     }
 
-    function handleCancel(event: React.SyntheticEvent) {
+    function handleCancel(event: SyntheticEvent) {
         event.preventDefault();
-        navigate("/pst/app/proposal/" + selectedProposal + "/investigators")
+        navigate("/pst/app/proposal/" + selectedProposalCode + "/investigators")
     }
 
     return (

@@ -1,5 +1,5 @@
-import React, { useReducer, useContext, useState } from "react";
-import {UserContext, formReducer} from '../App2'
+import { useReducer, useContext, useState, SyntheticEvent } from "react";
+import {ProposalContext} from '../App2'
 import {
     fetchProposalResourceReplaceSummary,
     ProposalResourceReplaceSummaryVariables,
@@ -8,8 +8,8 @@ import {
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 function SummaryPanel() {
-    const { selectedProposal} = useContext(UserContext) ;
-    const { data , error, isLoading } = useProposalResourceGetObservingProposal({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
+    const { selectedProposalCode} = useContext(ProposalContext) ;
+    const { data , error, isLoading } = useProposalResourceGetObservingProposal({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
     const [formData, setFormData] = useReducer(formReducer, {});
     const [submitting, setSubmitting] = useState(false);
 
@@ -22,7 +22,7 @@ function SummaryPanel() {
         );
     }
 
-    const handleSubmit = (e: React.SyntheticEvent) => {
+    const handleSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
         mutation.mutate();
     }
@@ -57,7 +57,7 @@ function SummaryPanel() {
         }
     );
 
-    function handleChange(event : React.SyntheticEvent) {
+    function handleChange(event : SyntheticEvent) {
         setFormData({
             name: event.target.name,
             value: event.target.value,

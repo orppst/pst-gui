@@ -62,17 +62,16 @@ export async function proposalToolFetch<
       delete requestHeaders["Content-Type"];
     }
 
-    // @ts-ignore
     const response = await window.fetch(
       `${baseUrl}${resolveUrl(url, queryParams, pathParams)}`,
       {
         signal,
         method: method.toUpperCase(),
-        body: body // the ignore at the top of the function, as the typing goes wrong, but I do not see why
+        body: body
           ? (body instanceof FormData
             ? body
             :  requestHeaders["Content-Type"].includes("text/plain")
-                    ? body
+                    ? body as string
                     : JSON.stringify(body))
           : undefined,
         headers: requestHeaders,

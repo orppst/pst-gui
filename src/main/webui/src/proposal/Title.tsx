@@ -1,5 +1,5 @@
-import React, { useReducer, useContext, useState } from "react";
-import {UserContext, formReducer} from '../App2'
+import  { useReducer, useContext, useState, SyntheticEvent } from "react";
+import { ProposalContext} from '../App2'
 import {
     fetchProposalResourceReplaceTitle,
     ProposalResourceReplaceTitleVariables,
@@ -8,10 +8,10 @@ import {
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 function TitlePanel() {
-    const { selectedProposal} = useContext(UserContext);
-    const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
-    const [formData, setFormData] = useReducer(formReducer,{title: ""});
+    const { selectedProposalCode} = useContext(ProposalContext);
+    const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
     const [submitting, setSubmitting] = useState(false);
+    const [title, setFormData] = useState("")
 
     const queryClient = useQueryClient()
     if (error) {
@@ -24,20 +24,12 @@ function TitlePanel() {
 
     const mutation = useMutation({
         mutationFn: () => {
-            let title = formData.title;
-            //Don't allow a blank title
-            if(!title) {
-                title = data;
-            }
-
-
-            const newTitle : ProposalResourceReplaceTitleVariables = {
-                pathParams: {proposalCode: selectedProposal},
+            const newTitle : ProposalResourceReplaceTitleVariables = {//IMPL the code generator does not create the correct type signature for API calls where the body is plain text.
+                pathParams: {proposalCode: selectedProposalCode},
                 // @ts-ignore
                 body: title,
                 headers: {"Content-Type": "text/plain"}
             }
-
             return fetchProposalResourceReplaceTitle(newTitle);
         },
         onMutate: () => {
@@ -57,11 +49,10 @@ function TitlePanel() {
         mutation.mutate();
     }
 
-    function handleChange(event : React.SyntheticEvent) {
-        setFormData({
-            name: event.target.name,
-            value: event.target.value,
-        });
+    function handleChange(event : SyntheticEvent<HTMLInputElement>) {
+        setFormData(
+             event.currentTarget.value
+        );
     }
 
     return (
