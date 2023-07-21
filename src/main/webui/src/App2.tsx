@@ -55,12 +55,14 @@ function App2() {
 
        },[]);
 
+
+
     const router = createBrowserRouter(
         [
             {path: "/", element: <PSTRoot/>,
                 children: [
                     {index: true, element: <PSTStart/>} ,
-                    { path: "proposal/new", element: <NewProposalPanel />},
+                    { path: "proposal/new", element: <NewProposalPanel setProposalSelectedCode={setProposalSelectedCode}/>},
                     { path: "proposal/:id", element: <OverviewPanel />},
                     { path: "proposal/:id/title",element: <TitlePanel />} ,
                     { path: "proposal/:id/summary",  element: <SummaryPanel />} ,

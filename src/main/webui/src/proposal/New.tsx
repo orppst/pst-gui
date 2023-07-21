@@ -6,7 +6,12 @@ import {
 import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
 import {redirect, useNavigate} from "react-router-dom";
 
- function NewProposalPanel( propcodeSetter) {
+//IMPL is there not nore concise way to set properties for component than this?
+type ss = {
+    setProposalSelectedCode : (i:number)=>void;
+}
+
+ function NewProposalPanel({setProposalSelectedCode}:ss) {
     const { user} = useContext(ProposalContext) ;
     const [formData, setFormData] = useState( {title:"Empty", summary:"Empty", kind:"STANDARD" as ProposalKind});
     const [submitting, setSubmitting] = useState(false);
@@ -34,9 +39,9 @@ import {redirect, useNavigate} from "react-router-dom";
 
         fetchProposalResourceCreateObservingProposal({ body: newProposal})
             .then((data) => {
-                propcodeSetter(data._id);
                 setSubmitting(false);
-                redirect("/pst/app/proposal/" + data?._id);
+                setProposalSelectedCode(data?._id)
+                navigate("/proposal/" + data?._id);
             })
             .catch(console.log);
     }
@@ -68,7 +73,7 @@ import {redirect, useNavigate} from "react-router-dom";
                 <div className={"form-group"}>
                     <label>Kind<br/></label>
                     <select className={"form-control"} name="kind" onChange={handleChange}>
-                        { kindOptions.map((opt)=>(<option value={opt.toUpperCase()}>{opt}</option>)) }
+                        { kindOptions.map((opt)=>(<option key={opt.toUpperCase()} value={opt.toUpperCase()}>{opt}</option>)) }
 
                  </select>
                 </div>
