@@ -1,4 +1,4 @@
-import  {  useContext, useState, SyntheticEvent } from "react";
+import {useContext, useState, SyntheticEvent, useEffect} from "react";
 import { ProposalContext} from '../App2'
 import {
     fetchProposalResourceReplaceTitle,
@@ -9,9 +9,10 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 function TitlePanel() {
     const { selectedProposalCode} = useContext(ProposalContext);
-    const { data , error, isLoading } = useProposalResourceGetObservingProposalTitle({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
     const [submitting, setSubmitting] = useState(false);
     const [title, setFormData] = useState("")
+    const { data, error, isLoading, status } = useProposalResourceGetObservingProposalTitle(
+        {pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
 
     const queryClient = useQueryClient()
 
@@ -36,6 +37,12 @@ function TitlePanel() {
                 .then(()=> setSubmitting(false))
         },
     })
+
+    useEffect(() => {
+        if (status === 'success') {
+            setFormData(data as unknown as string);
+        }
+    }, [status,data]);
 
     if (error) {
         return (
@@ -63,7 +70,7 @@ function TitlePanel() {
                  submitting ? ("Submitting..."):
             <form onSubmit={handleSubmit}>
                 <div className={"form-group"}>
-                            <input className={"form-control"} name="title" defaultValue={`${data}`} onChange={handleChange} />
+                            <input className={"form-control"} name="title" defaultValue={data} onChange={handleChange} />
                             <button type="submit" className={"btn btn-primary"}>Update</button>
                 </div>
             </form>
