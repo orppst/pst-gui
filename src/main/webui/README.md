@@ -17,13 +17,15 @@ will regenerate the code in [src/generated](src/generated) - this will require t
 
 the generated code uses https://github.com/tanstack/query
 
+Other client side libraries used
 
+* https://reactrouter.com/ - see https://tkdodo.eu/blog/react-query-meets-react-router
 
 ## Misc
 
 * see https://github.com/quarkiverse/quarkus-quinoa/issues/299 for issues regarding serving 
 off non-root deployment url
 
-* https://github.com/brillout/awesome-react-components
+* https://github.com/brillout/awesome-react-components 
 
 

@@ -14,29 +14,12 @@ function SummaryPanel() {
     const [submitting, setSubmitting] = useState(false);
 
     const queryClient = useQueryClient()
-    if (error) {
-        return (
-            <div>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
-        );
-    }
-
-    const handleSubmit = (e: SyntheticEvent) => {
-        e.preventDefault();
-        mutation.mutate();
-    }
 
     const mutation = useMutation({
             mutationFn: () => {
-                let summary = formData.summary;
-                //Don't allow a blank title
-                if (!summary) {
-                    summary = data?.summary;
-                }
 
                 const newSummary: ProposalResourceReplaceSummaryVariables = {
-                    pathParams: {proposalCode: selectedProposal},
+                    pathParams: {proposalCode: selectedProposalCode},
                     // @ts-ignore
                     body: summary,
                     headers: {"Content-Type": "text/plain"}
@@ -56,6 +39,20 @@ function SummaryPanel() {
             }
         }
     );
+    if (error) {
+        return (
+            <div>
+                <pre>{JSON.stringify(error, null, 2)}</pre>
+            </div>
+        );
+    }
+
+    const handleSubmit = (e: SyntheticEvent) => {
+        e.preventDefault();
+        mutation.mutate();
+    }
+
+
 
     function handleChange(event : SyntheticEvent<HTMLTextAreaElement>) {
         setFormData(
@@ -66,19 +63,17 @@ function SummaryPanel() {
     return (
         <div>
             <h3>Update summary</h3>
-            {submitting &&
-                <div>Submitting request</div>
-            }
+            {isLoading ? <div>loading...</div>:
+              submitting ?
+                <div>Submitting request</div> :
+
             <form onSubmit={handleSubmit}>
                 <div className={"form-group"}>
-                    {isLoading ? (`Loading...`)
-                        : submitting? (`Submitting...`) :
-                        (
-                            <textarea className={"form-control"} rows={3} name="summary" defaultValue={`${data?.summary}`} onChange={handleChange} />
-                        )}
+                    <textarea className={"form-control"} rows={3} name="summary" defaultValue={`${data?.summary}`} onChange={handleChange} />
                     <button type="submit" className="btn btn-primary">Update</button>
                 </div>
             </form>
+            }
         </div>
     );
 

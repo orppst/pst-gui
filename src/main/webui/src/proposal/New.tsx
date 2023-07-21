@@ -4,7 +4,7 @@ import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
-import {useNavigate} from "react-router-dom";
+import {redirect, useNavigate} from "react-router-dom";
 
  function NewProposalPanel( propcodeSetter) {
     const { user} = useContext(ProposalContext) ;
@@ -36,7 +36,7 @@ import {useNavigate} from "react-router-dom";
             .then((data) => {
                 propcodeSetter(data._id);
                 setSubmitting(false);
-                navigate("/pst/app/proposal/" + data?._id);
+                redirect("/pst/app/proposal/" + data?._id);
             })
             .catch(console.log);
     }
