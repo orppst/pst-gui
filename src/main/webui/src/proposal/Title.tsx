@@ -32,7 +32,7 @@ function TitlePanel() {
             console.log("An error occurred trying to update the title")
         },
         onSuccess: () => {
-            queryClient.invalidateQueries()
+            queryClient.invalidateQueries(["pst","api","proposals"])//IMPL this is slightly limiting the invalidation - some things should be ok still (users etc).
                 .then(()=> setSubmitting(false))
         },
     })
