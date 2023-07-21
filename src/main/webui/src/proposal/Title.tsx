@@ -1,4 +1,4 @@
-import  { useReducer, useContext, useState, SyntheticEvent } from "react";
+import  {  useContext, useState, SyntheticEvent } from "react";
 import { ProposalContext} from '../App2'
 import {
     fetchProposalResourceReplaceTitle,
@@ -14,13 +14,6 @@ function TitlePanel() {
     const [title, setFormData] = useState("")
 
     const queryClient = useQueryClient()
-    if (error) {
-        return (
-            <div>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
-        );
-    }
 
     const mutation = useMutation({
         mutationFn: () => {
@@ -44,7 +37,15 @@ function TitlePanel() {
         },
     })
 
-    const handleSubmit = (e) => {
+    if (error) {
+        return (
+            <div>
+                <pre>{JSON.stringify(error, null, 2)}</pre>
+            </div>
+        );
+    }
+
+    const handleSubmit = (e : SyntheticEvent) => {
         e.preventDefault();
         mutation.mutate();
     }
@@ -58,19 +59,15 @@ function TitlePanel() {
     return (
         <div>
             <h3>Update title</h3>
-            {submitting &&
-                <div>Submitting request</div>
-            }
+            { isLoading ? ("Loading..") :
+                 submitting ? ("Submitting..."):
             <form onSubmit={handleSubmit}>
                 <div className={"form-group"}>
-                    {isLoading ? (`Loading...`)
-                        : submitting? (`Submitting...`) :
-                        (
                             <input className={"form-control"} name="title" defaultValue={`${data}`} onChange={handleChange} />
-                        )}
-                    <button type="submit" className={"btn btn-primary"}>Update</button>
+                            <button type="submit" className={"btn btn-primary"}>Update</button>
                 </div>
             </form>
+            }
         </div>
     );
 
