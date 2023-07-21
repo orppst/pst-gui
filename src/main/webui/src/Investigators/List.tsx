@@ -22,7 +22,7 @@ function InvestigatorsPanel() {
         );
     }
 
-    function handleAddNew(event: React.SyntheticEvent) {
+    function handleAddNew(event: SyntheticEvent) {
         event.preventDefault();
         navigate("/pst/app/proposal/" + selectedProposalCode + "/investigators/new");
     }
@@ -42,7 +42,7 @@ function InvestigatorsPanel() {
     );
 }
 
-function RenderPerson(dbid: any) {
+function RenderPerson(dbid: number) {
     const { selectedProposalCode} = useContext(ProposalContext);
     const [submitting, setSubmitting] = useState(false);
     const tdClass: string = "col-lg-1 col-md-1";
@@ -55,7 +55,7 @@ function RenderPerson(dbid: any) {
             });
     const queryClient = useQueryClient();
 
-    function handleRemove(event : React.SyntheticEvent<HTMLFormElement>) {
+    function handleRemove(event : SyntheticEvent<HTMLFormElement>) {
         event.preventDefault();
         const choice = window.confirm(
             "Are you sure you want to remove the " + data?.type + " " + data?.person?.fullName + "?"

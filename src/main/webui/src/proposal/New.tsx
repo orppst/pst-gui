@@ -1,19 +1,20 @@
-import { useContext, useState} from "react";
+import { useContext, useState,SyntheticEvent} from "react";
 import {ProposalContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
-import {Investigator, ObservingProposal} from "../generated/proposalToolSchemas";
+import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
 
-function NewProposalPanel() {
-    const { user, selectedProposalCode, selectedProposal } = useContext(ProposalContext) ;
-    const [formData, setFormData] = useContext( {title:"Empty", summary:"Empty", kind:"STANDARD"});
+ function NewProposalPanel( propcodeSetter) {
+    const { user} = useContext(ProposalContext) ;
+    const [formData, setFormData] = useState( {title:"Empty", summary:"Empty", kind:"STANDARD" as ProposalKind});
     const [submitting, setSubmitting] = useState(false);
-    let navigate = useNavigate();
-    const kindOptions = ["Standard", "TOO", "Survey"];
+    const navigate = useNavigate();
 
-    function handleSubmit(event: React.SyntheticEvent) {
+     const kindOptions = ["Standard", "TOO", "Survey"];
+
+     function handleSubmit(event: SyntheticEvent) {
         event.preventDefault();
 
         setSubmitting(true);
@@ -33,21 +34,23 @@ function NewProposalPanel() {
 
         fetchProposalResourceCreateObservingProposal({ body: newProposal})
             .then((data) => {
-                setSelectedProposal(data?._id);
+                propcodeSetter(data._id);
                 setSubmitting(false);
-                navigate("/pst/app/proposal/" + selectedProposal);
+                navigate("/pst/app/proposal/" + data?._id);
             })
             .catch(console.log);
     }
 
-    function handleChange(event: React.SyntheticEvent) {
+    function handleChange(event: SyntheticEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) {
         setFormData({
-            name: event.target.name,
-            value: event.target.value,
+            ...formData,
+            [event.currentTarget.name] : event.currentTarget.value
         });
     }
 
-    return (
+
+
+     return (
         <div className={""}>
             <h3>Create Proposal</h3>
             {submitting &&
@@ -66,6 +69,7 @@ function NewProposalPanel() {
                     <label>Kind<br/></label>
                     <select className={"form-control"} name="kind" onChange={handleChange}>
                         { kindOptions.map((opt)=>(<option value={opt.toUpperCase()}>{opt}</option>)) }
+
                  </select>
                 </div>
                 <button className={"btn btn-primary"} type="submit" >Create</button>

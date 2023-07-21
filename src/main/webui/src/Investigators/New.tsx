@@ -1,4 +1,4 @@
-import {useContext, useReducer, useState, SyntheticEvent} from "react";
+import {useContext,  useState, SyntheticEvent} from "react";
 import {ProposalContext} from "../App2";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
@@ -7,9 +7,10 @@ import {
 } from "../generated/proposalToolComponents";
 import {useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
+import {Person} from "../generated/proposalToolSchemas.ts";
 
 function AddInvestigatorPanel() {
-    const [formData, setFormData] = useReducer(formReducer, {forPhD: false});
+    const [formData, setFormData] = useState( {forPhD: false, person:{} as Person});
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
     const { selectedProposalCode} = useContext(ProposalContext);
@@ -31,10 +32,10 @@ function AddInvestigatorPanel() {
         );
     }
 
-    function handleChange(event : SyntheticEvent) {
+    function handleChange(event : SyntheticEvent<HTMLInputElement|HTMLSelectElement>) {
         setFormData({
-            name: event.target.name,
-            value: event.target.value,
+            ...formData,
+            [event.currentTarget.name] : event.currentTarget.value
         });
     }
 

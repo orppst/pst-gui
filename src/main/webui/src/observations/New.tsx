@@ -1,14 +1,14 @@
-import {useReducer, SyntheticEvent} from "react";
+import { SyntheticEvent, useContext} from "react";
 
 function NewObservationPanel() {
 
     const [formData, setFormData] =
-        useReducer(formReducer, {
+        useContext( {
             observationType:"Target",
             calibrationUse:"placeHolder",
             targetName: "",
-            targetLongitude: "",
-            targetLatitude: "",
+            targetLongitude: 0,
+            targetLatitude: 0,
             targetSpaceFrame:"placeHolder",
             targetPositionEpoch:"placeHolder"
         });

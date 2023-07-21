@@ -6,7 +6,7 @@ import {
 
 function DocumentsPanel() {
     const { selectedProposalCode} = useContext(ProposalContext);
-    const { data , error, isLoading } = useSupportingDocumentResourceGetSupportingDocuments({pathParams: {proposalCode: selectedProposal},}, {enabled: true});
+    const { data , error, isLoading } = useSupportingDocumentResourceGetSupportingDocuments({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
 
     if (error) {
         return (

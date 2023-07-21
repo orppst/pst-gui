@@ -1,4 +1,4 @@
-import {createContext, useEffect, SyntheticEvent} from 'react';
+import {createContext, useEffect, SyntheticEvent, useState} from 'react';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
@@ -41,8 +41,10 @@ export const ProposalContext = createContext<UserContextType & ProposalContextTy
 function App2() {
     const blankUser : Person = {fullName: "Loading..."};
     const [user, setUser] = useHistoryState("user", blankUser);
-    const [selectedProposalCode, setSelectedProposal] = useHistoryState("selectedProposal", 0);
-    const values = {user, selectedProposalCode  };
+    const [historyProposalCode, setSelectedProposalInHistory] = useHistoryState("selectedProposal", 0);
+
+    const [selectedProposalCode, setProposalSelectedCode] = useState(historyProposalCode)
+    const values = {user, selectedProposalCode };
 
     useEffect(() => {
            fetchPersonResourceGetPeople({queryParams: {name: "PI"}})
@@ -52,7 +54,24 @@ function App2() {
                .catch(console.log)
 
        },[]);
-
+    function PanelRouter() {
+        return (
+            <Routes>
+                <Route path={"/pst/app/proposal/new"} element={<NewProposalPanel propcodeSetter={setProposalSelectedCode} />} />
+                <Route path={"/pst/app/proposal/:id"} element={<OverviewPanel />} />
+                <Route path={"/pst/app/proposal/:id/title"} element={<TitlePanel />} />
+                <Route path={"/pst/app/proposal/:id/summary"} element={<SummaryPanel />} />
+                <Route path={"/pst/app/proposal/:id/investigators"} element={<InvestigatorsPanel />} />
+                <Route path={"/pst/app/proposal/:id/investigators/new"} element={<AddInvestigatorPanel />} />
+                <Route path={"/pst/app/proposal/:id/targets"} element={<TargetPanel />} />
+                <Route path={"/pst/app/proposal/:id/goals"} element={<GoalsPanel />} />
+                <Route path={"/pst/app/proposal/:id/observations"} element={<ObservationsPanel />} />
+                <Route path={"/pst/app/proposal/:id/observations/new"} element={<NewObservationPanel />} />
+                <Route path={"/pst/app/proposal/:id/documents"} element={<DocumentsPanel />} />
+                <Route path={"*"} element={<div>Please select or create a proposal</div>} />
+            </Routes>
+        )
+    }
   return (
     <BrowserRouter>
         <ProposalContext.Provider value={values}>
@@ -92,26 +111,11 @@ function App2() {
             </QueryClientProvider>
         </ProposalContext.Provider>
     </BrowserRouter>
-  );
 
-    function PanelRouter() {
-        return (
-            <Routes>
-                <Route path={"/pst/app/proposal/new"} element={<NewProposalPanel />} />
-                <Route path={"/pst/app/proposal/:id"} element={<OverviewPanel />} />
-                <Route path={"/pst/app/proposal/:id/title"} element={<TitlePanel />} />
-                <Route path={"/pst/app/proposal/:id/summary"} element={<SummaryPanel />} />
-                <Route path={"/pst/app/proposal/:id/investigators"} element={<InvestigatorsPanel />} />
-                <Route path={"/pst/app/proposal/:id/investigators/new"} element={<AddInvestigatorPanel />} />
-                <Route path={"/pst/app/proposal/:id/targets"} element={<TargetPanel />} />
-                <Route path={"/pst/app/proposal/:id/goals"} element={<GoalsPanel />} />
-                <Route path={"/pst/app/proposal/:id/observations"} element={<ObservationsPanel />} />
-                <Route path={"/pst/app/proposal/:id/observations/new"} element={<NewObservationPanel />} />
-                <Route path={"/pst/app/proposal/:id/documents"} element={<DocumentsPanel />} />
-                <Route path={"*"} element={<div>Please select or create a proposal</div>} />
-            </Routes>
-        )
-    }
+
+
+);
+
 
     function Proposals() {
         const [proposalTitle, setProposalTitle] = useHistoryState("proposalTitle", "");
@@ -146,7 +150,7 @@ function App2() {
                 ) : (
                     <ul className={""}>
                         {data?.map((item) => (
-                        <li key={item.code} onClick={()=>{setSelectedProposal(item.code!)}}>{item.title}{selectedProposalCode===item.code && ChildList()}</li>
+                        <li key={item.code} onClick={()=>{setProposalSelectedCode(item.code!)}}>{item.title}{selectedProposalCode===item.code && ChildList()}</li>
                         ))}
                     </ul>
                 )}

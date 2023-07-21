@@ -1,5 +1,5 @@
-import { useContext } from "react";
-import {ProposalContext, UserContext} from '../App2'
+import {SyntheticEvent, useContext} from "react";
+import {ProposalContext} from '../App2'
 import {
     useObservationResourceGetObservations,
 } from "../generated/proposalToolComponents";
@@ -14,7 +14,7 @@ function ObservationsPanel() {
     );
 
     function Observations() {
-        const { selectedProposalCode } = useContext(ProposalContext) ;
+        const { user, selectedProposalCode } = useContext(ProposalContext) ;
         const { data , error, isLoading } = useObservationResourceGetObservations({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
         const navigate = useNavigate();
 
@@ -27,7 +27,7 @@ function ObservationsPanel() {
             );
         }
 
-        function handleAddNew(event: React.SyntheticEvent) {
+        function handleAddNew(event: SyntheticEvent) {
             event.preventDefault();
             navigate("/pst/app/proposal/" + selectedProposalCode + "/observations/new");
         }
