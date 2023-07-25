@@ -74,7 +74,7 @@ function App2() {
                     { path: "proposal/:id/observations/new",  element:<NewObservationPanel />} ,
                     { path: "proposal/:id/documents",  element:<DocumentsPanel />} ,
                 ]}], {
-            basename: "/pst/app/"
+            basename: "/pst/gui/tool/"
         }
 
     )

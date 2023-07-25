@@ -29,7 +29,7 @@ function ObservationsPanel() {
 
         function handleAddNew(event: SyntheticEvent) {
             event.preventDefault();
-            navigate("/pst/app/proposal/" + selectedProposalCode + "/observations/new");
+            navigate( "/observations/new");
         }
 
         return (

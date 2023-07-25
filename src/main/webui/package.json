@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "homepage": "https://kilburn.jb.man.ac.uk/pst/app",
+  "homepage": "https://kilburn.jb.man.ac.uk/pst/gui/",
   "dependencies": {
     "@rjsf/core": "^5.0.0-beta.15",
     "@rjsf/utils": "^5.0.0-beta.15",
@@ -42,8 +42,8 @@
     "vite": "^4.4.4"
   },
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --base=/pst/app",
-    "start": "vite --host 0.0.0.0  --base=/pst/app",
+    "dev": "vite --host 0.0.0.0 --base=/pst/gui/",
+    "start": "vite --host 0.0.0.0  --base=/pst/gui/",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
