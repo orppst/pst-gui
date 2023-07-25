@@ -24,7 +24,7 @@ function InvestigatorsPanel() {
 
     function handleAddNew(event: SyntheticEvent) {
         event.preventDefault();
-        navigate("/pst/app/proposal/" + selectedProposalCode + "/investigators/new");
+        navigate(  "new");
     }
 
     return (

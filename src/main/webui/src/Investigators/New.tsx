@@ -53,7 +53,7 @@ function AddInvestigatorPanel() {
                 .then(()=> {
                     return queryClient.invalidateQueries();
                 })
-                .then(()=>navigate("/pst/app/proposal/" + selectedProposalCode + "/investigators"))
+                .then(()=>navigate(  "../", {relative:"path"})) // see https://stackoverflow.com/questions/72537159/react-router-v6-and-relative-links-from-page-within-route
                 .catch(console.log)
             )
             .catch(console.log);
@@ -61,7 +61,7 @@ function AddInvestigatorPanel() {
 
     function handleCancel(event: SyntheticEvent) {
         event.preventDefault();
-        navigate("/pst/app/proposal/" + selectedProposalCode + "/investigators")
+        navigate("../",{relative:"path"})
     }
 
     return (
