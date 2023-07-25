@@ -29,7 +29,7 @@ function ObservationsPanel() {
 
         function handleAddNew(event: SyntheticEvent) {
             event.preventDefault();
-            navigate( "/observations/new");
+            navigate( "new");
         }
 
         return (
