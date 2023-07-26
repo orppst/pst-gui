@@ -1,4 +1,4 @@
-import  { useContext, useState, SyntheticEvent } from "react";
+import {useContext, useState, SyntheticEvent} from "react";
 import {ProposalContext} from '../App2'
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,11 +8,15 @@ import {
 } from "../generated/proposalToolComponents";
 import {useQueryClient} from "@tanstack/react-query";
 
+type PersonProps = {
+    dbid: number
+}
 
 function InvestigatorsPanel() {
     const { selectedProposalCode} = useContext(ProposalContext) ;
     const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
     const navigate = useNavigate();
+
 
     if (error) {
         return (
@@ -34,7 +38,11 @@ function InvestigatorsPanel() {
                 <button className={"btn btn-primary"} onClick={handleAddNew} >Add New</button>
                 {isLoading ? (`Loading...`)
                     : data?.map((item) => {
-                        return (<RenderPerson dbid={item?.dbid} key={item?.dbid}/>)
+                        if(item.dbid !== undefined) {
+                            return (<RenderPerson dbid={item.dbid} key={item.dbid}/>)
+                        } else {
+                            return (<div>Undefined Investigator!</div>)
+                        }
                     } )
                 }
             </div>
@@ -42,21 +50,20 @@ function InvestigatorsPanel() {
     );
 }
 
-function RenderPerson(dbid: number) {
+function RenderPerson(props: PersonProps) {
     const { selectedProposalCode} = useContext(ProposalContext);
     const [submitting, setSubmitting] = useState(false);
     const tdClass: string = "col-lg-1 col-md-1";
     const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
         {pathParams:
                     {
-                        investigatorId: dbid.dbid,
+                        investigatorId: props.dbid,
                         proposalCode: selectedProposalCode,
                     },
             });
     const queryClient = useQueryClient();
 
-    function handleRemove(event : SyntheticEvent<HTMLFormElement>) {
-        event.preventDefault();
+    function handleRemove() {
         const choice = window.confirm(
             "Are you sure you want to remove the " + data?.type + " " + data?.person?.fullName + "?"
         )
@@ -64,7 +71,7 @@ function RenderPerson(dbid: number) {
             setSubmitting(true);
             fetchInvestigatorResourceRemoveInvestigator({pathParams:
                     {
-                        investigatorId: dbid.dbid,
+                        investigatorId: props.dbid,
                         proposalCode: selectedProposalCode,
                     }})
                 .then(()=>setSubmitting(false))
