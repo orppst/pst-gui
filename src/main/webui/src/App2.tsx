@@ -5,6 +5,7 @@ import {
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
+//import '../scss/styles.scss'
 import 'bootstrap/dist/css/bootstrap.css';
 import TitlePanel from './proposal/Title';
 import TargetPanel from './proposal/Targets';
@@ -21,11 +22,13 @@ import NewObservationPanel from "./observations/New";
 import DocumentsPanel from "./proposal/Documents";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import {AuthProvider} from "./auth/Auth.tsx";
 
 const queryClient = new QueryClient()
 
 export type UserContextType = {
     user: Person;
+    token: string;
 }
 
 export type ProposalContextType = {
@@ -34,6 +37,7 @@ export type ProposalContextType = {
 
 export const ProposalContext = createContext<UserContextType & ProposalContextType>({
     user: {},
+    token:"",
     selectedProposalCode: 0,
 })
 
@@ -80,12 +84,14 @@ function App2() {
     )
 
   return (
+      <AuthProvider>
         <ProposalContext.Provider value={values}>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </ProposalContext.Provider>
+      </AuthProvider>
 );
 
     function PSTRoot() {
