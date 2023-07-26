@@ -7,10 +7,10 @@ import {
 } from "../generated/proposalToolComponents";
 import {useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {Person} from "../generated/proposalToolSchemas.ts";
+import {InvestigatorKind} from "../generated/proposalToolSchemas.ts";
 
 function AddInvestigatorPanel() {
-    const [formData, setFormData] = useState( {forPhD: false, person:{} as Person});
+    const [formData, setFormData] = useState( {type: "COI" as InvestigatorKind, forPhD: false, selectedInvestigator: 0});
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
     const { selectedProposalCode} = useContext(ProposalContext);
@@ -42,7 +42,7 @@ function AddInvestigatorPanel() {
     function handleAdd(event: SyntheticEvent) {
         event.preventDefault();
         //Get full investigator from API and add back to proposal
-        fetchPersonResourceGetPerson({pathParams:{id: formData.investigator}})
+        fetchPersonResourceGetPerson({pathParams:{id: formData.selectedInvestigator}})
             .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
                 {pathParams:{proposalCode: selectedProposalCode},
                     body:{
@@ -71,9 +71,8 @@ function AddInvestigatorPanel() {
                     <div className={"form-group"}>
                         <label>Type</label>
                         <select className={"form-control"} name="type" onChange={handleChange}>
-                            <option value="">--Please choose a type--</option>
-                            <option value="PI">PI</option>
                             <option value="COI">CO-I</option>
+                            <option value="PI">PI</option>
                         </select>
                     </div>
                     <div className={"form-group"}>
@@ -86,7 +85,7 @@ function AddInvestigatorPanel() {
                         <label>Filter names</label>
                         <input className={"form-control"} value={query} onChange={(e) => setQuery(e.target.value)}/>
                         <label>Investigators</label>
-                        <select className={"form-control"} name="investigator" onChange={handleChange}>
+                        <select className={"form-control"} name="selectedInvestigator" onChange={handleChange}>
                             <option value="">--Please choose one--</option>
                             {isLoading ? (
                                 <option>Loading…</option>
