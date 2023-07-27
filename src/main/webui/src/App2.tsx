@@ -1,4 +1,4 @@
-import {createContext, useEffect, SyntheticEvent, useState} from 'react';
+import {createContext, useEffect, SyntheticEvent, useState, useContext} from 'react';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
     fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
@@ -43,21 +43,9 @@ export const ProposalContext = createContext<UserContextType & ProposalContextTy
 
 
 function App2() {
-    const blankUser : Person = {fullName: "Loading..."};
-    const [user, setUser] = useHistoryState("user", blankUser);
     const [historyProposalCode, setSelectedProposalInHistory] = useHistoryState("selectedProposal", 0);
 
     const [selectedProposalCode, setProposalSelectedCode] = useState(historyProposalCode)
-    const values = {user, selectedProposalCode };
-
-    useEffect(() => {
-           fetchPersonResourceGetPeople({queryParams: {name: "PI"}})
-               .then((data) =>
-                   fetchPersonResourceGetPerson({ pathParams: {id: data[0].dbid!} }).then((data) => setUser(data))
-               )
-               .catch(console.log)
-
-       },[]);
 
 
 
@@ -85,16 +73,15 @@ function App2() {
 
   return (
       <AuthProvider>
-        <ProposalContext.Provider value={values}>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-        </ProposalContext.Provider>
       </AuthProvider>
 );
 
     function PSTRoot() {
+        const {user} = useContext(ProposalContext)
         return (
             <>
             <nav className={"navbar navbar-inverse"}>
