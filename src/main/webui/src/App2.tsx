@@ -78,46 +78,46 @@ function App2() {
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
       </AuthProvider>
-);
+   );
 
     function PSTRoot() {
-        const {user} = useContext(ProposalContext)
+        const {user, token} = useContext(ProposalContext)
         return (
-            <>
-            <nav className={"navbar navbar-inverse"}>
-                <div className={"container-fluid"}>
-                    <div className={"navbar-header"}>
+            <ProposalContext.Provider value={{selectedProposalCode, user, token}}>
+                <nav className={"navbar navbar-inverse"}>
+                    <div className={"container-fluid"}>
+                        <div className={"navbar-header"}>
                         <span className={"navbar-brand"} >
                             <NavLink to={"/"}>Proposals for {user.fullName}</NavLink>
                         </span>
+                        </div>
+                        <ul className={"nav navbar-nav"}>
+                            <li>
+                                <ul className={"nav navbar-nav"}>
+                                    <li>
+                                        <NavLink to={"proposal/new"} className={({ isActive, isPending }) =>
+                                            isPending ? "pending" : isActive ? "active" : ""}>Create New</NavLink>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul className={"nav navbar-nav navbar-right"}>
+                            <li><a href="#"><span className={"glyphicon glyphicon-user"}></span> Account</a></li>
+                            <li><a href="/pst/gui/logout"><span className={"glyphicon glyphicon-log-out"}></span> Logout</a></li>
+                        </ul>
                     </div>
-                    <ul className={"nav navbar-nav"}>
-                        <li>
-                            <ul className={"nav navbar-nav"}>
-                                <li>
-                                    <NavLink to={"proposal/new"} className={({ isActive, isPending }) =>
-                                        isPending ? "pending" : isActive ? "active" : ""}>Create New</NavLink>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <ul className={"nav navbar-nav navbar-right"}>
-                        <li><a href="#"><span className={"glyphicon glyphicon-user"}></span> Account</a></li>
-                        <li><a href="/pst/gui/logout"><span className={"glyphicon glyphicon-log-out"}></span> Logout</a></li>
-                    </ul>
-                </div>
-            </nav>
-        <div className={"row"}>
-            <div id={"sidebar"} className={"col-lg-2 col-md-2 col-sm-3 col-xs-4 well well-lg"}>
+                </nav>
+                <div className={"row"}>
+                    <div id={"sidebar"} className={"col-lg-2 col-md-2 col-sm-3 col-xs-4 well well-lg"}>
 
-                <div>Search and filter by</div>
-                <Proposals/>
-            </div>
-            <div className={"col-lg-9 col-md-9 col-sm-8 col-xs-7"}>
-                <Outlet/>
-            </div>
-        </div>
-            </>
+                        <div>Search and filter by</div>
+                        <Proposals/>
+                    </div>
+                    <div className={"col-lg-9 col-md-9 col-sm-8 col-xs-7"}>
+                        <Outlet/>
+                    </div>
+                </div>
+            </ProposalContext.Provider>
         )
     }
 

@@ -1,8 +1,11 @@
-import {createContext, ReactNode, useContext, useEffect, useReducer, useState} from "react";
+import {ReactNode, useEffect, useState} from "react";
 import {Person, SubjectMap} from "../generated/proposalToolSchemas.ts";
 import {ProposalContext} from "../App2.tsx";
 
-export type AuthMapping = SubjectMap
+export type AuthMapping = {
+    subjectMap:SubjectMap;
+    token: string;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 
@@ -43,11 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const resp = getUser();
         console.log("trying authentication");
         resp.then((s) => {
-            if(s.person) {
-                setUser(s.person)
+            setToken(s.token)
+            if(s.subjectMap.person) {
+                setUser(s.subjectMap.person)
             }
             else {
-                //what to do it the person is not properly registerd?
+                //what to do it the person is not properly registered?
                 console.error("authenticated person is not registered with database")
             }
         })
@@ -62,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
            </>
                 ) : (
                     <>
-                    <div>Need to Authenticate...</div>
+                    <div>Need to Authenticate..</div>
                     </>
             )
             }
