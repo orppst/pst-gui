@@ -5,11 +5,12 @@
   "type": "module",
   "homepage": "https://kilburn.jb.man.ac.uk/pst/gui/",
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "@rjsf/core": "^5.0.0-beta.15",
     "@rjsf/utils": "^5.0.0-beta.15",
     "@rjsf/validator-ajv8": "^5.0.0-beta.15",
     "@tanstack/react-query": "^4.29.7",
-    "bootstrap": "3",
+    "bootstrap": "3.3.7",
     "buffer": "^6.0.3",
     "namor": "^3.0.1",
     "react": "^18.2.0",
@@ -18,8 +19,6 @@
     "react-router-dom": "^6.14.0",
     "react-table": "^7.8.0",
     "semantic-ui-react": "^2.1.4",
-    "stream": "stream-browserify",
-    "stream-browserify": "^3.0.0",
     "web-vitals": "^2.1.0"
   },
   "devDependencies": {
@@ -38,6 +37,7 @@
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "sass": "^1.64.1",
     "typescript": "^5.1.6",
     "vite": "^4.4.4"
   },

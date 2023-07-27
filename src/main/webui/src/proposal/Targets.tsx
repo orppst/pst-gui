@@ -1,4 +1,4 @@
-import { useReducer, useContext, useState, SyntheticEvent } from "react";
+import { useContext } from "react";
 import {ProposalContext} from '../App2'
 import {
     useProposalResourceGetTarget,
@@ -32,9 +32,6 @@ function TargetPanel() {
     }
 
     function RenderTarget(proposal :any) {
-        const [submitting, setSubmitting] = useState(false);
-        const [formData, setFormData] = useReducer(formReducer, {});
-
         const {data, error, isLoading} = useProposalResourceGetTarget(
             {pathParams:
                     {
@@ -46,25 +43,8 @@ function TargetPanel() {
             return <div>Error loading target</div>
         }
 
-        function handleSubmit(event : SyntheticEvent) {
-            event.preventDefault();
-
-            setSubmitting(true);
-
-            setSubmitting(false);
-        }
-
-        function handleChange(event : SyntheticEvent) {
-            setFormData({
-                name: event.target.name,
-                value: event.target.value,
-            });
-        }
-
         function RenderTable(props: any) {
             let tableObj = props.obj;
-
-            //console.log("RenderTable passed this tabelObj: " + JSON.stringify(tableObj, null, 2));
 
             if(tableObj === undefined || tableObj === null) {
                 return (<table><tbody><tr><td>null</td></tr></tbody></table>);
@@ -101,7 +81,7 @@ function TargetPanel() {
                             : (
                                 <>
                                 <label>Source Name</label>
-                                <input title="Name" name="sourceName" value={data?.sourceName} onChange={handleChange} />
+                                <input title="Name" name="sourceName" value={data?.sourceName} />
                                     <RenderTable obj={data}></RenderTable>
                                 </>
                             )

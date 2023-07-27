@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import javax.security.auth.Subject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import io.quarkus.security.credential.Credential;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -15,6 +17,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import io.quarkus.oidc.AccessTokenCredential;
 import io.quarkus.security.Authenticated;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.logging.Logger;
 import org.orph2020.pst.apiimpl.entities.SubjectMap;
 
 import java.util.Map;
@@ -22,9 +25,10 @@ import java.util.Optional;
 import java.util.Set;
 
 @Path("/aai/")
-@Authenticated
+@Produces(MediaType.APPLICATION_JSON)
 public class ProtectedResource {
 
+    private static final Logger LOGGER = Logger.getLogger("AAI INFO");
     @RestClient
     UserInfo userService;
 
@@ -36,7 +40,9 @@ public class ProtectedResource {
 
     @GET
     public SubjectMap me() {
-        return userService.getUser(accessToken.claim(Claims.sub).toString()); // the subject is the AAI "unique identifier" - for keycloak anyway....
+        LOGGER.info(accessToken.claim(Claims.sub).toString());
+        LOGGER.info(accessToken.getRawToken());
+        return userService.getUser((String) accessToken.claim(Claims.sub).get()); // the subject is the AAI "unique identifier" - for keycloak anyway....
     }
 
     public static class User {

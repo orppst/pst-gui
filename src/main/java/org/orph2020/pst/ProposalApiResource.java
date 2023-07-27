@@ -21,7 +21,7 @@ public class ProposalApiResource {
     @RestClient
     ApiService apiService;
     @GET
-    @Path("observatories")
+    @Path("obs")
     public Set<ObjectIdentifier> getObservatories() {
 
         return apiService.getObservatories();

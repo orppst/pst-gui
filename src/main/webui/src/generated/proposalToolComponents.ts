@@ -88,7 +88,7 @@ export const fetchObservatoryResourceCreateObservatory = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
+    Schemas.Observatory,
     ObservatoryResourceCreateObservatoryError,
     Schemas.Observatory,
     {},
@@ -99,7 +99,7 @@ export const fetchObservatoryResourceCreateObservatory = (
 export const useObservatoryResourceCreateObservatory = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      Schemas.Observatory,
       ObservatoryResourceCreateObservatoryError,
       ObservatoryResourceCreateObservatoryVariables
     >,
@@ -108,7 +108,7 @@ export const useObservatoryResourceCreateObservatory = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
+    Schemas.Observatory,
     ObservatoryResourceCreateObservatoryError,
     ObservatoryResourceCreateObservatoryVariables
   >(
@@ -2371,7 +2371,7 @@ export const fetchOrganizationResourceCreateOrganization = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
+    Schemas.Organization,
     OrganizationResourceCreateOrganizationError,
     Schemas.Organization,
     {},
@@ -2382,7 +2382,7 @@ export const fetchOrganizationResourceCreateOrganization = (
 export const useOrganizationResourceCreateOrganization = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      Schemas.Organization,
       OrganizationResourceCreateOrganizationError,
       OrganizationResourceCreateOrganizationVariables
     >,
@@ -2391,7 +2391,7 @@ export const useOrganizationResourceCreateOrganization = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
+    Schemas.Organization,
     OrganizationResourceCreateOrganizationError,
     OrganizationResourceCreateOrganizationVariables
   >(
@@ -2828,7 +2828,7 @@ export const fetchPersonResourceCreatePerson = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
+    Schemas.Person,
     PersonResourceCreatePersonError,
     Schemas.Person,
     {},
@@ -2839,7 +2839,7 @@ export const fetchPersonResourceCreatePerson = (
 export const usePersonResourceCreatePerson = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      Schemas.Person,
       PersonResourceCreatePersonError,
       PersonResourceCreatePersonVariables
     >,
@@ -2848,7 +2848,7 @@ export const usePersonResourceCreatePerson = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
+    Schemas.Person,
     PersonResourceCreatePersonError,
     PersonResourceCreatePersonVariables
   >(
@@ -4503,7 +4503,7 @@ export const fetchProposalResourceCreateObservingProposal = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
+    Schemas.ObservingProposal,
     ProposalResourceCreateObservingProposalError,
     Schemas.ObservingProposal,
     {},
@@ -4514,7 +4514,7 @@ export const fetchProposalResourceCreateObservingProposal = (
 export const useProposalResourceCreateObservingProposal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      Schemas.ObservingProposal,
       ProposalResourceCreateObservingProposalError,
       ProposalResourceCreateObservingProposalVariables
     >,
@@ -4523,7 +4523,7 @@ export const useProposalResourceCreateObservingProposal = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
+    Schemas.ObservingProposal,
     ProposalResourceCreateObservingProposalError,
     ProposalResourceCreateObservingProposalVariables
   >(

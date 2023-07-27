@@ -12,7 +12,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 @RegisterRestClient(configKey="proposal-api")
-@Path("../api")
 public interface UserInfo {
 
     @GET
