@@ -116,7 +116,7 @@ function App2() {
                     </ul>
                     <ul className={"nav navbar-nav navbar-right"}>
                         <li><a href="#"><span className={"glyphicon glyphicon-user"}></span> Account</a></li>
-                        <li><a href="#"><span className={"glyphicon glyphicon-log-out"}></span> Logout</a></li>
+                        <li><a href="/pst/gui/logout"><span className={"glyphicon glyphicon-log-out"}></span> Logout</a></li>
                     </ul>
                 </div>
             </nav>
