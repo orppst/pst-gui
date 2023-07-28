@@ -2,12 +2,18 @@ package org.orph2020.pst.auth;
 /*
  * Created on 06/04/2023 by Paul Harrison (paul.harrison@manchester.ac.uk).
  */
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import io.quarkus.security.Authenticated;
+import io.quarkus.security.identity.SecurityIdentity;
+import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.oidc.IdToken;
@@ -16,7 +22,6 @@ import io.quarkus.oidc.RefreshToken;
 import java.util.Set;
 
 @Path("/aai/authz")
-@Authenticated
 public class TokenResource {
 
     /**
@@ -37,6 +42,14 @@ public class TokenResource {
      */
     @Inject
     RefreshToken refreshToken;
+
+
+    @Inject
+    SecurityIdentity identity;
+
+    @Context
+    SecurityContext ctx;
+
 
     /**
      * Returns the tokens available to the application. This endpoint exists only for demonstration purposes, you should not
@@ -63,7 +76,7 @@ public class TokenResource {
             response.append("<li>id claim: ").append(s).append("=").append(this.idToken.claim(s)).append("</li>");
         }
 
-
+        response.append("<h2>access token</h2>");
         claims = this.accessToken.getClaimNames();
 
         for (String s : claims) {
@@ -72,6 +85,19 @@ public class TokenResource {
 
         response.append("<li>refresh_token: ").append(refreshToken.getToken() != null).append("</li>");
 
+        response.append("<h2>Security Identity</h2>");
+
+        response.append("<li>").append(identity.getRoles()).append("</li>");
+
+
         return response.append("</ul>").append("</body>").append("</html>").toString();
+    }
+
+    @GET
+    @RolesAllowed("default-roles-orppst")
+    @Path("/rest")
+    @Produces(MediaType.TEXT_HTML)
+    public String admin() {
+        return "Access for subject " + accessToken.getSubject() + " is granted";
     }
 }
