@@ -78,17 +78,25 @@ export async function proposalToolFetch<
       }
     );
     if (!response.ok) {
+
       let error: ErrorWrapper<TError>;
-      try {
-        error = await response.json();
-      } catch (e) {
-        error = {
-          status: "unknown" as const,
-          payload:
-            e instanceof Error
-              ? `Unexpected error (${e.message})`
-              : "Unexpected error",
-        };
+
+      if(response.status == 401)
+      {
+        error = {status: "unknown",payload:"401, unauthorized"} // IMPL a bit of a hack to at least send something back for unauthorized - error handling bit odd...
+      }
+      else {
+        try {
+          error = await response.json();
+        } catch (e) {
+          error = {
+            status: "unknown" as const,
+            payload:
+                e instanceof Error
+                    ? `Unexpected error (${e.message})`
+                    : "Unexpected error",
+          };
+        }
       }
 
       throw error;

@@ -41,6 +41,11 @@ export const ProposalContext = createContext<UserContextType & ProposalContextTy
     selectedProposalCode: 0,
 })
 
+export const useToken = () => {
+    const { token } = useContext(ProposalContext);
+
+    return token;
+};
 
 function App2() {
     const [historyProposalCode, setSelectedProposalInHistory] = useHistoryState("selectedProposal", 0);

@@ -1,12 +1,17 @@
 import type { QueryKey, UseQueryOptions } from "@tanstack/react-query";
 import { QueryOperation } from "./proposalToolComponents";
+import { useToken } from "../App2.tsx";
+
 
 export type ProposalToolContext = {
+
   fetcherOptions: {
     /**
      * Headers to inject in the fetcher
      */
-    headers?: {};
+    headers?: {
+      authorization ?: string;
+    };
     /**
      * Query params to inject in the fetcher
      */
@@ -41,8 +46,13 @@ export function useProposalToolContext<
     "queryKey" | "queryFn"
   >
 ): ProposalToolContext {
+  const token = useToken();
   return {
-    fetcherOptions: {},
+    fetcherOptions: {
+      headers: {
+          authorization: token ? `Bearer ${token}` : undefined,
+      },
+    },
     queryOptions: {},
     queryKeyFn,
   };
