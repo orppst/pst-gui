@@ -4,9 +4,9 @@ import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
-import {redirect, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
-//IMPL is there not nore concise way to set properties for component than this?
+//IMPL is there not more concise way to set properties for component than this?
 type ss = {
     setProposalSelectedCode : (i:number)=>void;
 }
@@ -26,7 +26,6 @@ type ss = {
 
         //Add the current user as the PI
         const investigator : Investigator = {
-            // @ts-ignore
             "@type": "proposal:Investigator",
             "type": "PI",
             "person": user
@@ -40,7 +39,7 @@ type ss = {
         fetchProposalResourceCreateObservingProposal({ body: newProposal})
             .then((data) => {
                 setSubmitting(false);
-                setProposalSelectedCode(data?._id)
+                setProposalSelectedCode(data?._id!)
                 navigate("/proposal/" + data?._id);
             })
             .catch(console.log);
@@ -52,8 +51,6 @@ type ss = {
             [event.currentTarget.name] : event.currentTarget.value
         });
     }
-
-
 
      return (
         <div className={""}>

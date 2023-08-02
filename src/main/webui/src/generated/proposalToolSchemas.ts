@@ -166,6 +166,7 @@ export type CartesianCoordSpace = {
  * The basic target setup for a celestial Target.
  */
 export type CelestialTarget = {
+  "@type"?: string; // proposal:CelestialTarget
   /**
    * A common name for the source
    */
@@ -494,6 +495,7 @@ export type IntegerQuantity = {
 };
 
 export type Investigator = {
+  "@type"?: string;
   type?: InvestigatorKind;
   /**
    * is the investigator making proposal for their PhD
@@ -645,6 +647,7 @@ export type ObservingMode = {
  * a complete proposal
  */
 export type ObservingProposal = {
+  "_id"?: number;
   /**
    * the proposal title
    */
@@ -1344,6 +1347,7 @@ export type TacRole = "TECHNICALREVIEWER" | "SCIENCEREVIEWER" | "CHAIR";
  * A target source
  */
 export type Target = {
+  "@type"?: string;
   /**
    * A common name for the source
    */

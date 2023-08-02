@@ -1,4 +1,4 @@
-Subject: [PATCH] Add @type to some definitions
+Subject: [PATCH] Patch to add @type to some definitions
 ---
 Index: src/main/webui/src/generated/proposalToolSchemas.ts
 IDEA additional info:
@@ -6,8 +6,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/src/main/webui/src/generated/proposalToolSchemas.ts b/src/main/webui/src/generated/proposalToolSchemas.ts
---- a/src/main/webui/src/generated/proposalToolSchemas.ts	(revision e7cd9701848b1398ff55f5006a6c8729a02fadb7)
-+++ b/src/main/webui/src/generated/proposalToolSchemas.ts	(date 1690970029070)
+--- a/src/main/webui/src/generated/proposalToolSchemas.ts	(revision c487967e5e0da659f2c76006549e53ed8671ffe4)
++++ b/src/main/webui/src/generated/proposalToolSchemas.ts	(date 1690973175749)
 @@ -166,6 +166,7 @@
   * The basic target setup for a celestial Target.
   */
@@ -24,14 +24,19 @@ diff --git a/src/main/webui/src/generated/proposalToolSchemas.ts b/src/main/webu
    type?: InvestigatorKind;
    /**
     * is the investigator making proposal for their PhD
-@@ -1344,8 +1346,9 @@
+@@ -645,6 +647,7 @@
+  * a complete proposal
+  */
+ export type ObservingProposal = {
++  "_id"?: number;
+   /**
+    * the proposal title
+    */
+@@ -1344,6 +1347,7 @@
   * A target source
   */
  export type Target = {
 +  "@type"?: string;
    /**
--   * A common name for the source
-+   * /A common name for the source
+    * A common name for the source
     */
-   sourceName?: string;
- };
