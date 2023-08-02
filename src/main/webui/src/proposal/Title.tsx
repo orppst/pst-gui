@@ -20,8 +20,8 @@ function TitlePanel() {
         mutationFn: () => {
             const newTitle : ProposalResourceReplaceTitleVariables = {//IMPL the code generator does not create the correct type signature for API calls where the body is plain text.
                 pathParams: {proposalCode: selectedProposalCode},
-                // @ts-ignore
                 body: title,
+                // @ts-ignore
                 headers: {"Content-Type": "text/plain"}
             }
             return fetchProposalResourceReplaceTitle(newTitle);

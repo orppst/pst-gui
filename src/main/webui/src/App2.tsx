@@ -1,7 +1,6 @@
-import {createContext, useEffect, SyntheticEvent, useState, useContext} from 'react';
+import {createContext, useState, useContext} from 'react';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
-    fetchPersonResourceGetPeople, fetchPersonResourceGetPerson,
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
@@ -14,7 +13,7 @@ import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
 import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
-import {createBrowserRouter, NavLink, Outlet, Route, RouterProvider, Routes} from "react-router-dom";
+import {createBrowserRouter, NavLink, Outlet, RouterProvider} from "react-router-dom";
 import { useHistoryState } from "./useHistoryState";
 import GoalsPanel from "./proposal/Goals";
 import ObservationsPanel from "./observations/List";
@@ -48,7 +47,7 @@ export const useToken = () => {
 };
 
 function App2() {
-    const [historyProposalCode, setSelectedProposalInHistory] = useHistoryState("selectedProposal", 0);
+    const historyProposalCode= 0;
 
     const [selectedProposalCode, setProposalSelectedCode] = useState(historyProposalCode)
 

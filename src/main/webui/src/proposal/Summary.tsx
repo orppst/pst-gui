@@ -17,11 +17,10 @@ function SummaryPanel() {
 
     const mutation = useMutation({
             mutationFn: () => {
-
                 const newSummary: ProposalResourceReplaceSummaryVariables = {
                     pathParams: {proposalCode: selectedProposalCode},
-                    // @ts-ignore
                     body: summary,
+                    // @ts-ignore
                     headers: {"Content-Type": "text/plain"}
                 }
 
