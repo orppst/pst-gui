@@ -332,6 +332,7 @@ export type Epoch = {
  * A Point on the Unit Sphere
  */
 export type EquatorialPoint = {
+  coordSys: CoordSys;
   /**
    * A real value with a unit.
    */
@@ -771,6 +772,7 @@ export type Person = {
  * Abstract head of coordinate spaces related to physical properties.
  */
 export type PhysicalCoordSpace = {
+  "@type": string;
   /**
    * Describes an axis of the coordinate space.
    */
@@ -1211,6 +1213,7 @@ export type SpaceFrame = {
  * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
  */
 export type SpaceSys = {
+  "@type": string;
   /**
    * Abstract head of coordinate spaces related to physical properties.
    */

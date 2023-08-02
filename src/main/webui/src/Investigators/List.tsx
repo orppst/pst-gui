@@ -87,13 +87,13 @@ function RenderPerson(props: PersonProps) {
                     submitting?(`Removing...`):
                         (
                             <>
-                            <table className={"table"}>
+                            <table className={"table well"}>
                                 <tbody>
                                 <tr className={"row"}><td className={tdClass}>Type</td><td>{data?.type}</td></tr>
                                 <tr className={"row"}><td className={tdClass}>Name</td><td>{data?.person?.fullName}</td></tr>
                                 <tr className={"row"}><td className={tdClass}>Email</td><td>{data?.person?.eMail}</td></tr>
                                 <tr className={"row"}><td className={tdClass}>Institute</td><td>{data?.person?.homeInstitute?.name}</td></tr>
-                                <tr className={"row"}><td className={tdClass}></td><td><button className={"btn btn-danger"} onClick={handleRemove}>Remove</button></td></tr>
+                                <tr className={"row"}><td className={tdClass}></td><td><button className={"btn btn-danger pull-right"} onClick={handleRemove}>Remove</button></td></tr>
                                 </tbody>
                             </table>
                             </>
