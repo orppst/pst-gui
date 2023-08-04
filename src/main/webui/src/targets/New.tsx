@@ -1,6 +1,12 @@
 import {SyntheticEvent, useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {CelestialTarget, CoordSys, EquatorialPoint} from "../generated/proposalToolSchemas.ts";
+import {
+    CartesianCoordSpace,
+    CelestialTarget,
+    CoordSys,
+    EquatorialPoint,
+    SpaceFrame
+} from "../generated/proposalToolSchemas.ts";
 import {fetchProposalResourceAddNewTarget} from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {ProposalContext} from "../App2.tsx";
@@ -31,19 +37,36 @@ function AddTargetPanel() {
 
     function handleAdd(event: SyntheticEvent) {
         event.preventDefault();
-/*
-        const coSys: CoordSys = {
-            "@type": "coords:SpaceSys",
 
+        const coordSpace: CartesianCoordSpace = {
+            // @ts-ignore
+            "@type": "coords:CartesianCoordSpace",
+            "axis": []
         }
-*/
+
+        const frame: SpaceFrame = {
+            // @ts-ignore
+            "@type": "coords:SpaceFrame",
+            // @ts-ignore
+            "refPosition": null,
+            "spaceRefFrame": "ICRS",
+            "equinox": {},
+            "planetaryEphem": ""
+        }
+
+        const coordSys: CoordSys = {
+            "@type": "coords:SpaceSys",
+            "_id": 48,
+            coordSpace: coordSpace,
+            frame: frame
+        }
+
         const sourceCoords: EquatorialPoint = {
             // @ts-ignore
             "@type": "coords:EquatorialPoint",
-            //coordSys: coSys,
+            coordSys: coordSys,
             lat: {value: Math.floor(Math.random()*180), unit: {value: "degrees"}},
             lon: {value: Math.floor(Math.random()*90), unit: {value: "degrees"}}
-
         }
 
         const Targ: CelestialTarget = {
