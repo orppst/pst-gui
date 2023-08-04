@@ -1,5 +1,9 @@
-import {SyntheticEvent, useEffect, useState} from "react";
+import {SyntheticEvent, useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {CelestialTarget, CoordSys, EquatorialPoint} from "../generated/proposalToolSchemas.ts";
+import {fetchProposalResourceAddNewTarget} from "../generated/proposalToolComponents.ts";
+import {useQueryClient} from "@tanstack/react-query";
+import {ProposalContext} from "../App2.tsx";
 
 /*
     Could use http://www.skymaponline.net to show target?
@@ -9,7 +13,9 @@ import {useNavigate} from "react-router-dom";
 
 function AddTargetPanel() {
     const [formData, setFormData] = useState( {type: "CelestialTarget"});
+    const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const { selectedProposalCode} = useContext(ProposalContext);
 
     function handleCancel(event: SyntheticEvent) {
         event.preventDefault();
@@ -25,9 +31,39 @@ function AddTargetPanel() {
 
     function handleAdd(event: SyntheticEvent) {
         event.preventDefault();
+/*
+        const coSys: CoordSys = {
+            "@type": "coords:SpaceSys",
 
-        console.log("Add new target coming soon!");
-        navigate(  "../", {relative:"path"});
+        }
+*/
+        const sourceCoords: EquatorialPoint = {
+            // @ts-ignore
+            "@type": "coords:EquatorialPoint",
+            //coordSys: coSys,
+            lat: {value: Math.floor(Math.random()*180), unit: {value: "degrees"}},
+            lon: {value: Math.floor(Math.random()*90), unit: {value: "degrees"}}
+
+        }
+
+        const Targ: CelestialTarget = {
+            "@type": "proposal:CelestialTarget",
+            sourceName: "Random fake source #"+Math.floor(Math.random()*999),
+            sourceCoordinates: sourceCoords,
+            positionEpoch: {value: "J2000.0"},
+            "pmRA": {},
+            "pmDec": {},
+            "parallax": {},
+            "sourceVelocity": {}
+        }
+
+        //console.log(JSON.stringify(Targ,null,2));
+
+        fetchProposalResourceAddNewTarget({pathParams:{proposalCode: selectedProposalCode}, body: Targ})
+            .then(() => {return queryClient.invalidateQueries()})
+            .then(() => navigate(  "../", {relative:"path"}))
+            .catch(console.log);
+
     }
 
     return (
