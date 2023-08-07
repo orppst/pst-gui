@@ -7,7 +7,8 @@ import { Person} from "./generated/proposalToolSchemas";
 //import '../scss/styles.scss'
 import 'bootstrap/dist/css/bootstrap.css';
 import TitlePanel from './proposal/Title';
-import TargetPanel from './proposal/Targets';
+import TargetPanel from './targets/List';
+import AddTargetPanel from "./targets/New";
 import OverviewPanel from "./proposal/Overview";
 import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
@@ -65,6 +66,7 @@ function App2() {
                     { path: "proposal/:id/investigators",  element:<InvestigatorsPanel />} ,
                     { path: "proposal/:id/investigators/new",  element:<AddInvestigatorPanel />} ,
                     { path: "proposal/:id/targets",  element:<TargetPanel />} ,
+                    { path: "proposal/:id/targets/new", element:<AddTargetPanel />} ,
                     { path: "proposal/:id/goals",  element:<GoalsPanel />} ,
                     { path: "proposal/:id/observations",  element:<ObservationsPanel />} ,
                     { path: "proposal/:id/observations/new",  element:<NewObservationPanel />} ,
