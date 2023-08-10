@@ -1,8 +1,9 @@
 # pst-gui Project
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This project uses Quarkus - If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+Note that there is a separate [README](src/main/webui/README.md) for the client side browser application that makes up the 
+majority of this component.
 
 ## Running the application in dev mode
 
@@ -47,34 +48,5 @@ You can then execute your native executable with: `./build/pst-gui-0.1-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/gradle-tooling.
 
-## Related Guides
-
-see [Client]
-
-- Quinoa ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)): Quinoa is a Quarkus extension which eases the development, the build and serving single page apps or web components (built with NodeJS: React, Angular, Vue, Lit, …) alongside other Quarkus services (REST, GraphQL, Security, Events, ...).
-
-Live code the backend and frontend together with close to no configuration. When enabled in development mode, Quinoa will start the UI live coding server provided by the target framework and forward relevant requests to it. In production mode, Quinoa will run the build and process the generated files to serve them at runtime.
-
-- WebSockets ([guide](https://quarkus.io/guides/websockets)): WebSocket communication channel support
-- SmallRye JWT ([guide](https://quarkus.io/guides/security-jwt)): Secure your applications with JSON Web Token
-
-## Provided Code
-
-### Quinoa
-
-This is a tiny webpack app to get started with Quinoa. It generates a quinoa.html page and a script.
-
-[Related guide section...](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)
 
 
-### RESTEasy Reactive
-
-Easily start your Reactive RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-
-### WebSockets
-
-WebSocket communication channel starter code
-
-[Related guide section...](https://quarkus.io/guides/websockets)
