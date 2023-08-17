@@ -1,4 +1,5 @@
 import {ChangeEvent, SyntheticEvent, useState} from "react";
+import { Button } from "@mantine/core";
 
 function NewObservationPanel() {
 
@@ -12,6 +13,10 @@ function NewObservationPanel() {
             targetSpaceFrame:"placeHolder",
             targetPositionEpoch:"placeHolder"
         });
+
+    function MantineButton(){
+        return <Button>mantine button</Button>;
+    }
 
     function handleCreate(event:SyntheticEvent) {
         event.preventDefault();
@@ -208,6 +213,7 @@ function NewObservationPanel() {
     return (
         <div className={""}>
             <h3>Create an Observation</h3>
+            <MantineButton/>
             <form>
                 <DisplayObservationType/>
 
