@@ -7,9 +7,9 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.ivoa.dm.proposal.prop.Person;
 import org.orph2020.pst.apiimpl.entities.SubjectMap;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 
 @RegisterRestClient(configKey="proposal-api")
 public interface UserInfo {
