@@ -159,6 +159,7 @@ export type CalibrationTargetIntendedUse =
  * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
  */
 export type CartesianCoordSpace = {
+  "@type"?: string; // coords:CartesianCoordSpace
   axis?: Axis[];
 };
 
@@ -332,6 +333,7 @@ export type Epoch = {
  * A Point on the Unit Sphere
  */
 export type EquatorialPoint = {
+  "@type": string; // coords:EquatorialPoint
   coordSys: CoordSys;
   /**
    * A real value with a unit.
@@ -771,7 +773,6 @@ export type Person = {
  * Abstract head of coordinate spaces related to physical properties.
  */
 export type PhysicalCoordSpace = {
-  "@type": string;
   /**
    * Describes an axis of the coordinate space.
    */
@@ -1053,6 +1054,7 @@ export type Quantity = {
  * A real value with a unit.
  */
 export type RealQuantity = {
+  "@type": string; // ivoa:RealQuantity
   /**
    * Must conform to definition of unit in VOUnit spec.
    */
@@ -1190,6 +1192,7 @@ export type SolarSystemTarget = {
  * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
  */
 export type SpaceFrame = {
+  "@type": string; // coords:SpaceFrame
   /**
    * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
    */
@@ -1212,7 +1215,7 @@ export type SpaceFrame = {
  * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
  */
 export type SpaceSys = {
-  "@type": string;
+  "@type": string; // coords:SpaceSys
   /**
    * Abstract head of coordinate spaces related to physical properties.
    */
@@ -1349,7 +1352,6 @@ export type TacRole = "TECHNICALREVIEWER" | "SCIENCEREVIEWER" | "CHAIR";
  * A target source
  */
 export type Target = {
-  "@type"?: string;
   /**
    * A common name for the source
    */
