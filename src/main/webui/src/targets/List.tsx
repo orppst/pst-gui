@@ -13,6 +13,7 @@ import {
 } from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useNavigate} from "react-router-dom";
+import AddTargetPanel from "./New";
 
 function TargetPanel() {
     const { selectedProposalCode} = useContext(ProposalContext);
@@ -27,17 +28,17 @@ function TargetPanel() {
             </div>
         );
     }
-
+/*
     function handleAddNew(event: SyntheticEvent) {
         event.preventDefault();
         navigate(  "new");
     }
-
+*/
     return (
             <div>
                 <h3>Add and edit targets</h3>
                 <div>
-                    <button className={"btn btn-primary"} onClick={handleAddNew} >Add New</button>
+                    <AddTargetPanel/>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
                                 return (<RenderTarget proposalCode={selectedProposalCode} row={item} key={item.dbid}/>)

@@ -1,5 +1,10 @@
-import {SyntheticEvent, useContext, useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+// Test a mantine modal
+
+import { Modal } from "@mantine/core";
+import { useForm, UseFormReturnType } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import {ReactNode, useContext} from "react";
+
 import {
     CartesianCoordSpace,
     CelestialTarget,
@@ -12,31 +17,21 @@ import {useQueryClient} from "@tanstack/react-query";
 import {ProposalContext} from "../App2.tsx";
 
 /*
-    Could use http://www.skymaponline.net to show target?
-    Could use Aladin lite to locate target?
+    Could use Aladin lite, Simbad, or http://www.skymaponline.net resources here?
 
  */
 
-function AddTargetPanel() {
-    const [formData, setFormData] = useState( {type: "CelestialTarget"});
+const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
+    const form = useForm({
+        initialValues: props.initialValues ?? {
+            TargetName: ""
+        }
+    });
     const queryClient = useQueryClient();
-    const navigate = useNavigate();
     const { selectedProposalCode} = useContext(ProposalContext);
 
-    function handleCancel(event: SyntheticEvent) {
-        event.preventDefault();
-        navigate("../",{relative:"path"})
-    }
-
-    function handleChange(event : SyntheticEvent<HTMLInputElement|HTMLSelectElement>) {
-        setFormData({
-            ...formData,
-            [event.currentTarget.name] : event.currentTarget.value
-        });
-    }
-
-    function handleAdd(event: SyntheticEvent) {
-        event.preventDefault();
+    const handleSubmit = form.onSubmit((val) => {
+        console.log(form.values);
 
         const coordSpace: CartesianCoordSpace = {
             "@type": "coords:CartesianCoordSpace",
@@ -67,7 +62,7 @@ function AddTargetPanel() {
 
         const Targ: CelestialTarget = {
             "@type": "proposal:CelestialTarget",
-            sourceName: "Random fake source #"+Math.floor(Math.random()*999),
+            sourceName: form.values.TargetName,
             sourceCoordinates: sourceCoords,
             positionEpoch: {value: "J2000.0"},
             "pmRA": {"@type": "ivoa:RealQuantity", unit: {}, value: 0},
@@ -76,30 +71,42 @@ function AddTargetPanel() {
             "sourceVelocity": {"@type": "ivoa:RealQuantity", unit: {}, value: 0}
         }
 
-        console.log(JSON.stringify(Targ,null,2));
-
         fetchProposalResourceAddNewTarget({pathParams:{proposalCode: selectedProposalCode}, body: Targ})
             .then(() => {return queryClient.invalidateQueries()})
-            .then(() => navigate(  "../", {relative:"path"}))
+            .then(() => {props.onSubmit?.(val)})
             .catch(console.log);
 
-    }
+    });
 
     return (
-        <div>
-            <h3>Add a random fake target</h3>
-            <form>
-                <div className={"form-group"}>
-                    <label>Type</label>
-                    <select className={"form-control"} name="type" onChange={handleChange}>
-                        <option value="CelestialTarget">Celestial</option>
-                    </select>
-                </div>
-                <button className={"btn btn-primary"} onClick={handleAdd}>Add</button>
-            </form>
-            <button className={"btn"} onClick={handleCancel}>Cancel</button>
-        </div>
+        <form onSubmit={handleSubmit}>
+            <input {...form.getInputProps("TargetName")} />
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    );
+};
+
+export default function AddTargetPanel() {
+    const [opened, { close, open }] = useDisclosure();
+    return (
+        <>
+            <button className={"btn btn-primary"} onClick={open}>Add New</button>
+            <Modal title="Target name form" opened={opened} onClose={close}>
+                <TargetForm
+                    onSubmit={() => {
+                        close();
+                    }}
+                />
+            </Modal>
+        </>
     );
 }
 
-export default AddTargetPanel
+export type FormPropsType<T> = {
+    initialValues?: T;
+    onSubmit?: (values: T, form?: UseFormReturnType<T>) => void;
+    actions?: ReactNode;
+};
+
