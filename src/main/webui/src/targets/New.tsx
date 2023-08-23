@@ -1,6 +1,6 @@
 // Test a mantine modal
 
-import { Modal } from "@mantine/core";
+import {Modal, TextInput} from "@mantine/core";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {ReactNode, useContext} from "react";
@@ -25,12 +25,16 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
     const form = useForm({
         initialValues: props.initialValues ?? {
             TargetName: ""
+        },
+        validate: {
+            TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null),
         }
     });
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useContext(ProposalContext);
 
     const handleSubmit = form.onSubmit((val) => {
+        form.validate();
         console.log(form.values);
 
         const coordSpace: CartesianCoordSpace = {
@@ -80,7 +84,11 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <input {...form.getInputProps("TargetName")} />
+            <TextInput
+                withAsterisk
+                label="Name"
+                placeholder="name of target"
+                {...form.getInputProps("TargetName")} />
             <div>
                 <button type="submit">Submit</button>
             </div>
@@ -93,7 +101,7 @@ export default function AddTargetPanel() {
     return (
         <>
             <button className={"btn btn-primary"} onClick={open}>Add New</button>
-            <Modal title="Target name form" opened={opened} onClose={close}>
+            <Modal title="New target    " opened={opened} onClose={close}>
                 <TargetForm
                     onSubmit={() => {
                         close();
