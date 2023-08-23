@@ -24,14 +24,6 @@ diff --git a/src/main/webui/src/generated/proposalToolSchemas.ts b/src/main/webu
    /**
     * A real value with a unit.
     */
-@@ -494,6 +496,7 @@
- };
-
- export type Investigator = {
-+  "@type"?: string;
-   type?: InvestigatorKind;
-   /**
-    * is the investigator making proposal for their PhD
 @@ -645,6 +648,7 @@
   * a complete proposal
   */
