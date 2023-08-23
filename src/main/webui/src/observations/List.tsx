@@ -4,6 +4,7 @@ import {
     useObservationResourceGetObservations,
 } from "../generated/proposalToolComponents";
 import {useNavigate} from "react-router-dom";
+import {ObservationsNewModal} from "./observations.new.modal.tsx";
 
 function ObservationsPanel() {
 
@@ -27,15 +28,10 @@ function ObservationsPanel() {
             );
         }
 
-        function handleAddNew(event: SyntheticEvent) {
-            event.preventDefault();
-            navigate( "new");
-        }
-
         return (
             <div>
-                <button className={"btn btn-primary"} onClick={handleAddNew} >Add New</button>
                 <h3>This where observations will be managed</h3>
+                <ObservationsNewModal />
                 <fieldset>
                     {isLoading ? (`Loading...`)
                         : (
