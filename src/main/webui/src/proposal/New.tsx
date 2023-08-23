@@ -26,7 +26,6 @@ type ss = {
 
         //Add the current user as the PI
         const investigator : Investigator = {
-            "@type": "proposal:Investigator",
             "type": "PI",
             "person": user
         };
