@@ -50,7 +50,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --base=/pst/gui/",
     "start": "vite --host 0.0.0.0  --base=/pst/gui/",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --base=/pst/gui/",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "gen": "openapi-codegen gen proposalTool"
