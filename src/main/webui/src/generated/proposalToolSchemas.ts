@@ -1352,6 +1352,7 @@ export type TacRole = "TECHNICALREVIEWER" | "SCIENCEREVIEWER" | "CHAIR";
  * A target source
  */
 export type Target = {
+  "@type"?: string;
   /**
    * A common name for the source
    */
