@@ -1,6 +1,6 @@
 // Test a mantine modal
 
-import {Modal, TextInput} from "@mantine/core";
+import { Modal, NumberInput, Radio, TextInput} from "@mantine/core";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {ReactNode, useContext} from "react";
@@ -21,13 +21,17 @@ import {ProposalContext} from "../App2.tsx";
 
  */
 
-const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
+const TargetForm = (props: FormPropsType<{ TargetName: string, lat: number, lon: number }>) => {
     const form = useForm({
         initialValues: props.initialValues ?? {
-            TargetName: ""
+            TargetName: "",
+            lat: 0,
+            lon: 0
         },
         validate: {
             TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null),
+            lat: (value: number) => (value < -90.0 || value > 90.0 ? 'Lat must be within +/-90°' : null),
+            lon: (value: number) => (value < -180.0 || value > 180.0 ? 'Lon must be within +/-180°' : null),
         }
     });
     const queryClient = useQueryClient();
@@ -60,8 +64,8 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: coordSys,
-            lat: {"@type": "ivoa:RealQuantity", value: Math.floor(Math.random()*180), unit: {value: "degrees"}},
-            lon: {"@type": "ivoa:RealQuantity", value: Math.floor(Math.random()*90), unit: {value: "degrees"}}
+            lat: {"@type": "ivoa:RealQuantity", value: form.values.lat, unit: {value: "degrees"}},
+            lon: {"@type": "ivoa:RealQuantity", value: form.values.lon, unit: {value: "degrees"}}
         }
 
         const Targ: CelestialTarget = {
@@ -89,6 +93,19 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
                 label="Name"
                 placeholder="name of target"
                 {...form.getInputProps("TargetName")} />
+            <NumberInput
+                withAsterisk
+                label="Latitude"
+                precision={5} min={-90.0} max={90.0} step={0.00001}
+                {...form.getInputProps("lat")} />
+            <NumberInput
+                withAsterisk
+                label="Longitude"
+                precision={5} min={-180.0} max={180.0} step={0.00001}
+                {...form.getInputProps("lon")} />
+            <p> Space frame </p>
+                <Radio checked label="ICRS" value="ICRS" />
+                <Radio disabled label="Geocentric" value="GEOCENTRIC" />
             <div>
                 <button type="submit">Submit</button>
             </div>

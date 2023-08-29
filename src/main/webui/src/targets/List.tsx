@@ -1,4 +1,4 @@
-import {SyntheticEvent, useContext, useState} from "react";
+import { useContext, useState} from "react";
 import {ProposalContext} from '../App2.tsx'
 import {
     fetchProposalResourceRemoveTarget,
@@ -12,12 +12,10 @@ import {
     SpaceFrame,
 } from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {useNavigate} from "react-router-dom";
 import AddTargetPanel from "./New";
 
 function TargetPanel() {
     const { selectedProposalCode} = useContext(ProposalContext);
-    const navigate = useNavigate();
 
     const {  data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
 
