@@ -32,12 +32,14 @@ export type UserContextType = {
 
 export type ProposalContextType = {
     selectedProposalCode: number;
+    apiUrl: string;
 }
 
 export const ProposalContext = createContext<UserContextType & ProposalContextType>({
     user: {},
     token:"",
     selectedProposalCode: 0,
+    apiUrl:"http://api" // obviously false as a placeholder
 })
 
 export const useToken = () => {
@@ -45,6 +47,11 @@ export const useToken = () => {
 
     return token;
 };
+export const useApiUrl = () => {
+    const { apiUrl } = useContext(ProposalContext);
+    return apiUrl;
+};
+
 
 function App2() {
     const historyProposalCode= 0;
@@ -85,9 +92,9 @@ function App2() {
    );
 
     function PSTRoot() {
-        const {user, token} = useContext(ProposalContext)
+        const {user, token, apiUrl} = useContext(ProposalContext)
         return (
-            <ProposalContext.Provider value={{selectedProposalCode, user, token}}>
+            <ProposalContext.Provider value={{selectedProposalCode, user, token, apiUrl}}>
                 <nav className={"navbar navbar-inverse"}>
                     <div className={"container-fluid"}>
                         <div className={"navbar-header"}>

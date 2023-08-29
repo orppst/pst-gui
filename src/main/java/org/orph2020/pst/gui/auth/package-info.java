@@ -5,4 +5,4 @@
 /**
  * some experiments in AAI.
  */
-package org.orph2020.pst.auth;
+package org.orph2020.pst.gui.auth;

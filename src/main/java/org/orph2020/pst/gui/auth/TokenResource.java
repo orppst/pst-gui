@@ -1,4 +1,4 @@
-package org.orph2020.pst.auth;
+package org.orph2020.pst.gui.auth;
 /*
  * Created on 06/04/2023 by Paul Harrison (paul.harrison@manchester.ac.uk).
  */

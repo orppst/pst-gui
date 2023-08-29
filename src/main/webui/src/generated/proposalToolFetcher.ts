@@ -1,6 +1,12 @@
 import { ProposalToolContext } from "./proposalToolContext";
 
-const baseUrl = "http://localhost:8084"; // TODO need to set from config somehow...
+let baseUrl = "http://localhost:8084";
+
+export function setFetcherApiURL(url:string)//this is called when authenticating.
+{
+  baseUrl = url;
+  console.log("setting API url to "+ url)
+}
 
 export type ErrorWrapper<TError> =
   | TError

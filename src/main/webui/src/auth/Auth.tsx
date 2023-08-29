@@ -1,6 +1,7 @@
 import {ReactNode, useEffect, useState} from "react";
 import {Person, SubjectMap} from "../generated/proposalToolSchemas.ts";
 import {ProposalContext} from "../App2.tsx";
+import {setFetcherApiURL} from "../generated/proposalToolFetcher.ts";
 
 export type AuthMapping = {
     subjectMap:SubjectMap;
@@ -13,7 +14,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [token,setToken] = useState<string>("")//TODO what to do if token bad....
     const [loggedOn, setLoggedOn] = useState(false);
     const [user, setUser] = useState({fullName:"Unknown"} as Person)
+    const [apiURL, setApiURL] = useState<string>("")
     async function getUser() {
+        const apiResponse = await window.fetch("/pst/gui/api-info")
+        const localbaseUrl = await apiResponse.text()
+        setFetcherApiURL(localbaseUrl)
+        setApiURL(localbaseUrl)
+
         const response = await window.fetch("/pst/gui/aai/"); //IMPL would be nice to have this URL parameterized
         let error;
         if (response.ok) {
@@ -75,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .catch(console.log);
     }, [token, loggedOn])
     return (
-        <ProposalContext.Provider value={{user:user, token:token, selectedProposalCode:0}}>
+        <ProposalContext.Provider value={{user:user, token:token, selectedProposalCode:0, apiUrl:apiURL}}>
             {loggedOn ? (
            <>
                {children}
