@@ -7,10 +7,7 @@ import io.quarkus.runtime.LaunchMode;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.*;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.net.URI;
@@ -36,7 +33,8 @@ public class PathInfo {
       }
       else {
          //when deployed the api is on same server (as far as the client side can see things).
-         return Response.ok(requestUri.resolve("../../../")).build();
+         URI uriLoc = UriBuilder.fromUri(requestUri.resolve("../../../")).scheme("https").build();
+         return Response.ok(uriLoc).build();
       }
    }
 }
