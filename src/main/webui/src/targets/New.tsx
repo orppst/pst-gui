@@ -1,9 +1,9 @@
 // Test a mantine modal
 
-import { Modal, NumberInput, Radio, TextInput} from "@mantine/core";
+import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import {ReactNode, useContext} from "react";
+import {ReactNode, useContext, useState} from "react";
 
 import {
     CartesianCoordSpace,
@@ -12,7 +12,10 @@ import {
     EquatorialPoint,
     SpaceFrame
 } from "../generated/proposalToolSchemas.ts";
-import {fetchProposalResourceAddNewTarget} from "../generated/proposalToolComponents.ts";
+import {
+    fetchProposalResourceAddNewTarget,
+    fetchSimbadResourceSimbadFindTarget
+} from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {ProposalContext} from "../App2.tsx";
 
@@ -21,12 +24,14 @@ import {ProposalContext} from "../App2.tsx";
 
  */
 
-const TargetForm = (props: FormPropsType<{ TargetName: string, lat: number, lon: number }>) => {
+const TargetForm = (props: FormPropsType<{ TargetName: string, lat: number, lon: number , SpaceFrame: string}>) => {
     const form = useForm({
         initialValues: props.initialValues ?? {
             TargetName: "",
             lat: 0,
-            lon: 0
+            lon: 0,
+            SpaceFrame: "",
+            boo: "BOO!"
         },
         validate: {
             TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null),
@@ -79,12 +84,17 @@ const TargetForm = (props: FormPropsType<{ TargetName: string, lat: number, lon:
             "sourceVelocity": {"@type": "ivoa:RealQuantity", unit: {}, value: 0}
         }
 
+        fetchSimbadResourceSimbadFindTarget({queryParams: {targetName: form.values.TargetName}})
+            .then((data) => {console.log(data)});
+
         fetchProposalResourceAddNewTarget({pathParams:{proposalCode: selectedProposalCode}, body: Targ})
             .then(() => {return queryClient.invalidateQueries()})
             .then(() => {props.onSubmit?.(val)})
             .catch(console.log);
 
     });
+
+    const [spaceFrame, setSpaceFrame] = useState( "");
 
     return (
         <form onSubmit={handleSubmit}>
@@ -103,9 +113,14 @@ const TargetForm = (props: FormPropsType<{ TargetName: string, lat: number, lon:
                 label="Longitude"
                 precision={5} min={-180.0} max={180.0} step={0.00001}
                 {...form.getInputProps("lon")} />
-            <p> Space frame </p>
-                <Radio checked label="ICRS" value="ICRS" />
-                <Radio disabled label="Geocentric" value="GEOCENTRIC" />
+            <Select  label="Space frame"
+                     placeholder="Pick one"
+                     data={[
+                         { value: 'ICRS', label: 'ICRS' },
+                         { value: 'GEOCENTRIC', label: 'Geocentric' },
+                     ]}
+                     />
+            <TextInput name={"Boo!"} {...form.getInputProps("boo")} />
             <div>
                 <button type="submit">Submit</button>
             </div>

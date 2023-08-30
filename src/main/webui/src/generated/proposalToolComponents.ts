@@ -7281,6 +7281,65 @@ export const useProposalResourceReplaceTitle = (
   );
 };
 
+export type SimbadResourceSimbadFindTargetQueryParams = {
+  targetName?: string;
+};
+
+export type SimbadResourceSimbadFindTargetError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SimbadResourceSimbadFindTargetVariables = {
+  queryParams?: SimbadResourceSimbadFindTargetQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSimbadResourceSimbadFindTarget = (
+  variables: SimbadResourceSimbadFindTargetVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Target,
+    SimbadResourceSimbadFindTargetError,
+    undefined,
+    {},
+    SimbadResourceSimbadFindTargetQueryParams,
+    {}
+  >({ url: "/pst/api/simbad", method: "get", ...variables, signal });
+
+export const useSimbadResourceSimbadFindTarget = <TData = Schemas.Target>(
+  variables: SimbadResourceSimbadFindTargetVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Target,
+      SimbadResourceSimbadFindTargetError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Target,
+    SimbadResourceSimbadFindTargetError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/simbad",
+      operationId: "simbadResourceSimbadFindTarget",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchSimbadResourceSimbadFindTarget(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type SpaceFrameResourceGetSpaceFramePathParams = {
   frameCode: string;
 };
@@ -7672,6 +7731,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/title";
       operationId: "proposalResourceGetObservingProposalTitle";
       variables: ProposalResourceGetObservingProposalTitleVariables;
+    }
+  | {
+      path: "/pst/api/simbad";
+      operationId: "simbadResourceSimbadFindTarget";
+      variables: SimbadResourceSimbadFindTargetVariables;
     }
   | {
       path: "/pst/api/spaceFrames/{frameCode}";
