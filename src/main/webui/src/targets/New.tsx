@@ -1,100 +1,81 @@
 // Test a mantine modal
 
-import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
+import {Modal, TextInput} from "@mantine/core";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import {ReactNode, useContext, useState} from "react";
+import {ReactNode, useContext} from "react";
 
 import {
-    CartesianCoordSpace,
     CelestialTarget,
-    CoordSys,
-    EquatorialPoint,
-    SpaceFrame
+    EquatorialPoint, SimbadTargetResult, SpaceSys,
 } from "../generated/proposalToolSchemas.ts";
 import {
     fetchProposalResourceAddNewTarget,
-    fetchSimbadResourceSimbadFindTarget
+    fetchSimbadResourceSimbadFindTarget, fetchSpaceSystemResourceGetSpaceSystem
 } from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {ProposalContext} from "../App2.tsx";
 
-/*
-    Could use Aladin lite, Simbad, or http://www.skymaponline.net resources here?
-
- */
-
-const TargetForm = (props: FormPropsType<{ TargetName: string, lat: number, lon: number , SpaceFrame: string}>) => {
+const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
     const form = useForm({
         initialValues: props.initialValues ?? {
-            TargetName: "",
-            lat: 0,
-            lon: 0,
-            SpaceFrame: "",
-            boo: "BOO!"
+            TargetName: ""
         },
         validate: {
-            TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null),
-            lat: (value: number) => (value < -90.0 || value > 90.0 ? 'Lat must be within +/-90°' : null),
-            lon: (value: number) => (value < -180.0 || value > 180.0 ? 'Lon must be within +/-180°' : null),
+            TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null)
         }
     });
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useContext(ProposalContext);
 
-    const handleSubmit = form.onSubmit((val) => {
-        form.validate();
-        console.log(form.values);
-
-        const coordSpace: CartesianCoordSpace = {
-            "@type": "coords:CartesianCoordSpace",
-            "axis": []
-        }
-
-        const frame: SpaceFrame = {
-            "@type": "coords:SpaceFrame",
-            "spaceRefFrame": "ICRS",
-            "equinox": {},
-            "planetaryEphem": ""
-        }
-
-        const coordSys: CoordSys = {
-            "@type": "coords:SpaceSys",
-            // FIXME shouldn't have hard coded value
-            "_id": 2,
-            coordSpace: coordSpace,
-            frame: frame
-        }
-
+    function createNewTarget(val :{ TargetName: string }, data: SimbadTargetResult) {
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
-            coordSys: coordSys,
-            lat: {"@type": "ivoa:RealQuantity", value: form.values.lat, unit: {value: "degrees"}},
-            lon: {"@type": "ivoa:RealQuantity", value: form.values.lon, unit: {value: "degrees"}}
+            coordSys: {},
+            lat: {"@type": "ivoa:RealQuantity", value: data.raDegrees, unit: {value: "degrees"}},
+            lon: {"@type": "ivoa:RealQuantity", value: data.decDegrees, unit: {value: "degrees"}}
+        }
+        const Target: CelestialTarget = {
+                "@type": "proposal:CelestialTarget",
+                sourceName: data.targetName,
+                sourceCoordinates: sourceCoords,
+                positionEpoch: {value: data.epoch}
+        };
+
+        function assignSpaceSys(ss: SpaceSys) {
+            if(Target.sourceCoordinates != undefined)
+                if(Target.sourceCoordinates.coordSys != undefined)
+                    Target.sourceCoordinates.coordSys = ss;
         }
 
-        const Targ: CelestialTarget = {
-            "@type": "proposal:CelestialTarget",
-            sourceName: form.values.TargetName,
-            sourceCoordinates: sourceCoords,
-            positionEpoch: {value: "J2000.0"},
-            "pmRA": {"@type": "ivoa:RealQuantity", unit: {}, value: 0},
-            "pmDec": {"@type": "ivoa:RealQuantity", unit: {}, value: 0},
-            "parallax": {"@type": "ivoa:RealQuantity", unit: {}, value: 0},
-            "sourceVelocity": {"@type": "ivoa:RealQuantity", unit: {}, value: 0}
+        if(data.spaceSystemCode != undefined) {
+            fetchSpaceSystemResourceGetSpaceSystem({pathParams: {frameCode: data.spaceSystemCode}})
+                .then((spaceSys) => assignSpaceSys(spaceSys))
+                .then(() => fetchProposalResourceAddNewTarget({pathParams:{proposalCode: selectedProposalCode}, body: Target})
+                    .then(() => {return queryClient.invalidateQueries()})
+                    .then(() => {props.onSubmit?.(val)})
+                    .catch(console.log)
+                )
+                .catch(console.log);
+        } else {
+            console.log("Unable to fetch space system, failed :-(")
+        }
+
+    }
+
+    const handleSubmit = form.onSubmit((val) => {
+        form.validate();
+
+        function notFound() {
+            const choice = window.confirm("Unable to match source " + form.values.TargetName + " try again?");
+            if(!choice)
+                props.onSubmit?.(val);
         }
 
         fetchSimbadResourceSimbadFindTarget({queryParams: {targetName: form.values.TargetName}})
-            .then((data) => {console.log(data)});
-
-        fetchProposalResourceAddNewTarget({pathParams:{proposalCode: selectedProposalCode}, body: Targ})
-            .then(() => {return queryClient.invalidateQueries()})
-            .then(() => {props.onSubmit?.(val)})
-            .catch(console.log);
-
+            .then((data : SimbadTargetResult) => createNewTarget(val, data))
+            .catch(() => notFound());
     });
-
-    const [spaceFrame, setSpaceFrame] = useState( "");
 
     return (
         <form onSubmit={handleSubmit}>
@@ -103,24 +84,6 @@ const TargetForm = (props: FormPropsType<{ TargetName: string, lat: number, lon:
                 label="Name"
                 placeholder="name of target"
                 {...form.getInputProps("TargetName")} />
-            <NumberInput
-                withAsterisk
-                label="Latitude"
-                precision={5} min={-90.0} max={90.0} step={0.00001}
-                {...form.getInputProps("lat")} />
-            <NumberInput
-                withAsterisk
-                label="Longitude"
-                precision={5} min={-180.0} max={180.0} step={0.00001}
-                {...form.getInputProps("lon")} />
-            <Select  label="Space frame"
-                     placeholder="Pick one"
-                     data={[
-                         { value: 'ICRS', label: 'ICRS' },
-                         { value: 'GEOCENTRIC', label: 'Geocentric' },
-                     ]}
-                     />
-            <TextInput name={"Boo!"} {...form.getInputProps("boo")} />
             <div>
                 <button type="submit">Submit</button>
             </div>
