@@ -7297,7 +7297,7 @@ export const fetchSimbadResourceSimbadFindTarget = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    Schemas.Target,
+    Schemas.SimbadTargetResult,
     SimbadResourceSimbadFindTargetError,
     undefined,
     {},
@@ -7305,11 +7305,13 @@ export const fetchSimbadResourceSimbadFindTarget = (
     {}
   >({ url: "/pst/api/simbad", method: "get", ...variables, signal });
 
-export const useSimbadResourceSimbadFindTarget = <TData = Schemas.Target>(
+export const useSimbadResourceSimbadFindTarget = <
+  TData = Schemas.SimbadTargetResult
+>(
   variables: SimbadResourceSimbadFindTargetVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.Target,
+      Schemas.SimbadTargetResult,
       SimbadResourceSimbadFindTargetError,
       TData
     >,
@@ -7319,7 +7321,7 @@ export const useSimbadResourceSimbadFindTarget = <TData = Schemas.Target>(
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    Schemas.Target,
+    Schemas.SimbadTargetResult,
     SimbadResourceSimbadFindTargetError,
     TData
   >(

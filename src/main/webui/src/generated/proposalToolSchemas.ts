@@ -1173,6 +1173,20 @@ export type ScienceSpectralWindow = {
   expectedSpectralLine?: ExpectedSpectralLine[];
 };
 
+export type SimbadTargetResult = {
+  targetName?: string;
+  spaceSystemCode?: string;
+  epoch?: string;
+  /**
+   * @format double
+   */
+  raDegrees?: number;
+  /**
+   * @format double
+   */
+  decDegrees?: number;
+};
+
 /**
  * A constraint that requires that two observations occur simultaneously
  */
