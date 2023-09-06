@@ -4,7 +4,7 @@ import {
     useObservationResourceGetObservations,
 } from "../generated/proposalToolComponents";
 //import {useNavigate} from "react-router-dom";
-import {ObservationsNewModal} from "./observations.new.modal.tsx";
+import ObservationsNewModal from "./observations.new.modal.tsx";
 
 function ObservationsPanel() {
 
