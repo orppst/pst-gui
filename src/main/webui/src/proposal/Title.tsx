@@ -1,25 +1,33 @@
-import {useContext, useState, SyntheticEvent, useEffect} from "react";
-import { ProposalContext} from '../App2'
+import {useState, useEffect} from "react";
 import {
     fetchProposalResourceReplaceTitle,
     ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {Box, Button, TextInput} from "@mantine/core";
+import {useParams} from "react-router-dom";
+import {useForm} from "@mantine/form";
 
 function TitlePanel() {
-    const { selectedProposalCode} = useContext(ProposalContext);
+    const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
-    const [title, setFormData] = useState("")
+    const [title, setTitle] = useState("")
     const { data, error, isLoading, status } = useProposalResourceGetObservingProposalTitle(
-        {pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+        {pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const form = useForm({
+        initialValues: {title: "Loading..."},
+        validate: {
+            title: (value) => (value.length < 1 ? 'Title cannot be blank' : null)
+        }
+    });
 
     const queryClient = useQueryClient()
 
     const mutation = useMutation({
         mutationFn: () => {
             const newTitle : ProposalResourceReplaceTitleVariables = {//IMPL the code generator does not create the correct type signature for API calls where the body is plain text.
-                pathParams: {proposalCode: selectedProposalCode},
+                pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: title,
                 // @ts-ignore
                 headers: {"Content-Type": "text/plain"}
@@ -40,7 +48,8 @@ function TitlePanel() {
 
     useEffect(() => {
         if (status === 'success') {
-            setFormData(data as unknown as string);
+            setTitle(data as unknown as string);
+            form.values.title = data as unknown as string;
         }
     }, [status,data]);
 
@@ -52,30 +61,23 @@ function TitlePanel() {
         );
     }
 
-    const handleSubmit = (e : SyntheticEvent) => {
-        e.preventDefault();
+    const updateTitle = form.onSubmit((val) => {
+        form.validate();
+        setTitle(val.title);
         mutation.mutate();
-    }
-
-    function handleChange(event : SyntheticEvent<HTMLInputElement>) {
-        setFormData(
-             event.currentTarget.value
-        );
-    }
+    });
 
     return (
-        <div>
+        <Box>
             <h3>Update title</h3>
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
-            <form onSubmit={handleSubmit}>
-                <div className={"form-group"}>
-                            <input className={"form-control"} name="title" defaultValue={data} onChange={handleChange} />
-                            <button type="submit" className={"btn btn-primary"}>Update</button>
-                </div>
+            <form onSubmit={updateTitle}>
+                <TextInput name="title" {...form.getInputProps('title')}/>
+                <Button type="submit" >Update</Button>
             </form>
             }
-        </div>
+        </Box>
     );
 
 }

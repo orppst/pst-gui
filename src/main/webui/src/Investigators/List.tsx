@@ -1,20 +1,21 @@
-import {useContext, useState, SyntheticEvent} from "react";
-import {ProposalContext} from '../App2'
-import { useNavigate } from "react-router-dom";
+import {useState, SyntheticEvent} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import {
     fetchInvestigatorResourceRemoveInvestigator,
     useInvestigatorResourceGetInvestigator,
     useInvestigatorResourceGetInvestigators,
 } from "../generated/proposalToolComponents";
 import {useQueryClient} from "@tanstack/react-query";
+import {Box, Button, Grid, Table, Text} from "@mantine/core";
+import {modals} from "@mantine/modals";
 
 type PersonProps = {
     dbid: number
 }
 
 function InvestigatorsPanel() {
-    const { selectedProposalCode} = useContext(ProposalContext) ;
-    const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+    const { selectedProposalCode } = useParams();
+    const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
     const navigate = useNavigate();
 
 
@@ -34,72 +35,80 @@ function InvestigatorsPanel() {
     return (
         <div>
             <h3>Investigators linked to this proposal</h3>
-            <div>
-                <button className={"btn btn-primary"} onClick={handleAddNew} >Add New</button>
+            <Grid>
+                <Grid.Col span={5}>
+                <Button onClick={handleAddNew} >Add New</Button>
                 {isLoading ? (`Loading...`)
                     : data?.map((item) => {
                         if(item.dbid !== undefined) {
                             return (<RenderPerson dbid={item.dbid} key={item.dbid}/>)
                         } else {
-                            return (<div>Undefined Investigator!</div>)
+                            return (<Box>Undefined Investigator!</Box>)
                         }
                     } )
                 }
-            </div>
+                </Grid.Col>
+            </Grid>
         </div>
     );
 }
 
 function RenderPerson(props: PersonProps) {
-    const { selectedProposalCode} = useContext(ProposalContext);
+    const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
-    const tdClass: string = "col-lg-1 col-md-1";
     const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
         {pathParams:
                     {
                         investigatorId: props.dbid,
-                        proposalCode: selectedProposalCode,
+                        proposalCode: Number(selectedProposalCode),
                     },
             });
     const queryClient = useQueryClient();
 
     function handleRemove() {
-        const choice = window.confirm(
-            "Are you sure you want to remove the " + data?.type + " " + data?.person?.fullName + "?"
-        )
-        if(choice) {
-            setSubmitting(true);
-            fetchInvestigatorResourceRemoveInvestigator({pathParams:
-                    {
-                        investigatorId: props.dbid,
-                        proposalCode: selectedProposalCode,
-                    }})
-                .then(()=>setSubmitting(false))
-                .then(()=>queryClient.invalidateQueries())
-                .catch(console.log);
-        }
+        setSubmitting(true);
+        fetchInvestigatorResourceRemoveInvestigator({pathParams:
+                {
+                    investigatorId: props.dbid,
+                    proposalCode: Number(selectedProposalCode),
+                }})
+            .then(()=>setSubmitting(false))
+            .then(()=>queryClient.invalidateQueries())
+            .catch(console.log);
     }
 
+    const openRemoveModal = () =>
+        modals.openConfirmModal({
+            title: 'Remove investigator',
+            centered: true,
+            children: (
+                <Text size="sm">
+                    Are you sure you want to remove {data?.person?.fullName} from this proposal?
+                </Text>
+            ),
+            labels: { confirm: 'Delete', cancel: "Cancel" },
+            confirmProps: { color: 'red' },
+            onConfirm: () => handleRemove(),
+        });
+
     return (
-        <div>
+        <Box>
             {isLoading?(`Loading...`):
                 error?(`Error!`):
                     submitting?(`Removing...`):
                         (
-                            <>
-                            <table className={"table well"}>
+                            <Table>
                                 <tbody>
-                                <tr className={"row"}><td className={tdClass}>Type</td><td>{data?.type}</td></tr>
-                                <tr className={"row"}><td className={tdClass}>Name</td><td>{data?.person?.fullName}</td></tr>
-                                <tr className={"row"}><td className={tdClass}>Email</td><td>{data?.person?.eMail}</td></tr>
-                                <tr className={"row"}><td className={tdClass}>Institute</td><td>{data?.person?.homeInstitute?.name}</td></tr>
-                                <tr className={"row"}><td className={tdClass}></td><td><button className={"btn btn-danger pull-right"} onClick={handleRemove}>Remove</button></td></tr>
+                                <tr><td>Type</td><td>{data?.type}</td></tr>
+                                <tr><td>Name</td><td>{data?.person?.fullName}</td></tr>
+                                <tr><td>Email</td><td>{data?.person?.eMail}</td></tr>
+                                <tr><td>Institute</td><td>{data?.person?.homeInstitute?.name}</td></tr>
+                                <tr><td colSpan={2} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></td></tr>
                                 </tbody>
-                            </table>
-                            </>
+                            </Table>
                         )
             }
-        </div>
+        </Box>
     );
 }
 

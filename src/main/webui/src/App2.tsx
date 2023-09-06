@@ -4,8 +4,6 @@ import {
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
-//import '../scss/styles.scss'
-import 'bootstrap/dist/css/bootstrap.css';
 import TitlePanel from './proposal/Title';
 import TargetPanel from './targets/List';
 import OverviewPanel from "./proposal/Overview";
@@ -13,7 +11,7 @@ import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
 import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
-import {createBrowserRouter, NavLink, Outlet, RouterProvider} from "react-router-dom";
+import {createBrowserRouter, Link, Outlet, RouterProvider} from "react-router-dom";
 import { useHistoryState } from "./useHistoryState";
 import GoalsPanel from "./proposal/Goals";
 import ObservationsPanel from "./observations/List";
@@ -22,6 +20,8 @@ import DocumentsPanel from "./proposal/Documents";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
+import {AppShell, Navbar, Header, Button, NavLink, Anchor, Box, TextInput, ScrollArea, Grid} from "@mantine/core";
+
 
 const queryClient = new QueryClient()
 
@@ -65,17 +65,17 @@ function App2() {
             {path: "/", element: <PSTRoot/>,
                 children: [
                     {index: true, element: <PSTStart/>} ,
-                    { path: "proposal/new", element: <NewProposalPanel setProposalSelectedCode={setProposalSelectedCode}/>},
-                    { path: "proposal/:id", element: <OverviewPanel />},
-                    { path: "proposal/:id/title",element: <TitlePanel />} ,
-                    { path: "proposal/:id/summary",  element: <SummaryPanel />} ,
-                    { path: "proposal/:id/investigators",  element:<InvestigatorsPanel />} ,
-                    { path: "proposal/:id/investigators/new",  element:<AddInvestigatorPanel />} ,
-                    { path: "proposal/:id/targets",  element:<TargetPanel />} ,
-                    { path: "proposal/:id/goals",  element:<GoalsPanel />} ,
-                    { path: "proposal/:id/observations",  element:<ObservationsPanel />} ,
-                    { path: "proposal/:id/observations/new",  element:<NewObservationPanel />} ,
-                    { path: "proposal/:id/documents",  element:<DocumentsPanel />} ,
+                    { path: "proposal/new", element: <NewProposalPanel />},
+                    { path: "proposal/:selectedProposalCode", element: <OverviewPanel />},
+                    { path: "proposal/:selectedProposalCode/title",element: <TitlePanel />} ,
+                    { path: "proposal/:selectedProposalCode/summary",  element: <SummaryPanel />} ,
+                    { path: "proposal/:selectedProposalCode/investigators",  element:<InvestigatorsPanel />} ,
+                    { path: "proposal/:selectedProposalCode/investigators/new",  element:<AddInvestigatorPanel />} ,
+                    { path: "proposal/:selectedProposalCode/targets",  element:<TargetPanel />} ,
+                    { path: "proposal/:selectedProposalCode/goals",  element:<GoalsPanel />} ,
+                    { path: "proposal/:selectedProposalCode/observations",  element:<ObservationsPanel />} ,
+                    { path: "proposal/:selectedProposalCode/observations/new",  element:<NewObservationPanel />} ,
+                    { path: "proposal/:selectedProposalCode/documents",  element:<DocumentsPanel />} ,
                 ]}], {
             basename: "/pst/gui/tool/"
         }
@@ -95,39 +95,23 @@ function App2() {
         const {user, token, apiUrl} = useContext(ProposalContext)
         return (
             <ProposalContext.Provider value={{selectedProposalCode, user, token, apiUrl}}>
-                <nav className={"navbar navbar-inverse"}>
-                    <div className={"container-fluid"}>
-                        <div className={"navbar-header"}>
-                        <span className={"navbar-brand"} >
-                            <NavLink to={"/"}>Proposals for {user.fullName}</NavLink>
-                        </span>
-                        </div>
-                        <ul className={"nav navbar-nav"}>
-                            <li>
-                                <ul className={"nav navbar-nav"}>
-                                    <li>
-                                        <NavLink to={"proposal/new"} className={({ isActive, isPending }) =>
-                                            isPending ? "pending" : isActive ? "active" : ""}>Create New</NavLink>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <ul className={"nav navbar-nav navbar-right"}>
-                            <li><a href="#"><span className={"glyphicon glyphicon-user"}></span> Account</a></li>
-                            <li><a href="/pst/gui/logout"><span className={"glyphicon glyphicon-log-out"}></span> Logout</a></li>
-                        </ul>
-                    </div>
-                </nav>
-                <div className={"row"}>
-                    <div id={"sidebar"} className={"col-lg-2 col-md-2 col-sm-3 col-xs-4 well well-lg"}>
-
-                        <div>Search and filter by</div>
-                        <Proposals/>
-                    </div>
-                    <div className={"col-lg-9 col-md-9 col-sm-8 col-xs-7"}>
-                        <Outlet/>
-                    </div>
-                </div>
+                <AppShell
+                    header={<Header height={60} p="xs">
+                        <Grid>
+                            <Grid.Col span={1}><Anchor component={Link} to={"/"}>Proposals for {user.fullName}</Anchor></Grid.Col>
+                            <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
+                            <Grid.Col offset={8} span={1}><Button disabled>Account</Button></Grid.Col>
+                            <Grid.Col span={1}><Button component={Link} target={"/pst/gui/logout"}>Logout</Button></Grid.Col>
+                        </Grid>
+                    </Header>}
+                    navbar={<Navbar width={{ base: 310 }}>
+                                <Navbar.Section grow component={ScrollArea} width={{ base: 300 }}>
+                                    {<>Search and filter by <Proposals/> </>}
+                                </Navbar.Section>
+                            </Navbar>}
+                    >
+                <Outlet/>
+                </AppShell>
             </ProposalContext.Provider>
         )
     }
@@ -159,44 +143,30 @@ function App2() {
         }
 
         return (
-            <div className={"form-group"}>
+            <Box>
                 <label>Title</label>
-                <input className={"form-control"} value={proposalTitle} onChange={(e) => setProposalTitle(e.target.value)} />
+                <TextInput value={proposalTitle} onChange={(e) => setProposalTitle(e.target.value)} />
                 <label>Investigator name</label>
-                <input className={"form-control"} value={investigatorName} onChange={(e) => setInvestigatorName(e.target.value)} />
+                <TextInput value={investigatorName} onChange={(e) => setInvestigatorName(e.target.value)} />
                 {isLoading ? (
                     <div className={""}>Loading…</div>
                 ) : (
-                    <ul className={""}>
+                    <>
                         {data?.map((item) => (
-                        <li key={item.code} onClick={()=>{setProposalSelectedCode(item.code!)}}>{item.title}{selectedProposalCode===item.code && ChildList()}</li>
+                            <NavLink key={item.code} label={item.title} childrenOffset={30}>
+                                <NavLink to={"proposal/" + item.code} component={Link} label="Overview" />
+                                <NavLink to={"proposal/" + item.code + "/title"} component={Link}label="Title" />
+                                <NavLink to={"proposal/" + item.code + "/summary"} component={Link} label="Summary" />
+                                <NavLink to={"proposal/" + item.code + "/investigators"} component={Link} label="Investigators" />
+                                <NavLink to={"proposal/" + item.code + "/targets"} component={Link} label="Targets" />
+                                <NavLink to={"proposal/" + item.code + "/goals"} component={Link} label="Technical Goals" />
+                                <NavLink to={"proposal/" + item.code + "/observations"} component={Link} label="Observations" />
+                                <NavLink to={"proposal/" + item.code + "/documents"}  component={Link} label="Documents" />
+                            </NavLink>
                         ))}
-                    </ul>
+                    </>
                 )}
-            </div>
-        );
-    }
-
-    function ChildList() {
-        return (
-            <ul>
-                <li><NavLink to={"proposal/" + selectedProposalCode} className={({ isActive, isPending }) =>
-                    isPending ? "pending" : isActive ? "active" : ""}>Overview</NavLink></li>
-                <li><NavLink to={"proposal/" + selectedProposalCode + "/title"} className={({ isActive, isPending }) =>
-                    isPending ? "pending" : isActive ? "active" : ""}>Title</NavLink></li>
-                <li><NavLink to={"proposal/" + selectedProposalCode + "/summary"} className={({ isActive, isPending }) =>
-                    isPending ? "pending" : isActive ? "active" : ""}>Summary</NavLink></li>
-                <li><NavLink to={"proposal/" + selectedProposalCode + "/investigators"} className={({ isActive, isPending }) =>
-                    isPending ? "pending" : isActive ? "active" : ""}>Investigators</NavLink></li>
-                <li><NavLink to={"proposal/" + selectedProposalCode + "/targets"} className={({ isActive, isPending }) =>
-                    isPending ? "pending" : isActive ? "active" : ""}>Targets</NavLink></li>
-                <li><NavLink to={"proposal/" + selectedProposalCode + "/goals"} className={({ isActive, isPending }) =>
-                    isPending ? "pending" : isActive ? "active" : ""}>Technical Goals</NavLink></li>
-                <li><NavLink to={"proposal/" + selectedProposalCode + "/observations"} className={({ isActive, isPending }) =>
-                    isPending ? "pending" : isActive ? "active" : ""}>Observations</NavLink></li>
-                <li><NavLink to={"proposal/" + selectedProposalCode + "/documents"} className={({ isActive, isPending }) =>
-                    isPending ? "pending" : isActive ? "active" : ""}>Documents</NavLink></li>
-            </ul>
+            </Box>
         );
     }
 

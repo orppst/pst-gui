@@ -1,26 +1,38 @@
-import { useContext, useState,SyntheticEvent} from "react";
+import { useContext, useState } from "react";
 import {ProposalContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
+import {Box, Button, Select, Textarea, TextInput} from "@mantine/core";
+import {useForm} from "@mantine/form";
+import {useQueryClient} from "@tanstack/react-query";
 
-//IMPL is there not more concise way to set properties for component than this?
-type ss = {
-    setProposalSelectedCode : (i:number)=>void;
-}
+const kindData = [{value: "STANDARD", label: "Standard"}, {value: "TOO", label: "T.O.O"}, {value: "SURVEY", label: "Survey"}];
+const defaultKind : ProposalKind = "STANDARD";
 
- function NewProposalPanel({setProposalSelectedCode}:ss) {
+
+
+ function NewProposalPanel() {
     const { user} = useContext(ProposalContext) ;
-    const [formData, setFormData] = useState( {title:"Empty", summary:"Empty", kind:"STANDARD" as ProposalKind});
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
+    const queryClient = useQueryClient()
+    const form = useForm({
+        initialValues: {
+            title: "",
+            summary: "",
+            kind: defaultKind,
+        },
+        validate: {
+            title: (value) => (value.length < 1 ? 'Title cannot be blank' : null),
+            summary: (value) => (value.length < 1 ? 'Your summary cannot be blank' : null)
+        }
+    });
 
-     const kindOptions = ["Standard", "TOO", "Survey"];
-
-     function handleSubmit(event: SyntheticEvent) {
-        event.preventDefault();
+     const createNewObservingProposal = form.onSubmit((val) => {
+        form.validate();
 
         setSubmitting(true);
 
@@ -31,51 +43,37 @@ type ss = {
         };
 
         const newProposal :ObservingProposal = {
-            ...formData,
+            ...val,
             "investigators": [investigator]
         };
 
         fetchProposalResourceCreateObservingProposal({ body: newProposal})
             .then((data) => {
-                setSubmitting(false);
-                setProposalSelectedCode(data?._id!)
+                queryClient.invalidateQueries(["pst","api","proposals"])
+                        .then(() => setSubmitting(false));
                 navigate("/proposal/" + data?._id);
             })
             .catch(console.log);
-    }
-
-    function handleChange(event: SyntheticEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) {
-        setFormData({
-            ...formData,
-            [event.currentTarget.name] : event.currentTarget.value
-        });
-    }
+    });
 
      return (
-        <div className={""}>
+        <Box>
             <h3>Create Proposal</h3>
             {submitting &&
                 <div>Submitting request</div>
             }
-            <form onSubmit={handleSubmit}>
-                <div className={"form-group"}>
-                    <label>Title</label>
-                    <input className={"form-control"} name="title" onChange={handleChange} />
-                </div>
-                <div className={"form-group"}>
-                    <label>Summary</label>
-                    <textarea className={"form-control"} rows={3} name="summary" onChange={handleChange} />
-                </div>
-                <div className={"form-group"}>
-                    <label>Kind<br/></label>
-                    <select className={"form-control"} name="kind" onChange={handleChange}>
-                        { kindOptions.map((opt)=>(<option key={opt.toUpperCase()} value={opt.toUpperCase()}>{opt}</option>)) }
-
-                 </select>
-                </div>
-                <button className={"btn btn-primary"} type="submit" >Create</button>
+            <form onSubmit={createNewObservingProposal}>
+                <Box>
+                <TextInput name="title" placeholder="Give your proposal a title" withAsterisk label={"Title"} {...form.getInputProps("title")}/>
+                <Textarea rows={3} name="summary" placeholder="A brief summary" withAsterisk label={"Summary"} {...form.getInputProps("summary")} />
+                <Select label={"Kind"}
+                    data={kindData}
+                    {...form.getInputProps("kind")}
+                    />
+                </Box>
+                <Button type="submit">Create</Button>
             </form>
-        </div>
+        </Box>
     );
 }
 

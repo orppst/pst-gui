@@ -5,12 +5,17 @@
   "type": "module",
   "homepage": "https://kilburn.jb.man.ac.uk/pst/gui/",
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@mantine/core": "^6.0.20",
+    "@mantine/form": "^6.0.20",
+    "@mantine/hooks": "^6.0.20",
+    "@mantine/modals": "^6.0.20",
+    "@mantine/notifications": "^6.0.20",
     "@popperjs/core": "^2.11.8",
     "@rjsf/core": "^5.0.0-beta.15",
     "@rjsf/utils": "^5.0.0-beta.15",
     "@rjsf/validator-ajv8": "^5.0.0-beta.15",
     "@tanstack/react-query": "^4.29.7",
-    "bootstrap": "3.3.7",
     "buffer": "^6.0.3",
     "namor": "^3.0.1",
     "react": "^18.2.0",
@@ -19,13 +24,7 @@
     "react-router-dom": "^6.14.0",
     "react-table": "^7.8.0",
     "semantic-ui-react": "^2.1.4",
-    "web-vitals": "^2.1.0",
-    "@mantine/core": "^6.0.19",
-    "@mantine/hooks": "^6.0.19",
-    "@mantine/modals": "^6.0.19",
-    "@mantine/form": "^6.0.19",
-    "@mantine/notifications": "^6.0.19",
-    "@emotion/react": "^11.11.1"
+    "web-vitals": "^2.1.0"
   },
   "devDependencies": {
     "@openapi-codegen/cli": "^2.0.0",

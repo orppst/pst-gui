@@ -1,6 +1,6 @@
 // Test a mantine modal
 
-import {Modal, TextInput} from "@mantine/core";
+import {Button, Modal, TextInput} from "@mantine/core";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {ReactNode, useContext} from "react";
@@ -85,7 +85,7 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
                 placeholder="name of target"
                 {...form.getInputProps("TargetName")} />
             <div>
-                <button type="submit">Submit</button>
+                <Button type="submit">Submit</Button>
             </div>
         </form>
     );

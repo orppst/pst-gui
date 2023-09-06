@@ -1,24 +1,32 @@
-import { useContext, useState, SyntheticEvent } from "react";
-import {ProposalContext} from '../App2'
+import {useState, useEffect} from "react";
 import {
     fetchProposalResourceReplaceSummary,
     ProposalResourceReplaceSummaryVariables,
     useProposalResourceGetObservingProposal,
 } from "../generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useParams} from "react-router-dom";
+import {Box, Button, Textarea} from "@mantine/core";
+import {useForm} from "@mantine/form";
 
 function SummaryPanel() {
-    const { selectedProposalCode} = useContext(ProposalContext) ;
-    const { data , error, isLoading } = useProposalResourceGetObservingProposal({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
-    const [summary, setFormData] = useState( "");
+    const { selectedProposalCode } = useParams();
+    const { data , error, isLoading , status} = useProposalResourceGetObservingProposal({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const [summary, setSummary] = useState( "");
     const [submitting, setSubmitting] = useState(false);
+    const form = useForm({
+        initialValues: {summary: "Loading..."},
+        validate: {
+            summary: (value) => (value.length < 1 ? 'Your summary cannot be empty' : null)
+        }
+    });
 
     const queryClient = useQueryClient()
 
     const mutation = useMutation({
             mutationFn: () => {
                 const newSummary: ProposalResourceReplaceSummaryVariables = {
-                    pathParams: {proposalCode: selectedProposalCode},
+                    pathParams: {proposalCode: Number(selectedProposalCode)},
                     body: summary,
                     // @ts-ignore
                     headers: {"Content-Type": "text/plain"}
@@ -38,6 +46,15 @@ function SummaryPanel() {
             }
         }
     );
+
+    useEffect(() => {
+        if (status === 'success') {
+            setSummary(data.summary as string);
+            form.values.summary = data.summary as string;
+        }
+    }, [status,data]);
+
+
     if (error) {
         return (
             <div>
@@ -46,34 +63,25 @@ function SummaryPanel() {
         );
     }
 
-    const handleSubmit = (e: SyntheticEvent) => {
-        e.preventDefault();
+    const updateSummary = form.onSubmit((val) => {
+        form.validate();
+        setSummary(val.summary);
         mutation.mutate();
-    }
-
-
-
-    function handleChange(event : SyntheticEvent<HTMLTextAreaElement>) {
-        setFormData(
-            event.currentTarget.value
-        );
-    }
+    });
 
     return (
-        <div>
+        <Box>
             <h3>Update summary</h3>
             {isLoading ? <div>loading...</div>:
               submitting ?
                 <div>Submitting request</div> :
 
-            <form onSubmit={handleSubmit}>
-                <div className={"form-group"}>
-                    <textarea className={"form-control"} rows={3} name="summary" defaultValue={`${data?.summary}`} onChange={handleChange} />
-                    <button type="submit" className="btn btn-primary">Update</button>
-                </div>
+            <form onSubmit={updateSummary}>
+                <Textarea rows={3} name="summary" {...form.getInputProps('summary')} />
+                <Button type="submit" >Update</Button>
             </form>
             }
-        </div>
+        </Box>
     );
 
 }

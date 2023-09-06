@@ -1,19 +1,19 @@
-import {useContext,  useState, SyntheticEvent} from "react";
-import {ProposalContext} from "../App2";
+import { useState, SyntheticEvent} from "react";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
     usePersonResourceGetPeople,
 } from "../generated/proposalToolComponents";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "../generated/proposalToolSchemas.ts";
+import {Box, Button} from "@mantine/core";
 
 function AddInvestigatorPanel() {
     const [formData, setFormData] = useState( {type: "COI" as InvestigatorKind, forPhD: false, selectedInvestigator: 0});
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
-    const { selectedProposalCode} = useContext(ProposalContext);
+    const { selectedProposalCode } = useParams();
     const queryClient = useQueryClient();
     const { data, error, isLoading } = usePersonResourceGetPeople(
         {
@@ -44,7 +44,7 @@ function AddInvestigatorPanel() {
         //Get full investigator from API and add back to proposal
         fetchPersonResourceGetPerson({pathParams:{id: formData.selectedInvestigator}})
             .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
-                {pathParams:{proposalCode: selectedProposalCode},
+                {pathParams:{proposalCode: Number(selectedProposalCode)},
                     body:{
                         type: formData.type,
                         forPhD: formData.forPhD,
@@ -65,41 +65,35 @@ function AddInvestigatorPanel() {
     }
 
     return (
-            <div>
+            <Box>
                 <h3>Add and new investigator</h3>
                 <form>
-                    <div className={"form-group"}>
-                        <label>Type</label>
-                        <select className={"form-control"} name="type" onChange={handleChange}>
-                            <option value="COI">CO-I</option>
-                            <option value="PI">PI</option>
-                        </select>
-                    </div>
-                    <div className={"form-group"}>
-                        <label>Is this for a PHD?</label>
-                        <input className={"form-control"} type="checkbox" id="forPhD" name="forPhD" value="true" onChange={handleChange}/>
-                        <label htmlFor="forPhD">Yes</label>
-                    </div>
-                    <div className={"form-group"}>
-                        <legend>Select an investigator</legend>
-                        <label>Filter names</label>
-                        <input className={"form-control"} value={query} onChange={(e) => setQuery(e.target.value)}/>
-                        <label>Investigators</label>
-                        <select className={"form-control"} name="selectedInvestigator" onChange={handleChange}>
-                            <option value="">--Please choose one--</option>
-                            {isLoading ? (
-                                <option>Loading…</option>
-                            ) :
-                                data?.map((item) => (
-                                    <option key={item.dbid} value={item.dbid}>{item.name}</option>
-                                )
-                            )}
-                        </select>
-                    </div>
-                    <button className={"btn btn-primary"} onClick={handleAdd}>Add</button>
+                    <label>Type</label>
+                    <select name="type" onChange={handleChange}>
+                        <option value="COI">CO-I</option>
+                        <option value="PI">PI</option>
+                    </select>
+                    <label>Is this for a PHD?</label>
+                    <input type="checkbox" id="forPhD" name="forPhD" value="true" onChange={handleChange}/>
+                    <label htmlFor="forPhD">Yes</label>
+                    <legend>Select an investigator</legend>
+                    <label>Filter names</label>
+                    <input value={query} onChange={(e) => setQuery(e.target.value)}/>
+                    <label>Investigators</label>
+                    <select name="selectedInvestigator" onChange={handleChange}>
+                        <option value="">--Please choose one--</option>
+                        {isLoading ? (
+                            <option>Loading…</option>
+                        ) :
+                            data?.map((item) => (
+                                <option key={item.dbid} value={item.dbid}>{item.name}</option>
+                            )
+                        )}
+                    </select>
+                    <Button onClick={handleAdd}>Add</Button>
                 </form>
-                <button className={"btn"} onClick={handleCancel}>Cancel</button>
-            </div>
+                <Button onClick={handleCancel}>Cancel</Button>
+            </Box>
     )
 
 }

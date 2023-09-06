@@ -1,12 +1,11 @@
-import { useContext } from "react";
-import {ProposalContext} from '../App2'
+import { useParams } from "react-router-dom"
 import {
     useProposalResourceGetObservingProposal,
 } from "../generated/proposalToolComponents";
 
 function OverviewPanel() {
-    const { selectedProposalCode } = useContext(ProposalContext);
-    const { data , error, isLoading } = useProposalResourceGetObservingProposal({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+    const { selectedProposalCode } = useParams();
+    const { data , error, isLoading } = useProposalResourceGetObservingProposal({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
 
     if (error) {
         return (
