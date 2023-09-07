@@ -1,5 +1,4 @@
-import { useContext, useState} from "react";
-import {ProposalContext} from '../App2.tsx'
+import { useState} from "react";
 import {
     fetchProposalResourceRemoveTarget,
     useProposalResourceGetTarget,
@@ -13,11 +12,12 @@ import {
 } from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import AddTargetPanel from "./New";
+import {useParams} from "react-router-dom";
 
 function TargetPanel() {
-    const { selectedProposalCode} = useContext(ProposalContext);
+    const { selectedProposalCode} = useParams();
 
-    const {  data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+    const {  data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
 
     if (error) {
         return (
@@ -26,12 +26,7 @@ function TargetPanel() {
             </div>
         );
     }
-/*
-    function handleAddNew(event: SyntheticEvent) {
-        event.preventDefault();
-        navigate(  "new");
-    }
-*/
+
     return (
             <div>
                 <h3>Add and edit targets</h3>
@@ -39,7 +34,7 @@ function TargetPanel() {
                     <AddTargetPanel/>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
-                                return (<RenderTarget proposalCode={selectedProposalCode} row={item} key={item.dbid}/>)
+                                return (<RenderTarget proposalCode={Number(selectedProposalCode)} row={item} key={item.dbid}/>)
                             } )
                     }
                 </div>

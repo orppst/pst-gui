@@ -56,7 +56,7 @@ export const useApiUrl = () => {
 function App2() {
     const historyProposalCode= 0;
 
-    const [selectedProposalCode, setProposalSelectedCode] = useState(historyProposalCode)
+    const [selectedProposalCode] = useState(historyProposalCode)
 
 
 

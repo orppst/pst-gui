@@ -3,7 +3,7 @@
 import {Button, Modal, TextInput} from "@mantine/core";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import {ReactNode, useContext} from "react";
+import {ReactNode} from "react";
 
 import {
     CelestialTarget,
@@ -14,7 +14,7 @@ import {
     fetchSimbadResourceSimbadFindTarget, fetchSpaceSystemResourceGetSpaceSystem
 } from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {ProposalContext} from "../App2.tsx";
+import {useParams} from "react-router-dom";
 
 const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
     const form = useForm({
@@ -26,7 +26,7 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
         }
     });
     const queryClient = useQueryClient();
-    const { selectedProposalCode} = useContext(ProposalContext);
+    const { selectedProposalCode} = useParams();
 
     function createNewTarget(val :{ TargetName: string }, data: SimbadTargetResult) {
         const sourceCoords: EquatorialPoint = {
@@ -51,7 +51,7 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
         if(data.spaceSystemCode != undefined) {
             fetchSpaceSystemResourceGetSpaceSystem({pathParams: {frameCode: data.spaceSystemCode}})
                 .then((spaceSys) => assignSpaceSys(spaceSys))
-                .then(() => fetchProposalResourceAddNewTarget({pathParams:{proposalCode: selectedProposalCode}, body: Target})
+                .then(() => fetchProposalResourceAddNewTarget({pathParams:{proposalCode: Number(selectedProposalCode)}, body: Target})
                     .then(() => {return queryClient.invalidateQueries()})
                     .then(() => {props.onSubmit?.(val)})
                     .catch(console.log)
