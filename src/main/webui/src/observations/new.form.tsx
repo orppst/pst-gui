@@ -1,18 +1,19 @@
-import {Button, Group, Modal, Select} from "@mantine/core";
-import {useDisclosure} from "@mantine/hooks";
 import {useForm} from "@mantine/form";
-import {useContext} from "react";
+//import {useParams} from "react-router-dom";
 import {useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
+import {Button, Group, Select, TextInput} from "@mantine/core";
+import {useContext} from "react";
 import {ProposalContext} from "../App2.tsx";
+//import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
 
-const ObservationForm = () => {
+export function ObservationForm (){
     const form = useForm({
         initialValues: {
-            observationType:'Calibration',
+            observationType:'Target',
             calibrationUse:'placeHolder',
             targetName: '',
-            targetLongitude: 0,
-            targetLatitude: 0,
+            targetRA: 0,
+            targetDec: 0,
             targetSpaceFrame:'placeHolder',
             targetPositionEpoch:'placeHolder',
         },
@@ -22,12 +23,14 @@ const ObservationForm = () => {
         },
     });
 
+    const { selectedProposalCode} = useContext(ProposalContext);
+
     function SelectTargets() {
 
-        const { selectedProposalCode} = useContext(ProposalContext);
+        //const { selectedProposalCode} = useParams();
 
         const { data: targets , error } =
-            useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+            useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposalCode}}, {enabled: true});
 
         if (error) {
             return (
@@ -76,11 +79,12 @@ const ObservationForm = () => {
 
     function SelectCalibrationUse()
     {
-        //maxDropDownHeight to limit scrollable height less than the modal height otherwise gets clipped
+        //maxDropDownHeight: limits scrollable height < the modal height
+        //otherwise dropdown gets clipped
         return (
             <Select
                 label={"Calibration intended use: "}
-                placholder={"please select the calibration intended use"}
+                placeholder={"pick one"}
                 maxDropdownHeight={100}
                 data = {[
                     'Amplitude',
@@ -97,9 +101,51 @@ const ObservationForm = () => {
         )
     }
 
+    function DisplayTargetDetails()
+    {
+
+/*        const {data , error} = useProposalResourceGetTarget(
+            {
+                pathParams: {
+                    proposalCode: selectedProposalCode,
+                    targetId: Number(form.values.targetName)
+                }
+            }
+        );*/
+
+
+
+
+
+        return (
+            <>
+                {form.values.targetName ?
+                    <Group grow>
+                        <TextInput
+                            disabled
+                            placeholder={"RA degrees"}
+                            label={"Target Right-Ascension:"}
+                        />
+
+                        <TextInput
+                            disabled
+                            placeholder={"DEC degrees"}
+                            label={"Target Declination"}
+                        />
+                    </Group>
+                    : null
+                }
+
+            </>
+        )
+    }
+
     return (
         <form onSubmit={form.onSubmit((values) => console.log(values))}>
             {SelectTargets()}
+
+            {DisplayTargetDetails()}
+
             {SelectObservationType()}
 
             {form.values.observationType === 'Calibration' &&
@@ -111,23 +157,5 @@ const ObservationForm = () => {
                 <Button type="submit">Submit</Button>
             </Group>
         </form>
-    );
-}
-
-
-export default function ObservationsNewModal() {
-
-    const [opened, { close, open }] = useDisclosure();
-    return (
-        <>
-            <Button onClick={open}>Create new observation</Button>
-            <Modal
-                opened={opened}
-                onClose={close}
-                centered
-            >
-                <ObservationForm/>
-            </Modal>
-        </>
     );
 }
