@@ -1,10 +1,9 @@
-import { useContext} from "react";
-import {ProposalContext} from '../App2'
 import {
     useObservationResourceGetObservations,
 } from "../generated/proposalToolComponents";
 //import {useNavigate} from "react-router-dom";
 import ObservationsNewModal from "./new.modal.tsx";
+import {useParams} from "react-router-dom";
 
 function ObservationsPanel() {
 
@@ -15,8 +14,9 @@ function ObservationsPanel() {
     );
 
     function Observations() {
-        const {  selectedProposalCode } = useContext(ProposalContext) ;
-        const { data , error, isLoading } = useObservationResourceGetObservations({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+        const { selectedProposalCode} = useParams();
+
+        const { data , error, isLoading } = useObservationResourceGetObservations({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
       //  const navigate = useNavigate();
 
 

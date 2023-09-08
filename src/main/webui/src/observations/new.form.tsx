@@ -2,8 +2,7 @@ import {useForm} from "@mantine/form";
 //import {useParams} from "react-router-dom";
 import {useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
 import {Button, Group, Select, TextInput} from "@mantine/core";
-import {useContext} from "react";
-import {ProposalContext} from "../App2.tsx";
+import {useParams} from "react-router-dom";
 //import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
 
 export function ObservationForm (){
@@ -23,14 +22,15 @@ export function ObservationForm (){
         },
     });
 
-    const { selectedProposalCode} = useContext(ProposalContext);
-
+    //const { selectedProposalCode} = useContext(ProposalContext);
+    const { selectedProposalCode} = useParams();
     function SelectTargets() {
 
-        //const { selectedProposalCode} = useParams();
+        //
 
         const { data: targets , error } =
-            useProposalResourceGetTargets({pathParams: {proposalCode: selectedProposalCode}}, {enabled: true});
+            useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true});
+
 
         if (error) {
             return (
@@ -104,39 +104,45 @@ export function ObservationForm (){
     function DisplayTargetDetails()
     {
 
-/*        const {data , error} = useProposalResourceGetTarget(
-            {
-                pathParams: {
-                    proposalCode: selectedProposalCode,
-                    targetId: Number(form.values.targetName)
-                }
-            }
-        );*/
-
-
-
-
+        /*        const {data , error} = useProposalResourceGetTarget(
+                    {
+                        pathParams: {
+                            proposalCode: selectedProposalCode,
+                            targetId: Number(form.values.targetName)
+                        }
+                    }
+                );*/
 
         return (
-            <>
-                {form.values.targetName ?
+            form.values.targetName ?
+                <>
                     <Group grow>
                         <TextInput
                             disabled
                             placeholder={"RA degrees"}
-                            label={"Target Right-Ascension:"}
+                            label={"Right-Ascension:"}
                         />
-
                         <TextInput
                             disabled
                             placeholder={"DEC degrees"}
-                            label={"Target Declination"}
+                            label={"Declination:"}
                         />
                     </Group>
-                    : null
-                }
-
-            </>
+                    <Group grow>
+                        <TextInput
+                            disabled
+                            placeholder={"epoch"}
+                            label={"Position Epoch:"}
+                        />
+                        <TextInput
+                            disabled
+                            placeholder={"space frame"}
+                            label={"Space Frame:"}
+                        />
+                    </Group>
+                </>
+                :
+                <></>
         )
     }
 
