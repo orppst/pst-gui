@@ -5,14 +5,11 @@ import {
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
-import {Box, Button, Select, Textarea, TextInput} from "@mantine/core";
+import {Box, Button, Select, Text, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 
 const kindData = [{value: "STANDARD", label: "Standard"}, {value: "TOO", label: "T.O.O"}, {value: "SURVEY", label: "Survey"}];
-const defaultKind : ProposalKind = "STANDARD";
-
-
 
  function NewProposalPanel() {
     const { user} = useContext(ProposalContext) ;
@@ -23,7 +20,7 @@ const defaultKind : ProposalKind = "STANDARD";
         initialValues: {
             title: "",
             summary: "",
-            kind: defaultKind,
+            kind: "STANDARD" as ProposalKind,
         },
         validate: {
             title: (value) => (value.length < 1 ? 'Title cannot be blank' : null),
@@ -58,9 +55,9 @@ const defaultKind : ProposalKind = "STANDARD";
 
      return (
         <Box>
-            <h3>Create Proposal</h3>
+            <Text fz="lg" fw={700}>Create Proposal</Text>
             {submitting &&
-                <div>Submitting request</div>
+                <Box>Submitting request</Box>
             }
             <form onSubmit={createNewObservingProposal}>
                 <Box>

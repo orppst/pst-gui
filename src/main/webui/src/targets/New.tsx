@@ -95,7 +95,7 @@ export default function AddTargetPanel() {
     const [opened, { close, open }] = useDisclosure();
     return (
         <>
-            <button className={"btn btn-primary"} onClick={open}>Add New</button>
+            <Button onClick={open}>Add New</Button>
             <Modal title="New target    " opened={opened} onClose={close}>
                 <TargetForm
                     onSubmit={() => {

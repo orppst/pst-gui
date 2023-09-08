@@ -20,7 +20,7 @@ import DocumentsPanel from "./proposal/Documents";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
-import {AppShell, Navbar, Header, Button, NavLink, Anchor, Box, TextInput, ScrollArea, Grid} from "@mantine/core";
+import {AppShell, Navbar, Header, Button, NavLink, Anchor, Box, Text, TextInput, ScrollArea, Grid} from "@mantine/core";
 
 
 const queryClient = new QueryClient()
@@ -98,26 +98,26 @@ function App2() {
                 <AppShell
                     header={<Header height={60} p="xs">
                         <Grid>
-                            <Grid.Col span={1}><Anchor component={Link} to={"/"}>Proposals for {user.fullName}</Anchor></Grid.Col>
+                            <Grid.Col span={2}><Button variant="subtle" component={Link} to={"/"}>Proposals for {user.fullName}</Button></Grid.Col>
                             <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
-                            <Grid.Col offset={8} span={1}><Button disabled>Account</Button></Grid.Col>
+                            <Grid.Col offset={7} span={1}><Button disabled>Account</Button></Grid.Col>
                             <Grid.Col span={1}><Button component={Link} target={"/pst/gui/logout"}>Logout</Button></Grid.Col>
                         </Grid>
                     </Header>}
                     navbar={<Navbar width={{ base: 310 }}>
-                                <Navbar.Section grow component={ScrollArea} width={{ base: 300 }}>
-                                    {<>Search and filter by <Proposals/> </>}
-                                </Navbar.Section>
-                            </Navbar>}
+                        <Navbar.Section grow component={ScrollArea} width={{ base: 300 }}>
+                            {<Text fz="sm">Search and filter by <Proposals/> </Text>}
+                        </Navbar.Section>
+                        </Navbar>}
                     >
-                <Outlet/>
+                    <Outlet/>
                 </AppShell>
             </ProposalContext.Provider>
         )
     }
 
     function PSTStart() {
-        return (<div>Welcome</div>);
+        return (<Box><Text fz={"lg"}>Welcome</Text></Box>);
     }
 
     function Proposals() {
@@ -136,20 +136,18 @@ function App2() {
 
         if (error) {
             return (
-                <div>
+                <Box>
                     <pre>{JSON.stringify(error, null, 2)}</pre>
-                </div>
+                </Box>
             );
         }
 
         return (
             <Box>
-                <label>Title</label>
-                <TextInput value={proposalTitle} onChange={(e) => setProposalTitle(e.target.value)} />
-                <label>Investigator name</label>
-                <TextInput value={investigatorName} onChange={(e) => setInvestigatorName(e.target.value)} />
+                <TextInput label="Title" value={proposalTitle} onChange={(e: { target: { value: string; }; }) => setProposalTitle(e.target.value)} />
+                <TextInput label="Investigator name" value={investigatorName} onChange={(e: { target: { value: string; }; }) => setInvestigatorName(e.target.value)} />
                 {isLoading ? (
-                    <div className={""}>Loading…</div>
+                    <Box>Loading…</Box>
                 ) : (
                     <>
                         {data?.map((item) => (

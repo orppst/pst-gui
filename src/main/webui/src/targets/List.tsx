@@ -13,6 +13,8 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import AddTargetPanel from "./New";
 import {useParams} from "react-router-dom";
+import {Box, Button, Table, Text} from "@mantine/core";
+import {modals} from "@mantine/modals";
 
 function TargetPanel() {
     const { selectedProposalCode} = useParams();
@@ -21,24 +23,24 @@ function TargetPanel() {
 
     if (error) {
         return (
-            <div>
+            <Box>
                 <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
+            </Box>
         );
     }
 
     return (
-            <div>
-                <h3>Add and edit targets</h3>
-                <div>
+            <Box>
+                <Text fz="lg" fw={700}>Add and edit targets</Text>
+                <Box>
                     <AddTargetPanel/>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
                                 return (<RenderTarget proposalCode={Number(selectedProposalCode)} row={item} key={item.dbid}/>)
                             } )
                     }
-                </div>
-            </div>
+                </Box>
+            </Box>
         );
     }
 
@@ -69,28 +71,28 @@ function TargetPanel() {
             //console.log(JSON.stringify(Point, null, 2));
 
             return (
-                <table className={"table"}>
+                <Table>
                     <tbody>
-                        <tr className={"row"}><th colSpan={2}>Coordinates</th></tr>
+                        <tr><th colSpan={2}>Coordinates</th></tr>
                             {Point.coordSys?.["@type"] === "coords:SpaceSys"? <SpaceSys coords={Point?.coordSys}/> : (<tr><td>`Unknown...`</td></tr>)}
                             {Point?.coordSys?.frame?.["@type"] === "coords:SpaceFrame"?<SpaceFrame frame={Point?.coordSys?.frame}/>: (<tr><td>Unknown frame</td></tr>)}
-                        <tr className={"row"}>
+                        <tr>
                             <td>Latitude</td>
                             <td>{Point.lat?.value} {Point.lat?.unit?.value}</td>
                         </tr>
-                        <tr className={"row"}>
+                        <tr>
                             <td>Longitude</td>
                             <td>{Point.lon?.value} {Point.lon?.unit?.value}</td>
                         </tr>
                     </tbody>
-                </table>
+                </Table>
             )
         }
 
         function SpaceSys(props: PropsSpaceSys) {
             const Coords = props.coords;
             //console.log(JSON.stringify(Coords));
-            return (<tr className={"row"}><td>Space System</td>
+            return (<tr><td>Space System</td>
                 <td>
                 {Coords?.coordSpace?.["@type"] === "coords:CartesianCoordSpace"?<CartesianCoordSpace/>: (`Unknown coord space`)}
                 </td>
@@ -103,7 +105,7 @@ function TargetPanel() {
 
         function SpaceFrame(props: PropsSpaceFrame) {
             const frame = props.frame;
-            return (<tr className={"row"}><td>Space Frame Ref</td><td>{frame?.spaceRefFrame}</td></tr>);
+            return (<tr><td>Space Frame Ref</td><td>{frame?.spaceRefFrame}</td></tr>);
 
         }
 
@@ -111,53 +113,62 @@ function TargetPanel() {
             const PositionEpoch: Epoch = props.epoch;
 
             return (
-                <table className={"table"}>
+                <Table>
                     <tbody>
-                    <tr className={"row"}><th>Epoch</th></tr>
-                    <tr className={"row"}><td>{PositionEpoch.value}</td></tr>
+                    <tr><th>Epoch</th></tr>
+                    <tr><td>{PositionEpoch.value}</td></tr>
                     </tbody>
-                </table>);
+                </Table>);
         }
         function CelestialTarget(props: PropsCelestialTarget) {
             const target = props.obj;
             //console.log(JSON.stringify(target, null, 2));
 
             return (
-                <table className={"table"}>
+                <Table>
                     <tbody>
-                    <tr className={"row"}><th>Celestial Target</th></tr>
-                    <tr className={"row"}><td>{target.sourceName}</td></tr>
+                    <tr><th>Celestial Target</th></tr>
+                    <tr><td>{target.sourceName}</td></tr>
                     </tbody>
-                </table>
+                </Table>
             )
         }
 
         function handleRemove() {
-            const choice = window.confirm(
-                "Are you sure you want to remove the target " + data?.sourceName + "?"
-            )
-            if(choice) {
-                setSubmitting(true);
-                fetchProposalResourceRemoveTarget({pathParams:
-                        {
-                            proposalCode: props.proposalCode,
-                            targetId: props.row.dbid!
-                        }})
-                    .then(()=>setSubmitting(false))
-                    .then(()=>queryClient.invalidateQueries())
-                    .catch(console.log);
-            }
+            setSubmitting(true);
+            fetchProposalResourceRemoveTarget({pathParams:
+                    {
+                        proposalCode: props.proposalCode,
+                        targetId: props.row.dbid!
+                    }})
+                .then(()=>setSubmitting(false))
+                .then(()=>queryClient.invalidateQueries())
+                .catch(console.log);
         }
 
+        const openRemoveModal = () =>
+            modals.openConfirmModal({
+                title: "Remove target",
+                centered: true,
+                children: (
+                    <Text size="sm">
+                        Are you sure you want to remove '{data?.sourceName}' from this proposal?
+                    </Text>
+                ),
+                labels: { confirm: "Delete", cancel: "Cancel"},
+                confirmProps: { color: "red" },
+                onConfirm: () => handleRemove()
+            });
+
         return (
-            <div>
+            <Box>
                 {isLoading?(`Loading...`):
                     submitting?(`Removing...`):
                     (
-                        <table className={"table well"}>
+                        <Table>
                             <tbody>
                             <tr>
-                                <td>
+                                <td valign="top">
                                     {data?.["@type"] === "proposal:CelestialTarget" ?
                                         (<CelestialTarget obj={data}></CelestialTarget>)
                                     : (JSON.stringify(data, null, 2))
@@ -173,18 +184,18 @@ function TargetPanel() {
                                         : (JSON.stringify(data?.sourceCoordinates, null, 2))
                                     }
                                 </td>
-                                <td>
+                                <td valign="top">
 
                                     <Epoch epoch={// @ts-ignore
                                         data?.positionEpoch}/>
                                 </td>
                             </tr>
-                            <tr className={"row"}><td colSpan={3}><button className={"btn btn-danger pull-right"} onClick={handleRemove}>Remove</button></td></tr>
+                            <tr><td colSpan={3} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></td></tr>
                             </tbody>
-                        </table>
+                        </Table>
                     )
                 }
-            </div>);
+            </Box>);
 
 }
 

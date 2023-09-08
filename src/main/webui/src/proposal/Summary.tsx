@@ -6,7 +6,7 @@ import {
 } from "../generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
-import {Box, Button, Textarea} from "@mantine/core";
+import {Box, Button, Text, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
 
 function SummaryPanel() {
@@ -57,9 +57,9 @@ function SummaryPanel() {
 
     if (error) {
         return (
-            <div>
+            <Box>
                 <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
+            </Box>
         );
     }
 
@@ -71,10 +71,10 @@ function SummaryPanel() {
 
     return (
         <Box>
-            <h3>Update summary</h3>
-            {isLoading ? <div>loading...</div>:
+            <Text fz="lg" fw={700}>Update summary</Text>
+            {isLoading ? <Box>loading...</Box>:
               submitting ?
-                <div>Submitting request</div> :
+                <Box>Submitting request</Box> :
 
             <form onSubmit={updateSummary}>
                 <Textarea rows={3} name="summary" {...form.getInputProps('summary')} />

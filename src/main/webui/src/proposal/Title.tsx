@@ -5,7 +5,7 @@ import {
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {Box, Button, TextInput} from "@mantine/core";
+import {Box, Button, Text, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 
@@ -55,9 +55,9 @@ function TitlePanel() {
 
     if (error) {
         return (
-            <div>
+            <Box>
                 <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
+            </Box>
         );
     }
 
@@ -69,7 +69,7 @@ function TitlePanel() {
 
     return (
         <Box>
-            <h3>Update title</h3>
+            <Text fz="lg" fw={700}>Update title</Text>
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>

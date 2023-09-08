@@ -21,9 +21,9 @@ function InvestigatorsPanel() {
 
     if (error) {
         return (
-            <div>
+            <Box>
                 <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
+            </Box>
         );
     }
 
@@ -33,8 +33,8 @@ function InvestigatorsPanel() {
     }
 
     return (
-        <div>
-            <h3>Investigators linked to this proposal</h3>
+        <Box>
+            <Text fz="lg" fw={700}>Investigators linked to this proposal</Text>
             <Grid>
                 <Grid.Col span={5}>
                 <Button onClick={handleAddNew} >Add New</Button>
@@ -49,7 +49,7 @@ function InvestigatorsPanel() {
                 }
                 </Grid.Col>
             </Grid>
-        </div>
+        </Box>
     );
 }
 
@@ -79,15 +79,15 @@ function RenderPerson(props: PersonProps) {
 
     const openRemoveModal = () =>
         modals.openConfirmModal({
-            title: 'Remove investigator',
+            title: "Remove investigator",
             centered: true,
             children: (
                 <Text size="sm">
                     Are you sure you want to remove {data?.person?.fullName} from this proposal?
                 </Text>
             ),
-            labels: { confirm: 'Delete', cancel: "Cancel" },
-            confirmProps: { color: 'red' },
+            labels: { confirm: "Delete", cancel: "Cancel" },
+            confirmProps: { color: "red" },
             onConfirm: () => handleRemove(),
         });
 

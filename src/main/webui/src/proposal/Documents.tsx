@@ -1,33 +1,33 @@
-import { useContext } from "react";
-import {ProposalContext} from '../App2'
 import {
     useSupportingDocumentResourceGetSupportingDocuments,
 } from "../generated/proposalToolComponents";
+import {useParams} from "react-router-dom";
+import {Box, Text} from "@mantine/core";
 
 function DocumentsPanel() {
-    const { selectedProposalCode} = useContext(ProposalContext);
-    const { data , error, isLoading } = useSupportingDocumentResourceGetSupportingDocuments({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+    const { selectedProposalCode} = useParams();//
+    const { data , error, isLoading } = useSupportingDocumentResourceGetSupportingDocuments({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
 
     if (error) {
         return (
-            <div>
+            <Box>
                 <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
+            </Box>
         );
     }
 
     return (
-        <div>
-            <h3>This is where upload and download of documents will happen</h3>
-            <fieldset>
+        <Box>
+            <Text fz="lg" fw={700}>This is where upload and download of documents will happen</Text>
+            <Box>
                 {isLoading ? (`Loading...`)
                     : (
                         <pre>
                             {`${JSON.stringify(data, null, 2)}`}
                         </pre>
                     )}
-            </fieldset>
-        </div>
+            </Box>
+        </Box>
     );
 
 }

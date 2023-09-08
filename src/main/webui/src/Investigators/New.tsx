@@ -1,4 +1,4 @@
-import { useState, SyntheticEvent} from "react";
+import {SyntheticEvent, useEffect, useState} from "react";
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
@@ -7,22 +7,39 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "../generated/proposalToolSchemas.ts";
-import {Box, Button} from "@mantine/core";
+import {Box, Button, Checkbox, Grid, Select} from "@mantine/core";
+import {useForm} from "@mantine/form";
 
 function AddInvestigatorPanel() {
-    const [formData, setFormData] = useState( {type: "COI" as InvestigatorKind, forPhD: false, selectedInvestigator: 0});
-    const [query, setQuery] = useState("");
+    const form = useForm({
+        initialValues: {type: "COI" as InvestigatorKind, forPhD: false, selectedInvestigator: 0},
+        validate: {
+            selectedInvestigator: (value) => (value === 0 ? 'Please select an investigator' : null)
+        }
+    });
+    const typeData = [{value: "COI", label: "CO-I"}, {value: "PI", label: "PI"}];
+    const [searchData, setSearchData] = useState([]);
     const navigate = useNavigate();
     const { selectedProposalCode } = useParams();
     const queryClient = useQueryClient();
-    const { data, error, isLoading } = usePersonResourceGetPeople(
+    const { data, error, status } = usePersonResourceGetPeople(
         {
-            queryParams: { name: '%' + query + '%'},
+            queryParams: { name: '%' },
         },
         {
             enabled: true,
         }
     );
+
+    useEffect(() => {
+        if(status === 'success') {
+            setSearchData([]);
+            data?.map((item) => (
+                // @ts-ignore
+                setSearchData((current) => [...current, {value: item.dbid, label: item.name}])
+            ));
+        }
+    },[status,data]);
 
     if (error) {
         return (
@@ -32,22 +49,14 @@ function AddInvestigatorPanel() {
         );
     }
 
-    function handleChange(event : SyntheticEvent<HTMLInputElement|HTMLSelectElement>) {
-        setFormData({
-            ...formData,
-            [event.currentTarget.name] : event.currentTarget.value
-        });
-    }
-
-    function handleAdd(event: SyntheticEvent) {
-        event.preventDefault();
+    const handleAdd = form.onSubmit((val) => {
         //Get full investigator from API and add back to proposal
-        fetchPersonResourceGetPerson({pathParams:{id: formData.selectedInvestigator}})
+        fetchPersonResourceGetPerson({pathParams:{id: form.values.selectedInvestigator}})
             .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
                 {pathParams:{proposalCode: Number(selectedProposalCode)},
                     body:{
-                        type: formData.type,
-                        forPhD: formData.forPhD,
+                        type: val.type,
+                        forPhD: val.forPhD,
                         person: data,
                     }})
                 .then(()=> {
@@ -57,7 +66,7 @@ function AddInvestigatorPanel() {
                 .catch(console.log)
             )
             .catch(console.log);
-    }
+    });
 
     function handleCancel(event: SyntheticEvent) {
         event.preventDefault();
@@ -65,35 +74,30 @@ function AddInvestigatorPanel() {
     }
 
     return (
-            <Box>
-                <h3>Add and new investigator</h3>
-                <form>
-                    <label>Type</label>
-                    <select name="type" onChange={handleChange}>
-                        <option value="COI">CO-I</option>
-                        <option value="PI">PI</option>
-                    </select>
-                    <label>Is this for a PHD?</label>
-                    <input type="checkbox" id="forPhD" name="forPhD" value="true" onChange={handleChange}/>
-                    <label htmlFor="forPhD">Yes</label>
-                    <legend>Select an investigator</legend>
-                    <label>Filter names</label>
-                    <input value={query} onChange={(e) => setQuery(e.target.value)}/>
-                    <label>Investigators</label>
-                    <select name="selectedInvestigator" onChange={handleChange}>
-                        <option value="">--Please choose one--</option>
-                        {isLoading ? (
-                            <option>Loading…</option>
-                        ) :
-                            data?.map((item) => (
-                                <option key={item.dbid} value={item.dbid}>{item.name}</option>
-                            )
-                        )}
-                    </select>
-                    <Button onClick={handleAdd}>Add</Button>
-                </form>
-                <Button onClick={handleCancel}>Cancel</Button>
-            </Box>
+                <Box>
+                    <h3>Add and new investigator</h3>
+                    <form onSubmit={handleAdd}>
+                        <Select label={"Type"}
+                            data={typeData}
+                            {...form.getInputProps("type")}
+                        />
+                        <Checkbox
+                            label={"Is this for a PHD?"}
+                            {...form.getInputProps("forPhD")}
+                        />
+                        <Select
+                            label="Select an investigator"
+                            searchable
+                            data={searchData}
+                            {...form.getInputProps("selectedInvestigator")}
+                        />
+                        <Grid>
+                            <Grid.Col span={12}><Button type={"submit"}>Add</Button></Grid.Col>
+                            <Grid.Col span={1}><Button variant="light" onClick={handleCancel}>Cancel</Button></Grid.Col>
+                        </Grid>
+                    </form>
+                </Box>
+
     )
 
 }

@@ -1,33 +1,33 @@
-import { useContext } from "react";
-import {ProposalContext} from '../App2'
 import {
     useProposalResourceGetTechnicalGoals,
 } from "../generated/proposalToolComponents";
+import {Box, Text} from "@mantine/core";
+import {useParams} from "react-router-dom";
 
 function GoalsPanel() {
-    const { selectedProposalCode } = useContext(ProposalContext);
-    const { data , error, isLoading } = useProposalResourceGetTechnicalGoals({pathParams: {proposalCode: selectedProposalCode},}, {enabled: true});
+    const { selectedProposalCode } = useParams();
+    const { data , error, isLoading } = useProposalResourceGetTechnicalGoals({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
 
     if (error) {
         return (
-            <div>
+            <Box>
                 <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
+            </Box>
         );
     }
 
     return (
-        <div>
-            <h3>This is where technical goals will be managed</h3>
-            <fieldset>
+        <Box>
+            <Text fz="lg" fw={700}>This is where technical goals will be managed</Text>
+            <Box>
                 {isLoading ? (`Loading...`)
                     : (
                         <pre>
                             {`${JSON.stringify(data, null, 2)}`}
                         </pre>
                     )}
-            </fieldset>
-        </div>
+            </Box>
+        </Box>
     );
 
 }

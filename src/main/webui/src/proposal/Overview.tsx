@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom"
 import {
     useProposalResourceGetObservingProposal,
 } from "../generated/proposalToolComponents";
+import {Box, Text} from "@mantine/core";
 
 function OverviewPanel() {
     const { selectedProposalCode } = useParams();
@@ -9,24 +10,24 @@ function OverviewPanel() {
 
     if (error) {
         return (
-            <div>
+            <Box>
                 <pre>{JSON.stringify(error, null, 2)}</pre>
-            </div>
+            </Box>
         );
     }
 
     return (
-        <div>
-            <h3>This will become nicely formatted overview of the selected proposal</h3>
-            <fieldset>
+        <Box>
+            <Text fz="lg" fw={700}>This will become nicely formatted overview of the selected proposal</Text>
+            <Box>
                 {isLoading ? (`Loading...`)
                     : (
                         <pre>
                             {`${JSON.stringify(data, null, 2)}`}
                         </pre>
                     )}
-            </fieldset>
-        </div>
+            </Box>
+        </Box>
     );
 
 }
