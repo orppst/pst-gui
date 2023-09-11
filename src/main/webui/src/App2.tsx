@@ -20,7 +20,7 @@ import DocumentsPanel from "./proposal/Documents";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
-import {AppShell, Navbar, Header, Button, NavLink, Anchor, Box, Text, TextInput, ScrollArea, Grid} from "@mantine/core";
+import {AppShell, Navbar, Header, Button, NavLink, Box, Text, TextInput, ScrollArea, Grid} from "@mantine/core";
 
 
 const queryClient = new QueryClient()
