@@ -1,16 +1,26 @@
 import {useForm} from "@mantine/form";
 //import {useParams} from "react-router-dom";
-import {useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
+import {useProposalResourceGetTarget, useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
 import {Button, Group, Select, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
+import {TargetId} from "./List.tsx";
 //import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
 
-export function ObservationForm (){
+export function ObservationForm (props: TargetId){
+
+    // we need a valid form.values.targetName (aka database id) before we call the
+    // useProposalResourceGetTarget hook. We get this from the 'props' passed in from calling environment
+
+
+    const { selectedProposalCode} = useParams();
+
     const form = useForm({
         initialValues: {
             observationType:'Target',
             calibrationUse:'placeHolder',
-            targetName: '',
+            targetDBId: '',
             targetRA: 0,
             targetDec: 0,
             targetSpaceFrame:'placeHolder',
@@ -22,20 +32,58 @@ export function ObservationForm (){
         },
     });
 
-    //const { selectedProposalCode} = useContext(ProposalContext);
-    const { selectedProposalCode} = useParams();
+    const [targetDetails, setTargetDetails] = useState({
+        ra: 0.0,
+        dec: 0.0,
+        epoch: 'position epoch',
+        frame: 'space frame'
+    });
+
+    const {data: targetData , error: targetDetailsError} =
+        useProposalResourceGetTarget(
+            {
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode),
+                    targetId: form.values.targetDBId ? Number(form.values.targetDBId) : props.id!
+                }
+            }
+        );
+
+    useEffect( () => {
+
+        if (targetDetailsError) {
+            //probably need a better way of handling this
+            setTargetDetails(prevState => {
+                return {...prevState, epoch: 'not found', frame: 'not found'}
+            });
+        }
+        else if (targetData?.["@type"] === 'proposal:CelestialTarget') {
+
+            let source_coordinates = (targetData as CelestialTarget).sourceCoordinates;
+
+            let ra_degrees = source_coordinates?.lat?.value!;
+            let dec_degrees = source_coordinates?.lon?.value!;
+            let position_epoch = (targetData as CelestialTarget).positionEpoch?.value!;
+            //let coordinate_system = source_coordinates?.coordSys!;
+            //FIXME: can't seem to access the SpaceFrame string so hardcoding the "default" for now
+            let space_frame = 'ICRS'; //(coordinate_system as SpaceFrame).spaceRefFrame!;
+
+            setTargetDetails({ra: ra_degrees, dec: dec_degrees, epoch: position_epoch, frame: space_frame});
+        }
+        //else do nothing
+    }, [form.values.targetDBId]);
+
+
+
     function SelectTargets() {
 
-        //
-
-        const { data: targets , error } =
+        const { data: targets , error: targetListError } =
             useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true});
 
-
-        if (error) {
+        if (targetListError) {
             return (
                 <div>
-                    <pre>{JSON.stringify(error, null, 2)}</pre>
+                    <pre>{JSON.stringify(targetListError, null, 2)}</pre>
                 </div>
             )
         }
@@ -55,7 +103,7 @@ export function ObservationForm (){
                         placeholder={"pick one"}
                         searchable
                         data={selectTargets}
-                        {...form.getInputProps('targetName')}
+                        {...form.getInputProps('targetDBId')}
                         required
                     />
                     : null
@@ -80,7 +128,7 @@ export function ObservationForm (){
     function SelectCalibrationUse()
     {
         //maxDropDownHeight: limits scrollable height < the modal height
-        //otherwise dropdown gets clipped
+        //otherwise dropdown gets clipped (may want to rethink the hardcoded value)
         return (
             <Select
                 label={"Calibration intended use: "}
@@ -103,29 +151,23 @@ export function ObservationForm (){
 
     function DisplayTargetDetails()
     {
-
-        /*        const {data , error} = useProposalResourceGetTarget(
-                    {
-                        pathParams: {
-                            proposalCode: selectedProposalCode,
-                            targetId: Number(form.values.targetName)
-                        }
-                    }
-                );*/
-
+        //Mantine v7 includes a 'Fieldset' component
         return (
-            form.values.targetName ?
-                <>
+            form.values.targetDBId ?
+                <fieldset>
+                    <legend>Target Details</legend>
                     <Group grow>
                         <TextInput
                             disabled
                             placeholder={"RA degrees"}
                             label={"Right-Ascension:"}
+                            value={targetDetails.ra}
                         />
                         <TextInput
                             disabled
                             placeholder={"DEC degrees"}
                             label={"Declination:"}
+                            value={targetDetails.dec}
                         />
                     </Group>
                     <Group grow>
@@ -133,21 +175,27 @@ export function ObservationForm (){
                             disabled
                             placeholder={"epoch"}
                             label={"Position Epoch:"}
+                            value={targetDetails.epoch}
                         />
                         <TextInput
                             disabled
                             placeholder={"space frame"}
                             label={"Space Frame:"}
+                            value={targetDetails.frame}
                         />
                     </Group>
-                </>
+
+                </fieldset>
                 :
                 <></>
         )
     }
 
+    //TODO: onSubmit needs to do actual business logic to add the observation to the proposal
+
     return (
         <form onSubmit={form.onSubmit((values) => console.log(values))}>
+
             {SelectTargets()}
 
             {DisplayTargetDetails()}
@@ -157,7 +205,6 @@ export function ObservationForm (){
             {form.values.observationType === 'Calibration' &&
                 SelectCalibrationUse()
             }
-
 
             <Group position="right" mt="md">
                 <Button type="submit">Submit</Button>

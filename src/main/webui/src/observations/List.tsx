@@ -5,6 +5,9 @@ import {
 import ObservationsNewModal from "./new.modal.tsx";
 import {useParams} from "react-router-dom";
 
+
+export type TargetId = {id: number | undefined};
+
 function ObservationsPanel() {
 
     return (
@@ -28,10 +31,18 @@ function ObservationsPanel() {
             );
         }
 
+        //FIXME: the 'data' for the conditional should be a list of targets that have been added, rather than
+        // the list of observations added. We still want to display the observations added.
+
         return (
             <div>
                 <h3>This where observations will be managed for </h3>
-                <ObservationsNewModal />
+                {isLoading ? (`Loading...`) :
+                    data!.length > 0 ?
+                        <ObservationsNewModal id={data!.at(0)!.dbid}/> :
+                        <p>WIP: No targets added. Go to 'Targets' tab and add at least one target.</p>
+                }
+
                 <fieldset>
                     {isLoading ? (`Loading...`)
                         : (
