@@ -1,30 +1,36 @@
 import {useForm} from "@mantine/form";
-//import {useParams} from "react-router-dom";
 import {useProposalResourceGetTarget, useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
 import {Button, Group, Select, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
 import {TargetId} from "./List.tsx";
-//import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
+
+interface ObservationFormValues {
+    observationType: 'Target'|'Calibration';
+    calibrationUse:  'Amplitude'|'Atmospheric'|'Bandpass'|'Phase'|'Pointing'|'Focus'|'Polarization'|'Delay',
+    targetDBId: string,
+    timingWindows: {
+        start: Date | null,
+        end: Date | null,
+        note: string,
+        isAvoid: boolean
+    }[]
+}
 
 export function ObservationForm (props: TargetId){
 
-    // we need a valid form.values.targetName (aka database id) before we call the
+    // we need a valid form.values.targetDBId before we call the
     // useProposalResourceGetTarget hook. We get this from the 'props' passed in from calling environment
-
 
     const { selectedProposalCode} = useParams();
 
-    const form = useForm({
+    const form = useForm<ObservationFormValues>({
         initialValues: {
             observationType:'Target',
-            calibrationUse:'placeHolder',
+            calibrationUse:'Amplitude',
             targetDBId: '',
-            targetRA: 0,
-            targetDec: 0,
-            targetSpaceFrame:'placeHolder',
-            targetPositionEpoch:'placeHolder',
+            timingWindows: []
         },
 
         validate: {
@@ -191,6 +197,24 @@ export function ObservationForm (props: TargetId){
         )
     }
 
+    //As a reminder, Radio observations can be done at any time but Optical observations can occur only after sunset.
+    //In both cases the target must be above the horizon.
+
+    function SetObservationDateTime() {
+
+        //Providing a UI for a TimingWindow: {start: Date, end: Date, note: string, isAvoidConstraint: boolean}
+        // semantics of 'isAvoidConstraint' - true means avoid this date range, false means use this date range
+        // User may provide multiple "timing windows" per observation. These are stored as a List of Constraints
+        // in the Observation in the backend. TimingWindows are not the only Constraints.
+
+        return (
+            <></>
+        )
+    }
+
+
+
+
     //TODO: onSubmit needs to do actual business logic to add the observation to the proposal
 
     return (
@@ -205,6 +229,8 @@ export function ObservationForm (props: TargetId){
             {form.values.observationType === 'Calibration' &&
                 SelectCalibrationUse()
             }
+
+            {SetObservationDateTime()}
 
             <Group position="right" mt="md">
                 <Button type="submit">Submit</Button>
