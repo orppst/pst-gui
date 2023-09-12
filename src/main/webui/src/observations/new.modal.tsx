@@ -12,7 +12,7 @@ export default function ObservationsNewModal(props: TargetId) {
             <Modal
                 opened={opened}
                 onClose={close}
-                centered
+                title={"New Observation Form"}
             >
                 <ObservationForm id={props.id}/>
             </Modal>
