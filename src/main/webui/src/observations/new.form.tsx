@@ -1,11 +1,22 @@
 import {useForm} from "@mantine/form";
-import {useProposalResourceGetTarget, useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
-import {Button, Checkbox, Group, Select, Space, TextInput} from "@mantine/core";
+import {useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
+import {
+    ActionIcon,
+    Button,
+    Grid,
+    Group,
+    Select,
+    Space,
+    Switch,
+    Textarea,
+    Tooltip
+} from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
-import {CelestialTarget, SpaceFrame} from "../generated/proposalToolSchemas.ts";
 import {TargetId} from "./List.tsx";
-import {DatePickerInput, TimeInput} from "@mantine/dates";
+import {DateTimePicker} from "@mantine/dates";
+import {RenderTarget} from "../targets/RenderTarget.tsx";
+import {randomId} from "@mantine/hooks";
+import {IconPlus, IconTrash} from "@tabler/icons-react";
 
 interface ObservationFormValues {
     observationType: 'Target'|'Calibration'|'';
@@ -15,7 +26,8 @@ interface ObservationFormValues {
         start: Date | null,
         end: Date | null,
         note: string,
-        isAvoid: boolean
+        isAvoid: boolean,
+        key: string
     }[]
 }
 
@@ -26,12 +38,20 @@ export function ObservationForm (props: TargetId){
 
     const { selectedProposalCode} = useParams();
 
+    let timingWindowInitial = {
+        start: null,
+        end: null,
+        note: '',
+        isAvoid: false,
+        key: randomId()
+    }
+
     const form = useForm<ObservationFormValues>({
         initialValues: {
             observationType:'',
             calibrationUse:'',
             targetDBId: props.id!,
-            timingWindows: []
+            timingWindows: [timingWindowInitial]
         },
 
         validate: {
@@ -39,53 +59,10 @@ export function ObservationForm (props: TargetId){
         },
     });
 
-    const {data: targetData , error: targetDetailsError, isLoading: targetLoading} =
-        useProposalResourceGetTarget(
-            {
-                pathParams: {
-                    proposalCode: Number(selectedProposalCode),
-                    targetId: form.values.targetDBId
-                }
-            }
-        );
-
-    const [targetDetails, setTargetDetails] = useState({
-        ra: 0.0,
-        dec: 0.0,
-        epoch: 'position epoch',
-        frame: 'space frame'
-    });
-
-    useEffect( () => {
-
-        if (targetDetailsError)
-        {
-            //probably need a better way of handling this
-            setTargetDetails(prevState => {
-                return {...prevState, epoch: 'not found', frame: 'not found'}
-            });
-        }
-        else if (targetData?.["@type"] === 'proposal:CelestialTarget')
-        {
-            let source_coordinates = (targetData as CelestialTarget).sourceCoordinates;
-
-            let ra_degrees = source_coordinates?.lat?.value!;
-            let dec_degrees = source_coordinates?.lon?.value!;
-            let position_epoch = (targetData as CelestialTarget).positionEpoch?.value!;
-            let coordinate_system = source_coordinates?.coordSys!;
-            let space_frame =  (coordinate_system.frame as SpaceFrame).spaceRefFrame!;
-
-            setTargetDetails({ra: ra_degrees, dec: dec_degrees, epoch: position_epoch, frame: space_frame});
-        }
-        //else do nothing
-    }, [targetLoading, form.values.targetDBId]);
-
-
+    const { data: targets , error: targetListError, isLoading: targetsLoading } =
+        useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true});
 
     function SelectTargets() {
-
-        const { data: targets , error: targetListError } =
-            useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true});
 
         if (targetListError) {
             return (
@@ -156,50 +133,6 @@ export function ObservationForm (props: TargetId){
         )
     }
 
-    function DisplayTargetDetails()
-    {
-        //Mantine v7 includes a 'Fieldset' component
-        return (
-            //form.values.targetDBId ?
-                <fieldset>
-                    <legend>Target Details</legend>
-                    <Group grow>
-                        <TextInput
-                            disabled
-                            placeholder={"RA degrees"}
-                            label={"Right-Ascension:"}
-                            description={"degrees"}
-                            value={targetDetails.ra}
-                        />
-                        <TextInput
-                            disabled
-                            placeholder={"DEC degrees"}
-                            label={"Declination:"}
-                            description={"degrees"}
-                            value={targetDetails.dec}
-                        />
-                    </Group>
-                    <Group grow>
-                        <TextInput
-                            disabled
-                            placeholder={"epoch"}
-                            label={"Position Epoch:"}
-                            value={targetDetails.epoch}
-                        />
-                        <TextInput
-                            disabled
-                            placeholder={"space frame"}
-                            label={"Space Frame:"}
-                            value={targetDetails.frame}
-                        />
-                    </Group>
-
-                </fieldset>
-               // :
-               // <></>
-        )
-    }
-
     //As a reminder, Radio observations can be done at any time but Optical observations can occur only after sunset.
     //In both cases the target must be above the horizon.
 
@@ -210,76 +143,93 @@ export function ObservationForm (props: TargetId){
         // User may provide multiple "timing windows" per observation. These are stored as a List of Constraints
         // in the Observation in the backend. TimingWindows are not the only Constraints.
 
-        const [singleDate, setSingleDate] = useState(false);
-        const [isAvoid, setIsAvoid] = useState(false);
+        const targetsAdded = form.values.timingWindows.map((item, index) => (
+        <Group key={item.key} mt={"xs"}>
+            <DateTimePicker
+                label={"Start"}
+                placeholder={"pick a start time"}
+                allowDeselect
+                minDate={new Date()}
+                {...form.getInputProps(`timingWindows.${index}.start`)}
+            />
+            <DateTimePicker
+                label={"End"}
+                placeholder={"pick an end time"}
+                minDate={new Date()}
+                {...form.getInputProps(`timingWindows.${index}.end`)}
+            />
+            <Switch
+                mt={25}
+                label={"Avoid dates"}
+                {...form.getInputProps(`timingWindows.${index}.isAvoid`, {type: 'checkbox'})}
+            />
+            <Textarea
+                rows={2}
+                mt={25}
+                placeholder={"add optional note"}
+                {...form.getInputProps(`timingWindows.${index}.note`)}
+            />
+            <ActionIcon color={"red"} onClick={() => form.removeListItem("timingWindows", index) }>
+                <IconTrash size={"1rem"} />
+            </ActionIcon>
 
-
-        //FIXME: this would be better if it used the DateTimePicker, in current state have to add time on to
-        // first and final dates to get the correct start and end 'Date's (problem is it is not an "Input")
+        </Group>
+        ));
 
         return (
-            <fieldset>
-                <legend>Timing Window</legend>
-                <DatePickerInput
-                    label={"Select a date range"}
-                    placeholder={"first day - final day"}
-                    minDate={new Date()}
-                    type={"range"}
-                    allowSingleDateInRange={singleDate}
-                />
-                <Space h={"md"}/>
-                <Checkbox
-                    label={"single date as range"}
-                    checked={singleDate} onChange={(event: { currentTarget: { checked: boolean | ((prevState: boolean) => boolean); }; })=>{setSingleDate(event.currentTarget.checked)}}
-                />
-                <Space h={"md"}/>
-                <Group grow>
-                    <TimeInput
-                        label={"Start time"}
-                        description={"on first day in range"}
-                    />
-                    <TimeInput
-                        label={"End time"}
-                        description={"on final day in range"}
-                    />
-                </Group>
-                <Space h={"md"}/>
-                <Checkbox
-                    label={"avoid"}
-                    description={"do not observe during the range selected"}
-                    checked={isAvoid} onChange={(event: { currentTarget: { checked: boolean | ((prevState: boolean) => boolean); }; })=>setIsAvoid(event.currentTarget.checked)}
-                />
-            </fieldset>
+            <Group mb={"xs"}>
+                {targetsAdded}
+            </Group>
+
+            //button "add timing window" would not respond to the 'position' property of the enclosing Group
+            //when nested in this function - don't know why
         )
     }
 
 
-
+    //{//DisplayTargetDetails()// }
 
     //TODO: onSubmit needs to do actual business logic to add the observation to the proposal
 
     return (
         <form onSubmit={form.onSubmit((values) => console.log(values))}>
+            <Grid columns={2}>
+                <Grid.Col span={1}>
+                    <fieldset>
+                        <legend>Select target</legend>
+                        {SelectTargets()}
+                        {
+                            targetsLoading ? 'loading...' :
+                                <RenderTarget proposalCode={Number(selectedProposalCode)}  dbid={form.values.targetDBId} />
+                        }
+                        <Space h={"xl"}/>
+                        {SelectObservationType()}
+                        <Space h={"xl"}/>
+                        {form.values.observationType === 'Calibration' &&
+                            SelectCalibrationUse()
+                        }
+                    </fieldset>
+                </Grid.Col>
+                <Grid.Col span={1}>
+                    <fieldset>
+                        <legend>Timing Windows</legend>
+                        {SetObservationDateTime()}
+                        <Group position={"right"} mt={"xs"}>
+                            <Button onClick={() =>
+                                form.insertListItem('timingWindows', {...timingWindowInitial, key: randomId()})
+                            }>
+                                <IconPlus size={"1rem"}/> Add timing window
+                            </Button>
+                        </Group>
+                    </fieldset>
 
-            {SelectTargets()}
-
-            {DisplayTargetDetails()}
-
-            <Space h={"xl"}/>
-
-            {SelectObservationType()}
-
-            {form.values.observationType === 'Calibration' &&
-                SelectCalibrationUse()
-            }
-
-            <Space h={"xl"}/>
-
-            {SetObservationDateTime()}
-
-            <Group position="right" mt="md">
-                <Button type="submit">Submit</Button>
-            </Group>
+                    <Group position="right" mt="md">
+                        <Tooltip label={"submit"}>
+                            <Button type="submit">Submit</Button>
+                        </Tooltip>
+                    </Group>
+                </Grid.Col>
+            </Grid>
         </form>
     );
 }
