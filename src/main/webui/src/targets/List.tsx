@@ -37,7 +37,8 @@ function TargetPanel() {
                                         backgroundColor:
                                             theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
                                     },
-                                })}><RenderTarget proposalCode={Number(selectedProposalCode)} dbid={item.dbid!} key={item.dbid}/></Box>)
+                                })} key={item.dbid}>
+                                    <RenderTarget proposalCode={Number(selectedProposalCode)} dbid={item.dbid!}/></Box>)
                             } )
                     }
                 </Box>
