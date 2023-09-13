@@ -3,7 +3,7 @@ import {useProposalResourceGetTarget, useProposalResourceGetTargets} from "../ge
 import {Button, Checkbox, Group, Select, Space, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
+import {CelestialTarget, SpaceFrame} from "../generated/proposalToolSchemas.ts";
 import {TargetId} from "./List.tsx";
 import {DatePickerInput, TimeInput} from "@mantine/dates";
 
@@ -72,9 +72,8 @@ export function ObservationForm (props: TargetId){
             let ra_degrees = source_coordinates?.lat?.value!;
             let dec_degrees = source_coordinates?.lon?.value!;
             let position_epoch = (targetData as CelestialTarget).positionEpoch?.value!;
-            //let coordinate_system = source_coordinates?.coordSys!;
-            //FIXME: can't seem to access the SpaceFrame string so hardcoding the "default" for now
-            let space_frame = 'ICRS'; //(coordinate_system as SpaceFrame).spaceRefFrame!;
+            let coordinate_system = source_coordinates?.coordSys!;
+            let space_frame =  (coordinate_system.frame as SpaceFrame).spaceRefFrame!;
 
             setTargetDetails({ra: ra_degrees, dec: dec_degrees, epoch: position_epoch, frame: space_frame});
         }
