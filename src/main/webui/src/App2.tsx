@@ -21,6 +21,7 @@ import DocumentsPanel from "./proposal/Documents";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
 import {AppShell, Navbar, Header, Button, NavLink, Box, Text, TextInput, ScrollArea, Grid} from "@mantine/core";
+import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 
 
 const queryClient = new QueryClient()
@@ -100,7 +101,7 @@ function App2() {
                         <Grid>
                             <Grid.Col span={2}><Button variant="subtle" component={Link} to={"/"}>Proposals for {user.fullName}</Button></Grid.Col>
                             <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
-                            <Grid.Col offset={7} span={1}><Button disabled>Account</Button></Grid.Col>
+                            <Grid.Col offset={7} span={1}>{SwitchToggle()}</Grid.Col>
                             <Grid.Col span={1}><Button component={Link} target={"/pst/gui/logout"}>Logout</Button></Grid.Col>
                         </Grid>
                     </Header>}
