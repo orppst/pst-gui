@@ -1,4 +1,4 @@
-import {CoordSys, ObjectIdentifier} from "../generated/proposalToolSchemas.ts";
+import {CoordSys} from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
 import {fetchProposalResourceRemoveTarget, useProposalResourceGetTarget} from "../generated/proposalToolComponents.ts";
@@ -11,7 +11,7 @@ import {
     SpaceFrame,
 } from "../generated/proposalToolSchemas.ts";
 
-type TargetProps = { proposalCode: number, row: ObjectIdentifier };
+type TargetProps = { proposalCode: number, dbid: number };
 
 export function RenderTarget(props: TargetProps) {
     type PropsEquatorialPoint = {point: EquatorialPoint}
@@ -24,7 +24,7 @@ export function RenderTarget(props: TargetProps) {
         {pathParams:
                 {
                     proposalCode: props.proposalCode,
-                    targetId: props.row.dbid!,
+                    targetId: props.dbid!,
                 },
         });
 
@@ -106,7 +106,7 @@ export function RenderTarget(props: TargetProps) {
         fetchProposalResourceRemoveTarget({pathParams:
                 {
                     proposalCode: props.proposalCode,
-                    targetId: props.row.dbid!
+                    targetId: props.dbid!
                 }})
             .then(()=>setSubmitting(false))
             .then(()=>queryClient.invalidateQueries())
