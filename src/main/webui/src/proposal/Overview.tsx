@@ -19,7 +19,17 @@ function OverviewPanel() {
     return (
         <Box>
             <Text fz="lg" fw={700}>This will become nicely formatted overview of the selected proposal</Text>
-            <Box>
+            <Box  sx={(theme) => ({
+                backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+                padding: theme.spacing.xl,
+                borderRadius: theme.radius.md,
+                cursor: 'pointer',
+
+                '&:hover': {
+                    backgroundColor:
+                        theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
+                },
+            })}>
                 {isLoading ? (`Loading...`)
                     : (
                         <pre>

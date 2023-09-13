@@ -11,7 +11,13 @@ import {Box, Button, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
 
 function AddInvestigatorPanel() {
-    const form = useForm({
+    interface newInvestigatorForm {
+      type: InvestigatorKind,
+      forPhD: boolean,
+      selectedInvestigator: number
+    };
+
+    const form = useForm<newInvestigatorForm>({
         initialValues: {type: "COI" as InvestigatorKind, forPhD: false, selectedInvestigator: 0},
         validate: {
             selectedInvestigator: (value) => (value === 0 ? 'Please select an investigator' : null)
@@ -74,7 +80,17 @@ function AddInvestigatorPanel() {
     }
 
     return (
-                <Box>
+                <Box sx={(theme) => ({
+                    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+                    padding: theme.spacing.xl,
+                    margin: theme.spacing.md,
+                    borderRadius: theme.radius.md,
+                    cursor: 'pointer',
+                    '&:hover': {
+                        backgroundColor:
+                            theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
+                    },
+                })}>
                     <h3>Add and new investigator</h3>
                     <form onSubmit={handleAdd}>
                         <Select label={"Type"}
