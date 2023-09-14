@@ -11,7 +11,7 @@ import {
     SpaceFrame,
 } from "../generated/proposalToolSchemas.ts";
 
-type TargetProps = { proposalCode: number, dbid: number };
+type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
 
 export function RenderTarget(props: TargetProps) {
     type PropsEquatorialPoint = {point: EquatorialPoint}
@@ -157,7 +157,7 @@ export function RenderTarget(props: TargetProps) {
                                         data?.positionEpoch}/>
                                 </td>
                             </tr>
-                            <tr><td colSpan={3} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></td></tr>
+                            {props.showRemove && <tr><td colSpan={3} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></td></tr>}
                             </tbody>
                         </Table>
                     )

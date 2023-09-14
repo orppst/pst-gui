@@ -30,7 +30,7 @@ function TargetPanel() {
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
                                 return (<Box sx={boxListStyles} key={item.dbid}>
-                                    <RenderTarget proposalCode={Number(selectedProposalCode)} dbid={item.dbid!}/></Box>)
+                                    <RenderTarget proposalCode={Number(selectedProposalCode)} dbid={item.dbid!} showRemove={true}/></Box>)
                             } )
                     }
                 </Box>
