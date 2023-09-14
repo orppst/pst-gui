@@ -19,7 +19,19 @@ import DocumentsPanel from "./proposal/Documents";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
-import {AppShell, Navbar, Header, Button, NavLink, Box, Text, TextInput, ScrollArea, Grid} from "@mantine/core";
+import {
+    AppShell,
+    Navbar,
+    Header,
+    Button,
+    NavLink,
+    Box,
+    Text,
+    TextInput,
+    ScrollArea,
+    Grid,
+    useMantineTheme, MediaQuery, Burger
+} from "@mantine/core";
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 
 
@@ -91,24 +103,48 @@ function App2() {
    );
 
     function PSTRoot() {
-        const {user, token, apiUrl} = useContext(ProposalContext)
+        const {user, token, apiUrl} = useContext(ProposalContext);
+        const theme = useMantineTheme();
+        const [opened, setOpened] = useState(false);
         return (
             <ProposalContext.Provider value={{selectedProposalCode, user, token, apiUrl}}>
                 <AppShell
-                    header={<Header height={60} p="xs">
-                        <Grid>
-                            <Grid.Col span={2}><Button variant="subtle" component={Link} to={"/"}>Proposals for {user.fullName}</Button></Grid.Col>
-                            <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
-                            <Grid.Col offset={7} span={1}>{SwitchToggle()}</Grid.Col>
-                            <Grid.Col span={1}><Button component={Link} target={"/pst/gui/logout"}>Logout</Button></Grid.Col>
-                        </Grid>
-                    </Header>}
-                    navbar={<Navbar width={{ base: 310 }}>
-                        <Navbar.Section grow component={ScrollArea} width={{ base: 300 }}>
-                            {<Text fz="sm">Search and filter by <Proposals/> </Text>}
-                        </Navbar.Section>
+                    styles={{
+                        main: {
+                            background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.white,
+                        },
+                    }}
+                    navbarOffsetBreakpoint="sm"
+                    asideOffsetBreakpoint="sm"
+                    navbar={
+                        <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
+                            <Navbar.Section grow component={ScrollArea} width={{ sm: 200, lg: 300 }}>
+                                {<Text fz="sm">Search and filter by <Proposals/> </Text>}
+                            </Navbar.Section>
                         </Navbar>}
-                    >
+                    header={
+                        <Header height={60} p="xs">
+                            <Grid>
+                                <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+                                        <Grid.Col span={1}>
+                                            <Burger
+                                                opened={opened}
+                                                onClick={() => setOpened((o) => !o)}
+                                                size="sm"
+                                                color={theme.colors.gray[6]}
+                                                mr="xl"
+                                            />
+                                        </Grid.Col>
+                                </MediaQuery>
+                                <MediaQuery smallerThan={"md"} styles={{display: 'none'}}>
+                                    <Grid.Col span={2}><Button variant="subtle" component={Link} to={"/"}>Proposals for {user.fullName}</Button></Grid.Col>
+                                </MediaQuery>
+                                <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
+                                <Grid.Col offset={7} span={1}>{SwitchToggle()}</Grid.Col>
+                                <Grid.Col span={1}><Button component={Link} target={"/pst/gui/logout"}>Logout</Button></Grid.Col>
+                            </Grid>
+                        </Header>
+                    }>
                     <Outlet/>
                 </AppShell>
             </ProposalContext.Provider>
@@ -152,7 +188,7 @@ function App2() {
                         {data?.map((item) => (
                             <NavLink key={item.code} label={item.title} childrenOffset={30}>
                                 <NavLink to={"proposal/" + item.code} component={Link} label="Overview" />
-                                <NavLink to={"proposal/" + item.code + "/title"} component={Link}label="Title" />
+                                <NavLink to={"proposal/" + item.code + "/title"} component={Link} label="Title" />
                                 <NavLink to={"proposal/" + item.code + "/summary"} component={Link} label="Summary" />
                                 <NavLink to={"proposal/" + item.code + "/investigators"} component={Link} label="Investigators" />
                                 <NavLink to={"proposal/" + item.code + "/targets"} component={Link} label="Targets" />

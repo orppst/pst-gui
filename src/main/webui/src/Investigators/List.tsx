@@ -8,6 +8,7 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {Box, Button, Grid, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
+import {boxListStyles} from "../Styles";
 
 type PersonProps = {
     dbid: number
@@ -92,17 +93,7 @@ function RenderPerson(props: PersonProps) {
         });
 
     return (
-        <Box sx={(theme) => ({
-            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-            padding: theme.spacing.xl,
-            margin: theme.spacing.md,
-            borderRadius: theme.radius.md,
-            cursor: 'pointer',
-            '&:hover': {
-                backgroundColor:
-                    theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
-            },
-        })}>
+        <Box sx={boxListStyles}>
             {isLoading?(`Loading...`):
                 error?(`Error!`):
                     submitting?(`Removing...`):

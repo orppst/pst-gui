@@ -3,6 +3,7 @@ import {
     useProposalResourceGetObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Box, Text} from "@mantine/core";
+import {boxListStyles} from "../Styles";
 
 function OverviewPanel() {
     const { selectedProposalCode } = useParams();
@@ -19,17 +20,7 @@ function OverviewPanel() {
     return (
         <Box>
             <Text fz="lg" fw={700}>This will become nicely formatted overview of the selected proposal</Text>
-            <Box  sx={(theme) => ({
-                backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-                padding: theme.spacing.xl,
-                borderRadius: theme.radius.md,
-                cursor: 'pointer',
-
-                '&:hover': {
-                    backgroundColor:
-                        theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
-                },
-            })}>
+            <Box  sx={boxListStyles}>
                 {isLoading ? (`Loading...`)
                     : (
                         <pre>

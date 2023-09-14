@@ -6,9 +6,11 @@ import AddTargetPanel from "./New";
 import {useParams} from "react-router-dom";
 import {Box, Text} from "@mantine/core";
 import {RenderTarget} from "./RenderTarget";
+import {boxListStyles} from "../Styles";
 
 function TargetPanel() {
     const { selectedProposalCode} = useParams();
+
 
     const {  data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
 
@@ -27,17 +29,7 @@ function TargetPanel() {
                     <AddTargetPanel/>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
-                                return (<Box sx={(theme) => ({
-                                    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-                                    padding: theme.spacing.xl,
-                                    margin: theme.spacing.md,
-                                    borderRadius: theme.radius.md,
-                                    cursor: 'pointer',
-                                    '&:hover': {
-                                        backgroundColor:
-                                            theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
-                                    },
-                                })} key={item.dbid}>
+                                return (<Box sx={boxListStyles} key={item.dbid}>
                                     <RenderTarget proposalCode={Number(selectedProposalCode)} dbid={item.dbid!}/></Box>)
                             } )
                     }

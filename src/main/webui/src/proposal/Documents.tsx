@@ -3,6 +3,7 @@ import {
 } from "../generated/proposalToolComponents";
 import {useParams} from "react-router-dom";
 import {Box, Text} from "@mantine/core";
+import {boxListStyles} from "../Styles";
 
 function DocumentsPanel() {
     const { selectedProposalCode} = useParams();//
@@ -20,9 +21,7 @@ function DocumentsPanel() {
         <Box>
             <Text fz="lg" fw={700}>This is where upload and download of documents will happen</Text>
             <Box
-                sx={(theme) => ({
-                    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0]
-            })}>
+                sx={boxListStyles}>
                 {isLoading ? (`Loading...`)
                     : (
                         <pre>

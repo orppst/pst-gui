@@ -9,6 +9,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "../generated/proposalToolSchemas.ts";
 import {Box, Button, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
+import {boxAddNewStyles} from "../Styles";
 
 function AddInvestigatorPanel() {
     interface newInvestigatorForm {
@@ -80,18 +81,8 @@ function AddInvestigatorPanel() {
     }
 
     return (
-                <Box sx={(theme) => ({
-                    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-                    padding: theme.spacing.xl,
-                    margin: theme.spacing.md,
-                    borderRadius: theme.radius.md,
-                    cursor: 'pointer',
-                    '&:hover': {
-                        backgroundColor:
-                            theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
-                    },
-                })}>
-                    <h3>Add and new investigator</h3>
+                <Box sx={boxAddNewStyles}>
+                    <h3>Add an investigator</h3>
                     <form onSubmit={handleAdd}>
                         <Select label={"Type"}
                             data={typeData}

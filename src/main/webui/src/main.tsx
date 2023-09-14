@@ -17,16 +17,7 @@ function App() {
                 withGlobalStyles
                 withNormalizeCSS
                 theme={{
-                    colorScheme,
-
-                    headings: {
-                        fontFamily: 'Roboto, sans-serif',
-                        sizes: {
-                            h1: { fontSize: '2rem' },
-                        }
-                    },
-                    defaultRadius: 'md',
-                    loader: 'oval'
+                    colorScheme
                 }}>
                 <ModalsProvider>
                     <Notifications />

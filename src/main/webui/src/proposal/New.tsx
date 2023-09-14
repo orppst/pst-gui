@@ -8,6 +8,7 @@ import {useNavigate} from "react-router-dom";
 import {Box, Button, Select, Text, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
+import {boxAddNewStyles} from "../Styles";
 
 const kindData = [{value: "STANDARD", label: "Standard"}, {value: "TOO", label: "T.O.O"}, {value: "SURVEY", label: "Survey"}];
 
@@ -60,7 +61,7 @@ const kindData = [{value: "STANDARD", label: "Standard"}, {value: "TOO", label: 
                 <Box>Submitting request</Box>
             }
             <form onSubmit={createNewObservingProposal}>
-                <Box>
+                <Box sx={boxAddNewStyles}>
                 <TextInput name="title" placeholder="Give your proposal a title" withAsterisk label={"Title"} {...form.getInputProps("title")}/>
                 <Textarea rows={3} name="summary" placeholder="A brief summary" withAsterisk label={"Summary"} {...form.getInputProps("summary")} />
                 <Select label={"Kind"}
