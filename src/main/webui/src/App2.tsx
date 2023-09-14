@@ -15,7 +15,6 @@ import {createBrowserRouter, Link, Outlet, RouterProvider} from "react-router-do
 import { useHistoryState } from "./useHistoryState";
 import GoalsPanel from "./proposal/Goals";
 import ObservationsPanel from "./observations/List";
-import NewObservationPanel from "./observations/New";
 import DocumentsPanel from "./proposal/Documents";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -75,7 +74,6 @@ function App2() {
                     { path: "proposal/:selectedProposalCode/targets",  element:<TargetPanel />} ,
                     { path: "proposal/:selectedProposalCode/goals",  element:<GoalsPanel />} ,
                     { path: "proposal/:selectedProposalCode/observations",  element:<ObservationsPanel />} ,
-                    { path: "proposal/:selectedProposalCode/observations/new",  element:<NewObservationPanel />} ,
                     { path: "proposal/:selectedProposalCode/documents",  element:<DocumentsPanel />} ,
                 ]}], {
             basename: "/pst/gui/tool/"
