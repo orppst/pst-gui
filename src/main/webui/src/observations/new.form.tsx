@@ -2,12 +2,12 @@ import {useForm} from "@mantine/form";
 import {useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
 import {
     ActionIcon,
-    Button,
+    Button, Container, Divider,
     Grid,
-    Group,
+    Group, NumberInput,
     Select,
     Space,
-    Switch,
+    Switch, Text,
     Textarea,
     Tooltip
 } from "@mantine/core";
@@ -30,6 +30,16 @@ interface ObservationFormValues {
         key: string
     }[]
 }
+
+/*
+  We may want to do this in tabs with a stepper, there's a significant amount of detail for
+  one page:
+
+  1. select target and observation type
+  2. set technical goals and the "field"
+  3. select timing-windows
+ */
+
 
 export function ObservationForm (props: TargetId){
 
@@ -133,6 +143,58 @@ export function ObservationForm (props: TargetId){
         )
     }
 
+    function TechnicalGoalInputs() {
+        return (
+            <Group position={"center"}>
+                <NumberInput
+                    label={"Angular resolution (arcsec):"}
+                    defaultValue={0.000}
+                    precision={3}
+                    step={0.001}
+                    min={0}
+                    stepHoldDelay={500}
+                    stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                />
+                <NumberInput
+                    label={"Largest scale (degrees):"}
+                    defaultValue={0.000}
+                    precision={3}
+                    step={0.001}
+                    min={0}
+                    stepHoldDelay={500}
+                    stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                />
+                <NumberInput
+                    label={"Sensitivity (dB):"}
+                    defaultValue={0.000}
+                    precision={3}
+                    step={0.001}
+                    min={0}
+                    stepHoldDelay={500}
+                    stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                />
+                <NumberInput
+                    label={"Dynamic range (dB):"}
+                    defaultValue={0.00}
+                    precision={2}
+                    step={0.01}
+                    min={0}
+                    stepHoldDelay={500}
+                    stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                />
+                <NumberInput
+                    label={"Representative spectral point (GHz):"}
+                    defaultValue={0.00}
+                    precision={2}
+                    step={0.01}
+                    min={0}
+                    stepHoldDelay={500}
+                    stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                />
+            </Group>
+        )
+    }
+
     //As a reminder, Radio observations can be done at any time but Optical observations can occur only after sunset.
     //In both cases the target must be above the horizon.
 
@@ -143,93 +205,131 @@ export function ObservationForm (props: TargetId){
         // User may provide multiple "timing windows" per observation. These are stored as a List of Constraints
         // in the Observation in the backend. TimingWindows are not the only Constraints.
 
-        const targetsAdded = form.values.timingWindows.map((item, index) => (
-        <Group key={item.key} mt={"xs"}>
-            <DateTimePicker
-                label={"Start"}
-                placeholder={"pick a start time"}
-                allowDeselect
-                minDate={new Date()}
-                {...form.getInputProps(`timingWindows.${index}.start`)}
-            />
-            <DateTimePicker
-                label={"End"}
-                placeholder={"pick an end time"}
-                minDate={new Date()}
-                {...form.getInputProps(`timingWindows.${index}.end`)}
-            />
-            <Switch
-                mt={25}
-                label={"Avoid dates"}
-                {...form.getInputProps(`timingWindows.${index}.isAvoid`, {type: 'checkbox'})}
-            />
-            <Textarea
-                rows={2}
-                mt={25}
-                placeholder={"add optional note"}
-                {...form.getInputProps(`timingWindows.${index}.note`)}
-            />
-            <ActionIcon color={"red"} onClick={() => form.removeListItem("timingWindows", index) }>
-                <IconTrash size={"1rem"} />
-            </ActionIcon>
+        //Note: using Grid and Grid.Col to get the spacing correct for each element. Using Group appears to leave
+        // a significant amount of space unused
 
-        </Group>
+        let nCols = 24;
+        let rangeCol = 9;
+        let avoidCol = 3;
+        let noteCol = 9;
+        let removeCol = 3;
+
+
+        const targetsAdded = form.values.timingWindows.map((_item, index) => (
+        <>
+            <Grid.Col span={rangeCol}>
+                <DateTimePicker
+                    placeholder={"start time"}
+                    allowDeselect
+                    minDate={new Date()}
+                    {...form.getInputProps(`timingWindows.${index}.start`)}
+                />
+                <Space h={"xs"}/>
+                <DateTimePicker
+                    placeholder={"end time"}
+                    minDate={new Date()}
+                    {...form.getInputProps(`timingWindows.${index}.end`)}
+                />
+            </Grid.Col>
+            <Grid.Col span={avoidCol}>
+                <Switch
+                    mt={"1rem"}
+                    ml={"10%"}
+                    {...form.getInputProps(`timingWindows.${index}.isAvoid`, {type: 'checkbox'})}
+                />
+            </Grid.Col>
+            <Grid.Col span={noteCol}>
+                <Textarea
+                    autosize
+                    minRows={3}
+                    maxRows={3}
+                    placeholder={"add optional note"}
+                    {...form.getInputProps(`timingWindows.${index}.note`)}
+                />
+            </Grid.Col>
+            <Grid.Col span={removeCol}>
+                <ActionIcon
+                    color={"red"}
+                    variant={"filled"}
+                    onClick={() => form.removeListItem("timingWindows", index) }
+                >
+                    <IconTrash size={"2rem"} />
+                </ActionIcon>
+            </Grid.Col>
+            <Grid.Col span={nCols}>
+                <Divider />
+            </Grid.Col>
+        </>
         ));
 
         return (
-            <Group mb={"xs"}>
+            <Grid columns={nCols} gutter={"xl"}>
+                <Grid.Col span={rangeCol}>
+                    <Text size={"sm"}>Range</Text>
+                </Grid.Col>
+                <Grid.Col span={avoidCol}>
+                    <Text size={"sm"}>Avoid</Text>
+                </Grid.Col>
+                <Grid.Col span={noteCol}>
+                    <Text size={"sm"}>Note</Text>
+                </Grid.Col>
+                <Grid.Col span={removeCol}></Grid.Col>
+                <Grid.Col span={nCols}>
+                    <Divider size={"xs"}/>
+                </Grid.Col>
                 {targetsAdded}
-            </Group>
-
-            //button "add timing window" would not respond to the 'position' property of the enclosing Group
-            //when nested in this function - don't know why
+            </Grid>
         )
     }
 
-
-    //{//DisplayTargetDetails()// }
-
-    //TODO: onSubmit needs to do actual business logic to add the observation to the proposal
-
     return (
         <form onSubmit={form.onSubmit((values) => console.log(values))}>
-            <Grid columns={2}>
-                <Grid.Col span={1}>
+            <Container fluid>
+            <Grid grow columns={5}>
+                <Grid.Col span={2}>
                     <fieldset>
-                        <legend>Select target</legend>
+                        <legend><Text>Set target and observation type</Text></legend>
                         {SelectTargets()}
                         {
                             targetsLoading ? 'loading...' :
-                                <RenderTarget proposalCode={Number(selectedProposalCode)}  dbid={form.values.targetDBId} />
+                                <RenderTarget
+                                    proposalCode={Number(selectedProposalCode)}
+                                    dbid={form.values.targetDBId}
+                                    showRemove={false}
+                                />
                         }
                         <Space h={"xl"}/>
                         {SelectObservationType()}
-                        <Space h={"xl"}/>
                         {form.values.observationType === 'Calibration' &&
                             SelectCalibrationUse()
                         }
                     </fieldset>
-                </Grid.Col>
-                <Grid.Col span={1}>
                     <fieldset>
-                        <legend>Timing Windows</legend>
+                        <legend><Text>Technical goals</Text></legend>
+                        {TechnicalGoalInputs()}
+                    </fieldset>
+                </Grid.Col>
+                <Grid.Col span={3}>
+                    <fieldset>
+                        <legend><Text>Timing windows</Text></legend>
                         {SetObservationDateTime()}
                         <Group position={"right"} mt={"xs"}>
                             <Button onClick={() =>
                                 form.insertListItem('timingWindows', {...timingWindowInitial, key: randomId()})
                             }>
-                                <IconPlus size={"1rem"}/> Add timing window
+                                <IconPlus size={"1rem"}/>
                             </Button>
                         </Group>
                     </fieldset>
 
                     <Group position="right" mt="md">
                         <Tooltip label={"submit"}>
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit">Save</Button>
                         </Tooltip>
                     </Group>
                 </Grid.Col>
             </Grid>
+            </Container>
         </form>
     );
 }

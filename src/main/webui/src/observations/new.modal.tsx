@@ -13,7 +13,7 @@ export default function ObservationsNewModal(props: TargetId) {
                 opened={opened}
                 onClose={close}
                 title={"New Observation Form"}
-                size={'100%'}
+                fullScreen
             >
                 <ObservationForm id={props.id}/>
             </Modal>
