@@ -1,9 +1,10 @@
 import {
-    useObservationResourceGetObservations, useProposalResourceGetTargets,
+    useObservationResourceGetObservations, useProposalResourceGetObservingProposalTitle, useProposalResourceGetTargets,
 } from "../generated/proposalToolComponents";
-//import {useNavigate} from "react-router-dom";
 import ObservationsNewModal from "./new.modal.tsx";
 import {useParams} from "react-router-dom";
+import RenderObservation from "./RenderObservation.tsx";
+import {Button, Group, Space, Table} from "@mantine/core";
 
 
 export type TargetId = {id: number | undefined};
@@ -26,10 +27,13 @@ function ObservationsPanel() {
         </>
     );
 
+    //reminder we are getting lists of 'ObjectIdentifiers' which contain only a name and DB id for
+    //the object specified i.e. we don't get any information on child objects
+
     function Observations() {
         const { selectedProposalCode} = useParams();
 
-        const { data , error, isLoading } =
+        const { data: observations , error: observationsError, isLoading: observationsLoading } =
             useObservationResourceGetObservations(
                 {pathParams: {proposalCode: Number(selectedProposalCode)},},
                 {enabled: true});
@@ -40,42 +44,69 @@ function ObservationsPanel() {
             useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}},
                 {enabled: true});
 
-        if (error) {
+        const {data: titledata, error: titleError, isLoading: titleLoading} =
+        useProposalResourceGetObservingProposalTitle(
+            {pathParams: {proposalCode: Number(selectedProposalCode)}}
+        )
+
+        if (observationsError) {
             return (
-                <div>
-                    needs work
-                    <pre>{JSON.stringify(error, null, 2)}</pre>
-                </div>
+                <pre>{getErrorMessage(observationsError)}</pre>
             );
         }
 
         if (targetsError) {
             return (
-                <div>
-                    needs work
-                    <pre>{JSON.stringify(targetsError, null, 2)}</pre>
-                </div>
+                <pre>{getErrorMessage(targetsError)}</pre>
+            )
+        }
+
+        if (titleError) {
+            return (
+                <pre>{getErrorMessage(titleError)}</pre>
             )
         }
 
         return (
             <div>
-                <h3>This where observations will be managed for </h3>
-                {targetsLoading ? (`Loading...`) :
-                    targets!.length > 0 ?
-                        <ObservationsNewModal id={targets!.at(0)!.dbid}/> :
-                        <p>WIP: No targets added. Go to 'Targets' tab and add at least one target.</p>
+                <h3>Observations for { titleLoading ? '...' : "'" + titledata + "'"} </h3>
+
+                {observationsLoading ? (`Loading...`) :
+                    <Table>
+                        <thead>
+                        <tr>
+                            <th>Target name</th>
+                            <th>Observation type</th>
+                            <th>Field</th>
+                            <th>Technical goals</th>
+                            <th>Timing windows</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            observations?.map((observation) => {
+                                return (
+                                    <RenderObservation
+                                        proposalCode={Number(selectedProposalCode)}
+                                        dbid={observation.dbid!}
+                                    />
+                                )
+                            })
+                        }
+                        </tbody>
+                    </Table>
                 }
 
-                <fieldset>
-                    {isLoading ? (`Loading...`)
-                        : (
-                            <pre>
-                                needs work
-                                {`${JSON.stringify(data, null, 2)}`}
-                            </pre>
-                        )}
-                </fieldset>
+                <Space h={"xs"}/>
+
+                <Group position={"right"}>
+                    {targetsLoading ? (`Loading...`) :
+                        targets!.length > 0 ?
+                            <ObservationsNewModal id={targets!.at(0)!.dbid}/> :
+                            <Button>add a target</Button>
+                    }
+                </Group>
             </div>
         );
     }
