@@ -5685,6 +5685,79 @@ export const useObservationResourceAddNewObservation = (
   );
 };
 
+export type ObservationResourceGetObservationPathParams = {
+  /**
+   * @format int64
+   */
+  observationId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ObservationResourceGetObservationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservationResourceGetObservationVariables = {
+  pathParams: ObservationResourceGetObservationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservationResourceGetObservation = (
+  variables: ObservationResourceGetObservationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Observation,
+    ObservationResourceGetObservationError,
+    undefined,
+    {},
+    {},
+    ObservationResourceGetObservationPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservationResourceGetObservation = <
+  TData = Schemas.Observation
+>(
+  variables: ObservationResourceGetObservationVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Observation,
+      ObservationResourceGetObservationError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Observation,
+    ObservationResourceGetObservationError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/observations/{observationId}",
+      operationId: "observationResourceGetObservation",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchObservationResourceGetObservation(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type ObservationResourceRemoveObservationPathParams = {
   /**
    * @format int64
@@ -7693,6 +7766,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/observations";
       operationId: "observationResourceGetObservations";
       variables: ObservationResourceGetObservationsVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/observations/{observationId}";
+      operationId: "observationResourceGetObservation";
+      variables: ObservationResourceGetObservationVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints";

@@ -568,6 +568,7 @@ export type ObjectIdentifier = {
 export type ObsType = "TargetObservation" | "CalibrationObservation";
 
 export type Observation = {
+  "@type"?: string; //ObsType (see above)
   /**
    * any constraints on the observation
    */
