@@ -5,9 +5,22 @@ import ObservationsNewModal from "./new.modal.tsx";
 import {useParams} from "react-router-dom";
 import RenderObservation from "./RenderObservation.tsx";
 import {Button, Group, Space, Table} from "@mantine/core";
+import {Observation} from "../generated/proposalToolSchemas.ts";
 
 
-export type TargetId = {id: number | undefined};
+export type TargetId = {
+    id: number,
+};
+
+export type ObservationProps = {
+    observation: Observation,
+    id: number
+}
+
+export type ObservationTargetProps = {
+    observationProps: ObservationProps | undefined,
+    targetId: number | undefined
+}
 
 /*
        TODO:
@@ -38,7 +51,6 @@ function ObservationsPanel() {
                 {pathParams: {proposalCode: Number(selectedProposalCode)},},
                 {enabled: true}
             );
-      //  const navigate = useNavigate();
 
 
         const {data: targets, error: targetsError, isLoading: targetsLoading} =
@@ -78,9 +90,9 @@ function ObservationsPanel() {
                         <thead>
                         <tr>
                             <th>Target name</th>
-                            <th>Observation type</th>
+                            <th>Type</th>
                             <th>Field</th>
-                            <th>Performance parameters</th>
+                            <th>Performance params</th>
                             <th>Spectral windows</th>
                             <th>Timing windows</th>
                             <th></th>
@@ -90,10 +102,7 @@ function ObservationsPanel() {
                         {
                             observations?.map((observation) => {
                                 return (
-                                    <RenderObservation
-                                        proposalCode={Number(selectedProposalCode)}
-                                        dbid={observation.dbid!}
-                                    />
+                                    <RenderObservation id={observation.dbid!} />
                                 )
                             })
                         }
@@ -106,7 +115,7 @@ function ObservationsPanel() {
                 <Group position={"right"}>
                     {targetsLoading ? (`Loading...`) :
                         targets!.length > 0 ?
-                            <ObservationsNewModal id={targets!.at(0)!.dbid}/> :
+                            <ObservationsNewModal/> :
                             <Button>add a target</Button>
                     }
                 </Group>

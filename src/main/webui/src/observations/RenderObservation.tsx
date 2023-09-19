@@ -1,30 +1,57 @@
-import {useObservationResourceGetObservation} from "../generated/proposalToolComponents.ts";
-import {ActionIcon, Tooltip, Text, Space, Modal, Badge, Group} from "@mantine/core";
-import {IconCopy, IconEyeEdit, IconTrash} from "@tabler/icons-react";
+import {
+    useObservationResourceGetObservation,
+    useProposalResourceGetTargets
+} from "../generated/proposalToolComponents.ts";
+import {ActionIcon, Tooltip, Text, Space, Badge, Group} from "@mantine/core";
+import {IconCopy, IconTrash} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
-import {useDisclosure} from "@mantine/hooks";
-import ViewEditTechnicalGoals from "./ViewEditTechnicalGoals.tsx";
 import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
+import ObservationEditModal from "./edit.modal.tsx";
+import {useParams} from "react-router-dom";
+import {ObservationProps} from "./List.tsx";
 
-export type ObservationProps = {proposalCode: number, dbid: number}
+export type ObservationId = {id: number}
 
-export type TechnicalGoalsProps = {goal: TechnicalGoal, ids: ObservationProps}
+export type TechnicalGoalsProps = {goal: TechnicalGoal, observationId: number}
 
-export default function RenderObservation(props: ObservationProps) {
+export default function RenderObservation(observationId: ObservationId) {
 
-    const {data: observation, error, isLoading} =
+    const { selectedProposalCode} = useParams();
+
+    const {data: observation, error: observationError, isLoading: observationLoading} =
         useObservationResourceGetObservation(
-            {pathParams:
+            {
+                pathParams:
                 {
-                    proposalCode: props.proposalCode,
-                    observationId: props.dbid!,
+                    proposalCode: Number(selectedProposalCode),
+                    observationId: observationId.id,
                 },
         });
 
-    if (error) {
-        return <pre>{getErrorMessage(error)}</pre>
+    if (observationError) {
+        return <pre>{getErrorMessage(observationError)}</pre>
     }
 
+    let targetName = observationLoading ? '' : observation!.target!.sourceName!;
+
+    const {data: target, error: targetError, isLoading: targetLoading} =
+        useProposalResourceGetTargets(
+            {
+                pathParams: {proposalCode: Number(selectedProposalCode)},
+                queryParams: {sourceName: "%" + targetName + "%"},
+            },
+        );
+
+    if (targetError) {
+        return <pre>{getErrorMessage(targetError)}</pre>
+    }
+
+    let targetId = targetLoading ? 0 : target!.at(0)!.dbid!;
+
+    let observationProps : ObservationProps = {
+        observation: observation!,
+        id: observationId.id
+    }
 
     const confirmDeletion = () => modals.openConfirmModal({
         title: 'Delete Observation?',
@@ -65,28 +92,25 @@ export default function RenderObservation(props: ObservationProps) {
         onCancel:() => console.log('Cancel copy'),
     })
 
-    const [editOpened, {close, open}] = useDisclosure();
-
     let performance : PerformanceParameters = observation?.technicalGoal?.performance!;
 
-    let performanceFull =
+    let performanceFull = observationLoading ? false :
         performance.desiredAngularResolution?.value !== undefined &&
         performance.representativeSpectralPoint?.value !== undefined &&
         performance.desiredDynamicRange?.value !== undefined &&
         performance.desiredSensitivity?.value !== undefined &&
         performance.desiredLargestScale?.value !== undefined;
 
-    let performanceEmpty =
+    let performanceEmpty = observationLoading ? true :
         performance.desiredAngularResolution?.value === undefined &&
         performance.representativeSpectralPoint?.value === undefined &&
         performance.desiredDynamicRange?.value === undefined &&
         performance.desiredSensitivity?.value === undefined &&
         performance.desiredLargestScale?.value === undefined;
 
-
     return (
         <>
-            {isLoading? ('Loading...') :
+            {observationLoading? ('Loading...') :
                 (
                     <tr>
                         <td>
@@ -161,11 +185,13 @@ export default function RenderObservation(props: ObservationProps) {
                         </td>
                         <td>
                             <Group position={"right"}>
-                                <Tooltip openDelay={1000} label={"view/edit"}>
-                                    <ActionIcon color={"green"} onClick={open}>
-                                        <IconEyeEdit size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
+                                {
+                                    observationLoading || targetLoading ? 'Loading...' :
+                                    <ObservationEditModal
+                                        observationProps={observationProps}
+                                        targetId={targetId}
+                                    />
+                                }
                                 <Tooltip openDelay={1000} label={"copy"}>
                                     <ActionIcon color={"blue"} onClick={confirmCopy}>
                                         <IconCopy size={"2rem"}/>
@@ -177,18 +203,6 @@ export default function RenderObservation(props: ObservationProps) {
                                     </ActionIcon>
                                 </Tooltip>
                             </Group>
-                            <Modal
-                                opened={editOpened}
-                                onClose={close}
-                                title={"View/edit technical goals"}
-                                fullScreen
-                            >
-                                <ViewEditTechnicalGoals
-                                    goal={observation?.technicalGoal!}
-                                    ids={props}
-                                />
-                            </Modal>
-
                         </td>
                     </tr>
                 )

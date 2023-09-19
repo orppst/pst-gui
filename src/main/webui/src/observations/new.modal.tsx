@@ -1,10 +1,9 @@
 import {ActionIcon, Modal, Tooltip} from "@mantine/core";
 import {useDisclosure} from "@mantine/hooks";
-import {ObservationForm} from "./new.form.tsx";
-import {TargetId} from "./List.tsx";
+import {ObservationNewForm} from "./new.form.tsx";
 import {IconPlus} from "@tabler/icons-react";
 
-export default function ObservationsNewModal(props: TargetId) {
+export default function ObservationsNewModal() {
 
     const [opened, { close, open }] = useDisclosure();
     return (
@@ -18,9 +17,12 @@ export default function ObservationsNewModal(props: TargetId) {
                 opened={opened}
                 onClose={close}
                 title={"New Observation Form"}
-                fullScreen
+                size={"50%"}
             >
-                <ObservationForm id={props.id}/>
+                <ObservationNewForm
+                    observationProps={undefined}
+                    targetId={undefined}
+                />
             </Modal>
         </>
     );

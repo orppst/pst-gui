@@ -1,6 +1,7 @@
-import {Button, Group, NumberInput, Text, Tooltip} from "@mantine/core";
+import {ActionIcon, Group, NumberInput, Text, Tooltip} from "@mantine/core";
 import {TechnicalGoalsProps} from "./RenderObservation.tsx";
 import {useForm} from "@mantine/form";
+import {IconDeviceFloppy} from "@tabler/icons-react";
 
 export default function ViewEditTechnicalGoals(props: TechnicalGoalsProps) {
 
@@ -87,7 +88,6 @@ export default function ViewEditTechnicalGoals(props: TechnicalGoalsProps) {
         )
     }
 
-    //(titleLoading ? "title loading" : proposalTitle)
     return (
         <form
             onSubmit={form.onSubmit(
@@ -97,8 +97,10 @@ export default function ViewEditTechnicalGoals(props: TechnicalGoalsProps) {
             <RenderPerformanceDetails/>
             <RenderSpectrumDetails />
             <Group position="right" mt="md">
-                <Tooltip label={"submit"}>
-                    <Button type="submit">Save</Button>
+                <Tooltip label={"Save"}>
+                    <ActionIcon size={"xl"} color={"indigo.5"} type="submit">
+                        <IconDeviceFloppy size={"3rem"}/>
+                    </ActionIcon>
                 </Tooltip>
             </Group>
         </form>
