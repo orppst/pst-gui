@@ -81,32 +81,30 @@ function AddInvestigatorPanel() {
     }
 
     return (
-                <Box sx={boxAddNewStyles}>
-                    <h3>Add an investigator</h3>
-                    <form onSubmit={handleAdd}>
-                        <Select label={"Type"}
-                            data={typeData}
-                            {...form.getInputProps("type")}
-                        />
-                        <Checkbox
-                            label={"Is this for a PHD?"}
-                            {...form.getInputProps("forPhD")}
-                        />
-                        <Select
-                            label="Select an investigator"
-                            searchable
-                            data={searchData}
-                            {...form.getInputProps("selectedInvestigator")}
-                        />
-                        <Grid>
-                            <Grid.Col span={12}><Button type={"submit"}>Add</Button></Grid.Col>
-                            <Grid.Col span={1}><Button variant="light" onClick={handleCancel}>Cancel</Button></Grid.Col>
-                        </Grid>
-                    </form>
-                </Box>
-
+            <Box sx={boxAddNewStyles}>
+                <h3>Add an investigator</h3>
+                <form onSubmit={handleAdd}>
+                    <Select label={"Type"}
+                        data={typeData}
+                        {...form.getInputProps("type")}
+                    />
+                    <Checkbox
+                        label={"Is this for a PHD?"}
+                        {...form.getInputProps("forPhD")}
+                    />
+                    <Select
+                        label="Select an investigator"
+                        searchable
+                        data={searchData}
+                        {...form.getInputProps("selectedInvestigator")}
+                    />
+                    <Grid>
+                        <Grid.Col span={12}><Button type={"submit"}>Add</Button></Grid.Col>
+                        <Grid.Col span={1}><Button variant="light" onClick={handleCancel}>Cancel</Button></Grid.Col>
+                    </Grid>
+                </form>
+            </Box>
     )
-
 }
 
 export default AddInvestigatorPanel
