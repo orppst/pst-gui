@@ -1,4 +1,4 @@
-import {Button, Modal} from "@mantine/core";
+import {ActionIcon, Modal, Tooltip} from "@mantine/core";
 import {useDisclosure} from "@mantine/hooks";
 import {ObservationForm} from "./new.form.tsx";
 import {TargetId} from "./List.tsx";
@@ -9,9 +9,11 @@ export default function ObservationsNewModal(props: TargetId) {
     const [opened, { close, open }] = useDisclosure();
     return (
         <>
-            <Button onClick={open}>
-                <IconPlus size={"1rem"}/>
-            </Button>
+            <Tooltip openDelay={1000} label={"new observation"}>
+                <ActionIcon color={"teal.5"} onClick={open}>
+                    <IconPlus size={"2rem"}/>
+                </ActionIcon>
+            </Tooltip>
             <Modal
                 opened={opened}
                 onClose={close}

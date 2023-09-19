@@ -36,18 +36,20 @@ function ObservationsPanel() {
         const { data: observations , error: observationsError, isLoading: observationsLoading } =
             useObservationResourceGetObservations(
                 {pathParams: {proposalCode: Number(selectedProposalCode)},},
-                {enabled: true});
+                {enabled: true}
+            );
       //  const navigate = useNavigate();
 
 
         const {data: targets, error: targetsError, isLoading: targetsLoading} =
             useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}},
-                {enabled: true});
+                {enabled: true}
+            );
 
-        const {data: titledata, error: titleError, isLoading: titleLoading} =
-        useProposalResourceGetObservingProposalTitle(
+        const {data: titleData, error: titleError, isLoading: titleLoading} =
+            useProposalResourceGetObservingProposalTitle(
             {pathParams: {proposalCode: Number(selectedProposalCode)}}
-        )
+            );
 
         if (observationsError) {
             return (
@@ -69,7 +71,7 @@ function ObservationsPanel() {
 
         return (
             <div>
-                <h3>Observations for { titleLoading ? '...' : "'" + titledata + "'"} </h3>
+                <h3>Observations for { titleLoading ? '...' : "'" + titleData + "'"} </h3>
 
                 {observationsLoading ? (`Loading...`) :
                     <Table>
@@ -78,7 +80,8 @@ function ObservationsPanel() {
                             <th>Target name</th>
                             <th>Observation type</th>
                             <th>Field</th>
-                            <th>Technical goals</th>
+                            <th>Performance parameters</th>
+                            <th>Spectral windows</th>
                             <th>Timing windows</th>
                             <th></th>
                         </tr>
