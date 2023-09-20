@@ -1,4 +1,5 @@
 import {
+    fetchObservationResourceRemoveObservation,
     useObservationResourceGetObservation,
     useProposalResourceGetTargets
 } from "../generated/proposalToolComponents.ts";
@@ -9,12 +10,15 @@ import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSch
 import ObservationEditModal from "./edit.modal.tsx";
 import {useParams} from "react-router-dom";
 import {ObservationProps} from "./List.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 export type ObservationId = {id: number}
 
 export type TechnicalGoalsProps = {goal: TechnicalGoal, observationId: number}
 
 export default function RenderObservation(observationId: ObservationId) {
+
+    const queryClient = useQueryClient();
 
     const { selectedProposalCode} = useParams();
 
@@ -53,6 +57,14 @@ export default function RenderObservation(observationId: ObservationId) {
         id: observationId.id
     }
 
+    function handleDelete() {
+        fetchObservationResourceRemoveObservation({
+            pathParams: {proposalCode: Number(selectedProposalCode), observationId: observationId.id}
+        })
+            .then(()=>queryClient.invalidateQueries())
+            .catch(console.log);
+    }
+
     const confirmDeletion = () => modals.openConfirmModal({
         title: 'Delete Observation?',
         children: (
@@ -68,7 +80,7 @@ export default function RenderObservation(observationId: ObservationId) {
         ),
         labels: {confirm: 'Delete', cancel: "No don't delete it"},
         confirmProps: {color: 'red'},
-        onConfirm: () => console.log('Confirm delete'),
+        onConfirm() {handleDelete()},
         onCancel: () => console.log('Cancel delete'),
     })
 
@@ -190,6 +202,7 @@ export default function RenderObservation(observationId: ObservationId) {
                                     <ObservationEditModal
                                         observationProps={observationProps}
                                         targetId={targetId}
+                                        newObservation={false}
                                     />
                                 }
                                 <Tooltip openDelay={1000} label={"copy"}>

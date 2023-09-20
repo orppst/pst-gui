@@ -19,8 +19,7 @@ export default function ObservationEditForm(props: ObservationTargetProps){
     return (
         <>
             <ObservationNewForm
-                observationProps={props.observationProps}
-                targetId={props.targetId}
+                {...props}
             />
             <ViewEditTechnicalGoals
                 goal={props.observationProps!.observation.technicalGoal!}

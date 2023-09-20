@@ -1,5 +1,8 @@
 import {useForm} from "@mantine/form";
-import {useProposalResourceGetTargets} from "../generated/proposalToolComponents.ts";
+import {
+    fetchObservationResourceAddNewObservation,
+    useProposalResourceGetTargets
+} from "../generated/proposalToolComponents.ts";
 import {
     ActionIcon,
     Container,
@@ -12,22 +15,24 @@ import {useParams} from "react-router-dom";
 import {ObservationTargetProps} from "./List.tsx";
 import {RenderTarget} from "../targets/RenderTarget.tsx";
 import {IconDeviceFloppy} from "@tabler/icons-react";
-import {CalibrationObservation, CalibrationTargetIntendedUse} from "../generated/proposalToolSchemas.ts";
+import {
+    CalibrationObservation,
+    CalibrationTargetIntendedUse
+} from "../generated/proposalToolSchemas.ts";
+import {useQueryClient} from "@tanstack/react-query";
 
 
 type ObservationType = 'Target'|'Calibration'|'';
-type CalibrationUse = CalibrationTargetIntendedUse |'';
 
 interface ObservationFormValues {
     observationType: ObservationType;
-    calibrationUse:  CalibrationUse,
+    calibrationUse:  CalibrationTargetIntendedUse,
     targetDBId: number | undefined,
 }
 
 export function ObservationNewForm (props: ObservationTargetProps){
 
-    // we need a valid form.values.targetDBId before we call the 'RenderTarget' function.
-    // We get this from the 'props' passed in from calling environment
+    const queryClient = useQueryClient();
 
     const { selectedProposalCode} = useParams();
 
@@ -38,8 +43,8 @@ export function ObservationNewForm (props: ObservationTargetProps){
         === 'proposal:TargetObservation' ? 'Target': 'Calibration' :
         '';
 
-    let calibrationUse : CalibrationUse = observationType === 'Calibration' ?
-        (props.observationProps!.observation as CalibrationObservation).intent! : '';
+    let calibrationUse : CalibrationTargetIntendedUse = observationType === 'Calibration' ?
+        (props.observationProps!.observation as CalibrationObservation).intent! : 'AMPLITUDE';
 
 
     const form = useForm<ObservationFormValues>({
@@ -50,7 +55,10 @@ export function ObservationNewForm (props: ObservationTargetProps){
         },
 
         validate: {
-
+            targetDBId: (value) =>
+                (value === undefined ? 'Please select a target' : null),
+            observationType: (value) =>
+                (value === '' ? 'Please select the observation type' : null),
         },
     });
 
@@ -83,7 +91,6 @@ export function ObservationNewForm (props: ObservationTargetProps){
                         searchable
                         data={selectTargets}
                         {...form.getInputProps('targetDBId')}
-                        required
                     />
                     : null
                 }
@@ -126,8 +133,52 @@ export function ObservationNewForm (props: ObservationTargetProps){
         )
     }
 
+    const handleSubmit = form.onSubmit( (values) => {
+
+
+
+        if (props.newObservation) {
+            console.log("Creating");
+
+            let newObservation : CalibrationObservation = {
+                "@type": "proposal:TargetObservation",
+                target: {
+                    "@type": "proposal:SolarSystemTarget",
+                    "_id": values.targetDBId
+                },
+                technicalGoal: {
+                    "_id": 1
+                },
+                field: {
+                    "@type": "proposal:TargetField",
+                    "_id": 1
+                }
+            }
+
+            if (values.observationType == 'Calibration') {
+                newObservation = {...newObservation,"@type": "proposal:CalibrationObservation", intent: values.calibrationUse}
+            }
+
+            console.log(JSON.stringify(newObservation));
+
+            fetchObservationResourceAddNewObservation({
+                pathParams:{proposalCode: Number(selectedProposalCode)},
+                body: newObservation
+            })
+                .then(()=>queryClient.invalidateQueries())
+                .then(()=>props.closeModal!())
+                .catch(console.log);
+
+        }
+        else {
+            console.log("Editing");
+        }
+        console.log(values)
+    });
+
+
     return (
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form onSubmit={handleSubmit}>
             <Container fluid>
                 {SelectTargets()}
                 {

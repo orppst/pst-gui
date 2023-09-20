@@ -126,6 +126,7 @@ export type BinnedCoordinate = {
  * An observation that is intended for calibration
  */
 export type CalibrationObservation = {
+  "@type"?: string;
   /**
    * any constraints on the observation
    */
@@ -365,7 +366,11 @@ export type ExpectedSpectralLine = {
  * Definition of an observing field pointing
  */
 export type Field = {
+  "@type"?: string;
+
   name?: string;
+
+  _id?: number;
 };
 
 /**
@@ -1372,6 +1377,8 @@ export type Target = {
    * A common name for the source
    */
   sourceName?: string;
+
+  _id?: number;
 };
 
 /**
@@ -1385,6 +1392,7 @@ export type TargetField = {
  * an observation of the scientific target
  */
 export type TargetObservation = {
+  "@type"?: string;
   /**
    * any constraints on the observation
    */
@@ -1412,6 +1420,8 @@ export type TechnicalGoal = {
    */
   performance?: PerformanceParameters;
   spectrum?: ScienceSpectralWindow[];
+
+  _id?: number;
 };
 
 export type Telescope = {

@@ -681,6 +681,13 @@
     react-remove-scroll "^2.5.5"
     react-textarea-autosize "8.3.4"
 
+"@mantine/dates@^6.0.20":
+  version "6.0.20"
+  resolved "https://registry.yarnpkg.com/@mantine/dates/-/dates-6.0.20.tgz#d5029c29a102830ab7f0f0040b0a30ea9540832a"
+  integrity sha512-pLxMRdHkLzswqhgJFyQE+Tyf5UuyOeed+FOpFxUzxmv9tHD2kKjr7CwfXSIv8utPF6RRKY9QYErFAGve1/Gg6g==
+  dependencies:
+    "@mantine/utils" "6.0.20"
+
 "@mantine/form@^6.0.20":
   version "6.0.20"
   resolved "https://registry.yarnpkg.com/@mantine/form/-/form-6.0.20.tgz#8c6b3f0b096a7bdc9c29614950f500d31a97a379"
@@ -1009,6 +1016,19 @@
   integrity sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==
   dependencies:
     defer-to-connect "^2.0.1"
+
+"@tabler/icons-react@^2.34.0":
+  version "2.34.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons-react/-/icons-react-2.34.0.tgz#fd112ab70269f114a4cb6f76e959a6649b86f009"
+  integrity sha512-HNNTdwwAW8IwUxLPY2HWFw+d7nPVByieamIx90qM1+Rq8UfvLjwsBFNcUKaJcfRFIAa80o4g6ZGy/NMD/Zw73A==
+  dependencies:
+    "@tabler/icons" "2.34.0"
+    prop-types "^15.7.2"
+
+"@tabler/icons@2.34.0":
+  version "2.34.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-2.34.0.tgz#cfa4b762259102cc91f52708253745b6438a5425"
+  integrity sha512-65GsJsT4ZBETWcdrNxbsjsbRoZvbVk3CcU2SafaElrzP1wpOeuAn9aELVEbxhdyZyP9dg2SCfgH6iAArJgp7lw==
 
 "@tanstack/match-sorter-utils@^8.7.0":
   version "8.8.4"
@@ -1835,6 +1855,11 @@ csstype@^3.0.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
+
+dayjs@^1.11.9:
+  version "1.11.9"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.9.tgz#9ca491933fadd0a60a2c19f6c237c03517d71d1a"
+  integrity sha512-QvzAURSbQ0pKdIye2txOzNaHmxtUBXerpY0FJsFXUMKbIZeFm5ht1LS/jFsrncjnmtv8HsG0W2g6c0zUjZWmpA==
 
 debug@^4.1.0, debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.4"

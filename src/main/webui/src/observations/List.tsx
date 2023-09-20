@@ -4,7 +4,7 @@ import {
 import ObservationsNewModal from "./new.modal.tsx";
 import {useParams} from "react-router-dom";
 import RenderObservation from "./RenderObservation.tsx";
-import {Button, Group, Space, Table} from "@mantine/core";
+import {Badge, Button, Group, Space, Table} from "@mantine/core";
 import {Observation} from "../generated/proposalToolSchemas.ts";
 
 
@@ -19,7 +19,9 @@ export type ObservationProps = {
 
 export type ObservationTargetProps = {
     observationProps: ObservationProps | undefined,
-    targetId: number | undefined
+    targetId: number | undefined,
+    newObservation: boolean,
+    closeModal?: () => void
 }
 
 /*
@@ -83,7 +85,13 @@ function ObservationsPanel() {
 
         return (
             <div>
-                <h3>Observations for { titleLoading ? '...' : "'" + titleData + "'"} </h3>
+                <h3>
+                    { titleLoading ?
+                        <Badge size={"xl"} radius={0}>...</Badge> :
+                        <Badge size={"xl"} radius={0}>{titleData}</Badge>
+                    }
+                    : Observations
+                </h3>
 
                 {observationsLoading ? (`Loading...`) :
                     <Table>

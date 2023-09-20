@@ -6,6 +6,9 @@ import {ObservationTargetProps} from "./List.tsx";
 
 export default function ObservationEditModal(observationProps: ObservationTargetProps) {
     const [opened, {close, open}] = useDisclosure();
+
+    const props = {...observationProps, closeModal: () => {close()}};
+
     return (
         <>
             <Tooltip openDelay={1000} label={"view/edit"}>
@@ -19,7 +22,7 @@ export default function ObservationEditModal(observationProps: ObservationTarget
                 title={"View/Edit Observation Form"}
                 fullScreen
             >
-                <ObservationEditForm {...observationProps}/>
+                <ObservationEditForm {...props}/>
             </Modal>
         </>
     )

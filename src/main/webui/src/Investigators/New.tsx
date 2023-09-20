@@ -16,7 +16,7 @@ function AddInvestigatorPanel() {
       type: InvestigatorKind,
       forPhD: boolean,
       selectedInvestigator: number
-    };
+    }
 
     const form = useForm<newInvestigatorForm>({
         initialValues: {type: "COI" as InvestigatorKind, forPhD: false, selectedInvestigator: 0},

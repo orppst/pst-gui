@@ -22,6 +22,8 @@ export default function ObservationsNewModal() {
                 <ObservationNewForm
                     observationProps={undefined}
                     targetId={undefined}
+                    newObservation={true}
+                    closeModal={() => {close();}}
                 />
             </Modal>
         </>
