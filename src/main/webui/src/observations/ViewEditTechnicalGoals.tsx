@@ -1,5 +1,5 @@
 import {ActionIcon, Group, NumberInput, Text, Tooltip} from "@mantine/core";
-import {TechnicalGoalsProps} from "./RenderObservation.tsx";
+import {TechnicalGoalsProps} from "./table.row.tsx";
 import {useForm} from "@mantine/form";
 import {IconDeviceFloppy} from "@tabler/icons-react";
 

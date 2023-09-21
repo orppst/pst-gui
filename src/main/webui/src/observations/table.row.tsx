@@ -16,7 +16,7 @@ export type ObservationId = {id: number}
 
 export type TechnicalGoalsProps = {goal: TechnicalGoal, observationId: number}
 
-export default function RenderObservation(observationId: ObservationId) {
+export default function ObservationRow(observationId: ObservationId) {
 
     const queryClient = useQueryClient();
 

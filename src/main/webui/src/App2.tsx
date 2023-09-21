@@ -13,7 +13,7 @@ import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
 import {createBrowserRouter, Link, Outlet, RouterProvider} from "react-router-dom";
 import { useHistoryState } from "./useHistoryState";
-import GoalsPanel from "./proposal/Goals";
+import GoalsPanel from "./technicalGoals/Goals.tsx";
 import ObservationsPanel from "./observations/List";
 import DocumentsPanel from "./proposal/Documents";
 

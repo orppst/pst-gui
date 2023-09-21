@@ -3,7 +3,7 @@ import {
 } from "../generated/proposalToolComponents";
 import ObservationsNewModal from "./new.modal.tsx";
 import {useParams} from "react-router-dom";
-import RenderObservation from "./RenderObservation.tsx";
+import ObservationRow from "./table.row.tsx";
 import {Badge, Button, Group, Space, Table} from "@mantine/core";
 import {Observation} from "../generated/proposalToolSchemas.ts";
 
@@ -110,7 +110,7 @@ function ObservationsPanel() {
                         {
                             observations?.map((observation) => {
                                 return (
-                                    <RenderObservation id={observation.dbid!} />
+                                    <ObservationRow id={observation.dbid!} />
                                 )
                             })
                         }
