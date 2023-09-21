@@ -1,6 +1,6 @@
-import {ActionIcon, Divider, Grid, Space, Switch, Text, Textarea} from "@mantine/core";
+import {ActionIcon, Button, Divider, Grid, Group, Space, Switch, Text, Textarea} from "@mantine/core";
 import {DateTimePicker} from "@mantine/dates";
-import {IconTrash} from "@tabler/icons-react";
+import {IconPlus, IconTrash} from "@tabler/icons-react";
 import {useForm} from "@mantine/form";
 import {randomId} from "@mantine/hooks";
 
@@ -101,21 +101,31 @@ export default function ViewEditTimingWindows() {
     ));
 
     return (
-        <Grid columns={nCols} gutter={"xl"}>
-            <Grid.Col span={rangeCol}>
-                <Text size={"sm"}>Range</Text>
-            </Grid.Col>
-            <Grid.Col span={avoidCol}>
-                <Text size={"sm"}>Avoid</Text>
-            </Grid.Col>
-            <Grid.Col span={noteCol}>
-                <Text size={"sm"}>Note</Text>
-            </Grid.Col>
-            <Grid.Col span={removeCol}></Grid.Col>
-            <Grid.Col span={nCols}>
-                <Divider size={"xs"}/>
-            </Grid.Col>
-            {targetsAdded}
-        </Grid>
-    )
+        <>
+            <Grid columns={nCols} gutter={"xl"}>
+                <Grid.Col span={rangeCol}>
+                    <Text size={"sm"}>Range</Text>
+                </Grid.Col>
+                <Grid.Col span={avoidCol}>
+                    <Text size={"sm"}>Avoid</Text>
+                </Grid.Col>
+                <Grid.Col span={noteCol}>
+                    <Text size={"sm"}>Note</Text>
+                </Grid.Col>
+                <Grid.Col span={removeCol}></Grid.Col>
+                <Grid.Col span={nCols}>
+                    <Divider size={"xs"}/>
+                </Grid.Col>
+                {targetsAdded}
+            </Grid>
+            <Group position={"right"} mt={"xs"}>
+                <Button onClick={() =>
+                    form.insertListItem('timingWindows', {...timingWindowInitial, key: randomId()})
+                }>
+                    <IconPlus size={"1rem"}/> Add timing window
+                </Button>
+            </Group>
+        </>
+
+)
 }

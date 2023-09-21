@@ -135,8 +135,6 @@ export function ObservationNewForm (props: ObservationTargetProps){
 
     const handleSubmit = form.onSubmit( (values) => {
 
-
-
         if (props.newObservation) {
             console.log("Creating");
 
