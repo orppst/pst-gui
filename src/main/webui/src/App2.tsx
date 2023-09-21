@@ -141,7 +141,7 @@ function App2() {
                                 </MediaQuery>
                                 <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
                                 <Grid.Col offset={7} span={1}>{SwitchToggle()}</Grid.Col>
-                                <Grid.Col span={1}><Button component={Link} target={"/pst/gui/logout"}>Logout</Button></Grid.Col>
+                                <Grid.Col span={1}><Button component={Link} to={"/../logout"}>Logout</Button></Grid.Col>
                             </Grid>
                         </Header>
                     }>
