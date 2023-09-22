@@ -101,6 +101,15 @@ export function RenderTarget(props: TargetProps) {
         )
     }
 
+    //Errors come in as name: "unknown", message: "Network Error" with an object called "stack" that
+    // contains the exception and message set in the API when the exception is thrown
+    const handleError = (error: { stack: { message: any; }; }) => {
+        console.error(error);
+        alert(error.stack.message);
+        setSubmitting(false);
+    }
+
+
     function handleRemove() {
         setSubmitting(true);
         fetchProposalResourceRemoveTarget({pathParams:
@@ -110,7 +119,7 @@ export function RenderTarget(props: TargetProps) {
                 }})
             .then(()=>setSubmitting(false))
             .then(()=>queryClient.invalidateQueries())
-            .catch((error) => {console.error(error)});
+            .catch(handleError);
     }
 
     const openRemoveModal = () =>
