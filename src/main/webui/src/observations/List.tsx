@@ -6,6 +6,7 @@ import {useParams} from "react-router-dom";
 import ObservationRow from "./table.row.tsx";
 import {Badge, Button, Group, Space, Table} from "@mantine/core";
 import {Observation} from "../generated/proposalToolSchemas.ts";
+import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 
 
 export type TargetId = {

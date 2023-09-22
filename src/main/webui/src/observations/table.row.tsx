@@ -11,6 +11,7 @@ import ObservationEditModal from "./edit.modal.tsx";
 import {useParams} from "react-router-dom";
 import {ObservationProps} from "./List.tsx";
 import {useQueryClient} from "@tanstack/react-query";
+import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 
 export type ObservationId = {id: number}
 

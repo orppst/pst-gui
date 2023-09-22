@@ -4,8 +4,10 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {ActionIcon, Badge, Group, Space, Text, Tooltip} from "@mantine/core";
-import {IconCopy, IconEyeEdit, IconTrash} from "@tabler/icons-react";
+import {IconCopy, IconTrash} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
+import TechnicalGoalEditModal from "./edit.modal.tsx";
+import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 
 export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
 
@@ -129,11 +131,7 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                             <Group position={"right"}>
                                 {
                                     goalLoading ? 'Loading...' :
-                                        <Tooltip openDelay={1000} label={"view/edit"}>
-                                            <ActionIcon color={"green"}>
-                                                <IconEyeEdit size={"2rem"}/>
-                                            </ActionIcon>
-                                        </Tooltip>
+                                        <TechnicalGoalEditModal {...goal} />
                                 }
                                 <Tooltip openDelay={1000} label={"clone"}>
                                     <ActionIcon color={"blue"} onClick={confirmClone}>
