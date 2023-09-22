@@ -110,7 +110,7 @@ export function RenderTarget(props: TargetProps) {
                 }})
             .then(()=>setSubmitting(false))
             .then(()=>queryClient.invalidateQueries())
-            .catch(console.log);
+            .catch((error) => {console.error(error)});
     }
 
     const openRemoveModal = () =>
