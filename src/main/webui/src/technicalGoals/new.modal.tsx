@@ -1,8 +1,9 @@
 import {useDisclosure} from "@mantine/hooks";
-import {ActionIcon, Modal, Tooltip, Text} from "@mantine/core";
+import {ActionIcon, Modal, Tooltip} from "@mantine/core";
 import {IconPlus} from "@tabler/icons-react";
+import TechnicalGoalParentForm from "./parent.form.tsx";
 
-export default function TechnicalGoalsNewModal() {
+export default function TechnicalGoalNewModal() {
 
     const [opened, { close, open }] = useDisclosure();
     return (
@@ -16,9 +17,9 @@ export default function TechnicalGoalsNewModal() {
                 opened={opened}
                 onClose={close}
                 title={"New Technical Goal Form"}
-                size={"50%"}
+                size={"30%"}
             >
-                <Text color={"yellow"}>Under Construction</Text>
+                <TechnicalGoalParentForm goal={undefined} close={close}/>
             </Modal>
         </>
     );

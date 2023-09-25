@@ -5,9 +5,15 @@ import {
 import {Badge, Box, Group, Space, Table} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import TechnicalGoalRow from "./table.row.tsx";
-import TechnicalGoalsNewModal from "./new.modal.tsx";
+import TechnicalGoalNewModal from "./new.modal.tsx";
+import {TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 
 export type TechnicalGoalId = {id: number};
+
+export type TechnicalGoalClose = {
+    goal: TechnicalGoal | undefined,
+    close: () => void
+}
 
 function GoalsPanel() {
     const { selectedProposalCode } = useParams();
@@ -78,7 +84,7 @@ function GoalsPanel() {
             <Space h={"xs"}/>
 
             <Group position={"right"}>
-                {goalsLoading ? (`Loading...`) : <TechnicalGoalsNewModal/>}
+                {goalsLoading ? (`Loading...`) : <TechnicalGoalNewModal/>}
             </Group>
         </div>
     );
