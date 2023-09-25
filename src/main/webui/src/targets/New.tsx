@@ -1,6 +1,6 @@
 // Test a mantine modal
 
-import {Button, Modal, TextInput} from "@mantine/core";
+import {Button, Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm, UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {ReactNode} from "react";
@@ -16,10 +16,17 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 
-const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
+const TargetForm = (props: FormPropsType<{
+    SelectedEpoch: string;
+    RA: number;
+    Dec: number;
+    TargetName: string }>) => {
     const form = useForm({
         initialValues: props.initialValues ?? {
-            TargetName: ""
+            TargetName: "",
+            RA: 0.00,
+            Dec: 0.00,
+            SelectedEpoch: "J2000"
         },
         validate: {
             TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null)
@@ -27,6 +34,25 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
     });
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
+
+    function simbadLookup() {
+        function notFound() {
+            const choice = window.confirm("Unable to match source " + form.values.TargetName + " try again?");
+            if(!choice)
+                { // @ts-ignore
+                    props.onSubmit?.('CANCEL' );
+                }
+        }
+
+        fetchSimbadResourceSimbadFindTarget({queryParams: {targetName: form.values.TargetName}})
+            .then((data : SimbadTargetResult) => {
+                console.log(data);
+                form.setFieldValue('RA', data.raDegrees?data.raDegrees:0);
+                form.setFieldValue('Dec', data.decDegrees?data.decDegrees:0);
+                form.setFieldValue('SelectedEpoch', data.epoch!);
+            })
+            .catch(() => notFound());
+    }
 
     function createNewTarget(val :{ TargetName: string }, data: SimbadTargetResult) {
         const sourceCoords: EquatorialPoint = {
@@ -66,15 +92,15 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
     const handleSubmit = form.onSubmit((val) => {
         form.validate();
 
-        function notFound() {
-            const choice = window.confirm("Unable to match source " + form.values.TargetName + " try again?");
-            if(!choice)
-                props.onSubmit?.(val);
-        }
+        const target: SimbadTargetResult = {
+            targetName: form.values.TargetName,
+            spaceSystemCode: 'ICRS',
+            epoch: form.values.SelectedEpoch,
+            raDegrees: form.values.RA,
+            decDegrees: form.values.Dec
+        };
 
-        fetchSimbadResourceSimbadFindTarget({queryParams: {targetName: form.values.TargetName}})
-            .then((data : SimbadTargetResult) => createNewTarget(val, data))
-            .catch(() => notFound());
+        createNewTarget({ TargetName: form.values.TargetName }, target);
     });
 
     return (
@@ -84,6 +110,31 @@ const TargetForm = (props: FormPropsType<{ TargetName: string }>) => {
                 label="Name"
                 placeholder="name of target"
                 {...form.getInputProps("TargetName")} />
+            <Button onClick={simbadLookup}>Lookup</Button>
+            <NumberInput
+                withAsterisk
+                label={"RA"}
+                precision={5}
+                step={0.00001}
+                min={0}
+                max={360}
+                stepHoldDelay={500}
+                stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                {...form.getInputProps("RA")}/>
+            <NumberInput
+                withAsterisk
+                label={"Dec"}
+                precision={5}
+                step={0.00001}
+                min={-90}
+                max={90}
+                stepHoldDelay={500}
+                stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                {...form.getInputProps("Dec")} />
+            <Select
+                label={"Coordinate System"}
+                data={[{label:"J2000",value:"J2000"}]}
+                {...form.getInputProps("SelectedEpoch")} />
             <div>
                 <Button type="submit">Submit</Button>
             </div>
@@ -96,7 +147,7 @@ export default function AddTargetPanel() {
     return (
         <>
             <Button onClick={open}>Add New</Button>
-            <Modal title="New target    " opened={opened} onClose={close}>
+            <Modal title="New target" opened={opened} onClose={close}>
                 <TargetForm
                     onSubmit={() => {
                         close();
