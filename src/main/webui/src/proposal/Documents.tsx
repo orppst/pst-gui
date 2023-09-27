@@ -2,38 +2,9 @@ import {
     useSupportingDocumentResourceGetSupportingDocuments,
 } from "../generated/proposalToolComponents";
 import {useParams} from "react-router-dom";
-import {Box, Button, Input, Table, Text} from "@mantine/core";
-import {boxAddNewStyles, boxListStyles} from "../Styles";
-import {useState} from "react";
-
-function oldDocumentsPanel() {
-    const { selectedProposalCode} = useParams();//
-    const { data , error, isLoading } = useSupportingDocumentResourceGetSupportingDocuments({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
-
-    if (error) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
-            </Box>
-        );
-    }
-
-    return (
-        <Box>
-            <Text fz="lg" fw={700}>This is where upload and download of documents will happen</Text>
-            <Box
-                sx={boxListStyles}>
-                {isLoading ? (`Loading...`)
-                    : (
-                        <pre>
-                            {`${JSON.stringify(data, null, 2)}`}
-                        </pre>
-                    )}
-            </Box>
-        </Box>
-    );
-
-}
+import {Box, Button, FileButton, Table, Text} from "@mantine/core";
+import {boxListStyles} from "../Styles";
+import {useState} from "react";8
 
 const DocumentsPanel = () => {
     const { selectedProposalCode} = useParams();//
@@ -50,12 +21,6 @@ const DocumentsPanel = () => {
             </Box>
         );
     }
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            setStatus("initial");
-            setFile(e.target.files[0]);
-        }
-    };
 
     const handleUpload = async () => {
         if (file) {
@@ -94,7 +59,9 @@ const DocumentsPanel = () => {
                     )}
             </Box>
             <Text fz="lg" fw={700}>Upload a document</Text>
-                <Input label="Choose a file" id="file" type="file" onChange={handleFileChange} />
+            <FileButton onChange={setFile}>
+                        {(props) => <Button {...props}>Choose a file</Button>}
+            </FileButton>
             {file && (
                 <Box sx={boxListStyles}>
                     File details:
@@ -121,11 +88,11 @@ const DocumentsPanel = () => {
 
 const Result = ({ status }: { status: string }) => {
     if (status === "success") {
-        return <p>✅ File uploaded successfully</p>;
+        return <Text>✅ File uploaded successfully</Text>;
     } else if (status === "fail") {
-        return <p>❌ File upload failed</p>;
+        return <Text>❌ File upload failed</Text>;
     } else if (status === "uploading") {
-        return <p>⏳ Uploading selected file...</p>;
+        return <Text>⏳ Uploading selected file...</Text>;
     } else {
         return null;
     }
