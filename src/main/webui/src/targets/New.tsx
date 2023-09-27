@@ -1,7 +1,7 @@
 // Test a mantine modal
 
 import {Button, Modal, NumberInput, Select, TextInput} from "@mantine/core";
-import { useForm, UseFormReturnType } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {ReactNode} from "react";
 
@@ -17,21 +17,21 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 
 const TargetForm = (props: FormPropsType<{
-    SelectedEpoch: string;
-    RA: number;
-    Dec: number;
-    TargetName: string }>) => {
+        SelectedEpoch: string;
+        RA: number;
+        Dec: number;
+        TargetName: string }>) => {
     const form = useForm({
-        initialValues: props.initialValues ?? {
-            TargetName: "",
-            RA: 0.00,
-            Dec: 0.00,
-            SelectedEpoch: "J2000"
-        },
-        validate: {
-            TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null)
-        }
-    });
+            initialValues: props.initialValues ?? {
+                TargetName: "",
+                RA: 0.00,
+                Dec: 0.00,
+                SelectedEpoch: "J2000"
+            },
+            validate: {
+                TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null)
+            }
+        });
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
 
@@ -39,9 +39,7 @@ const TargetForm = (props: FormPropsType<{
         function notFound() {
             const choice = window.confirm("Unable to match source " + form.values.TargetName + " try again?");
             if(!choice)
-                { // @ts-ignore
-                    props.onSubmit?.('CANCEL' );
-                }
+                props.onSubmit();
         }
 
         fetchSimbadResourceSimbadFindTarget({queryParams: {targetName: form.values.TargetName}})
@@ -54,18 +52,18 @@ const TargetForm = (props: FormPropsType<{
             .catch(() => notFound());
     }
 
-    function createNewTarget(val :{ TargetName: string }, data: SimbadTargetResult) {
+    const createNewTarget = form.onSubmit((val) => {
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: {},
-            lat: {"@type": "ivoa:RealQuantity", value: data.raDegrees, unit: {value: "degrees"}},
-            lon: {"@type": "ivoa:RealQuantity", value: data.decDegrees, unit: {value: "degrees"}}
+            lat: {"@type": "ivoa:RealQuantity", value: val.RA, unit: {value: "degrees"}},
+            lon: {"@type": "ivoa:RealQuantity", value: val.Dec, unit: {value: "degrees"}}
         }
         const Target: CelestialTarget = {
                 "@type": "proposal:CelestialTarget",
-                sourceName: data.targetName,
+                sourceName: val.TargetName,
                 sourceCoordinates: sourceCoords,
-                positionEpoch: {value: data.epoch}
+                positionEpoch: {value: val.SelectedEpoch}
         };
 
         function assignSpaceSys(ss: SpaceSys) {
@@ -74,37 +72,19 @@ const TargetForm = (props: FormPropsType<{
                     Target.sourceCoordinates.coordSys = ss;
         }
 
-        if(data.spaceSystemCode != undefined) {
-            fetchSpaceSystemResourceGetSpaceSystem({pathParams: {frameCode: data.spaceSystemCode}})
-                .then((spaceSys) => assignSpaceSys(spaceSys))
-                .then(() => fetchProposalResourceAddNewTarget({pathParams:{proposalCode: Number(selectedProposalCode)}, body: Target})
-                    .then(() => {return queryClient.invalidateQueries()})
-                    .then(() => {props.onSubmit?.(val)})
-                    .catch(console.log)
-                )
-                .catch(console.log);
-        } else {
-            console.log("Unable to fetch space system, failed :-(")
-        }
+        fetchSpaceSystemResourceGetSpaceSystem({pathParams: {frameCode: 'ICRS'}})
+            .then((spaceSys) => assignSpaceSys(spaceSys))
+            .then(() => fetchProposalResourceAddNewTarget({pathParams:{proposalCode: Number(selectedProposalCode)}, body: Target})
+                .then(() => {return queryClient.invalidateQueries()})
+                .then(() => {props.onSubmit()})
+                .catch(console.log)
+            )
+            .catch(console.log);
 
-    }
-
-    const handleSubmit = form.onSubmit((val) => {
-        form.validate();
-
-        const target: SimbadTargetResult = {
-            targetName: form.values.TargetName,
-            spaceSystemCode: 'ICRS',
-            epoch: form.values.SelectedEpoch,
-            raDegrees: form.values.RA,
-            decDegrees: form.values.Dec
-        };
-
-        createNewTarget({ TargetName: form.values.TargetName }, target);
     });
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={createNewTarget}>
             <TextInput
                 withAsterisk
                 label="Name"
@@ -136,13 +116,13 @@ const TargetForm = (props: FormPropsType<{
                 data={[{label:"J2000",value:"J2000"}]}
                 {...form.getInputProps("SelectedEpoch")} />
             <div>
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Save</Button>
             </div>
         </form>
     );
 };
 
-export default function AddTargetPanel() {
+export default function AddTargetModal() {
     const [opened, { close, open }] = useDisclosure();
     return (
         <>
@@ -160,7 +140,7 @@ export default function AddTargetPanel() {
 
 export type FormPropsType<T> = {
     initialValues?: T;
-    onSubmit?: (values: T, form?: UseFormReturnType<T>) => void;
+    onSubmit: () => void;
     actions?: ReactNode;
 };
 

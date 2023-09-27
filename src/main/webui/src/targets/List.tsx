@@ -2,7 +2,7 @@ import {
     useProposalResourceGetTargets,
 } from "../generated/proposalToolComponents.ts";
 
-import AddTargetPanel from "./New";
+import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
 import {Box, Text} from "@mantine/core";
 import {RenderTarget} from "./RenderTarget";
@@ -26,7 +26,7 @@ function TargetPanel() {
             <Box>
                 <Text fz="lg" fw={700}>Add and edit targets</Text>
                 <Box>
-                    <AddTargetPanel/>
+                    <AddTargetModal/>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
                                 return (<Box sx={boxListStyles} key={item.dbid}>
