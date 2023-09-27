@@ -31,7 +31,7 @@ export default function ViewEditPerformanceParameters(performance: PerformancePa
 
     const holdInterval = (t:number) => Math.max(1000/t**2, 1);
 
-    function PerformanceDetails() {
+    const PerformanceDetails = () => {
         return (
             <>
                 <NumberInput
@@ -103,7 +103,7 @@ export default function ViewEditPerformanceParameters(performance: PerformancePa
         <form
             onSubmit={handleSubmit}
         >
-            <PerformanceDetails/>
+            {PerformanceDetails()}
             <Group position="right" mt="md">
                 <Tooltip openDelay={1000} label={"save performance parameters"}>
                     <ActionIcon size={"xl"} color={"indigo.5"} type="submit">
