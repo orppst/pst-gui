@@ -19,7 +19,7 @@ export default function TechnicalGoalEditModal(goal: TechnicalGoal) {
                 opened={opened}
                 onClose={close}
                 title={"View/Edit Technical Goal No." + goal._id}
-                size={"50%"}
+                fullScreen
             >
                 <TechnicalGoalParentForm goal={goal} close={close} />
             </Modal>
