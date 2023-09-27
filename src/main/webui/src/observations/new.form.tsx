@@ -26,8 +26,10 @@ type ObservationType = 'Target'|'Calibration'|'';
 
 interface ObservationFormValues {
     observationType: ObservationType;
-    calibrationUse:  CalibrationTargetIntendedUse,
+    calibrationUse:  CalibrationTargetIntendedUse | undefined,
     targetDBId: number | undefined,
+    techGoalId: number | undefined,
+    fieldId: number | undefined
 }
 
 export function ObservationNewForm (props: ObservationTargetProps){
@@ -52,6 +54,8 @@ export function ObservationNewForm (props: ObservationTargetProps){
             observationType: observationType,
             calibrationUse: calibrationUse,
             targetDBId: props.targetId,
+            techGoalId: 1, //FIXME: change to a user selected value
+            fieldId: 1, //FIXME: change to a user selected value
         },
 
         validate: {
@@ -59,6 +63,8 @@ export function ObservationNewForm (props: ObservationTargetProps){
                 (value === undefined ? 'Please select a target' : null),
             observationType: (value) =>
                 (value === '' ? 'Please select the observation type' : null),
+            calibrationUse: (value, values) =>
+                ((values.observationType === "Calibration" && value === undefined) ? 'Please select the calibration use' : null)
         },
     });
 
@@ -145,11 +151,11 @@ export function ObservationNewForm (props: ObservationTargetProps){
                     "_id": values.targetDBId
                 },
                 technicalGoal: {
-                    "_id": 1
+                    "_id": values.techGoalId
                 },
                 field: {
                     "@type": "proposal:TargetField",
-                    "_id": 1
+                    "_id": values.fieldId
                 }
             }
 
