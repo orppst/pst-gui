@@ -20,7 +20,7 @@ export default function ObservationEditModal(observationProps: ObservationTarget
                 opened={opened}
                 onClose={close}
                 title={"View/Edit Observation Form"}
-                fullScreen
+                size={"75%"}
             >
                 <ObservationEditForm {...props}/>
             </Modal>

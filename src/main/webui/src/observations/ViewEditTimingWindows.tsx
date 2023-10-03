@@ -1,4 +1,4 @@
-import {ActionIcon, Button, Divider, Grid, Group, Space, Switch, Text, Textarea} from "@mantine/core";
+import {Accordion, ActionIcon, Box, Grid, Group, Space, Switch, Textarea} from "@mantine/core";
 import {DateTimePicker} from "@mantine/dates";
 import {IconPlus, IconTrash} from "@tabler/icons-react";
 import {useForm} from "@mantine/form";
@@ -48,84 +48,88 @@ export default function ViewEditTimingWindows() {
     })
 
 
-    let nCols = 24;
-    let rangeCol = 9;
-    let avoidCol = 3;
-    let noteCol = 9;
-    let removeCol = 3;
+    let nCols = 7;
+    let rangeCol = 3;
+    let avoidCol = 1;
+    let noteCol = 3;
+
+
+    function AccordionControl(props : {index: number}) {
+        return (
+            <Box style={{ display: 'flex', alignItems: 'center' }}>
+                <Accordion.Control>Window {props.index + 1}</Accordion.Control>
+                <ActionIcon
+                    color={"red.5"}
+                    variant={"subtle"}
+                    onClick={() =>form.removeListItem("timingWindows", props.index)}
+                >
+                    <IconTrash size={"1rem"}/>
+                </ActionIcon>
+            </Box>
+        )
+    }
 
 
     const targetsAdded = form.values.timingWindows.map((_item, index) => (
-        <>
-            <Grid.Col span={rangeCol}>
-                <DateTimePicker
-                    placeholder={"start time"}
-                    allowDeselect
-                    minDate={new Date()}
-                    {...form.getInputProps(`timingWindows.${index}.start`)}
-                />
-                <Space h={"xs"}/>
-                <DateTimePicker
-                    placeholder={"end time"}
-                    minDate={new Date()}
-                    {...form.getInputProps(`timingWindows.${index}.end`)}
-                />
-            </Grid.Col>
-            <Grid.Col span={avoidCol}>
-                <Switch
-                    mt={"1rem"}
-                    ml={"10%"}
-                    {...form.getInputProps(`timingWindows.${index}.isAvoid`, {type: 'checkbox'})}
-                />
-            </Grid.Col>
-            <Grid.Col span={noteCol}>
-                <Textarea
-                    autosize
-                    minRows={3}
-                    maxRows={3}
-                    placeholder={"add optional note"}
-                    {...form.getInputProps(`timingWindows.${index}.note`)}
-                />
-            </Grid.Col>
-            <Grid.Col span={removeCol}>
-                <ActionIcon
-                    color={"red"}
-                    variant={"filled"}
-                    onClick={() => form.removeListItem("timingWindows", index) }
-                >
-                    <IconTrash size={"2rem"} />
-                </ActionIcon>
-            </Grid.Col>
-            <Grid.Col span={nCols}>
-                <Divider />
-            </Grid.Col>
-        </>
+        <Accordion.Item value={(index + 1).toString()}>
+            <AccordionControl index={index} />
+            <Accordion.Panel>
+                <Grid columns={nCols} gutter={"xs"}>
+                    <Grid.Col span={{base: nCols, lg: rangeCol}}>
+                        <DateTimePicker
+                            placeholder={"start time"}
+                            allowDeselect
+                            minDate={new Date()}
+                            {...form.getInputProps(`timingWindows.${index}.start`)}
+                        />
+                        <Space h={"xs"}/>
+                        <DateTimePicker
+                            placeholder={"end time"}
+                            minDate={new Date()}
+                            {...form.getInputProps(`timingWindows.${index}.end`)}
+                        />
+                    </Grid.Col>
+                    <Grid.Col span={{base: nCols, lg: avoidCol}}>
+                        <Switch
+                            onLabel={"avoid"}
+                            offLabel={""}
+                            color={'grape'}
+                            radius={'xs'}
+                            mt={"1.5rem"}
+                            ml={"10%"}
+                            {...form.getInputProps(`timingWindows.${index}.isAvoid`, {type: 'checkbox'})}
+                        />
+                    </Grid.Col>
+                    <Grid.Col span={{base: nCols, lg: noteCol}}>
+                        <Textarea
+                            autosize
+                            minRows={3}
+                            maxRows={3}
+                            placeholder={"add optional note"}
+                            {...form.getInputProps(`timingWindows.${index}.note`)}
+                        />
+                    </Grid.Col>
+                </Grid>
+            </Accordion.Panel>
+        </Accordion.Item>
     ));
 
     return (
         <>
-            <Grid columns={nCols} gutter={"xl"}>
-                <Grid.Col span={rangeCol}>
-                    <Text size={"sm"}>Range</Text>
-                </Grid.Col>
-                <Grid.Col span={avoidCol}>
-                    <Text size={"sm"}>Avoid</Text>
-                </Grid.Col>
-                <Grid.Col span={noteCol}>
-                    <Text size={"sm"}>Note</Text>
-                </Grid.Col>
-                <Grid.Col span={removeCol}></Grid.Col>
-                <Grid.Col span={nCols}>
-                    <Divider size={"xs"}/>
-                </Grid.Col>
+            <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {targetsAdded}
-            </Grid>
-            <Group position={"right"} mt={"xs"}>
-                <Button onClick={() =>
-                    form.insertListItem('timingWindows', {...timingWindowInitial, key: randomId()})
-                }>
-                    <IconPlus size={"1rem"}/> Add timing window
-                </Button>
+            </Accordion>
+            <Group justify={"flex-end"}>
+                <ActionIcon
+                    color={"green.5"}
+                    variant={'subtle'}
+                    onClick={() =>
+                    form.insertListItem('timingWindows',
+                        {...timingWindowInitial, key: randomId()}
+                    )}
+                >
+                    <IconPlus size={"2rem"}/>
+                </ActionIcon>
             </Group>
         </>
 
