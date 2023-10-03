@@ -100,6 +100,10 @@ const TargetForm = (props: FormPropsType<{
                 max={360}
                 stepHoldDelay={500}
                 stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                formatter={(value: string) =>
+                    !Number.isNaN(parseFloat(value))
+                        ? `${value}°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                        : ' °'}
                 {...form.getInputProps("RA")}/>
             <NumberInput
                 withAsterisk
@@ -110,6 +114,10 @@ const TargetForm = (props: FormPropsType<{
                 max={90}
                 stepHoldDelay={500}
                 stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
+                formatter={(value: string) =>
+                    !Number.isNaN(parseFloat(value))
+                        ? `${value}°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                        : ' °'}
                 {...form.getInputProps("Dec")} />
             <Select
                 label={"Coordinate System"}
