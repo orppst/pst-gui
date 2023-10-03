@@ -2,6 +2,7 @@ import {ActionIcon, Group, NumberInput, Tooltip} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {IconDeviceFloppy} from "@tabler/icons-react";
 import {PerformanceParameters} from "../generated/proposalToolSchemas.ts";
+import {notSpecified} from "./parent.form.tsx";
 
 
 interface PerformanceValues {
@@ -36,7 +37,7 @@ export default function ViewEditPerformanceParameters(performance: PerformancePa
             <>
                 <NumberInput
                     label={"Angular resolution (arcsec):"}
-                    placeholder={"not set"}
+                    placeholder={notSpecified}
                     defaultValue={form.values.angularResolution}
                     precision={3}
                     step={0.001}
@@ -47,7 +48,7 @@ export default function ViewEditPerformanceParameters(performance: PerformancePa
                 />
                 <NumberInput
                     label={"Largest scale (degrees):"}
-                    placeholder={"not set"}
+                    placeholder={notSpecified}
                     defaultValue={form.values.largestScale}
                     precision={3}
                     step={0.001}
@@ -58,7 +59,7 @@ export default function ViewEditPerformanceParameters(performance: PerformancePa
                 />
                 <NumberInput
                     label={"Sensitivity (dB):"}
-                    placeholder={"not set"}
+                    placeholder={notSpecified}
                     defaultValue={form.values.sensitivity}
                     precision={3}
                     step={0.001}
@@ -69,7 +70,7 @@ export default function ViewEditPerformanceParameters(performance: PerformancePa
                 />
                 <NumberInput
                     label={"Dynamic range (dB):"}
-                    placeholder={"not set"}
+                    placeholder={notSpecified}
                     defaultValue={form.values.dynamicRange}
                     precision={2}
                     step={0.01}
@@ -80,7 +81,7 @@ export default function ViewEditPerformanceParameters(performance: PerformancePa
                 />
                 <NumberInput
                     label={"Representative spectral point (GHz):"}
-                    placeholder={"not set"}
+                    placeholder={notSpecified}
                     defaultValue={form.values.spectralPoint}
                     precision={2}
                     step={0.01}

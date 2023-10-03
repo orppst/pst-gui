@@ -3,7 +3,6 @@ import {
 } from "../generated/proposalToolComponents";
 import {useParams} from "react-router-dom";
 import {Box, Button, FileButton, Table, Text} from "@mantine/core";
-import {boxListStyles} from "../Styles";
 import {useState} from "react";8
 
 const DocumentsPanel = () => {
@@ -49,8 +48,7 @@ const DocumentsPanel = () => {
     return (
         <Box>
             <Text fz="lg" fw={700}>View and retrieve documents</Text>
-            <Box
-                sx={boxListStyles}>
+            <Box>
                 {isLoading ? (`Loading...`)
                     : (
                         <pre>
@@ -63,7 +61,7 @@ const DocumentsPanel = () => {
                         {(props) => <Button {...props}>Choose a file</Button>}
             </FileButton>
             {file && (
-                <Box sx={boxListStyles}>
+                <Box>
                     File details:
                     <Table>
                         <tbody>

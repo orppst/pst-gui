@@ -4,6 +4,8 @@ import {IconPlus, IconTrash} from "@tabler/icons-react";
 import {useForm} from "@mantine/form";
 import {randomId} from "@mantine/hooks";
 
+import '@mantine/dates/styles.css'
+
 //As a general reminder, Radio observations can be done at any time but Optical observations can occur only after
 // sunset. In both cases the target must be above the horizon at the time
 

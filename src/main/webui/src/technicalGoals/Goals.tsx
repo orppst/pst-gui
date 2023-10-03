@@ -57,19 +57,19 @@ function GoalsPanel() {
 
             {goalsLoading ? (`Loading...`) :
                 <Table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Angular resolution (arcsec)</th>
-                        <th>Largest scale (degrees)</th>
-                        <th>Sensitivity (dB)</th>
-                        <th>Dynamic Range (dB)</th>
-                        <th>Spectral point (GHz)</th>
-                        <th>Spectral windows</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                    <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>ID</Table.Th>
+                        <Table.Th>Angular resolution (arcsec)</Table.Th>
+                        <Table.Th>Largest scale (degrees)</Table.Th>
+                        <Table.Th>Sensitivity (dB)</Table.Th>
+                        <Table.Th>Dynamic Range (dB)</Table.Th>
+                        <Table.Th>Spectral point (GHz)</Table.Th>
+                        <Table.Th>Spectral windows</Table.Th>
+                        <Table.Th></Table.Th>
+                    </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
                     {
                         goals?.map((goal) => {
                             return (
@@ -77,13 +77,13 @@ function GoalsPanel() {
                             )
                         })
                     }
-                    </tbody>
+                    </Table.Tbody>
                 </Table>
             }
 
             <Space h={"xs"}/>
 
-            <Group position={"right"}>
+            <Group justify={'flex-end'}>
                 {goalsLoading ? (`Loading...`) : <TechnicalGoalNewModal/>}
             </Group>
         </div>

@@ -6,7 +6,6 @@ import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
 import {Box, Text} from "@mantine/core";
 import {RenderTarget} from "./RenderTarget";
-import {boxListStyles} from "../Styles";
 
 function TargetPanel() {
     const { selectedProposalCode} = useParams();
@@ -29,7 +28,7 @@ function TargetPanel() {
                     <AddTargetModal/>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
-                                return (<Box sx={boxListStyles} key={item.dbid}>
+                                return (<Box key={item.dbid}>
                                     <RenderTarget proposalCode={Number(selectedProposalCode)} dbid={item.dbid!} showRemove={true}/></Box>)
                             } )
                     }

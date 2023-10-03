@@ -11,10 +11,11 @@ export interface ScienceSpectrumValues {
 }
 
 export type ScienceSpectrumProps = {
-    spectrum: ScienceSpectralWindow,
     form: UseFormReturnType<ScienceSpectrumValues>
     index: number
 }
+
+export const notSpecified = "not specified";
 
 export default function TechnicalGoalParentForm( props: TechnicalGoalClose ) {
 
@@ -62,7 +63,7 @@ export default function TechnicalGoalParentForm( props: TechnicalGoalClose ) {
 
     return (
         <Grid columns={totalCol}>
-            <Grid.Col span={props.goal ? 1 : totalCol}>
+            <Grid.Col md={props.goal ? 1 : totalCol} span={totalCol}>
                 <fieldset>
                     <legend>Performance parameters</legend>
                     <ViewEditPerformanceParameters {...props.goal?.performance} />
@@ -70,7 +71,7 @@ export default function TechnicalGoalParentForm( props: TechnicalGoalClose ) {
             </Grid.Col>
             {
                 props.goal ?
-                    <Grid.Col span={spectralWindowCol}>
+                    <Grid.Col md={spectralWindowCol} span={totalCol}>
                         <fieldset>
                             <legend>Spectral windows</legend>
                             <Accordion defaultValue={"1"} chevronPosition={"left"}>
@@ -80,7 +81,7 @@ export default function TechnicalGoalParentForm( props: TechnicalGoalClose ) {
                                         <Accordion.Item value={s?.index ? s.index.toString() : (mapIndex + 1).toString()}>
                                             <AccordionControl index={mapIndex} />
                                             <Accordion.Panel>
-                                                <ViewEditSpectralWindow spectrum={s!} form={form} index={mapIndex} />
+                                                <ViewEditSpectralWindow form={form} index={mapIndex} />
                                             </Accordion.Panel>
                                         </Accordion.Item>
                                     )
@@ -89,13 +90,13 @@ export default function TechnicalGoalParentForm( props: TechnicalGoalClose ) {
                             </Accordion>
                             <Space h={"xs"}/>
                             <Group position={"right"}>
-                            <ActionIcon
-                                color={"green.5"}
-                                onClick={() => form.insertListItem(
-                                    'windows', {...initialWindow}
-                                )}>
-                                <IconPlus size={"2rem"}/>
-                            </ActionIcon>
+                                <ActionIcon
+                                    color={"green.5"}
+                                    onClick={() => form.insertListItem(
+                                        'windows', {...initialWindow}
+                                    )}>
+                                    <IconPlus size={"2rem"}/>
+                                </ActionIcon>
                             </Group>
                             <Group position={"right"}>
                                 <Button onClick={props.close}>Done</Button>
@@ -106,7 +107,7 @@ export default function TechnicalGoalParentForm( props: TechnicalGoalClose ) {
                     </Grid.Col> :
                     <Grid.Col span={totalCol}>
                     <Group>
-                        <Text color={"pink.5"} maw={400} align={"center"} size={"xs"}>
+                        <Text c={"pink.5"} maw={400} align={"center"} size={"xs"}>
                             Creation of a new Technical Goal is done with the performance
                             parameters only. Spectral windows can be added after creation
                             using the view/edit button

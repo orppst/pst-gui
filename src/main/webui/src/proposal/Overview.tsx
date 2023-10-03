@@ -3,7 +3,6 @@ import {
     useProposalResourceGetObservingProposal,
 } from "../generated/proposalToolComponents";
 import {Box, Text} from "@mantine/core";
-import {boxListStyles} from "../Styles";
 
 function OverviewPanel() {
     const { selectedProposalCode } = useParams();
@@ -20,7 +19,7 @@ function OverviewPanel() {
     return (
         <Box>
             <Text fz="lg" fw={700}>This will become nicely formatted overview of the selected proposal</Text>
-            <Box  sx={boxListStyles}>
+            <Box>
                 {isLoading ? (`Loading...`)
                     : (
                         <pre>

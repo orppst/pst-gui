@@ -9,7 +9,7 @@ export default function TechnicalGoalNewModal() {
     return (
         <>
             <Tooltip openDelay={1000} label={"new technical goal"}>
-                <ActionIcon color={"teal.5"} onClick={open}>
+                <ActionIcon color={"teal.5"} onClick={open} variant={"subtle"}>
                     <IconPlus size={"2rem"}/>
                 </ActionIcon>
             </Tooltip>

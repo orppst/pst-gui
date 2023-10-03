@@ -83,8 +83,8 @@ export function ObservationNewForm (props: ObservationTargetProps){
 
         let selectTargets = targets?.map((target) => {
             return {
-                value: target.dbid,
-                label: target.name
+                value: target.dbid!.toString(),
+                label: target.name!
             }
         })
 

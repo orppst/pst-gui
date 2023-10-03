@@ -8,7 +8,6 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {Box, Button, Grid, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
-import {boxListStyles} from "../Styles";
 
 type PersonProps = {
     dbid: number
@@ -93,7 +92,7 @@ function RenderPerson(props: PersonProps) {
         });
 
     return (
-        <Box sx={boxListStyles}>
+        <Box>
             {isLoading?(`Loading...`):
                 error?(`Error!`):
                     submitting?(`Removing...`):

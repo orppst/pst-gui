@@ -21,18 +21,17 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
 import {
     AppShell,
-    Navbar,
-    Header,
     Button,
     NavLink,
     Box,
     Text,
     TextInput,
-    ScrollArea,
     Grid,
-    useMantineTheme, MediaQuery, Burger
+    useMantineTheme, Burger, ScrollArea
 } from "@mantine/core";
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
+import {Icon3dCubeSphere, IconChevronRight} from "@tabler/icons-react";
+import {useMediaQuery} from "@mantine/hooks";
 
 
 const queryClient = new QueryClient()
@@ -70,7 +69,7 @@ function App2() {
 
     const [selectedProposalCode] = useState(historyProposalCode)
 
-
+    const largeScreen = useMediaQuery('(min-width: 62em)');
 
     const router = createBrowserRouter(
         [
@@ -109,43 +108,40 @@ function App2() {
         return (
             <ProposalContext.Provider value={{selectedProposalCode, user, token, apiUrl}}>
                 <AppShell
-                    styles={{
-                        main: {
-                            background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.white,
-                        },
-                    }}
-                    navbarOffsetBreakpoint="sm"
-                    asideOffsetBreakpoint="sm"
-                    navbar={
-                        <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
-                            <Navbar.Section grow component={ScrollArea} width={{ sm: 200, lg: 300 }}>
-                                {<Text fz="sm">Search and filter by <Proposals/> </Text>}
-                            </Navbar.Section>
-                        </Navbar>}
-                    header={
-                        <Header height={60} p="xs">
-                            <Grid>
-                                <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-                                        <Grid.Col span={1}>
-                                            <Burger
-                                                opened={opened}
-                                                onClick={() => setOpened((o) => !o)}
-                                                size="sm"
-                                                color={theme.colors.gray[6]}
-                                                mr="xl"
-                                            />
-                                        </Grid.Col>
-                                </MediaQuery>
-                                <MediaQuery smallerThan={"md"} styles={{display: 'none'}}>
-                                    <Grid.Col span={2}><Button variant="subtle" component={Link} to={"/"}>Proposals for {user.fullName}</Button></Grid.Col>
-                                </MediaQuery>
-                                <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
-                                <Grid.Col offset={7} span={1}>{SwitchToggle()}</Grid.Col>
-                                <Grid.Col span={1}><Button component={"a"} href={"/pst/gui/logout"}>Logout</Button></Grid.Col>
-                            </Grid>
-                        </Header>
-                    }>
-                    <Outlet/>
+                    navbar={{width: 300, breakpoint: 'md', collapsed: {mobile: !opened}}}
+                    header={{height: 60}}
+                >
+                    <AppShell.Header p="xs">
+                        <Grid columns={12} align={"center"}>
+                            <Grid.Col span={1}>
+                                {
+                                    largeScreen ?
+                                        <Icon3dCubeSphere />:
+                                        <Burger
+                                            opened={opened}
+                                            onClick={() => setOpened((o) => !o)}
+                                            size="sm"
+                                            color={theme.colors.gray[6]}
+                                            mr="xl"
+                                        />
+                                }
+
+                            </Grid.Col>
+                            <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
+                            <Grid.Col offset={7} span={1}>{SwitchToggle()}</Grid.Col>
+                            <Grid.Col span={1}><Button component={"a"} href={"/pst/gui/logout"}>Logout</Button></Grid.Col>
+                        </Grid>
+                    </AppShell.Header>
+
+
+                    <AppShell.Navbar p="md">
+                        <AppShell.Section grow component={ScrollArea}>
+                            {<Text fz="sm">Search and filter by <Proposals/> </Text>}
+                        </AppShell.Section>
+                    </AppShell.Navbar>
+                    <AppShell.Main>
+                        <Outlet/>
+                    </AppShell.Main>
                 </AppShell>
             </ProposalContext.Provider>
         )
@@ -186,7 +182,7 @@ function App2() {
                 ) : (
                     <>
                         {data?.map((item) => (
-                            <NavLink key={item.code} label={item.title} childrenOffset={30}>
+                            <NavLink key={item.code} label={item.title} childrenOffset={30} rightSection={<IconChevronRight size="0.8rem" stroke={1.5} />}>
                                 <NavLink to={"proposal/" + item.code} component={Link} label="Overview" />
                                 <NavLink to={"proposal/" + item.code + "/title"} component={Link} label="Title" />
                                 <NavLink to={"proposal/" + item.code + "/summary"} component={Link} label="Summary" />
