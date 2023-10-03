@@ -96,18 +96,18 @@ function ObservationsPanel() {
 
                 {observationsLoading ? (`Loading...`) :
                     <Table>
-                        <thead>
-                        <tr>
-                            <th>Target name</th>
-                            <th>Type</th>
-                            <th>Field</th>
-                            <th>Performance params</th>
-                            <th>Spectral windows</th>
-                            <th>Timing windows</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                        <Table.Thead>
+                        <Table.Tr>
+                            <Table.Th>Target name</Table.Th>
+                            <Table.Th>Type</Table.Th>
+                            <Table.Th>Field</Table.Th>
+                            <Table.Th>Performance params</Table.Th>
+                            <Table.Th>Spectral windows</Table.Th>
+                            <Table.Th>Timing windows</Table.Th>
+                            <Table.Th></Table.Th>
+                        </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
                         {
                             observations?.map((observation) => {
                                 return (
@@ -115,13 +115,13 @@ function ObservationsPanel() {
                                 )
                             })
                         }
-                        </tbody>
+                        </Table.Tbody>
                     </Table>
                 }
 
                 <Space h={"xs"}/>
 
-                <Group position={"right"}>
+                <Group justify={'flex-end'}>
                     {targetsLoading ? (`Loading...`) :
                         targets!.length > 0 ?
                             <ObservationsNewModal/> :

@@ -3,7 +3,7 @@ import {
     useObservationResourceGetObservation,
     useProposalResourceGetTargets
 } from "../generated/proposalToolComponents.ts";
-import {ActionIcon, Tooltip, Text, Space, Badge, Group} from "@mantine/core";
+import {ActionIcon, Tooltip, Text, Space, Badge, Group, Table} from "@mantine/core";
 import {IconCopy, IconTrash} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
 import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
@@ -70,11 +70,11 @@ export default function ObservationRow(observationId: ObservationId) {
         title: 'Delete Observation?',
         children: (
             <>
-                <Text color={"yellow"} size={"sm"}>
+                <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation') ? 'Target' : 'Calibration'} Observation of '{observation?.target?.sourceName}'
                 </Text>
                 <Space h={"sm"}/>
-                <Text color={"gray.6"} size={"sm"}>
+                <Text c={"gray.6"} size={"sm"}>
                     Deletes the observation from the list only. Preserves everything except the timing windows.
                 </Text>
             </>
@@ -89,11 +89,11 @@ export default function ObservationRow(observationId: ObservationId) {
         title: 'Copy Observation?',
         children: (
             <>
-                <Text color={"yellow"} size={"sm"}>
+                <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation') ? 'Target' : 'Calibration'} Observation of '{observation?.target?.sourceName}'
                 </Text>
                 <Space h={"sm"}/>
-                <Text color={"gray.6"} size={"sm"}>
+                <Text c={"gray.6"} size={"sm"}>
                     Creates a new observation with a deep copy of this observation's properties.
                     You should edit the copied observation for your needs.
                 </Text>
@@ -125,18 +125,18 @@ export default function ObservationRow(observationId: ObservationId) {
         <>
             {observationLoading? ('Loading...') :
                 (
-                    <tr>
-                        <td>
+                    <Table.Tr>
+                        <Table.Td>
                             {observation?.target?.sourceName}
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {observation?.["@type"]=== 'proposal:TargetObservation' ?
                                 'target' : 'calibration'}
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {observation?.field?.name}
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {
                                 performanceFull ?
                                     <Badge
@@ -159,8 +159,8 @@ export default function ObservationRow(observationId: ObservationId) {
                                             Partial
                                         </Badge>
                             }
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {
                                 observation?.technicalGoal?.spectrum?.length! > 0 ?
                                     <Badge
@@ -176,8 +176,8 @@ export default function ObservationRow(observationId: ObservationId) {
                                         None
                                     </Badge>
                             }
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             <Group>
                             {
                                 observation?.constraints?.length! > 0 ?
@@ -195,8 +195,8 @@ export default function ObservationRow(observationId: ObservationId) {
                                     </Badge>
                             }
                             </Group>
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             <Group position={"right"}>
                                 {
                                     observationLoading || targetLoading ? 'Loading...' :
@@ -207,18 +207,18 @@ export default function ObservationRow(observationId: ObservationId) {
                                     />
                                 }
                                 <Tooltip openDelay={1000} label={"copy"}>
-                                    <ActionIcon color={"blue"} onClick={confirmCopy}>
+                                    <ActionIcon color={"blue"} onClick={confirmCopy} variant={"subtle"}>
                                         <IconCopy size={"2rem"}/>
                                     </ActionIcon>
                                 </Tooltip>
                                 <Tooltip openDelay={1000}  label={"delete"}>
-                                    <ActionIcon color={"red.7"} onClick={confirmDeletion}>
+                                    <ActionIcon color={"red.7"} onClick={confirmDeletion} variant={"subtle"}>
                                         <IconTrash size={"2rem"}/>
                                     </ActionIcon>
                                 </Tooltip>
                             </Group>
-                        </td>
-                    </tr>
+                        </Table.Td>
+                    </Table.Tr>
                 )
             }
         </>

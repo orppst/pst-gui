@@ -1,5 +1,4 @@
 import {ObservationNewForm} from "./new.form.tsx";
-import ViewEditTechnicalGoals from "./ViewEditTechnicalGoals.tsx";
 import ViewEditTimingWindows from "./ViewEditTimingWindows.tsx";
 import {ObservationTargetProps} from "./List.tsx";
 
@@ -20,10 +19,6 @@ export default function ObservationEditForm(props: ObservationTargetProps){
         <>
             <ObservationNewForm
                 {...props}
-            />
-            <ViewEditTechnicalGoals
-                goal={props.observationProps!.observation.technicalGoal!}
-                observationId={props.observationProps!.id}
             />
             <ViewEditTimingWindows/>
         </>

@@ -12,7 +12,7 @@ export default function ObservationEditModal(observationProps: ObservationTarget
     return (
         <>
             <Tooltip openDelay={1000} label={"view/edit"}>
-                <ActionIcon color={"green"} onClick={open}>
+                <ActionIcon color={"green"} onClick={open} variant={"subtle"}>
                     <IconEyeEdit size={"2rem"}/>
                 </ActionIcon>
             </Tooltip>

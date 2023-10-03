@@ -198,9 +198,9 @@ export function ObservationNewForm (props: ObservationTargetProps){
                 {form.values.observationType === 'Calibration' &&
                     SelectCalibrationUse()
                 }
-                <Group position="right" mt="md">
+                <Group justify={'flex-end'} mt="md">
                     <Tooltip label={"Save"}>
-                        <ActionIcon size={"xl"} color={"indigo.5"} type="submit">
+                        <ActionIcon size={"xl"} color={"indigo.5"} type="submit" variant={"subtle"}>
                             <IconDeviceFloppy size={"3rem"}/>
                         </ActionIcon>
                     </Tooltip>
