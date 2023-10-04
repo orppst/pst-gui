@@ -98,13 +98,13 @@ function RenderPerson(props: PersonProps) {
                     submitting?(`Removing...`):
                         (
                             <Table>
-                                <tbody>
-                                <tr><td>Type</td><td>{data?.type}</td></tr>
-                                <tr><td>Name</td><td>{data?.person?.fullName}</td></tr>
-                                <tr><td>Email</td><td>{data?.person?.eMail}</td></tr>
-                                <tr><td>Institute</td><td>{data?.person?.homeInstitute?.name}</td></tr>
-                                <tr><td colSpan={2} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></td></tr>
-                                </tbody>
+                                <Table.Tbody>
+                                    <Table.Tr><Table.Td>Type</Table.Td><Table.Td>{data?.type}</Table.Td></Table.Tr>
+                                    <Table.Tr><Table.Td>Name</Table.Td><Table.Td>{data?.person?.fullName}</Table.Td></Table.Tr>
+                                    <Table.Tr><Table.Td>Email</Table.Td><Table.Td>{data?.person?.eMail}</Table.Td></Table.Tr>
+                                    <Table.Tr><Table.Td>Institute</Table.Td><Table.Td>{data?.person?.homeInstitute?.name}</Table.Td></Table.Tr>
+                                    <Table.Tr><Table.Td colSpan={2} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></Table.Td></Table.Tr>
+                                </Table.Tbody>
                             </Table>
                         )
             }

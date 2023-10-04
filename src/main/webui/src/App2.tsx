@@ -69,7 +69,7 @@ function App2() {
 
     const [selectedProposalCode] = useState(historyProposalCode)
 
-    const largeScreen = useMediaQuery('(min-width: 62em)');
+    const largeScreen = useMediaQuery('(min-width: 48em)');
 
     const router = createBrowserRouter(
         [
@@ -108,15 +108,16 @@ function App2() {
         return (
             <ProposalContext.Provider value={{selectedProposalCode, user, token, apiUrl}}>
                 <AppShell
-                    navbar={{width: 300, breakpoint: 'md', collapsed: {mobile: !opened}}}
+                    navbar={{width: 300, breakpoint: 'sm', collapsed: {mobile: !opened}}}
                     header={{height: 60}}
+                    footer={{height: 60}}
                 >
                     <AppShell.Header p="xs">
                         <Grid columns={12} align={"center"}>
-                            <Grid.Col span={1}>
+                            <Grid.Col span={3}>
                                 {
                                     largeScreen ?
-                                        <Icon3dCubeSphere />:
+                                        <><img src={"../public/polaris4.png"} alt="Polaris" width={60}/><Button variant="subtle" component={Link} to={"/"}>Proposals for {user.fullName}</Button></>:
                                         <Burger
                                             opened={opened}
                                             onClick={() => setOpened((o) => !o)}
@@ -128,8 +129,7 @@ function App2() {
 
                             </Grid.Col>
                             <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
-                            <Grid.Col offset={7} span={1}>{SwitchToggle()}</Grid.Col>
-                            <Grid.Col span={1}><Button component={"a"} href={"/pst/gui/logout"}>Logout</Button></Grid.Col>
+                            <Grid.Col offset={5} span={3} align={"right"}><Button component={"a"} href={"/pst/gui/logout"}>Logout</Button></Grid.Col>
                         </Grid>
                     </AppShell.Header>
 
@@ -142,6 +142,13 @@ function App2() {
                     <AppShell.Main>
                         <Outlet/>
                     </AppShell.Main>
+                    <AppShell.Footer>
+                        <Grid align={"right"}>
+                            <Grid.Col offset={11}>
+                                {SwitchToggle()}
+                            </Grid.Col>
+                        </Grid>
+                    </AppShell.Footer>
                 </AppShell>
             </ProposalContext.Provider>
         )

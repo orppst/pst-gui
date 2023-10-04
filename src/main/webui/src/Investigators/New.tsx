@@ -42,7 +42,7 @@ function AddInvestigatorPanel() {
             setSearchData([]);
             data?.map((item) => (
                 // @ts-ignore
-                setSearchData((current) => [...current, {value: item.dbid, label: item.name}])
+                setSearchData((current) => [...current, {value: String(item.dbid), label: item.name}])
             ));
         }
     },[status,data]);
