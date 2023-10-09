@@ -169,7 +169,7 @@ function App2() {
                                         size={"sm"}
                                         component={Link}
                                         to={"proposal/new"}
-                                        onClick={toggle}
+                                        onClick={opened && toggle}
                                     >
                                         <IconPlus size={"2rem"}/>
                                     </ActionIcon>
@@ -177,7 +177,7 @@ function App2() {
                             </Group>
                         </AppShell.Section>
                     </AppShell.Navbar>
-                    <AppShell.Main>
+                    <AppShell.Main pr={"sm"}>
                         <Outlet/>
                     </AppShell.Main>
                 </AppShell>
