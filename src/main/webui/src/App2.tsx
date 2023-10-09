@@ -27,11 +27,11 @@ import {
     Text,
     TextInput,
     Grid,
-    useMantineTheme, Burger, ScrollArea
+    useMantineTheme, Burger, ScrollArea, Group
 } from "@mantine/core";
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {Icon3dCubeSphere, IconChevronRight} from "@tabler/icons-react";
-import {useMediaQuery} from "@mantine/hooks";
+import {useDisclosure} from "@mantine/hooks";
 
 
 const queryClient = new QueryClient()
@@ -69,8 +69,6 @@ function App2() {
 
     const [selectedProposalCode] = useState(historyProposalCode)
 
-    const largeScreen = useMediaQuery('(min-width: 62em)');
-
     const router = createBrowserRouter(
         [
             {path: "/", element: <PSTRoot/>,
@@ -104,32 +102,42 @@ function App2() {
     function PSTRoot() {
         const {user, token, apiUrl} = useContext(ProposalContext);
         const theme = useMantineTheme();
-        const [opened, setOpened] = useState(false);
+        const [opened, {toggle}] = useDisclosure();
+
         return (
             <ProposalContext.Provider value={{selectedProposalCode, user, token, apiUrl}}>
                 <AppShell
-                    navbar={{width: 300, breakpoint: 'md', collapsed: {mobile: !opened}}}
-                    header={{height: 60}}
+                    header={{
+                        height: {base: 60, md: 70, lg: 80}
+                    }}
+                    navbar={{
+                        width: {base: 200, md: 300, lg: 400},
+                        breakpoint: 'sm',
+                        collapsed: {mobile: !opened},
+                    }}
                 >
-                    <AppShell.Header p="xs">
-                        <Grid columns={12} align={"center"}>
+                    <AppShell.Header p="md">
+                        <Grid columns={2}>
                             <Grid.Col span={1}>
-                                {
-                                    largeScreen ?
-                                        <Icon3dCubeSphere />:
-                                        <Burger
-                                            opened={opened}
-                                            onClick={() => setOpened((o) => !o)}
-                                            size="sm"
-                                            color={theme.colors.gray[6]}
-                                            mr="xl"
-                                        />
-                                }
-
+                                <Group h="100%" px="md" wrap={"nowrap"}>
+                                    <Burger
+                                        opened={opened}
+                                        onClick={toggle}
+                                        hiddenFrom={"sm"}
+                                        size="sm"
+                                        color={theme.colors.gray[6]}
+                                        mr="xl"
+                                    />
+                                    <Icon3dCubeSphere />
+                                    <Button size={"sm"} component={Link} to={"proposal/new"} >Create New</Button>
+                                </Group>
                             </Grid.Col>
-                            <Grid.Col span={1}><Button component={Link} to={"proposal/new"} >Create New</Button></Grid.Col>
-                            <Grid.Col offset={7} span={1}>{SwitchToggle()}</Grid.Col>
-                            <Grid.Col span={1}><Button component={"a"} href={"/pst/gui/logout"}>Logout</Button></Grid.Col>
+                            <Grid.Col span={1}>
+                                <Group justify={"flex-end"}>
+                                    {SwitchToggle()}
+                                    <Button size={"sm"} component={"a"} href={"/pst/gui/logout"}>Logout</Button>
+                                </Group>
+                            </Grid.Col>
                         </Grid>
                     </AppShell.Header>
 
