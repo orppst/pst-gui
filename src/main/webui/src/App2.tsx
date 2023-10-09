@@ -27,10 +27,10 @@ import {
     Text,
     TextInput,
     Grid,
-    useMantineTheme, Burger, ScrollArea, Group
+    useMantineTheme, Burger, ScrollArea, Group, ActionIcon, Tooltip
 } from "@mantine/core";
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
-import {Icon3dCubeSphere, IconChevronRight} from "@tabler/icons-react";
+import {IconChevronRight, IconLogout, IconPlus} from "@tabler/icons-react";
 import {useDisclosure} from "@mantine/hooks";
 
 
@@ -108,10 +108,10 @@ function App2() {
             <ProposalContext.Provider value={{selectedProposalCode, user, token, apiUrl}}>
                 <AppShell
                     header={{
-                        height: {base: 60, md: 70, lg: 80}
+                        height: 60
                     }}
                     navbar={{
-                        width: {base: 200, md: 300, lg: 400},
+                        width: {base: 300, md: 400, lg: 450},
                         breakpoint: 'sm',
                         collapsed: {mobile: !opened},
                     }}
@@ -128,23 +128,53 @@ function App2() {
                                         color={theme.colors.gray[6]}
                                         mr="xl"
                                     />
-                                    <Icon3dCubeSphere />
-                                    <Button size={"sm"} component={Link} to={"proposal/new"} >Create New</Button>
+                                    <img src={"../public/polaris4.png"} alt="Polaris" width={60}/>
+                                    <Button
+                                        variant="light"
+                                        component={Link}
+                                        to={"/"}
+                                        onClick={opened && toggle}
+                                    >
+                                        Proposals for {user.fullName}
+                                    </Button>
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
                                     {SwitchToggle()}
-                                    <Button size={"sm"} component={"a"} href={"/pst/gui/logout"}>Logout</Button>
+                                    <Tooltip label={"logout"} openDelay={1000}>
+                                        <ActionIcon
+                                            color={"orange.8"}
+                                            variant={"subtle"}
+                                            size={"sm"}
+                                            component={"a"}
+                                            href={"/pst/gui/logout"}
+                                        >
+                                            <IconLogout size={"2rem"}/>
+                                        </ActionIcon>
+                                    </Tooltip>
                                 </Group>
                             </Grid.Col>
                         </Grid>
                     </AppShell.Header>
 
-
                     <AppShell.Navbar p="md">
                         <AppShell.Section grow component={ScrollArea}>
                             {<Text fz="sm">Search and filter by <Proposals/> </Text>}
+                            <Group justify={"flex-end"}>
+                                <Tooltip label={"new proposal"} position={"left"} openDelay={1000}>
+                                    <ActionIcon
+                                        color={"green.5"}
+                                        variant={"subtle"}
+                                        size={"sm"}
+                                        component={Link}
+                                        to={"proposal/new"}
+                                        onClick={toggle}
+                                    >
+                                        <IconPlus size={"2rem"}/>
+                                    </ActionIcon>
+                                </Tooltip>
+                            </Group>
                         </AppShell.Section>
                     </AppShell.Navbar>
                     <AppShell.Main>
