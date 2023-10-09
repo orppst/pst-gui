@@ -4,22 +4,20 @@ import {
     useProposalResourceGetTargets
 } from "../generated/proposalToolComponents.ts";
 import {
-    ActionIcon,
     Container,
     Group,
     Select,
-    Space,
-    Tooltip
+    Space
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ObservationTargetProps} from "./List.tsx";
 import {RenderTarget} from "../targets/RenderTarget.tsx";
-import {IconDeviceFloppy} from "@tabler/icons-react";
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse
 } from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
+import SaveButton from "../commonButtons/save.tsx";
 
 
 type ObservationType = 'Target'|'Calibration'|'';
@@ -32,7 +30,7 @@ interface ObservationFormValues {
     fieldId: number | undefined
 }
 
-export function ObservationNewForm (props: ObservationTargetProps){
+export default function TargetTypeForm (props: ObservationTargetProps){
 
     const queryClient = useQueryClient();
 
@@ -199,11 +197,7 @@ export function ObservationNewForm (props: ObservationTargetProps){
                     SelectCalibrationUse()
                 }
                 <Group justify={'flex-end'} mt="md">
-                    <Tooltip label={"Save"}>
-                        <ActionIcon size={"xl"} color={"indigo.5"} type="submit" variant={"subtle"}>
-                            <IconDeviceFloppy size={"3rem"}/>
-                        </ActionIcon>
-                    </Tooltip>
+                    <SaveButton toolTipLabel={hasObservation ? "save changes" : "save"}/>
                 </Group>
             </Container>
         </form>

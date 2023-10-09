@@ -146,7 +146,6 @@ function App2() {
                                         <ActionIcon
                                             color={"orange.8"}
                                             variant={"subtle"}
-                                            size={"sm"}
                                             component={"a"}
                                             href={"/pst/gui/logout"}
                                         >
@@ -162,11 +161,12 @@ function App2() {
                         <AppShell.Section grow component={ScrollArea}>
                             {<Text fz="sm">Search and filter by <Proposals/> </Text>}
                             <Group justify={"flex-end"}>
+                                {//can't use 'AddButton' here as we are opening a Link
+                                }
                                 <Tooltip label={"new proposal"} position={"left"} openDelay={1000}>
                                     <ActionIcon
                                         color={"green.5"}
                                         variant={"subtle"}
-                                        size={"sm"}
                                         component={Link}
                                         to={"proposal/new"}
                                         onClick={opened && toggle}

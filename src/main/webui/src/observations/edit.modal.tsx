@@ -1,8 +1,8 @@
 import {useDisclosure} from "@mantine/hooks";
-import {ActionIcon, Modal, Tooltip} from "@mantine/core";
-import {IconEyeEdit} from "@tabler/icons-react";
-import ObservationEditForm from "./edit.form.tsx";
+import {Modal} from "@mantine/core";
+import ObservationEditGroup from "./edit.group.tsx";
 import {ObservationTargetProps} from "./List.tsx";
+import ViewEditButton from "../commonButtons/viewEdit.tsx";
 
 export default function ObservationEditModal(observationProps: ObservationTargetProps) {
     const [opened, {close, open}] = useDisclosure();
@@ -11,18 +11,14 @@ export default function ObservationEditModal(observationProps: ObservationTarget
 
     return (
         <>
-            <Tooltip openDelay={1000} label={"view/edit"}>
-                <ActionIcon color={"green"} onClick={open} variant={"subtle"}>
-                    <IconEyeEdit size={"2rem"}/>
-                </ActionIcon>
-            </Tooltip>
+            <ViewEditButton toolTipLabel={"view/edit"} onClick={open} />
             <Modal
                 opened={opened}
                 onClose={close}
                 title={"View/Edit Observation Form"}
-                size={"75%"}
+                fullScreen
             >
-                <ObservationEditForm {...props}/>
+                <ObservationEditGroup {...props}/>
             </Modal>
         </>
     )

@@ -11,7 +11,7 @@ import {TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 export type TechnicalGoalId = {id: number};
 
 export type TechnicalGoalClose = {
-    goal: TechnicalGoal | undefined,
+    goal: TechnicalGoal,
     close: () => void
 }
 

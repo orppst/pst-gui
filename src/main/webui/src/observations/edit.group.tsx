@@ -1,5 +1,5 @@
-import {ObservationNewForm} from "./new.form.tsx";
-import ViewEditTimingWindows from "./ViewEditTimingWindows.tsx";
+import TargetTypeForm from "./targetType.form.tsx";
+import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationTargetProps} from "./List.tsx";
 import {Fieldset, Grid} from "@mantine/core";
 
@@ -11,22 +11,20 @@ import {Fieldset, Grid} from "@mantine/core";
   3. select timing-windows
  */
 
-export default function ObservationEditForm(props: ObservationTargetProps){
+export default function ObservationEditGroup(props: ObservationTargetProps){
 
     //target and type (and field??)
     //timing windows
     return (
-        <Grid columns={5}>
+        <Grid  columns={5}>
             <Grid.Col span={{base: 5, lg: 2}}>
                 <Fieldset legend={"Target and type"}>
-                    <ObservationNewForm
-                        {...props}
-                    />
+                    <TargetTypeForm {...props}/>
                 </Fieldset>
             </Grid.Col>
             <Grid.Col span={{base: 5, lg: 3}}>
                 <Fieldset legend={"Timing windows"}>
-                    <ViewEditTimingWindows/>
+                    <TimingWindowsForm/>
                 </Fieldset>
             </Grid.Col>
         </Grid>

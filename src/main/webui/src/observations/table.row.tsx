@@ -3,8 +3,7 @@ import {
     useObservationResourceGetObservation,
     useProposalResourceGetTargets
 } from "../generated/proposalToolComponents.ts";
-import {ActionIcon, Tooltip, Text, Space, Badge, Group, Table} from "@mantine/core";
-import {IconCopy, IconTrash} from "@tabler/icons-react";
+import {Text, Space, Badge, Group, Table} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 import ObservationEditModal from "./edit.modal.tsx";
@@ -12,6 +11,8 @@ import {useParams} from "react-router-dom";
 import {ObservationProps} from "./List.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
+import CloneButton from "../commonButtons/clone.tsx";
+import DeleteButton from "../commonButtons/delete.tsx";
 
 export type ObservationId = {id: number}
 
@@ -206,16 +207,8 @@ export default function ObservationRow(observationId: ObservationId) {
                                         newObservation={false}
                                     />
                                 }
-                                <Tooltip openDelay={1000} label={"copy"}>
-                                    <ActionIcon color={"blue"} onClick={confirmCopy} variant={"subtle"}>
-                                        <IconCopy size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
-                                <Tooltip openDelay={1000}  label={"delete"}>
-                                    <ActionIcon color={"red.7"} onClick={confirmDeletion} variant={"subtle"}>
-                                        <IconTrash size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
+                                <CloneButton toolTipLabel={"clone"} onClick={confirmCopy} />
+                                <DeleteButton toolTipLabel={"delete"} onClick={confirmDeletion} />
                             </Group>
                         </Table.Td>
                     </Table.Tr>

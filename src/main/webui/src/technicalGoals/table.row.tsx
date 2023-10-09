@@ -3,12 +3,13 @@ import {
     useProposalResourceGetTechnicalGoal
 } from "../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {ActionIcon, Badge, Group, Space, Table, Text, Tooltip} from "@mantine/core";
-import {IconCopy, IconTrash} from "@tabler/icons-react";
+import {Badge, Group, Space, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import TechnicalGoalEditModal from "./edit.modal.tsx";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
-import {notSpecified} from "./parent.form.tsx";
+import {notSpecified} from "./edit.group.tsx";
+import CloneButton from "../commonButtons/clone.tsx";
+import DeleteButton from "../commonButtons/delete.tsx";
 
 export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
 
@@ -134,16 +135,8 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                     goalLoading ? 'Loading...' :
                                         <TechnicalGoalEditModal {...goal} />
                                 }
-                                <Tooltip openDelay={1000} label={"clone"}>
-                                    <ActionIcon color={"blue"} onClick={confirmClone} variant={"subtle"}>
-                                        <IconCopy size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
-                                <Tooltip openDelay={1000}  label={"delete"}>
-                                    <ActionIcon color={"red.7"} onClick={confirmDelete} variant={"subtle"}>
-                                        <IconTrash size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
+                                <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
+                                <DeleteButton toolTipLabel={"delete"} onClick={confirmDelete} />
                             </Group>
                         </Table.Td>
                     </Table.Tr>

@@ -373,6 +373,8 @@ export type Field = {
   _id?: number;
 };
 
+export type FileUpload = Record<string, any>;
+
 /**
  * Generic, one-dimensional coordinate space suitable for use with most non-spatial properties. In Appendix B, we provide the description of a Standard 1D Coordinate Space instance which may be referenced in serializations.
  */
@@ -1541,6 +1543,11 @@ export type TimingWindow = {
 export type Unit = {
   value?: string;
 };
+
+/**
+ * @format binary
+ */
+export type UploadItemSchema = Blob;
 
 /**
  * a WikiData identifier

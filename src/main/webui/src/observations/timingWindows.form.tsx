@@ -1,15 +1,17 @@
 import {Accordion, ActionIcon, Box, Grid, Group, Space, Switch, Textarea} from "@mantine/core";
 import {DateTimePicker} from "@mantine/dates";
-import {IconPlus, IconTrash} from "@tabler/icons-react";
+import {IconTrash} from "@tabler/icons-react";
 import {useForm} from "@mantine/form";
 import {randomId} from "@mantine/hooks";
 
 import '@mantine/dates/styles.css'
+import SaveButton from "../commonButtons/save.tsx";
+import AddButton from "../commonButtons/add.tsx";
 
 //As a general reminder, Radio observations can be done at any time but Optical observations can occur only after
 // sunset. In both cases the target must be above the horizon at the time
 
-export default function ViewEditTimingWindows() {
+export default function TimingWindowsForm() {
 
     //Providing a UI for a TimingWindow: {start: Date, end: Date, note: string, isAvoidConstraint: boolean}
     // semantics of 'isAvoidConstraint' - true means avoid this date range, false means use this date range
@@ -74,7 +76,7 @@ export default function ViewEditTimingWindows() {
         <Accordion.Item value={(index + 1).toString()}>
             <AccordionControl index={index} />
             <Accordion.Panel>
-                <Grid columns={nCols} gutter={"xs"}>
+                <Grid columns={nCols} gutter={"md"}>
                     <Grid.Col span={{base: nCols, lg: rangeCol}}>
                         <DateTimePicker
                             placeholder={"start time"}
@@ -114,24 +116,26 @@ export default function ViewEditTimingWindows() {
         </Accordion.Item>
     ));
 
+    const handleSubmit = form.onSubmit((values) => {
+        console.log(values)
+    })
+
     return (
-        <>
+        <form onSubmit={handleSubmit}>
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {targetsAdded}
             </Accordion>
             <Group justify={"flex-end"}>
-                <ActionIcon
-                    color={"green.5"}
-                    variant={'subtle'}
-                    onClick={() =>
-                    form.insertListItem('timingWindows',
-                        {...timingWindowInitial, key: randomId()}
-                    )}
-                >
-                    <IconPlus size={"2rem"}/>
-                </ActionIcon>
+                <AddButton
+                    toolTipLabel={"add a timing window"}
+                    onClick={() => form.insertListItem('timingWindows',
+                        {...timingWindowInitial, key: randomId()})}
+                />
             </Group>
-        </>
-
-)
+            <Space h={"xs"} />
+            <Group justify={"flex-end"}>
+                <SaveButton toolTipLabel={"save changes"}/>
+            </Group>
+        </form>
+    )
 }
