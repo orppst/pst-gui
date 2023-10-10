@@ -14,6 +14,7 @@ import {ExpectedSpectralLine, ScienceSpectralWindow} from "../generated/proposal
 import DeleteButton from "../commonButtons/delete.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import {useForm} from "@mantine/form";
+import {AccordionDelete} from "../commonButtons/accordianControls.tsx";
 
 export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
 
@@ -39,20 +40,6 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
         },
         validate: {}
     })
-
-
-
-    function AccordionControl(props : {index: number}) {
-        return (
-            <Box style={{ display: 'flex', alignItems: 'center' }}>
-                <Accordion.Control>Window {props.index + 1}</Accordion.Control>
-                <DeleteButton
-                    toolTipLabel={"remove spectral window " + (props.index + 1)}
-                    onClick={() =>form.removeListItem("windows", props.index)}
-                />
-            </Box>
-        )
-    }
 
 
     const renderWindowSetup = (props: {index: number}) => {
@@ -175,10 +162,17 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
         <form onSubmit={handleSubmit}>
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {
-                    form.values.windows?.map((s, mapIndex) => {
+                    form.values.windows?.map((_s, mapIndex) => {
+                        let labelIndex = (mapIndex + 1).toString();
                         return (
-                            <Accordion.Item value={s?.index ? s.index.toString() : (mapIndex + 1).toString()}>
-                                <AccordionControl index={mapIndex} />
+                            <Accordion.Item value={labelIndex}>
+                                <AccordionDelete
+                                    title={"Window " + labelIndex}
+                                    deleteProps={{
+                                        toolTipLabel: "remove spectral window " + labelIndex,
+                                        onClick: ()=>form.removeListItem("windows", mapIndex)
+                                    }}
+                                />
                                 <Accordion.Panel>
                                     {renderWindowSetup({index: mapIndex})}
                                     {renderSpectralLines({index: mapIndex})}

@@ -1,7 +1,8 @@
 import {ActionIcon, Tooltip} from "@mantine/core";
 import {IconPlus} from "@tabler/icons-react";
+import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
 
-export default function AddButton(props: {toolTipLabel: string, onClick?: ()=> void }) {
+export default function AddButton(props: ButtonInterfaceProps) {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
             <ActionIcon

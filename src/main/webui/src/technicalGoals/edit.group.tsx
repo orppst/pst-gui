@@ -12,14 +12,18 @@ export const notSpecified = "not specified";
 
 export default function TechnicalGoalEditGroup(props: TechnicalGoalClose ) {
 
+    const totalCols = 8;
+    const performanceCols = 3;
+    const spectrumCols = totalCols - performanceCols
+
     return (
-        <Grid columns={5}>
-            <Grid.Col span={{base: 5, lg: 2}}>
+        <Grid columns={totalCols}>
+            <Grid.Col span={{base: totalCols, lg: performanceCols}}>
                 <Fieldset legend={"Performance parameters"}>
                     <PerformanceParametersForm {...props.goal.performance} />
                 </Fieldset>
             </Grid.Col>
-            <Grid.Col span={{base: 5, lg: 3}}>
+            <Grid.Col span={{base: totalCols, lg: spectrumCols}}>
                 <Fieldset legend={"Spectral windows"}>
                     <ViewEditSpectralWindow windows={props.goal.spectrum} />
                 </Fieldset>

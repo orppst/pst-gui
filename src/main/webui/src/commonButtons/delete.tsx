@@ -1,7 +1,8 @@
 import {ActionIcon, Tooltip} from "@mantine/core";
 import {IconTrash} from "@tabler/icons-react";
+import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
 
-export default function DeleteButton(props: {toolTipLabel: string, onClick?: () => void}) {
+export default function DeleteButton(props: ButtonInterfaceProps) {
     return (
         <Tooltip position="left" openDelay={1000}  label={props.toolTipLabel}>
             <ActionIcon

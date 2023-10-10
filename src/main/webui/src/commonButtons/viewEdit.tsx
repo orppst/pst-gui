@@ -1,7 +1,8 @@
 import {ActionIcon, Tooltip} from "@mantine/core";
 import {IconEyeEdit} from "@tabler/icons-react";
+import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
 
-export default function ViewEditButton(props: {toolTipLabel: string, onClick?: () => void}) {
+export default function ViewEditButton(props: ButtonInterfaceProps) {
     return (
         <Tooltip openDelay={1000} label={props.toolTipLabel}>
             <ActionIcon
