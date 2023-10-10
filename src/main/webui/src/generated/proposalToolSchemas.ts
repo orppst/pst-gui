@@ -1062,7 +1062,7 @@ export type Quantity = {
  * A real value with a unit.
  */
 export type RealQuantity = {
-  "@type": string; // ivoa:RealQuantity
+  "@type"?: string; // ivoa:RealQuantity
   /**
    * Must conform to definition of unit in VOUnit spec.
    */
