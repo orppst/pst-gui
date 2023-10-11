@@ -1,12 +1,23 @@
 import {
-    useSupportingDocumentResourceGetSupportingDocuments,
+    fetchSupportingDocumentResourceRemoveSupportingDocument,
+    fetchSupportingDocumentResourceUploadSupportingDocument,
+    useSupportingDocumentResourceGetSupportingDocuments
 } from "../generated/proposalToolComponents";
 import {useParams} from "react-router-dom";
-import {Box, Button, FileButton, Table, Text} from "@mantine/core";
-import {useState} from "react";8
+import {Alert, Box, Button, FileButton, Table, Text} from "@mantine/core";
+import {useState} from "react";
+import {useQueryClient} from "@tanstack/react-query";
+import {modals} from "@mantine/modals";
+import {notifications} from "@mantine/notifications";
+
+type DocumentProps = {
+    dbid: number,
+    name: string
+}
 
 const DocumentsPanel = () => {
-    const { selectedProposalCode} = useParams();//
+    const queryClient = useQueryClient();
+    const { selectedProposalCode} = useParams();
     const { data , error, isLoading } = useSupportingDocumentResourceGetSupportingDocuments({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
     const [file, setFile] = useState<File | null>(null);
     const [status, setStatus] = useState<
@@ -26,22 +37,40 @@ const DocumentsPanel = () => {
             setStatus("uploading");
 
             const formData = new FormData();
-            formData.append("file", file);
+            formData.append("document", file);
+            formData.append("title", file.name);
 
-            try {
-                const result = await fetch("http://127.0.0.1/upload", {
-                    method: "POST",
+            fetchSupportingDocumentResourceUploadSupportingDocument(
+                {
+                    // @ts-ignore
                     body: formData,
-                });
-
-                const data = await result.json();
-
-                console.log(data);
-                setStatus("success");
-            } catch (error) {
-                console.error(error);
-                setStatus("fail");
-            }
+                    pathParams: {proposalCode: Number(selectedProposalCode)},
+                    // @ts-ignore
+                    headers: {"Content-Type": "multipart/form-data"}
+                }
+            ).then((data) => console.log(data))
+                .then(() => {
+                    setStatus("success");
+                    queryClient.invalidateQueries();
+                    setFile(null);
+                    notifications.show({
+                        autoClose: 5000,
+                        title: "Upload successful",
+                        message: 'The supporting document has been uploaded',
+                        color: 'green',
+                        className: 'my-notification-class',
+                    });
+                })
+                .catch((error) => {
+                    setStatus("fail");
+                    notifications.show({
+                        autoClose: 7000,
+                        title: "Upload failed",
+                        message: error.stack.message,
+                        color: 'red',
+                        className: 'my-notification-class',
+                    });
+                })
         }
     };
 
@@ -49,12 +78,18 @@ const DocumentsPanel = () => {
         <Box>
             <Text fz="lg" fw={700}>View and retrieve documents</Text>
             <Box>
-                {isLoading ? (`Loading...`)
-                    : (
-                        <pre>
-                        {`${JSON.stringify(data, null, 2)}`}
-                    </pre>
-                    )}
+                <Table>
+                    <Table.Tbody>
+                    {isLoading ? (<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>)
+                    : data?.map((item) => {
+                            if (item.dbid !== undefined && item.name !== undefined)
+                                return (<RenderDocumentListItem dbid={item.dbid} name={item.name}/>)
+                            else
+                                return (<Table.Tr><Table.Td>Empty!</Table.Td></Table.Tr>)
+                        })
+                    }
+                    </Table.Tbody>
+                </Table>
             </Box>
             <Text fz="lg" fw={700}>Upload a document</Text>
             <FileButton onChange={setFile}>
@@ -64,11 +99,11 @@ const DocumentsPanel = () => {
                 <Box>
                     File details:
                     <Table>
-                        <tbody>
-                            <tr><td>Name</td><td>{file.name}</td></tr>
-                            <tr><td>Type</td><td>{file.type}</td></tr>
-                            <tr><td>Size</td><td>{file.size} bytes</td></tr>
-                        </tbody>
+                        <Table.Tbody>
+                            <Table.Tr><Table.Td>Name</Table.Td><Table.Td>{file.name}</Table.Td></Table.Tr>
+                            <Table.Tr><Table.Td>Type</Table.Td><Table.Td>{file.type}</Table.Td></Table.Tr>
+                            <Table.Tr><Table.Td>Size</Table.Td><Table.Td>{file.size} bytes</Table.Td></Table.Tr>
+                        </Table.Tbody>
                     </Table>
                 </Box>
             )}
@@ -84,9 +119,69 @@ const DocumentsPanel = () => {
     );
 };
 
+function RenderDocumentListItem(props: DocumentProps) {
+    const queryClient = useQueryClient();
+    const { selectedProposalCode} = useParams();
+    const [submitting, setSubmitting] = useState(false);
+
+    function handleRemove() {
+        setSubmitting(true);
+        fetchSupportingDocumentResourceRemoveSupportingDocument({pathParams:
+                {
+                    id: props.dbid,
+                    proposalCode: Number(selectedProposalCode),
+                }})
+            .then(()=> {
+                setSubmitting(false);
+                queryClient.invalidateQueries();
+                notifications.show({
+                    autoClose: 5000,
+                    title: "Removed",
+                    message: 'The supporting document has been removed',
+                    color: 'green',
+                    className: 'my-notification-class',
+                });
+            })
+            .catch(console.log);
+    }
+
+    const openRemoveModal = () =>
+        modals.openConfirmModal({
+            title: "Remove document",
+            centered: true,
+            children: (
+                <Text size="sm">
+                    Are you sure you want to remove the document {props.name} from this proposal?
+                </Text>
+            ),
+            labels: { confirm: "Delete", cancel: "Cancel" },
+            confirmProps: { color: "red" },
+            onConfirm: () => handleRemove(),
+        });
+
+    const downloadDocument = () => {
+        return (
+            <Alert variant="light" color="blue" title="Coming soon!">
+                Document download is a work in progress
+            </Alert>
+        )
+    }
+
+    if(submitting)
+        return (<Table.Tr key={props.dbid}><Table.Td>DELETING...</Table.Td></Table.Tr>);
+    else
+        return (
+                <Table.Tr key={props.dbid}>
+                    <Table.Td>{props.name}</Table.Td>
+                    <Table.Td align={"right"}><Button color={"green"} onClick={downloadDocument}>Download</Button></Table.Td>
+                    <Table.Td align={"left"}><Button color={"red"}  onClick={openRemoveModal}>Remove</Button></Table.Td>
+                </Table.Tr>
+            );
+}
+
 const Result = ({ status }: { status: string }) => {
     if (status === "success") {
-        return <Text>✅ File uploaded successfully</Text>;
+        return null;
     } else if (status === "fail") {
         return <Text>❌ File upload failed</Text>;
     } else if (status === "uploading") {
