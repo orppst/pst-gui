@@ -65,13 +65,12 @@ const DocumentsPanel = () => {
                     });
                 })
                 .catch((error) => {
-                    console.log(error);
                     setStatus("fail");
                     notifications.show({
                         withCloseButton: true,
-                        autoClose: 5000,
+                        autoClose: 7000,
                         title: "Upload failed",
-                        message: 'The supporting document has not been uploaded',
+                        message: error.stack.message,
                         color: 'red',
                         className: 'my-notification-class',
                         loading: false,
@@ -171,7 +170,7 @@ const Result = ({ status }: { status: string }) => {
     if (status === "success") {
         return null;
     } else if (status === "fail") {
-        return <Text>❌ File upload failed, please contact your administrator</Text>;
+        return <Text>❌ File upload failed</Text>;
     } else if (status === "uploading") {
         return <Text>⏳ Uploading selected file...</Text>;
     } else {
