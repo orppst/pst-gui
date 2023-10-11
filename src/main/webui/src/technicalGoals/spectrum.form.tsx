@@ -1,11 +1,11 @@
 import {
     Accordion,
-    Box,
-    Checkbox, Fieldset,
+    Box, Checkbox,
+    Fieldset, Grid,
     Group,
     NumberInput,
     Select,
-    Space,
+    Space, Stack,
     Text,
     TextInput
 } from "@mantine/core";
@@ -15,81 +15,109 @@ import DeleteButton from "../commonButtons/delete.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import {useForm} from "@mantine/form";
 import {AccordionDelete} from "../commonButtons/accordianControls.tsx";
+import SaveButton from "../commonButtons/save.tsx";
+import {frequencyUnits} from "../physicalUnits/PhysicalUnits.tsx";
+import {NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
 
 export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
 
     const decimalPlaces = 3;
     const step = 0.001;
 
+    const emptySpectralLine : ExpectedSpectralLine = {
+        restFrequency: {value: undefined, unit: {value: undefined}},
+        transition: undefined,
+        splatalogId: {value: undefined},
+        description: undefined
+    }
+
     const emptyWindow : ScienceSpectralWindow = {
         index: undefined,
         spectralWindowSetup: {
-            start: undefined,
-            end: undefined,
-            spectralResolution: undefined,
+            start: {value: undefined, unit: {value: undefined}},
+            end: {value: undefined, unit: {value: undefined}},
+            spectralResolution: {value: undefined, unit: {value: undefined}},
             isSkyFrequency: false,
             polarization: undefined
         },
-        expectedSpectralLine: []
+        expectedSpectralLine: [emptySpectralLine]
     }
 
     const form
         = useForm<ScienceSpectrumValues>({
         initialValues: {
-            windows: props? props.windows: [emptyWindow]
+            windows: props? props.windows: [emptyWindow],
+            spectralPoint: props.spectralPoint
         },
         validate: {}
     })
 
 
     const renderWindowSetup = (props: {index: number}) => {
+        const totalCols = 16;
+
         return (
-            <Group grow>
-                <NumberInput
-                    label={"Start:"}
-                    placeholder={notSpecified}
-                    decimalScale={decimalPlaces}
-                    step={step}
-                    min={0}
-                    {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.start.value`)}
-                />
-                <NumberInput
-                    label={"End:"}
-                    placeholder={notSpecified}
-                    decimalScale={decimalPlaces}
-                    step={step}
-                    min={0}
-                    {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.end.value`)}
-                />
-                <NumberInput
-                    label={"Spectral resolution:"}
-                    placeholder={notSpecified}
-                    decimalScale={decimalPlaces}
-                    step={step}
-                    min={0}
-                    {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.spectralResolution.value`)}
-                />
-                <Select
-                    label={"Polarization:"}
-                    placeholder={"pick one"}
-                    data={[
-                        "I","Q","U","V","RR","LL","RL","LR","XX","YY","XY","YX","PF","PP","PA"
-                    ]}
-                    {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.polarization`)}
-                />
-                <Checkbox pt={25}
-                    label={"Sky frequency"}
-                    {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.isSkyFrequency`,
-                        {type: 'checkbox'})}
-                />
-            </Group>
+            <Grid columns={totalCols} gutter={0}>
+                <Grid.Col span={{base: totalCols, xl: 4}}>
+                    <NumberInputPlusUnit
+                        color={"cyan"}
+                        gap={0}
+                        padding={5}
+                        form={form}
+                        label={"Start"}
+                        valueRoot={`windows.${props.index}.spectralWindowSetup.start`}
+                        units={frequencyUnits}
+                    />
+                </Grid.Col>
+                <Grid.Col span={{base: totalCols, xl: 4}}>
+                    <NumberInputPlusUnit
+                        color={"indigo"}
+                        gap={0}
+                        padding={5}
+                        form={form}
+                        label={"End"}
+                        valueRoot={`windows.${props.index}.spectralWindowSetup.end`}
+                        units={frequencyUnits}
+                    />
+                </Grid.Col>
+                <Grid.Col span={{base: totalCols, xl: 4}}>
+                    <NumberInputPlusUnit
+                        color={"violet"}
+                        gap={0}
+                        padding={5}
+                        form={form}
+                        label={"Resolution"}
+                        valueRoot={`windows.${props.index}.spectralWindowSetup.spectralResolution`}
+                        units={frequencyUnits}
+                    />
+                </Grid.Col>
+                <Grid.Col span={{base: totalCols/2, xl: 2}}>
+                    <Select
+                        label={"Polarization:"}
+                        placeholder={"pick one"}
+                        px={5}
+                        data={[
+                            "I","Q","U","V","RR","LL","RL","LR","XX","YY","XY","YX","PF","PP","PA"
+                        ]}
+                        {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.polarization`)}
+                    />
+                </Grid.Col>
+                <Grid.Col span={{base: totalCols/2, xl: 2}}>
+                    <Group justify={"center"}>
+                        <Checkbox
+                            size={"sm"}
+                            label={"sky frequency"}
+                            pt={25}
+                            {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.isSkyFrequency`,
+                                {type: 'checkbox'})}
+                        />
+                    </Group>
+                </Grid.Col>
+            </Grid>
         )
     }
 
     const renderSpectralLines = (props: {index: number}) => {
-
-        const emptySpectralLine : ExpectedSpectralLine = {}
-
         return (
             <Fieldset legend={"Spectral lines"}>
                 {
@@ -139,7 +167,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
                             )
                         })
                         :
-                        <Text c={"yellow.5"}>None specified</Text>
+                        <Text c={"orange.5"}>None specified</Text>
                 }
                 <Space h={"xs"} />
                 <Group justify={"flex-end"}>
@@ -184,11 +212,17 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
             </Accordion>
             <Space h={"xs"}/>
             <Group justify={"flex-end"}>
-                <AddButton
-                    toolTipLabel={"add a spectral window"}
-                    onClick={() => form.insertListItem('windows', {...emptyWindow})}
-                />
+                <Stack>
+                    <AddButton
+                        toolTipLabel={"add a spectral window"}
+                        onClick={() => form.insertListItem('windows', {...emptyWindow})}
+                    />
+                    <SaveButton toolTipLabel={"save changes to spectral windows"} />
+                </Stack>
+
             </Group>
+
+
         </form>
     )
 }

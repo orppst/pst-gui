@@ -16,6 +16,7 @@ export default function TechnicalGoalEditModal(goal: TechnicalGoal) {
                 onClose={close}
                 title={"View/Edit Technical Goal No." + goal._id}
                 fullScreen
+                withCloseButton={false}
             >
                 <TechnicalGoalEditGroup goal={goal} close={close} />
             </Modal>
