@@ -4,7 +4,7 @@ import {
     useSupportingDocumentResourceGetSupportingDocuments
 } from "../generated/proposalToolComponents";
 import {useParams} from "react-router-dom";
-import {Box, Button, FileButton, Table, Text} from "@mantine/core";
+import {Alert, Box, Button, FileButton, Table, Text} from "@mantine/core";
 import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
@@ -23,7 +23,6 @@ const DocumentsPanel = () => {
     const [status, setStatus] = useState<
         "initial" | "uploading" | "success" | "fail"
     >("initial");
-
 
     if (error) {
         return (
@@ -55,25 +54,21 @@ const DocumentsPanel = () => {
                     queryClient.invalidateQueries();
                     setFile(null);
                     notifications.show({
-                        withCloseButton: true,
                         autoClose: 5000,
                         title: "Upload successful",
                         message: 'The supporting document has been uploaded',
                         color: 'green',
                         className: 'my-notification-class',
-                        loading: false,
                     });
                 })
                 .catch((error) => {
                     setStatus("fail");
                     notifications.show({
-                        withCloseButton: true,
                         autoClose: 7000,
                         title: "Upload failed",
                         message: error.stack.message,
                         color: 'red',
                         className: 'my-notification-class',
-                        loading: false,
                     });
                 })
         }
@@ -136,8 +131,17 @@ function RenderDocumentListItem(props: DocumentProps) {
                     id: props.dbid,
                     proposalCode: Number(selectedProposalCode),
                 }})
-            .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries())
+            .then(()=> {
+                setSubmitting(false);
+                queryClient.invalidateQueries();
+                notifications.show({
+                    autoClose: 5000,
+                    title: "Removed",
+                    message: 'The supporting document has been removed',
+                    color: 'green',
+                    className: 'my-notification-class',
+                });
+            })
             .catch(console.log);
     }
 
@@ -155,13 +159,22 @@ function RenderDocumentListItem(props: DocumentProps) {
             onConfirm: () => handleRemove(),
         });
 
+    const downloadDocument = () => {
+        return (
+            <Alert variant="light" color="blue" title="Coming soon!">
+                Document download is a work in progress
+            </Alert>
+        )
+    }
+
     if(submitting)
-        return (<Table.Tr><Table.Td>DELETING...</Table.Td></Table.Tr>);
+        return (<Table.Tr key={props.dbid}><Table.Td>DELETING...</Table.Td></Table.Tr>);
     else
         return (
-                <Table.Tr>
+                <Table.Tr key={props.dbid}>
                     <Table.Td>{props.name}</Table.Td>
-                    <Table.Td><Button color={"red"} align={"right"} onClick={openRemoveModal}>Remove</Button></Table.Td>
+                    <Table.Td align={"right"}><Button color={"green"} onClick={downloadDocument}>Download</Button></Table.Td>
+                    <Table.Td align={"left"}><Button color={"red"}  onClick={openRemoveModal}>Remove</Button></Table.Td>
                 </Table.Tr>
             );
 }
