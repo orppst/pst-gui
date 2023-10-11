@@ -6,7 +6,7 @@ import './index.css'
 import {ModalsProvider} from "@mantine/modals";
 import {Notifications} from "@mantine/notifications";
 import '@mantine/core/styles.css';
-
+import '@mantine/notifications/styles.css';
 
 //if we want to override any parts of theme we can do it here
 // this 'theme' object is merged with the 'theme' property of MantineProvider
