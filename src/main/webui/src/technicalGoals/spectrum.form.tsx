@@ -18,6 +18,7 @@ import {AccordionDelete} from "../commonButtons/accordianControls.tsx";
 import SaveButton from "../commonButtons/save.tsx";
 import {frequencyUnits} from "../physicalUnits/PhysicalUnits.tsx";
 import {NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
+import {randomId} from "@mantine/hooks";
 
 export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
 
@@ -40,7 +41,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
             isSkyFrequency: false,
             polarization: undefined
         },
-        expectedSpectralLine: [emptySpectralLine]
+        expectedSpectralLine:[]
     }
 
     const form
@@ -122,9 +123,9 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
             <Fieldset legend={"Spectral lines"}>
                 {
                     form.values.windows?.at(props.index)?.expectedSpectralLine?.length! > 0 ?
-                        form.values.windows?.at(props.index)?.expectedSpectralLine?.map((_s, index) => {
+                        form.values.windows?.at(props.index)?.expectedSpectralLine?.map((s, index) => {
                             return (
-                                <Group grow>
+                                <Group grow key={s.splatalogId ? s.splatalogId.value : randomId()}>
                                     <NumberInput
                                         label={index == 0 ? "Rest frequency:" : ''}
                                         placeholder={notSpecified}
@@ -190,10 +191,10 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
         <form onSubmit={handleSubmit}>
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {
-                    form.values.windows?.map((_s, mapIndex) => {
+                    form.values.windows?.map((s, mapIndex) => {
                         let labelIndex = (mapIndex + 1).toString();
                         return (
-                            <Accordion.Item value={labelIndex}>
+                            <Accordion.Item value={labelIndex} key={s?.index}>
                                 <AccordionDelete
                                     title={"Window " + labelIndex}
                                     deleteProps={{

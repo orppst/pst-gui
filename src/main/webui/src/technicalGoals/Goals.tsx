@@ -73,7 +73,7 @@ function GoalsPanel() {
                     {
                         goals?.map((goal) => {
                             return (
-                                <TechnicalGoalRow id={goal._id!} />
+                                <TechnicalGoalRow id={goal._id!} key={goal._id!}/>
                             )
                         })
                     }

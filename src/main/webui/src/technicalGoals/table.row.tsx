@@ -1,5 +1,6 @@
 import {TechnicalGoalId} from "./Goals.tsx";
 import {
+    fetchProposalResourceRemoveTechnicalGoal,
     useProposalResourceGetTechnicalGoal
 } from "../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
@@ -10,10 +11,12 @@ import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import {notSpecified} from "./edit.group.tsx";
 import CloneButton from "../commonButtons/clone.tsx";
 import DeleteButton from "../commonButtons/delete.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
 
     const { selectedProposalCode} = useParams();
+    const queryClient = useQueryClient();
 
     const {data: goal, error: goalError, isLoading: goalLoading} =
         useProposalResourceGetTechnicalGoal(
@@ -32,7 +35,11 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     }
 
     const handleDelete = () => {
-        console.log("Deleting technical goal");
+        fetchProposalResourceRemoveTechnicalGoal( {
+            pathParams: {proposalCode: Number(selectedProposalCode), techGoalId: technicalGoalId.id}
+        })
+            .then(()=>queryClient.invalidateQueries())
+            .catch(console.error);
     }
 
     const confirmDelete = () => modals.openConfirmModal({
@@ -74,6 +81,13 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
         onCancel:() => console.log('Cancel copy'),
     })
 
+    let hasAngularResolution = !!goal?.performance?.desiredAngularResolution?.value;
+    let hasLargestScale = !!goal?.performance?.desiredLargestScale?.value;
+    let hasSensitivity= !!goal?.performance?.desiredSensitivity?.value;
+    let hasDynamicRange= !!goal?.performance?.desiredDynamicRange?.value;
+    let hasSpectralPoint = !!goal?.performance?.representativeSpectralPoint?.value;
+
+
     return (
         <>
             {goalLoading ? ('Loading...') :
@@ -82,34 +96,34 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                         <Table.Td>
                             {goal?._id}
                         </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.desiredAngularResolution?.value ?
+                        <Table.Td c={hasAngularResolution ? "" : "yellow"}>
+                            {hasAngularResolution ?
                                 goal?.performance?.desiredAngularResolution?.value :
-                                <Text c={"yellow"}>{notSpecified}</Text>
+                                notSpecified
                             }
                         </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.desiredLargestScale?.value ?
+                        <Table.Td c={hasLargestScale ? "" : "yellow"}>
+                            {hasLargestScale ?
                                 goal?.performance?.desiredLargestScale?.value :
-                                <Text c={"yellow"}>{notSpecified}</Text>
+                                notSpecified
                             }
                         </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.desiredSensitivity?.value ?
+                        <Table.Td c={hasSensitivity ? "" : "yellow"}>
+                            {hasSensitivity ?
                                 goal?.performance?.desiredSensitivity?.value :
-                                <Text c={"yellow"}>{notSpecified}</Text>
+                                notSpecified
                             }
                         </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.desiredDynamicRange?.value ?
+                        <Table.Td c={hasDynamicRange ? "" : "yellow"}>
+                            {hasDynamicRange ?
                                 goal?.performance?.desiredDynamicRange?.value :
-                                <Text c={"yellow"}>{notSpecified}</Text>
+                                notSpecified
                             }
                         </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.representativeSpectralPoint?.value ?
+                        <Table.Td c={hasSpectralPoint ? "" : "yellow"}>
+                            {hasSpectralPoint ?
                                 goal?.performance?.representativeSpectralPoint?.value :
-                                <Text c={"yellow"}>{notSpecified}</Text>
+                                notSpecified
                             }
                         </Table.Td>
                         <Table.Td>
@@ -122,7 +136,7 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                         {goal?.spectrum?.length!}
                                     </Badge>:
                                     <Badge
-                                        c={"red"}
+                                        color={"red"}
                                         radius={0}
                                     >
                                         None

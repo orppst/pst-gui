@@ -5,7 +5,7 @@ import {TechnicalGoalClose} from "./Goals.tsx";
 import {RealQuantity, ScienceSpectralWindow} from "../generated/proposalToolSchemas.ts";
 
 export interface ScienceSpectrumValues {
-    windows: (ScienceSpectralWindow | undefined) [] | undefined
+    windows: ScienceSpectralWindow []
     spectralPoint: RealQuantity
 }
 
@@ -22,13 +22,13 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalClose ) {
             <Grid columns={totalCols}>
                 <Grid.Col span={{base: totalCols, md: performanceCols}}>
                     <Fieldset legend={"Performance parameters"}>
-                        <PerformanceParametersForm {...props.goal.performance} />
+                        <PerformanceParametersForm newTechnicalGoal={false} performance={props.goal.performance} />
                     </Fieldset>
                 </Grid.Col>
                 <Grid.Col span={{base: totalCols, md: spectrumCols}}>
                     <Fieldset legend={"Spectral windows"}>
                         <ViewEditSpectralWindow
-                            windows={props.goal.spectrum}
+                            windows={props.goal.spectrum!}
                             spectralPoint={props.goal.performance?.representativeSpectralPoint!}
                         />
                     </Fieldset>

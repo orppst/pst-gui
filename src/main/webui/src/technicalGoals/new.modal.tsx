@@ -15,7 +15,7 @@ export default function TechnicalGoalNewModal() {
                 title={"New Technical Goal Form"}
                 size={"30%"}
             >
-                <PerformanceParametersForm />
+                <PerformanceParametersForm newTechnicalGoal={true} closeModal={close} />
             </Modal>
         </>
     );
