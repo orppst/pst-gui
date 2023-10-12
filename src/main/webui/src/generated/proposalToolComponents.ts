@@ -7059,7 +7059,8 @@ export type ProposalResourceGetTechnicalGoalsPathParams = {
 export type ProposalResourceGetTechnicalGoalsError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceGetTechnicalGoalsResponse = Schemas.TechnicalGoal[];
+export type ProposalResourceGetTechnicalGoalsResponse =
+  Schemas.ObjectIdentifier[];
 
 export type ProposalResourceGetTechnicalGoalsVariables = {
   pathParams: ProposalResourceGetTechnicalGoalsPathParams;
