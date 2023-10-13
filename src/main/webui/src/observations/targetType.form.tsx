@@ -1,7 +1,7 @@
 import {useForm} from "@mantine/form";
 import {
     fetchObservationResourceAddNewObservation,
-    useProposalResourceGetTargets
+    useProposalResourceGetTargets, useProposalResourceGetTechnicalGoals
 } from "../generated/proposalToolComponents.ts";
 import {
     Container,
@@ -67,7 +67,14 @@ export default function TargetTypeForm (props: ObservationTargetProps){
     });
 
     const { data: targets , error: targetListError, isLoading: targetsLoading } =
-        useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true});
+        useProposalResourceGetTargets({
+            pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true}
+        );
+
+    const {data: technicalGoals, error: technicalGoalsError, isLoading: technicalGoalsLoading} =
+        useProposalResourceGetTechnicalGoals( {
+            pathParams: {proposalCode: Number(selectedProposalCode)}
+        });
 
     function SelectTargets() {
 
@@ -95,8 +102,37 @@ export default function TargetTypeForm (props: ObservationTargetProps){
                         searchable
                         data={selectTargets}
                         {...form.getInputProps('targetDBId')}
-                    />
-                    : null
+                    /> : null
+                }
+            </>
+        )
+    }
+
+    function SelectTechnicalGoal() {
+        if (technicalGoalsError) {
+            return (
+                <div>
+                    <pre>{JSON.stringify(technicalGoalsError, null, 2)}</pre>
+                </div>
+            )
+        }
+
+        let selectTechGoals = technicalGoals?.map((goal) => {
+            return {
+                value: goal.dbid!.toString(),
+                label: goal.name! //note: for TechnicalGoals name is equivalent to dbid
+            }
+        })
+
+        return (
+            <>
+                { selectTechGoals ?
+                    <Select
+                        label={"Technical Goal:"}
+                        placeholder={"pick one"}
+                        data={selectTechGoals}
+                        {...form.getInputProps('techGoalId')}
+                    /> : null
                 }
             </>
         )
@@ -190,6 +226,10 @@ export default function TargetTypeForm (props: ObservationTargetProps){
                             dbid={form.values.targetDBId!}
                             showRemove={false}
                         />
+                }
+                {SelectTechnicalGoal()}
+                {
+                    technicalGoalsLoading ? 'loading...' : <></>
                 }
                 <Space h={"xl"}/>
                 {SelectObservationType()}

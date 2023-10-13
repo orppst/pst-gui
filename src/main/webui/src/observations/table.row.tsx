@@ -59,13 +59,14 @@ export default function ObservationRow(observationId: ObservationId) {
         id: observationId.id
     }
 
-    function handleDelete() {
+    const handleDelete = () => {
         fetchObservationResourceRemoveObservation({
             pathParams: {proposalCode: Number(selectedProposalCode), observationId: observationId.id}
         })
-            .then(()=>queryClient.invalidateQueries())
+            .then(() => queryClient.invalidateQueries())
             .catch(console.log);
     }
+
 
     const confirmDeletion = () => modals.openConfirmModal({
         title: 'Delete Observation?',
@@ -86,8 +87,12 @@ export default function ObservationRow(observationId: ObservationId) {
         onCancel: () => console.log('Cancel delete'),
     })
 
-    const confirmCopy = () => modals.openConfirmModal({
-        title: 'Copy Observation?',
+    const handleClone = () => {
+        alert("Clone function not yet implemented");
+    }
+
+    const confirmClone = () => modals.openConfirmModal({
+        title: 'Clone Observation?',
         children: (
             <>
                 <Text c={"yellow"} size={"sm"}>
@@ -100,10 +105,10 @@ export default function ObservationRow(observationId: ObservationId) {
                 </Text>
             </>
         ),
-        labels: {confirm: 'Copy', cancel: 'Do not copy'},
+        labels: {confirm: 'Clone', cancel: 'Do not clone'},
         confirmProps: {color: 'blue'},
-        onConfirm: () => console.log('Confirm copy'),
-        onCancel:() => console.log('Cancel copy'),
+        onConfirm() {handleClone()},
+        onCancel:() => console.log('Cancel clone'),
     })
 
     let performance : PerformanceParameters = observation?.technicalGoal?.performance!;
@@ -207,7 +212,7 @@ export default function ObservationRow(observationId: ObservationId) {
                                         newObservation={false}
                                     />
                                 }
-                                <CloneButton toolTipLabel={"clone"} onClick={confirmCopy} />
+                                <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
                                 <DeleteButton toolTipLabel={"delete"} onClick={confirmDeletion} />
                             </Group>
                         </Table.Td>
