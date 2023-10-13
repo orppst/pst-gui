@@ -1,10 +1,10 @@
 import {useDisclosure} from "@mantine/hooks";
 import {Modal} from "@mantine/core";
 import ObservationEditGroup from "./edit.group.tsx";
-import {ObservationTargetProps} from "./List.tsx";
+import {ObservationProps} from "./List.tsx";
 import ViewEditButton from "../commonButtons/viewEdit.tsx";
 
-export default function ObservationEditModal(observationProps: ObservationTargetProps) {
+export default function ObservationEditModal(observationProps: ObservationProps) {
     const [opened, {close, open}] = useDisclosure();
 
     const props = {...observationProps, closeModal: () => {close()}};

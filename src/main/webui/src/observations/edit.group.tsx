@@ -1,6 +1,6 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
-import {ObservationTargetProps} from "./List.tsx";
+import {ObservationProps} from "./List.tsx";
 import {Fieldset, Grid} from "@mantine/core";
 
 /*
@@ -11,7 +11,7 @@ import {Fieldset, Grid} from "@mantine/core";
   3. select timing-windows
  */
 
-export default function ObservationEditGroup(props: ObservationTargetProps){
+export default function ObservationEditGroup(props: ObservationProps){
 
     //target and type (and field??)
     //timing windows

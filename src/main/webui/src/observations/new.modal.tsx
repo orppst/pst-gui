@@ -16,8 +16,7 @@ export default function ObservationsNewModal() {
                 size={"50%"}
             >
                 <TargetTypeForm
-                    observationProps={undefined}
-                    targetId={undefined}
+                    observation={undefined}
                     newObservation={true}
                     closeModal={() => {close();}}
                 />

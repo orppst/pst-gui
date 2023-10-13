@@ -9,21 +9,9 @@ import {Observation} from "../generated/proposalToolSchemas.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 
 
-export type TargetId = {
-    id: number,
-};
-
 export type ObservationProps = {
-    observation: Observation,
-    id: number
-}
-
-export type ObservationTargetProps = {
-    observationProps: ObservationProps | undefined,
-    targetId: number | undefined,
-    techGoalId?: number | undefined,
-    fieldId?: number | undefined,
-    newObservation: boolean,
+    observation: Observation | undefined,
+    newObservation?: boolean,
     closeModal?: () => void
 }
 

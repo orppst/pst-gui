@@ -10,11 +10,11 @@ import {
     Space
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {ObservationTargetProps} from "./List.tsx";
+import {ObservationProps} from "./List.tsx";
 import {RenderTarget} from "../targets/RenderTarget.tsx";
 import {
     CalibrationObservation,
-    CalibrationTargetIntendedUse
+    CalibrationTargetIntendedUse, Observation, TargetObservation
 } from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import SaveButton from "../commonButtons/save.tsx";
@@ -31,29 +31,29 @@ interface ObservationFormValues {
     fieldId: number | undefined
 }
 
-export default function TargetTypeForm (props: ObservationTargetProps){
+export default function TargetTypeForm (props: ObservationProps){
 
     const queryClient = useQueryClient();
 
     const { selectedProposalCode} = useParams();
 
-    let hasObservation = props.observationProps !== undefined ;
+    let hasObservation = props.observation !== undefined ;
 
     let observationType : ObservationType = hasObservation ?
-        props.observationProps!.observation["@type"]
+        props.observation!["@type"]
         === 'proposal:TargetObservation' ? 'Target': 'Calibration' :
         '';
 
-    let calibrationUse : CalibrationTargetIntendedUse = observationType === 'Calibration' ?
-        (props.observationProps!.observation as CalibrationObservation).intent! : 'AMPLITUDE';
+    let calibrationUse : CalibrationTargetIntendedUse | undefined = observationType === 'Calibration' ?
+        (props.observation as CalibrationObservation).intent! : undefined;
 
 
     const form = useForm<ObservationFormValues>({
         initialValues: {
             observationType: observationType,
             calibrationUse: calibrationUse,
-            targetDBId: props.targetId,
-            techGoalId: props.techGoalId,
+            targetDBId: props.observation?.target?._id,
+            techGoalId: props.observation?.technicalGoal?._id,
             fieldId: 1, //FIXME: need a user selected value
         },
 
@@ -179,8 +179,7 @@ export default function TargetTypeForm (props: ObservationTargetProps){
         if (props.newObservation) {
             console.log("Creating");
 
-            let newObservation : CalibrationObservation = {
-                "@type": "proposal:TargetObservation",
+            let baseObservation : Observation = {
                 target: {
                     "@type": "proposal:SolarSystemTarget",
                     "_id": values.targetDBId
@@ -194,15 +193,22 @@ export default function TargetTypeForm (props: ObservationTargetProps){
                 }
             }
 
+            let targetObservation = baseObservation as TargetObservation;
+
+            let calibrationObservation = baseObservation as CalibrationObservation;
+
+
             if (values.observationType == 'Calibration') {
-                newObservation = {...newObservation,"@type": "proposal:CalibrationObservation", intent: values.calibrationUse}
+                calibrationObservation = {...calibrationObservation,"@type": "proposal:CalibrationObservation", intent: values.calibrationUse}
+            } else {
+                targetObservation = {...targetObservation, "@type": "proposal:TargetObservation"}
             }
 
-            console.log(JSON.stringify(newObservation));
+            console.log(JSON.stringify(baseObservation));
 
             fetchObservationResourceAddNewObservation({
                 pathParams:{proposalCode: Number(selectedProposalCode)},
-                body: newObservation
+                body: values.observationType == 'Target' ? targetObservation : calibrationObservation
             })
                 .then(()=>queryClient.invalidateQueries())
                 .then(()=>props.closeModal!())

@@ -1,14 +1,12 @@
 import {
     fetchObservationResourceRemoveObservation,
-    useObservationResourceGetObservation,
-    useProposalResourceGetTargets
+    useObservationResourceGetObservation
 } from "../generated/proposalToolComponents.ts";
 import {Text, Space, Badge, Group, Table} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 import ObservationEditModal from "./edit.modal.tsx";
 import {useParams} from "react-router-dom";
-import {ObservationProps} from "./List.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import CloneButton from "../commonButtons/clone.tsx";
@@ -36,27 +34,6 @@ export default function ObservationRow(observationId: ObservationId) {
 
     if (observationError) {
         return <pre>{getErrorMessage(observationError)}</pre>
-    }
-
-    let targetName = observationLoading ? '' : observation!.target!.sourceName!;
-
-    const {data: target, error: targetError, isLoading: targetLoading} =
-        useProposalResourceGetTargets(
-            {
-                pathParams: {proposalCode: Number(selectedProposalCode)},
-                queryParams: {sourceName: "%" + targetName + "%"},
-            },
-        );
-
-    if (targetError) {
-        return <pre>{getErrorMessage(targetError)}</pre>
-    }
-
-    let targetId = targetLoading ? 0 : target!.at(0)!.dbid!;
-
-    let observationProps : ObservationProps = {
-        observation: observation!,
-        id: observationId.id
     }
 
     const handleDelete = () => {
@@ -205,10 +182,9 @@ export default function ObservationRow(observationId: ObservationId) {
                         <Table.Td>
                             <Group position={"right"}>
                                 {
-                                    observationLoading || targetLoading ? 'Loading...' :
+                                    observationLoading ? 'Loading...' :
                                     <ObservationEditModal
-                                        observationProps={observationProps}
-                                        targetId={targetId}
+                                        observation={observation}
                                         newObservation={false}
                                     />
                                 }
