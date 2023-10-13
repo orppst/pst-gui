@@ -21,6 +21,8 @@ export type ObservationProps = {
 export type ObservationTargetProps = {
     observationProps: ObservationProps | undefined,
     targetId: number | undefined,
+    techGoalId?: number | undefined,
+    fieldId?: number | undefined,
     newObservation: boolean,
     closeModal?: () => void
 }

@@ -18,6 +18,7 @@ import {
 } from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import SaveButton from "../commonButtons/save.tsx";
+import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
 
 
 type ObservationType = 'Target'|'Calibration'|'';
@@ -52,8 +53,8 @@ export default function TargetTypeForm (props: ObservationTargetProps){
             observationType: observationType,
             calibrationUse: calibrationUse,
             targetDBId: props.targetId,
-            techGoalId: 1, //FIXME: change to a user selected value
-            fieldId: 1, //FIXME: change to a user selected value
+            techGoalId: props.techGoalId,
+            fieldId: 1, //FIXME: need a user selected value
         },
 
         validate: {
@@ -223,13 +224,17 @@ export default function TargetTypeForm (props: ObservationTargetProps){
                     targetsLoading ? 'loading...' : form.values.targetDBId != undefined &&
                         <RenderTarget
                             proposalCode={Number(selectedProposalCode)}
-                            dbid={form.values.targetDBId!}
+                            dbid={form.values.targetDBId}
                             showRemove={false}
                         />
                 }
                 {SelectTechnicalGoal()}
                 {
-                    technicalGoalsLoading ? 'loading...' : <></>
+                    technicalGoalsLoading ? 'loading...' : form.values.techGoalId != undefined &&
+                        <RenderTechnicalGoal
+                            proposalCode={Number(selectedProposalCode)}
+                            dbid={form.values.techGoalId}
+                        />
                 }
                 <Space h={"xl"}/>
                 {SelectObservationType()}
