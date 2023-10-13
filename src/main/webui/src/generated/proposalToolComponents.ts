@@ -6392,32 +6392,37 @@ export const useSupportingDocumentResourceGetSupportingDocuments = <
   );
 };
 
-export type SupportingDocumentResourceAddNewSupportingDocumentPathParams = {
+export type SupportingDocumentResourceUploadSupportingDocumentPathParams = {
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type SupportingDocumentResourceAddNewSupportingDocumentError =
+export type SupportingDocumentResourceUploadSupportingDocumentError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type SupportingDocumentResourceAddNewSupportingDocumentVariables = {
-  body?: Schemas.SupportingDocument;
-  pathParams: SupportingDocumentResourceAddNewSupportingDocumentPathParams;
+export type SupportingDocumentResourceUploadSupportingDocumentRequestBody = {
+  document?: Schemas.UploadItemSchema;
+  title?: string;
+};
+
+export type SupportingDocumentResourceUploadSupportingDocumentVariables = {
+  body?: SupportingDocumentResourceUploadSupportingDocumentRequestBody;
+  pathParams: SupportingDocumentResourceUploadSupportingDocumentPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchSupportingDocumentResourceAddNewSupportingDocument = (
-  variables: SupportingDocumentResourceAddNewSupportingDocumentVariables,
+export const fetchSupportingDocumentResourceUploadSupportingDocument = (
+  variables: SupportingDocumentResourceUploadSupportingDocumentVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
-    SupportingDocumentResourceAddNewSupportingDocumentError,
     Schemas.SupportingDocument,
+    SupportingDocumentResourceUploadSupportingDocumentError,
+    SupportingDocumentResourceUploadSupportingDocumentRequestBody,
     {},
     {},
-    SupportingDocumentResourceAddNewSupportingDocumentPathParams
+    SupportingDocumentResourceUploadSupportingDocumentPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/supportingDocuments",
     method: "post",
@@ -6425,24 +6430,24 @@ export const fetchSupportingDocumentResourceAddNewSupportingDocument = (
     signal,
   });
 
-export const useSupportingDocumentResourceAddNewSupportingDocument = (
+export const useSupportingDocumentResourceUploadSupportingDocument = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
-      SupportingDocumentResourceAddNewSupportingDocumentError,
-      SupportingDocumentResourceAddNewSupportingDocumentVariables
+      Schemas.SupportingDocument,
+      SupportingDocumentResourceUploadSupportingDocumentError,
+      SupportingDocumentResourceUploadSupportingDocumentVariables
     >,
     "mutationFn"
   >
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
-    SupportingDocumentResourceAddNewSupportingDocumentError,
-    SupportingDocumentResourceAddNewSupportingDocumentVariables
+    Schemas.SupportingDocument,
+    SupportingDocumentResourceUploadSupportingDocumentError,
+    SupportingDocumentResourceUploadSupportingDocumentVariables
   >(
-    (variables: SupportingDocumentResourceAddNewSupportingDocumentVariables) =>
-      fetchSupportingDocumentResourceAddNewSupportingDocument({
+    (variables: SupportingDocumentResourceUploadSupportingDocumentVariables) =>
+      fetchSupportingDocumentResourceUploadSupportingDocument({
         ...fetcherOptions,
         ...variables,
       }),
@@ -6523,6 +6528,72 @@ export const useSupportingDocumentResourceGetSupportingDocument = <
   );
 };
 
+export type SupportingDocumentResourceReplaceSupportingDocumentPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type SupportingDocumentResourceReplaceSupportingDocumentError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SupportingDocumentResourceReplaceSupportingDocumentRequestBody = {
+  document?: Schemas.UploadItemSchema;
+};
+
+export type SupportingDocumentResourceReplaceSupportingDocumentVariables = {
+  body?: SupportingDocumentResourceReplaceSupportingDocumentRequestBody;
+  pathParams: SupportingDocumentResourceReplaceSupportingDocumentPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSupportingDocumentResourceReplaceSupportingDocument = (
+  variables: SupportingDocumentResourceReplaceSupportingDocumentVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    SupportingDocumentResourceReplaceSupportingDocumentError,
+    SupportingDocumentResourceReplaceSupportingDocumentRequestBody,
+    {},
+    {},
+    SupportingDocumentResourceReplaceSupportingDocumentPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useSupportingDocumentResourceReplaceSupportingDocument = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      SupportingDocumentResourceReplaceSupportingDocumentError,
+      SupportingDocumentResourceReplaceSupportingDocumentVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    SupportingDocumentResourceReplaceSupportingDocumentError,
+    SupportingDocumentResourceReplaceSupportingDocumentVariables
+  >(
+    (variables: SupportingDocumentResourceReplaceSupportingDocumentVariables) =>
+      fetchSupportingDocumentResourceReplaceSupportingDocument({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
 export type SupportingDocumentResourceRemoveSupportingDocumentPathParams = {
   /**
    * @format int64
@@ -6584,69 +6655,76 @@ export const useSupportingDocumentResourceRemoveSupportingDocument = (
   );
 };
 
-export type SupportingDocumentResourceReplaceSupportingDocumentLocationPathParams =
-  {
-    /**
-     * @format int64
-     */
-    id: number;
-    /**
-     * @format int64
-     */
-    proposalCode: number;
-  };
+export type SupportingDocumentResourceDownloadSupportingDocumentPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
 
-export type SupportingDocumentResourceReplaceSupportingDocumentLocationError =
+export type SupportingDocumentResourceDownloadSupportingDocumentError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type SupportingDocumentResourceReplaceSupportingDocumentLocationVariables =
-  {
-    pathParams: SupportingDocumentResourceReplaceSupportingDocumentLocationPathParams;
-  } & ProposalToolContext["fetcherOptions"];
+export type SupportingDocumentResourceDownloadSupportingDocumentVariables = {
+  pathParams: SupportingDocumentResourceDownloadSupportingDocumentPathParams;
+} & ProposalToolContext["fetcherOptions"];
 
-export const fetchSupportingDocumentResourceReplaceSupportingDocumentLocation =
-  (
-    variables: SupportingDocumentResourceReplaceSupportingDocumentLocationVariables,
-    signal?: AbortSignal
-  ) =>
-    proposalToolFetch<
-      undefined,
-      SupportingDocumentResourceReplaceSupportingDocumentLocationError,
-      undefined,
-      {},
-      {},
-      SupportingDocumentResourceReplaceSupportingDocumentLocationPathParams
-    >({
-      url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}/location",
-      method: "put",
-      ...variables,
-      signal,
-    });
+export const fetchSupportingDocumentResourceDownloadSupportingDocument = (
+  variables: SupportingDocumentResourceDownloadSupportingDocumentVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    SupportingDocumentResourceDownloadSupportingDocumentError,
+    undefined,
+    {},
+    {},
+    SupportingDocumentResourceDownloadSupportingDocumentPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}/get-file",
+    method: "get",
+    ...variables,
+    signal,
+  });
 
-export const useSupportingDocumentResourceReplaceSupportingDocumentLocation = (
+export const useSupportingDocumentResourceDownloadSupportingDocument = <
+  TData = undefined
+>(
+  variables: SupportingDocumentResourceDownloadSupportingDocumentVariables,
   options?: Omit<
-    reactQuery.UseMutationOptions<
+    reactQuery.UseQueryOptions<
       undefined,
-      SupportingDocumentResourceReplaceSupportingDocumentLocationError,
-      SupportingDocumentResourceReplaceSupportingDocumentLocationVariables
+      SupportingDocumentResourceDownloadSupportingDocumentError,
+      TData
     >,
-    "mutationFn"
+    "queryKey" | "queryFn"
   >
 ) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
     undefined,
-    SupportingDocumentResourceReplaceSupportingDocumentLocationError,
-    SupportingDocumentResourceReplaceSupportingDocumentLocationVariables
+    SupportingDocumentResourceDownloadSupportingDocumentError,
+    TData
   >(
-    (
-      variables: SupportingDocumentResourceReplaceSupportingDocumentLocationVariables
-    ) =>
-      fetchSupportingDocumentResourceReplaceSupportingDocumentLocation({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    options
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}/get-file",
+      operationId: "supportingDocumentResourceDownloadSupportingDocument",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchSupportingDocumentResourceDownloadSupportingDocument(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
   );
 };
 
@@ -6675,7 +6753,7 @@ export const fetchSupportingDocumentResourceReplaceSupportingDocumentTitle = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
+    Schemas.SupportingDocument,
     SupportingDocumentResourceReplaceSupportingDocumentTitleError,
     undefined,
     {},
@@ -6691,7 +6769,7 @@ export const fetchSupportingDocumentResourceReplaceSupportingDocumentTitle = (
 export const useSupportingDocumentResourceReplaceSupportingDocumentTitle = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      Schemas.SupportingDocument,
       SupportingDocumentResourceReplaceSupportingDocumentTitleError,
       SupportingDocumentResourceReplaceSupportingDocumentTitleVariables
     >,
@@ -6700,7 +6778,7 @@ export const useSupportingDocumentResourceReplaceSupportingDocumentTitle = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
+    Schemas.SupportingDocument,
     SupportingDocumentResourceReplaceSupportingDocumentTitleError,
     SupportingDocumentResourceReplaceSupportingDocumentTitleVariables
   >(
@@ -6981,7 +7059,8 @@ export type ProposalResourceGetTechnicalGoalsPathParams = {
 export type ProposalResourceGetTechnicalGoalsError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceGetTechnicalGoalsResponse = Schemas.TechnicalGoal[];
+export type ProposalResourceGetTechnicalGoalsResponse =
+  Schemas.ObjectIdentifier[];
 
 export type ProposalResourceGetTechnicalGoalsVariables = {
   pathParams: ProposalResourceGetTechnicalGoalsPathParams;
@@ -7786,6 +7865,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}";
       operationId: "supportingDocumentResourceGetSupportingDocument";
       variables: SupportingDocumentResourceGetSupportingDocumentVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}/get-file";
+      operationId: "supportingDocumentResourceDownloadSupportingDocument";
+      variables: SupportingDocumentResourceDownloadSupportingDocumentVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/targets";

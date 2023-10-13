@@ -1,8 +1,8 @@
 import {useDisclosure} from "@mantine/hooks";
-import {ActionIcon, Modal, Tooltip} from "@mantine/core";
-import {IconEyeEdit} from "@tabler/icons-react";
-import TechnicalGoalParentForm from "./parent.form.tsx";
+import {Modal} from "@mantine/core";
+import TechnicalGoalEditGroup from "./edit.group.tsx";
 import {TechnicalGoal} from "../generated/proposalToolSchemas.ts";
+import ViewEditButton from "../commonButtons/viewEdit.tsx";
 
 export default function TechnicalGoalEditModal(goal: TechnicalGoal) {
 
@@ -10,18 +10,15 @@ export default function TechnicalGoalEditModal(goal: TechnicalGoal) {
 
     return (
         <>
-            <Tooltip openDelay={1000} label={"view/edit"}>
-                <ActionIcon color={"green"} onClick={open}>
-                    <IconEyeEdit size={"2rem"}/>
-                </ActionIcon>
-            </Tooltip>
+            <ViewEditButton toolTipLabel={"view/edit"} onClick={open} />
             <Modal
                 opened={opened}
                 onClose={close}
                 title={"View/Edit Technical Goal No." + goal._id}
                 fullScreen
+                withCloseButton={false}
             >
-                <TechnicalGoalParentForm goal={goal} close={close} />
+                <TechnicalGoalEditGroup goal={goal} close={close} />
             </Modal>
         </>
     );

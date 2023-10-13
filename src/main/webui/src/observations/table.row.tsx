@@ -3,8 +3,7 @@ import {
     useObservationResourceGetObservation,
     useProposalResourceGetTargets
 } from "../generated/proposalToolComponents.ts";
-import {ActionIcon, Tooltip, Text, Space, Badge, Group} from "@mantine/core";
-import {IconCopy, IconTrash} from "@tabler/icons-react";
+import {Text, Space, Badge, Group, Table} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 import ObservationEditModal from "./edit.modal.tsx";
@@ -12,6 +11,8 @@ import {useParams} from "react-router-dom";
 import {ObservationProps} from "./List.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
+import CloneButton from "../commonButtons/clone.tsx";
+import DeleteButton from "../commonButtons/delete.tsx";
 
 export type ObservationId = {id: number}
 
@@ -58,23 +59,24 @@ export default function ObservationRow(observationId: ObservationId) {
         id: observationId.id
     }
 
-    function handleDelete() {
+    const handleDelete = () => {
         fetchObservationResourceRemoveObservation({
             pathParams: {proposalCode: Number(selectedProposalCode), observationId: observationId.id}
         })
-            .then(()=>queryClient.invalidateQueries())
+            .then(() => queryClient.invalidateQueries())
             .catch(console.log);
     }
+
 
     const confirmDeletion = () => modals.openConfirmModal({
         title: 'Delete Observation?',
         children: (
             <>
-                <Text color={"yellow"} size={"sm"}>
+                <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation') ? 'Target' : 'Calibration'} Observation of '{observation?.target?.sourceName}'
                 </Text>
                 <Space h={"sm"}/>
-                <Text color={"gray.6"} size={"sm"}>
+                <Text c={"gray.6"} size={"sm"}>
                     Deletes the observation from the list only. Preserves everything except the timing windows.
                 </Text>
             </>
@@ -85,24 +87,28 @@ export default function ObservationRow(observationId: ObservationId) {
         onCancel: () => console.log('Cancel delete'),
     })
 
-    const confirmCopy = () => modals.openConfirmModal({
-        title: 'Copy Observation?',
+    const handleClone = () => {
+        alert("Clone function not yet implemented");
+    }
+
+    const confirmClone = () => modals.openConfirmModal({
+        title: 'Clone Observation?',
         children: (
             <>
-                <Text color={"yellow"} size={"sm"}>
+                <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation') ? 'Target' : 'Calibration'} Observation of '{observation?.target?.sourceName}'
                 </Text>
                 <Space h={"sm"}/>
-                <Text color={"gray.6"} size={"sm"}>
+                <Text c={"gray.6"} size={"sm"}>
                     Creates a new observation with a deep copy of this observation's properties.
                     You should edit the copied observation for your needs.
                 </Text>
             </>
         ),
-        labels: {confirm: 'Copy', cancel: 'Do not copy'},
+        labels: {confirm: 'Clone', cancel: 'Do not clone'},
         confirmProps: {color: 'blue'},
-        onConfirm: () => console.log('Confirm copy'),
-        onCancel:() => console.log('Cancel copy'),
+        onConfirm() {handleClone()},
+        onCancel:() => console.log('Cancel clone'),
     })
 
     let performance : PerformanceParameters = observation?.technicalGoal?.performance!;
@@ -125,18 +131,18 @@ export default function ObservationRow(observationId: ObservationId) {
         <>
             {observationLoading? ('Loading...') :
                 (
-                    <tr>
-                        <td>
+                    <Table.Tr>
+                        <Table.Td>
                             {observation?.target?.sourceName}
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {observation?.["@type"]=== 'proposal:TargetObservation' ?
                                 'target' : 'calibration'}
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {observation?.field?.name}
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {
                                 performanceFull ?
                                     <Badge
@@ -159,8 +165,8 @@ export default function ObservationRow(observationId: ObservationId) {
                                             Partial
                                         </Badge>
                             }
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {
                                 observation?.technicalGoal?.spectrum?.length! > 0 ?
                                     <Badge
@@ -176,8 +182,8 @@ export default function ObservationRow(observationId: ObservationId) {
                                         None
                                     </Badge>
                             }
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             <Group>
                             {
                                 observation?.constraints?.length! > 0 ?
@@ -195,8 +201,8 @@ export default function ObservationRow(observationId: ObservationId) {
                                     </Badge>
                             }
                             </Group>
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             <Group position={"right"}>
                                 {
                                     observationLoading || targetLoading ? 'Loading...' :
@@ -206,19 +212,11 @@ export default function ObservationRow(observationId: ObservationId) {
                                         newObservation={false}
                                     />
                                 }
-                                <Tooltip openDelay={1000} label={"copy"}>
-                                    <ActionIcon color={"blue"} onClick={confirmCopy}>
-                                        <IconCopy size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
-                                <Tooltip openDelay={1000}  label={"delete"}>
-                                    <ActionIcon color={"red.7"} onClick={confirmDeletion}>
-                                        <IconTrash size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
+                                <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
+                                <DeleteButton toolTipLabel={"delete"} onClick={confirmDeletion} />
                             </Group>
-                        </td>
-                    </tr>
+                        </Table.Td>
+                    </Table.Tr>
                 )
             }
         </>

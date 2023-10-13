@@ -1,17 +1,22 @@
 import {TechnicalGoalId} from "./Goals.tsx";
 import {
+    fetchProposalResourceRemoveTechnicalGoal,
     useProposalResourceGetTechnicalGoal
 } from "../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {ActionIcon, Badge, Group, Space, Text, Tooltip} from "@mantine/core";
-import {IconCopy, IconTrash} from "@tabler/icons-react";
+import {Badge, Group, Space, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import TechnicalGoalEditModal from "./edit.modal.tsx";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
+import {notSpecified} from "./edit.group.tsx";
+import CloneButton from "../commonButtons/clone.tsx";
+import DeleteButton from "../commonButtons/delete.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
 
     const { selectedProposalCode} = useParams();
+    const queryClient = useQueryClient();
 
     const {data: goal, error: goalError, isLoading: goalLoading} =
         useProposalResourceGetTechnicalGoal(
@@ -30,14 +35,18 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     }
 
     const handleDelete = () => {
-        console.log("Deleting technical goal");
+        fetchProposalResourceRemoveTechnicalGoal( {
+            pathParams: {proposalCode: Number(selectedProposalCode), techGoalId: technicalGoalId.id}
+        })
+            .then(()=>queryClient.invalidateQueries())
+            .catch(console.error);
     }
 
     const confirmDelete = () => modals.openConfirmModal({
         title: 'Delete Technical Goal?',
         children: (
             <>
-                <Text color={"yellow"} size={"sm"}>
+                <Text c={"yellow"} size={"sm"}>
                     Technical goal #{goal?._id}
                 </Text>
             </>
@@ -56,11 +65,11 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
         title: 'Clone Technical Goal?',
         children: (
             <>
-                <Text color={"yellow"} size={"sm"}>
+                <Text c={"yellow"} size={"sm"}>
                     Technical goal #{goal?._id}
                 </Text>
                 <Space h={"xs"}/>
-                <Text color={"gray.6"} size={"sm"}>
+                <Text c={"gray.6"} size={"sm"}>
                     Creates a new technical goal with a clone of this technical goal's properties.
                     You should edit the cloned technical goal for your needs.
                 </Text>
@@ -72,45 +81,52 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
         onCancel:() => console.log('Cancel copy'),
     })
 
+    let hasAngularResolution = !!goal?.performance?.desiredAngularResolution?.value;
+    let hasLargestScale = !!goal?.performance?.desiredLargestScale?.value;
+    let hasSensitivity= !!goal?.performance?.desiredSensitivity?.value;
+    let hasDynamicRange= !!goal?.performance?.desiredDynamicRange?.value;
+    let hasSpectralPoint = !!goal?.performance?.representativeSpectralPoint?.value;
+
+
     return (
         <>
             {goalLoading ? ('Loading...') :
                 (
-                    <tr>
-                        <td>
+                    <Table.Tr>
+                        <Table.Td>
                             {goal?._id}
-                        </td>
-                        <td>
-                            {goal?.performance?.desiredAngularResolution?.value ?
+                        </Table.Td>
+                        <Table.Td c={hasAngularResolution ? "" : "yellow"}>
+                            {hasAngularResolution ?
                                 goal?.performance?.desiredAngularResolution?.value :
-                                <Text color={"yellow"}>not set</Text>
+                                notSpecified
                             }
-                        </td>
-                        <td>
-                            {goal?.performance?.desiredLargestScale?.value ?
+                        </Table.Td>
+                        <Table.Td c={hasLargestScale ? "" : "yellow"}>
+                            {hasLargestScale ?
                                 goal?.performance?.desiredLargestScale?.value :
-                                <Text color={"yellow"}>not set</Text>
+                                notSpecified
                             }
-                        </td>
-                        <td>
-                            {goal?.performance?.desiredSensitivity?.value ?
+                        </Table.Td>
+                        <Table.Td c={hasSensitivity ? "" : "yellow"}>
+                            {hasSensitivity ?
                                 goal?.performance?.desiredSensitivity?.value :
-                                <Text color={"yellow"}>not set</Text>
+                                notSpecified
                             }
-                        </td>
-                        <td>
-                            {goal?.performance?.desiredDynamicRange?.value ?
+                        </Table.Td>
+                        <Table.Td c={hasDynamicRange ? "" : "yellow"}>
+                            {hasDynamicRange ?
                                 goal?.performance?.desiredDynamicRange?.value :
-                                <Text color={"yellow"}>not set</Text>
+                                notSpecified
                             }
-                        </td>
-                        <td>
-                            {goal?.performance?.representativeSpectralPoint?.value ?
+                        </Table.Td>
+                        <Table.Td c={hasSpectralPoint ? "" : "yellow"}>
+                            {hasSpectralPoint ?
                                 goal?.performance?.representativeSpectralPoint?.value :
-                                <Text color={"yellow"}>not set</Text>
+                                notSpecified
                             }
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             {
                                 goal?.spectrum?.length! > 0 ?
                                     <Badge
@@ -126,26 +142,18 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                         None
                                     </Badge>
                             }
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                             <Group position={"right"}>
                                 {
                                     goalLoading ? 'Loading...' :
                                         <TechnicalGoalEditModal {...goal} />
                                 }
-                                <Tooltip openDelay={1000} label={"clone"}>
-                                    <ActionIcon color={"blue"} onClick={confirmClone}>
-                                        <IconCopy size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
-                                <Tooltip openDelay={1000}  label={"delete"}>
-                                    <ActionIcon color={"red.7"} onClick={confirmDelete}>
-                                        <IconTrash size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
+                                <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
+                                <DeleteButton toolTipLabel={"delete"} onClick={confirmDelete} />
                             </Group>
-                        </td>
-                    </tr>
+                        </Table.Td>
+                    </Table.Tr>
                 )
             }
         </>

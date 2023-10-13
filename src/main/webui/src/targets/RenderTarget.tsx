@@ -2,7 +2,7 @@ import {CoordSys} from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
 import {fetchProposalResourceRemoveTarget, useProposalResourceGetTarget} from "../generated/proposalToolComponents.ts";
-import {Button, Table, Text} from "@mantine/core";
+import {Box, Button, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {
     CelestialTarget,
@@ -29,7 +29,7 @@ export function RenderTarget(props: TargetProps) {
         });
 
     if(error) {
-        return <div>Error loading target</div>
+        return <Box>Error loading target</Box>
     }
 
     function EquatorialPoint(props: PropsEquatorialPoint) {
@@ -39,19 +39,21 @@ export function RenderTarget(props: TargetProps) {
 
         return (
             <Table>
-                <tbody>
-                <tr><th colSpan={2}>Coordinates</th></tr>
-                {Point.coordSys?.["@type"] === "coords:SpaceSys"? <SpaceSys coords={Point?.coordSys}/> : (<tr><td>`Unknown...`</td></tr>)}
-                {Point?.coordSys?.frame?.["@type"] === "coords:SpaceFrame"?<SpaceFrame frame={Point?.coordSys?.frame}/>: (<tr><td>Unknown frame</td></tr>)}
-                <tr>
-                    <td>Latitude</td>
-                    <td>{Point.lat?.value} {Point.lat?.unit?.value}</td>
-                </tr>
-                <tr>
-                    <td>Longitude</td>
-                    <td>{Point.lon?.value} {Point.lon?.unit?.value}</td>
-                </tr>
-                </tbody>
+                <Table.Thead>
+                    <Table.Tr><Table.Th colSpan={2}>Coordinates</Table.Th></Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                {Point.coordSys?.["@type"] === "coords:SpaceSys"? <SpaceSys coords={Point?.coordSys}/> : (<Table.Tr><Table.Td>`Unknown...`</Table.Td></Table.Tr>)}
+                {Point?.coordSys?.frame?.["@type"] === "coords:SpaceFrame"?<SpaceFrame frame={Point?.coordSys?.frame}/>: (<Table.Tr><Table.Td>Unknown frame</Table.Td></Table.Tr>)}
+                <Table.Tr>
+                    <Table.Td>Latitude</Table.Td>
+                    <Table.Td>{Point.lat?.value} {Point.lat?.unit?.value}</Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                    <Table.Td>Longitude</Table.Td>
+                    <Table.Td>{Point.lon?.value} {Point.lon?.unit?.value}</Table.Td>
+                </Table.Tr>
+                </Table.Tbody>
             </Table>
         )
     }
@@ -59,11 +61,11 @@ export function RenderTarget(props: TargetProps) {
     function SpaceSys(props: PropsSpaceSys) {
         const Coords = props.coords;
         //console.log(JSON.stringify(Coords));
-        return (<tr><td>Space System</td>
-            <td>
+        return (<Table.Tr><Table.Td>Space System</Table.Td>
+            <Table.Td>
                 {Coords?.coordSpace?.["@type"] === "coords:CartesianCoordSpace"?<CartesianCoordSpace/>: (`Unknown coord space`)}
-            </td>
-        </tr>);
+            </Table.Td>
+        </Table.Tr>);
     }
 
     function CartesianCoordSpace() {
@@ -72,7 +74,7 @@ export function RenderTarget(props: TargetProps) {
 
     function SpaceFrame(props: PropsSpaceFrame) {
         const frame: SpaceFrame = props.frame;
-        return (<tr><td>Space Frame Ref</td><td>{frame?.spaceRefFrame}</td></tr>);
+        return (<Table.Tr><Table.Td>Space Frame Ref</Table.Td><Table.Td>{frame?.spaceRefFrame}</Table.Td></Table.Tr>);
 
     }
 
@@ -81,10 +83,12 @@ export function RenderTarget(props: TargetProps) {
 
         return (
             <Table>
-                <tbody>
-                <tr><th>Epoch</th></tr>
-                <tr><td>{PositionEpoch.value}</td></tr>
-                </tbody>
+                <Table.Thead>
+                    <Table.Tr><Table.Th>Epoch</Table.Th></Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                    <Table.Tr><Table.Td>{PositionEpoch.value}</Table.Td></Table.Tr>
+                </Table.Tbody>
             </Table>);
     }
     function CelestialTarget(props: PropsCelestialTarget) {
@@ -93,10 +97,12 @@ export function RenderTarget(props: TargetProps) {
 
         return (
             <Table>
-                <tbody>
-                <tr><th>Celestial Target</th></tr>
-                <tr><td>{target.sourceName}</td></tr>
-                </tbody>
+                <Table.Thead>
+                    <Table.Tr><Table.Th>Celestial Target</Table.Th></Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                    <Table.Tr><Table.Td>{target.sourceName}</Table.Td></Table.Tr>
+                </Table.Tbody>
             </Table>
         )
     }
@@ -142,15 +148,15 @@ export function RenderTarget(props: TargetProps) {
                 submitting?(`Removing...`):
                     (
                         <Table>
-                            <tbody>
-                            <tr>
-                                <td valign="top">
+                            <Table.Tbody>
+                            <Table.Tr>
+                                <Table.Td valign="top">
                                     {data?.["@type"] === "proposal:CelestialTarget" ?
                                         (<CelestialTarget obj={data}></CelestialTarget>)
                                         : (JSON.stringify(data, null, 2))
                                     }
-                                </td>
-                                <td>
+                                </Table.Td>
+                                <Table.Td>
                                     {
                                         // @ts-ignore
                                         data?.sourceCoordinates?.["@type"] === "coords:EquatorialPoint" ?
@@ -159,15 +165,15 @@ export function RenderTarget(props: TargetProps) {
                                             // @ts-ignore
                                             : (JSON.stringify(data?.sourceCoordinates, null, 2))
                                     }
-                                </td>
-                                <td valign="top">
+                                </Table.Td>
+                                <Table.Td valign="top">
 
                                     <Epoch epoch={// @ts-ignore
                                         data?.positionEpoch}/>
-                                </td>
-                            </tr>
-                            {props.showRemove && <tr><td colSpan={3} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></td></tr>}
-                            </tbody>
+                                </Table.Td>
+                            </Table.Tr>
+                            {props.showRemove && <tr><Table.Td colSpan={3} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></Table.Td></tr>}
+                            </Table.Tbody>
                         </Table>
                     )
             }

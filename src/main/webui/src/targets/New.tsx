@@ -92,12 +92,14 @@ const TargetForm = (props: FormPropsType<{
                 {...form.getInputProps("TargetName")} />
             <Button onClick={simbadLookup}>Lookup</Button>
             <NumberInput
-                withAsterisk
+                required={true}
                 label={"RA"}
-                precision={5}
+                decimalScale={5}
                 step={0.00001}
                 min={0}
                 max={360}
+                allowNegative={false}
+                suffix="°"
                 stepHoldDelay={500}
                 stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
                 formatter={(value: string) =>
@@ -106,12 +108,13 @@ const TargetForm = (props: FormPropsType<{
                         : ' °'}
                 {...form.getInputProps("RA")}/>
             <NumberInput
-                withAsterisk
+                required={true}
                 label={"Dec"}
-                precision={5}
+                decimalScale={5}
                 step={0.00001}
                 min={-90}
                 max={90}
+                suffix="°"
                 stepHoldDelay={500}
                 stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
                 formatter={(value: string) =>

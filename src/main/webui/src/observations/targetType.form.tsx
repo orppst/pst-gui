@@ -1,25 +1,23 @@
 import {useForm} from "@mantine/form";
 import {
     fetchObservationResourceAddNewObservation,
-    useProposalResourceGetTargets
+    useProposalResourceGetTargets, useProposalResourceGetTechnicalGoals
 } from "../generated/proposalToolComponents.ts";
 import {
-    ActionIcon,
     Container,
     Group,
     Select,
-    Space,
-    Tooltip
+    Space
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ObservationTargetProps} from "./List.tsx";
 import {RenderTarget} from "../targets/RenderTarget.tsx";
-import {IconDeviceFloppy} from "@tabler/icons-react";
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse
 } from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
+import SaveButton from "../commonButtons/save.tsx";
 
 
 type ObservationType = 'Target'|'Calibration'|'';
@@ -32,7 +30,7 @@ interface ObservationFormValues {
     fieldId: number | undefined
 }
 
-export function ObservationNewForm (props: ObservationTargetProps){
+export default function TargetTypeForm (props: ObservationTargetProps){
 
     const queryClient = useQueryClient();
 
@@ -69,7 +67,14 @@ export function ObservationNewForm (props: ObservationTargetProps){
     });
 
     const { data: targets , error: targetListError, isLoading: targetsLoading } =
-        useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true});
+        useProposalResourceGetTargets({
+            pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true}
+        );
+
+    const {data: technicalGoals, error: technicalGoalsError, isLoading: technicalGoalsLoading} =
+        useProposalResourceGetTechnicalGoals( {
+            pathParams: {proposalCode: Number(selectedProposalCode)}
+        });
 
     function SelectTargets() {
 
@@ -83,8 +88,8 @@ export function ObservationNewForm (props: ObservationTargetProps){
 
         let selectTargets = targets?.map((target) => {
             return {
-                value: target.dbid,
-                label: target.name
+                value: target.dbid!.toString(),
+                label: target.name!
             }
         })
 
@@ -97,8 +102,37 @@ export function ObservationNewForm (props: ObservationTargetProps){
                         searchable
                         data={selectTargets}
                         {...form.getInputProps('targetDBId')}
-                    />
-                    : null
+                    /> : null
+                }
+            </>
+        )
+    }
+
+    function SelectTechnicalGoal() {
+        if (technicalGoalsError) {
+            return (
+                <div>
+                    <pre>{JSON.stringify(technicalGoalsError, null, 2)}</pre>
+                </div>
+            )
+        }
+
+        let selectTechGoals = technicalGoals?.map((goal) => {
+            return {
+                value: goal.dbid!.toString(),
+                label: goal.name! //note: for TechnicalGoals name is equivalent to dbid
+            }
+        })
+
+        return (
+            <>
+                { selectTechGoals ?
+                    <Select
+                        label={"Technical Goal:"}
+                        placeholder={"pick one"}
+                        data={selectTechGoals}
+                        {...form.getInputProps('techGoalId')}
+                    /> : null
                 }
             </>
         )
@@ -193,17 +227,17 @@ export function ObservationNewForm (props: ObservationTargetProps){
                             showRemove={false}
                         />
                 }
+                {SelectTechnicalGoal()}
+                {
+                    technicalGoalsLoading ? 'loading...' : <></>
+                }
                 <Space h={"xl"}/>
                 {SelectObservationType()}
                 {form.values.observationType === 'Calibration' &&
                     SelectCalibrationUse()
                 }
-                <Group position="right" mt="md">
-                    <Tooltip label={"Save"}>
-                        <ActionIcon size={"xl"} color={"indigo.5"} type="submit">
-                            <IconDeviceFloppy size={"3rem"}/>
-                        </ActionIcon>
-                    </Tooltip>
+                <Group justify={'flex-end'} mt="md">
+                    <SaveButton toolTipLabel={hasObservation ? "save changes" : "save"}/>
                 </Group>
             </Container>
         </form>
