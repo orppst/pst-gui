@@ -2,9 +2,9 @@ import {
     useObservationResourceGetObservations, useProposalResourceGetObservingProposalTitle, useProposalResourceGetTargets,
 } from "../generated/proposalToolComponents";
 import ObservationsNewModal from "./new.modal.tsx";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import ObservationRow from "./table.row.tsx";
-import {Badge, Button, Group, Space, Table} from "@mantine/core";
+import {Badge, Button, Group, Space, Table, Text} from "@mantine/core";
 import {Observation} from "../generated/proposalToolSchemas.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 
@@ -19,9 +19,6 @@ export type ObservationProps = {
        TODO:
        1. provide better UX for errors
        2. provide functionality to edit an observation
-       3. provide functionality to remove an observation
-       4. display the observations in a formatted way
-       5. if the targets list is empty provide a nav-link to the Targets page instead of just a prompt
  */
 
 
@@ -115,7 +112,21 @@ function ObservationsPanel() {
                     {targetsLoading ? (`Loading...`) :
                         targets!.length > 0 ?
                             <ObservationsNewModal/> :
-                            <Button>add a target</Button>
+                            <Group>
+                            <Text c={"yellow"} mr={-5}>
+                                To create an observation please add at least one
+                            </Text>
+                            <Button
+                                variant={"subtle"}
+                                p={5}
+                                ml={-5}
+                                to={"../proposal/" + selectedProposalCode + "/targets"}
+                                component={Link}
+                            >
+                                target
+                            </Button>
+                            </Group>
+
                     }
                 </Group>
             </div>
