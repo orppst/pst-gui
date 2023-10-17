@@ -1,10 +1,11 @@
 import {
+    fetchSupportingDocumentResourceDownloadSupportingDocument,
     fetchSupportingDocumentResourceRemoveSupportingDocument,
     fetchSupportingDocumentResourceUploadSupportingDocument,
     useSupportingDocumentResourceGetSupportingDocuments
 } from "../generated/proposalToolComponents";
 import {useParams} from "react-router-dom";
-import {Alert, Box, Button, FileButton, Table, Text} from "@mantine/core";
+import {Box, Button, FileButton, Table, Text} from "@mantine/core";
 import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
@@ -123,6 +124,8 @@ function RenderDocumentListItem(props: DocumentProps) {
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
     const [submitting, setSubmitting] = useState(false);
+    const [downloadLink, setDownloadLink] = useState("");
+    const [downloadReady, setDownloadReady] = useState(false);
 
     function handleRemove() {
         setSubmitting(true);
@@ -159,13 +162,13 @@ function RenderDocumentListItem(props: DocumentProps) {
             onConfirm: () => handleRemove(),
         });
 
-    const downloadDocument = () => {
-        return (
-            <Alert variant="light" color="blue" title="Coming soon!">
-                Document download is a work in progress
-            </Alert>
-        )
+
+    const prepareDownload = () => {
+        fetchSupportingDocumentResourceDownloadSupportingDocument({pathParams: {id: props.dbid, proposalCode: Number(selectedProposalCode)}})
+            .then((blob) => setDownloadLink(window.URL.createObjectURL(blob as unknown as Blob)))
+            .then(() => setDownloadReady(true));
     }
+
 
     if(submitting)
         return (<Table.Tr key={props.dbid}><Table.Td>DELETING...</Table.Td></Table.Tr>);
@@ -173,8 +176,10 @@ function RenderDocumentListItem(props: DocumentProps) {
         return (
                 <Table.Tr key={props.dbid}>
                     <Table.Td>{props.name}</Table.Td>
-                    <Table.Td align={"right"}><Button color={"green"} onClick={downloadDocument}>Download</Button></Table.Td>
-                    <Table.Td align={"left"}><Button color={"red"}  onClick={openRemoveModal}>Remove</Button></Table.Td>
+                    {downloadReady?
+                        <Table.Td align={"right"}><Button component={"a"} download={props.name} color={"green"} href={downloadLink}>Download</Button></Table.Td>
+                        :<Table.Td align={"right"}><Button component={"a"} download={props.name} color={"blue"} onClick={prepareDownload}>Request download</Button></Table.Td>}
+                    <Table.Td align={"left"}><Button color={"red"} onClick={openRemoveModal}>Remove</Button></Table.Td>
                 </Table.Tr>
             );
 }
