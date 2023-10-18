@@ -16,6 +16,7 @@ export function SwitchToggle() {
                 offLabel={<IconMoonStars color={theme.colors.gray[6]} size="1.25rem" stroke={1.5}/>}
             />
             <Slider miw={120}
+                label={null}
                 showLabelOnHover={false}
                 defaultValue={100}
                 min={70}
