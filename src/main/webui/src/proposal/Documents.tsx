@@ -10,6 +10,7 @@ import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import {notifications} from "@mantine/notifications";
+import {randomId} from "@mantine/hooks";
 
 type DocumentProps = {
     dbid: number,
@@ -49,29 +50,29 @@ const DocumentsPanel = () => {
                     // @ts-ignore
                     headers: {"Content-Type": "multipart/form-data"}
                 }
-            ).then((data) => console.log(data))
-                .then(() => {
-                    setStatus("success");
-                    queryClient.invalidateQueries();
-                    setFile(null);
-                    notifications.show({
-                        autoClose: 5000,
-                        title: "Upload successful",
-                        message: 'The supporting document has been uploaded',
-                        color: 'green',
-                        className: 'my-notification-class',
-                    });
-                })
-                .catch((error) => {
-                    setStatus("fail");
-                    notifications.show({
-                        autoClose: 7000,
-                        title: "Upload failed",
-                        message: error.stack.message,
-                        color: 'red',
-                        className: 'my-notification-class',
-                    });
-                })
+            )
+            .then(() => {
+                setStatus("success");
+                queryClient.invalidateQueries();
+                setFile(null);
+                notifications.show({
+                    autoClose: 5000,
+                    title: "Upload successful",
+                    message: 'The supporting document has been uploaded',
+                    color: 'green',
+                    className: 'my-notification-class',
+                });
+            })
+            .catch((error) => {
+                setStatus("fail");
+                notifications.show({
+                    autoClose: 7000,
+                    title: "Upload failed",
+                    message: error.stack.message,
+                    color: 'red',
+                    className: 'my-notification-class',
+                });
+            })
         }
     };
 
@@ -84,9 +85,9 @@ const DocumentsPanel = () => {
                     {isLoading ? (<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>)
                     : data?.map((item) => {
                             if (item.dbid !== undefined && item.name !== undefined)
-                                return (<RenderDocumentListItem dbid={item.dbid} name={item.name}/>)
+                                return (<RenderDocumentListItem key={item.dbid} dbid={item.dbid} name={item.name}/>)
                             else
-                                return (<Table.Tr><Table.Td>Empty!</Table.Td></Table.Tr>)
+                                return (<Table.Tr key={randomId()}><Table.Td>Empty!</Table.Td></Table.Tr>)
                         })
                     }
                     </Table.Tbody>
