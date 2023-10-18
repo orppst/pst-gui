@@ -4,8 +4,13 @@ import {
 } from "../generated/proposalToolComponents";
 import {Accordion, Avatar, Badge, Box, Container, Group, List, Table, Text} from "@mantine/core";
 import {
-    Investigator,
+    CalibrationTargetIntendedUse,
+    Investigator, RealQuantity
 } from "../generated/proposalToolSchemas.ts";
+import {randomId} from "@mantine/hooks";
+import {RenderTarget} from "../targets/RenderTarget.tsx";
+import {IconNorthStar} from "@tabler/icons-react";
+import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
 
 // needs styling work
 
@@ -78,6 +83,46 @@ function InvestigatorAccordionContent(investigator : Investigator) {
         </Table>
     )
 }
+
+interface ObservationLabelProps {
+    targetName: string;
+    observationType: string;
+    intendedUse?: CalibrationTargetIntendedUse;
+    spectralPoint: RealQuantity;
+}
+
+function ObservationAccordionLabel({targetName, observationType, intendedUse, spectralPoint} : ObservationLabelProps) {
+    return(
+        <Group wrap={"nowrap"}>
+            <Avatar radius={"sm"}>
+                <IconNorthStar size={"1rem"}/>
+            </Avatar>
+            <div>
+                <Text>{targetName}</Text>
+                <Text size={"sm"} c={"dimmed"} fw={400}>
+                    {observationType} {intendedUse && "|" + intendedUse} | {spectralPoint.value} {spectralPoint.unit?.value}
+                </Text>
+            </div>
+        </Group>
+    )
+}
+
+interface ObservationContentProps {
+    proposalCode: number;
+    targetId: number;
+    technicalGoalId: number;
+}
+
+function ObservationAccordionContent({proposalCode, targetId, technicalGoalId} : ObservationContentProps) {
+    return (
+        //TODO: consider a Grid instead of Group
+        <Group>
+            <RenderTarget proposalCode={proposalCode} dbid={targetId} showRemove={false} />
+            <RenderTechnicalGoal proposalCode={proposalCode} dbid={technicalGoalId} />
+        </Group>
+    )
+}
+
 
 function OverviewPanel() {
 
@@ -171,9 +216,14 @@ function OverviewPanel() {
         return (
             <>
                 <h3>Investigators</h3>
-                <Accordion chevronPosition={"right"}>
-                    {investigators}
-                </Accordion>
+                {
+                    proposalsData?.investigators && proposalsData.investigators.length > 0 ?
+                        <Accordion chevronPosition={"right"}>
+                            {investigators}
+                        </Accordion> :
+                        <Text c={"yellow"}>No investigators added</Text>
+                }
+
             </>
         )
     }
@@ -181,7 +231,7 @@ function OverviewPanel() {
     const DisplaySupportingDocuments = () => {
 
         const documents = proposalsData?.supportingDocuments?.map((document) =>(
-            <List.Item>{document.title}</List.Item>
+            <List.Item key={document.location}>{document.title}</List.Item>
         ))
 
         return (
@@ -201,7 +251,7 @@ function OverviewPanel() {
     const DisplayRelatedProposals = () => {
 
         const proposals = proposalsData?.relatedProposals?.map((related) =>(
-            <List.Item>{related.proposal?.title}</List.Item>
+            <List.Item key={related.proposal?._id}>{related.proposal?.title}</List.Item>
         ))
 
         return (
@@ -221,19 +271,75 @@ function OverviewPanel() {
 
     //FIXME: need to fetch the required data (targets, technical goals, ...) at the top of this function
     const DisplayObservations = () => {
-        const observations = proposalsData?.observations?.map((observation) => (
-            <List.Item>{observation["@type"]} {observation.target}</List.Item>
-        ))
+
+        const observations = proposalsData?.observations?.map((observation) => {
+
+            //*************** WORK-AROUND start *****************//
+            //observation.target and observation.technicalGoal are NOT objects but numbers here,
+            // specifically their DB id
+
+            let targetName = proposalsData?.targets?.find((target) =>
+                target._id === observation.target)?.sourceName!
+
+            let spectralPoint = proposalsData?.technicalGoals?.find((techGoal) =>
+                techGoal._id === observation.technicalGoal)?.performance?.representativeSpectralPoint!
+
+            //*************** WORK-AROUND end ******************//
+
+            let observationType = observation["@type"] === 'proposal:TargetObservation' ?
+                'Target Obs.' : 'Calibration Obs.';
+
+            return(
+                <Accordion.Item key={randomId()} value={targetName}>
+                    <Accordion.Control>
+                        <ObservationAccordionLabel
+                            targetName={targetName}
+                            observationType={observationType}
+                            spectralPoint={spectralPoint}
+                        />
+                    </Accordion.Control>
+                    <Accordion.Panel>
+                        <ObservationAccordionContent
+                            proposalCode={Number(selectedProposalCode)}
+                            // @ts-ignore
+                            targetId={observation.target} // WORK-AROUND
+                            // @ts-ignore
+                            technicalGoalId={observation.technicalGoal} //WORK-AROUND
+                        />
+                    </Accordion.Panel>
+                </Accordion.Item>
+            )
+        })
 
         return (
             <>
                 <h3>Observations</h3>
                 {
                     proposalsData?.observations && proposalsData.observations.length > 0 ?
-                        <List>
+                        <Accordion>
                             {observations}
-                        </List> :
+                        </Accordion> :
                         <Text c={"yellow"}>No observations added</Text>
+                }
+            </>
+        )
+    }
+
+    const DisplayTargets = () => {
+        const targets = proposalsData?.targets?.map((target) =>(
+            <List.Item key={target._id}>
+                <RenderTarget proposalCode={Number(selectedProposalCode)} dbid={target._id!} showRemove={false}/>
+            </List.Item>
+        ));
+        return(
+            <>
+                <h3>Targets</h3>
+                {
+                    proposalsData?.targets && proposalsData.targets.length > 0 ?
+                        <List>
+                            {targets}
+                        </List> :
+                        <Text c={"yellow"}>No targets added</Text>
                 }
             </>
         )
@@ -244,7 +350,7 @@ function OverviewPanel() {
         <>
             {
                 proposalsIsLoading ? 'Loading...' :
-                    <Container>
+                    <Container fluid>
                         <DisplayTitle/>
                         <DisplayInvestigators/>
                         <DisplaySummary/>
@@ -252,6 +358,8 @@ function OverviewPanel() {
                         <DisplayScientificJustification/>
                         <DisplayTechnicalJustification/>
                         <DisplayObservations/>
+
+                        <DisplayTargets/>
 
                         <DisplaySupportingDocuments/>
                         <DisplayRelatedProposals/>

@@ -10,6 +10,7 @@ export interface ScienceSpectrumValues {
 }
 
 export const notSpecified = "not specified";
+export const notSet = "not set";
 
 export default function TechnicalGoalEditGroup(props: TechnicalGoalClose ) {
 

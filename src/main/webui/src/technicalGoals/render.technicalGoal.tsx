@@ -1,8 +1,9 @@
 import {
     useProposalResourceGetTechnicalGoal
 } from "../generated/proposalToolComponents.ts";
-import {Box, Grid, Table} from "@mantine/core";
+import {Box, Table} from "@mantine/core";
 import {PerformanceParameters, ScienceSpectralWindow} from "../generated/proposalToolSchemas.ts";
+import {notSet} from "./edit.group.tsx";
 
 
 type RenderTechnicalGoalProps = {
@@ -25,29 +26,45 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
             <Table>
                 <Table.Thead>
                     <Table.Tr>
-                        <Table.Th colSpan={2}>Performance Parameters</Table.Th>
+                        <Table.Th colSpan={4}>Performance Parameters</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                     <Table.Tr>
-                        <Table.Td>Angular res.: </Table.Td>
-                        <Table.Td>{parameters.desiredAngularResolution?.value} {parameters.desiredAngularResolution?.unit?.value}</Table.Td>
+                        <Table.Td>Angular res. </Table.Td>
+                        {
+                            parameters.desiredAngularResolution ?
+                                <Table.Td>{parameters.desiredAngularResolution?.value} {parameters.desiredAngularResolution?.unit?.value}</Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
+                        <Table.Td>Largest scale </Table.Td>
+                        {
+                            parameters.desiredLargestScale ?
+                                <Table.Td>{parameters.desiredLargestScale?.value} {parameters.desiredLargestScale?.unit?.value}</Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td>Largest scale: </Table.Td>
-                        <Table.Td>{parameters.desiredLargestScale?.value} {parameters.desiredLargestScale?.unit?.value}</Table.Td>
+                        <Table.Td>Sensitivity</Table.Td>
+                        {
+                            parameters.desiredSensitivity ?
+                                <Table.Td>{parameters.desiredSensitivity?.value} {parameters.desiredSensitivity?.unit?.value}</Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
+                        <Table.Td>Dyn. range</Table.Td>
+                        {
+                            parameters.desiredDynamicRange ?
+                                <Table.Td>{parameters.desiredDynamicRange?.value} {parameters.desiredDynamicRange?.unit?.value}</Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
                     </Table.Tr>
                     <Table.Tr>
-                        <Table.Td>Sensitivity: </Table.Td>
-                        <Table.Td>{parameters.desiredSensitivity?.value} {parameters.desiredSensitivity?.unit?.value}</Table.Td>
-                    </Table.Tr>
-                    <Table.Tr>
-                        <Table.Td>Dynamic range: </Table.Td>
-                        <Table.Td>{parameters.desiredDynamicRange?.value} {parameters.desiredDynamicRange?.unit?.value}</Table.Td>
-                    </Table.Tr>
-                    <Table.Tr>
-                        <Table.Td>Spectral point: </Table.Td>
-                        <Table.Td>{parameters.representativeSpectralPoint?.value} {parameters.representativeSpectralPoint?.unit?.value}</Table.Td>
+                        <Table.Td>Spectral point</Table.Td>
+                        {
+                            parameters.representativeSpectralPoint ?
+                                <Table.Td>{parameters.representativeSpectralPoint?.value} {parameters.representativeSpectralPoint?.unit?.value}</Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
                     </Table.Tr>
                 </Table.Tbody>
             </Table>
@@ -58,11 +75,11 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
     function RenderSpectralWindowRow(window: ScienceSpectralWindow){
         return (
             <Table.Tr key={window.index}>
-                <Table.Td>Start:</Table.Td>
+                <Table.Th>Start</Table.Th>
                 <Table.Td>{window.spectralWindowSetup?.start?.value} {window.spectralWindowSetup?.start?.unit?.value}</Table.Td>
-                <Table.Td>End:</Table.Td>
+                <Table.Th>End</Table.Th>
                 <Table.Td>{window.spectralWindowSetup?.end?.value} {window.spectralWindowSetup?.end?.unit?.value}</Table.Td>
-                <Table.Td>Res.:</Table.Td>
+                <Table.Th>Res.</Table.Th>
                 <Table.Td>{window.spectralWindowSetup?.spectralResolution?.value} {window.spectralWindowSetup?.spectralResolution?.unit?.value}</Table.Td>
             </Table.Tr>
         )
@@ -71,7 +88,6 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
 
 
     function RenderSpectralWindows(windows: ScienceSpectralWindow[]){
-        console.log(windows)
         return (
             <Table>
                 <Table.Thead>
@@ -94,14 +110,20 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
         <>
             {
                 isLoading ? 'loading...' :
-                    <Grid columns={5}>
-                        <Grid.Col span={2}>
-                            <RenderPerformanceParameters {...data?.performance!}/>
-                        </Grid.Col>
-                        <Grid.Col span={3}>
-                            {RenderSpectralWindows(data?.spectrum!) }
-                        </Grid.Col>
-                    </Grid>
+                    <Table>
+                        <Table.Tbody>
+                            <Table.Tr>
+                                <Table.Td>
+                                    <RenderPerformanceParameters {...data?.performance!}/>
+                                </Table.Td>
+                            </Table.Tr>
+                            <Table.Tr>
+                                <Table.Td>
+                                    {RenderSpectralWindows(data?.spectrum!) }
+                                </Table.Td>
+                            </Table.Tr>
+                        </Table.Tbody>
+                    </Table>
             }
         </>
 
