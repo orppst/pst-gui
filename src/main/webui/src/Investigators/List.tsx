@@ -8,6 +8,7 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {Box, Button, Grid, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
+import {randomId} from "@mantine/hooks";
 
 type PersonProps = {
     dbid: number
@@ -43,7 +44,7 @@ function InvestigatorsPanel() {
                         if(item.dbid !== undefined) {
                             return (<RenderPerson dbid={item.dbid} key={item.dbid}/>)
                         } else {
-                            return (<Box>Undefined Investigator!</Box>)
+                            return (<Box key={randomId()}>Undefined Investigator!</Box>)
                         }
                     } )
                 }
