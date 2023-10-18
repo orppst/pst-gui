@@ -159,7 +159,7 @@ function App2() {
 
                     <AppShell.Navbar p="md">
                         <AppShell.Section grow component={ScrollArea}>
-                            {<Text fz="sm">Search and filter by <Proposals/> </Text>}
+                            <><Text fz="sm">Search and filter by</Text><Proposals/></>
                             <Group justify={"flex-end"}>
                                 {//can't use 'AddButton' here as we are opening a Link
                                 }

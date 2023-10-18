@@ -163,13 +163,13 @@ function RenderDocumentListItem(props: DocumentProps) {
             onConfirm: () => handleRemove(),
         });
 
-
+    //TODO: Do we need to revoke this URL after use?
     const prepareDownload = () => {
         fetchSupportingDocumentResourceDownloadSupportingDocument({pathParams: {id: props.dbid, proposalCode: Number(selectedProposalCode)}})
             .then((blob) => setDownloadLink(window.URL.createObjectURL(blob as unknown as Blob)))
             .then(() => setDownloadReady(true));
-    }
 
+    }
 
     if(submitting)
         return (<Table.Tr key={props.dbid}><Table.Td>DELETING...</Table.Td></Table.Tr>);
