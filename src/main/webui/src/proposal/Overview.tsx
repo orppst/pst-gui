@@ -4,6 +4,7 @@ import {
 } from "../generated/proposalToolComponents";
 import {Accordion, Avatar, Badge, Box, Container, Group, List, Table, Text} from "@mantine/core";
 import {
+    CalibrationObservation,
     CalibrationTargetIntendedUse,
     Investigator, RealQuantity
 } from "../generated/proposalToolSchemas.ts";
@@ -100,7 +101,7 @@ function ObservationAccordionLabel({targetName, observationType, intendedUse, sp
             <div>
                 <Text>{targetName}</Text>
                 <Text size={"sm"} c={"dimmed"} fw={400}>
-                    {observationType} {intendedUse && "|" + intendedUse} | {spectralPoint.value} {spectralPoint.unit?.value}
+                    {observationType} {intendedUse && "| " + intendedUse.toLowerCase()} | {spectralPoint.value} {spectralPoint.unit?.value}
                 </Text>
             </div>
         </Group>
@@ -274,37 +275,34 @@ function OverviewPanel() {
 
         const observations = proposalsData?.observations?.map((observation) => {
 
-            //*************** WORK-AROUND start *****************//
             //observation.target and observation.technicalGoal are NOT objects but numbers here,
             // specifically their DB id
 
-            let targetName = proposalsData?.targets?.find((target) =>
-                target._id === observation.target)?.sourceName!
+            let targetObj = proposalsData?.targets?.find((target) =>
+                target._id === observation.target)!
 
-            let spectralPoint = proposalsData?.technicalGoals?.find((techGoal) =>
-                techGoal._id === observation.technicalGoal)?.performance?.representativeSpectralPoint!
-
-            //*************** WORK-AROUND end ******************//
+            let technicalGoalObj  = proposalsData?.technicalGoals?.find((techGoal) =>
+                techGoal._id === observation.technicalGoal)!
 
             let observationType = observation["@type"] === 'proposal:TargetObservation' ?
                 'Target Obs.' : 'Calibration Obs.';
 
             return(
-                <Accordion.Item key={randomId()} value={targetName}>
+                <Accordion.Item key={randomId()} value={targetObj.sourceName!}>
                     <Accordion.Control>
                         <ObservationAccordionLabel
-                            targetName={targetName}
+                            targetName={targetObj.sourceName!}
                             observationType={observationType}
-                            spectralPoint={spectralPoint}
+                            intendedUse={observationType === 'Calibration Obs.' ?
+                                (observation as CalibrationObservation).intent : undefined}
+                            spectralPoint={technicalGoalObj.performance?.representativeSpectralPoint!}
                         />
                     </Accordion.Control>
                     <Accordion.Panel>
                         <ObservationAccordionContent
                             proposalCode={Number(selectedProposalCode)}
-                            // @ts-ignore
-                            targetId={observation.target} // WORK-AROUND
-                            // @ts-ignore
-                            technicalGoalId={observation.technicalGoal} //WORK-AROUND
+                            targetId={targetObj._id!}
+                            technicalGoalId={technicalGoalObj._id!}
                         />
                     </Accordion.Panel>
                 </Accordion.Item>
@@ -325,27 +323,6 @@ function OverviewPanel() {
         )
     }
 
-    const DisplayTargets = () => {
-        const targets = proposalsData?.targets?.map((target) =>(
-            <List.Item key={target._id}>
-                <RenderTarget proposalCode={Number(selectedProposalCode)} dbid={target._id!} showRemove={false}/>
-            </List.Item>
-        ));
-        return(
-            <>
-                <h3>Targets</h3>
-                {
-                    proposalsData?.targets && proposalsData.targets.length > 0 ?
-                        <List>
-                            {targets}
-                        </List> :
-                        <Text c={"yellow"}>No targets added</Text>
-                }
-            </>
-        )
-    }
-
-
     return (
         <>
             {
@@ -358,8 +335,6 @@ function OverviewPanel() {
                         <DisplayScientificJustification/>
                         <DisplayTechnicalJustification/>
                         <DisplayObservations/>
-
-                        <DisplayTargets/>
 
                         <DisplaySupportingDocuments/>
                         <DisplayRelatedProposals/>
