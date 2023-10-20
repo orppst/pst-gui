@@ -5,7 +5,7 @@ Using yarn for package management
 
 Using https://vitejs.dev for build/dev management
 
-Client side (browser) code written in Typescript using React https://www.typescriptlang.org/docs/handbook/react.html
+Client side (browser) code written in Typescript using the https://mantine.dev react component library
 
 Using https://github.com/fabien0102/openapi-codegen to generate code from the openapi spec of the api
 
