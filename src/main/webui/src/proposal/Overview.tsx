@@ -13,8 +13,6 @@ import {RenderTarget} from "../targets/RenderTarget.tsx";
 import {IconNorthStar} from "@tabler/icons-react";
 import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
 
-// needs styling work
-
 /*
       title    -- string
       summary  -- string
@@ -269,8 +267,6 @@ function OverviewPanel() {
         )
     }
 
-
-    //FIXME: need to fetch the required data (targets, technical goals, ...) at the top of this function
     const DisplayObservations = () => {
 
         const observations = proposalsData?.observations?.map((observation) => {

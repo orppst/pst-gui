@@ -159,10 +159,8 @@ function App2() {
 
                     <AppShell.Navbar p="md">
                         <AppShell.Section grow component={ScrollArea}>
-                            <><Text fz="sm">Search and filter by</Text><Proposals/></>
-                            <Group justify={"flex-end"}>
-                                {//can't use 'AddButton' here as we are opening a Link
-                                }
+                            <Text fz={"sm"}>Create a new proposal</Text>
+                            <Group justify={"center"} mb={"5%"}>
                                 <Tooltip label={"new proposal"} position={"left"} openDelay={1000}>
                                     <ActionIcon
                                         color={"green.5"}
@@ -175,6 +173,10 @@ function App2() {
                                     </ActionIcon>
                                 </Tooltip>
                             </Group>
+                            <Group justify={"center"}>
+                                <Text fz={"sm"}>-- OR --</Text>
+                            </Group>
+                            <Text fz="sm">Filter existing proposals by</Text><Proposals/>
                         </AppShell.Section>
                     </AppShell.Navbar>
                     <AppShell.Main pr={"sm"}>
