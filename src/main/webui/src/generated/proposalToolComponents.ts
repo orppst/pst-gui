@@ -5918,7 +5918,7 @@ export const fetchObservationResourceAddNewConstraint = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
+    Schemas.Constraint,
     ObservationResourceAddNewConstraintError,
     Schemas.Constraint,
     {},
@@ -5934,7 +5934,7 @@ export const fetchObservationResourceAddNewConstraint = (
 export const useObservationResourceAddNewConstraint = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      Schemas.Constraint,
       ObservationResourceAddNewConstraintError,
       ObservationResourceAddNewConstraintVariables
     >,
@@ -5943,7 +5943,7 @@ export const useObservationResourceAddNewConstraint = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
+    Schemas.Constraint,
     ObservationResourceAddNewConstraintError,
     ObservationResourceAddNewConstraintVariables
   >(
