@@ -4,6 +4,12 @@ import ViewEditButton from "./viewEdit.tsx";
 import CloneButton from "./clone.tsx";
 import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
 
+/*
+functions to simplify Accordion controls when we want to include a delete/remove button or
+edit-clone-delete buttons. You provide the appropriate functions in the input properties.
+ */
+
+
 export function AccordionDelete(
     props : {
         title: string,
