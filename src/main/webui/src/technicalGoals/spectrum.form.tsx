@@ -194,7 +194,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
                     form.values.windows?.map((s, mapIndex) => {
                         let labelIndex = (mapIndex + 1).toString();
                         return (
-                            <Accordion.Item value={labelIndex} key={s?.index}>
+                            <Accordion.Item value={labelIndex} key={s ? s.index : randomId()}>
                                 <AccordionDelete
                                     title={"Window " + labelIndex}
                                     deleteProps={{
