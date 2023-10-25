@@ -7,41 +7,63 @@ import {randomId} from "@mantine/hooks";
 import '@mantine/dates/styles.css'
 import SaveButton from "../commonButtons/save.tsx";
 import AddButton from "../commonButtons/add.tsx";
+import {TimingWindows} from "./edit.group.tsx";
+import {TimingWindow} from "../generated/proposalToolSchemas.ts";
 
 //As a general reminder, Radio observations can be done at any time but Optical observations can occur only after
 // sunset. In both cases the target must be above the horizon at the time
 
-export default function TimingWindowsForm() {
+type TimingWindowTsx = {
+    startTime: Date | null,
+    endTime: Date | null,
+    note: string,
+    isAvoidConstraint: boolean,
+    key: string
+}
+
+interface TimingWindowValues {
+    timingWindows: TimingWindowTsx[]
+}
+
+
+//type TimingWindow in proposalToolSchemas.ts has 'startTime' and 'endTime' as strings (ISO strings).
+// We need to convert these to type Date before using them with the 'DateTimePicker' element
+
+function ConvertToTimingWindowTsx(input: TimingWindow) : TimingWindowTsx {
+    return ({
+        startTime: new Date(input.startTime!),
+        endTime: new Date(input.endTime!),
+        note: input.note!,
+        isAvoidConstraint: input.isAvoidConstraint!,
+        key: randomId()
+    })
+}
+
+
+export default function TimingWindowsForm(props?: TimingWindows) {
 
     //Providing a UI for a TimingWindow: {start: Date, end: Date, note: string, isAvoidConstraint: boolean}
     // semantics of 'isAvoidConstraint' - true means avoid this date range, false means use this date range
     // User may provide multiple "timing windows" per observation. These are stored as a List of Constraints
     // in the Observation in the backend. TimingWindows may not be the only Constraints.
 
-    //Note: using Grid and Grid.Col to get the spacing correct for each element. Using Group appears to leave
-    // a significant amount of space unused
+    if(props) props.timingWindows.map((timingWindow)=>{console.log(timingWindow)})
 
-    interface TimingWindowsValues {
-        timingWindows: {
-            start: Date | null,
-            end: Date | null,
-            note: string,
-            isAvoid: boolean,
-            key: string
-        }[]
+    let emptyTimingWindow : TimingWindowTsx = {
+        startTime: null, endTime: null, note: '', isAvoidConstraint: false, key: randomId()
     }
 
-    let timingWindowInitial = {
-        start: null,
-        end: null,
-        note: '',
-        isAvoid: false,
-        key: randomId()
-    }
 
-    const form = useForm<TimingWindowsValues>({
+    let initialTimingWindows = props && props.timingWindows.length > 0 ?
+        props.timingWindows.map((timingWindow) => {
+        return ConvertToTimingWindowTsx(timingWindow);}) :
+        [emptyTimingWindow];
+
+
+    const form
+        = useForm<TimingWindowValues>({
         initialValues: {
-            timingWindows: [timingWindowInitial]
+            timingWindows: initialTimingWindows
         },
 
         validate: {
@@ -71,50 +93,58 @@ export default function TimingWindowsForm() {
         )
     }
 
+    //Note: using Grid and Grid.Col to get the spacing correct for each element. Using Group appears to leave
+    // a significant amount of space unused
 
-    const targetsAdded = form.values.timingWindows.map((_item, index) => (
-        <Accordion.Item value={(index + 1).toString()}>
-            <AccordionControl index={index} />
-            <Accordion.Panel>
-                <Grid columns={nCols} gutter={"md"}>
-                    <Grid.Col span={{base: nCols, lg: rangeCol}}>
-                        <DateTimePicker
-                            placeholder={"start time"}
-                            allowDeselect
-                            minDate={new Date()}
-                            {...form.getInputProps(`timingWindows.${index}.start`)}
-                        />
-                        <Space h={"xs"}/>
-                        <DateTimePicker
-                            placeholder={"end time"}
-                            minDate={new Date()}
-                            {...form.getInputProps(`timingWindows.${index}.end`)}
-                        />
-                    </Grid.Col>
-                    <Grid.Col span={{base: nCols, lg: avoidCol}}>
-                        <Switch
-                            onLabel={"avoid"}
-                            offLabel={""}
-                            color={'grape'}
-                            radius={'xs'}
-                            mt={"1.5rem"}
-                            ml={"10%"}
-                            {...form.getInputProps(`timingWindows.${index}.isAvoid`, {type: 'checkbox'})}
-                        />
-                    </Grid.Col>
-                    <Grid.Col span={{base: nCols, lg: noteCol}}>
-                        <Textarea
-                            autosize
-                            minRows={3}
-                            maxRows={3}
-                            placeholder={"add optional note"}
-                            {...form.getInputProps(`timingWindows.${index}.note`)}
-                        />
-                    </Grid.Col>
-                </Grid>
-            </Accordion.Panel>
-        </Accordion.Item>
-    ));
+    //TODO: ensure the DateTimePicker uses UTC - default seems to be locale, e.g. BST for me
+
+    const windowsAdded = form.values.timingWindows.map((item, index) => {
+        return (
+            <Accordion.Item value={(index + 1).toString()} key={item.key}>
+                <AccordionControl index={index} />
+                <Accordion.Panel>
+                    <Grid columns={nCols} gutter={"md"}>
+                        <Grid.Col span={{base: nCols, lg: rangeCol}}>
+                            <DateTimePicker
+                                placeholder={"start time"}
+                                minDate={new Date()}
+                                {...form.getInputProps(`timingWindows.${index}.startTime`)}
+                            />
+                            <Space h={"xs"}/>
+                            <DateTimePicker
+                                placeholder={"end time"}
+                                minDate={new Date()}
+                                {...form.getInputProps(`timingWindows.${index}.endTime`)}
+                            />
+                        </Grid.Col>
+                        <Grid.Col span={{base: nCols, lg: avoidCol}}>
+                            <Switch
+                                onLabel={"avoid"}
+                                offLabel={""}
+                                size={"xl"}
+                                color={'grape'}
+                                radius={'xs'}
+                                mt={"1.5rem"}
+                                {...form.getInputProps(`timingWindows.${index}.isAvoidConstraint`, {type: 'checkbox'})}
+                            />
+                        </Grid.Col>
+                        <Grid.Col span={{base: nCols, lg: noteCol}}>
+                            <Textarea
+                                autosize
+                                minRows={3}
+                                maxRows={3}
+                                maxLength={150}
+                                description={150 - form.values.timingWindows[index].note.length + "/150"}
+                                inputWrapperOrder={['label', 'error', 'input', 'description']}
+                                placeholder={"add optional note"}
+                                {...form.getInputProps(`timingWindows.${index}.note`)}
+                            />
+                        </Grid.Col>
+                    </Grid>
+                </Accordion.Panel>
+            </Accordion.Item>
+        )
+    });
 
     const handleSubmit = form.onSubmit((values) => {
         console.log(values)
@@ -123,13 +153,13 @@ export default function TimingWindowsForm() {
     return (
         <form onSubmit={handleSubmit}>
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
-                {targetsAdded}
+                {windowsAdded}
             </Accordion>
             <Group justify={"flex-end"}>
                 <AddButton
                     toolTipLabel={"add a timing window"}
                     onClick={() => form.insertListItem('timingWindows',
-                        {...timingWindowInitial, key: randomId()})}
+                        {...emptyTimingWindow, key: randomId()})}
                 />
             </Group>
             <Space h={"xs"} />
