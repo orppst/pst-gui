@@ -1523,6 +1523,7 @@ export type TimingConstraint = {
  * particular time range
  */
 export type TimingWindow = {
+  "@type"?: string; //proposal:TimingWindow
   note?: string;
   isAvoidConstraint?: boolean;
   /**
