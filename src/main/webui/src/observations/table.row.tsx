@@ -104,6 +104,14 @@ export default function ObservationRow(observationId: ObservationId) {
         performance.desiredSensitivity?.value === undefined &&
         performance.desiredLargestScale?.value === undefined;
 
+
+    /*
+    On startup this code triggers the following in warning (in Chrome at least):
+        Warning: validateDOMNesting(...): Text nodes cannot appear as a child of <tbody>
+    I have yet to track down the cause. I suspect either one-of the 'Loading...' texts or possibly the observation
+    type text. Note the warning disappears after the initial render so the 'Loading...' texts are prime suspects.
+     */
+
     return (
         <>
             {observationLoading? ('Loading...') :
@@ -185,6 +193,7 @@ export default function ObservationRow(observationId: ObservationId) {
                                     observationLoading ? 'Loading...' :
                                     <ObservationEditModal
                                         observation={observation}
+                                        observationId={observationId.id}
                                         newObservation={false}
                                     />
                                 }

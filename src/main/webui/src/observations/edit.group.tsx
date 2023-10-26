@@ -13,6 +13,7 @@ import {TimingWindow} from "../generated/proposalToolSchemas.ts";
  */
 
 export interface TimingWindows {
+    observationId: number,
     timingWindows: TimingWindow [] //do you ever feel like you might be running, head first, into naming problems?
 }
 
@@ -36,7 +37,9 @@ export default function ObservationEditGroup(props: ObservationProps){
             </Grid.Col>
             <Grid.Col span={{base: 5, lg: 3}}>
                 <Fieldset legend={"Timing windows"}>
-                    <TimingWindowsForm timingWindows={props.observation?.constraints!}/>
+                    <TimingWindowsForm
+                        observationId={props.observationId}
+                        timingWindows={props.observation?.constraints!}/>
                 </Fieldset>
             </Grid.Col>
         </Grid>

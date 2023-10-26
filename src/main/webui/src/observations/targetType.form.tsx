@@ -17,7 +17,7 @@ import {
     CalibrationTargetIntendedUse, Observation, TargetObservation
 } from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import SaveButton from "../commonButtons/save.tsx";
+import {SubmitButton} from "../commonButtons/save.tsx";
 import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
 
 
@@ -248,7 +248,7 @@ export default function TargetTypeForm (props: ObservationProps){
                     SelectCalibrationUse()
                 }
                 <Group justify={'flex-end'} mt="md">
-                    <SaveButton toolTipLabel={hasObservation ? "save changes" : "save"}/>
+                    <SubmitButton toolTipLabel={hasObservation ? "save changes" : "save"}/>
                 </Group>
             </Container>
         </form>

@@ -11,7 +11,8 @@ import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 
 export type ObservationProps = {
     observation: Observation | undefined,
-    newObservation?: boolean,
+    observationId: number, // needed as 'observation' does not contain its database id
+    newObservation?: boolean, // this might be redundant i.e. observation === undefined contains the information
     closeModal?: () => void
 }
 

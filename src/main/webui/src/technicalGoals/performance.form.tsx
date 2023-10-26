@@ -1,7 +1,7 @@
 import {Group, Stack, Tooltip} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {PerformanceParameters, RealQuantity, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
-import SaveButton from "../commonButtons/save.tsx";
+import {SubmitButton} from "../commonButtons/save.tsx";
 import {angularUnits, frequencyUnits, sensitivityUnits} from "../physicalUnits/PhysicalUnits.tsx";
 import {NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {useQueryClient} from "@tanstack/react-query";
@@ -166,12 +166,10 @@ export default function PerformanceParametersForm(
     })
 
     return (
-        <form
-            onSubmit={handleSubmit}
-        >
+        <form onSubmit={handleSubmit}>
             {PerformanceDetails()}
             <Group justify={"flex-end"} mt="md">
-                <SaveButton toolTipLabel={"save performance parameters"} />
+                <SubmitButton toolTipLabel={"save performance parameters"} />
             </Group>
         </form>
     )

@@ -5,5 +5,6 @@ Input property for common buttons:
  */
 export interface ButtonInterfaceProps {
     toolTipLabel: string
+    disabled?: boolean
     onClick?: ()=>void
 }

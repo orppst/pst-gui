@@ -15,7 +15,7 @@ import DeleteButton from "../commonButtons/delete.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import {useForm} from "@mantine/form";
 import {AccordionDelete} from "../commonButtons/accordianControls.tsx";
-import SaveButton from "../commonButtons/save.tsx";
+import {SubmitButton} from "../commonButtons/save.tsx";
 import {frequencyUnits} from "../physicalUnits/PhysicalUnits.tsx";
 import {NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {randomId} from "@mantine/hooks";
@@ -218,7 +218,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
                         toolTipLabel={"add a spectral window"}
                         onClick={() => form.insertListItem('windows', {...emptyWindow})}
                     />
-                    <SaveButton toolTipLabel={"save changes to spectral windows"} />
+                    <SubmitButton toolTipLabel={"save changes to spectral windows"} />
                 </Stack>
 
             </Group>

@@ -73,6 +73,12 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
 
 
     function RenderSpectralWindowRow(window: ScienceSpectralWindow){
+        /*
+        triggers the warning:
+            Warning: Each child in a list should have a unique "key" prop.
+         This suggests window.index is somehow not unique or the table headers need keys, should investigate
+         */
+
         return (
             <Table.Tr key={window.index}>
                 <Table.Th>Start</Table.Th>
