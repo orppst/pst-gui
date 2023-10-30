@@ -102,9 +102,21 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                 notSpecified
                             }
                         </Table.Td>
+                        <Table.Td c={hasAngularResolution ? "" : "yellow"}>
+                            {hasAngularResolution ?
+                                goal?.performance?.desiredAngularResolution?.unit?.value :
+                                notSpecified
+                            }
+                        </Table.Td>
                         <Table.Td c={hasLargestScale ? "" : "yellow"}>
                             {hasLargestScale ?
                                 goal?.performance?.desiredLargestScale?.value :
+                                notSpecified
+                            }
+                        </Table.Td>
+                        <Table.Td c={hasLargestScale ? "" : "yellow"}>
+                            {hasLargestScale ?
+                                goal?.performance?.desiredLargestScale?.unit?.value :
                                 notSpecified
                             }
                         </Table.Td>
@@ -114,15 +126,33 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                 notSpecified
                             }
                         </Table.Td>
+                        <Table.Td c={hasSensitivity ? "" : "yellow"}>
+                            {hasSensitivity ?
+                                goal?.performance?.desiredSensitivity?.unit?.value :
+                                notSpecified
+                            }
+                        </Table.Td>
                         <Table.Td c={hasDynamicRange ? "" : "yellow"}>
                             {hasDynamicRange ?
                                 goal?.performance?.desiredDynamicRange?.value :
                                 notSpecified
                             }
                         </Table.Td>
+                        <Table.Td c={hasDynamicRange ? "" : "yellow"}>
+                            {hasDynamicRange ?
+                                goal?.performance?.desiredDynamicRange?.unit?.value :
+                                notSpecified
+                            }
+                        </Table.Td>
                         <Table.Td c={hasSpectralPoint ? "" : "yellow"}>
                             {hasSpectralPoint ?
                                 goal?.performance?.representativeSpectralPoint?.value :
+                                notSpecified
+                            }
+                        </Table.Td>
+                        <Table.Td c={hasSpectralPoint ? "" : "yellow"}>
+                            {hasSpectralPoint ?
+                                goal?.performance?.representativeSpectralPoint?.unit?.value :
                                 notSpecified
                             }
                         </Table.Td>
