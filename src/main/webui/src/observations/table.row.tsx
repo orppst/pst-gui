@@ -1,10 +1,16 @@
 import {
+    fetchObservationResourceAddNewObservation,
     fetchObservationResourceRemoveObservation,
     useObservationResourceGetObservation
 } from "../generated/proposalToolComponents.ts";
 import {Text, Space, Badge, Group, Table} from "@mantine/core";
 import {modals} from "@mantine/modals";
-import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
+import {
+    CalibrationObservation,
+    PerformanceParameters,
+    TargetObservation,
+    TechnicalGoal
+} from "../generated/proposalToolSchemas.ts";
 import ObservationEditModal from "./edit.modal.tsx";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -65,7 +71,14 @@ export default function ObservationRow(observationId: ObservationId) {
     })
 
     const handleClone = () => {
-        alert("Clone function not yet implemented");
+        //create a new observation with the details of the current observation
+        fetchObservationResourceAddNewObservation({
+            pathParams: {proposalCode: Number(selectedProposalCode)},
+            body: observation?.["@type"] === 'proposal:TargetObservation' ?
+                observation! as TargetObservation : observation! as CalibrationObservation
+        })
+            .then(()=>queryClient.invalidateQueries())
+            .catch(console.error)
     }
 
     const confirmClone = () => modals.openConfirmModal({

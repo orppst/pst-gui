@@ -11,6 +11,7 @@ import {fetchObservationResourceAddNewConstraint} from "../generated/proposalToo
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {AccordionSaveDelete} from "../commonButtons/accordianControls.tsx";
+import {notifications} from "@mantine/notifications";
 
 
 //Providing a UI for a TimingWindow: {start: Date, end: Date, note: string, isAvoidConstraint: boolean}
@@ -107,6 +108,7 @@ export default function TimingWindowsForm(props: TimingWindows) {
         })
     }
 
+
     //custom "submit" function for individual windows
     const handleSave = (timingWindow : TimingWindowApi) => {
         console.log(timingWindow)
@@ -115,11 +117,22 @@ export default function TimingWindowsForm(props: TimingWindows) {
             pathParams: {proposalCode: Number(selectedProposalCode), observationId: props.observationId},
             body: timingWindow
         })
-            .then(()=>queryClient.invalidateQueries())
+            .then(() => queryClient.invalidateQueries())
+            .then(() => {
+                notifications.show({
+                    autoClose: false,
+                    title: "Timing Window Saved",
+                    message: 'The timing window has saved successfully',
+                    color: "green"
+                })
+            })
             .catch(console.error)
+    }
 
-        //todo: add a notification to tell the user the window has been saved successfully
-        //todo: provide a means to disable the save button after a successful save
+    const handleDelete = (index: number) => {
+        alert("Removes the list item only - does not yet delete the timing window from the database")
+        form.removeListItem('timingWindows', index);
+        //todo: call API function to delete timing window from the database (requires the DB ID)
     }
 
     //Note: using Grid and Grid.Col to get the spacing correct for each element. Using Group appears to leave
@@ -130,18 +143,23 @@ export default function TimingWindowsForm(props: TimingWindows) {
     let noteCol = 3;
 
     const windowsList = form.values.timingWindows.map((item, index) => {
+        let labelIndex = index + 1;
         return (
-            <Accordion.Item value={(index + 1).toString()} key={item.key}>
+            <Accordion.Item value={labelIndex.toString()} key={item.key}>
                 <AccordionSaveDelete
-                    title={"Window " + (index + 1)}
+                    title={"Window " + labelIndex}
                     saveProps={{
-                        toolTipLabel: 'save timing window ' + (index + 1),
-                        disabled: !form.isDirty() || !form.isValid(), //todo: we need a checker for single windows
-                        onClick: () => handleSave(ConvertToTimingWindowApi(item))
+                        toolTipLabel: 'save timing window ' + labelIndex,
+                        disabled: !form.isDirty(`timingWindows.${index}`)
+                            || !form.isValid(`timingWindows.${index}`),
+                        onClick: () => {
+                            handleSave(ConvertToTimingWindowApi(item));
+                            form.resetDirty();
+                        }
                     }}
                     deleteProps={{
-                        toolTipLabel: 'delete timing window ' + index + 1,
-                        onClick: () => form.removeListItem('timingWindows', index) //todo: hook up to database
+                        toolTipLabel: 'delete timing window ' + labelIndex,
+                        onClick: () => handleDelete(index)
                     }}
                 />
                 <Accordion.Panel>
