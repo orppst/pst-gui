@@ -61,15 +61,10 @@ function GoalsPanel() {
                     <Table.Tr>
                         <Table.Th>ID</Table.Th>
                         <Table.Th>Angular resolution</Table.Th>
-                        <Table.Th>Unit</Table.Th>
                         <Table.Th>Largest scale (degrees)</Table.Th>
-                        <Table.Th>Unit</Table.Th>
                         <Table.Th>Sensitivity (dB)</Table.Th>
-                        <Table.Th>Unit</Table.Th>
                         <Table.Th>Dynamic Range (dB)</Table.Th>
-                        <Table.Th>Unit</Table.Th>
                         <Table.Th>Spectral point (GHz)</Table.Th>
-                        <Table.Th>Unit</Table.Th>
                         <Table.Th>Spectral windows</Table.Th>
                         <Table.Th></Table.Th>
                     </Table.Tr>

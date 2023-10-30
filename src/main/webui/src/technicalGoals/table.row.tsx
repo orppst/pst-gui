@@ -99,10 +99,7 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                         <Table.Td c={hasAngularResolution ? "" : "yellow"}>
                             {hasAngularResolution ?
                                 goal?.performance?.desiredAngularResolution?.value :
-                                notSpecified
-                            }
-                        </Table.Td>
-                        <Table.Td c={hasAngularResolution ? "" : "yellow"}>
+                                notSpecified}
                             {hasAngularResolution ?
                                 goal?.performance?.desiredAngularResolution?.unit?.value :
                                 notSpecified
@@ -113,8 +110,6 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                 goal?.performance?.desiredLargestScale?.value :
                                 notSpecified
                             }
-                        </Table.Td>
-                        <Table.Td c={hasLargestScale ? "" : "yellow"}>
                             {hasLargestScale ?
                                 goal?.performance?.desiredLargestScale?.unit?.value :
                                 notSpecified
@@ -125,8 +120,6 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                 goal?.performance?.desiredSensitivity?.value :
                                 notSpecified
                             }
-                        </Table.Td>
-                        <Table.Td c={hasSensitivity ? "" : "yellow"}>
                             {hasSensitivity ?
                                 goal?.performance?.desiredSensitivity?.unit?.value :
                                 notSpecified
@@ -137,8 +130,6 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                 goal?.performance?.desiredDynamicRange?.value :
                                 notSpecified
                             }
-                        </Table.Td>
-                        <Table.Td c={hasDynamicRange ? "" : "yellow"}>
                             {hasDynamicRange ?
                                 goal?.performance?.desiredDynamicRange?.unit?.value :
                                 notSpecified
@@ -149,8 +140,6 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                                 goal?.performance?.representativeSpectralPoint?.value :
                                 notSpecified
                             }
-                        </Table.Td>
-                        <Table.Td c={hasSpectralPoint ? "" : "yellow"}>
                             {hasSpectralPoint ?
                                 goal?.performance?.representativeSpectralPoint?.unit?.value :
                                 notSpecified
