@@ -1,8 +1,9 @@
 import {TechnicalGoalId} from "./Goals.tsx";
 import {
+    fetchProposalResourceAddNewTechnicalGoal,
     fetchProposalResourceRemoveTechnicalGoal,
     useProposalResourceGetTechnicalGoal
-} from "../generated/proposalToolComponents.ts";
+} from '../generated/proposalToolComponents.ts';
 import {useParams} from "react-router-dom";
 import {Badge, Group, Space, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
@@ -12,6 +13,7 @@ import {notSpecified} from "./edit.group.tsx";
 import CloneButton from "../commonButtons/clone.tsx";
 import DeleteButton from "../commonButtons/delete.tsx";
 import {useQueryClient} from "@tanstack/react-query";
+import { TechnicalGoal } from '../generated/proposalToolSchemas.ts';
 
 export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
 
@@ -34,6 +36,9 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
         return <pre>{getErrorMessage(goalError)}</pre>
     }
 
+    /**
+     * processes the actual deletion of a technical goal from the database.
+     */
     const handleDelete = () => {
         fetchProposalResourceRemoveTechnicalGoal( {
             pathParams: {proposalCode: Number(selectedProposalCode), techGoalId: technicalGoalId.id}
@@ -42,6 +47,9 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
             .catch(console.error);
     }
 
+    /**
+     * create a safety check with the user to ensure they want to delete a given technical goal.
+     */
     const confirmDelete = () => modals.openConfirmModal({
         title: 'Delete Technical Goal?',
         children: (
@@ -57,10 +65,34 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
         onCancel: () => console.log('Cancel delete'),
     })
 
+    /**
+     * processes the actual cloning of a technical goal.
+     */
     const handleClone = () => {
         console.log("Cloning Technical Goal")
+
+        // create a new technicalGoal, which does not have its id set, but contains the spectral and performance
+        // of the selected goal.
+        let clonedGoal: TechnicalGoal = {
+            performance: goal?.performance,
+            spectrum: goal?.spectrum
+        }
+
+        // save the new clonedGoal to the database.
+        fetchProposalResourceAddNewTechnicalGoal( {
+            pathParams: {proposalCode: Number(selectedProposalCode)},
+            body: clonedGoal
+        })
+            .then(()=>
+                queryClient.invalidateQueries().then(
+                    () => console.log("Cloning Technical Goal success."))
+            )
+            .catch(console.error);
     }
 
+    /**
+     * create a safety check with the user to ensure they want to clone a given technical goal.
+     */
     const confirmClone = () => modals.openConfirmModal({
         title: 'Clone Technical Goal?',
         children: (
