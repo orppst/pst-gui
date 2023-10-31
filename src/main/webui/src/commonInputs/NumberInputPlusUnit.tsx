@@ -42,6 +42,7 @@ export function NumberInputPlusUnit(props: NumberInputPlusUnitProps) {
                     label={"unit:"}
                     p={props.padding}
                     placeholder={"pick a unit"}
+                    allowDeselect
                     data={props.units}
                     {...props.form.getInputProps(props.valueRoot + ".unit.value")}
                 />

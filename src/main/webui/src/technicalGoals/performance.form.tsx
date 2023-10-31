@@ -8,6 +8,16 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import {fetchProposalResourceAddNewTechnicalGoal} from "../generated/proposalToolComponents.ts";
 
+
+/*
+    When creating new Performance Parameters at least one of the parameters must be fully
+    specified i.e., have a numeric value and a unit name. Other parameters can be left
+    blank/null/undefined. It may turn out that on Proposal Submission some of these
+    parameters need filling out. In which case, this is a task for the Proposal validation
+    function, whatever that entails.
+ */
+
+
 /**
  * interface for what's within a PerformanceParameters.
  */
@@ -53,23 +63,68 @@ export default function PerformanceParametersForm(
     const form = useForm<PerformanceValues>({
         initialValues: initialPerformanceValues,
         validate: {
-            // ensure that both the value and the units value are populated
-            // for every parameter.
-            angularResolution: (value)  => (
-                value.value === undefined || value.unit?.value === "" ?
-                    `Angular resolution value and unit cannot be left blank`: null),
-            largestScale: (value)  => (
-                value.value === undefined || value.unit?.value === "" ?
-                    `largest scale value and unit cannot be left blank`: null),
-            sensitivity: (value)  => (
-                value.value === undefined || value.unit?.value === "" ?
-                    `Sensitivity value and unit cannot be left blank`: null),
-            dynamicRange: (value)  => (
-                value.value === undefined || value.unit?.value === "" ?
-                    `Dynamic range value and unit cannot be left blank`: null),
-            spectralPoint: (value)  => (
-                value.value === undefined || value.unit?.value === "" ?
-                    `spectral point value and unit cannot be left blank`: null),
+            //theNumber: check that if a unit has been selected the numeric component isn't blank
+            //theUnit: ensure that if the parameter has a numeric value it also has a unit name
+            angularResolution:{
+                value: (theNumber, formValues) => (
+                    formValues.angularResolution.unit?.value !== "" && theNumber === undefined ?
+                        "Unit selected but no value given" : null
+                ),
+                unit: {
+                    value: (theUnit, formValues) => (
+                        formValues.angularResolution.value !== undefined && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                }
+            },
+            largestScale:{
+                value: (theNumber, formValues) => (
+                    formValues.largestScale.unit?.value !== "" && theNumber === undefined ?
+                        "Unit selected but no value given" : null
+                ),
+                unit: {
+                    value: (theUnit, formValues) => (
+                        formValues.largestScale.value !== undefined && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                }
+            },
+            sensitivity:{
+                value: (theNumber, formValues) => (
+                    formValues.sensitivity.unit?.value !== "" && theNumber === undefined ?
+                        "Unit selected but no value given" : null
+                ),
+                unit: {
+                    value: (theUnit, formValues) => (
+                        formValues.sensitivity.value !== undefined && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                }
+            },
+            dynamicRange:{
+                value: (theNumber, formValues) => (
+                    formValues.dynamicRange.unit?.value !== "" && theNumber === undefined ?
+                        "You've selected a unit but haven't given a value" : null
+                ),
+                unit: {
+                    value: (theUnit, formValues) => (
+                        formValues.dynamicRange.value !== undefined && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                }
+            },
+            spectralPoint:{
+                value: (theNumber, formValues) => (
+                    formValues.spectralPoint.unit?.value !== "" && theNumber === undefined ?
+                        "You've selected a unit but haven't given a value" : null
+                ),
+                unit: {
+                    value: (theUnit, formValues) => (
+                        formValues.spectralPoint.value !== undefined && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                }
+            },
         },
         
         transformValues: (values) => ({
@@ -159,7 +214,6 @@ export default function PerformanceParametersForm(
         if (props.newTechnicalGoal)
         {
             //posting a new technical goal to the DB
-            console.log("Creating goal")
 
             let performanceParameters : PerformanceParameters = {
                 desiredAngularResolution: values.angularResolution,
@@ -174,8 +228,6 @@ export default function PerformanceParametersForm(
                 spectrum: []
             }
 
-            console.log(JSON.stringify(goal));
-
             fetchProposalResourceAddNewTechnicalGoal( {
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: goal
@@ -187,7 +239,7 @@ export default function PerformanceParametersForm(
         } else
         {
             //editing an existing technical goal
-            console.log("Editing goal")
+            alert("editing a technical goal is not yet implemented")
         }
 
     })
@@ -196,7 +248,10 @@ export default function PerformanceParametersForm(
         <form onSubmit={handleSubmit}>
             {PerformanceDetails()}
             <Group justify={"flex-end"} mt="md">
-                <SubmitButton toolTipLabel={"save performance parameters"} />
+                <SubmitButton
+                    toolTipLabel={"save performance parameters"}
+                    disabled={!form.isDirty()}
+                />
             </Group>
         </form>
     )
