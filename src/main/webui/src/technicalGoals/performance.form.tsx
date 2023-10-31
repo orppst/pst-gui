@@ -56,8 +56,7 @@ export default function PerformanceParametersForm(
             // ensure that both the value and the units value are populated
             // for every parameter.
             angularResolution: (value)  => (
-                value.value === undefined || value.unit === undefined ||
-                value.unit.value === "" ?
+                value.value === undefined || value.unit?.value === "" ?
                     `Angular resolution value and unit cannot be left blank`: null),
             largestScale: (value)  => (
                 value.value === undefined || value.unit?.value === "" ?
