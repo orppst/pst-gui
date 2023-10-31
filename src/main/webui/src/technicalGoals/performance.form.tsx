@@ -8,6 +8,9 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import {fetchProposalResourceAddNewTechnicalGoal} from "../generated/proposalToolComponents.ts";
 
+/**
+ * interface for what's within a PerformanceParameters.
+ */
 interface PerformanceValues {
     angularResolution: RealQuantity,
     largestScale: RealQuantity,
@@ -16,6 +19,15 @@ interface PerformanceValues {
     spectralPoint: RealQuantity
 }
 
+/**
+ * entry function for building the performance parameters page.
+ * @param {{performance?: PerformanceParameters, newTechnicalGoal: boolean, closeModal?: () => void}} props
+ * input data that contains the performance parameters to display,
+ * a boolean which states if it is a new technical goal or not,
+ * and an optional close method.
+ * @return {JSX.Element} the generated HTML for the performance form.
+ * @constructor
+ */
 export default function PerformanceParametersForm(
     props: {performance?: PerformanceParameters, newTechnicalGoal: boolean, closeModal?: ()=>void}
 )
@@ -41,7 +53,23 @@ export default function PerformanceParametersForm(
     const form = useForm<PerformanceValues>({
         initialValues: initialPerformanceValues,
         validate: {
-
+            // ensure that both the value and the units value are populated
+            // for every parameter.
+            angularResolution: (value)  => (
+                value.value === undefined || value.unit === undefined ||
+                value.unit.value === "" ? `Cannot be left blank`: null),
+            largestScale: (value)  => (
+                value.value === undefined || value.unit === undefined ||
+                value.unit.value === "" ? `Cannot be left blank`: null),
+            sensitivity: (value)  => (
+                value.value === undefined || value.unit === undefined ||
+                value.unit.value === "" ? `Cannot be left blank`: null),
+            dynamicRange: (value)  => (
+                value.value === undefined || value.unit === undefined ||
+                value.unit.value === "" ? `Cannot be left blank`: null),
+            spectralPoint: (value)  => (
+                value.value === undefined || value.unit === undefined ||
+                value.unit.value === "" ? `Cannot be left blank`: null),
         },
         
         transformValues: (values) => ({
@@ -70,9 +98,7 @@ export default function PerformanceParametersForm(
                 value: values.spectralPoint.value,
                 unit: {value: values.spectralPoint.unit?.value}
             },
-            
         })
-        
     });
 
     const PerformanceDetails = () => {

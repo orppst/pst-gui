@@ -9,7 +9,6 @@ import {Badge, Group, Space, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import TechnicalGoalEditModal from "./edit.modal.tsx";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
-import {notSpecified} from "./edit.group.tsx";
 import CloneButton from "../commonButtons/clone.tsx";
 import DeleteButton from "../commonButtons/delete.tsx";
 import {useQueryClient} from "@tanstack/react-query";
@@ -114,12 +113,6 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
         onCancel:() => console.log('Cancel copy'),
     })
 
-    let hasAngularResolution = !!goal?.performance?.desiredAngularResolution?.value;
-    let hasLargestScale = !!goal?.performance?.desiredLargestScale?.value;
-    let hasSensitivity= !!goal?.performance?.desiredSensitivity?.value;
-    let hasDynamicRange= !!goal?.performance?.desiredDynamicRange?.value;
-    let hasSpectralPoint = !!goal?.performance?.representativeSpectralPoint?.value;
-
     /**
      * helper method to determine the correct label.
      * @param array the array of value and labels from physical units.
@@ -140,61 +133,33 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                         <Table.Td>
                             {goal?._id}
                         </Table.Td>
-                        <Table.Td c={hasAngularResolution ? "" : "yellow"}>
-                            {hasAngularResolution ?
-                                goal?.performance?.desiredAngularResolution?.value :
-                                notSpecified}
-                            {hasAngularResolution ?
-                                ` ${ locateLabel(
+                        <Table.Td>
+                            {goal?.performance?.desiredAngularResolution?.value}
+                            {` ${ locateLabel(
+                                angularUnits, 
+                                goal?.performance?.desiredAngularResolution?.unit?.value)?.label }`}
+                        </Table.Td>
+                        <Table.Td>
+                            {goal?.performance?.desiredLargestScale?.value}
+                            {` ${ locateLabel(
                                     angularUnits,
-                                    goal?.performance?.desiredAngularResolution?.unit?.value)?.label }` :
-                                notSpecified
-                            }
+                                    goal?.performance?.desiredLargestScale?.unit?.value)?.label }`}
                         </Table.Td>
-                        <Table.Td c={hasLargestScale ? "" : "yellow"}>
-                            {hasLargestScale ?
-                                goal?.performance?.desiredLargestScale?.value :
-                                notSpecified
-                            }
-                            {hasLargestScale ?
-                                ` ${ locateLabel(
-                                    angularUnits,
-                                    goal?.performance?.desiredLargestScale?.unit?.value)?.label }` :
-                                notSpecified
-                            }
+                        <Table.Td>
+                            {goal?.performance?.desiredSensitivity?.value}
+                            {` ${ locateLabel(
+                                    sensitivityUnits, 
+                                    goal?.performance?.desiredSensitivity?.unit?.value)?.label}`}
                         </Table.Td>
-                        <Table.Td c={hasSensitivity ? "" : "yellow"}>
-                            {hasSensitivity ?
-                                goal?.performance?.desiredSensitivity?.value :
-                                notSpecified
-                            }
-                            {hasSensitivity ?
-                                ` ${ locateLabel(sensitivityUnits, 
-                                    goal?.performance?.desiredSensitivity?.unit?.value)?.label}` :
-                                notSpecified
-                            }
+                        <Table.Td>
+                            {goal?.performance?.desiredDynamicRange?.value}
+                            {` ${ locateLabel(sensitivityUnits, 
+                                    goal?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
                         </Table.Td>
-                        <Table.Td c={hasDynamicRange ? "" : "yellow"}>
-                            {hasDynamicRange ?
-                                goal?.performance?.desiredDynamicRange?.value :
-                                notSpecified
-                            }
-                            {hasDynamicRange ?
-                                ` ${ locateLabel(sensitivityUnits, 
-                                    goal?.performance?.desiredDynamicRange?.unit?.value)?.label}` :
-                                notSpecified
-                            }
-                        </Table.Td>
-                        <Table.Td c={hasSpectralPoint ? "" : "yellow"}>
-                            {hasSpectralPoint ?
-                                goal?.performance?.representativeSpectralPoint?.value :
-                                notSpecified
-                            }
-                            {hasSpectralPoint ?
-                                ` ${ locateLabel(frequencyUnits, 
-                                    goal?.performance?.representativeSpectralPoint?.unit?.value)?.label}` :
-                                notSpecified
-                            }
+                        <Table.Td>
+                            {goal?.performance?.representativeSpectralPoint?.value}
+                            {` ${ locateLabel(frequencyUnits, 
+                                    goal?.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
                         </Table.Td>
                         <Table.Td>
                             {
