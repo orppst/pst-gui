@@ -104,7 +104,7 @@ export default function PerformanceParametersForm(
             dynamicRange:{
                 value: (theNumber, formValues) => (
                     formValues.dynamicRange.unit?.value !== "" && theNumber === undefined ?
-                        "You've selected a unit but haven't given a value" : null
+                        "Unit selected but no value given" : null
                 ),
                 unit: {
                     value: (theUnit, formValues) => (
@@ -116,7 +116,7 @@ export default function PerformanceParametersForm(
             spectralPoint:{
                 value: (theNumber, formValues) => (
                     formValues.spectralPoint.unit?.value !== "" && theNumber === undefined ?
-                        "You've selected a unit but haven't given a value" : null
+                        "Unit selected but no value given" : null
                 ),
                 unit: {
                     value: (theUnit, formValues) => (
