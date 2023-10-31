@@ -57,19 +57,20 @@ export default function PerformanceParametersForm(
             // for every parameter.
             angularResolution: (value)  => (
                 value.value === undefined || value.unit === undefined ||
-                value.unit.value === "" ? `Cannot be left blank`: null),
+                value.unit.value === "" ?
+                    `Angular resolution value and unit cannot be left blank`: null),
             largestScale: (value)  => (
-                value.value === undefined || value.unit === undefined ||
-                value.unit.value === "" ? `Cannot be left blank`: null),
+                value.value === undefined || value.unit?.value === "" ?
+                    `largest scale value and unit cannot be left blank`: null),
             sensitivity: (value)  => (
-                value.value === undefined || value.unit === undefined ||
-                value.unit.value === "" ? `Cannot be left blank`: null),
+                value.value === undefined || value.unit?.value === "" ?
+                    `Sensitivity value and unit cannot be left blank`: null),
             dynamicRange: (value)  => (
-                value.value === undefined || value.unit === undefined ||
-                value.unit.value === "" ? `Cannot be left blank`: null),
+                value.value === undefined || value.unit?.value === "" ?
+                    `Dynamic range value and unit cannot be left blank`: null),
             spectralPoint: (value)  => (
-                value.value === undefined || value.unit === undefined ||
-                value.unit.value === "" ? `Cannot be left blank`: null),
+                value.value === undefined || value.unit?.value === "" ?
+                    `spectral point value and unit cannot be left blank`: null),
         },
         
         transformValues: (values) => ({
@@ -155,6 +156,7 @@ export default function PerformanceParametersForm(
     }
 
     const handleSubmit = form.onSubmit( (values) => {
+        form.validate();
         if (props.newTechnicalGoal)
         {
             //posting a new technical goal to the DB
