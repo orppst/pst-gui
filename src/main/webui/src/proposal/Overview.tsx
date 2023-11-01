@@ -1,21 +1,22 @@
-import { useParams } from "react-router-dom"
-import {
-    useProposalResourceGetObservingProposal,
-} from "../generated/proposalToolComponents";
-import {Accordion, Avatar, Badge, Box, Container, Group, List, Table, Text} from "@mantine/core";
+import { useParams } from 'react-router-dom'
+import { useProposalResourceGetObservingProposal, } from '../generated/proposalToolComponents';
+import { Accordion, Avatar, Badge, Box, Container, Group, List, Table, Text } from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse,
-    Investigator, RealQuantity
-} from "../generated/proposalToolSchemas.ts";
-import {randomId} from "@mantine/hooks";
-import {RenderTarget} from "../targets/RenderTarget.tsx";
-import {IconNorthStar} from "@tabler/icons-react";
-import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
+    Investigator,
+    RealQuantity
+} from '../generated/proposalToolSchemas.ts';
+import { randomId } from '@mantine/hooks';
+import { RenderTarget } from '../targets/RenderTarget.tsx';
+import { IconNorthStar } from '@tabler/icons-react';
+import { RenderTechnicalGoal } from '../technicalGoals/render.technicalGoal.tsx';
 import { ReactElement, useRef } from 'react';
 import { SaveButton } from '../commonButtons/save.tsx';
 import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+// renamed to bypass ESlint issues about constructors needing to be capital letters.
+import { jsPDF as JSPDF } from 'jspdf';
+
 /*
       title    -- string
       summary  -- string
@@ -45,14 +46,26 @@ import { jsPDF } from 'jspdf';
  */
 
 
-
+/**
+ * internal interface for the investigator.
+ *
+ * @param {string} fullName the full name of the investigator.
+ * @param {string} role the role of the investigator.
+ * @param {string} home the home of the investigator.
+ */
 interface InvestigatorLabelProps {
     fullName: string;
     role: string;
     home: string;
 }
 
-function InvestigatorAccordionLabel({fullName, role, home} : InvestigatorLabelProps) {
+/**
+ *
+ * @param an InvestigatorLabelProps object.
+ * @return {ReactElement} the html to present a given investigator.
+ * @constructor
+ */
+function InvestigatorAccordionLabel({fullName, role, home} : InvestigatorLabelProps): ReactElement {
     return (
         <Group wrap={"nowrap"}>
             <Avatar radius={"md"} />
@@ -65,21 +78,37 @@ function InvestigatorAccordionLabel({fullName, role, home} : InvestigatorLabelPr
         </Group>
     )
 }
-function InvestigatorAccordionContent(investigator : Investigator) {
+
+/**
+ * generates a table for a given investigator.
+ *
+ * @param {Investigator} investigator the investigator for the table.
+ * @return {ReactElement} the html for the table of investigators.
+ * @constructor
+ */
+function InvestigatorAccordionContent(investigator : Investigator): ReactElement {
     return (
         <Table>
             <Table.Tbody>
                 <Table.Tr>
-                    <Table.Td>for phd?</Table.Td><Table.Td>{investigator.forPhD ? 'yes' : 'no'}</Table.Td>
+                    <Table.Td>for phd?</Table.Td><Table.Td>{
+                        investigator.forPhD ? 'yes' : 'no'}
+                    </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
-                    <Table.Td>email</Table.Td><Table.Td>{investigator.person?.eMail}</Table.Td>
+                    <Table.Td>email</Table.Td><Table.Td>{
+                        investigator.person?.eMail}
+                    </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
-                    <Table.Td>orcid ID</Table.Td><Table.Td>{investigator.person?.orcidId?.value}</Table.Td>
+                    <Table.Td>orcid ID</Table.Td><Table.Td>{
+                        investigator.person?.orcidId?.value}
+                    </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
-                    <Table.Td>Institute address</Table.Td><Table.Td>{investigator.person?.homeInstitute?.address}</Table.Td>
+                    <Table.Td>Institute address</Table.Td><Table.Td>{
+                        investigator.person?.homeInstitute?.address}
+                    </Table.Td>
                 </Table.Tr>
             </Table.Tbody>
         </Table>
@@ -125,8 +154,12 @@ function ObservationAccordionContent({proposalCode, targetId, technicalGoalId} :
     )
 }
 
-
-function OverviewPanel() {
+/**
+ * creates the html for the overview panel.
+ * @return {ReactElement} the html of the overview panel.
+ * @constructor
+ */
+function OverviewPanel(): ReactElement {
     const { selectedProposalCode } = useParams();
 
     // holder for the reference needed for the pdf generator to work.
@@ -148,7 +181,7 @@ function OverviewPanel() {
             const data = canvas.toDataURL('image/png');
 
             // convert png to pdf.
-            const pdfGenerator = new jsPDF();
+            const pdfGenerator = new JSPDF();
             const imgProperties =
                 pdfGenerator.getImageProperties(data);
             const pdfWidth =
@@ -190,13 +223,18 @@ function OverviewPanel() {
         );
     }
 
-    const DisplayTitle = () => {
+    /**
+     *
+     * @return {JSX.Element}
+     * @constructor
+     */
+    const DisplayTitle = (): ReactElement => {
         return (
             <h1>{proposalsData?.title}</h1>
         )
     }
 
-    const DisplaySummary = () => {
+    const DisplaySummary = (): ReactElement => {
         return (
             <>
                 <h3>Summary</h3>
@@ -205,7 +243,7 @@ function OverviewPanel() {
         )
     }
 
-    const DisplayKind = () => {
+    const DisplayKind = (): ReactElement => {
         return (
             <>
                 <h3>Kind</h3>
@@ -214,7 +252,7 @@ function OverviewPanel() {
         )
     }
 
-    const DisplaySubmitted = () => {
+    const DisplaySubmitted = (): ReactElement => {
         return (
             <Group>
                 <h4>Submitted:</h4>
@@ -223,7 +261,7 @@ function OverviewPanel() {
         )
     }
 
-    const DisplayScientificJustification = () => {
+    const DisplayScientificJustification = (): ReactElement => {
         return (
             <>
                 <h3>Scientific Justification</h3>
@@ -233,7 +271,7 @@ function OverviewPanel() {
         )
     }
 
-    const DisplayTechnicalJustification = () => {
+    const DisplayTechnicalJustification = (): ReactElement => {
         return (
             <>
                 <h3>Technical Justification</h3>
