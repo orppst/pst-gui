@@ -12,7 +12,10 @@ import {randomId} from "@mantine/hooks";
 import {RenderTarget} from "../targets/RenderTarget.tsx";
 import {IconNorthStar} from "@tabler/icons-react";
 import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
-
+import { ReactElement, useRef } from 'react';
+import { SaveButton } from '../commonButtons/save.tsx';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 /*
       title    -- string
       summary  -- string
@@ -124,8 +127,53 @@ function ObservationAccordionContent({proposalCode, targetId, technicalGoalId} :
 
 
 function OverviewPanel() {
-
     const { selectedProposalCode } = useParams();
+
+    // holder for the reference needed for the pdf generator to work.
+    const printRef = useRef<HTMLInputElement>(null);
+
+    /**
+     * generates the overview pdf and saves it to the users disk.
+     *
+     * code extracted from: https://www.robinwieruch.de/react-component-to-pdf/
+     * @return {Promise<void>} promise that the pdf will be saved at some point.
+     */
+    const handleDownloadPdf = async (): Promise<void> => {
+        const element = printRef.current;
+
+        // ensure there is a rendered overview.
+        if(element !== null) {
+            // convert overview to png.
+            const canvas = await html2canvas(element);
+            const data = canvas.toDataURL('image/png');
+
+            // convert png to pdf.
+            const pdfGenerator = new jsPDF();
+            const imgProperties =
+                pdfGenerator.getImageProperties(data);
+            const pdfWidth =
+                pdfGenerator.internal.pageSize.getWidth();
+            const pdfHeight =
+                (imgProperties.height * pdfWidth) /
+                imgProperties.width;
+            pdfGenerator.addImage(
+                data, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+            // save pdf to users disk.
+            if (proposalsData?.title) {
+                pdfGenerator.save(`${proposalsData.title}.pdf`);
+            } else {
+                /* should never reach here, but the interface states it could,
+                 so added protection. */
+                pdfGenerator.save('UnNamedProposal.pdf');
+            }
+        } else {
+            // something failed in the rendering of the overview react element.
+            console.error(
+                'Tried to download a Overview that had not formed correctly.');
+        }
+    };
+
 
     const { data: proposalsData , error: proposalsError, isLoading: proposalsIsLoading } =
         useProposalResourceGetObservingProposal({
@@ -195,7 +243,12 @@ function OverviewPanel() {
         )
     }
 
-    const DisplayInvestigators = () => {
+    /**
+     * generates the HTML for the investigators for the overview page.
+     * @return {ReactElement} the html for the investigators.
+     * @constructor
+     */
+    const DisplayInvestigators = (): ReactElement => {
 
         const investigators = proposalsData?.investigators?.map((investigator) => (
             <Accordion.Item key={investigator.person?.orcidId?.value} value={investigator.person?.fullName!}>
@@ -227,7 +280,13 @@ function OverviewPanel() {
         )
     }
 
-    const DisplaySupportingDocuments = () => {
+    /**
+     * generates the html for the supporting documents for the overview page.
+     *
+     * @return {ReactElement} the html for the supporting documents.
+     * @constructor
+     */
+    const DisplaySupportingDocuments = (): ReactElement => {
 
         const documents = proposalsData?.supportingDocuments?.map((document) =>(
             <List.Item key={document.location}>{document.title}</List.Item>
@@ -247,7 +306,13 @@ function OverviewPanel() {
         )
     }
 
-    const DisplayRelatedProposals = () => {
+    /**
+     * generates the display for the related proposals for the overview page.
+     *
+     * @return {ReactElement} the html for the related proposal panel.
+     * @constructor
+     */
+    const DisplayRelatedProposals = (): ReactElement => {
 
         const proposals = proposalsData?.relatedProposals?.map((related) =>(
             <List.Item key={related.proposal?._id}>{related.proposal?.title}</List.Item>
@@ -267,7 +332,13 @@ function OverviewPanel() {
         )
     }
 
-    const DisplayObservations = () => {
+    /**
+     * creates the observations panel for the overview page.
+     *
+     * @return ReactElement the generated HTML for the observations panel.
+     * @constructor
+     */
+    const DisplayObservations = (): ReactElement => {
 
         const observations = proposalsData?.observations?.map((observation) => {
 
@@ -319,28 +390,44 @@ function OverviewPanel() {
         )
     }
 
+    /**
+     * add download button for the proposal to be extracted as a tar ball.
+     *
+     * @return {ReactElement} the html which contains the download button.
+     * @constructor
+     */
+    const DownloadButton = (): ReactElement => {
+        return SaveButton(
+            {
+                toolTipLabel: `download proposal`,
+                disabled: false,
+                onClick: handleDownloadPdf,
+            });
+    }
+
+    /**
+     * returns the HTML structure for the overview page.
+     */
     return (
         <>
             {
                 proposalsIsLoading ? 'Loading...' :
                     <Container fluid>
-                        <DisplayTitle/>
-                        <DisplayInvestigators/>
-                        <DisplaySummary/>
-                        <DisplayKind/>
-                        <DisplayScientificJustification/>
-                        <DisplayTechnicalJustification/>
-                        <DisplayObservations/>
-
-                        <DisplaySupportingDocuments/>
-                        <DisplayRelatedProposals/>
-
-                        <DisplaySubmitted/>
-
+                        <DownloadButton/>
+                        <div ref={printRef}>
+                            <DisplayTitle/>
+                            <DisplayInvestigators/>
+                            <DisplaySummary/>
+                            <DisplayKind/>
+                            <DisplayScientificJustification/>
+                            <DisplayTechnicalJustification/>
+                            <DisplayObservations/>
+                            <DisplaySupportingDocuments/>
+                            <DisplayRelatedProposals/>
+                            <DisplaySubmitted/>
+                        </div>
                     </Container>
-
             }
-
         </>
     );
 
