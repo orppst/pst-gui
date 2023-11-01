@@ -19,12 +19,14 @@ type DocumentProps = {
 
 const DocumentsPanel = () => {
     const queryClient = useQueryClient();
-    const { selectedProposalCode} = useParams();
-    const { data , error, isLoading } = useSupportingDocumentResourceGetSupportingDocuments({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
-    const [file, setFile] = useState<File | null>(null);
-    const [status, setStatus] = useState<
-        "initial" | "uploading" | "success" | "fail"
-    >("initial");
+    const {selectedProposalCode} = useParams();
+    const {data, error, isLoading}
+        = useSupportingDocumentResourceGetSupportingDocuments(
+        {pathParams: {proposalCode: Number(selectedProposalCode)},},
+        {enabled: true}
+    );
+    const [status, setStatus]
+        = useState<"initial" | "uploading" | "success" | "fail">("initial");
 
     if (error) {
         return (
@@ -34,13 +36,13 @@ const DocumentsPanel = () => {
         );
     }
 
-    const handleUpload = async () => {
-        if (file) {
+    const handleUpload = async (chosenFile: File) => {
+        if (chosenFile) {
             setStatus("uploading");
 
             const formData = new FormData();
-            formData.append("document", file);
-            formData.append("title", file.name);
+            formData.append("document", chosenFile);
+            formData.append("title", chosenFile.name);
 
             fetchSupportingDocumentResourceUploadSupportingDocument(
                 {
@@ -54,7 +56,6 @@ const DocumentsPanel = () => {
             .then(() => {
                 setStatus("success");
                 queryClient.invalidateQueries();
-                setFile(null);
                 notifications.show({
                     autoClose: 5000,
                     title: "Upload successful",
@@ -94,28 +95,9 @@ const DocumentsPanel = () => {
                 </Table>
             </Box>
             <Text fz="lg" fw={700}>Upload a document</Text>
-            <FileButton onChange={setFile}>
+            <FileButton onChange={handleUpload}>
                         {(props) => <Button {...props}>Choose a file</Button>}
             </FileButton>
-            {file && (
-                <Box>
-                    File details:
-                    <Table>
-                        <Table.Tbody>
-                            <Table.Tr><Table.Td>Name</Table.Td><Table.Td>{file.name}</Table.Td></Table.Tr>
-                            <Table.Tr><Table.Td>Type</Table.Td><Table.Td>{file.type}</Table.Td></Table.Tr>
-                            <Table.Tr><Table.Td>Size</Table.Td><Table.Td>{file.size} bytes</Table.Td></Table.Tr>
-                        </Table.Tbody>
-                    </Table>
-                </Box>
-            )}
-
-            {file && (
-                <Button onClick={handleUpload} >
-                    Upload file
-                </Button>
-            )}
-
             <Result status={status} />
         </Box>
     );
