@@ -5,6 +5,8 @@
   "type": "module",
   "homepage": "https://kilburn.jb.man.ac.uk/pst/gui/",
   "dependencies": {
+    "jszip": "3.4.0",
+    "jszip-utils": "0.1.0",
     "@mantine/core": "^7.1.0",
     "@mantine/dates": "^7.1.0",
     "@mantine/form": "^7.1.0",

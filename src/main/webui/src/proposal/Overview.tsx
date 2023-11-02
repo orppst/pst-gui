@@ -13,9 +13,7 @@ import { IconNorthStar } from '@tabler/icons-react';
 import { RenderTechnicalGoal } from '../technicalGoals/render.technicalGoal.tsx';
 import { ReactElement, useRef } from 'react';
 import { SaveButton } from '../commonButtons/save.tsx';
-import html2canvas from 'html2canvas';
-// renamed to bypass ESlint issues about constructors needing to be capital letters.
-import { jsPDF as JSPDF } from 'jspdf';
+import downloadProposal from './downloadProposal.tsx';
 
 /*
       title    -- string
@@ -171,39 +169,23 @@ function OverviewPanel(): ReactElement {
      * code extracted from: https://www.robinwieruch.de/react-component-to-pdf/
      * @return {Promise<void>} promise that the pdf will be saved at some point.
      */
-    const handleDownloadPdf = async (): Promise<void> => {
+    const handleDownloadPdf = (): void => {
+        // get the overview page to print as well as the proposal data.
         const element = printRef.current;
 
         // ensure there is a rendered overview.
-        if(element !== null) {
-            // convert overview to png.
-            const canvas = await html2canvas(element);
-            const data = canvas.toDataURL('image/png');
-
-            // convert png to pdf.
-            const pdfGenerator = new JSPDF();
-            const imgProperties =
-                pdfGenerator.getImageProperties(data);
-            const pdfWidth =
-                pdfGenerator.internal.pageSize.getWidth();
-            const pdfHeight =
-                (imgProperties.height * pdfWidth) /
-                imgProperties.width;
-            pdfGenerator.addImage(
-                data, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-            // save pdf to users disk.
-            if (proposalsData?.title) {
-                pdfGenerator.save(`${proposalsData.title}.pdf`);
-            } else {
-                /* should never reach here, but the interface states it could,
-                 so added protection. */
-                pdfGenerator.save('UnNamedProposal.pdf');
-            }
+        if(element !== null && proposalsData !== undefined) {
+            downloadProposal(element, proposalsData).then();
         } else {
-            // something failed in the rendering of the overview react element.
-            console.error(
-                'Tried to download a Overview that had not formed correctly.');
+            // something failed in the rendering of the overview react element or
+            // extracting the proposal data.
+            if (element === null) {
+                console.error(
+                    'Tried to download a Overview that had not formed correctly.');
+            } else {
+                console.error(
+                    'Tried to download the proposal data and that had not formed correctly.');
+            }
         }
     };
 
