@@ -1,5 +1,8 @@
 import { useParams } from 'react-router-dom'
-import { useProposalResourceGetObservingProposal, } from '../generated/proposalToolComponents';
+import {
+    useProposalResourceGetObservingProposal,
+    useSupportingDocumentResourceGetSupportingDocuments,
+} from '../generated/proposalToolComponents';
 import { Accordion, Avatar, Badge, Box, Container, Group, List, Table, Text } from '@mantine/core';
 import {
     CalibrationObservation,
@@ -160,6 +163,11 @@ function ObservationAccordionContent({proposalCode, targetId, technicalGoalId} :
 function OverviewPanel(): ReactElement {
     const { selectedProposalCode } = useParams();
 
+    const {data} =
+        useSupportingDocumentResourceGetSupportingDocuments(
+            {pathParams: {proposalCode: Number(selectedProposalCode)},},
+            {enabled: true});
+
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
 
@@ -174,8 +182,8 @@ function OverviewPanel(): ReactElement {
         const element = printRef.current;
 
         // ensure there is a rendered overview.
-        if(element !== null && proposalsData !== undefined) {
-            downloadProposal(element, proposalsData).then();
+        if(element !== null && proposalsData !== undefined && selectedProposalCode !== undefined && data !== undefined) {
+            downloadProposal(element, proposalsData, data, selectedProposalCode).then();
         } else {
             // something failed in the rendering of the overview react element or
             // extracting the proposal data.
