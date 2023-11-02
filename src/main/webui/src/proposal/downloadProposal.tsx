@@ -10,6 +10,64 @@ import {
 } from '../generated/proposalToolComponents.ts';
 
 /**
+ * generates a blob for the overview page that contains the pdf.
+ *
+ * @param {HTMLInputElement} element the top page to turn into a pdf blob.
+ * @return {Promise<Blob>} the blob of the pdf.
+ */
+const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
+    // convert overview to png.
+    const canvas = await html2canvas(element);
+    const data = canvas.toDataURL('image/png');
+
+    // convert png to pdf.
+    const pdfGenerator = new JSPDF();
+    // noinspection JSUnresolvedReference
+    const imgProperties =
+        pdfGenerator.getImageProperties(data);
+    // noinspection JSUnresolvedReference
+    const pdfWidth =
+        pdfGenerator.internal.pageSize.getWidth();
+    const pdfHeight =
+        (imgProperties.height * pdfWidth) /
+        imgProperties.width;
+    // noinspection JSUnresolvedReference
+    pdfGenerator.addImage(
+        data, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+    // get pdf data.
+    return pdfGenerator.output('blob');
+}
+
+/**
+ * goes through the proposals supporting documents and adds them to the zip.
+ * @param {JSZip} zip the zip object.
+ * @param supportingDocumentData the data for supporting documents.
+ * @param selectedProposalCode the selected proposal code.
+ */
+const populateSupportingDocuments = (
+    zip: JSZip,
+    supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
+    selectedProposalCode: String):
+    Array<Promise<void>> => {
+    return supportingDocumentData.map(async (item: ObjectIdentifier) => {
+        if (item.dbid !== undefined && item.name !== undefined) {
+            // have to destructure this, as otherwise risk of being undefined detected later.
+            const docTitle = item.name;
+            await fetchSupportingDocumentResourceDownloadSupportingDocument(
+                { pathParams: { id: item.dbid, proposalCode: Number(selectedProposalCode) } })
+                .then((blob) => {
+                    // ensure we got some data back.
+                    if (blob !== undefined) {
+                        zip.file(docTitle, blob)
+                    }
+                })
+        }
+    });
+}
+
+
+/**
  * handles all the processing for downloading a proposal into a tarball.
  *
  * @param {HTMLInputElement} element the overview page to print as a pdf.
@@ -23,63 +81,6 @@ async function downloadProposal(
         supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
         selectedProposalCode: String):
     Promise<void> {
-
-    /**
-     * generates a blob for the overview page that contains the pdf.
-     *
-     * @param {HTMLInputElement} element the top page to turn into a pdf blob.
-     * @return {Promise<Blob>} the blob of the pdf.
-     */
-    const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
-        // convert overview to png.
-        const canvas = await html2canvas(element);
-        const data = canvas.toDataURL('image/png');
-
-        // convert png to pdf.
-        const pdfGenerator = new JSPDF();
-        // noinspection JSUnresolvedReference
-        const imgProperties =
-            pdfGenerator.getImageProperties(data);
-        // noinspection JSUnresolvedReference
-        const pdfWidth =
-            pdfGenerator.internal.pageSize.getWidth();
-        const pdfHeight =
-            (imgProperties.height * pdfWidth) /
-            imgProperties.width;
-        // noinspection JSUnresolvedReference
-        pdfGenerator.addImage(
-            data, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-        // get pdf data.
-        return pdfGenerator.output('blob');
-    }
-
-    /**
-     * goes through the proposals supporting documents and adds them to the zip.
-     * @param {JSZip} zip the zip object.
-     * @param supportingDocumentData the data for supporting documents.
-     * @param selectedProposalCode the selected proposal code.
-     */
-    const populateSupportingDocuments = (
-            zip: JSZip,
-            supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
-            selectedProposalCode: String):
-        Array<Promise<void>> => {
-        return supportingDocumentData.map(async (item: ObjectIdentifier) => {
-            if (item.dbid !== undefined && item.name !== undefined) {
-                // have to destructure this, as otherwise risk of being undefined detected later.
-                const docTitle = item.name;
-                await fetchSupportingDocumentResourceDownloadSupportingDocument(
-                    { pathParams: { id: item.dbid, proposalCode: Number(selectedProposalCode) } })
-                    .then((blob) => {
-                        // ensure we got some data back.
-                        if (blob !== undefined) {
-                            zip.file(docTitle, blob)
-                        }
-                    })
-            }
-        });
-    }
 
     // determine correct title for the pdf.
     let title = 'UnNamedProposal.pdf';
