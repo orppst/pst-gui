@@ -132,12 +132,7 @@ interface ObservationLabelProps {
 
 /**
  * creates the observation label.
- * @param {string} targetName the target name.
- * @param {string} observationType the observation type.
- * @param {"AMPLITUDE" | "ATMOSPHERIC" | "BANDPASS" | "PHASE" |
- *         "POINTING" | "FOCUS" | "POLARIZATION" | "DELAY" |
- *         undefined} intendedUse the intended use.
- * @param {RealQuantity} spectralPoint the spectral point.
+ * @param ObservationLabelProps: the data for the method.
  * @return {ReactElement} the htm for the observation accordion label.
  * @constructor
  */
@@ -175,9 +170,7 @@ interface ObservationContentProps {
 
 /**
  * generates the observation accordion content.
- * @param {number} proposalCode the proposal code.
- * @param {number} targetId the target id in the database.
- * @param {number} technicalGoalId the technical goal id in the database.
+ * @param ObservationContentProps: data for the method.
  * @return {ReactElement} the html for the observation accordion content.
  * @constructor
  */
