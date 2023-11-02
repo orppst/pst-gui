@@ -3,9 +3,10 @@ import html2canvas from 'html2canvas';
 // renamed to bypass ESlint issues about constructors needing to be capital letters.
 import { jsPDF as JSPDF } from 'jspdf';
 // used the import * as it bypasses a fault with how this is meant to be imported.
-import * as JSZip from "jszip";
+import * as JSZip from 'jszip';
 import {
-    fetchSupportingDocumentResourceDownloadSupportingDocument, SupportingDocumentResourceGetSupportingDocumentsResponse,
+    fetchSupportingDocumentResourceDownloadSupportingDocument,
+    SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from '../generated/proposalToolComponents.ts';
 
 /**
@@ -59,24 +60,25 @@ async function downloadProposal(
      * @param supportingDocumentData the data for supporting documents.
      * @param selectedProposalCode the selected proposal code.
      */
-    const populateSupportingDocuments = async (
+    const populateSupportingDocuments = (
             zip: JSZip,
             supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
             selectedProposalCode: String):
-        Promise<JSZip> => {
-        supportingDocumentData.map(async (item: ObjectIdentifier) => {
+        Array<Promise<void>> => {
+        return supportingDocumentData.map(async (item: ObjectIdentifier) => {
             if (item.dbid !== undefined && item.name !== undefined) {
+                // have to destructure this, as otherwise risk of being undefined detected later.
                 const docTitle = item.name;
                 await fetchSupportingDocumentResourceDownloadSupportingDocument(
                     { pathParams: { id: item.dbid, proposalCode: Number(selectedProposalCode) } })
                     .then((blob) => {
+                        // ensure we got some data back.
                         if (blob !== undefined) {
                             zip.file(docTitle, blob)
                         }
                     })
             }
         });
-        return zip;
     }
 
     // determine correct title for the pdf.
@@ -93,23 +95,18 @@ async function downloadProposal(
     zip = zip.file(title, pdfData);
 
     // add supporting documents to the zip.
-    const promises = supportingDocumentData.map(async (item: ObjectIdentifier) => {
-        if (item.dbid !== undefined && item.name !== undefined) {
-            const docTitle = item.name;
-            await fetchSupportingDocumentResourceDownloadSupportingDocument(
-                { pathParams: { id: item.dbid, proposalCode: Number(selectedProposalCode) } })
-                .then((blob) => {
-                    if (blob !== undefined) {
-                        zip = zip.file(docTitle, blob)
-                    }
-                })
-        }
-    });
+    const promises = populateSupportingDocuments(
+        zip, supportingDocumentData, selectedProposalCode
+    );
 
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(
         () => {
-            console.log(zip.files);
+            //logging for safety.
+            console.debug(`The zip currently contains the following docs:`);
+            console.debug(zip.files);
+
+            // generate the zip file.
             zip.generateAsync({type: "blob"}).then((zipData: Blob | MediaSource) => {
                 // Create a download link for the zip file
                 const link = document.createElement("a");
@@ -121,4 +118,5 @@ async function downloadProposal(
     )
 }
 
+// main entrance function is the download proposal function.
 export default downloadProposal

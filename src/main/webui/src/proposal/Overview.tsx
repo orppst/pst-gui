@@ -116,6 +116,13 @@ function InvestigatorAccordionContent(investigator : Investigator): ReactElement
     )
 }
 
+/**
+ * interface used in the observation panel.
+ * @param {string} targetName the target name.
+ * @param {string} observationType the type of observation.
+ * @param {CalibrationTargetIntendedUse} intendedUse the targets intended use.
+ * @param {RealQuantity} spectralPoint the spectral point.
+ */
 interface ObservationLabelProps {
     targetName: string;
     observationType: string;
@@ -123,7 +130,20 @@ interface ObservationLabelProps {
     spectralPoint: RealQuantity;
 }
 
-function ObservationAccordionLabel({targetName, observationType, intendedUse, spectralPoint} : ObservationLabelProps) {
+/**
+ * creates the observation label.
+ * @param {string} targetName the target name.
+ * @param {string} observationType the observation type.
+ * @param {"AMPLITUDE" | "ATMOSPHERIC" | "BANDPASS" | "PHASE" |
+ *         "POINTING" | "FOCUS" | "POLARIZATION" | "DELAY" |
+ *         undefined} intendedUse the intended use.
+ * @param {RealQuantity} spectralPoint the spectral point.
+ * @return {ReactElement} the htm for the observation accordion label.
+ * @constructor
+ */
+function ObservationAccordionLabel(
+    {targetName, observationType, intendedUse, spectralPoint} :
+        ObservationLabelProps): ReactElement {
     return(
         <Group wrap={"nowrap"}>
             <Avatar radius={"sm"}>
@@ -132,20 +152,38 @@ function ObservationAccordionLabel({targetName, observationType, intendedUse, sp
             <div>
                 <Text>{targetName}</Text>
                 <Text size={"sm"} c={"dimmed"} fw={400}>
-                    {observationType} {intendedUse && "| " + intendedUse.toLowerCase()} | {spectralPoint.value} {spectralPoint.unit?.value}
+                    {observationType}
+                    {intendedUse && "| " + intendedUse.toLowerCase()} |
+                    {spectralPoint.value} {spectralPoint.unit?.value}
                 </Text>
             </div>
         </Group>
     )
 }
 
+/**
+ * interface for the observation content props.
+ * @param {number} proposalCode: the proposal code.
+ * @param {number} targetID the target id in the database.
+ * @param {number} technicalGoalId the technical goal id in the database.
+ */
 interface ObservationContentProps {
     proposalCode: number;
     targetId: number;
     technicalGoalId: number;
 }
 
-function ObservationAccordionContent({proposalCode, targetId, technicalGoalId} : ObservationContentProps) {
+/**
+ * generates the observation accordion content.
+ * @param {number} proposalCode the proposal code.
+ * @param {number} targetId the target id in the database.
+ * @param {number} technicalGoalId the technical goal id in the database.
+ * @return {ReactElement} the html for the observation accordion content.
+ * @constructor
+ */
+function ObservationAccordionContent(
+    {proposalCode, targetId, technicalGoalId} : ObservationContentProps) :
+    ReactElement {
     return (
         //TODO: consider a Grid instead of Group
         <Group>
@@ -170,6 +208,21 @@ function OverviewPanel(): ReactElement {
 
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
+
+    const { data: proposalsData , error: proposalsError, isLoading: proposalsIsLoading } =
+        useProposalResourceGetObservingProposal({
+                pathParams: {proposalCode: Number(selectedProposalCode)},},
+            {enabled: true}
+        );
+
+
+    if (proposalsError) {
+        return (
+            <Box>
+                <pre>{JSON.stringify(proposalsError, null, 2)}</pre>
+            </Box>
+        );
+    }
 
     /**
      * generates the overview pdf and saves it to the users disk.
@@ -197,25 +250,9 @@ function OverviewPanel(): ReactElement {
         }
     };
 
-
-    const { data: proposalsData , error: proposalsError, isLoading: proposalsIsLoading } =
-        useProposalResourceGetObservingProposal({
-            pathParams: {proposalCode: Number(selectedProposalCode)},},
-            {enabled: true}
-        );
-
-
-    if (proposalsError) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(proposalsError, null, 2)}</pre>
-            </Box>
-        );
-    }
-
     /**
-     *
-     * @return {JSX.Element}
+     * handles the title display panel.
+     * @return {ReactElement} the html for the title display panel.
      * @constructor
      */
     const DisplayTitle = (): ReactElement => {
@@ -224,6 +261,11 @@ function OverviewPanel(): ReactElement {
         )
     }
 
+    /**
+     * handles the summary display panel.
+     * @return {React.ReactElement} the html for the summary display panel.
+     * @constructor
+     */
     const DisplaySummary = (): ReactElement => {
         return (
             <>
@@ -233,6 +275,11 @@ function OverviewPanel(): ReactElement {
         )
     }
 
+    /**
+     * handles the display kind panel.
+     * @return {React.ReactElement} the html for the display kind panel.
+     * @constructor
+     */
     const DisplayKind = (): ReactElement => {
         return (
             <>
@@ -242,6 +289,11 @@ function OverviewPanel(): ReactElement {
         )
     }
 
+    /**
+     * generates the display submitted panel.
+     * @return {React.ReactElement} the html for the submitted display.
+     * @constructor
+     */
     const DisplaySubmitted = (): ReactElement => {
         return (
             <Group>
@@ -251,6 +303,11 @@ function OverviewPanel(): ReactElement {
         )
     }
 
+    /**
+     * handles the scientific justification panel.
+     * @return {React.ReactElement} the html for the scientific justification panel.
+     * @constructor
+     */
     const DisplayScientificJustification = (): ReactElement => {
         return (
             <>
@@ -261,6 +318,11 @@ function OverviewPanel(): ReactElement {
         )
     }
 
+    /**
+     * handles the technical justification panel.
+     * @return {React.ReactElement} the html for the technical justification.
+     * @constructor
+     */
     const DisplayTechnicalJustification = (): ReactElement => {
         return (
             <>
