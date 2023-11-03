@@ -7049,34 +7049,34 @@ export const useProposalResourceRemoveTarget = (
   );
 };
 
-export type ProposalResourceGetTechnicalGoalsPathParams = {
+export type TechnicalGoalResourceGetTechnicalGoalsPathParams = {
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type ProposalResourceGetTechnicalGoalsError =
+export type TechnicalGoalResourceGetTechnicalGoalsError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceGetTechnicalGoalsResponse =
+export type TechnicalGoalResourceGetTechnicalGoalsResponse =
   Schemas.ObjectIdentifier[];
 
-export type ProposalResourceGetTechnicalGoalsVariables = {
-  pathParams: ProposalResourceGetTechnicalGoalsPathParams;
+export type TechnicalGoalResourceGetTechnicalGoalsVariables = {
+  pathParams: TechnicalGoalResourceGetTechnicalGoalsPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceGetTechnicalGoals = (
-  variables: ProposalResourceGetTechnicalGoalsVariables,
+export const fetchTechnicalGoalResourceGetTechnicalGoals = (
+  variables: TechnicalGoalResourceGetTechnicalGoalsVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    ProposalResourceGetTechnicalGoalsResponse,
-    ProposalResourceGetTechnicalGoalsError,
+    TechnicalGoalResourceGetTechnicalGoalsResponse,
+    TechnicalGoalResourceGetTechnicalGoalsError,
     undefined,
     {},
     {},
-    ProposalResourceGetTechnicalGoalsPathParams
+    TechnicalGoalResourceGetTechnicalGoalsPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/technicalGoals",
     method: "get",
@@ -7084,14 +7084,14 @@ export const fetchProposalResourceGetTechnicalGoals = (
     signal,
   });
 
-export const useProposalResourceGetTechnicalGoals = <
-  TData = ProposalResourceGetTechnicalGoalsResponse
+export const useTechnicalGoalResourceGetTechnicalGoals = <
+  TData = TechnicalGoalResourceGetTechnicalGoalsResponse
 >(
-  variables: ProposalResourceGetTechnicalGoalsVariables,
+  variables: TechnicalGoalResourceGetTechnicalGoalsVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      ProposalResourceGetTechnicalGoalsResponse,
-      ProposalResourceGetTechnicalGoalsError,
+      TechnicalGoalResourceGetTechnicalGoalsResponse,
+      TechnicalGoalResourceGetTechnicalGoalsError,
       TData
     >,
     "queryKey" | "queryFn"
@@ -7100,17 +7100,17 @@ export const useProposalResourceGetTechnicalGoals = <
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    ProposalResourceGetTechnicalGoalsResponse,
-    ProposalResourceGetTechnicalGoalsError,
+    TechnicalGoalResourceGetTechnicalGoalsResponse,
+    TechnicalGoalResourceGetTechnicalGoalsError,
     TData
   >(
     queryKeyFn({
       path: "/pst/api/proposals/{proposalCode}/technicalGoals",
-      operationId: "proposalResourceGetTechnicalGoals",
+      operationId: "technicalGoalResourceGetTechnicalGoals",
       variables,
     }),
     ({ signal }) =>
-      fetchProposalResourceGetTechnicalGoals(
+      fetchTechnicalGoalResourceGetTechnicalGoals(
         { ...fetcherOptions, ...variables },
         signal
       ),
@@ -7121,32 +7121,32 @@ export const useProposalResourceGetTechnicalGoals = <
   );
 };
 
-export type ProposalResourceAddNewTechnicalGoalPathParams = {
+export type TechnicalGoalResourceAddTechnicalGoalPathParams = {
   /**
    * @format int64
    */
   proposalCode: number;
 };
 
-export type ProposalResourceAddNewTechnicalGoalError =
+export type TechnicalGoalResourceAddTechnicalGoalError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceAddNewTechnicalGoalVariables = {
+export type TechnicalGoalResourceAddTechnicalGoalVariables = {
   body?: Schemas.TechnicalGoal;
-  pathParams: ProposalResourceAddNewTechnicalGoalPathParams;
+  pathParams: TechnicalGoalResourceAddTechnicalGoalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceAddNewTechnicalGoal = (
-  variables: ProposalResourceAddNewTechnicalGoalVariables,
+export const fetchTechnicalGoalResourceAddTechnicalGoal = (
+  variables: TechnicalGoalResourceAddTechnicalGoalVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     Schemas.TechnicalGoal,
-    ProposalResourceAddNewTechnicalGoalError,
+    TechnicalGoalResourceAddTechnicalGoalError,
     Schemas.TechnicalGoal,
     {},
     {},
-    ProposalResourceAddNewTechnicalGoalPathParams
+    TechnicalGoalResourceAddTechnicalGoalPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/technicalGoals",
     method: "post",
@@ -7154,12 +7154,12 @@ export const fetchProposalResourceAddNewTechnicalGoal = (
     signal,
   });
 
-export const useProposalResourceAddNewTechnicalGoal = (
+export const useTechnicalGoalResourceAddTechnicalGoal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       Schemas.TechnicalGoal,
-      ProposalResourceAddNewTechnicalGoalError,
-      ProposalResourceAddNewTechnicalGoalVariables
+      TechnicalGoalResourceAddTechnicalGoalError,
+      TechnicalGoalResourceAddTechnicalGoalVariables
     >,
     "mutationFn"
   >
@@ -7167,11 +7167,11 @@ export const useProposalResourceAddNewTechnicalGoal = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     Schemas.TechnicalGoal,
-    ProposalResourceAddNewTechnicalGoalError,
-    ProposalResourceAddNewTechnicalGoalVariables
+    TechnicalGoalResourceAddTechnicalGoalError,
+    TechnicalGoalResourceAddTechnicalGoalVariables
   >(
-    (variables: ProposalResourceAddNewTechnicalGoalVariables) =>
-      fetchProposalResourceAddNewTechnicalGoal({
+    (variables: TechnicalGoalResourceAddTechnicalGoalVariables) =>
+      fetchTechnicalGoalResourceAddTechnicalGoal({
         ...fetcherOptions,
         ...variables,
       }),
@@ -7179,68 +7179,7 @@ export const useProposalResourceAddNewTechnicalGoal = (
   );
 };
 
-export type ProposalResourceRemoveTechnicalGoalPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  /**
-   * @format int64
-   */
-  techGoalId: number;
-};
-
-export type ProposalResourceRemoveTechnicalGoalError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ProposalResourceRemoveTechnicalGoalVariables = {
-  pathParams: ProposalResourceRemoveTechnicalGoalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchProposalResourceRemoveTechnicalGoal = (
-  variables: ProposalResourceRemoveTechnicalGoalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ProposalResourceRemoveTechnicalGoalError,
-    undefined,
-    {},
-    {},
-    ProposalResourceRemoveTechnicalGoalPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{techGoalId}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useProposalResourceRemoveTechnicalGoal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ProposalResourceRemoveTechnicalGoalError,
-      ProposalResourceRemoveTechnicalGoalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ProposalResourceRemoveTechnicalGoalError,
-    ProposalResourceRemoveTechnicalGoalVariables
-  >(
-    (variables: ProposalResourceRemoveTechnicalGoalVariables) =>
-      fetchProposalResourceRemoveTechnicalGoal({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    options
-  );
-};
-
-export type ProposalResourceGetTechnicalGoalPathParams = {
+export type TechnicalGoalResourceGetTechnicalGoalPathParams = {
   /**
    * @format int64
    */
@@ -7251,24 +7190,24 @@ export type ProposalResourceGetTechnicalGoalPathParams = {
   technicalGoalId: number;
 };
 
-export type ProposalResourceGetTechnicalGoalError =
+export type TechnicalGoalResourceGetTechnicalGoalError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceGetTechnicalGoalVariables = {
-  pathParams: ProposalResourceGetTechnicalGoalPathParams;
+export type TechnicalGoalResourceGetTechnicalGoalVariables = {
+  pathParams: TechnicalGoalResourceGetTechnicalGoalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceGetTechnicalGoal = (
-  variables: ProposalResourceGetTechnicalGoalVariables,
+export const fetchTechnicalGoalResourceGetTechnicalGoal = (
+  variables: TechnicalGoalResourceGetTechnicalGoalVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     Schemas.TechnicalGoal,
-    ProposalResourceGetTechnicalGoalError,
+    TechnicalGoalResourceGetTechnicalGoalError,
     undefined,
     {},
     {},
-    ProposalResourceGetTechnicalGoalPathParams
+    TechnicalGoalResourceGetTechnicalGoalPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}",
     method: "get",
@@ -7276,14 +7215,14 @@ export const fetchProposalResourceGetTechnicalGoal = (
     signal,
   });
 
-export const useProposalResourceGetTechnicalGoal = <
+export const useTechnicalGoalResourceGetTechnicalGoal = <
   TData = Schemas.TechnicalGoal
 >(
-  variables: ProposalResourceGetTechnicalGoalVariables,
+  variables: TechnicalGoalResourceGetTechnicalGoalVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
       Schemas.TechnicalGoal,
-      ProposalResourceGetTechnicalGoalError,
+      TechnicalGoalResourceGetTechnicalGoalError,
       TData
     >,
     "queryKey" | "queryFn"
@@ -7293,16 +7232,16 @@ export const useProposalResourceGetTechnicalGoal = <
     useProposalToolContext(options);
   return reactQuery.useQuery<
     Schemas.TechnicalGoal,
-    ProposalResourceGetTechnicalGoalError,
+    TechnicalGoalResourceGetTechnicalGoalError,
     TData
   >(
     queryKeyFn({
       path: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}",
-      operationId: "proposalResourceGetTechnicalGoal",
+      operationId: "technicalGoalResourceGetTechnicalGoal",
       variables,
     }),
     ({ signal }) =>
-      fetchProposalResourceGetTechnicalGoal(
+      fetchTechnicalGoalResourceGetTechnicalGoal(
         { ...fetcherOptions, ...variables },
         signal
       ),
@@ -7310,6 +7249,457 @@ export const useProposalResourceGetTechnicalGoal = <
       ...options,
       ...queryOptions,
     }
+  );
+};
+
+export type TechnicalGoalResourceRemoveTechnicalGoalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  technicalGoalId: number;
+};
+
+export type TechnicalGoalResourceRemoveTechnicalGoalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TechnicalGoalResourceRemoveTechnicalGoalVariables = {
+  pathParams: TechnicalGoalResourceRemoveTechnicalGoalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTechnicalGoalResourceRemoveTechnicalGoal = (
+  variables: TechnicalGoalResourceRemoveTechnicalGoalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TechnicalGoalResourceRemoveTechnicalGoalError,
+    undefined,
+    {},
+    {},
+    TechnicalGoalResourceRemoveTechnicalGoalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useTechnicalGoalResourceRemoveTechnicalGoal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TechnicalGoalResourceRemoveTechnicalGoalError,
+      TechnicalGoalResourceRemoveTechnicalGoalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TechnicalGoalResourceRemoveTechnicalGoalError,
+    TechnicalGoalResourceRemoveTechnicalGoalVariables
+  >(
+    (variables: TechnicalGoalResourceRemoveTechnicalGoalVariables) =>
+      fetchTechnicalGoalResourceRemoveTechnicalGoal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TechnicalGoalResourceReplacePerformanceParametersPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  technicalGoalId: number;
+};
+
+export type TechnicalGoalResourceReplacePerformanceParametersError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TechnicalGoalResourceReplacePerformanceParametersVariables = {
+  body?: Schemas.PerformanceParameters;
+  pathParams: TechnicalGoalResourceReplacePerformanceParametersPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTechnicalGoalResourceReplacePerformanceParameters = (
+  variables: TechnicalGoalResourceReplacePerformanceParametersVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.PerformanceParameters,
+    TechnicalGoalResourceReplacePerformanceParametersError,
+    Schemas.PerformanceParameters,
+    {},
+    {},
+    TechnicalGoalResourceReplacePerformanceParametersPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/performanceParameters",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTechnicalGoalResourceReplacePerformanceParameters = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.PerformanceParameters,
+      TechnicalGoalResourceReplacePerformanceParametersError,
+      TechnicalGoalResourceReplacePerformanceParametersVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.PerformanceParameters,
+    TechnicalGoalResourceReplacePerformanceParametersError,
+    TechnicalGoalResourceReplacePerformanceParametersVariables
+  >(
+    (variables: TechnicalGoalResourceReplacePerformanceParametersVariables) =>
+      fetchTechnicalGoalResourceReplacePerformanceParameters({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TechnicalGoalResourceAddSpectrumPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  technicalGoalId: number;
+};
+
+export type TechnicalGoalResourceAddSpectrumError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TechnicalGoalResourceAddSpectrumVariables = {
+  body?: Schemas.ScienceSpectralWindow;
+  pathParams: TechnicalGoalResourceAddSpectrumPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTechnicalGoalResourceAddSpectrum = (
+  variables: TechnicalGoalResourceAddSpectrumVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ScienceSpectralWindow,
+    TechnicalGoalResourceAddSpectrumError,
+    Schemas.ScienceSpectralWindow,
+    {},
+    {},
+    TechnicalGoalResourceAddSpectrumPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useTechnicalGoalResourceAddSpectrum = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ScienceSpectralWindow,
+      TechnicalGoalResourceAddSpectrumError,
+      TechnicalGoalResourceAddSpectrumVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ScienceSpectralWindow,
+    TechnicalGoalResourceAddSpectrumError,
+    TechnicalGoalResourceAddSpectrumVariables
+  >(
+    (variables: TechnicalGoalResourceAddSpectrumVariables) =>
+      fetchTechnicalGoalResourceAddSpectrum({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TechnicalGoalResourceReplaceSpectrumPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  technicalGoalId: number;
+  /**
+   * @format int32
+   */
+  windowIndex: number;
+};
+
+export type TechnicalGoalResourceReplaceSpectrumError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TechnicalGoalResourceReplaceSpectrumVariables = {
+  body?: Schemas.ScienceSpectralWindow;
+  pathParams: TechnicalGoalResourceReplaceSpectrumPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTechnicalGoalResourceReplaceSpectrum = (
+  variables: TechnicalGoalResourceReplaceSpectrumVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ScienceSpectralWindow,
+    TechnicalGoalResourceReplaceSpectrumError,
+    Schemas.ScienceSpectralWindow,
+    {},
+    {},
+    TechnicalGoalResourceReplaceSpectrumPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{windowIndex}",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useTechnicalGoalResourceReplaceSpectrum = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ScienceSpectralWindow,
+      TechnicalGoalResourceReplaceSpectrumError,
+      TechnicalGoalResourceReplaceSpectrumVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ScienceSpectralWindow,
+    TechnicalGoalResourceReplaceSpectrumError,
+    TechnicalGoalResourceReplaceSpectrumVariables
+  >(
+    (variables: TechnicalGoalResourceReplaceSpectrumVariables) =>
+      fetchTechnicalGoalResourceReplaceSpectrum({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TechnicalGoalResourceRemoveSpectrumPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  technicalGoalId: number;
+  /**
+   * @format int32
+   */
+  windowIndex: number;
+};
+
+export type TechnicalGoalResourceRemoveSpectrumError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TechnicalGoalResourceRemoveSpectrumVariables = {
+  pathParams: TechnicalGoalResourceRemoveSpectrumPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTechnicalGoalResourceRemoveSpectrum = (
+  variables: TechnicalGoalResourceRemoveSpectrumVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TechnicalGoalResourceRemoveSpectrumError,
+    undefined,
+    {},
+    {},
+    TechnicalGoalResourceRemoveSpectrumPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{windowIndex}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useTechnicalGoalResourceRemoveSpectrum = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TechnicalGoalResourceRemoveSpectrumError,
+      TechnicalGoalResourceRemoveSpectrumVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TechnicalGoalResourceRemoveSpectrumError,
+    TechnicalGoalResourceRemoveSpectrumVariables
+  >(
+    (variables: TechnicalGoalResourceRemoveSpectrumVariables) =>
+      fetchTechnicalGoalResourceRemoveSpectrum({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TechnicalGoalResourceAddExpectedSpectralLinePathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  technicalGoalId: number;
+  /**
+   * @format int32
+   */
+  windowIndex: number;
+};
+
+export type TechnicalGoalResourceAddExpectedSpectralLineError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TechnicalGoalResourceAddExpectedSpectralLineVariables = {
+  body?: Schemas.ExpectedSpectralLine;
+  pathParams: TechnicalGoalResourceAddExpectedSpectralLinePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTechnicalGoalResourceAddExpectedSpectralLine = (
+  variables: TechnicalGoalResourceAddExpectedSpectralLineVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ExpectedSpectralLine,
+    TechnicalGoalResourceAddExpectedSpectralLineError,
+    Schemas.ExpectedSpectralLine,
+    {},
+    {},
+    TechnicalGoalResourceAddExpectedSpectralLinePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{windowIndex}/expectedSpectralLine",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useTechnicalGoalResourceAddExpectedSpectralLine = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ExpectedSpectralLine,
+      TechnicalGoalResourceAddExpectedSpectralLineError,
+      TechnicalGoalResourceAddExpectedSpectralLineVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ExpectedSpectralLine,
+    TechnicalGoalResourceAddExpectedSpectralLineError,
+    TechnicalGoalResourceAddExpectedSpectralLineVariables
+  >(
+    (variables: TechnicalGoalResourceAddExpectedSpectralLineVariables) =>
+      fetchTechnicalGoalResourceAddExpectedSpectralLine({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type TechnicalGoalResourceRemoveExpectedSpectralLinePathParams = {
+  /**
+   * @format int32
+   */
+  lineIndex: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  technicalGoalId: number;
+  /**
+   * @format int32
+   */
+  windowIndex: number;
+};
+
+export type TechnicalGoalResourceRemoveExpectedSpectralLineError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TechnicalGoalResourceRemoveExpectedSpectralLineVariables = {
+  pathParams: TechnicalGoalResourceRemoveExpectedSpectralLinePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTechnicalGoalResourceRemoveExpectedSpectralLine = (
+  variables: TechnicalGoalResourceRemoveExpectedSpectralLineVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    TechnicalGoalResourceRemoveExpectedSpectralLineError,
+    undefined,
+    {},
+    {},
+    TechnicalGoalResourceRemoveExpectedSpectralLinePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{windowIndex}/expectedSpectralLine/{lineIndex}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useTechnicalGoalResourceRemoveExpectedSpectralLine = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      TechnicalGoalResourceRemoveExpectedSpectralLineError,
+      TechnicalGoalResourceRemoveExpectedSpectralLineVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    TechnicalGoalResourceRemoveExpectedSpectralLineError,
+    TechnicalGoalResourceRemoveExpectedSpectralLineVariables
+  >(
+    (variables: TechnicalGoalResourceRemoveExpectedSpectralLineVariables) =>
+      fetchTechnicalGoalResourceRemoveExpectedSpectralLine({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
   );
 };
 
@@ -7883,13 +8273,13 @@ export type QueryOperation =
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/technicalGoals";
-      operationId: "proposalResourceGetTechnicalGoals";
-      variables: ProposalResourceGetTechnicalGoalsVariables;
+      operationId: "technicalGoalResourceGetTechnicalGoals";
+      variables: TechnicalGoalResourceGetTechnicalGoalsVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}";
-      operationId: "proposalResourceGetTechnicalGoal";
-      variables: ProposalResourceGetTechnicalGoalVariables;
+      operationId: "technicalGoalResourceGetTechnicalGoal";
+      variables: TechnicalGoalResourceGetTechnicalGoalVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/title";

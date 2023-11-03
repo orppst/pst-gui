@@ -1,16 +1,19 @@
 import {Group, Stack, Tooltip} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {PerformanceParameters, RealQuantity, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
+import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 import {SubmitButton} from "../commonButtons/save.tsx";
 import {angularUnits, frequencyUnits, sensitivityUnits} from "../physicalUnits/PhysicalUnits.tsx";
-import {NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
+import {NumberInputPlusUnit, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
-import {fetchProposalResourceAddNewTechnicalGoal} from "../generated/proposalToolComponents.ts";
-
+import {
+    fetchTechnicalGoalResourceAddTechnicalGoal,
+    fetchTechnicalGoalResourceReplacePerformanceParameters
+} from "../generated/proposalToolComponents.ts";
+import {notifications} from "@mantine/notifications";
 
 /*
-    When creating new Performance Parameters at least one of the parameters must be fully
+    When creating new Performance Parameters the representative spectral point must be fully
     specified i.e., have a numeric value and a unit name. Other parameters can be left
     blank/null/undefined. It may turn out that on Proposal Submission some of these
     parameters need filling out. In which case, this is a task for the Proposal validation
@@ -22,16 +25,17 @@ import {fetchProposalResourceAddNewTechnicalGoal} from "../generated/proposalToo
  * interface for what's within a PerformanceParameters.
  */
 interface PerformanceValues {
-    angularResolution: RealQuantity,
-    largestScale: RealQuantity,
-    sensitivity: RealQuantity,
-    dynamicRange: RealQuantity,
-    spectralPoint: RealQuantity
+    angularResolution: NumberUnitType,
+    largestScale: NumberUnitType,
+    sensitivity: NumberUnitType,
+    dynamicRange: NumberUnitType,
+    spectralPoint: NumberUnitType
 }
 
 /**
  * entry function for building the performance parameters page.
- * @param {{performance?: PerformanceParameters, newTechnicalGoal: boolean, closeModal?: () => void}} props
+ * @param {{performance?: PerformanceParameters, technicalGoalId?: number,
+ * newTechnicalGoal: boolean, closeModal?: () => void}} props
  * input data that contains the performance parameters to display,
  * a boolean which states if it is a new technical goal or not,
  * and an optional close method.
@@ -39,25 +43,55 @@ interface PerformanceValues {
  * @constructor
  */
 export default function PerformanceParametersForm(
-    props: {performance?: PerformanceParameters, newTechnicalGoal: boolean, closeModal?: ()=>void}
+    props: {performance?: PerformanceParameters, technicalGoalId?: number,
+        newTechnicalGoal: boolean, closeModal?: ()=>void}
 )
 {
-
     const queryClient = useQueryClient();
 
     const { selectedProposalCode} = useParams();
 
     let initialPerformanceValues : PerformanceValues = {
         angularResolution: props.performance?.desiredAngularResolution ?
-            props.performance.desiredAngularResolution : {value: undefined, unit: {value: ""}},
+            {
+                value: props.performance.desiredAngularResolution.value!,
+                unit: props.performance.desiredAngularResolution.unit?.value!
+            } :
+            {
+                value: '', unit: ''
+            },
         largestScale: props.performance?.desiredLargestScale ?
-            props.performance.desiredLargestScale : {value: undefined, unit: {value: ""}},
+            {
+                value: props.performance.desiredLargestScale.value!,
+                unit: props.performance.desiredLargestScale.unit?.value!
+            } :
+            {
+                value: '', unit: ''
+            },
         sensitivity: props.performance?.desiredSensitivity ?
-            props.performance.desiredSensitivity : {value: undefined, unit: {value: ""}},
+            {
+                value: props.performance.desiredSensitivity.value!,
+                unit: props.performance.desiredSensitivity.unit?.value!
+            } :
+            {
+                value: '', unit: ''
+            },
         dynamicRange: props.performance?.desiredDynamicRange ?
-            props.performance.desiredDynamicRange : {value: undefined, unit: {value: ""}},
+            {
+                value: props.performance.desiredDynamicRange.value!,
+                unit: props.performance.desiredDynamicRange.unit?.value!
+            } :
+            {
+                value: '', unit: ''
+            },
         spectralPoint: props.performance?.representativeSpectralPoint ?
-            props.performance.representativeSpectralPoint : {value: undefined, unit: {value: ""}},
+            {
+                value: props.performance.representativeSpectralPoint.value!,
+                unit: props.performance.representativeSpectralPoint.unit?.value!
+            } :
+            {
+                value: '', unit: ''
+            }
     }
 
     const form = useForm<PerformanceValues>({
@@ -67,93 +101,58 @@ export default function PerformanceParametersForm(
             //theUnit: ensure that if the parameter has a numeric value it also has a unit name
             angularResolution:{
                 value: (theNumber, formValues) => (
-                    formValues.angularResolution.unit?.value !== "" && theNumber === undefined ?
+                    formValues.angularResolution.unit !== "" && theNumber === "" ?
                         "Unit selected but no value given" : null
                 ),
-                unit: {
-                    value: (theUnit, formValues) => (
-                        formValues.angularResolution.value !== undefined && theUnit === "" ?
-                            'Please pick a unit' : null
-                    )
-                }
+                unit:(theUnit, formValues) => (
+                    formValues.angularResolution.value !== "" && theUnit === "" ?
+                        'Please pick a unit' : null
+                )
             },
             largestScale:{
                 value: (theNumber, formValues) => (
-                    formValues.largestScale.unit?.value !== "" && theNumber === undefined ?
+                    formValues.largestScale.unit !== "" && theNumber === "" ?
                         "Unit selected but no value given" : null
                 ),
-                unit: {
-                    value: (theUnit, formValues) => (
-                        formValues.largestScale.value !== undefined && theUnit === "" ?
-                            'Please pick a unit' : null
-                    )
-                }
+                unit: (theUnit, formValues) => (
+                    formValues.largestScale.value !== "" && theUnit === "" ?
+                        'Please pick a unit' : null
+                )
             },
             sensitivity:{
                 value: (theNumber, formValues) => (
-                    formValues.sensitivity.unit?.value !== "" && theNumber === undefined ?
+                    formValues.sensitivity.unit !== "" && theNumber === "" ?
                         "Unit selected but no value given" : null
                 ),
-                unit: {
-                    value: (theUnit, formValues) => (
-                        formValues.sensitivity.value !== undefined && theUnit === "" ?
-                            'Please pick a unit' : null
-                    )
-                }
+                unit: (theUnit, formValues) => (
+                    formValues.sensitivity.value !== "" && theUnit === "" ?
+                        'Please pick a unit' : null
+                )
             },
             dynamicRange:{
                 value: (theNumber, formValues) => (
-                    formValues.dynamicRange.unit?.value !== "" && theNumber === undefined ?
+                    formValues.dynamicRange.unit !== "" && theNumber === ""?
                         "Unit selected but no value given" : null
                 ),
-                unit: {
-                    value: (theUnit, formValues) => (
-                        formValues.dynamicRange.value !== undefined && theUnit === "" ?
-                            'Please pick a unit' : null
-                    )
-                }
+                unit: (theUnit, formValues) => (
+                    formValues.dynamicRange.value !== "" && theUnit === "" ?
+                        'Please pick a unit' : null
+                )
             },
+            //a spectral point must be given
             spectralPoint:{
-                value: (theNumber, formValues) => (
-                    formValues.spectralPoint.unit?.value !== "" && theNumber === undefined ?
-                        "Unit selected but no value given" : null
+                value: (theNumber) => (
+                    theNumber === "" ?
+                        "A representative spectral point must be given" : null
                 ),
-                unit: {
-                    value: (theUnit, formValues) => (
-                        formValues.spectralPoint.value !== undefined && theUnit === "" ?
-                            'Please pick a unit' : null
-                    )
-                }
+                unit:(theUnit, formValues) => (
+                    formValues.spectralPoint.value !== "" && theUnit === "" ?
+                        'Please pick a unit' : null
+                )
+
             },
         },
-        
-        transformValues: (values) => ({
-            angularResolution: {
-                "@type": "ivoa:RealQuantity", 
-                value: values.angularResolution.value,
-                unit: {value: values.angularResolution.unit?.value}
-            },
-            largestScale: {
-                "@type": "ivoa:RealQuantity",
-                value: values.largestScale.value,
-                unit: {value: values.largestScale.unit?.value}
-            },
-            sensitivity: {
-                "@type": "ivoa:RealQuantity",
-                value: values.sensitivity.value,
-                unit: {value: values.sensitivity.unit?.value}
-            },
-            dynamicRange: {
-                "@type": "ivoa:RealQuantity",
-                value: values.dynamicRange.value,
-                unit: {value: values.dynamicRange.unit?.value}
-            },
-            spectralPoint: {
-                "@type": "ivoa:RealQuantity",
-                value: values.spectralPoint.value,
-                unit: {value: values.spectralPoint.unit?.value}
-            },
-        })
+
     });
 
     const PerformanceDetails = () => {
@@ -209,26 +208,37 @@ export default function PerformanceParametersForm(
         )
     }
 
+    const convertToRealQuantity = (input : NumberUnitType) => {
+        return {
+            "@type": "ivoa:RealQuantity",
+            value: input.value as number, //RealQuantity expects a number only
+            unit: {
+                value: input.unit
+            }
+        }
+    }
+
+
     const handleSubmit = form.onSubmit( (values) => {
-        form.validate();
+
+        let performanceParameters : PerformanceParameters = {
+            desiredAngularResolution: convertToRealQuantity(values.angularResolution),
+            desiredDynamicRange: convertToRealQuantity(values.dynamicRange),
+            desiredSensitivity: convertToRealQuantity(values.sensitivity),
+            desiredLargestScale: convertToRealQuantity(values.largestScale),
+            representativeSpectralPoint: convertToRealQuantity(values.spectralPoint)
+        }
+
         if (props.newTechnicalGoal)
         {
             //posting a new technical goal to the DB
-
-            let performanceParameters : PerformanceParameters = {
-                desiredAngularResolution: values.angularResolution,
-                desiredDynamicRange: values.dynamicRange,
-                desiredSensitivity: values.sensitivity,
-                desiredLargestScale: values.largestScale,
-                representativeSpectralPoint: values.spectralPoint
-            }
 
             let goal : TechnicalGoal = {
                 performance: performanceParameters,
                 spectrum: []
             }
 
-            fetchProposalResourceAddNewTechnicalGoal( {
+            fetchTechnicalGoalResourceAddTechnicalGoal( {
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: goal
             })
@@ -239,7 +249,25 @@ export default function PerformanceParametersForm(
         } else
         {
             //editing an existing technical goal
-            alert("editing a technical goal is not yet implemented")
+
+            fetchTechnicalGoalResourceReplacePerformanceParameters({
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode),
+                    technicalGoalId: props.technicalGoalId!
+                },
+                body: performanceParameters
+            })
+                .then(()=>queryClient.invalidateQueries())
+                .then(() => {
+                    notifications.show({
+                        autoClose: false,
+                        title: "Edit successful",
+                        message: "performance parameters updated",
+                        color: "green"
+                    })
+                })
+                .then(() => form.resetDirty())
+                .catch(console.error);
         }
 
     })
