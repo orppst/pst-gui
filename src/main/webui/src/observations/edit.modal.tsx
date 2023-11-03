@@ -7,10 +7,11 @@ import { ReactElement } from 'react';
 import AddButton from '../commonButtons/add.tsx';
 
 export default function ObservationEditModal(observationProps: ObservationProps) {
-    const [opened, {close, open}] = useDisclosure();
-
-    const props = {...observationProps, closeModal: () => {close()}};
-
+    /**
+     * generates the html for a new button.
+     * @return {React.ReactElement} the html for the new button.
+     * @constructor
+     */
     const NewButton = (): ReactElement => {
         return (
             <AddButton toolTipLabel={"new observation"}
@@ -18,6 +19,11 @@ export default function ObservationEditModal(observationProps: ObservationProps)
         );
     }
 
+    /**
+     * generates the html for the edit button.
+     * @return {React.ReactElement} the html for the edit button.
+     * @constructor
+     */
     const EditButton = (): ReactElement => {
         return (
             <ViewEditButton toolTipLabel={"view/edit"}
@@ -25,6 +31,11 @@ export default function ObservationEditModal(observationProps: ObservationProps)
         );
     }
 
+    /**
+     * generates the html for the modal.
+     * @return {React.ReactElement} the html for the modal.
+     * @constructor
+     */
     const ModalHtml = (): ReactElement => {
         return (
             <>
@@ -39,6 +50,11 @@ export default function ObservationEditModal(observationProps: ObservationProps)
             </>
         )
     }
+
+    // main code starts here.
+    const [opened, {close, open}] = useDisclosure();
+
+    const props = {...observationProps, closeModal: () => {close()}};
 
     if (props.newObservation) {
         return (
