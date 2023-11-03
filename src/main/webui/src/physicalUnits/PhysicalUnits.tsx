@@ -31,7 +31,9 @@ export const sensitivityUnits = [
  * @param value the value to find the label of.
  * @return {{value: string, label: string} | undefined} the found value, label combo.
  */
-export const locateLabel = (array: Array<{value:string, label:string}>, value: string | undefined): { value: string; label: string; } | undefined => {
+export const locateLabel = (
+        array: Array<{value:string, label:string}>,
+        value: string | undefined): { value: string; label: string; } | undefined => {
     return array.find((object) => {
         return object.value == value
     })

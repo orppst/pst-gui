@@ -153,6 +153,5 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
                     </Table>
             }
         </>
-
     )
 }

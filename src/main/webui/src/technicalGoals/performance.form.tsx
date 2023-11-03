@@ -1,6 +1,6 @@
 import {Group, Stack, Tooltip} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
+import { PerformanceParameters, RealQuantity, TechnicalGoal } from '../generated/proposalToolSchemas.ts';
 import {SubmitButton} from "../commonButtons/save.tsx";
 import {angularUnits, frequencyUnits, sensitivityUnits} from "../physicalUnits/PhysicalUnits.tsx";
 import {NumberInputPlusUnit, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
@@ -208,7 +208,13 @@ export default function PerformanceParametersForm(
         )
     }
 
-    const convertToRealQuantity = (input : NumberUnitType) => {
+    /**
+     * helper method that converts a NumberUnitType into an ivoa:RealQuantity.
+     *
+     * @param {NumberUnitType} input the number unit type to convert.
+     * @return {RealQuantity} the converted RealQuantity.
+     */
+    const convertToRealQuantity = (input : NumberUnitType): RealQuantity => {
         return {
             "@type": "ivoa:RealQuantity",
             value: input.value as number, //RealQuantity expects a number only
@@ -249,7 +255,6 @@ export default function PerformanceParametersForm(
         } else
         {
             //editing an existing technical goal
-
             fetchTechnicalGoalResourceReplacePerformanceParameters({
                 pathParams: {
                     proposalCode: Number(selectedProposalCode),
