@@ -1,16 +1,16 @@
 import {Accordion, Grid, Group, Space, Switch, Textarea} from "@mantine/core";
 import {DateTimePicker} from "@mantine/dates";
-import {useForm} from "@mantine/form";
+import { UseFormReturnType } from '@mantine/form';
 import {randomId} from "@mantine/hooks";
 
 import '@mantine/dates/styles.css'
 import AddButton from "../commonButtons/add.tsx";
-import {TimingWindows} from "./edit.group.tsx";
+import { ObservationFormValues } from './edit.group.tsx';
 import {TimingWindow} from "../generated/proposalToolSchemas.ts";
 import {fetchObservationResourceAddNewConstraint} from "../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {AccordionSaveDelete} from "../commonButtons/accordianControls.tsx";
+import { AccordionDelete, AccordionSaveDelete } from '../commonButtons/accordianControls.tsx';
 import {notifications} from "@mantine/notifications";
 
 
@@ -48,38 +48,10 @@ type TimingWindowApi = {
     isAvoidConstraint: boolean,
 }
 
-export default function TimingWindowsForm(props: TimingWindows) {
-
-    const queryClient = useQueryClient();
-
-    const {selectedProposalCode} = useParams();
-
+export default function TimingWindowsForm(form: UseFormReturnType<ObservationFormValues>) {
     let emptyTimingWindow : TimingWindowGui = {
         startTime: null, endTime: null, note: '', isAvoidConstraint: false, key: randomId()
     }
-
-    let initialTimingWindows = props && props.timingWindows.length > 0 ?
-        props.timingWindows.map((timingWindow) => {
-        return ConvertToTimingWindowGui(timingWindow);}) :
-        [emptyTimingWindow];
-
-
-    const form
-        = useForm({
-        initialValues: {
-            timingWindows: initialTimingWindows
-        },
-
-        validate: {
-            timingWindows: {
-                //TODO: we should check that startTime < endTime - may need to be done in 'handleSave'
-                startTime: (value) => (value === null ? 'No start time selected' : null),
-                endTime: (value) => (value === null ? 'No end time selected' : null)
-            }
-
-        },
-
-    })
 
     /*
         Type TimingWindow in proposalToolSchemas.ts has 'startTime' and 'endTime' as date strings (ISO8601 strings).
@@ -108,27 +80,6 @@ export default function TimingWindowsForm(props: TimingWindows) {
         })
     }
 
-
-    //custom "submit" function for individual windows
-    const handleSave = (timingWindow : TimingWindowApi) => {
-        console.log(timingWindow)
-
-        fetchObservationResourceAddNewConstraint({
-            pathParams: {proposalCode: Number(selectedProposalCode), observationId: props.observationId},
-            body: timingWindow
-        })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => {
-                notifications.show({
-                    autoClose: false,
-                    title: "Timing Window Saved",
-                    message: 'The timing window has saved successfully',
-                    color: "green"
-                })
-            })
-            .catch(console.error)
-    }
-
     const handleDelete = (index: number) => {
         alert("Removes the list item only - does not yet delete the timing window from the database")
         form.removeListItem('timingWindows', index);
@@ -142,21 +93,13 @@ export default function TimingWindowsForm(props: TimingWindows) {
     let avoidCol = 1;
     let noteCol = 3;
 
-    const windowsList = form.values.timingWindows.map((item, index) => {
+    const windowsList = form.values.timingWindows.timingWindows.map((item, index) => {
         let labelIndex = index + 1;
+        // @ts-ignore
         return (
             <Accordion.Item value={labelIndex.toString()} key={item.key}>
-                <AccordionSaveDelete
+                <AccordionDelete
                     title={"Window " + labelIndex}
-                    saveProps={{
-                        toolTipLabel: 'save timing window ' + labelIndex,
-                        disabled: !form.isDirty(`timingWindows.${index}`)
-                            || !form.isValid(`timingWindows.${index}`),
-                        onClick: () => {
-                            handleSave(ConvertToTimingWindowApi(item));
-                            form.resetDirty();
-                        }
-                    }}
                     deleteProps={{
                         toolTipLabel: 'delete timing window ' + labelIndex,
                         onClick: () => handleDelete(index)
@@ -194,7 +137,7 @@ export default function TimingWindowsForm(props: TimingWindows) {
                                 minRows={3}
                                 maxRows={3}
                                 maxLength={150}
-                                description={150 - form.values.timingWindows[index].note.length + "/150"}
+                                description={150 - form.values.timingWindows.timingWindows[index].note.length + "/150"}
                                 inputWrapperOrder={['label', 'error', 'input', 'description']}
                                 placeholder={"add optional note"}
                                 {...form.getInputProps(`timingWindows.${index}.note`)}

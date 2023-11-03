@@ -21,7 +21,7 @@ import ObservationEditModal from './edit.modal.tsx';
 export type ObservationProps = {
     observation: Observation | undefined,
     observationId?: number, // needed as 'observation' does not contain its database id
-    newObservation?: boolean, // this might be redundant i.e. observation === undefined contains the information
+    newObservation: boolean, // this might be redundant i.e. observation === undefined contains the information
     closeModal?: () => void
 }
 

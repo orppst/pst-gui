@@ -1,24 +1,53 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import {Fieldset, Grid} from "@mantine/core";
-import {TimingWindow} from "../generated/proposalToolSchemas.ts";
+import { Fieldset, Grid, Group } from '@mantine/core';
+import {
+    CalibrationObservation,
+    CalibrationTargetIntendedUse, Observation, TargetObservation,
+    TimingWindow
+} from '../generated/proposalToolSchemas.ts';
+import { useForm, UseFormReturnType } from '@mantine/form';
+import { fetchObservationResourceAddNewObservation } from '../generated/proposalToolComponents.ts';
+import { SubmitButton } from '../commonButtons/save.tsx';
+import { useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { ReactElement } from 'react';
 
-/*
-  We may want to do this in tabs, there's a significant amount of detail for one page:
-
-  1. select target and observation type
-  2. set technical goals and the "field"
-  3. select timing-windows
+/**
+ * the different types of observation.
+ * TODO check if this can be a enum somewhere instead.
  */
+type ObservationType = 'Target'|'Calibration'|'';
 
+/**
+ * the interface for the timing windows.
+ */
 export interface TimingWindows {
-    observationId: number,
+    observationId?: number,
     timingWindows: TimingWindow [] //do you ever feel like you might be running, head first, into naming problems?
 }
 
+/**
+ * the interface for the entire observation form.
+ */
+export interface ObservationFormValues {
+    observationType: ObservationType;
+    calibrationUse: CalibrationTargetIntendedUse | undefined,
+    targetDBId: number | undefined,
+    techGoalId: number | undefined,
+    fieldId: number | undefined
+    timingWindows: TimingWindows,
+}
 
-export default function ObservationEditGroup(props: ObservationProps){
+/**
+ * builds the observation edit panel.
+ *
+ * @param {ObservationProps} props the properties for observation.
+ * @return {ReactElement} the react HTML for the observations edit panel.
+ * @constructor
+ */
+export default function ObservationEditGroup(props: ObservationProps): ReactElement {
 
     /*
     For the TimingWindowForm the timingWindows array/list parameter should only contain 'TimingWindow'
@@ -27,21 +56,153 @@ export default function ObservationEditGroup(props: ObservationProps){
     separate the 'Constraints' based on their subtypes here, or have a 'TimingWindow' specific API call
     that returns the desired list via a hook.
      */
+    const { selectedProposalCode} = useParams();
+    const queryClient = useQueryClient();
+
+    // figures out if we have an observation.
+    const hasObservation = props.observation !== undefined;
+
+    // figure out the current observation type.
+    let observationType : ObservationType = hasObservation ?
+        props.observation!["@type"]
+        === 'proposal:TargetObservation' ? 'Target': 'Calibration' :
+        '';
+
+    // figure out the current calibration use.
+    let calibrationUse : CalibrationTargetIntendedUse | undefined = observationType === 'Calibration' ?
+        (props.observation as CalibrationObservation).intent! : undefined;
+
+    // figure out the current timing windows
+    let initialTimingWindows = props && props.observation.constraints.length > 0 ?
+        props.timingWindows.map((timingWindow) => {
+            return ConvertToTimingWindowGui(timingWindow);}) :
+        [emptyTimingWindow];
+
+
+    const form: UseFormReturnType<ObservationFormValues> = useForm<ObservationFormValues>({
+        initialValues: {
+            observationType: observationType,
+            calibrationUse: calibrationUse,
+            targetDBId: props.observation?.target?._id,
+            techGoalId: props.observation?.technicalGoal?._id,
+            fieldId: 1, //FIXME: need a user selected value
+            timingWindows: {
+                observationId: props.observationId,
+                timingWindows: initialTimingWindows,
+            }
+        },
+
+        validate: {
+            targetDBId: (value) =>
+                (value === undefined ?
+                    'Please select a target' : null),
+            observationType: (value) =>
+                (value === '' ?
+                    'Please select the observation type' : null),
+            calibrationUse: (value, values) =>
+                ((values.observationType === "Calibration" &&
+                    value === undefined) ?
+                    'Please select the calibration use' : null),
+            timingWindows: {
+                //TODO: we should check that startTime < endTime - may need to be done in 'handleSave'
+                timingWindows: {
+                    startTime: (value) => (value === null ? 'No start time selected' : null),
+                    endTime: (value) => (value === null ? 'No end time selected' : null)
+                }
+            }
+        },
+    });
+
+    const handleSubmit = form.onSubmit( (values) => {
+
+        if (props.newObservation) {
+            console.log("Creating");
+
+            let baseObservation : Observation = {
+                target: {
+                    "@type": "proposal:SolarSystemTarget",
+                    "_id": values.targetDBId
+                },
+                technicalGoal: {
+                    "_id": values.techGoalId
+                },
+                field: {
+                    "@type": "proposal:TargetField",
+                    "_id": values.fieldId
+                }
+            }
+
+            let targetObservation = baseObservation as TargetObservation;
+
+            let calibrationObservation = baseObservation as CalibrationObservation;
+
+
+            if (values.observationType == 'Calibration') {
+                calibrationObservation = {...calibrationObservation,"@type": "proposal:CalibrationObservation", intent: values.calibrationUse}
+            } else {
+                targetObservation = {...targetObservation, "@type": "proposal:TargetObservation"}
+            }
+
+            console.log(JSON.stringify(baseObservation));
+
+            fetchObservationResourceAddNewObservation({
+                pathParams:{proposalCode: Number(selectedProposalCode)},
+                body: values.observationType == 'Target' ? targetObservation : calibrationObservation
+            })
+                .then(()=>queryClient.invalidateQueries())
+                .then(()=>props.closeModal!())
+                .catch(console.log);
+
+        }
+        else {
+            console.log("Editing");
+        }
+        console.log(values)
+    });
 
     return (
-        <Grid  columns={5}>
-            <Grid.Col span={{base: 5, lg: 2}}>
-                <Fieldset legend={"Target and type"}>
-                    <TargetTypeForm {...props}/>
-                </Fieldset>
-            </Grid.Col>
-            <Grid.Col span={{base: 5, lg: 3}}>
-                <Fieldset legend={"Timing windows"}>
-                    <TimingWindowsForm
-                        observationId={props.observationId}
-                        timingWindows={props.observation?.constraints!}/>
-                </Fieldset>
-            </Grid.Col>
-        </Grid>
+        <>
+            <Group justify={'flex-end'} mt="md">
+                <SubmitButton toolTipLabel={hasObservation ? "save changes" : "save"}/>
+            </Group>
+            <form onSubmit={handleSubmit}>
+                <Grid  columns={5}>
+                    <Grid.Col span={{base: 5, lg: 2}}>
+                        <Fieldset legend={"Target and type"}>
+                            <TargetTypeForm {...form} />
+                        </Fieldset>
+                    </Grid.Col>
+                    <Grid.Col span={{base: 5, lg: 3}}>
+                        <Fieldset legend={"Timing windows"}>
+                            <TimingWindowsForm {...form}/>
+                        </Fieldset>
+                    </Grid.Col>
+                </Grid>
+            </form>
+        </>
     )
 }
+
+
+/**
+ *  const handleSave = (timingWindow : TimingWindowApi) => {
+ *         console.log(timingWindow)
+ *
+ *         fetchObservationResourceAddNewConstraint({
+ *             pathParams: {
+ *                 proposalCode: Number(selectedProposalCode),
+ *                 observationId: form.values.timingWindows.observationId},
+ *             body: timingWindow
+ *         })
+ *             .then(() => queryClient.invalidateQueries())
+ *             .then(() => {
+ *                 notifications.show({
+ *                     autoClose: false,
+ *                     title: "Timing Window Saved",
+ *                     message: 'The timing window has saved successfully',
+ *                     color: "green"
+ *                 })
+ *             })
+ *             .catch(console.error)
+ *     }
+ */
