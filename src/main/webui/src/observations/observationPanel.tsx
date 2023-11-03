@@ -3,7 +3,7 @@ import {
 } from "../generated/proposalToolComponents";
 import ObservationsNewModal from "./new.modal.tsx";
 import {Link, useParams} from "react-router-dom";
-import ObservationRow from "./table.row.tsx";
+import ObservationRow, { observationTableHeader } from './observationTable.tsx';
 import {Badge, Button, Group, Space, Table, Text} from "@mantine/core";
 import {Observation} from "../generated/proposalToolSchemas.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
@@ -97,17 +97,7 @@ function ObservationsPanel(): ReactElement {
 
                 {observationsLoading ? (`Loading...`) :
                     <Table>
-                        <Table.Thead>
-                        <Table.Tr>
-                            <Table.Th>Target name</Table.Th>
-                            <Table.Th>Type</Table.Th>
-                            <Table.Th>Field</Table.Th>
-                            <Table.Th>Performance params</Table.Th>
-                            <Table.Th>Spectral windows</Table.Th>
-                            <Table.Th>Timing windows</Table.Th>
-                            <Table.Th></Table.Th>
-                        </Table.Tr>
-                        </Table.Thead>
+                        { observationTableHeader() }
                         <Table.Tbody>
                         {
                             observations?.map((observation) => {

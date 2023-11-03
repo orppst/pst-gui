@@ -243,3 +243,24 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         </>
     )
 }
+
+/**
+ * returns the header for the observation table.
+ *
+ * @return {React.ReactElement} the html for the table header.
+ */
+export function observationTableHeader(): ReactElement {
+    return (
+        <Table.Thead>
+            <Table.Tr>
+                <Table.Th>Target name</Table.Th>
+                <Table.Th>Type</Table.Th>
+                <Table.Th>Field</Table.Th>
+                <Table.Th>Performance params</Table.Th>
+                <Table.Th>Spectral windows</Table.Th>
+                <Table.Th>Timing windows</Table.Th>
+                <Table.Th></Table.Th>
+            </Table.Tr>
+        </Table.Thead>
+    );
+}
