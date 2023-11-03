@@ -1,7 +1,7 @@
 import {useDisclosure} from "@mantine/hooks";
 import {Modal} from "@mantine/core";
 import ObservationEditGroup from "./edit.group.tsx";
-import {ObservationProps} from "./List.tsx";
+import {ObservationProps} from "./observationPanel.tsx";
 import ViewEditButton from "../commonButtons/viewEdit.tsx";
 
 export default function ObservationEditModal(observationProps: ObservationProps) {

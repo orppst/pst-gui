@@ -10,7 +10,7 @@ import {
     Space
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {ObservationProps} from "./List.tsx";
+import {ObservationProps} from "./observationPanel.tsx";
 import {RenderTarget} from "../targets/RenderTarget.tsx";
 import {
     CalibrationObservation,

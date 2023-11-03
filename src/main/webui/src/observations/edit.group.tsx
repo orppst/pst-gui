@@ -1,6 +1,6 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
-import {ObservationProps} from "./List.tsx";
+import {ObservationProps} from "./observationPanel.tsx";
 import {Fieldset, Grid} from "@mantine/core";
 import {TimingWindow} from "../generated/proposalToolSchemas.ts";
 
