@@ -8,10 +8,12 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import {Box, Button, Text, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
+import { MAX_CHARS_FOR_INPUTS } from '../constants.tsx';
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
-    const { data , error, isLoading , status} = useProposalResourceGetObservingProposal({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const { data , error, isLoading , status} = useProposalResourceGetObservingProposal(
+        {pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
     const [summary, setSummary] = useState( "");
     const [submitting, setSubmitting] = useState(false);
     const form = useForm({
@@ -77,11 +79,18 @@ function SummaryPanel() {
                 <Box>Submitting request</Box> :
 
             <form onSubmit={updateSummary}>
-                <Textarea rows={3} name="summary" {...form.getInputProps('summary')} />
+                <Textarea rows={3} maxLength={MAX_CHARS_FOR_INPUTS}
+                    name="summary" {...form.getInputProps('summary')} />
+                <small>
+                    Characters remaining:
+                    {MAX_CHARS_FOR_INPUTS - form.values.summary.length}
+                </small>
+                <br/>
                 <Button type="submit" >Update</Button>
             </form>
             }
         </Box>
+
     );
 
 }
