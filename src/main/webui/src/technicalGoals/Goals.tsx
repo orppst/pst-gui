@@ -1,6 +1,5 @@
 import {
-    useProposalResourceGetObservingProposalTitle,
-    useProposalResourceGetTechnicalGoals,
+    useProposalResourceGetObservingProposalTitle, useTechnicalGoalResourceGetTechnicalGoals,
 } from "../generated/proposalToolComponents.ts";
 import {Badge, Box, Group, Space, Table} from "@mantine/core";
 import {useParams} from "react-router-dom";
@@ -18,7 +17,7 @@ export type TechnicalGoalClose = {
 function GoalsPanel() {
     const { selectedProposalCode } = useParams();
     const { data: goals, error: goalsError, isLoading: goalsLoading } =
-        useProposalResourceGetTechnicalGoals({
+        useTechnicalGoalResourceGetTechnicalGoals({
             pathParams: {proposalCode: Number(selectedProposalCode)},
             },
             {enabled: true}

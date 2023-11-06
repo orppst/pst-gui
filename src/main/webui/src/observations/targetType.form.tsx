@@ -1,7 +1,7 @@
 import {useForm} from "@mantine/form";
 import {
     fetchObservationResourceAddNewObservation,
-    useProposalResourceGetTargets, useProposalResourceGetTechnicalGoals
+    useProposalResourceGetTargets, useTechnicalGoalResourceGetTechnicalGoals,
 } from "../generated/proposalToolComponents.ts";
 import {
     Container,
@@ -73,7 +73,7 @@ export default function TargetTypeForm (props: ObservationProps){
         );
 
     const {data: technicalGoals, error: technicalGoalsError, isLoading: technicalGoalsLoading} =
-        useProposalResourceGetTechnicalGoals( {
+        useTechnicalGoalResourceGetTechnicalGoals( {
             pathParams: {proposalCode: Number(selectedProposalCode)}
         });
 

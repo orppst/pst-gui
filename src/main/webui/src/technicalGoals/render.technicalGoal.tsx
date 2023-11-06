@@ -1,9 +1,8 @@
-import {
-    useProposalResourceGetTechnicalGoal
-} from "../generated/proposalToolComponents.ts";
 import {Box, Table} from "@mantine/core";
 import {PerformanceParameters, ScienceSpectralWindow} from "../generated/proposalToolSchemas.ts";
 import {notSet} from "./edit.group.tsx";
+import {useTechnicalGoalResourceGetTechnicalGoal} from "../generated/proposalToolComponents.ts";
+import {angularUnits, frequencyUnits, locateLabel, sensitivityUnits} from "../physicalUnits/PhysicalUnits.tsx";
 
 
 type RenderTechnicalGoalProps = {
@@ -13,7 +12,7 @@ type RenderTechnicalGoalProps = {
 export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
 
     const {data, error, isLoading} =
-        useProposalResourceGetTechnicalGoal( {
+        useTechnicalGoalResourceGetTechnicalGoal( {
             pathParams: {proposalCode: props.proposalCode, technicalGoalId: props.dbid}
         });
 
@@ -33,36 +32,59 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
                     <Table.Tr>
                         <Table.Td>Angular res. </Table.Td>
                         {
-                            parameters.desiredAngularResolution ?
-                                <Table.Td>{parameters.desiredAngularResolution?.value} {parameters.desiredAngularResolution?.unit?.value}</Table.Td> :
+                            parameters.desiredAngularResolution?.value ?
+                                <Table.Td>
+                                    {parameters.desiredAngularResolution?.value}
+                                    {` ${ locateLabel(
+                                        angularUnits,
+                                        parameters.desiredAngularResolution?.unit?.value)?.label }`}
+                                </Table.Td> :
                                 <Table.Td c={"yellow"}>{notSet}</Table.Td>
                         }
                         <Table.Td>Largest scale </Table.Td>
                         {
-                            parameters.desiredLargestScale ?
-                                <Table.Td>{parameters.desiredLargestScale?.value} {parameters.desiredLargestScale?.unit?.value}</Table.Td> :
+                            parameters.desiredLargestScale?.value ?
+                                <Table.Td>
+                                    {parameters.desiredLargestScale?.value}
+                                    {` ${ locateLabel(
+                                        angularUnits,
+                                        parameters.desiredLargestScale?.unit?.value)?.label }`}
+                                </Table.Td> :
                                 <Table.Td c={"yellow"}>{notSet}</Table.Td>
                         }
                     </Table.Tr>
                     <Table.Tr>
                         <Table.Td>Sensitivity</Table.Td>
                         {
-                            parameters.desiredSensitivity ?
-                                <Table.Td>{parameters.desiredSensitivity?.value} {parameters.desiredSensitivity?.unit?.value}</Table.Td> :
+                            parameters.desiredSensitivity?.value ?
+                                <Table.Td>
+                                    {parameters.desiredSensitivity?.value}
+                                    {` ${ locateLabel(
+                                        sensitivityUnits,
+                                        parameters.desiredSensitivity?.unit?.value)?.label}`}
+                                </Table.Td> :
                                 <Table.Td c={"yellow"}>{notSet}</Table.Td>
                         }
                         <Table.Td>Dyn. range</Table.Td>
                         {
-                            parameters.desiredDynamicRange ?
-                                <Table.Td>{parameters.desiredDynamicRange?.value} {parameters.desiredDynamicRange?.unit?.value}</Table.Td> :
+                            parameters.desiredDynamicRange?.value ?
+                                <Table.Td>
+                                    {parameters.desiredDynamicRange?.value}
+                                    {` ${ locateLabel(sensitivityUnits,
+                                        parameters.desiredDynamicRange?.unit?.value)?.label}`}
+                                </Table.Td> :
                                 <Table.Td c={"yellow"}>{notSet}</Table.Td>
                         }
                     </Table.Tr>
                     <Table.Tr>
                         <Table.Td>Spectral point</Table.Td>
                         {
-                            parameters.representativeSpectralPoint ?
-                                <Table.Td>{parameters.representativeSpectralPoint?.value} {parameters.representativeSpectralPoint?.unit?.value}</Table.Td> :
+                            parameters.representativeSpectralPoint?.value ?
+                                <Table.Td>
+                                    {parameters.representativeSpectralPoint?.value}
+                                    {` ${ locateLabel(frequencyUnits,
+                                        parameters.representativeSpectralPoint?.unit?.value)?.label}`}
+                                </Table.Td> :
                                 <Table.Td c={"yellow"}>{notSet}</Table.Td>
                         }
                     </Table.Tr>
@@ -111,7 +133,6 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
 
     }
 
-
     return (
         <>
             {
@@ -132,6 +153,5 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
                     </Table>
             }
         </>
-
     )
 }
