@@ -1,55 +1,119 @@
 import {
-    Accordion,
+    Accordion, Badge,
     Box, Checkbox,
     Fieldset, Grid,
     Group,
-    NumberInput,
     Select,
     Space, Stack,
     Text,
     TextInput
 } from "@mantine/core";
-import {notSpecified, ScienceSpectrumValues} from "./edit.group.tsx";
-import {ExpectedSpectralLine, ScienceSpectralWindow} from "../generated/proposalToolSchemas.ts";
+import {notSpecified} from "./edit.group.tsx";
+import {
+    ExpectedSpectralLine,
+    PolStateEnum,
+    ScienceSpectralWindow
+} from "../generated/proposalToolSchemas.ts";
 import DeleteButton from "../commonButtons/delete.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import {useForm} from "@mantine/form";
 import {AccordionDelete} from "../commonButtons/accordianControls.tsx";
 import {SubmitButton} from "../commonButtons/save.tsx";
 import {frequencyUnits} from "../physicalUnits/PhysicalUnits.tsx";
-import {NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
+import {NumberInputPlusUnit, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {randomId} from "@mantine/hooks";
 
-export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
 
-    const decimalPlaces = 3;
-    const step = 0.001;
+type ExpectedSpectralLineAlt = {
+    restFrequency: NumberUnitType,
+    transition?: string,
+    splatalogId?: string,
+    description?: string
+}
 
-    const emptySpectralLine : ExpectedSpectralLine = {
-        restFrequency: {value: undefined, unit: {value: undefined}},
-        transition: undefined,
-        splatalogId: {value: undefined},
-        description: undefined
+type ScienceSpectralWindowAlt = {
+    index?: number | string
+    start: NumberUnitType,
+    end: NumberUnitType,
+    spectralResolution: NumberUnitType,
+    isSkyFrequency: boolean,
+    polarization: PolStateEnum | undefined
+    expectedSpectralLines: ExpectedSpectralLineAlt []
+}
+
+interface SpectrumValues {
+    windows: ScienceSpectralWindowAlt []
+}
+
+function convertExpectedSpectralLineToAlt(input: ExpectedSpectralLine) {
+    let expectedSpectralLineAlt : ExpectedSpectralLineAlt = {
+        restFrequency: {
+            value: input.restFrequency?.value ?? "",
+            unit: input.restFrequency?.unit?.value ?? ""
+        },
+        transition: input.transition,
+        splatalogId: input.splatalogId?.value,
+        description: input.description
     }
 
-    const emptyWindow : ScienceSpectralWindow = {
-        index: undefined,
-        spectralWindowSetup: {
-            start: {value: undefined, unit: {value: undefined}},
-            end: {value: undefined, unit: {value: undefined}},
-            spectralResolution: {value: undefined, unit: {value: undefined}},
-            isSkyFrequency: false,
-            polarization: undefined
+    return expectedSpectralLineAlt;
+}
+
+function convertSpectralWindowSetupAlt(input: ScienceSpectralWindow) {
+    let spectralWindowSetupAlt : ScienceSpectralWindowAlt = {
+        index: input.index,
+        start: {
+            value: input.spectralWindowSetup?.start?.value ?? "",
+            unit: input.spectralWindowSetup?.start?.unit?.value ?? ""
         },
-        expectedSpectralLine:[]
+        end: {
+            value: input.spectralWindowSetup?.end?.value ?? "",
+            unit: input.spectralWindowSetup?.end?.unit?.value ?? ""
+        },
+        spectralResolution: {
+            value: input.spectralWindowSetup?.spectralResolution?.value ?? "",
+            unit: input.spectralWindowSetup?.spectralResolution?.unit?.value ?? ""
+        },
+        isSkyFrequency: input.spectralWindowSetup?.isSkyFrequency ?? false,
+        polarization: input.spectralWindowSetup?.polarization ?? undefined,
+        expectedSpectralLines: input.expectedSpectralLine ?
+            input.expectedSpectralLine.map((line) =>{
+            return convertExpectedSpectralLineToAlt(line);
+        }) : []
+    }
+
+    return spectralWindowSetupAlt;
+}
+
+export default function ViewEditSpectralWindow(props: {windows: ScienceSpectralWindow[]}) {
+
+    const emptySpectralLine : ExpectedSpectralLineAlt = {
+        restFrequency: {value: "", unit: ""} ,
+        transition: "",
+        splatalogId: "",
+        description: ""
+    }
+
+    const emptyWindow : ScienceSpectralWindowAlt = {
+        index: "",
+        start: {value: "", unit: ""},
+        end: {value: "", unit: ""},
+        spectralResolution: {value: "", unit: ""},
+        isSkyFrequency: false,
+        polarization: undefined,
+        expectedSpectralLines:[]
+    }
+
+    let initialSpectrumValues : SpectrumValues = {
+        windows: props.windows ?
+            props.windows.map((window) => {
+                return convertSpectralWindowSetupAlt(window)
+            }) : []
     }
 
     const form
-        = useForm<ScienceSpectrumValues>({
-        initialValues: {
-            windows: props? props.windows: [emptyWindow],
-            spectralPoint: props.spectralPoint
-        },
+        = useForm<SpectrumValues>({
+        initialValues: initialSpectrumValues,
         validate: {}
     })
 
@@ -66,7 +130,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
                         padding={5}
                         form={form}
                         label={"Start"}
-                        valueRoot={`windows.${props.index}.spectralWindowSetup.start`}
+                        valueRoot={`windows.${props.index}.start`}
                         units={frequencyUnits}
                     />
                 </Grid.Col>
@@ -77,7 +141,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
                         padding={5}
                         form={form}
                         label={"End"}
-                        valueRoot={`windows.${props.index}.spectralWindowSetup.end`}
+                        valueRoot={`windows.${props.index}.end`}
                         units={frequencyUnits}
                     />
                 </Grid.Col>
@@ -88,7 +152,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
                         padding={5}
                         form={form}
                         label={"Resolution"}
-                        valueRoot={`windows.${props.index}.spectralWindowSetup.spectralResolution`}
+                        valueRoot={`windows.${props.index}.spectralResolution`}
                         units={frequencyUnits}
                     />
                 </Grid.Col>
@@ -100,7 +164,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
                         data={[
                             "I","Q","U","V","RR","LL","RL","LR","XX","YY","XY","YX","PF","PP","PA"
                         ]}
-                        {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.polarization`)}
+                        {...form.getInputProps(`windows.${props.index}.polarization`)}
                     />
                 </Grid.Col>
                 <Grid.Col span={{base: totalCols/2, xl: 2}}>
@@ -109,7 +173,7 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
                             size={"sm"}
                             label={"sky frequency"}
                             pt={25}
-                            {...form.getInputProps(`windows.${props.index}.spectralWindowSetup.isSkyFrequency`,
+                            {...form.getInputProps(`windows.${props.index}.isSkyFrequency`,
                                 {type: 'checkbox'})}
                         />
                     </Group>
@@ -121,47 +185,46 @@ export default function ViewEditSpectralWindow(props: ScienceSpectrumValues) {
     const renderSpectralLines = (props: {index: number}) => {
         return (
             <Fieldset legend={"Spectral lines"}>
+                <Badge radius={0} color={"teal"}>
+                    Work-in-progress: provide a selectable list of potential spectral lines given the spectral range above
+                </Badge>
                 {
-                    form.values.windows?.at(props.index)?.expectedSpectralLine?.length! > 0 ?
-                        form.values.windows?.at(props.index)?.expectedSpectralLine?.map((s, index) => {
+                    form.values.windows?.at(props.index)?.expectedSpectralLines?.length! > 0 ?
+                        form.values.windows?.at(props.index)?.expectedSpectralLines?.map((s, index) => {
                             return (
-                                <Group grow key={s.splatalogId ? s.splatalogId.value : randomId()}>
-                                    <NumberInput
-                                        label={index == 0 ? "Rest frequency:" : ''}
-                                        placeholder={notSpecified}
-                                        decimalScale={decimalPlaces}
-                                        step={step}
-                                        min={0}
-                                        {...form.getInputProps(
-                                            `windows.${props.index}.expectedSpectralLine.${index}.restFrequency.value`
-                                        )}
+                                <Group grow key={s.splatalogId ? s.splatalogId : randomId()}>
+                                    <NumberInputPlusUnit
+                                        label={index == 0 ? "Rest frequency" : ''}
+                                        form={form}
+                                        valueRoot={`windows.${props.index}.expectedSpectralLines.${index}.restFrequency`}
+                                        units={frequencyUnits}
                                     />
                                     <TextInput
                                         label={index == 0 ? "Transition:" : ''}
                                         placeholder={notSpecified}
                                         {...form.getInputProps(
-                                            `windows.${props.index}.expectedSpectralLine.${index}.transition`
+                                            `windows.${props.index}.expectedSpectralLines.${index}.transition`
                                         )}
                                     />
                                     <TextInput
                                         label={index == 0 ? "Splatalogue id:": ''}
                                         placeholder={notSpecified}
                                         {...form.getInputProps(
-                                            `windows.${props.index}.expectedSpectralLine.${index}.splatalogId.value`
+                                            `windows.${props.index}.expectedSpectralLines.${index}.splatalogId`
                                         )}
                                     />
                                     <TextInput
                                         label={index == 0 ? "Description:" : ''}
                                         placeholder={notSpecified}
                                         {...form.getInputProps(
-                                            `windows.${props.index}.expectedSpectralLine.${index}.description`
+                                            `windows.${props.index}.expectedSpectralLines.${index}.description`
                                         )}
                                     />
                                     <Box style={{ display: 'flex', alignItems: 'center' }}>
                                         <DeleteButton
                                             toolTipLabel={"remove spectral line " + (index + 1)}
                                             onClick={() => form.removeListItem(
-                                                `windows.${props.index}.expectedSpectralLine`, index
+                                                `windows.${props.index}.expectedSpectralLines`, index
                                             )} />
                                     </Box>
                                 </Group>

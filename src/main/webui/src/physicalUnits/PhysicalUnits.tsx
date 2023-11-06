@@ -24,3 +24,15 @@ export const sensitivityUnits = [
     {value: 'dB', label: 'db'},
     {value: 'bel', label: 'bel'}
 ]
+
+/**
+ * helper method to determine the correct label.
+ * @param array the array of value and labels from physical units.
+ * @param value the value to find the label of.
+ * @return {{value: string, label: string} | undefined} the found value, label combo.
+ */
+export const locateLabel = (array: Array<{value:string, label:string}>, value: string | undefined): { value: string; label: string; } | undefined => {
+    return array.find((object) => {
+        return object.value == value
+    })
+}
