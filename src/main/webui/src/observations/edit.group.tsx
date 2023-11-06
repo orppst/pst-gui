@@ -38,7 +38,7 @@ export default function ObservationEditGroup(props: ObservationProps){
             <Grid.Col span={{base: 5, lg: 3}}>
                 <Fieldset legend={"Timing windows"}>
                     <TimingWindowsForm
-                        observationId={props.observationId}
+                        observationId={props.observationId!}
                         timingWindows={props.observation?.constraints!}/>
                 </Fieldset>
             </Grid.Col>
