@@ -1,19 +1,33 @@
 import {Grid, MantineColor, MantineSpacing, NumberInput, Select, StyleProp, Tooltip} from "@mantine/core";
 import {UseFormReturnType} from "@mantine/form";
 import {notSpecified} from "../technicalGoals/edit.group.tsx";
+import { ReactElement } from 'react';
 
 
 /**
  * Type to use with the Mantine 'NumberInput' element embedded in NumberInputPlusUnit function.
  * The Mantine NumberInput requires a number | string type where a "null" number is given by
- * the empty string
+ * the empty string.
  */
 export type NumberUnitType =  {
     value: number | string,
     unit: string
 }
 
-
+/**
+ * prop for the number input with unit.
+ *
+ * @param {StyleProp<MantineColor>} color the text color.
+ * @param {StyleProp<MantineSpacing>} gap the space between number value and unit.
+ * @param {StyleProp<MantineSpacing>} padding
+ * @param {number} decimalPlaces the number of decimal places to display.
+ * @param {number} step the quantity that will be incremented up or down.
+ * @param {UseFormReturnType<any>} form the form that contains this input with unit.
+ * @param {string} label the label for the input.
+ * @param {string} toolTip the text shown when hovering over the input.
+ * @param {string} valueRoot
+ * @param {value: string, label: string[]} the unit values and labels.
+ */
 export interface NumberInputPlusUnitProps {
     color?: StyleProp<MantineColor>
     gap?: StyleProp<MantineSpacing>
@@ -27,7 +41,13 @@ export interface NumberInputPlusUnitProps {
     units: {value: string, label: string}[]
 }
 
-export function NumberInputPlusUnit(props: NumberInputPlusUnitProps) {
+/**
+ *
+ * @param {NumberInputPlusUnitProps} props the data related to this number input with unit.
+ * @return {ReactElement} the html that represents a number input plus unit.
+ * @constructor
+ */
+export function NumberInputPlusUnit(props: NumberInputPlusUnitProps): ReactElement {
     const totalCols = 12;
     const baseCols = totalCols / 2;
 

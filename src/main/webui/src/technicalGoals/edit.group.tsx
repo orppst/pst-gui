@@ -2,13 +2,17 @@ import PerformanceParametersForm from "./performance.form.tsx";
 import ViewEditSpectralWindow from "./spectrum.form.tsx";
 import {Space, Grid, Fieldset, Button, Group} from "@mantine/core";
 import {TechnicalGoalClose} from "./Goals.tsx";
-
-
+import { ReactElement } from 'react';
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
 
-export default function TechnicalGoalEditGroup(props: TechnicalGoalClose ) {
+/**
+ * @param {TechnicalGoalClose} props the data needed to create the technical goal edit group.
+ * @return {ReactElement} the html for the technical goal edit page.
+ * @constructor
+ */
+export default function TechnicalGoalEditGroup(props: TechnicalGoalClose ): ReactElement {
 
     const totalCols = 10;
     const performanceCols = 4;
