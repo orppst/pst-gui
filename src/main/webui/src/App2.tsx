@@ -14,7 +14,7 @@ import AddInvestigatorPanel from "./Investigators/New";
 import {createBrowserRouter, Link, Outlet, RouterProvider} from "react-router-dom";
 import { useHistoryState } from "./useHistoryState";
 import GoalsPanel from "./technicalGoals/Goals.tsx";
-import ObservationsPanel from "./observations/List";
+import ObservationsPanel from "./observations/observationPanel.tsx";
 import DocumentsPanel from "./proposal/Documents";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'

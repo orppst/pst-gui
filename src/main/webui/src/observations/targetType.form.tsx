@@ -1,84 +1,54 @@
-import {useForm} from "@mantine/form";
 import {
-    fetchObservationResourceAddNewObservation,
     useProposalResourceGetTargets, useTechnicalGoalResourceGetTechnicalGoals,
 } from "../generated/proposalToolComponents.ts";
 import {
     Container,
-    Group,
     Select,
     Space
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {ObservationProps} from "./List.tsx";
 import {RenderTarget} from "../targets/RenderTarget.tsx";
-import {
-    CalibrationObservation,
-    CalibrationTargetIntendedUse, Observation, TargetObservation
-} from "../generated/proposalToolSchemas.ts";
-import {useQueryClient} from "@tanstack/react-query";
-import {SubmitButton} from "../commonButtons/save.tsx";
 import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
+import { ReactElement } from 'react';
+import { UseFormReturnType } from '@mantine/form';
+import { ObservationFormValues } from './edit.group.tsx';
 
-
-type ObservationType = 'Target'|'Calibration'|'';
-
-interface ObservationFormValues {
-    observationType: ObservationType;
-    calibrationUse:  CalibrationTargetIntendedUse | undefined,
-    targetDBId: number | undefined,
-    techGoalId: number | undefined,
-    fieldId: number | undefined
-}
-
-export default function TargetTypeForm (props: ObservationProps){
-
-    const queryClient = useQueryClient();
-
+/**
+ * the entrance to building the target part of the edit panel.
+ *
+ * TODO try to find the actual type for the form. as any is a dire type.
+ * @param {any} form the form that governs the entire observation edit.
+ * @return {ReactElement} the HTML for the observation edit panel.
+ * @constructor
+ */
+export default function TargetTypeForm (
+        form: UseFormReturnType<ObservationFormValues>): ReactElement {
     const { selectedProposalCode} = useParams();
 
-    let hasObservation = props.observation !== undefined ;
+    const {
+        data: targets ,
+        error: targetListError,
+        isLoading: targetsLoading } =
+            useProposalResourceGetTargets({
+                pathParams: {proposalCode: Number(selectedProposalCode)}},
+                {enabled: true}
+            );
 
-    let observationType : ObservationType = hasObservation ?
-        props.observation!["@type"]
-        === 'proposal:TargetObservation' ? 'Target': 'Calibration' :
-        '';
+    const {
+        data: technicalGoals,
+        error: technicalGoalsError,
+        isLoading: technicalGoalsLoading} =
+            useTechnicalGoalResourceGetTechnicalGoals( {
+                pathParams: {proposalCode: Number(selectedProposalCode)}
+            });
 
-    let calibrationUse : CalibrationTargetIntendedUse | undefined = observationType === 'Calibration' ?
-        (props.observation as CalibrationObservation).intent! : undefined;
-
-
-    const form = useForm<ObservationFormValues>({
-        initialValues: {
-            observationType: observationType,
-            calibrationUse: calibrationUse,
-            targetDBId: props.observation?.target?._id,
-            techGoalId: props.observation?.technicalGoal?._id,
-            fieldId: 1, //FIXME: need a user selected value
-        },
-
-        validate: {
-            targetDBId: (value) =>
-                (value === undefined ? 'Please select a target' : null),
-            observationType: (value) =>
-                (value === '' ? 'Please select the observation type' : null),
-            calibrationUse: (value, values) =>
-                ((values.observationType === "Calibration" && value === undefined) ? 'Please select the calibration use' : null)
-        },
-    });
-
-    const { data: targets , error: targetListError, isLoading: targetsLoading } =
-        useProposalResourceGetTargets({
-            pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true}
-        );
-
-    const {data: technicalGoals, error: technicalGoalsError, isLoading: technicalGoalsLoading} =
-        useTechnicalGoalResourceGetTechnicalGoals( {
-            pathParams: {proposalCode: Number(selectedProposalCode)}
-        });
-
-    function SelectTargets() {
-
+    /**
+     * produces the HTML for the select targets.
+     *
+     * @return {ReactElement} the html for the select targets.
+     * @constructor
+     */
+    function SelectTargets(): ReactElement {
         if (targetListError) {
             return (
                 <div>
@@ -109,11 +79,19 @@ export default function TargetTypeForm (props: ObservationProps){
         )
     }
 
-    function SelectTechnicalGoal() {
+    /**
+     * generates the html for a technical goal.
+     *
+     * @return {ReactElement} the html for the technical goal.
+     * @constructor
+     */
+    function SelectTechnicalGoal(): ReactElement {
         if (technicalGoalsError) {
             return (
                 <div>
-                    <pre>{JSON.stringify(technicalGoalsError, null, 2)}</pre>
+                    <pre>{JSON.stringify(
+                        technicalGoalsError, null, 2)}
+                    </pre>
                 </div>
             )
         }
@@ -121,7 +99,8 @@ export default function TargetTypeForm (props: ObservationProps){
         let selectTechGoals = technicalGoals?.map((goal) => {
             return {
                 value: goal.dbid!.toString(),
-                label: goal.name! //note: for TechnicalGoals name is equivalent to dbid
+                //note: for TechnicalGoals name is equivalent to dbid
+                label: goal.name!
             }
         })
 
@@ -139,7 +118,12 @@ export default function TargetTypeForm (props: ObservationProps){
         )
     }
 
-    function SelectObservationType() {
+    /**
+     * generates the html for the observation type.
+     * @return {ReactElement} the html for the observation type.
+     * @constructor
+     */
+    function SelectObservationType(): ReactElement {
         return (
             <Select
                 label={"Observation type: "}
@@ -152,7 +136,12 @@ export default function TargetTypeForm (props: ObservationProps){
         )
     }
 
-    function SelectCalibrationUse()
+    /**
+     * generates the html for the calibration use element.
+     * @return {ReactElement} the html for the calibration element.
+     * @constructor
+     */
+    function SelectCalibrationUse(): ReactElement
     {
         return (
             <Select
@@ -174,83 +163,33 @@ export default function TargetTypeForm (props: ObservationProps){
         )
     }
 
-    const handleSubmit = form.onSubmit( (values) => {
-
-        if (props.newObservation) {
-            console.log("Creating");
-
-            let baseObservation : Observation = {
-                target: {
-                    "@type": "proposal:SolarSystemTarget",
-                    "_id": values.targetDBId
-                },
-                technicalGoal: {
-                    "_id": values.techGoalId
-                },
-                field: {
-                    "@type": "proposal:TargetField",
-                    "_id": values.fieldId
-                }
-            }
-
-            let targetObservation = baseObservation as TargetObservation;
-
-            let calibrationObservation = baseObservation as CalibrationObservation;
-
-
-            if (values.observationType == 'Calibration') {
-                calibrationObservation = {...calibrationObservation,"@type": "proposal:CalibrationObservation", intent: values.calibrationUse}
-            } else {
-                targetObservation = {...targetObservation, "@type": "proposal:TargetObservation"}
-            }
-
-            console.log(JSON.stringify(baseObservation));
-
-            fetchObservationResourceAddNewObservation({
-                pathParams:{proposalCode: Number(selectedProposalCode)},
-                body: values.observationType == 'Target' ? targetObservation : calibrationObservation
-            })
-                .then(()=>queryClient.invalidateQueries())
-                .then(()=>props.closeModal!())
-                .catch(console.log);
-
-        }
-        else {
-            console.log("Editing");
-        }
-        console.log(values)
-    });
-
 
     return (
-        <form onSubmit={handleSubmit}>
-            <Container fluid>
-                {SelectTargets()}
-                {
-                    targetsLoading ? 'loading...' : form.values.targetDBId != undefined &&
-                        <RenderTarget
-                            proposalCode={Number(selectedProposalCode)}
-                            dbid={form.values.targetDBId}
-                            showRemove={false}
-                        />
-                }
-                {SelectTechnicalGoal()}
-                {
-                    technicalGoalsLoading ? 'loading...' : form.values.techGoalId != undefined &&
-                        <RenderTechnicalGoal
-                            proposalCode={Number(selectedProposalCode)}
-                            dbid={form.values.techGoalId}
-                        />
-                }
-                <Space h={"xl"}/>
-                {SelectObservationType()}
-                {form.values.observationType === 'Calibration' &&
-                    SelectCalibrationUse()
-                }
-                <Group justify={'flex-end'} mt="md">
-                    <SubmitButton toolTipLabel={hasObservation ? "save changes" : "save"}/>
-                </Group>
-            </Container>
-        </form>
+        <Container fluid>
+            {SelectTargets()}
+            {
+                targetsLoading ? 'loading...' :
+                    form.values.targetDBId != undefined &&
+                    <RenderTarget
+                        proposalCode={Number(selectedProposalCode)}
+                        dbid={form.values.targetDBId}
+                        showRemove={false}
+                    />
+            }
+            {SelectTechnicalGoal()}
+            {
+                technicalGoalsLoading ? 'loading...' :
+                    form.values.techGoalId != undefined &&
+                    <RenderTechnicalGoal
+                        proposalCode={Number(selectedProposalCode)}
+                        dbid={form.values.techGoalId}
+                    />
+            }
+            <Space h={"xl"}/>
+            {SelectObservationType()}
+            {form.values.observationType === 'Calibration' &&
+                SelectCalibrationUse()
+            }
+        </Container>
     );
 }
