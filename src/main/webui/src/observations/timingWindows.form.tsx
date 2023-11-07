@@ -6,8 +6,9 @@ import {randomId} from "@mantine/hooks";
 import '@mantine/dates/styles.css'
 import AddButton from "../commonButtons/add.tsx";
 import { ObservationFormValues } from './edit.group.tsx';
-import {TimingWindow} from "../generated/proposalToolSchemas.ts";
 import { AccordionDelete } from '../commonButtons/accordianControls.tsx';
+import { ReactElement } from 'react';
+import { TimingWindowGui } from './timingWindowGui.tsx';
 
 
 //Providing a UI for a TimingWindow: {start: Date, end: Date, note: string, isAvoidConstraint: boolean}
@@ -26,15 +27,6 @@ import { AccordionDelete } from '../commonButtons/accordianControls.tsx';
 //As a general reminder, Radio observations can be done at any time but Optical observations can occur only after
 // sunset. In both cases the target must be above the horizon at the time
 
-//type to use for the DateTimePickers
-type TimingWindowGui = {
-    startTime: Date | null,
-    endTime: Date | null,
-    note: string,
-    isAvoidConstraint: boolean,
-    key: string
-}
-
 //type to use to pass data to the API
 type TimingWindowApi = {
     "@type": string,
@@ -44,38 +36,27 @@ type TimingWindowApi = {
     isAvoidConstraint: boolean,
 }
 
-export default function TimingWindowsForm(form: UseFormReturnType<ObservationFormValues>) {
+/**
+ *
+ * @param {UseFormReturnType<ObservationFormValues>} form the form containing all the data to display.
+ * @return {ReactElement} the HTML for the timing windows panel.
+ * @constructor
+ */
+export default function TimingWindowsForm(
+        form: UseFormReturnType<ObservationFormValues>): ReactElement {
     let emptyTimingWindow : TimingWindowGui = {
-        startTime: null, endTime: null, note: '', isAvoidConstraint: false, key: randomId()
+        startTime: null,
+        endTime: null,
+        note: '',
+        isAvoidConstraint: false,
+        key: randomId()
     }
 
-    /*
-        Type TimingWindow in proposalToolSchemas.ts has 'startTime' and 'endTime' as date strings (ISO8601 strings).
-        We need to convert these to type Date before using them with the 'DateTimePicker' element
+    /**
+     * handles the deletion of a timing window.
+     *
+     * @param {number} index the index in the table.
      */
-    function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
-        return ({
-            startTime: new Date(input.startTime!),
-            endTime: new Date(input.endTime!),
-            note: input.note!,
-            isAvoidConstraint: input.isAvoidConstraint!,
-            key: randomId()
-        })
-    }
-
-    /*
-     Note: API expects the Dates as the number of seconds since the posix epoch
-     */
-    function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
-        return ({
-            "@type": "proposal:TimingWindow",
-            startTime: input.startTime!.getTime(),
-            endTime: input.endTime!.getTime(),
-            note: input.note,
-            isAvoidConstraint: input.isAvoidConstraint
-        })
-    }
-
     const handleDelete = (index: number) => {
         alert("Removes the list item only - does not yet delete the timing window from the database")
         form.removeListItem('timingWindows', index);
@@ -89,60 +70,61 @@ export default function TimingWindowsForm(form: UseFormReturnType<ObservationFor
     let avoidCol = 1;
     let noteCol = 3;
 
-    const windowsList = form.values.timingWindows.timingWindows.map((item, index) => {
-        let labelIndex = index + 1;
-        // @ts-ignore
-        return (
-            <Accordion.Item value={labelIndex.toString()} key={item.key}>
-                <AccordionDelete
-                    title={"Window " + labelIndex}
-                    deleteProps={{
-                        toolTipLabel: 'delete timing window ' + labelIndex,
-                        onClick: () => handleDelete(index)
-                    }}
-                />
-                <Accordion.Panel>
-                    <Grid columns={nCols} gutter={"md"}>
-                        <Grid.Col span={{base: nCols, lg: rangeCol}}>
-                            <DateTimePicker
-                                placeholder={"start time"}
-                                minDate={new Date()}
-                                {...form.getInputProps(`timingWindows.${index}.startTime`)}
-                            />
-                            <Space h={"xs"}/>
-                            <DateTimePicker
-                                placeholder={"end time"}
-                                minDate={new Date()}
-                                {...form.getInputProps(`timingWindows.${index}.endTime`)}
-                            />
-                        </Grid.Col>
-                        <Grid.Col span={{base: nCols, lg: avoidCol}}>
-                            <Switch
-                                onLabel={"avoid"}
-                                offLabel={""}
-                                size={"xl"}
-                                color={'grape'}
-                                radius={'xs'}
-                                mt={"1.5rem"}
-                                {...form.getInputProps(`timingWindows.${index}.isAvoidConstraint`, {type: 'checkbox'})}
-                            />
-                        </Grid.Col>
-                        <Grid.Col span={{base: nCols, lg: noteCol}}>
-                            <Textarea
-                                autosize
-                                minRows={3}
-                                maxRows={3}
-                                maxLength={150}
-                                description={150 - form.values.timingWindows.timingWindows[index].note.length + "/150"}
-                                inputWrapperOrder={['label', 'error', 'input', 'description']}
-                                placeholder={"add optional note"}
-                                {...form.getInputProps(`timingWindows.${index}.note`)}
-                            />
-                        </Grid.Col>
-                    </Grid>
-                </Accordion.Panel>
-            </Accordion.Item>
-        )
+    const windowsList = form.values.timingWindows.map(
+        (item: TimingWindowGui, index: number) => {
+            let labelIndex = index + 1;
+            // @ts-ignore
+            return (
+                <Accordion.Item value={labelIndex.toString()} key={item.key}>
+                    <AccordionDelete
+                        title={"Window " + labelIndex}
+                        deleteProps={{
+                            toolTipLabel: 'delete timing window ' + labelIndex,
+                            onClick: () => handleDelete(index)
+                        }}
+                    />
+                    <Accordion.Panel>
+                        <Grid columns={nCols} gutter={"md"}>
+                            <Grid.Col span={{base: nCols, lg: rangeCol}}>
+                                <DateTimePicker
+                                    placeholder={"start time"}
+                                    minDate={new Date()}
+                                    {...form.getInputProps(`timingWindows.${index}.startTime`)}
+                                />
+                                <Space h={"xs"}/>
+                                <DateTimePicker
+                                    placeholder={"end time"}
+                                    minDate={new Date()}
+                                    {...form.getInputProps(`timingWindows.${index}.endTime`)}
+                                />
+                            </Grid.Col>
+                            <Grid.Col span={{base: nCols, lg: avoidCol}}>
+                                <Switch
+                                    onLabel={"avoid"}
+                                    offLabel={""}
+                                    size={"xl"}
+                                    color={'grape'}
+                                    radius={'xs'}
+                                    mt={"1.5rem"}
+                                    {...form.getInputProps(`timingWindows.${index}.isAvoidConstraint`, {type: 'checkbox'})}
+                                />
+                            </Grid.Col>
+                            <Grid.Col span={{base: nCols, lg: noteCol}}>
+                                <Textarea
+                                    autosize
+                                    minRows={3}
+                                    maxRows={3}
+                                    maxLength={150}
+                                    description={150 - form.values.timingWindows[index].note.length + "/150"}
+                                    inputWrapperOrder={['label', 'error', 'input', 'description']}
+                                    placeholder={"add optional note"}
+                                    {...form.getInputProps(`timingWindows.${index}.note`)}
+                                />
+                            </Grid.Col>
+                        </Grid>
+                    </Accordion.Panel>
+                </Accordion.Item>
+            )
     });
 
     return (

@@ -13,6 +13,8 @@ import { SubmitButton } from '../commonButtons/save.tsx';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { ReactElement } from 'react';
+import { randomId } from '@mantine/hooks';
+import { TimingWindowGui } from './timingWindowGui.tsx';
 
 /**
  * the different types of observation.
@@ -37,7 +39,7 @@ export interface ObservationFormValues {
     targetDBId: number | undefined,
     techGoalId: number | undefined,
     fieldId: number | undefined
-    timingWindows: TimingWindows,
+    timingWindows: TimingWindowGui[],
 }
 
 /**
@@ -77,7 +79,6 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
         props.timingWindows.map((timingWindow) => {
             return ConvertToTimingWindowGui(timingWindow);}) :
         [emptyTimingWindow];
-
 
     const form: UseFormReturnType<ObservationFormValues> = useForm<ObservationFormValues>({
         initialValues: {
@@ -181,6 +182,34 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
             </form>
         </>
     )
+}
+
+/*
+        Type TimingWindow in proposalToolSchemas.ts has 'startTime' and 'endTime' as date strings (ISO8601 strings).
+        We need to convert these to type Date before using them with the 'DateTimePicker' element
+     */
+function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
+    return ({
+        startTime: new Date(input.startTime!),
+        endTime: new Date(input.endTime!),
+        note: input.note!,
+        isAvoidConstraint: input.isAvoidConstraint!,
+        key: randomId()
+    })
+}
+
+/*
+ Note: API expects the Dates as the number of seconds since the posix epoch
+ */
+// @ts-ignore
+function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
+    return ({
+        "@type": "proposal:TimingWindow",
+        startTime: input.startTime!.getTime(),
+        endTime: input.endTime!.getTime(),
+        note: input.note,
+        isAvoidConstraint: input.isAvoidConstraint
+    })
 }
 
 
