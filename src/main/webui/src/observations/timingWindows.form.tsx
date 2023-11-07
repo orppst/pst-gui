@@ -7,11 +7,7 @@ import '@mantine/dates/styles.css'
 import AddButton from "../commonButtons/add.tsx";
 import { ObservationFormValues } from './edit.group.tsx';
 import {TimingWindow} from "../generated/proposalToolSchemas.ts";
-import {fetchObservationResourceAddNewConstraint} from "../generated/proposalToolComponents.ts";
-import {useParams} from "react-router-dom";
-import {useQueryClient} from "@tanstack/react-query";
-import { AccordionDelete, AccordionSaveDelete } from '../commonButtons/accordianControls.tsx';
-import {notifications} from "@mantine/notifications";
+import { AccordionDelete } from '../commonButtons/accordianControls.tsx';
 
 
 //Providing a UI for a TimingWindow: {start: Date, end: Date, note: string, isAvoidConstraint: boolean}
