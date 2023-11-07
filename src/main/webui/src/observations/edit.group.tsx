@@ -74,11 +74,14 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
     let calibrationUse : CalibrationTargetIntendedUse | undefined = observationType === 'Calibration' ?
         (props.observation as CalibrationObservation).intent! : undefined;
 
-    // figure out the current timing windows
-    let initialTimingWindows = props && props.observation.constraints.length > 0 ?
-        props.timingWindows.map((timingWindow) => {
-            return ConvertToTimingWindowGui(timingWindow);}) :
-        [emptyTimingWindow];
+    // figure out the current timing windows, ensures that the array is not undefined.
+    let initialTimingWindows: TimingWindowGui[] = [];
+    if (props && props.observation?.constraints?.length != undefined &&
+            props.observation?.constraints?.length > 0) {
+        initialTimingWindows = props.observation?.constraints?.map<TimingWindowGui>((timingWindow) => {
+            return ConvertToTimingWindowGui(timingWindow);
+        });
+    }
 
     const form: UseFormReturnType<ObservationFormValues> = useForm<ObservationFormValues>({
         initialValues: {
@@ -87,10 +90,7 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
             targetDBId: props.observation?.target?._id,
             techGoalId: props.observation?.technicalGoal?._id,
             fieldId: 1, //FIXME: need a user selected value
-            timingWindows: {
-                observationId: props.observationId,
-                timingWindows: initialTimingWindows,
-            }
+            timingWindows: initialTimingWindows
         },
 
         validate: {
@@ -105,11 +105,8 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
                     value === undefined) ?
                     'Please select the calibration use' : null),
             timingWindows: {
-                //TODO: we should check that startTime < endTime - may need to be done in 'handleSave'
-                timingWindows: {
-                    startTime: (value) => (value === null ? 'No start time selected' : null),
-                    endTime: (value) => (value === null ? 'No end time selected' : null)
-                }
+                startTime: (value) => (value === null ? 'No start time selected' : null),
+                endTime: (value) => (value === null ? 'No end time selected' : null)
             }
         },
     });
