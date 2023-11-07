@@ -21,21 +21,34 @@ import { ObservationFormValues } from './edit.group.tsx';
  * @return {ReactElement} the HTML for the observation edit panel.
  * @constructor
  */
-export default function TargetTypeForm (form: UseFormReturnType<ObservationFormValues>): ReactElement {
+export default function TargetTypeForm (
+        form: UseFormReturnType<ObservationFormValues>): ReactElement {
     const { selectedProposalCode} = useParams();
 
-    const { data: targets , error: targetListError, isLoading: targetsLoading } =
-        useProposalResourceGetTargets({
-            pathParams: {proposalCode: Number(selectedProposalCode)}}, {enabled: true}
-        );
+    const {
+        data: targets ,
+        error: targetListError,
+        isLoading: targetsLoading } =
+            useProposalResourceGetTargets({
+                pathParams: {proposalCode: Number(selectedProposalCode)}},
+                {enabled: true}
+            );
 
-    const {data: technicalGoals, error: technicalGoalsError, isLoading: technicalGoalsLoading} =
-        useTechnicalGoalResourceGetTechnicalGoals( {
-            pathParams: {proposalCode: Number(selectedProposalCode)}
-        });
+    const {
+        data: technicalGoals,
+        error: technicalGoalsError,
+        isLoading: technicalGoalsLoading} =
+            useTechnicalGoalResourceGetTechnicalGoals( {
+                pathParams: {proposalCode: Number(selectedProposalCode)}
+            });
 
-    function SelectTargets() {
-
+    /**
+     * produces the HTML for the select targets.
+     *
+     * @return {ReactElement} the html for the select targets.
+     * @constructor
+     */
+    function SelectTargets(): ReactElement {
         if (targetListError) {
             return (
                 <div>
@@ -66,11 +79,19 @@ export default function TargetTypeForm (form: UseFormReturnType<ObservationFormV
         )
     }
 
-    function SelectTechnicalGoal() {
+    /**
+     * generates the html for a technical goal.
+     *
+     * @return {ReactElement} the html for the technical goal.
+     * @constructor
+     */
+    function SelectTechnicalGoal(): ReactElement {
         if (technicalGoalsError) {
             return (
                 <div>
-                    <pre>{JSON.stringify(technicalGoalsError, null, 2)}</pre>
+                    <pre>{JSON.stringify(
+                        technicalGoalsError, null, 2)}
+                    </pre>
                 </div>
             )
         }
@@ -78,7 +99,8 @@ export default function TargetTypeForm (form: UseFormReturnType<ObservationFormV
         let selectTechGoals = technicalGoals?.map((goal) => {
             return {
                 value: goal.dbid!.toString(),
-                label: goal.name! //note: for TechnicalGoals name is equivalent to dbid
+                //note: for TechnicalGoals name is equivalent to dbid
+                label: goal.name!
             }
         })
 
@@ -96,7 +118,12 @@ export default function TargetTypeForm (form: UseFormReturnType<ObservationFormV
         )
     }
 
-    function SelectObservationType() {
+    /**
+     * generates the html for the observation type.
+     * @return {ReactElement} the html for the observation type.
+     * @constructor
+     */
+    function SelectObservationType(): ReactElement {
         return (
             <Select
                 label={"Observation type: "}
@@ -109,7 +136,12 @@ export default function TargetTypeForm (form: UseFormReturnType<ObservationFormV
         )
     }
 
-    function SelectCalibrationUse()
+    /**
+     * generates the html for the calibration use element.
+     * @return {ReactElement} the html for the calibration element.
+     * @constructor
+     */
+    function SelectCalibrationUse(): ReactElement
     {
         return (
             <Select
@@ -136,7 +168,8 @@ export default function TargetTypeForm (form: UseFormReturnType<ObservationFormV
         <Container fluid>
             {SelectTargets()}
             {
-                targetsLoading ? 'loading...' : form.values.targetDBId != undefined &&
+                targetsLoading ? 'loading...' :
+                    form.values.targetDBId != undefined &&
                     <RenderTarget
                         proposalCode={Number(selectedProposalCode)}
                         dbid={form.values.targetDBId}
@@ -145,7 +178,8 @@ export default function TargetTypeForm (form: UseFormReturnType<ObservationFormV
             }
             {SelectTechnicalGoal()}
             {
-                technicalGoalsLoading ? 'loading...' : form.values.techGoalId != undefined &&
+                technicalGoalsLoading ? 'loading...' :
+                    form.values.techGoalId != undefined &&
                     <RenderTechnicalGoal
                         proposalCode={Number(selectedProposalCode)}
                         dbid={form.values.techGoalId}

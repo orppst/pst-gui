@@ -11,25 +11,31 @@ import { ReactElement } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
 
 
-//Providing a UI for a TimingWindow: {start: Date, end: Date, note: string, isAvoidConstraint: boolean}
-// semantics of 'isAvoidConstraint' - true means avoid this date range, false means use this date range
-// User may provide multiple "timing windows" per observation. These are stored as a List of Constraints
-// in the Observation in the backend. TimingWindows may not be the only Constraints.
+//Providing a UI for a TimingWindow:
+// {start: Date, end: Date, note: string, isAvoidConstraint: boolean}
+// semantics of 'isAvoidConstraint' - true means avoid this date range, false
+// means use this date range User may provide multiple "timing windows" per
+// observation. These are stored as a List of Constraints in the Observation in
+// the backend. TimingWindows may not be the only Constraints.
 
-//FIXME: This currently only ADDS new timing windows to the specified observation.
-// -- for example, it will display all currently added timing windows and if you try to edit one of those
-//    (and press the 'save' button) it will instead add a new timing window with the new data (note this won't
-//    show up until you close and re-open the modal).
-// We need to be able to edit existing timing windows or at least be able to delete them to replace them with
-// a new window.
+//FIXME: This currently only ADDS new timing windows to the specified
+// observation.
+// -- for example, it will display all currently added timing windows and if
+// you try to edit one of those (and press the 'save' button) it will instead
+// add a new timing window with the new data (note this won't show up until you
+// close and re-open the modal).
+// We need to be able to edit existing timing windows or at least be able to
+// delete them to replace them with a new window.
 // -- this issue stems from having no access to the timing window database IDs
 
-//As a general reminder, Radio observations can be done at any time but Optical observations can occur only after
-// sunset. In both cases the target must be above the horizon at the time
+//As a general reminder, Radio observations can be done at any time but
+// Optical observations can occur only after sunset. In both cases the target
+// must be above the horizon at the time
 
 /**
  *
- * @param {UseFormReturnType<ObservationFormValues>} form the form containing all the data to display.
+ * @param {UseFormReturnType<ObservationFormValues>} form the
+ * form containing all the data to display.
  * @return {ReactElement} the HTML for the timing windows panel.
  * @constructor
  */
@@ -44,8 +50,9 @@ export default function TimingWindowsForm(
         key: randomId()
     }
 
-    //Note: using Grid and Grid.Col to get the spacing correct for each element. Using Group appears to leave
-    // a significant amount of unused space, so below is the fixed sizes.
+    //Note: using Grid and Grid.Col to get the spacing correct for each element.
+    // Using Group appears to leave a significant amount of unused space, so
+    // below is the fixed sizes.
 
     // how many columns the window table should take.
     const MAX_COLUMNS_WINDOW_TABLE = 7;
@@ -65,9 +72,11 @@ export default function TimingWindowsForm(
      * @param {number} index the index in the table.
      */
     const handleDelete = (index: number) => {
-        alert("Removes the list item only - does not yet delete the timing window from the database")
+        alert("Removes the list item only - " +
+            "does not yet delete the timing window from the database")
         form.removeListItem('timingWindows', index);
-        //todo: call API function to delete timing window from the database (requires the DB ID)
+        //todo: call API function to delete timing window from the database
+        // (requires the DB ID)
     }
 
     const windowsList = form.values.timingWindows.map(

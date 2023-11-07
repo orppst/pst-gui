@@ -45,11 +45,12 @@ export default function ObservationEditGroup(
     props: ObservationProps): ReactElement {
 
     /*
-    For the TimingWindowForm the timingWindows array/list parameter should only contain 'TimingWindow'
-    types rather than the generic 'Constraint', the class from which it inherits in Java. Issue being
-    that the containing object, the 'observation', only has an array of 'Constraints'. We either
-    separate the 'Constraints' based on their subtypes here, or have a 'TimingWindow' specific API call
-    that returns the desired list via a hook.
+    For the TimingWindowForm the timingWindows array/list parameter should
+    only contain 'TimingWindow' types rather than the generic 'Constraint',
+    the class from which it inherits in Java. Issue being that the containing
+    object, the 'observation', only has an array of 'Constraints'. We either
+    separate the 'Constraints' based on their subtypes here, or have a
+    'TimingWindow' specific API call that returns the desired list via a hook.
      */
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
@@ -126,56 +127,58 @@ export default function ObservationEditGroup(
      * @type {(event?: React.FormEvent<HTMLFormElement>) => void} handles
      * saving the entire form.
      */
-    const handleSubmit: (event?: FormEvent<HTMLFormElement>) => void = form.onSubmit((values) => {
-        if (props.newObservation) {
-            console.log("Creating");
+    const handleSubmit: (event?: FormEvent<HTMLFormElement>) => void =
+        form.onSubmit((values) => {
+            if (props.newObservation) {
+                console.log("Creating");
 
-            let baseObservation : Observation = {
-                target: {
-                    "@type": "proposal:SolarSystemTarget",
-                    "_id": values.targetDBId
-                },
-                technicalGoal: {
-                    "_id": values.techGoalId
-                },
-                field: {
-                    "@type": "proposal:TargetField",
-                    "_id": values.fieldId
+                let baseObservation : Observation = {
+                    target: {
+                        "@type": "proposal:SolarSystemTarget",
+                        "_id": values.targetDBId
+                    },
+                    technicalGoal: {
+                        "_id": values.techGoalId
+                    },
+                    field: {
+                        "@type": "proposal:TargetField",
+                        "_id": values.fieldId
+                    }
                 }
+
+                let targetObservation =
+                    baseObservation as TargetObservation;
+
+                let calibrationObservation =
+                    baseObservation as CalibrationObservation;
+
+
+                if (values.observationType == 'Calibration') {
+                    calibrationObservation = {
+                        ...calibrationObservation,
+                        "@type": "proposal:CalibrationObservation",
+                        intent: values.calibrationUse}
+                } else {
+                    targetObservation = {
+                        ...targetObservation,
+                        "@type": "proposal:TargetObservation"}
+                }
+
+                console.log(JSON.stringify(baseObservation));
+
+                fetchObservationResourceAddNewObservation({
+                    pathParams:{proposalCode: Number(selectedProposalCode)},
+                    body: values.observationType == 'Target' ?
+                        targetObservation : calibrationObservation
+                })
+                    .then(()=>queryClient.invalidateQueries())
+                    .then(()=>props.closeModal!())
+                    .catch(console.log);
+
             }
-
-            let targetObservation =
-                baseObservation as TargetObservation;
-
-            let calibrationObservation =
-                baseObservation as CalibrationObservation;
-
-
-            if (values.observationType == 'Calibration') {
-                calibrationObservation = {
-                    ...calibrationObservation,
-                    "@type": "proposal:CalibrationObservation",
-                    intent: values.calibrationUse}
-            } else {
-                targetObservation = {
-                    ...targetObservation,
-                    "@type": "proposal:TargetObservation"}
+            else {
+                console.log("Editing");
             }
-
-            console.log(JSON.stringify(baseObservation));
-
-            fetchObservationResourceAddNewObservation({
-                pathParams:{proposalCode: Number(selectedProposalCode)},
-                body: values.observationType == 'Target' ? targetObservation : calibrationObservation
-            })
-                .then(()=>queryClient.invalidateQueries())
-                .then(()=>props.closeModal!())
-                .catch(console.log);
-
-        }
-        else {
-            console.log("Editing");
-        }
         console.log(values)
     });
 
@@ -204,8 +207,10 @@ export default function ObservationEditGroup(
 }
 
 
-//Type TimingWindow in proposalToolSchemas.ts has 'startTime' and 'endTime' as date strings (ISO8601 strings).
-//We need to convert these to type Date before using them with the 'DateTimePicker' element
+//Type TimingWindow in proposalToolSchemas.ts has 'startTime' and
+// 'endTime' as date strings (ISO8601 strings).
+//We need to convert these to type Date before using them with the
+// 'DateTimePicker' element
 
 function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     return ({

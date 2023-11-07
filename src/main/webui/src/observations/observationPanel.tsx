@@ -15,13 +15,17 @@ import ObservationEditModal from './edit.modal.tsx';
  * @param {Observation | undefined} observation the observation object, or
  * undefined if not populated.
  * @param {number} observationId the observation id.
- * @param {boolean} newObservation a optional parameter stating if it is a new observation.
+ * @param {boolean} newObservation a optional parameter stating if it is a new
+ * observation.
  * @param {() => void}} closeModal an optional close modal.
  */
 export type ObservationProps = {
     observation: Observation | undefined,
-    observationId?: number, // needed as 'observation' does not contain its database id
-    newObservation: boolean, // this might be redundant i.e. observation === undefined contains the information
+    // needed as 'observation' does not contain its database id
+    observationId?: number,
+    // this might be redundant i.e. observation === undefined contains the
+    // information
+    newObservation: boolean,
     closeModal?: () => void
 }
 
@@ -44,26 +48,31 @@ function ObservationsPanel(): ReactElement {
     );
 }
 
-//reminder we are getting lists of 'ObjectIdentifiers' which contain only a name and DB id for
-//the object specified i.e. we don't get any information on child objects.
+//reminder we are getting lists of 'ObjectIdentifiers' which contain only a
+// name and DB id for the object specified i.e. we don't get any information
+// on child objects.
 function Observations() {
     const { selectedProposalCode} = useParams();
 
-    const { data: observations , error: observationsError, isLoading: observationsLoading } =
-        useObservationResourceGetObservations(
-            {pathParams: {proposalCode: Number(selectedProposalCode)},},
-            {enabled: true}
-        );
+    const {
+        data: observations ,
+        error: observationsError,
+        isLoading: observationsLoading } =
+            useObservationResourceGetObservations(
+                {pathParams: {proposalCode: Number(selectedProposalCode)},},
+                {enabled: true}
+            );
 
 
     const {data: targets, error: targetsError, isLoading: targetsLoading} =
-        useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)}},
+        useProposalResourceGetTargets(
+            {pathParams: {proposalCode: Number(selectedProposalCode)}},
             {enabled: true}
         );
 
     const {data: titleData, error: titleError, isLoading: titleLoading} =
         useProposalResourceGetObservingProposalTitle(
-        {pathParams: {proposalCode: Number(selectedProposalCode)}}
+            {pathParams: {proposalCode: Number(selectedProposalCode)}}
         );
 
     if (observationsError) {
@@ -101,7 +110,8 @@ function Observations() {
                     {
                         observations?.map((observation) => {
                             return (
-                                <ObservationRow id={observation.dbid!} key={observation.dbid!} />
+                                <ObservationRow id={observation.dbid!}
+                                                key={observation.dbid!} />
                             )
                         })
                     }
@@ -126,7 +136,8 @@ function Observations() {
                             variant={"subtle"}
                             p={5}
                             ml={-5}
-                            to={"../proposal/" + selectedProposalCode + "/targets"}
+                            to={"../proposal/" +
+                                selectedProposalCode + "/targets"}
                             component={Link}
                         >
                             target
