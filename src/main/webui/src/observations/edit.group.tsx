@@ -12,7 +12,7 @@ import { fetchObservationResourceAddNewObservation } from '../generated/proposal
 import { SubmitButton } from '../commonButtons/save.tsx';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ReactElement } from 'react';
+import { FormEvent, ReactElement } from 'react';
 import { randomId } from '@mantine/hooks';
 import { TimingWindowGui } from './timingWindowGui.tsx';
 
@@ -20,14 +20,15 @@ import { TimingWindowGui } from './timingWindowGui.tsx';
  * the different types of observation.
  * TODO check if this can be a enum somewhere instead.
  */
-type ObservationType = 'Target'|'Calibration'|'';
+type ObservationType = 'Target' | 'Calibration' | '';
 
-/**
- * the interface for the timing windows.
- */
-export interface TimingWindows {
-    observationId?: number,
-    timingWindows: TimingWindow [] //do you ever feel like you might be running, head first, into naming problems?
+//type to use to pass data to the API
+type TimingWindowApi = {
+    "@type": string,
+    startTime: number,
+    endTime: number,
+    note: string,
+    isAvoidConstraint: boolean,
 }
 
 /**
@@ -83,36 +84,50 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
         });
     }
 
-    const form: UseFormReturnType<ObservationFormValues> = useForm<ObservationFormValues>({
-        initialValues: {
-            observationType: observationType,
-            calibrationUse: calibrationUse,
-            targetDBId: props.observation?.target?._id,
-            techGoalId: props.observation?.technicalGoal?._id,
-            fieldId: 1, //FIXME: need a user selected value
-            timingWindows: initialTimingWindows
-        },
+    /**
+     * builds the form for the united form.
+     *
+     * @type {UseFormReturnType<ObservationFormValues>} the form values
+     * for the entire panel.
+     */
+    const form: UseFormReturnType<ObservationFormValues> =
+        useForm<ObservationFormValues>({
+            initialValues: {
+                observationType: observationType,
+                calibrationUse: calibrationUse,
+                targetDBId: props.observation?.target?._id,
+                techGoalId: props.observation?.technicalGoal?._id,
+                fieldId: 1, //FIXME: need a user selected value
+                timingWindows: initialTimingWindows
+            },
 
-        validate: {
-            targetDBId: (value) =>
-                (value === undefined ?
-                    'Please select a target' : null),
-            observationType: (value) =>
-                (value === '' ?
-                    'Please select the observation type' : null),
-            calibrationUse: (value, values) =>
-                ((values.observationType === "Calibration" &&
-                    value === undefined) ?
-                    'Please select the calibration use' : null),
-            timingWindows: {
-                startTime: (value) => (value === null ? 'No start time selected' : null),
-                endTime: (value) => (value === null ? 'No end time selected' : null)
-            }
-        },
+            validate: {
+                targetDBId: (value) =>
+                    (value === undefined ?
+                        'Please select a target' : null),
+                observationType: (value) =>
+                    (value === '' ?
+                        'Please select the observation type' : null),
+                calibrationUse: (value, values) =>
+                    ((values.observationType === "Calibration" &&
+                        value === undefined) ?
+                        'Please select the calibration use' : null),
+                timingWindows: {
+                    startTime: (value) => (
+                        value === null ? 'No start time selected' : null),
+                    endTime: (value) => (
+                        value === null ? 'No end time selected' : null)
+                }
+            },
     });
 
-    const handleSubmit = form.onSubmit( (values) => {
-
+    /**
+     * handles the saving of the entire form to the database.
+     *
+     * @type {(event?: React.FormEvent<HTMLFormElement>) => void} handles
+     * saving the entire form.
+     */
+    const handleSubmit: (event?: FormEvent<HTMLFormElement>) => void = form.onSubmit((values) => {
         if (props.newObservation) {
             console.log("Creating");
 
@@ -160,7 +175,7 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
 
     return (
         <>
-            <Group justify={'flex-end'} mt="md">
+            <Group justify={'flex-start'} mt="md">
                 <SubmitButton toolTipLabel={hasObservation ? "save changes" : "save"}/>
             </Group>
             <form onSubmit={handleSubmit}>

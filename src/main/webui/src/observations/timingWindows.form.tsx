@@ -27,15 +27,6 @@ import { TimingWindowGui } from './timingWindowGui.tsx';
 //As a general reminder, Radio observations can be done at any time but Optical observations can occur only after
 // sunset. In both cases the target must be above the horizon at the time
 
-//type to use to pass data to the API
-type TimingWindowApi = {
-    "@type": string,
-    startTime: number,
-    endTime: number,
-    note: string,
-    isAvoidConstraint: boolean,
-}
-
 /**
  *
  * @param {UseFormReturnType<ObservationFormValues>} form the form containing all the data to display.
@@ -44,13 +35,29 @@ type TimingWindowApi = {
  */
 export default function TimingWindowsForm(
         form: UseFormReturnType<ObservationFormValues>): ReactElement {
-    let emptyTimingWindow : TimingWindowGui = {
+    // constant used for populating new timing window guis.
+    const EMPTY_TIMING_WINDOW : TimingWindowGui = {
         startTime: null,
         endTime: null,
         note: '',
         isAvoidConstraint: false,
         key: randomId()
     }
+
+    //Note: using Grid and Grid.Col to get the spacing correct for each element. Using Group appears to leave
+    // a significant amount of unused space, so below is the fixed sizes.
+
+    // how many columns the window table should take.
+    const MAX_COLUMNS_WINDOW_TABLE = 7;
+
+    // how many columns the range requires.
+    const MAX_COLUMNS_RANGE = 3;
+
+    // how many columns the avoid element requires.
+    const MAX_COLUMNS_AVOID = 1;
+
+    // how many columns the note field requires.
+    const MAX_COLUMNS_NOTE = 3;
 
     /**
      * handles the deletion of a timing window.
@@ -62,13 +69,6 @@ export default function TimingWindowsForm(
         form.removeListItem('timingWindows', index);
         //todo: call API function to delete timing window from the database (requires the DB ID)
     }
-
-    //Note: using Grid and Grid.Col to get the spacing correct for each element. Using Group appears to leave
-    // a significant amount of unused space
-    let nCols = 7;
-    let rangeCol = 3;
-    let avoidCol = 1;
-    let noteCol = 3;
 
     const windowsList = form.values.timingWindows.map(
         (item: TimingWindowGui, index: number) => {
@@ -84,21 +84,28 @@ export default function TimingWindowsForm(
                         }}
                     />
                     <Accordion.Panel>
-                        <Grid columns={nCols} gutter={"md"}>
-                            <Grid.Col span={{base: nCols, lg: rangeCol}}>
+                        <Grid columns={MAX_COLUMNS_WINDOW_TABLE}
+                              gutter={"md"}>
+                            <Grid.Col span={{
+                                base: MAX_COLUMNS_WINDOW_TABLE,
+                                lg: MAX_COLUMNS_RANGE}}>
                                 <DateTimePicker
                                     placeholder={"start time"}
                                     minDate={new Date()}
-                                    {...form.getInputProps(`timingWindows.${index}.startTime`)}
+                                    {...form.getInputProps(
+                                        `timingWindows.${index}.startTime`)}
                                 />
                                 <Space h={"xs"}/>
                                 <DateTimePicker
                                     placeholder={"end time"}
                                     minDate={new Date()}
-                                    {...form.getInputProps(`timingWindows.${index}.endTime`)}
+                                    {...form.getInputProps(
+                                        `timingWindows.${index}.endTime`)}
                                 />
                             </Grid.Col>
-                            <Grid.Col span={{base: nCols, lg: avoidCol}}>
+                            <Grid.Col span={{
+                                base: MAX_COLUMNS_WINDOW_TABLE,
+                                lg: MAX_COLUMNS_AVOID}}>
                                 <Switch
                                     onLabel={"avoid"}
                                     offLabel={""}
@@ -106,19 +113,27 @@ export default function TimingWindowsForm(
                                     color={'grape'}
                                     radius={'xs'}
                                     mt={"1.5rem"}
-                                    {...form.getInputProps(`timingWindows.${index}.isAvoidConstraint`, {type: 'checkbox'})}
+                                    {...form.getInputProps(
+                                        `timingWindows.${index}.isAvoidConstraint`,
+                                        {type: 'checkbox'})}
                                 />
                             </Grid.Col>
-                            <Grid.Col span={{base: nCols, lg: noteCol}}>
+                            <Grid.Col span={{
+                                base: MAX_COLUMNS_WINDOW_TABLE,
+                                lg: MAX_COLUMNS_NOTE}}>
                                 <Textarea
                                     autosize
                                     minRows={3}
                                     maxRows={3}
                                     maxLength={150}
-                                    description={150 - form.values.timingWindows[index].note.length + "/150"}
-                                    inputWrapperOrder={['label', 'error', 'input', 'description']}
+                                    description={
+                                        150 -
+                                        form.values.timingWindows[index].note.length + "/150"}
+                                    inputWrapperOrder={[
+                                        'label', 'error', 'input', 'description']}
                                     placeholder={"add optional note"}
-                                    {...form.getInputProps(`timingWindows.${index}.note`)}
+                                    {...form.getInputProps(
+                                        `timingWindows.${index}.note`)}
                                 />
                             </Grid.Col>
                         </Grid>
@@ -135,8 +150,9 @@ export default function TimingWindowsForm(
             <Group justify={"flex-end"}>
                 <AddButton
                     toolTipLabel={"add a timing window"}
-                    onClick={() => form.insertListItem('timingWindows',
-                        {...emptyTimingWindow, key: randomId()})}
+                    onClick={() => form.insertListItem(
+                        'timingWindows',
+                        {...EMPTY_TIMING_WINDOW, key: randomId()})}
                 />
             </Group>
         </>
