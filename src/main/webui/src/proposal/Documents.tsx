@@ -36,7 +36,7 @@ const DocumentsPanel = () => {
         );
     }
 
-    const handleUpload = async (chosenFile: File) => {
+    const handleUpload = async (chosenFile: File | null) => {
         if (chosenFile) {
             setStatus("uploading");
 
@@ -119,7 +119,7 @@ function RenderDocumentListItem(props: DocumentProps) {
                 }})
             .then(()=> {
                 setSubmitting(false);
-                queryClient.invalidateQueries();
+                queryClient.invalidateQueries().then();
                 notifications.show({
                     autoClose: 5000,
                     title: "Removed",
