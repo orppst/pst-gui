@@ -50,7 +50,8 @@ export interface ObservationFormValues {
  * @return {ReactElement} the react HTML for the observations edit panel.
  * @constructor
  */
-export default function ObservationEditGroup(props: ObservationProps): ReactElement {
+export default function ObservationEditGroup(
+    props: ObservationProps): ReactElement {
 
     /*
     For the TimingWindowForm the timingWindows array/list parameter should only contain 'TimingWindow'
@@ -72,15 +73,18 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
         '';
 
     // figure out the current calibration use.
-    let calibrationUse : CalibrationTargetIntendedUse | undefined = observationType === 'Calibration' ?
+    let calibrationUse : CalibrationTargetIntendedUse | undefined =
+        observationType === 'Calibration' ?
         (props.observation as CalibrationObservation).intent! : undefined;
 
     // figure out the current timing windows, ensures that the array is not undefined.
     let initialTimingWindows: TimingWindowGui[] = [];
     if (props && props.observation?.constraints?.length != undefined &&
             props.observation?.constraints?.length > 0) {
-        initialTimingWindows = props.observation?.constraints?.map<TimingWindowGui>((timingWindow) => {
-            return ConvertToTimingWindowGui(timingWindow);
+        initialTimingWindows =
+            props.observation?.constraints?.map<TimingWindowGui>(
+                (timingWindow) => {
+                    return ConvertToTimingWindowGui(timingWindow);
         });
     }
 
@@ -102,10 +106,10 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
             },
 
             validate: {
-                targetDBId: (value) =>
+                targetDBId: (value: number | undefined) =>
                     (value === undefined ?
                         'Please select a target' : null),
-                observationType: (value) =>
+                observationType: (value: ObservationType) =>
                     (value === '' ?
                         'Please select the observation type' : null),
                 calibrationUse: (value, values) =>
@@ -145,15 +149,22 @@ export default function ObservationEditGroup(props: ObservationProps): ReactElem
                 }
             }
 
-            let targetObservation = baseObservation as TargetObservation;
+            let targetObservation =
+                baseObservation as TargetObservation;
 
-            let calibrationObservation = baseObservation as CalibrationObservation;
+            let calibrationObservation =
+                baseObservation as CalibrationObservation;
 
 
             if (values.observationType == 'Calibration') {
-                calibrationObservation = {...calibrationObservation,"@type": "proposal:CalibrationObservation", intent: values.calibrationUse}
+                calibrationObservation = {
+                    ...calibrationObservation,
+                    "@type": "proposal:CalibrationObservation",
+                    intent: values.calibrationUse}
             } else {
-                targetObservation = {...targetObservation, "@type": "proposal:TargetObservation"}
+                targetObservation = {
+                    ...targetObservation,
+                    "@type": "proposal:TargetObservation"}
             }
 
             console.log(JSON.stringify(baseObservation));
