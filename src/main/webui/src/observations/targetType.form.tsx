@@ -1,5 +1,7 @@
 import {
     useProposalResourceGetTargets, useProposalResourceGetTechnicalGoals
+    fetchObservationResourceAddNewObservation,
+    useProposalResourceGetTargets, useTechnicalGoalResourceGetTechnicalGoals,
 } from "../generated/proposalToolComponents.ts";
 import {
     Container,
@@ -30,7 +32,7 @@ export default function TargetTypeForm (form: UseFormReturnType<ObservationFormV
         );
 
     const {data: technicalGoals, error: technicalGoalsError, isLoading: technicalGoalsLoading} =
-        useProposalResourceGetTechnicalGoals( {
+        useTechnicalGoalResourceGetTechnicalGoals( {
             pathParams: {proposalCode: Number(selectedProposalCode)}
         });
 

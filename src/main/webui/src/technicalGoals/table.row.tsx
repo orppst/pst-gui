@@ -1,9 +1,4 @@
 import {TechnicalGoalId} from "./Goals.tsx";
-import {
-    fetchProposalResourceAddNewTechnicalGoal,
-    fetchProposalResourceRemoveTechnicalGoal,
-    useProposalResourceGetTechnicalGoal
-} from '../generated/proposalToolComponents.ts';
 import {useParams} from "react-router-dom";
 import {Badge, Group, Space, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
@@ -12,8 +7,19 @@ import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import CloneButton from "../commonButtons/clone.tsx";
 import DeleteButton from "../commonButtons/delete.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import { angularUnits, frequencyUnits, sensitivityUnits } from '../physicalUnits/PhysicalUnits.tsx';
+import {
+    angularUnits,
+    frequencyUnits,
+    sensitivityUnits,
+    locateLabel } from '../physicalUnits/PhysicalUnits.tsx';
 import { TechnicalGoal } from '../generated/proposalToolSchemas.ts';
+import {
+    fetchTechnicalGoalResourceAddTechnicalGoal,
+    fetchTechnicalGoalResourceRemoveTechnicalGoal,
+    useTechnicalGoalResourceGetTechnicalGoal
+} from "../generated/proposalToolComponents.ts";
+import {notifications} from "@mantine/notifications";
+import {notSet} from "./edit.group.tsx";
 
 export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
 
@@ -21,7 +27,7 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     const queryClient = useQueryClient();
 
     const {data: goal, error: goalError, isLoading: goalLoading} =
-        useProposalResourceGetTechnicalGoal(
+        useTechnicalGoalResourceGetTechnicalGoal(
             {
                 pathParams:
                     {
@@ -29,7 +35,6 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                         technicalGoalId: technicalGoalId.id
                     },
             }
-
         );
 
     if (goalError) {
@@ -40,10 +45,18 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
      * processes the actual deletion of a technical goal from the database.
      */
     const handleDelete = () => {
-        fetchProposalResourceRemoveTechnicalGoal( {
-            pathParams: {proposalCode: Number(selectedProposalCode), techGoalId: technicalGoalId.id}
+        fetchTechnicalGoalResourceRemoveTechnicalGoal( {
+            pathParams: {proposalCode: Number(selectedProposalCode), technicalGoalId: technicalGoalId.id}
         })
             .then(()=>queryClient.invalidateQueries())
+            .then(() => {
+                notifications.show({
+                    autoClose: false,
+                    title: "TechnicalGoal deleted",
+                    message: 'The selected technical goal has been deleted',
+                    color: "green"
+                })
+            })
             .catch(console.error);
     }
 
@@ -79,14 +92,19 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
         }
 
         // save the new clonedGoal to the database.
-        fetchProposalResourceAddNewTechnicalGoal( {
+        fetchTechnicalGoalResourceAddTechnicalGoal( {
             pathParams: {proposalCode: Number(selectedProposalCode)},
             body: clonedGoal
         })
-            .then(()=>
-                queryClient.invalidateQueries().then(
-                    () => console.log("Cloning Technical Goal success."))
-            )
+            .then(()=> queryClient.invalidateQueries())
+            .then(() => {
+                notifications.show({
+                    autoClose: false,
+                    title: "Technical Goal Cloned",
+                    message: 'The selected technical goal has been cloned',
+                    color: "green"
+                })
+            })
             .catch(console.error);
     }
 
@@ -113,18 +131,6 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
         onCancel:() => console.log('Cancel copy'),
     })
 
-    /**
-     * helper method to determine the correct label.
-     * @param array the array of value and labels from physical units.
-     * @param value the value to find the label of.
-     * @return {{value: string, label: string} | undefined} the found value, label combo.
-     */
-    const locateLabel = (array: Array<{value:string, label:string}>, value: string | undefined): { value: string; label: string; } | undefined => {
-        return array.find((object) => {
-            return object.value == value
-        })
-    }
-
     return (
         <>
             {goalLoading ? ('Loading...') :
@@ -133,34 +139,54 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                         <Table.Td>
                             {goal?._id}
                         </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.desiredAngularResolution?.value}
-                            {` ${ locateLabel(
-                                angularUnits, 
-                                goal?.performance?.desiredAngularResolution?.unit?.value)?.label }`}
-                        </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.desiredLargestScale?.value}
-                            {` ${ locateLabel(
-                                    angularUnits,
-                                    goal?.performance?.desiredLargestScale?.unit?.value)?.label }`}
-                        </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.desiredSensitivity?.value}
-                            {` ${ locateLabel(
-                                    sensitivityUnits, 
-                                    goal?.performance?.desiredSensitivity?.unit?.value)?.label}`}
-                        </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.desiredDynamicRange?.value}
-                            {` ${ locateLabel(sensitivityUnits, 
-                                    goal?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
-                        </Table.Td>
-                        <Table.Td>
-                            {goal?.performance?.representativeSpectralPoint?.value}
-                            {` ${ locateLabel(frequencyUnits, 
-                                    goal?.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
-                        </Table.Td>
+                        {
+                            goal?.performance?.desiredAngularResolution?.value ?
+                                <Table.Td>
+                                    {goal?.performance?.desiredAngularResolution?.value}
+                                    {` ${ locateLabel(
+                                        angularUnits,
+                                        goal?.performance?.desiredAngularResolution?.unit?.value)?.label }`}
+                                </Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
+                        {
+                            goal?.performance?.desiredLargestScale?.value ?
+                                <Table.Td>
+                                    {goal?.performance?.desiredLargestScale?.value}
+                                    {` ${ locateLabel(
+                                        angularUnits,
+                                        goal?.performance?.desiredLargestScale?.unit?.value)?.label }`}
+                                </Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
+                        {
+                            goal?.performance?.desiredSensitivity?.value ?
+                                <Table.Td>
+                                    {goal?.performance?.desiredSensitivity?.value}
+                                    {` ${ locateLabel(
+                                        sensitivityUnits,
+                                        goal?.performance?.desiredSensitivity?.unit?.value)?.label}`}
+                                </Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
+                        {
+                            goal?.performance?.desiredDynamicRange?.value ?
+                                <Table.Td>
+                                    {goal?.performance?.desiredDynamicRange?.value}
+                                    {` ${ locateLabel(sensitivityUnits,
+                                        goal?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
+                                </Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
+                        {
+                            goal?.performance?.representativeSpectralPoint?.value ?
+                                <Table.Td>
+                                    {goal?.performance?.representativeSpectralPoint?.value}
+                                    {` ${ locateLabel(frequencyUnits,
+                                        goal?.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
+                                </Table.Td> :
+                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                        }
                         <Table.Td>
                             {
                                 goal?.spectrum?.length! > 0 ?
