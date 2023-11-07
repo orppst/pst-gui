@@ -1,6 +1,4 @@
 import {
-    useProposalResourceGetTargets, useProposalResourceGetTechnicalGoals
-    fetchObservationResourceAddNewObservation,
     useProposalResourceGetTargets, useTechnicalGoalResourceGetTechnicalGoals,
 } from "../generated/proposalToolComponents.ts";
 import {
