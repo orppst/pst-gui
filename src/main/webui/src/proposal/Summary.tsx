@@ -12,8 +12,9 @@ import { MAX_CHARS_FOR_INPUTS } from '../constants.tsx';
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
-    const { data , error, isLoading , status} = useProposalResourceGetObservingProposal(
-        {pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const { data, error, isLoading, status} = useProposalResourceGetObservingProposal(
+        {pathParams: {proposalCode: Number(selectedProposalCode)},},
+        {enabled: true});
     const [summary, setSummary] = useState( "");
     const [submitting, setSubmitting] = useState(false);
     const form = useForm({
@@ -23,6 +24,7 @@ function SummaryPanel() {
         }
     });
 
+    // get client for talking to database.
     const queryClient = useQueryClient()
 
     const mutation = useMutation({
@@ -33,7 +35,6 @@ function SummaryPanel() {
                     // @ts-ignore
                     headers: {"Content-Type": "text/plain"}
                 }
-
                 return fetchProposalResourceReplaceSummary(newSummary);
             },
             onMutate: () => {
@@ -54,7 +55,7 @@ function SummaryPanel() {
             setSummary(data.summary as string);
             form.values.summary = data.summary as string;
         }
-    }, [status,data]);
+    }, [status, data]);
 
 
     if (error) {
@@ -90,7 +91,6 @@ function SummaryPanel() {
             </form>
             }
         </Box>
-
     );
 
 }
