@@ -22,15 +22,6 @@ import { TimingWindowGui } from './timingWindowGui.tsx';
  */
 type ObservationType = 'Target' | 'Calibration' | '';
 
-//type to use to pass data to the API
-type TimingWindowApi = {
-    "@type": string,
-    startTime: number,
-    endTime: number,
-    note: string,
-    isAvoidConstraint: boolean,
-}
-
 /**
  * the interface for the entire observation form.
  */
@@ -77,7 +68,8 @@ export default function ObservationEditGroup(
         observationType === 'Calibration' ?
         (props.observation as CalibrationObservation).intent! : undefined;
 
-    // figure out the current timing windows, ensures that the array is not undefined.
+    // figure out the current timing windows, ensures that the array is
+    // not undefined.
     let initialTimingWindows: TimingWindowGui[] = [];
     if (props && props.observation?.constraints?.length != undefined &&
             props.observation?.constraints?.length > 0) {
@@ -106,9 +98,12 @@ export default function ObservationEditGroup(
             },
 
             validate: {
-                targetDBId: (value: number | undefined) =>
+                targetDBId: (value: number | undefined | string ) =>
                     (value === undefined ?
                         'Please select a target' : null),
+                techGoalId: (value: number | undefined | string) =>
+                    (value === undefined ?
+                        'Please select a technical goal' : null),
                 observationType: (value: ObservationType) =>
                     (value === '' ?
                         'Please select the observation type' : null),
@@ -186,10 +181,11 @@ export default function ObservationEditGroup(
 
     return (
         <>
-            <Group justify={'flex-start'} mt="md">
-                <SubmitButton toolTipLabel={hasObservation ? "save changes" : "save"}/>
-            </Group>
             <form onSubmit={handleSubmit}>
+                <Group justify={'flex-start'} mt="md">
+                    <SubmitButton toolTipLabel={
+                        hasObservation ? "save changes" : "save"}/>
+                </Group>
                 <Grid  columns={5}>
                     <Grid.Col span={{base: 5, lg: 2}}>
                         <Fieldset legend={"Target and type"}>
@@ -207,10 +203,10 @@ export default function ObservationEditGroup(
     )
 }
 
-/*
-        Type TimingWindow in proposalToolSchemas.ts has 'startTime' and 'endTime' as date strings (ISO8601 strings).
-        We need to convert these to type Date before using them with the 'DateTimePicker' element
-     */
+
+//Type TimingWindow in proposalToolSchemas.ts has 'startTime' and 'endTime' as date strings (ISO8601 strings).
+//We need to convert these to type Date before using them with the 'DateTimePicker' element
+
 function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     return ({
         startTime: new Date(input.startTime!),
@@ -221,22 +217,33 @@ function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     })
 }
 
-/*
- Note: API expects the Dates as the number of seconds since the posix epoch
- */
-// @ts-ignore
-function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
-    return ({
-        "@type": "proposal:TimingWindow",
-        startTime: input.startTime!.getTime(),
-        endTime: input.endTime!.getTime(),
-        note: input.note,
-        isAvoidConstraint: input.isAvoidConstraint
-    })
-}
-
-
 /**
+ * left as im sure this will be useful once we decide how to save
+ *
+ * // Note: API expects the Dates as the number of seconds since the posix epoch
+ * // @ts-ignore
+ * function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
+ *     return ({
+ *         "@type": "proposal:TimingWindow",
+ *         startTime: input.startTime!.getTime(),
+ *         endTime: input.endTime!.getTime(),
+ *         note: input.note,
+ *         isAvoidConstraint: input.isAvoidConstraint
+ *     })
+ * }
+ *
+ *
+ *
+ * //type to use to pass data to the API
+ * type TimingWindowApi = {
+ *     "@type": string,
+ *     startTime: number,
+ *     endTime: number,
+ *     note: string,
+ *     isAvoidConstraint: boolean,
+ * }
+ *
+ *
  *  const handleSave = (timingWindow : TimingWindowApi) => {
  *         console.log(timingWindow)
  *
