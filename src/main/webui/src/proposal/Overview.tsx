@@ -263,7 +263,9 @@ function OverviewPanel(): ReactElement {
         return (
             <>
                 <h3>Summary</h3>
-                <Text>{proposalsData?.summary}</Text>
+                <Text style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
+                    {proposalsData?.summary}
+                </Text>
             </>
         )
     }
@@ -380,7 +382,7 @@ function OverviewPanel(): ReactElement {
                 <h3>Supporting Documents</h3>
                 {
                     proposalsData?.supportingDocuments && proposalsData.supportingDocuments.length > 0 ?
-                        <List>
+                        <List style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
                             {documents}
                         </List> :
                         <Text c={"yellow"}>No supporting documents added</Text>
