@@ -39,20 +39,91 @@ function InvestigatorsPanel() {
             <Grid>
                 <Grid.Col span={5}>
                 <Button onClick={handleAddNew} >Add New</Button>
-                {isLoading ? (`Loading...`)
-                    : data?.map((item) => {
-                        if(item.dbid !== undefined) {
-                            return (<RenderPerson dbid={item.dbid} key={item.dbid}/>)
-                        } else {
-                            return (<Box key={randomId()}>Undefined Investigator!</Box>)
+                    <Table>
+                        {InvestigatorsHeader()}
+                        {isLoading ? (`Loading...`)
+                            : data?.map((item) => {
+                                if(item.dbid !== undefined) {
+                                    return (<InvestigatorsRow dbid={item.dbid} key={item.dbid}/>)
+                                } else {
+                                    return (<Box key={randomId()}>Undefined Investigator!</Box>)
+                                }
+                            } )
                         }
-                    } )
-                }
+                    </Table>
                 </Grid.Col>
             </Grid>
         </Box>
     );
 }
+
+function InvestigatorsHeader() {
+    return (
+        <Table.Thead>
+            <Table.Tr>
+                <Table.Th>Type</Table.Th>
+                <Table.Th>Name</Table.Th>
+                <Table.Th>eMail</Table.Th>
+                <Table.Th>Institute</Table.Th>
+                <Table.Th></Table.Th>
+            </Table.Tr>
+        </Table.Thead>
+    );
+}
+
+function InvestigatorsRow(props: PersonProps) {
+    const { selectedProposalCode } = useParams();
+    const [submitting, setSubmitting] = useState(false);
+    const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
+        {pathParams:
+                {
+                    investigatorId: props.dbid,
+                    proposalCode: Number(selectedProposalCode),
+                },
+        });
+    const queryClient = useQueryClient();
+
+    function handleRemove() {
+        setSubmitting(true);
+        fetchInvestigatorResourceRemoveInvestigator({pathParams:
+                {
+                    investigatorId: props.dbid,
+                    proposalCode: Number(selectedProposalCode),
+                }})
+            .then(()=>setSubmitting(false))
+            .then(()=>queryClient.invalidateQueries())
+            .catch(console.log);
+    }
+
+    const openRemoveModal = () =>
+        modals.openConfirmModal({
+            title: "Remove investigator",
+            centered: true,
+            children: (
+                <Text size="sm">
+                    Are you sure you want to remove {data?.person?.fullName} from this proposal?
+                </Text>
+            ),
+            labels: { confirm: "Delete", cancel: "Cancel" },
+            confirmProps: { color: "red" },
+            onConfirm: () => handleRemove(),
+        });
+
+    return (
+      <Table.Tr>
+          {isLoading?(<Table.Td colSpan={5}>Loading...</Table.Td>):
+              error?(<Table.Td colSpan={5}>Error!</Table.Td>):
+                  submitting?(<Table.Td colSpan={5}>Removing...</Table.Td>):(<>
+          <Table.Td>{data?.type}</Table.Td>
+          <Table.Td>{data?.person?.fullName}</Table.Td>
+          <Table.Td>{data?.person?.eMail}</Table.Td>
+          <Table.Td>{data?.person?.homeInstitute?.name}</Table.Td>
+          <Table.Td><Button color="red" onClick={openRemoveModal}>Remove</Button></Table.Td></>)}
+      </Table.Tr>
+    );
+}
+
+/*
 
 function RenderPerson(props: PersonProps) {
     const { selectedProposalCode } = useParams();
@@ -112,6 +183,6 @@ function RenderPerson(props: PersonProps) {
         </Box>
     );
 }
-
+*/
 
 export default InvestigatorsPanel
