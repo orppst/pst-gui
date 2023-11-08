@@ -32,6 +32,9 @@ export function RenderTarget(props: TargetProps) {
                         targetId: props.dbid!,
                     },
             });
+
+    // cast the target as a celestial target, to fix issues with
+    // accessors later on.
     const celestialTarget: CelestialTarget = data as CelestialTarget;
 
     if(error) {
