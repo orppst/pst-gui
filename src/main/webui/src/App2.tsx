@@ -30,8 +30,9 @@ import {
     useMantineTheme, Burger, ScrollArea, Group, ActionIcon, Tooltip
 } from "@mantine/core";
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
-import {IconChevronRight, IconLogout, IconPlus} from "@tabler/icons-react";
+import {IconChevronRight, IconLogout} from "@tabler/icons-react";
 import {useDisclosure} from "@mantine/hooks";
+import AddButton from './commonButtons/add.tsx';
 
 
 const queryClient = new QueryClient()
@@ -182,21 +183,9 @@ function App2() {
 
                     <AppShell.Navbar p="md">
                         <AppShell.Section grow component={ScrollArea}>
-                            <Text fz={"sm"}>Create a new proposal</Text>
                             <Group justify={"center"} mb={"5%"}>
-                                <Tooltip label={"new proposal"}
-                                         position={"left"}
-                                         openDelay={1000}>
-                                    <ActionIcon
-                                        color={"green.5"}
-                                        variant={"subtle"}
-                                        component={Link}
-                                        to={"proposal/new"}
-                                        onClick={opened && toggle}
-                                    >
-                                        <IconPlus size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
+                                <AddButton toolTipLabel={"new proposal"}
+                                           label={"Create a new proposal"}/>
                             </Group>
                             <Group justify={"center"}>
                                 <Text fz={"sm"}>-- OR --</Text>

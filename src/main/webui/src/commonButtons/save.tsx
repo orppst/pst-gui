@@ -1,4 +1,4 @@
-import {ActionIcon, Tooltip} from "@mantine/core";
+import { Button, Tooltip } from '@mantine/core';
 import {IconDeviceFloppy} from "@tabler/icons-react";
 import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
 
@@ -12,14 +12,13 @@ Notice: this is a 'submit' type button for a form and does not require an 'onCli
 export function SubmitButton(props: { toolTipLabel: string, disabled?: boolean }) {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <ActionIcon
-                color={"violet.5"}
-                variant={"subtle"}
-                type="submit"
-                disabled={props.disabled}
-            >
-                <IconDeviceFloppy size={"2rem"}/>
-            </ActionIcon>
+            <Button rightSection={<IconDeviceFloppy size={"2rem"}/>}
+                    color={"violet.5"}
+                    variant={"subtle"}
+                    type="submit"
+                    disabled={props.disabled}>
+                Submit
+            </Button>
         </Tooltip>
     )
 }
@@ -35,14 +34,13 @@ props:  string variable for the tool tip label,
 export function SaveButton(props: ButtonInterfaceProps) {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <ActionIcon
-                color={"violet.5"}
-                variant={"subtle"}
-                disabled={props.disabled}
-                onClick={props.onClick}
-            >
-                <IconDeviceFloppy size={"2rem"}/>
-            </ActionIcon>
+            <Button rightSection={<IconDeviceFloppy size={"2rem"}/>}
+            color={"violet.5"}
+            variant={"subtle"}
+            type="submit"
+            disabled={props.disabled}>
+                Save
+            </Button>
         </Tooltip>
     )
 }

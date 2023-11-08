@@ -6,9 +6,11 @@ import {
     useInvestigatorResourceGetInvestigators,
 } from "../generated/proposalToolComponents";
 import {useQueryClient} from "@tanstack/react-query";
-import {Box, Button, Grid, Table, Text} from "@mantine/core";
+import {Box, Grid, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
+import DeleteButton from '../commonButtons/delete.tsx';
+import AddButton from '../commonButtons/add.tsx';
 
 type PersonProps = {
     dbid: number
@@ -38,7 +40,8 @@ function InvestigatorsPanel() {
             <Text fz="lg" fw={700}>Investigators linked to this proposal</Text>
             <Grid>
                 <Grid.Col span={5}>
-                <Button onClick={handleAddNew} >Add New</Button>
+                    <AddButton toolTipLabel={"add new investigator"}
+                               onClickEvent={handleAddNew}/>
                 {isLoading ? (`Loading...`)
                     : data?.map((item) => {
                         if(item.dbid !== undefined) {
@@ -104,7 +107,10 @@ function RenderPerson(props: PersonProps) {
                                     <Table.Tr><Table.Td>Name</Table.Td><Table.Td>{data?.person?.fullName}</Table.Td></Table.Tr>
                                     <Table.Tr><Table.Td>Email</Table.Td><Table.Td>{data?.person?.eMail}</Table.Td></Table.Tr>
                                     <Table.Tr><Table.Td>Institute</Table.Td><Table.Td>{data?.person?.homeInstitute?.name}</Table.Td></Table.Tr>
-                                    <Table.Tr><Table.Td colSpan={2} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></Table.Td></Table.Tr>
+                                    <Table.Tr>
+                                        <Table.Td colSpan={2} align={"right"}>
+                                            <DeleteButton toolTipLabel={"delete investigator"} onClick={openRemoveModal}/>
+                                        </Table.Td></Table.Tr>
                                 </Table.Tbody>
                             </Table>
                         )
