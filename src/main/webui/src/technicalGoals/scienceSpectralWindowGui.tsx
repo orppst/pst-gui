@@ -25,7 +25,7 @@ export type ScienceSpectralWindowGui = {
     end: NumberUnitType,
     spectralResolution: NumberUnitType,
     isSkyFrequency: boolean,
-    polarization: PolStateEnum | undefined
+    polarization: PolStateEnum | null
     expectedSpectralLines: ExpectedSpectralLineGui [],
     key: string
 }
@@ -66,7 +66,7 @@ export function convertToScienceSpectralWindowGui(input: ScienceSpectralWindow) 
             unit: input.spectralWindowSetup?.spectralResolution?.unit?.value ?? ""
         },
         isSkyFrequency: input.spectralWindowSetup?.isSkyFrequency ?? false,
-        polarization: input.spectralWindowSetup?.polarization ?? undefined,
+        polarization: input.spectralWindowSetup?.polarization ?? null,
         expectedSpectralLines: input.expectedSpectralLine ?
             input.expectedSpectralLine.map((line) =>{
                 return convertToExpectedSpectralLineGui(line);
@@ -102,7 +102,7 @@ export function convertToScienceSpectralWindow(input: ScienceSpectralWindowGui) 
             end: convertToRealQuantity(input.end),
             spectralResolution: convertToRealQuantity(input.spectralResolution),
             isSkyFrequency: input.isSkyFrequency,
-            polarization: input.polarization
+            polarization: input.polarization as PolStateEnum
         },
         expectedSpectralLine: input.expectedSpectralLines.map((lineAlt) => {
             return convertToExpectedSpectralLine(lineAlt)

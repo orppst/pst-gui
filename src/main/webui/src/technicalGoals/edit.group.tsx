@@ -17,6 +17,7 @@ import {
     fetchTechnicalGoalResourceReplacePerformanceParameters
 } from "../generated/proposalToolComponents.ts";
 import {notifications} from "@mantine/notifications";
+import {SubmitButton} from "../commonButtons/save.tsx";
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
@@ -90,41 +91,41 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
                 //theUnit: ensure that if the parameter has a numeric value it also has a unit name
                 angularResolution:{
                     value: (theNumber, formValues) => (
-                        formValues.angularResolution.unit !== "" && theNumber === "" ?
+                        formValues.angularResolution.unit !== null && theNumber === "" ?
                             "Unit selected but no value given" : null
                     ),
                     unit:(theUnit, formValues) => (
-                        formValues.angularResolution.value !== "" && theUnit === "" ?
+                        formValues.angularResolution.value !== "" && theUnit === null  ?
                             'Please pick a unit' : null
                     )
                 },
                 largestScale:{
                     value: (theNumber, formValues) => (
-                        formValues.largestScale.unit !== "" && theNumber === "" ?
+                        formValues.largestScale.unit !== null && theNumber === "" ?
                             "Unit selected but no value given" : null
                     ),
                     unit: (theUnit, formValues) => (
-                        formValues.largestScale.value !== "" && theUnit === "" ?
+                        formValues.largestScale.value !== "" && theUnit === null ?
                             'Please pick a unit' : null
                     )
                 },
                 sensitivity:{
                     value: (theNumber, formValues) => (
-                        formValues.sensitivity.unit !== "" && theNumber === "" ?
+                        formValues.sensitivity.unit !== null && theNumber === "" ?
                             "Unit selected but no value given" : null
                     ),
                     unit: (theUnit, formValues) => (
-                        formValues.sensitivity.value !== "" && theUnit === "" ?
+                        formValues.sensitivity.value !== "" && theUnit === null  ?
                             'Please pick a unit' : null
                     )
                 },
                 dynamicRange:{
                     value: (theNumber, formValues) => (
-                        formValues.dynamicRange.unit !== "" && theNumber === ""?
+                        formValues.dynamicRange.unit !== null && theNumber === ""?
                             "Unit selected but no value given" : null
                     ),
                     unit: (theUnit, formValues) => (
-                        formValues.dynamicRange.value !== "" && theUnit === "" ?
+                        formValues.dynamicRange.value !== "" && theUnit === null  ?
                             'Please pick a unit' : null
                     )
                 },
@@ -135,40 +136,40 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
                             "A representative spectral point must be given" : null
                     ),
                     unit:(theUnit, formValues) => (
-                        formValues.spectralPoint.value !== "" && theUnit === "" ?
+                        formValues.spectralPoint.value !== "" && theUnit === null  ?
                             'Please pick a unit' : null
                     )
                 },
                 spectralWindows: {
                     start: {
                         value: (theNumber) => (
-                            theNumber === '' ? 'Please specify a frequency for the start of the spectral window' :
+                            theNumber === '' ? 'Please specify a start value' :
                                 null
                         ),
                         unit: (theUnit) => (
-                            theUnit === '' ? 'Please specify a unit for the start frequency' : null
+                            theUnit === null  ? 'Please specify a unit' : null
                         )
                     },
                     end: {
                         value: (theNumber) => (
-                            theNumber === '' ? 'Please specify a frequency for the end of the spectral window' :
+                            theNumber === '' ? 'Please specify an end value' :
                                 null
                         ),
                         unit: (theUnit) => (
-                            theUnit === '' ? 'Please specify a unit for the end frequency' : null
+                            theUnit === null  ? 'Please specify a unit' : null
                         )
                     },
                     spectralResolution: {
                         value: (theNumber) => (
-                            theNumber === '' ? 'Please specify a frequency resolution value for the window' :
+                            theNumber === '' ? 'Please specify a resolution value' :
                                 null
                         ),
                         unit: (theUnit) => (
-                            theUnit === '' ? 'Please specify a unit for the frequency resolution ' : null
+                            theUnit === null  ? 'Please specify a unit' : null
                         )
                     },
                     polarization: (value) => (
-                        value === undefined ? 'Please select a polarization' : null
+                        value === null ? 'Please select a polarization' : null
                     )
                 }
             }
@@ -176,6 +177,8 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
     )
 
     const handleSubmit = form.onSubmit((values) => {
+
+        console.log(values);
 
         let performanceParameters : PerformanceParameters = {
             desiredAngularResolution: convertToRealQuantity(values.angularResolution),
@@ -229,6 +232,10 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
 
     return (
         <form onSubmit={handleSubmit}>
+            <SubmitButton
+                toolTipLabel={"save technical goal"}
+                disabled={!form.isDirty() || !form.isValid()}
+            />
             <Grid columns={TOTAL_COLUMNS}>
                 <Grid.Col span={{base: TOTAL_COLUMNS, md: PERFORMANCE_COLUMNS}}>
                     <PerformanceParametersSection {...form}/>

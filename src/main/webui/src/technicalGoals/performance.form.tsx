@@ -64,6 +64,7 @@ export default function PerformanceParametersSection(
                             toolTip={"representative spectral frequency"}
                             valueRoot={'spectralPoint'}
                             units={frequencyUnits}
+                            withAsterisk
                         />
                     </Group>
                 </Stack>

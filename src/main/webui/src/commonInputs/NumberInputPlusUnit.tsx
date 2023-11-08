@@ -8,11 +8,12 @@ import {RealQuantity} from "../generated/proposalToolSchemas.ts";
 /**
  * Type to use with the Mantine 'NumberInput' element embedded in NumberInputPlusUnit function.
  * The Mantine NumberInput requires a number | string type where a "null" number is given by
- * the empty string.
+ * the empty string. The 'unit' member is used in a 'Select' element, which requires 'null'
+ * when there is no unit rather than the empty string - confusing much?
  */
 export type NumberUnitType =  {
     value: number | string,
-    unit: string
+    unit: string | null
 }
 
 /**
@@ -26,7 +27,7 @@ export const convertToRealQuantity = (input: NumberUnitType) : RealQuantity =>
         {
             "@type": "ivoa:RealQuantity",
             value: input.value as number,
-            unit: {value: input.unit}
+            unit: {value: input.unit as string}
         }
     )
 }
@@ -41,7 +42,7 @@ export const convertToNumberUnitType = (input: RealQuantity | undefined) : Numbe
     return (
         {
             value: input?.value ?? '',
-            unit: input?.unit?.value ?? ''
+            unit: input?.unit?.value ?? null
         }
     )
 }
@@ -68,7 +69,8 @@ export interface NumberInputPlusUnitProps {
     step?: number
     form: UseFormReturnType<any>
     label: string
-    toolTip?: string,
+    withAsterisk?: boolean
+    toolTip?: string
     valueRoot: string
     units: {value: string, label: string}[]
 }
@@ -88,10 +90,11 @@ export function NumberInputPlusUnit(props: NumberInputPlusUnitProps): ReactEleme
             <Grid.Col span={{base: baseCols, sm: 7}}>
                 <Tooltip disabled={props.toolTip == undefined} label={props.toolTip}>
                     <NumberInput
-                        bg={props.color + ".7"}
+                        bg={props.color}
                         label={props.label + ":"}
                         p={props.padding}
                         placeholder={notSpecified}
+                        withAsterisk={props.withAsterisk}
                         decimalScale={props.decimalPlaces ?? 3}
                         hideControls
                         step={props.step ?? 0.1}
@@ -102,10 +105,11 @@ export function NumberInputPlusUnit(props: NumberInputPlusUnitProps): ReactEleme
             </Grid.Col>
             <Grid.Col span={{base: baseCols, sm: 5}}>
                 <Select
-                    bg={props.color + ".7"}
+                    bg={props.color}
                     label={"unit:"}
                     p={props.padding}
-                    placeholder={"pick a unit"}
+                    placeholder={"pick one"}
+                    withAsterisk={props.withAsterisk}
                     allowDeselect
                     data={props.units}
                     {...props.form.getInputProps(props.valueRoot + ".unit")}
