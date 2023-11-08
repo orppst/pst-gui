@@ -9,6 +9,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {Box, Button, Grid, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
+import { JSON_SPACES } from '../constants.tsx';
 
 type PersonProps = {
     dbid: number
@@ -16,14 +17,17 @@ type PersonProps = {
 
 function InvestigatorsPanel() {
     const { selectedProposalCode } = useParams();
-    const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const { data , error, isLoading } =
+        useInvestigatorResourceGetInvestigators(
+            {pathParams: { proposalCode: Number(selectedProposalCode)},},
+            {enabled: true});
     const navigate = useNavigate();
 
 
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -42,9 +46,14 @@ function InvestigatorsPanel() {
                 {isLoading ? (`Loading...`)
                     : data?.map((item) => {
                         if(item.dbid !== undefined) {
-                            return (<RenderPerson dbid={item.dbid} key={item.dbid}/>)
+                            return (<RenderPerson
+                                dbid={item.dbid}
+                                key={item.dbid}/>)
                         } else {
-                            return (<Box key={randomId()}>Undefined Investigator!</Box>)
+                            return (
+                                <Box key={randomId()}>
+                                    Undefined Investigator!
+                                </Box>)
                         }
                     } )
                 }

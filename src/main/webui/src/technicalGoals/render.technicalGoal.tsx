@@ -13,11 +13,77 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
 
     const {data, error, isLoading} =
         useTechnicalGoalResourceGetTechnicalGoal( {
-            pathParams: {proposalCode: props.proposalCode, technicalGoalId: props.dbid}
+            pathParams: {
+                proposalCode: props.proposalCode,
+                technicalGoalId: props.dbid}
         });
 
     if (error) {
         return <Box>Error loading technical goal</Box>
+    }
+
+    const RenderPPTableBody = (parameters: PerformanceParameters) => {
+        return (<Table.Tbody>
+            <Table.Tr>
+                <Table.Td>Angular res. </Table.Td>
+                {
+                    parameters.desiredAngularResolution?.value ?
+                        <Table.Td>
+                            {parameters.desiredAngularResolution?.value}
+                            {` ${ locateLabel(
+                                angularUnits,
+                                parameters.desiredAngularResolution?.unit?.value)?.label }`}
+                        </Table.Td> :
+                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                }
+                <Table.Td>Largest scale </Table.Td>
+                {
+                    parameters.desiredLargestScale?.value ?
+                        <Table.Td>
+                            {parameters.desiredLargestScale?.value}
+                            {` ${ locateLabel(
+                                angularUnits,
+                                parameters.desiredLargestScale?.unit?.value)?.label }`}
+                        </Table.Td> :
+                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                }
+            </Table.Tr>
+            <Table.Tr>
+                <Table.Td>Sensitivity</Table.Td>
+                {
+                    parameters.desiredSensitivity?.value ?
+                        <Table.Td>
+                            {parameters.desiredSensitivity?.value}
+                            {` ${ locateLabel(
+                                sensitivityUnits,
+                                parameters.desiredSensitivity?.unit?.value)?.label}`}
+                        </Table.Td> :
+                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                }
+                <Table.Td>Dyn. range</Table.Td>
+                {
+                    parameters.desiredDynamicRange?.value ?
+                        <Table.Td>
+                            {parameters.desiredDynamicRange?.value}
+                            {` ${ locateLabel(sensitivityUnits,
+                                parameters.desiredDynamicRange?.unit?.value)?.label}`}
+                        </Table.Td> :
+                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                }
+            </Table.Tr>
+            <Table.Tr>
+                <Table.Td>Spectral point</Table.Td>
+                {
+                    parameters.representativeSpectralPoint?.value ?
+                        <Table.Td>
+                            {parameters.representativeSpectralPoint?.value}
+                            {` ${ locateLabel(frequencyUnits,
+                                parameters.representativeSpectralPoint?.unit?.value)?.label}`}
+                        </Table.Td> :
+                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
+                }
+            </Table.Tr>
+        </Table.Tbody>)
     }
 
     const RenderPerformanceParameters = (parameters: PerformanceParameters) => {
@@ -28,67 +94,7 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
                         <Table.Th colSpan={4}>Performance Parameters</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
-                <Table.Tbody>
-                    <Table.Tr>
-                        <Table.Td>Angular res. </Table.Td>
-                        {
-                            parameters.desiredAngularResolution?.value ?
-                                <Table.Td>
-                                    {parameters.desiredAngularResolution?.value}
-                                    {` ${ locateLabel(
-                                        angularUnits,
-                                        parameters.desiredAngularResolution?.unit?.value)?.label }`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                        <Table.Td>Largest scale </Table.Td>
-                        {
-                            parameters.desiredLargestScale?.value ?
-                                <Table.Td>
-                                    {parameters.desiredLargestScale?.value}
-                                    {` ${ locateLabel(
-                                        angularUnits,
-                                        parameters.desiredLargestScale?.unit?.value)?.label }`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                    </Table.Tr>
-                    <Table.Tr>
-                        <Table.Td>Sensitivity</Table.Td>
-                        {
-                            parameters.desiredSensitivity?.value ?
-                                <Table.Td>
-                                    {parameters.desiredSensitivity?.value}
-                                    {` ${ locateLabel(
-                                        sensitivityUnits,
-                                        parameters.desiredSensitivity?.unit?.value)?.label}`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                        <Table.Td>Dyn. range</Table.Td>
-                        {
-                            parameters.desiredDynamicRange?.value ?
-                                <Table.Td>
-                                    {parameters.desiredDynamicRange?.value}
-                                    {` ${ locateLabel(sensitivityUnits,
-                                        parameters.desiredDynamicRange?.unit?.value)?.label}`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                    </Table.Tr>
-                    <Table.Tr>
-                        <Table.Td>Spectral point</Table.Td>
-                        {
-                            parameters.representativeSpectralPoint?.value ?
-                                <Table.Td>
-                                    {parameters.representativeSpectralPoint?.value}
-                                    {` ${ locateLabel(frequencyUnits,
-                                        parameters.representativeSpectralPoint?.unit?.value)?.label}`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                    </Table.Tr>
-                </Table.Tbody>
+                <RenderPPTableBody {...parameters!}/>
             </Table>
         )
     }
@@ -104,11 +110,17 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
         return (
             <Table.Tr key={window.index}>
                 <Table.Th>Start</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.start?.value} {window.spectralWindowSetup?.start?.unit?.value}</Table.Td>
+                <Table.Td>{window.spectralWindowSetup?.start?.value}
+                    {window.spectralWindowSetup?.start?.unit?.value}
+                </Table.Td>
                 <Table.Th>End</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.end?.value} {window.spectralWindowSetup?.end?.unit?.value}</Table.Td>
+                <Table.Td>{window.spectralWindowSetup?.end?.value}
+                    {window.spectralWindowSetup?.end?.unit?.value}
+                </Table.Td>
                 <Table.Th>Res.</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.spectralResolution?.value} {window.spectralWindowSetup?.spectralResolution?.unit?.value}</Table.Td>
+                <Table.Td>{window.spectralWindowSetup?.spectralResolution?.value}
+                    {window.spectralWindowSetup?.spectralResolution?.unit?.value}
+                </Table.Td>
             </Table.Tr>
         )
     }
@@ -119,7 +131,9 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps) {
         return (
             <Table>
                 <Table.Thead>
-                    <Table.Tr><Table.Th colSpan={6}>Spectral Windows</Table.Th></Table.Tr>
+                    <Table.Tr><Table.Th colSpan={6}>
+                        Spectral Windows
+                    </Table.Th></Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                     {

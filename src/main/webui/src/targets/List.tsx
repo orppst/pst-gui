@@ -6,30 +6,41 @@ import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
 import {Box, Text} from "@mantine/core";
 import {RenderTarget} from "./RenderTarget";
+import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
 
 function TargetPanel() {
     const { selectedProposalCode} = useParams();
 
 
-    const {  data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const {  data , error, isLoading } = useProposalResourceGetTargets(
+        {pathParams: {proposalCode: Number(selectedProposalCode)},},
+        {enabled: true});
 
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
 
     return (
             <Box>
-                <Text fz="lg" fw={700}>Add and edit targets</Text>
+                <Text fz="lg"
+                      fw={HEADER_FONT_WEIGHT}>
+                    Add and edit targets
+                </Text>
                 <Box>
                     <AddTargetModal/>
                     {isLoading ? (`Loading...`)
                         : data?.map((item) => {
                                 return (<Box key={item.dbid}>
-                                    <RenderTarget proposalCode={Number(selectedProposalCode)} dbid={item.dbid!} showRemove={true}/></Box>)
+                                    <RenderTarget
+                                        proposalCode={
+                                            Number(selectedProposalCode)}
+                                        dbid={item.dbid!}
+                                        showRemove={true}/>
+                                </Box>)
                             } )
                     }
                 </Box>

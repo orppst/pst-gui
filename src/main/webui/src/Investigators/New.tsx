@@ -9,6 +9,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "../generated/proposalToolSchemas.ts";
 import {Box, Button, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
+import { JSON_SPACES, MAX_COLUMNS } from '../constants.tsx';
 
 function AddInvestigatorPanel() {
     interface newInvestigatorForm {
@@ -18,9 +19,13 @@ function AddInvestigatorPanel() {
     }
 
     const form = useForm<newInvestigatorForm>({
-        initialValues: {type: "COI" as InvestigatorKind, forPhD: false, selectedInvestigator: 0},
+        initialValues: {
+            type: "COI" as InvestigatorKind,
+            forPhD: false,
+            selectedInvestigator: 0},
         validate: {
-            selectedInvestigator: (value) => (value === 0 ? 'Please select an investigator' : null)
+            selectedInvestigator: (value) => (
+                value === 0 ? 'Please select an investigator' : null)
         }
     });
     const typeData = [{value: "COI", label: "CO-I"}, {value: "PI", label: "PI"}];
@@ -42,7 +47,8 @@ function AddInvestigatorPanel() {
             setSearchData([]);
             data?.map((item) => (
                 // @ts-ignore
-                setSearchData((current) => [...current, {value: String(item.dbid), label: item.name}])
+                setSearchData((current) => [...current, {
+                    value: String(item.dbid), label: item.name}])
             ));
         }
     },[status,data]);
@@ -50,14 +56,15 @@ function AddInvestigatorPanel() {
     if (error) {
         return (
             <div>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </div>
         );
     }
 
     const handleAdd = form.onSubmit((val) => {
         //Get full investigator from API and add back to proposal
-        fetchPersonResourceGetPerson({pathParams:{id: form.values.selectedInvestigator}})
+        fetchPersonResourceGetPerson(
+            {pathParams:{id: form.values.selectedInvestigator}})
             .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
                 {pathParams:{proposalCode: Number(selectedProposalCode)},
                     body:{
@@ -98,8 +105,13 @@ function AddInvestigatorPanel() {
                         {...form.getInputProps("selectedInvestigator")}
                     />
                     <Grid>
-                        <Grid.Col span={12}><Button type={"submit"}>Add</Button></Grid.Col>
-                        <Grid.Col span={1}><Button variant="light" onClick={handleCancel}>Cancel</Button></Grid.Col>
+                        <Grid.Col span={MAX_COLUMNS}>
+                            <Button type={"submit"}>Add</Button></Grid.Col>
+                        <Grid.Col span={1}>
+                            <Button variant="light"
+                                    onClick={handleCancel}>Cancel
+                            </Button>
+                        </Grid.Col>
                     </Grid>
                 </form>
             </Box>

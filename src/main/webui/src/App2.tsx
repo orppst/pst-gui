@@ -27,11 +27,20 @@ import {
     Text,
     TextInput,
     Grid,
-    useMantineTheme, Burger, ScrollArea, Group, ActionIcon, Tooltip
+    Burger,
+    ScrollArea,
+    Group,
+    ActionIcon,
+    Tooltip
 } from "@mantine/core";
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {IconChevronRight, IconLogout, IconPlus} from "@tabler/icons-react";
 import {useDisclosure} from "@mantine/hooks";
+import {
+    APP_HEADER_HEIGHT, CLOSE_DELAY, GRAY, ICON_SIZE, JSON_SPACES,
+    NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
+    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
+} from './constants.tsx';
 
 
 const queryClient = new QueryClient()
@@ -123,16 +132,18 @@ function App2() {
 
     function PSTRoot() {
         const {user, token, apiUrl} = useContext(ProposalContext);
-        const theme = useMantineTheme();
         const [opened, {toggle}] = useDisclosure();
 
         return (
             <ProposalContext.Provider
                 value={{selectedProposalCode, user, token, apiUrl}}>
                 <AppShell
-                    header={{height: 60}}
+                    header={{height: APP_HEADER_HEIGHT}}
                     navbar={{
-                        width: {base: 300, md: 400, lg: 450},
+                        width: {
+                            base: NAV_BAR_DEFAULT_WIDTH,
+                            md: NAV_BAR_MEDIUM_WIDTH,
+                            lg: NAV_BAR_LARGE_WIDTH},
                         breakpoint: 'sm',
                         collapsed: {mobile: !opened},
                     }}
@@ -145,8 +156,8 @@ function App2() {
                                         opened={opened}
                                         onClick={toggle}
                                         hiddenFrom={"sm"}
-                                        size="sm"
-                                        color={theme.colors.gray[6]}
+                                        size="lg"
+                                        color={GRAY}
                                         mr="xl"
                                     />
                                     <img src={"/pst/gui/public/polaris4.png"}
@@ -165,14 +176,16 @@ function App2() {
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
                                     {SwitchToggle()}
-                                    <Tooltip label={"logout"} openDelay={1000}>
+                                    <Tooltip label={"logout"}
+                                             openDelay={OPEN_DELAY}
+                                             closeDelay={CLOSE_DELAY}>
                                         <ActionIcon
                                             color={"orange.8"}
                                             variant={"subtle"}
                                             component={"a"}
                                             href={"/pst/gui/logout"}
                                         >
-                                            <IconLogout size={"2rem"}/>
+                                            <IconLogout size={ICON_SIZE}/>
                                         </ActionIcon>
                                     </Tooltip>
                                 </Group>
@@ -186,7 +199,8 @@ function App2() {
                             <Group justify={"center"} mb={"5%"}>
                                 <Tooltip label={"new proposal"}
                                          position={"left"}
-                                         openDelay={1000}>
+                                         openDelay={OPEN_DELAY}
+                                         closeDelay={CLOSE_DELAY}>
                                     <ActionIcon
                                         color={"green.5"}
                                         variant={"subtle"}
@@ -194,7 +208,7 @@ function App2() {
                                         to={"proposal/new"}
                                         onClick={opened && toggle}
                                     >
-                                        <IconPlus size={"2rem"}/>
+                                        <IconPlus size={ICON_SIZE}/>
                                     </ActionIcon>
                                 </Tooltip>
                             </Group>
@@ -239,7 +253,7 @@ function App2() {
         if (error) {
             return (
                 <Box>
-                    <pre>{JSON.stringify(error, null, 2)}</pre>
+                    <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
                 </Box>
             );
         }
@@ -264,7 +278,7 @@ function App2() {
                                      childrenOffset={30}
                                      rightSection={<IconChevronRight
                                          size="0.8rem"
-                                         stroke={1.5} />}>
+                                         stroke={STROKE} />}>
                                 <NavLink to={"proposal/" + item.code}
                                          component={Link}
                                          label="Overview" />

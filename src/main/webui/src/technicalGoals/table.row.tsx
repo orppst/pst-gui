@@ -46,7 +46,8 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
      */
     const handleDelete = () => {
         fetchTechnicalGoalResourceRemoveTechnicalGoal( {
-            pathParams: {proposalCode: Number(selectedProposalCode), technicalGoalId: technicalGoalId.id}
+            pathParams: {proposalCode: Number(selectedProposalCode),
+                technicalGoalId: technicalGoalId.id}
         })
             .then(()=>queryClient.invalidateQueries())
             .then(() => {
@@ -61,7 +62,8 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     }
 
     /**
-     * create a safety check with the user to ensure they want to delete a given technical goal.
+     * create a safety check with the user to ensure they want to delete a
+     * given technical goal.
      */
     const confirmDelete = () => modals.openConfirmModal({
         title: 'Delete Technical Goal?',
@@ -84,7 +86,8 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     const handleClone = () => {
         console.log("Cloning Technical Goal")
 
-        // create a new technicalGoal, which does not have its id set, but contains the spectral and performance
+        // create a new technicalGoal, which does not have its id set, but
+        // contains the spectral and performance
         // of the selected goal.
         let clonedGoal: TechnicalGoal = {
             performance: goal?.performance,
@@ -109,7 +112,8 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     }
 
     /**
-     * create a safety check with the user to ensure they want to clone a given technical goal.
+     * create a safety check with the user to ensure they want to clone a given
+     * technical goal.
      */
     const confirmClone = () => modals.openConfirmModal({
         title: 'Clone Technical Goal?',
@@ -120,8 +124,9 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                 </Text>
                 <Space h={"xs"}/>
                 <Text c={"gray.6"} size={"sm"}>
-                    Creates a new technical goal with a clone of this technical goal's properties.
-                    You should edit the cloned technical goal for your needs.
+                    Creates a new technical goal with a clone of this technical
+                    goal's properties. You should edit the cloned technical
+                    goal for your needs.
                 </Text>
             </>
         ),

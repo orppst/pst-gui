@@ -12,7 +12,8 @@ export const notSet = "not set";
  * @return {ReactElement} the html for the technical goal edit page.
  * @constructor
  */
-export default function TechnicalGoalEditGroup(props: TechnicalGoalClose ): ReactElement {
+export default function TechnicalGoalEditGroup(
+        props: TechnicalGoalClose ): ReactElement {
 
     const totalCols = 10;
     const performanceCols = 4;

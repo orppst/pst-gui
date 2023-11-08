@@ -11,6 +11,7 @@ import {
     fetchTechnicalGoalResourceReplacePerformanceParameters
 } from "../generated/proposalToolComponents.ts";
 import {notifications} from "@mantine/notifications";
+import { CLOSE_DELAY, OPEN_DELAY } from '../constants.tsx';
 
 /*
     When creating new Performance Parameters the representative spectral point must be fully
@@ -157,7 +158,7 @@ export default function PerformanceParametersForm(
 
     const PerformanceDetails = () => {
         return (
-            <Tooltip.Group openDelay={1000} closeDelay={200}>
+            <Tooltip.Group openDelay={OPEN_DELAY} closeDelay={CLOSE_DELAY}>
                 <Stack>
                     <Group grow>
                         <NumberInputPlusUnit

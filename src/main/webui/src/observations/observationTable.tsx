@@ -17,6 +17,7 @@ import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import CloneButton from "../commonButtons/clone.tsx";
 import DeleteButton from "../commonButtons/delete.tsx";
 import { ReactElement } from 'react';
+import { GRAY } from '../constants.tsx';
 
 export type ObservationId = {id: number}
 
@@ -76,7 +77,7 @@ export default function ObservationRow(
                     Observation of '{observation?.target?.sourceName}'
                 </Text>
                 <Space h={"sm"}/>
-                <Text c={"gray.6"} size={"sm"}>
+                <Text c={GRAY} size={"sm"}>
                     Deletes the observation from the list only.
                     Preserves everything except the timing windows.
                 </Text>
@@ -117,7 +118,7 @@ export default function ObservationRow(
                     Observation of '{observation?.target?.sourceName}'
                 </Text>
                 <Space h={"sm"}/>
-                <Text c={"gray.6"} size={"sm"}>
+                <Text c={GRAY} size={"sm"}>
                     Creates a new observation with a deep copy of this
                     observation's properties. You should edit the copied
                     observation for your needs.

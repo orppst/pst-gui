@@ -10,8 +10,12 @@ import {
     EquatorialPoint,
     SpaceFrame,
 } from "../generated/proposalToolSchemas.ts";
+import { JSON_SPACES } from '../constants.tsx';
 
-type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
+type TargetProps = {
+    proposalCode: number,
+    dbid: number,
+    showRemove: boolean };
 
 export function RenderTarget(props: TargetProps) {
     type PropsEquatorialPoint = {point: EquatorialPoint}
@@ -20,13 +24,15 @@ export function RenderTarget(props: TargetProps) {
     type PropsSpaceFrame = {frame: SpaceFrame}
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
-    const {data, error, isLoading} = useProposalResourceGetTarget(
-        {pathParams:
-                {
-                    proposalCode: props.proposalCode,
-                    targetId: props.dbid!,
-                },
-        });
+    const {data, error, isLoading} =
+        useProposalResourceGetTarget(
+            {pathParams:
+                    {
+                        proposalCode: props.proposalCode,
+                        targetId: props.dbid!,
+                    },
+            });
+    const celestialTarget: CelestialTarget = data as CelestialTarget;
 
     if(error) {
         return <Box>Error loading target</Box>
@@ -35,23 +41,35 @@ export function RenderTarget(props: TargetProps) {
     function EquatorialPoint(props: PropsEquatorialPoint) {
         const Point: EquatorialPoint = props.point;
 
-        //console.log(JSON.stringify(Point, null, 2));
-
         return (
             <Table>
                 <Table.Thead>
-                    <Table.Tr><Table.Th colSpan={2}>Coordinates</Table.Th></Table.Tr>
+                    <Table.Tr>
+                        <Table.Th colSpan={2}>Coordinates</Table.Th>
+                    </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                {Point.coordSys?.["@type"] === "coords:SpaceSys"? <SpaceSys coords={Point?.coordSys}/> : (<Table.Tr><Table.Td>`Unknown...`</Table.Td></Table.Tr>)}
-                {Point?.coordSys?.frame?.["@type"] === "coords:SpaceFrame"?<SpaceFrame frame={Point?.coordSys?.frame}/>: (<Table.Tr><Table.Td>Unknown frame</Table.Td></Table.Tr>)}
+                {Point.coordSys?.["@type"] === "coords:SpaceSys"? <
+                    SpaceSys coords={Point?.coordSys}/> : (
+                        <Table.Tr>
+                            <Table.Td>`Unknown...`</Table.Td>
+                        </Table.Tr>)}
+                {Point?.coordSys?.frame?.["@type"] === "coords:SpaceFrame"?<
+                    SpaceFrame frame={Point?.coordSys?.frame}/>: (
+                        <Table.Tr>
+                            <Table.Td>Unknown frame</Table.Td>
+                        </Table.Tr>)}
                 <Table.Tr>
                     <Table.Td>Latitude</Table.Td>
-                    <Table.Td>{Point.lat?.value} {Point.lat?.unit?.value}</Table.Td>
+                    <Table.Td>
+                        {Point.lat?.value} {Point.lat?.unit?.value}
+                    </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
                     <Table.Td>Longitude</Table.Td>
-                    <Table.Td>{Point.lon?.value} {Point.lon?.unit?.value}</Table.Td>
+                    <Table.Td>{
+                        Point.lon?.value} {Point.lon?.unit?.value}
+                    </Table.Td>
                 </Table.Tr>
                 </Table.Tbody>
             </Table>
@@ -60,10 +78,11 @@ export function RenderTarget(props: TargetProps) {
 
     function SpaceSys(props: PropsSpaceSys) {
         const Coords = props.coords;
-        //console.log(JSON.stringify(Coords));
-        return (<Table.Tr><Table.Td>Space System</Table.Td>
+        return (
+            <Table.Tr><Table.Td>Space System</Table.Td>
             <Table.Td>
-                {Coords?.coordSpace?.["@type"] === "coords:CartesianCoordSpace"?<CartesianCoordSpace/>: (`Unknown coord space`)}
+                {Coords?.coordSpace?.["@type"] === "coords:CartesianCoordSpace"?
+                    <CartesianCoordSpace/>: (`Unknown coord space`)}
             </Table.Td>
         </Table.Tr>);
     }
@@ -74,8 +93,11 @@ export function RenderTarget(props: TargetProps) {
 
     function SpaceFrame(props: PropsSpaceFrame) {
         const frame: SpaceFrame = props.frame;
-        return (<Table.Tr><Table.Td>Space Frame Ref</Table.Td><Table.Td>{frame?.spaceRefFrame}</Table.Td></Table.Tr>);
-
+        return (
+            <Table.Tr>
+                <Table.Td>Space Frame Ref</Table.Td>
+                <Table.Td>{frame?.spaceRefFrame}</Table.Td>
+            </Table.Tr>);
     }
 
     function Epoch(props: any) {
@@ -87,28 +109,31 @@ export function RenderTarget(props: TargetProps) {
                     <Table.Tr><Table.Th>Epoch</Table.Th></Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    <Table.Tr><Table.Td>{PositionEpoch.value}</Table.Td></Table.Tr>
+                    <Table.Tr><Table.Td>
+                        {PositionEpoch.value}
+                    </Table.Td></Table.Tr>
                 </Table.Tbody>
             </Table>);
     }
     function CelestialTarget(props: PropsCelestialTarget) {
         const target : CelestialTarget = props.obj;
-        //console.log(JSON.stringify(target, null, 2));
-
         return (
             <Table>
                 <Table.Thead>
                     <Table.Tr><Table.Th>Celestial Target</Table.Th></Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    <Table.Tr><Table.Td>{target.sourceName}</Table.Td></Table.Tr>
+                    <Table.Tr><Table.Td>
+                        {target.sourceName}
+                    </Table.Td></Table.Tr>
                 </Table.Tbody>
             </Table>
         )
     }
 
-    //Errors come in as name: "unknown", message: "Network Error" with an object called "stack" that
-    // contains the exception and message set in the API when the exception is thrown
+    //Errors come in as name: "unknown", message: "Network Error" with an
+    // object called "stack" that contains the exception and message set in
+    // the API when the exception is thrown
     const handleError = (error: { stack: { message: any; }; }) => {
         console.error(error);
         alert(error.stack.message);
@@ -151,28 +176,38 @@ export function RenderTarget(props: TargetProps) {
                             <Table.Tbody>
                             <Table.Tr>
                                 <Table.Td valign="top">
-                                    {data?.["@type"] === "proposal:CelestialTarget" ?
-                                        (<CelestialTarget obj={data}></CelestialTarget>)
-                                        : (JSON.stringify(data, null, 2))
+                                    {data?.["@type"] ===
+                                    "proposal:CelestialTarget" ?
+                                        (<CelestialTarget obj={celestialTarget}/>):
+                                        (JSON.stringify(data, null, JSON_SPACES))
                                     }
                                 </Table.Td>
                                 <Table.Td>
                                     {
-                                        // @ts-ignore
-                                        data?.sourceCoordinates?.["@type"] === "coords:EquatorialPoint" ?
-                                            // @ts-ignore
-                                            (<EquatorialPoint point={data?.["sourceCoordinates"]} ></EquatorialPoint>)
-                                            // @ts-ignore
-                                            : (JSON.stringify(data?.sourceCoordinates, null, 2))
+                                        celestialTarget.sourceCoordinates?.["@type"] ===
+                                        "coords:EquatorialPoint" ?
+                                            (<EquatorialPoint
+                                                point={celestialTarget?.sourceCoordinates}/>)
+                                            : (JSON.stringify(
+                                                celestialTarget?.sourceCoordinates,
+                                                null,
+                                                JSON_SPACES))
                                     }
                                 </Table.Td>
                                 <Table.Td valign="top">
-
-                                    <Epoch epoch={// @ts-ignore
-                                        data?.positionEpoch}/>
+                                    <Epoch epoch={celestialTarget?.positionEpoch}/>
                                 </Table.Td>
                             </Table.Tr>
-                            {props.showRemove && <tr><Table.Td colSpan={3} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></Table.Td></tr>}
+                            {props.showRemove &&
+                                <tr>
+                                    <Table.Td colSpan={3}
+                                              align={"right"}>
+                                        <Button color="red"
+                                                onClick={openRemoveModal}>
+                                            Remove
+                                        </Button>
+                                    </Table.Td>
+                                </tr>}
                             </Table.Tbody>
                         </Table>
                     )

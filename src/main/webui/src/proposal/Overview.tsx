@@ -17,6 +17,7 @@ import { RenderTechnicalGoal } from '../technicalGoals/render.technicalGoal.tsx'
 import { ReactElement, useRef } from 'react';
 import { SaveButton } from '../commonButtons/save.tsx';
 import downloadProposal from './downloadProposal.tsx';
+import { DIMMED_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
 
 /*
       title    -- string
@@ -66,13 +67,14 @@ interface InvestigatorLabelProps {
  * @return {ReactElement} the html to present a given investigator.
  * @constructor
  */
-function InvestigatorAccordionLabel({fullName, role, home} : InvestigatorLabelProps): ReactElement {
+function InvestigatorAccordionLabel(
+        {fullName, role, home} : InvestigatorLabelProps): ReactElement {
     return (
         <Group wrap={"nowrap"}>
             <Avatar radius={"md"} />
             <div>
                 <Text>{fullName}</Text>
-                <Text size={"sm"} c={"dimmed"} fw={400}>
+                <Text size={"sm"} c={"dimmed"} fw={DIMMED_FONT_WEIGHT}>
                     {role} | {home}
                 </Text>
             </div>
@@ -87,7 +89,8 @@ function InvestigatorAccordionLabel({fullName, role, home} : InvestigatorLabelPr
  * @return {ReactElement} the html for the table of investigators.
  * @constructor
  */
-function InvestigatorAccordionContent(investigator : Investigator): ReactElement {
+function InvestigatorAccordionContent(
+        investigator : Investigator): ReactElement {
     return (
         <Table>
             <Table.Tbody>
@@ -146,7 +149,7 @@ function ObservationAccordionLabel(
             </Avatar>
             <div>
                 <Text>{targetName}</Text>
-                <Text size={"sm"} c={"dimmed"} fw={400}>
+                <Text size={"sm"} c={"dimmed"} fw={DIMMED_FONT_WEIGHT}>
                     {observationType}
                     {intendedUse && "| " + intendedUse.toLowerCase()} |
                     {spectralPoint.value} {spectralPoint.unit?.value}
@@ -212,7 +215,7 @@ function OverviewPanel(): ReactElement {
     if (proposalsError) {
         return (
             <Box>
-                <pre>{JSON.stringify(proposalsError, null, 2)}</pre>
+                <pre>{JSON.stringify(proposalsError, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -228,17 +231,21 @@ function OverviewPanel(): ReactElement {
         const element = printRef.current;
 
         // ensure there is a rendered overview.
-        if(element !== null && proposalsData !== undefined && selectedProposalCode !== undefined && data !== undefined) {
-            downloadProposal(element, proposalsData, data, selectedProposalCode).then();
+        if(element !== null && proposalsData !== undefined &&
+                selectedProposalCode !== undefined && data !== undefined) {
+            downloadProposal(
+                element, proposalsData, data, selectedProposalCode).then();
         } else {
             // something failed in the rendering of the overview react element or
             // extracting the proposal data.
             if (element === null) {
                 console.error(
-                    'Tried to download a Overview that had not formed correctly.');
+                    'Tried to download a Overview that had not formed ' +
+                    'correctly.');
             } else {
                 console.error(
-                    'Tried to download the proposal data and that had not formed correctly.');
+                    'Tried to download the proposal data and that had not ' +
+                    'formed correctly.');
             }
         }
     };
@@ -263,7 +270,8 @@ function OverviewPanel(): ReactElement {
         return (
             <>
                 <h3>Summary</h3>
-                <Text style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
+                <Text style={{ whiteSpace: 'pre-wrap',
+                               overflowWrap: 'break-word'}}>
                     {proposalsData?.summary}
                 </Text>
             </>
@@ -335,26 +343,29 @@ function OverviewPanel(): ReactElement {
      */
     const DisplayInvestigators = (): ReactElement => {
 
-        const investigators = proposalsData?.investigators?.map((investigator) => (
-            <Accordion.Item key={investigator.person?.orcidId?.value} value={investigator.person?.fullName!}>
-                <Accordion.Control>
-                    <InvestigatorAccordionLabel
-                        fullName={investigator.person?.fullName!}
-                        role={investigator.type!}
-                        home={investigator.person?.homeInstitute?.name!}
-                    />
-                </Accordion.Control>
-                <Accordion.Panel>
-                    <InvestigatorAccordionContent {...investigator} />
-                </Accordion.Panel>
-            </Accordion.Item>
+        const investigators = proposalsData?.investigators?.map(
+            (investigator) => (
+                <Accordion.Item key={investigator.person?.orcidId?.value}
+                                value={investigator.person?.fullName!}>
+                    <Accordion.Control>
+                        <InvestigatorAccordionLabel
+                            fullName={investigator.person?.fullName!}
+                            role={investigator.type!}
+                            home={investigator.person?.homeInstitute?.name!}
+                        />
+                    </Accordion.Control>
+                    <Accordion.Panel>
+                        <InvestigatorAccordionContent {...investigator} />
+                    </Accordion.Panel>
+                </Accordion.Item>
         ))
 
         return (
             <>
                 <h3>Investigators</h3>
                 {
-                    proposalsData?.investigators && proposalsData.investigators.length > 0 ?
+                    proposalsData?.investigators &&
+                    proposalsData.investigators.length > 0 ?
                         <Accordion chevronPosition={"right"}>
                             {investigators}
                         </Accordion> :
@@ -381,8 +392,10 @@ function OverviewPanel(): ReactElement {
             <>
                 <h3>Supporting Documents</h3>
                 {
-                    proposalsData?.supportingDocuments && proposalsData.supportingDocuments.length > 0 ?
-                        <List style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
+                    proposalsData?.supportingDocuments &&
+                    proposalsData.supportingDocuments.length > 0 ?
+                        <List style={{whiteSpace: 'pre-wrap',
+                                      overflowWrap: 'break-word'}}>
                             {documents}
                         </List> :
                         <Text c={"yellow"}>No supporting documents added</Text>
@@ -400,14 +413,17 @@ function OverviewPanel(): ReactElement {
     const DisplayRelatedProposals = (): ReactElement => {
 
         const proposals = proposalsData?.relatedProposals?.map((related) =>(
-            <List.Item key={related.proposal?._id}>{related.proposal?.title}</List.Item>
+            <List.Item key={related.proposal?._id}>
+                {related.proposal?.title}
+            </List.Item>
         ))
 
         return (
             <>
                 <h3>Related Proposals</h3>
                 {
-                    proposalsData?.relatedProposals && proposalsData.relatedProposals.length > 0 ?
+                    proposalsData?.relatedProposals &&
+                    proposalsData.relatedProposals.length > 0 ?
                         <List>
                             {proposals}
                         </List> :
@@ -427,8 +443,8 @@ function OverviewPanel(): ReactElement {
 
         const observations = proposalsData?.observations?.map((observation) => {
 
-            //observation.target and observation.technicalGoal are NOT objects but numbers here,
-            // specifically their DB id
+            //observation.target and observation.technicalGoal are NOT objects
+            // but numbers here, specifically their DB id
 
             let targetObj = proposalsData?.targets?.find((target) =>
                 target._id === observation.target)!
@@ -465,7 +481,8 @@ function OverviewPanel(): ReactElement {
             <>
                 <h3>Observations</h3>
                 {
-                    proposalsData?.observations && proposalsData.observations.length > 0 ?
+                    proposalsData?.observations &&
+                    proposalsData.observations.length > 0 ?
                         <Accordion>
                             {observations}
                         </Accordion> :

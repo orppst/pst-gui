@@ -22,6 +22,7 @@ import {SubmitButton} from "../commonButtons/save.tsx";
 import {frequencyUnits} from "../physicalUnits/PhysicalUnits.tsx";
 import {NumberInputPlusUnit, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {randomId} from "@mantine/hooks";
+import { MAX_COLUMNS } from '../constants.tsx';
 
 
 type ExpectedSpectralLineAlt = {
@@ -85,7 +86,8 @@ function convertSpectralWindowSetupAlt(input: ScienceSpectralWindow) {
     return spectralWindowSetupAlt;
 }
 
-export default function ViewEditSpectralWindow(props: {windows: ScienceSpectralWindow[]}) {
+export default function ViewEditSpectralWindow(
+        props: {windows: ScienceSpectralWindow[]}) {
 
     const emptySpectralLine : ExpectedSpectralLineAlt = {
         restFrequency: {value: "", unit: ""} ,
@@ -119,7 +121,7 @@ export default function ViewEditSpectralWindow(props: {windows: ScienceSpectralW
 
 
     const renderWindowSetup = (props: {index: number}) => {
-        const totalCols = 16;
+        const totalCols = MAX_COLUMNS;
 
         return (
             <Grid columns={totalCols} gutter={0}>

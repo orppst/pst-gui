@@ -1,11 +1,13 @@
 import {
-    useProposalResourceGetObservingProposalTitle, useTechnicalGoalResourceGetTechnicalGoals,
+    useProposalResourceGetObservingProposalTitle,
+    useTechnicalGoalResourceGetTechnicalGoals,
 } from "../generated/proposalToolComponents.ts";
 import {Badge, Box, Group, Space, Table} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import TechnicalGoalRow from "./table.row.tsx";
 import TechnicalGoalNewModal from "./new.modal.tsx";
 import {TechnicalGoal} from "../generated/proposalToolSchemas.ts";
+import { JSON_SPACES } from '../constants.tsx';
 
 export type TechnicalGoalId = {id: number};
 
@@ -26,7 +28,7 @@ function GoalsPanel() {
     if (goalsError) {
         return (
             <Box>
-                <pre>{JSON.stringify(goalsError, null, 2)}</pre>
+                <pre>{JSON.stringify(goalsError, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -39,7 +41,7 @@ function GoalsPanel() {
     if (titleError) {
         return (
             <Box>
-                <pre>{JSON.stringify(titleError, null, 2)}</pre>
+                <pre>{JSON.stringify(titleError, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -72,7 +74,9 @@ function GoalsPanel() {
                     {
                         goals?.map((goal) => {
                             return (
-                                <TechnicalGoalRow id={goal.dbid!} key={goal.dbid!}/>
+                                <TechnicalGoalRow
+                                    id={goal.dbid!}
+                                    key={goal.dbid!}/>
                             )
                         })
                     }

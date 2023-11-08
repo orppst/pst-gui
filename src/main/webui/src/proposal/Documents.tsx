@@ -11,6 +11,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import {notifications} from "@mantine/notifications";
 import {randomId} from "@mantine/hooks";
+import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
 
 type DocumentProps = {
     dbid: number,
@@ -31,7 +32,7 @@ const DocumentsPanel = () => {
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -79,22 +80,37 @@ const DocumentsPanel = () => {
 
     return (
         <Box>
-            <Text fz="lg" fw={700}>View and retrieve documents</Text>
+            <Text fz="lg"
+                  fw={HEADER_FONT_WEIGHT}>
+                View and retrieve documents
+            </Text>
             <Box>
                 <Table>
                     <Table.Tbody>
-                    {isLoading ? (<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>)
+                    {isLoading ? (
+                        <Table.Tr>
+                            <Table.Td>Loading...</Table.Td>
+                        </Table.Tr>)
                     : data?.map((item) => {
                             if (item.dbid !== undefined && item.name !== undefined)
-                                return (<RenderDocumentListItem key={item.dbid} dbid={item.dbid} name={item.name}/>)
+                                return (<RenderDocumentListItem
+                                    key={item.dbid}
+                                    dbid={item.dbid}
+                                    name={item.name}/>)
                             else
-                                return (<Table.Tr key={randomId()}><Table.Td>Empty!</Table.Td></Table.Tr>)
+                                return (
+                                    <Table.Tr key={randomId()}>
+                                        <Table.Td>Empty!</Table.Td>
+                                    </Table.Tr>)
                         })
                     }
                     </Table.Tbody>
                 </Table>
             </Box>
-            <Text fz="lg" fw={700}>Upload a document</Text>
+            <Text fz="lg"
+                  fw={HEADER_FONT_WEIGHT}>
+                Upload a document
+            </Text>
             <FileButton onChange={handleUpload}>
                         {(props) => <Button {...props}>Choose a file</Button>}
             </FileButton>
@@ -147,22 +163,45 @@ function RenderDocumentListItem(props: DocumentProps) {
 
     //TODO: Do we need to revoke this URL after use?
     const prepareDownload = () => {
-        fetchSupportingDocumentResourceDownloadSupportingDocument({pathParams: {id: props.dbid, proposalCode: Number(selectedProposalCode)}})
-            .then((blob) => setDownloadLink(window.URL.createObjectURL(blob as unknown as Blob)))
+        fetchSupportingDocumentResourceDownloadSupportingDocument(
+            {pathParams: {
+                id: props.dbid,
+                    proposalCode: Number(selectedProposalCode)}})
+            .then((blob) => setDownloadLink(
+                window.URL.createObjectURL(blob as unknown as Blob)))
             .then(() => setDownloadReady(true));
 
     }
 
     if(submitting)
-        return (<Table.Tr key={props.dbid}><Table.Td>DELETING...</Table.Td></Table.Tr>);
+        return (
+            <Table.Tr key={props.dbid}>
+                <Table.Td>DELETING...</Table.Td>
+            </Table.Tr>);
     else
         return (
                 <Table.Tr key={props.dbid}>
                     <Table.Td>{props.name}</Table.Td>
                     {downloadReady?
-                        <Table.Td align={"right"}><Button component={"a"} download={props.name} color={"green"} href={downloadLink}>Download</Button></Table.Td>
-                        :<Table.Td align={"right"}><Button component={"a"} download={props.name} color={"blue"} onClick={prepareDownload}>Request download</Button></Table.Td>}
-                    <Table.Td align={"left"}><Button color={"red"} onClick={openRemoveModal}>Remove</Button></Table.Td>
+                        <Table.Td align={"right"}>
+                            <Button component={"a"}
+                                    download={props.name}
+                                    color={"green"}
+                                    href={downloadLink}>Download
+                            </Button>
+                        </Table.Td>
+                        :<Table.Td align={"right"}>
+                            <Button component={"a"}
+                                    download={props.name}
+                                    color={"blue"}
+                                    onClick={prepareDownload}>Request download
+                            </Button>
+                        </Table.Td>}
+                    <Table.Td align={"left"}>
+                        <Button color={"red"}
+                                onClick={openRemoveModal}>Remove
+                        </Button>
+                    </Table.Td>
                 </Table.Tr>
             );
 }

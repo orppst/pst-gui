@@ -29,7 +29,8 @@ const TargetForm = (props: FormPropsType<{
                 SelectedEpoch: "J2000"
             },
             validate: {
-                TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null)
+                TargetName: (value) => (
+                    value.length < 1 ? 'Name cannot be blank ' : null)
             }
         });
     const queryClient = useQueryClient();
@@ -37,12 +38,15 @@ const TargetForm = (props: FormPropsType<{
 
     function simbadLookup() {
         function notFound() {
-            const choice = window.confirm("Unable to match source " + form.values.TargetName + " try again?");
+            const choice = window.confirm(
+                "Unable to match source " + form.values.TargetName +
+                " try again?");
             if(!choice)
                 props.onSubmit();
         }
 
-        fetchSimbadResourceSimbadFindTarget({queryParams: {targetName: form.values.TargetName}})
+        fetchSimbadResourceSimbadFindTarget(
+            {queryParams: {targetName: form.values.TargetName}})
             .then((data : SimbadTargetResult) => {
                 console.log(data);
                 form.setFieldValue('RA', data.raDegrees?data.raDegrees:0);
@@ -56,8 +60,14 @@ const TargetForm = (props: FormPropsType<{
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: {},
-            lat: {"@type": "ivoa:RealQuantity", value: val.RA, unit: {value: "degrees"}},
-            lon: {"@type": "ivoa:RealQuantity", value: val.Dec, unit: {value: "degrees"}}
+            lat: {
+                "@type": "ivoa:RealQuantity",
+                value: val.RA,
+                unit: {value: "degrees"}},
+            lon: {
+                "@type": "ivoa:RealQuantity",
+                value: val.Dec,
+                unit: {value: "degrees"}}
         }
         const Target: CelestialTarget = {
                 "@type": "proposal:CelestialTarget",
@@ -72,9 +82,13 @@ const TargetForm = (props: FormPropsType<{
                     Target.sourceCoordinates.coordSys = ss;
         }
 
-        fetchSpaceSystemResourceGetSpaceSystem({pathParams: {frameCode: 'ICRS'}})
+        fetchSpaceSystemResourceGetSpaceSystem(
+            {pathParams: {frameCode: 'ICRS'}})
             .then((spaceSys) => assignSpaceSys(spaceSys))
-            .then(() => fetchProposalResourceAddNewTarget({pathParams:{proposalCode: Number(selectedProposalCode)}, body: Target})
+            .then(() => fetchProposalResourceAddNewTarget(
+                {pathParams:{
+                    proposalCode: Number(selectedProposalCode)},
+                    body: Target})
                 .then(() => {return queryClient.invalidateQueries()})
                 .then(() => {props.onSubmit()})
                 .catch(console.log)

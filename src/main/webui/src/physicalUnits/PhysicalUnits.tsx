@@ -33,8 +33,9 @@ export const sensitivityUnits = [
  */
 export const locateLabel = (
         array: Array<{value:string, label:string}>,
-        value: string | undefined): { value: string; label: string; } | undefined => {
-    return array.find((object) => {
-        return object.value == value
-    })
+        value: string | undefined):
+    { value: string; label: string; } | undefined => {
+        return array.find((object) => {
+            return object.value == value
+        })
 }
