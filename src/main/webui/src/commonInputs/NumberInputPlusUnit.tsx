@@ -2,6 +2,7 @@ import {Grid, MantineColor, MantineSpacing, NumberInput, Select, StyleProp, Tool
 import {UseFormReturnType} from "@mantine/form";
 import {notSpecified} from "../technicalGoals/edit.group.tsx";
 import { ReactElement } from 'react';
+import {RealQuantity} from "../generated/proposalToolSchemas.ts";
 
 
 /**
@@ -12,6 +13,37 @@ import { ReactElement } from 'react';
 export type NumberUnitType =  {
     value: number | string,
     unit: string
+}
+
+/**
+ * convert NumberUnitType to RealQuantity
+ *
+ * intention: use before saving a "RealQuantity" to the database
+ */
+export const convertToRealQuantity = (input: NumberUnitType) : RealQuantity =>
+{
+    return (
+        {
+            "@type": "ivoa:RealQuantity",
+            value: input.value as number,
+            unit: {value: input.unit}
+        }
+    )
+}
+
+/**
+ *  convert RealQuantity to NumberUnitType
+ *
+ *  intention: use after reading a "RealQuantity" from the database which is potentially undefined
+ */
+export const convertToNumberUnitType = (input: RealQuantity | undefined) : NumberUnitType =>
+{
+    return (
+        {
+            value: input?.value ?? '',
+            unit: input?.unit?.value ?? ''
+        }
+    )
 }
 
 /**

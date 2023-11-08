@@ -4,6 +4,9 @@ import {notSet} from "./edit.group.tsx";
 import {useTechnicalGoalResourceGetTechnicalGoal} from "../generated/proposalToolComponents.ts";
 import {angularUnits, frequencyUnits, locateLabel, sensitivityUnits} from "../physicalUnits/PhysicalUnits.tsx";
 
+/**
+ *  Provides a means to build a "stylish" summary table for display in the Proposal Overview
+ */
 
 type RenderTechnicalGoalProps = {
     proposalCode: number, dbid: number

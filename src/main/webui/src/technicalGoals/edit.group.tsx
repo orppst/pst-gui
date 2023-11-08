@@ -1,50 +1,242 @@
-import PerformanceParametersForm from "./performance.form.tsx";
-import ViewEditSpectralWindow from "./spectrum.form.tsx";
-import {Space, Grid, Fieldset, Button, Group} from "@mantine/core";
-import {TechnicalGoalClose} from "./Goals.tsx";
+import PerformanceParametersSection from "./performance.form.tsx";
+import SpectralWindowsSection from "./spectrum.form.tsx";
+import {Grid} from "@mantine/core";
+import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
 import { ReactElement } from 'react';
+import {convertToNumberUnitType, convertToRealQuantity, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
+import {useParams} from "react-router-dom";
+import {useQueryClient} from "@tanstack/react-query";
+import {
+    convertToScienceSpectralWindowGui,
+    ScienceSpectralWindowGui
+} from "./scienceSpectralWindowGui.tsx";
+import {useForm} from "@mantine/form";
+import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
+import {
+    fetchTechnicalGoalResourceAddTechnicalGoal,
+    fetchTechnicalGoalResourceReplacePerformanceParameters
+} from "../generated/proposalToolComponents.ts";
+import {notifications} from "@mantine/notifications";
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
 
+
 /**
- * @param {TechnicalGoalClose} props the data needed to create the technical goal edit group.
+ * interface for the TechnicalGoal Form values.
+ */
+export interface TechnicalGoalValues {
+    angularResolution: NumberUnitType,
+    largestScale: NumberUnitType,
+    sensitivity: NumberUnitType,
+    dynamicRange: NumberUnitType,
+    spectralPoint: NumberUnitType
+    spectralWindows: ScienceSpectralWindowGui []
+}
+
+/**
+ * creates the Technical Goals form
+ * @param {TechnicalGoalProps} props the data needed to create the technical goal edit group.
  * @return {ReactElement} the html for the technical goal edit page.
  * @constructor
  */
-export default function TechnicalGoalEditGroup(props: TechnicalGoalClose ): ReactElement {
+export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): ReactElement {
 
-    const totalCols = 10;
-    const performanceCols = 4;
-    const spectrumCols = totalCols - performanceCols
+    // integers specifying the proportional number of columns for the performance parameter
+    // section and the spectral window section
+    const TOTAL_COLUMNS = 10;
+    const PERFORMANCE_COLUMNS = 4;
+    const SPECTRUM_COLUMNS = TOTAL_COLUMNS - PERFORMANCE_COLUMNS
+
+    const {selectedProposalCode} = useParams();
+    const queryClient = useQueryClient();
+
+    const newTechnicalGoal = !props.technicalGoal;
+
+
+    // use spectral windows if we have them, else use empty array
+    let initialSpectralWindows: ScienceSpectralWindowGui[] = [];
+    if (props.technicalGoal?.spectrum !== undefined &&
+        props.technicalGoal.spectrum.length > 0) {
+        initialSpectralWindows = props.technicalGoal.spectrum.map((spectralWindow) => {
+            return convertToScienceSpectralWindowGui(spectralWindow);
+        })
+    }
+
+
+    const form = useForm<TechnicalGoalValues> (
+        {
+            initialValues: {
+                angularResolution: convertToNumberUnitType(
+                    props.technicalGoal?.performance?.desiredAngularResolution
+                ),
+                largestScale: convertToNumberUnitType(
+                    props.technicalGoal?.performance?.desiredLargestScale
+                ),
+                sensitivity: convertToNumberUnitType(
+                    props.technicalGoal?.performance?.desiredSensitivity
+                ),
+                dynamicRange: convertToNumberUnitType(
+                    props.technicalGoal?.performance?.desiredDynamicRange
+                ),
+                spectralPoint: convertToNumberUnitType(
+                    props.technicalGoal?.performance?.representativeSpectralPoint
+                ),
+                spectralWindows: initialSpectralWindows
+            },
+
+            validate: {
+                //theNumber: check that if a unit has been selected the numeric component isn't blank
+                //theUnit: ensure that if the parameter has a numeric value it also has a unit name
+                angularResolution:{
+                    value: (theNumber, formValues) => (
+                        formValues.angularResolution.unit !== "" && theNumber === "" ?
+                            "Unit selected but no value given" : null
+                    ),
+                    unit:(theUnit, formValues) => (
+                        formValues.angularResolution.value !== "" && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                },
+                largestScale:{
+                    value: (theNumber, formValues) => (
+                        formValues.largestScale.unit !== "" && theNumber === "" ?
+                            "Unit selected but no value given" : null
+                    ),
+                    unit: (theUnit, formValues) => (
+                        formValues.largestScale.value !== "" && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                },
+                sensitivity:{
+                    value: (theNumber, formValues) => (
+                        formValues.sensitivity.unit !== "" && theNumber === "" ?
+                            "Unit selected but no value given" : null
+                    ),
+                    unit: (theUnit, formValues) => (
+                        formValues.sensitivity.value !== "" && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                },
+                dynamicRange:{
+                    value: (theNumber, formValues) => (
+                        formValues.dynamicRange.unit !== "" && theNumber === ""?
+                            "Unit selected but no value given" : null
+                    ),
+                    unit: (theUnit, formValues) => (
+                        formValues.dynamicRange.value !== "" && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                },
+                //a spectral point must be given
+                spectralPoint:{
+                    value: (theNumber) => (
+                        theNumber === "" ?
+                            "A representative spectral point must be given" : null
+                    ),
+                    unit:(theUnit, formValues) => (
+                        formValues.spectralPoint.value !== "" && theUnit === "" ?
+                            'Please pick a unit' : null
+                    )
+                },
+                spectralWindows: {
+                    start: {
+                        value: (theNumber) => (
+                            theNumber === '' ? 'Please specify a frequency for the start of the spectral window' :
+                                null
+                        ),
+                        unit: (theUnit) => (
+                            theUnit === '' ? 'Please specify a unit for the start frequency' : null
+                        )
+                    },
+                    end: {
+                        value: (theNumber) => (
+                            theNumber === '' ? 'Please specify a frequency for the end of the spectral window' :
+                                null
+                        ),
+                        unit: (theUnit) => (
+                            theUnit === '' ? 'Please specify a unit for the end frequency' : null
+                        )
+                    },
+                    spectralResolution: {
+                        value: (theNumber) => (
+                            theNumber === '' ? 'Please specify a frequency resolution value for the window' :
+                                null
+                        ),
+                        unit: (theUnit) => (
+                            theUnit === '' ? 'Please specify a unit for the frequency resolution ' : null
+                        )
+                    },
+                    polarization: (value) => (
+                        value === undefined ? 'Please select a polarization' : null
+                    )
+                }
+            }
+        }
+    )
+
+    const handleSubmit = form.onSubmit((values) => {
+
+        let performanceParameters : PerformanceParameters = {
+            desiredAngularResolution: convertToRealQuantity(values.angularResolution),
+            desiredDynamicRange: convertToRealQuantity(values.dynamicRange),
+            desiredSensitivity: convertToRealQuantity(values.sensitivity),
+            desiredLargestScale: convertToRealQuantity(values.largestScale),
+            representativeSpectralPoint: convertToRealQuantity(values.spectralPoint)
+        }
+
+        if(newTechnicalGoal) {
+            //posting a new technical goal to the DB
+
+            let goal : TechnicalGoal = {
+                performance: performanceParameters,
+                spectrum: [] //TODO: implement saving spectral windows, see issue #12
+            }
+
+            fetchTechnicalGoalResourceAddTechnicalGoal( {
+                pathParams: {proposalCode: Number(selectedProposalCode)},
+                body: goal
+            })
+                .then(()=>queryClient.invalidateQueries())
+                .then(()=>props.closeModal!())
+                .catch(console.error);
+        } else {
+            //editing an existing technical goal
+
+            fetchTechnicalGoalResourceReplacePerformanceParameters({
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode),
+                    technicalGoalId: props.technicalGoal?._id!
+                },
+                body: performanceParameters
+            })
+                .then(()=>queryClient.invalidateQueries())
+                .then(() => {
+                    notifications.show({
+                        autoClose: false,
+                        title: "Edit successful",
+                        message: "performance parameters updated only, spectral window updates yet to be implemented",
+                        color: "green"
+                    })
+                })
+                .then(() => form.resetDirty())
+                .catch(console.error);
+
+            //TODO: implement editing existing spectral windows and/or adding new windows, issue #12
+        }
+    })
+
 
     return (
-        <>
-            <Grid columns={totalCols}>
-                <Grid.Col span={{base: totalCols, md: performanceCols}}>
-                    <Fieldset legend={"Performance parameters"}>
-                        <PerformanceParametersForm
-                            technicalGoalId={props.goal._id}
-                            newTechnicalGoal={false}
-                            performance={props.goal.performance}
-                        />
-                    </Fieldset>
+        <form onSubmit={handleSubmit}>
+            <Grid columns={TOTAL_COLUMNS}>
+                <Grid.Col span={{base: TOTAL_COLUMNS, md: PERFORMANCE_COLUMNS}}>
+                    <PerformanceParametersSection {...form}/>
                 </Grid.Col>
-                <Grid.Col span={{base: totalCols, md: spectrumCols}}>
-                    <Fieldset legend={"Spectral windows"}>
-                        <ViewEditSpectralWindow
-                            windows={props.goal.spectrum!}
-                        />
-                    </Fieldset>
-                    <Space h={"xs"}/>
+                <Grid.Col span={{base: TOTAL_COLUMNS, md: SPECTRUM_COLUMNS}}>
+                    <SpectralWindowsSection {...form}/>
                 </Grid.Col>
-
             </Grid>
-            <Group justify={"flex-end"}>
-                <Button size="sm" onClick={props.close}>
-                    finished editing
-                </Button>
-            </Group>
-        </>
+        </form>
     )
 }

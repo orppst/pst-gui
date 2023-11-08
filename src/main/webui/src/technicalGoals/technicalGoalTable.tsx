@@ -1,4 +1,3 @@
-import {TechnicalGoalId} from "./Goals.tsx";
 import {useParams} from "react-router-dom";
 import {Badge, Group, Space, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
@@ -20,6 +19,11 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import {notifications} from "@mantine/notifications";
 import {notSet} from "./edit.group.tsx";
+import {ReactElement} from "react";
+
+
+export type TechnicalGoalId = {id: number};
+
 
 export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
 
@@ -208,7 +212,7 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                             <Group position={"right"}>
                                 {
                                     goalLoading ? 'Loading...' :
-                                        <TechnicalGoalEditModal {...goal} />
+                                        <TechnicalGoalEditModal technicalGoal={goal} />
                                 }
                                 <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
                                 <DeleteButton toolTipLabel={"delete"} onClick={confirmDelete} />
@@ -218,5 +222,22 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                 )
             }
         </>
+    )
+}
+
+export function technicalGoalsHeader() : ReactElement {
+    return (
+        <Table.Thead>
+            <Table.Tr>
+                <Table.Th>ID</Table.Th>
+                <Table.Th>Angular resolution</Table.Th>
+                <Table.Th>Largest scale</Table.Th>
+                <Table.Th>Sensitivity</Table.Th>
+                <Table.Th>Dynamic Range</Table.Th>
+                <Table.Th>Spectral point</Table.Th>
+                <Table.Th>Spectral windows</Table.Th>
+                <Table.Th></Table.Th>
+            </Table.Tr>
+        </Table.Thead>
     )
 }

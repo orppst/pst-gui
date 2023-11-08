@@ -3,24 +3,34 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import {Badge, Box, Group, Space, Table} from "@mantine/core";
 import {useParams} from "react-router-dom";
-import TechnicalGoalRow from "./table.row.tsx";
-import TechnicalGoalNewModal from "./new.modal.tsx";
+import TechnicalGoalRow, {technicalGoalsHeader} from "./technicalGoalTable.tsx";
 import {TechnicalGoal} from "../generated/proposalToolSchemas.ts";
+import TechnicalGoalEditModal from "./edit.modal.tsx";
 
-export type TechnicalGoalId = {id: number};
-
-export type TechnicalGoalClose = {
-    goal: TechnicalGoal,
-    close: () => void
+export type TechnicalGoalProps = {
+    technicalGoal: TechnicalGoal | undefined,
+    closeModal?: () => void
 }
 
-function GoalsPanel() {
+function TechnicalGoalsPanel() {
+
     const { selectedProposalCode } = useParams();
-    const { data: goals, error: goalsError, isLoading: goalsLoading } =
-        useTechnicalGoalResourceGetTechnicalGoals({
-            pathParams: {proposalCode: Number(selectedProposalCode)},
-            },
+
+    const {
+        data: goals,
+        error: goalsError,
+        isLoading: goalsLoading } =
+        useTechnicalGoalResourceGetTechnicalGoals(
+            {pathParams: {proposalCode: Number(selectedProposalCode)},},
             {enabled: true}
+        );
+
+    const {
+        data: titleData,
+        error: titleError,
+        isLoading: titleLoading} =
+        useProposalResourceGetObservingProposalTitle(
+            {pathParams: {proposalCode: Number(selectedProposalCode)}}
         );
 
     if (goalsError) {
@@ -30,11 +40,6 @@ function GoalsPanel() {
             </Box>
         );
     }
-
-    const {data: titleData, error: titleError, isLoading: titleLoading} =
-        useProposalResourceGetObservingProposalTitle(
-            {pathParams: {proposalCode: Number(selectedProposalCode)}}
-        );
 
     if (titleError) {
         return (
@@ -56,23 +61,14 @@ function GoalsPanel() {
 
             {goalsLoading ? (`Loading...`) :
                 <Table>
-                    <Table.Thead>
-                    <Table.Tr>
-                        <Table.Th>ID</Table.Th>
-                        <Table.Th>Angular resolution</Table.Th>
-                        <Table.Th>Largest scale</Table.Th>
-                        <Table.Th>Sensitivity</Table.Th>
-                        <Table.Th>Dynamic Range</Table.Th>
-                        <Table.Th>Spectral point</Table.Th>
-                        <Table.Th>Spectral windows</Table.Th>
-                        <Table.Th></Table.Th>
-                    </Table.Tr>
-                    </Table.Thead>
+                    {technicalGoalsHeader()}
                     <Table.Tbody>
                     {
                         goals?.map((goal) => {
                             return (
-                                <TechnicalGoalRow id={goal.dbid!} key={goal.dbid!}/>
+                                <TechnicalGoalRow id={goal.dbid!}
+                                                  key={goal.dbid!}
+                                />
                             )
                         })
                     }
@@ -83,11 +79,15 @@ function GoalsPanel() {
             <Space h={"xs"}/>
 
             <Group justify={'flex-end'}>
-                {goalsLoading ? (`Loading...`) : <TechnicalGoalNewModal/>}
+                {goalsLoading ? (`Loading...`) :
+                    <TechnicalGoalEditModal
+                        technicalGoal={undefined}
+                    />
+                }
             </Group>
         </div>
     );
 
 }
 
-export default GoalsPanel
+export default TechnicalGoalsPanel
