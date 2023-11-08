@@ -40,7 +40,8 @@ function InvestigatorsPanel() {
                 <Grid.Col span={5}>
                 <Button onClick={handleAddNew} >Add New</Button>
                     <Table>
-                        {InvestigatorsHeader()}
+                        {data?.length === 0? (<Table.Td>Please add an investigator</Table.Td>) : InvestigatorsHeader()}
+                        <Table.Tbody>
                         {isLoading ? (`Loading...`)
                             : data?.map((item) => {
                                 if(item.dbid !== undefined) {
@@ -50,6 +51,7 @@ function InvestigatorsPanel() {
                                 }
                             } )
                         }
+                        </Table.Tbody>
                     </Table>
                 </Grid.Col>
             </Grid>
