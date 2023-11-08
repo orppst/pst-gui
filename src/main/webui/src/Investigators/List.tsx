@@ -85,6 +85,14 @@ function InvestigatorsRow(props: PersonProps) {
         });
     const queryClient = useQueryClient();
 
+    //Errors come in as name: "unknown", message: "Network Error" with an object called "stack" that
+    // contains the exception and message set in the API when the exception is thrown
+    const handleError = (error: { stack: { message: any; }; }) => {
+        console.error(error);
+        alert(error.stack.message);
+        setSubmitting(false);
+    }
+
     function handleRemove() {
         setSubmitting(true);
         fetchInvestigatorResourceRemoveInvestigator({pathParams:
@@ -94,7 +102,7 @@ function InvestigatorsRow(props: PersonProps) {
                 }})
             .then(()=>setSubmitting(false))
             .then(()=>queryClient.invalidateQueries())
-            .catch(console.log);
+            .catch(handleError);
     }
 
     const openRemoveModal = () =>
@@ -124,67 +132,5 @@ function InvestigatorsRow(props: PersonProps) {
       </Table.Tr>
     );
 }
-
-/*
-
-function RenderPerson(props: PersonProps) {
-    const { selectedProposalCode } = useParams();
-    const [submitting, setSubmitting] = useState(false);
-    const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
-        {pathParams:
-                    {
-                        investigatorId: props.dbid,
-                        proposalCode: Number(selectedProposalCode),
-                    },
-            });
-    const queryClient = useQueryClient();
-
-    function handleRemove() {
-        setSubmitting(true);
-        fetchInvestigatorResourceRemoveInvestigator({pathParams:
-                {
-                    investigatorId: props.dbid,
-                    proposalCode: Number(selectedProposalCode),
-                }})
-            .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries())
-            .catch(console.log);
-    }
-
-    const openRemoveModal = () =>
-        modals.openConfirmModal({
-            title: "Remove investigator",
-            centered: true,
-            children: (
-                <Text size="sm">
-                    Are you sure you want to remove {data?.person?.fullName} from this proposal?
-                </Text>
-            ),
-            labels: { confirm: "Delete", cancel: "Cancel" },
-            confirmProps: { color: "red" },
-            onConfirm: () => handleRemove(),
-        });
-
-    return (
-        <Box>
-            {isLoading?(`Loading...`):
-                error?(`Error!`):
-                    submitting?(`Removing...`):
-                        (
-                            <Table>
-                                <Table.Tbody>
-                                    <Table.Tr><Table.Td>Type</Table.Td><Table.Td>{data?.type}</Table.Td></Table.Tr>
-                                    <Table.Tr><Table.Td>Name</Table.Td><Table.Td>{data?.person?.fullName}</Table.Td></Table.Tr>
-                                    <Table.Tr><Table.Td>Email</Table.Td><Table.Td>{data?.person?.eMail}</Table.Td></Table.Tr>
-                                    <Table.Tr><Table.Td>Institute</Table.Td><Table.Td>{data?.person?.homeInstitute?.name}</Table.Td></Table.Tr>
-                                    <Table.Tr><Table.Td colSpan={2} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></Table.Td></Table.Tr>
-                                </Table.Tbody>
-                            </Table>
-                        )
-            }
-        </Box>
-    );
-}
-*/
 
 export default InvestigatorsPanel
