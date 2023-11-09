@@ -2,7 +2,7 @@ import {Accordion, Box} from "@mantine/core";
 import DeleteButton from "./delete.tsx";
 import ViewEditButton from "./viewEdit.tsx";
 import CloneButton from "./clone.tsx";
-import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
+import { ClickButtonInterfaceProps } from './buttonInterfaceProps.tsx';
 import {SaveButton} from "./save.tsx";
 
 /*
@@ -13,7 +13,7 @@ import {SaveButton} from "./save.tsx";
 export function AccordionDelete(
     props : {
         title: string,
-        deleteProps: ButtonInterfaceProps
+        deleteProps: ClickButtonInterfaceProps
     }) {
     return (
         <Box style={{ display: 'flex', alignItems: 'center' }}>
@@ -29,8 +29,8 @@ Note: this uses a 'SaveButton' not a 'SubmitButton'
 export function AccordionSaveDelete(
     props: {
         title: string,
-        saveProps: ButtonInterfaceProps,
-        deleteProps: ButtonInterfaceProps
+        saveProps: ClickButtonInterfaceProps,
+        deleteProps: ClickButtonInterfaceProps
     }) {
     return (
         <Box style={{display: 'flex', alignItems: 'center'}}>
@@ -44,9 +44,9 @@ export function AccordionSaveDelete(
 export function AccordionEditCloneDelete(
     props: {
         title: string,
-        editProps: ButtonInterfaceProps,
-        cloneProps: ButtonInterfaceProps,
-        deleteProps: ButtonInterfaceProps
+        editProps: ClickButtonInterfaceProps,
+        cloneProps: ClickButtonInterfaceProps,
+        deleteProps: ClickButtonInterfaceProps
     }) {
     return (
         <Box style={{ display: 'flex', alignItems: 'center' }}>
