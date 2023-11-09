@@ -41,6 +41,12 @@ export interface DownloadButtonInterfaceProps extends BasicButtonInterfaceProps 
     href: string
 }
 
+/**
+ * used by the download request button.
+ *
+ * @param {string} download the downloaded file name.
+ * @param {() => void}} onClick the function to call when clicked.
+ */
 export interface DownloadRequestInterfaceProps extends BasicButtonInterfaceProps {
     download: string
     onClick?: () => void
