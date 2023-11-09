@@ -1,27 +1,27 @@
 import { Button, Tooltip } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { IconDatabaseSearch } from '@tabler/icons-react';
 import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
 import { ReactElement } from 'react';
 
 /**
- * creates an add button.
+ * creates a database button.
  *
- * @param {ButtonInterfaceProps} props the button inputs.
- * @return {ReactElement} the dynamic html for the add button
+ * @param {ButtonInterfaceProps} props the input data to this button
+ * @return {ReactElement} the dynamic HTML for the database interface button
  * @constructor
  */
-export default function AddButton(props: ButtonInterfaceProps):
+export default function DatabaseSearchButton(props: ButtonInterfaceProps):
         ReactElement {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<IconPlus size={"2rem"}/>}
+            <Button rightSection={<IconDatabaseSearch size={"2rem"}/>}
                     color={"green.5"}
                     variant={"subtle"}
                     onClick={props.onClick === undefined?
                         props.onClickEvent :
                         props.onClick}
                     disabled={props.disabled}>
-                {props.label === undefined? 'Add' : props.label}
+                {props.label === undefined? 'Search' : props.label}
             </Button>
         </Tooltip>
     )

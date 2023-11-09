@@ -487,6 +487,7 @@ function OverviewPanel(): ReactElement {
                 toolTipLabel: `download proposal`,
                 disabled: false,
                 onClick: handleDownloadPdf,
+                label: "Save to disk",
             });
     }
 

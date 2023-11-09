@@ -32,7 +32,7 @@ function InvestigatorsPanel() {
 
     function handleAddNew(event: SyntheticEvent) {
         event.preventDefault();
-        navigate(  "new");
+        navigate("new");
     }
 
     return (

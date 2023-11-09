@@ -88,7 +88,8 @@ function SummaryPanel() {
                     {MAX_CHARS_FOR_INPUTS - form.values.summary.length}
                 </small>
                 <br/>
-                <SubmitButton toolTipLabel={"save summary"}></SubmitButton>
+                <SubmitButton toolTipLabel={"save summary"}
+                              label={'save'}/>
             </form>
             }
         </Box>

@@ -75,7 +75,8 @@ function TitlePanel() {
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>
                 <TextInput name="title" {...form.getInputProps('title')}/>
-                <SubmitButton toolTipLabel={"save title"}></SubmitButton>
+                <SubmitButton toolTipLabel={"save title"}
+                              label={"Save"}/>
             </form>
             }
         </Box>

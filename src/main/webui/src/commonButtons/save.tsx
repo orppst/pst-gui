@@ -1,15 +1,19 @@
 import { Button, Tooltip } from '@mantine/core';
 import {IconDeviceFloppy} from "@tabler/icons-react";
 import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
+import { ReactElement } from 'react';
 
-/*
-Returns a form submit button in the form of a Mantine ActionIcon displaying a floppy disk
-
-props: input consists of a string variable for the tool tip label, and a boolean for the disabled state
-
-Notice: this is a 'submit' type button for a form and does not require an 'onClick()' function
+/**
+ * creates a submit button in the form of a Mantine ActionIcon displaying a
+ * floppy disk. This is the only button with a type=submit and so does
+ * not require an 'onClick()' function.
+ *
+ *
+ * @param {ButtonInterfaceProps} props the button inputs.
+ * @return {ReactElement} the dynamic html for the submit button
+ * @constructor
  */
-export function SubmitButton(props: { toolTipLabel: string, disabled?: boolean }) {
+export function SubmitButton(props: ButtonInterfaceProps) {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
             <Button rightSection={<IconDeviceFloppy size={"2rem"}/>}
@@ -17,21 +21,22 @@ export function SubmitButton(props: { toolTipLabel: string, disabled?: boolean }
                     variant={"subtle"}
                     type="submit"
                     disabled={props.disabled}>
-                Submit
+                {props.label === undefined? 'Submit' : props.label}
             </Button>
         </Tooltip>
     )
 }
 
-/*
-Returns a save button in the form of a Mantine ActionIcon displaying a floppy disk - use in place of a
-SubmitButton when a submit is not appropriate
-
-props:  string variable for the tool tip label,
-        a boolean for the disabled state,
-        an onClick() function.
+/**
+ * Returns a save button in the form of a Mantine ActionIcon displaying a
+ * floppy disk - use in place of a SubmitButton when a submit is not appropriate
+ *
+ *
+ * @param {ButtonInterfaceProps} props the button inputs.
+ * @return {ReactElement} the dynamic html for the submit button
+ * @constructor
  */
-export function SaveButton(props: ButtonInterfaceProps) {
+export function SaveButton(props: ButtonInterfaceProps): ReactElement {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
             <Button rightSection={<IconDeviceFloppy size={"2rem"}/>}
@@ -39,7 +44,7 @@ export function SaveButton(props: ButtonInterfaceProps) {
             variant={"subtle"}
             type="submit"
             disabled={props.disabled}>
-                Save
+                {props.label === undefined? 'Save' : props.label}
             </Button>
         </Tooltip>
     )

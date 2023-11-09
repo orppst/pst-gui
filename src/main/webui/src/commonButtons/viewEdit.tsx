@@ -1,16 +1,27 @@
 import { Button, Tooltip } from '@mantine/core';
 import { IconEyeEdit } from '@tabler/icons-react';
 import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
+import { ReactElement } from 'react';
 
-export default function ViewEditButton(props: ButtonInterfaceProps) {
+/**
+ * creates a view/edit button.
+ *
+ * @param {ButtonInterfaceProps} props the button inputs.
+ * @return {ReactElement} the dynamic html for the view/edit button
+ * @constructor
+ */
+export default function ViewEditButton(props: ButtonInterfaceProps):
+        ReactElement {
     return (
         <Tooltip openDelay={1000} label={props.toolTipLabel}>
             <Button rightSection={<IconEyeEdit size={"2rem"}/>}
                     color={"green"}
                     variant={"subtle"}
-                    onClick={props.onClick}
+                    onClick={props.onClick === undefined?
+                        props.onClickEvent :
+                        props.onClick}
                     disabled={props.disabled}>
-                Edit
+                {props.label === undefined? 'edit' : props.label}
             </Button>
         </Tooltip>
     )

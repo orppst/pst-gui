@@ -2,7 +2,7 @@ import {CoordSys} from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
 import {fetchProposalResourceRemoveTarget, useProposalResourceGetTarget} from "../generated/proposalToolComponents.ts";
-import {Box, Button, Table, Text} from "@mantine/core";
+import {Box, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {
     CelestialTarget,
@@ -10,6 +10,7 @@ import {
     EquatorialPoint,
     SpaceFrame,
 } from "../generated/proposalToolSchemas.ts";
+import DeleteButton from '../commonButtons/delete.tsx';
 
 type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
 
@@ -172,7 +173,12 @@ export function RenderTarget(props: TargetProps) {
                                         data?.positionEpoch}/>
                                 </Table.Td>
                             </Table.Tr>
-                            {props.showRemove && <tr><Table.Td colSpan={3} align={"right"}><Button color="red" onClick={openRemoveModal}>Remove</Button></Table.Td></tr>}
+                            {props.showRemove && <tr>
+                                <Table.Td colSpan={3} align={"right"}>
+                                    <DeleteButton
+                                        onClick={openRemoveModal}
+                                        toolTipLabel={"Delete the target"}/>
+                                </Table.Td></tr>}
                             </Table.Tbody>
                         </Table>
                     )

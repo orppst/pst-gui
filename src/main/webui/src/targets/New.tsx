@@ -1,6 +1,6 @@
 // Test a mantine modal
 
-import {Button, Modal, NumberInput, Select, TextInput} from "@mantine/core";
+import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {ReactNode} from "react";
@@ -15,6 +15,9 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
+import AddButton from '../commonButtons/add.tsx';
+import DatabaseSearchButton from '../commonButtons/databaseSearch.tsx';
+import { SubmitButton } from '../commonButtons/save.tsx';
 
 const TargetForm = (props: FormPropsType<{
         SelectedEpoch: string;
@@ -90,7 +93,10 @@ const TargetForm = (props: FormPropsType<{
                 label="Name"
                 placeholder="name of target"
                 {...form.getInputProps("TargetName")} />
-            <Button onClick={simbadLookup}>Lookup</Button>
+            <DatabaseSearchButton
+                label={"Lookup"}
+                onClick={simbadLookup}
+                toolTipLabel={"Search Simbad database"}/>
             <NumberInput
                 required={true}
                 label={"RA"}
@@ -127,7 +133,9 @@ const TargetForm = (props: FormPropsType<{
                 data={[{label:"J2000",value:"J2000"}]}
                 {...form.getInputProps("SelectedEpoch")} />
             <div>
-                <Button type="submit">Save</Button>
+                <SubmitButton
+                    toolTipLabel={"Save this target"}
+                    label={"Save"}/>
             </div>
         </form>
     );
@@ -137,7 +145,8 @@ export default function AddTargetModal() {
     const [opened, { close, open }] = useDisclosure();
     return (
         <>
-            <Button onClick={open}>Add New</Button>
+            <AddButton onClick={open}
+                       toolTipLabel={"Add new target."}/>
             <Modal title="New target" opened={opened} onClose={close}>
                 <TargetForm
                     onSubmit={() => {
