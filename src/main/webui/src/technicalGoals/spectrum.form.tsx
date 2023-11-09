@@ -15,15 +15,23 @@ import {randomId} from "@mantine/hooks";
 import {ScienceSpectralWindowGui} from "./scienceSpectralWindowGui.tsx";
 import {ReactElement} from "react";
 
-
+/**
+ * generates the spectral window panel.
+ *
+ * @param {UseFormReturnType<TechnicalGoalValues>} form the
+ * form containign the spectral windows.
+ * @return {React.ReactElement} the dynamic html for the spectral window panel.
+ * @constructor
+ */
 export default function SpectralWindowsSection(
     form: UseFormReturnType<TechnicalGoalValues>
 ): ReactElement {
 
-    let {colorScheme} = useMantineColorScheme();
+    // determine color.
+    const {colorScheme} = useMantineColorScheme();
+    const IS_LIGHT = colorScheme === 'light'
 
-    let isLight = colorScheme === 'light'
-
+    // default window settings.
     const EMPTY_SPECTRAL_WINDOW : ScienceSpectralWindowGui = {
         index: "",
         start: {value: "", unit: null},
@@ -35,17 +43,22 @@ export default function SpectralWindowsSection(
         key: randomId()
     }
 
-    const renderWindowSetup = (index: number) => {
+    /**
+     * builds a window setup panel.
+     *
+     * @param {number} index the window index.
+     * @return {ReactElement} the dynamic html for the window.
+     */
+    const renderWindowSetup = (index: number): ReactElement => {
         const TOTAL_COLUMNS = 16;
 
         //spans work out the proportional amount of space for each element and
         //provide responsiveness in terms of view-port width
-
         return (
             <Grid columns={TOTAL_COLUMNS} gutter={0}>
-                <Grid.Col span={{base: TOTAL_COLUMNS, xl: TOTAL_COLUMNS/4}}>
+                <Grid.Col span={{base: TOTAL_COLUMNS, xl: TOTAL_COLUMNS / 4}}>
                     <NumberInputPlusUnit
-                        color={isLight ? "teal.3" :"teal.7"}
+                        color={IS_LIGHT ? "teal.3" :"teal.7"}
                         gap={0}
                         padding={5}
                         form={form}
@@ -56,7 +69,7 @@ export default function SpectralWindowsSection(
                 </Grid.Col>
                 <Grid.Col span={{base: TOTAL_COLUMNS, xl: TOTAL_COLUMNS/4}}>
                     <NumberInputPlusUnit
-                        color={isLight ? "indigo.3" :"indigo.7"}
+                        color={IS_LIGHT ? "indigo.3" :"indigo.7"}
                         gap={0}
                         padding={5}
                         form={form}
@@ -67,7 +80,7 @@ export default function SpectralWindowsSection(
                 </Grid.Col>
                 <Grid.Col span={{base: TOTAL_COLUMNS, xl: TOTAL_COLUMNS/4}}>
                     <NumberInputPlusUnit
-                        color={isLight ? "violet.3" :"violet.7"}
+                        color={IS_LIGHT ? "violet.3" :"violet.7"}
                         gap={0}
                         padding={5}
                         form={form}
@@ -85,7 +98,8 @@ export default function SpectralWindowsSection(
                         data={[
                             "I","Q","U","V","RR","LL","RL","LR","XX","YY","XY","YX","PF","PP","PA"
                         ]}
-                        {...form.getInputProps(`spectralWindows.${index}.polarization`)}
+                        {...form.getInputProps(
+                            `spectralWindows.${index}.polarization`)}
                     />
                 </Grid.Col>
                 <Grid.Col span={{base: TOTAL_COLUMNS/2, xl: TOTAL_COLUMNS/2/4}}>
@@ -94,7 +108,8 @@ export default function SpectralWindowsSection(
                             size={"sm"}
                             label={"sky frequency"}
                             pt={35}
-                            {...form.getInputProps(`spectralWindows.${index}.isSkyFrequency`,
+                            {...form.getInputProps(
+                                `spectralWindows.${index}.isSkyFrequency`,
                                 {type: 'checkbox'})}
                         />
                     </Group>
@@ -103,7 +118,12 @@ export default function SpectralWindowsSection(
         )
     }
 
-    const renderSpectralLines = () => {
+    /**
+     * renders the spectral lines.
+     *
+     * @return {ReactElement} the dynamic html for the spectral lines.
+     */
+    const renderSpectralLines = (): ReactElement => {
         return (
             <Fieldset legend={"Spectral lines"}>
                 <Badge radius={0} color={"red"}>
@@ -118,7 +138,7 @@ export default function SpectralWindowsSection(
      *
      * @param {number} index the index in the table.
      */
-    const handleDelete = (index: number) => {
+    const handleDelete = (index: number): void => {
         alert("Removes the list item only - " +
             "does not yet delete the spectral window from the database")
         form.removeListItem('spectralWindows', index);

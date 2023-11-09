@@ -6,9 +6,21 @@ import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import TechnicalGoalEditGroup from "./edit.group.tsx";
 
-
-export default function TechnicalGoalEditModal(technicalGoalProps: TechnicalGoalProps) {
-
+/**
+ * generates the modal for the edit panel.
+ *
+ * @param {TechnicalGoalProps} technicalGoalProps the data.
+ * @return {React.ReactElement} the dynamic html for the panel.
+ * @constructor
+ */
+export default function TechnicalGoalEditModal(
+        technicalGoalProps: TechnicalGoalProps): ReactElement {
+    /**
+     * creates an add button under the new label.
+     *
+     * @return {React.ReactElement}: the dynamic html for the add button.
+     * @constructor
+     */
     const NewButton = (): ReactElement => {
         return (
             <AddButton toolTipLabel={"new technical goal"}
@@ -16,6 +28,12 @@ export default function TechnicalGoalEditModal(technicalGoalProps: TechnicalGoal
         );
     }
 
+    /**
+     * creates an edit button.
+     *
+     * @return {React.ReactElement} the dynamic html for the edit button.
+     * @constructor
+     */
     const EditButton = (): ReactElement => {
         return (
             <ViewEditButton toolTipLabel={"view/edit"}
@@ -23,6 +41,12 @@ export default function TechnicalGoalEditModal(technicalGoalProps: TechnicalGoal
         );
     }
 
+    /**
+     * creates the modals dynamic html.
+     *
+     * @return {React.ReactElement} the mdoals dynamic html.
+     * @constructor
+     */
     const ModalHtml = () : ReactElement => {
         return (
             <Modal
@@ -39,9 +63,7 @@ export default function TechnicalGoalEditModal(technicalGoalProps: TechnicalGoal
     }
 
     const [opened, { close, open }] = useDisclosure();
-
     const props = {...technicalGoalProps, closeModal: () => {close()}}
-
     let newTechnicalGoal = !technicalGoalProps.technicalGoal
 
     return (

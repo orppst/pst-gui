@@ -9,15 +9,13 @@ import {TechnicalGoalValues} from "./edit.group.tsx";
 /**
  * creates the Performance Parameter section of the Technical Goal form
  *
- * @param {UseFormReturnType<TechnicalGoalValues>} form
+ * @param {UseFormReturnType<TechnicalGoalValues>} form the form for the page.
  * @return {ReactElement} the generated HTML for the performance form.
  * @constructor
  */
 export default function PerformanceParametersSection(
-    form : UseFormReturnType<TechnicalGoalValues>
-) : ReactElement
-{
-
+    form : UseFormReturnType<TechnicalGoalValues>):
+        ReactElement {
     const PerformanceDetails = () => {
         return (
             <Tooltip.Group openDelay={1000} closeDelay={200}>

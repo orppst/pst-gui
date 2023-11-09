@@ -37,11 +37,13 @@ export interface TechnicalGoalValues {
 
 /**
  * creates the Technical Goals form
- * @param {TechnicalGoalProps} props the data needed to create the technical goal edit group.
+ * @param {TechnicalGoalProps} props the data needed to create the technical
+ * goal edit group.
  * @return {ReactElement} the html for the technical goal edit page.
  * @constructor
  */
-export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): ReactElement {
+export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
+        ReactElement {
 
     // integers specifying the proportional number of columns for the performance parameter
     // section and the spectral window section
@@ -49,22 +51,23 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
     const PERFORMANCE_COLUMNS = 4;
     const SPECTRUM_COLUMNS = TOTAL_COLUMNS - PERFORMANCE_COLUMNS
 
+    // setup default values (proposal code, query system,
+    // and the technical goal)
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
-
     const newTechnicalGoal = !props.technicalGoal;
-
 
     // use spectral windows if we have them, else use empty array
     let initialSpectralWindows: ScienceSpectralWindowGui[] = [];
     if (props.technicalGoal?.spectrum !== undefined &&
         props.technicalGoal.spectrum.length > 0) {
-        initialSpectralWindows = props.technicalGoal.spectrum.map((spectralWindow) => {
-            return convertToScienceSpectralWindowGui(spectralWindow);
+        initialSpectralWindows = props.technicalGoal.spectrum.map(
+            (spectralWindow) => {
+                return convertToScienceSpectralWindowGui(spectralWindow);
         })
     }
 
-
+    // create form.
     const form = useForm<TechnicalGoalValues> (
         {
             initialValues: {
@@ -87,45 +90,55 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
             },
 
             validate: {
-                //theNumber: check that if a unit has been selected the numeric component isn't blank
-                //theUnit: ensure that if the parameter has a numeric value it also has a unit name
+                //theNumber: check that if a unit has been selected the numeric
+                // component isn't blank
+                //theUnit: ensure that if the parameter has a numeric value it
+                // also has a unit name
                 angularResolution:{
                     value: (theNumber, formValues) => (
-                        formValues.angularResolution.unit !== null && theNumber === "" ?
+                        formValues.angularResolution.unit !== null &&
+                        theNumber === "" ?
                             "Unit selected but no value given" : null
                     ),
                     unit:(theUnit, formValues) => (
-                        formValues.angularResolution.value !== "" && theUnit === null  ?
+                        formValues.angularResolution.value !== "" &&
+                        theUnit === null  ?
                             'Please pick a unit' : null
                     )
                 },
                 largestScale:{
                     value: (theNumber, formValues) => (
-                        formValues.largestScale.unit !== null && theNumber === "" ?
+                        formValues.largestScale.unit !== null &&
+                        theNumber === "" ?
                             "Unit selected but no value given" : null
                     ),
                     unit: (theUnit, formValues) => (
-                        formValues.largestScale.value !== "" && theUnit === null ?
+                        formValues.largestScale.value !== "" &&
+                        theUnit === null ?
                             'Please pick a unit' : null
                     )
                 },
                 sensitivity:{
                     value: (theNumber, formValues) => (
-                        formValues.sensitivity.unit !== null && theNumber === "" ?
+                        formValues.sensitivity.unit !== null &&
+                        theNumber === "" ?
                             "Unit selected but no value given" : null
                     ),
                     unit: (theUnit, formValues) => (
-                        formValues.sensitivity.value !== "" && theUnit === null  ?
+                        formValues.sensitivity.value !== "" &&
+                        theUnit === null  ?
                             'Please pick a unit' : null
                     )
                 },
                 dynamicRange:{
                     value: (theNumber, formValues) => (
-                        formValues.dynamicRange.unit !== null && theNumber === ""?
+                        formValues.dynamicRange.unit !== null &&
+                        theNumber === ""?
                             "Unit selected but no value given" : null
                     ),
                     unit: (theUnit, formValues) => (
-                        formValues.dynamicRange.value !== "" && theUnit === null  ?
+                        formValues.dynamicRange.value !== "" &&
+                        theUnit === null  ?
                             'Please pick a unit' : null
                     )
                 },
@@ -133,10 +146,12 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
                 spectralPoint:{
                     value: (theNumber) => (
                         theNumber === "" ?
-                            "A representative spectral point must be given" : null
+                            "A representative spectral point must be given" :
+                            null
                     ),
                     unit:(theUnit, formValues) => (
-                        formValues.spectralPoint.value !== "" && theUnit === null  ?
+                        formValues.spectralPoint.value !== "" &&
+                        theUnit === null  ?
                             'Please pick a unit' : null
                     )
                 },
@@ -161,7 +176,8 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
                     },
                     spectralResolution: {
                         value: (theNumber) => (
-                            theNumber === '' ? 'Please specify a resolution value' :
+                            theNumber === '' ?
+                                'Please specify a resolution value' :
                                 null
                         ),
                         unit: (theUnit) => (
@@ -176,21 +192,26 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
         }
     )
 
+    /**
+     * handles the submission.
+     *
+     * @type {(event?: React.FormEvent<HTMLFormElement>) => void} the new values.
+     */
     const handleSubmit = form.onSubmit((values) => {
-
         console.log(values);
 
         let performanceParameters : PerformanceParameters = {
-            desiredAngularResolution: convertToRealQuantity(values.angularResolution),
+            desiredAngularResolution: convertToRealQuantity(
+                values.angularResolution),
             desiredDynamicRange: convertToRealQuantity(values.dynamicRange),
             desiredSensitivity: convertToRealQuantity(values.sensitivity),
             desiredLargestScale: convertToRealQuantity(values.largestScale),
-            representativeSpectralPoint: convertToRealQuantity(values.spectralPoint)
+            representativeSpectralPoint: convertToRealQuantity(
+                values.spectralPoint)
         }
 
         if(newTechnicalGoal) {
             //posting a new technical goal to the DB
-
             let goal : TechnicalGoal = {
                 performance: performanceParameters,
                 spectrum: [] //TODO: implement saving spectral windows, see issue #12
@@ -205,7 +226,6 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
                 .catch(console.error);
         } else {
             //editing an existing technical goal
-
             fetchTechnicalGoalResourceReplacePerformanceParameters({
                 pathParams: {
                     proposalCode: Number(selectedProposalCode),
@@ -218,17 +238,18 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ): Reac
                     notifications.show({
                         autoClose: false,
                         title: "Edit successful",
-                        message: "performance parameters updated only, spectral window updates yet to be implemented",
+                        message: "performance parameters updated only, " +
+                            "spectral window updates yet to be implemented",
                         color: "green"
                     })
                 })
                 .then(() => form.resetDirty())
                 .catch(console.error);
 
-            //TODO: implement editing existing spectral windows and/or adding new windows, issue #12
+            //TODO: implement editing existing spectral windows and/or adding
+            // new windows, issue #12
         }
     })
-
 
     return (
         <form onSubmit={handleSubmit}>
