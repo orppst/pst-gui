@@ -1,6 +1,9 @@
 import { Button, Tooltip } from '@mantine/core';
 import {IconDeviceFloppy} from "@tabler/icons-react";
-import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
+import {
+    BasicButtonInterfaceProps,
+    ClickButtonInterfaceProps
+} from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
 
 /**
@@ -9,11 +12,11 @@ import { ReactElement } from 'react';
  * not require an 'onClick()' function.
  *
  *
- * @param {ButtonInterfaceProps} props the button inputs.
+ * @param {BasicButtonInterfaceProps} props the button inputs.
  * @return {ReactElement} the dynamic html for the submit button
  * @constructor
  */
-export function SubmitButton(props: ButtonInterfaceProps) {
+export function SubmitButton(props: BasicButtonInterfaceProps): ReactElement {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
             <Button rightSection={<IconDeviceFloppy size={"2rem"}/>}
@@ -32,17 +35,19 @@ export function SubmitButton(props: ButtonInterfaceProps) {
  * floppy disk - use in place of a SubmitButton when a submit is not appropriate
  *
  *
- * @param {ButtonInterfaceProps} props the button inputs.
+ * @param {ClickButtonInterfaceProps} props the button inputs.
  * @return {ReactElement} the dynamic html for the submit button
  * @constructor
  */
-export function SaveButton(props: ButtonInterfaceProps): ReactElement {
+export function SaveButton(props: ClickButtonInterfaceProps): ReactElement {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
             <Button rightSection={<IconDeviceFloppy size={"2rem"}/>}
             color={"violet.5"}
             variant={"subtle"}
-            type="submit"
+            onClick={props.onClick === undefined?
+                props.onClickEvent :
+                props.onClick}
             disabled={props.disabled}>
                 {props.label === undefined? 'Save' : props.label}
             </Button>

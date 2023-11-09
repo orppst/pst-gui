@@ -1,16 +1,18 @@
 import { Button, Tooltip } from '@mantine/core';
 import { IconDatabaseSearch } from '@tabler/icons-react';
-import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
+import {
+    ClickButtonInterfaceProps
+} from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
 
 /**
  * creates a database button.
  *
- * @param {ButtonInterfaceProps} props the input data to this button
+ * @param {ClickButtonInterfaceProps} props the input data to this button
  * @return {ReactElement} the dynamic HTML for the database interface button
  * @constructor
  */
-export default function DatabaseSearchButton(props: ButtonInterfaceProps):
+export default function DatabaseSearchButton(props: ClickButtonInterfaceProps):
         ReactElement {
     return (
         <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>

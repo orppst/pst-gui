@@ -1,16 +1,18 @@
 import { Button, Tooltip } from '@mantine/core';
 import { IconCopy } from '@tabler/icons-react';
-import {ButtonInterfaceProps} from "./buttonInterfaceProps.tsx";
+import {
+    ClickButtonInterfaceProps
+} from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
 
 /**
  * creates a clone button.
  *
- * @param {ButtonInterfaceProps} props the button inputs.
+ * @param {ClickButtonInterfaceProps} props the button inputs.
  * @return {ReactElement} the dynamic html for the clone button
  * @constructor
  */
-export default function CloneButton(props: ButtonInterfaceProps):
+export default function CloneButton(props: ClickButtonInterfaceProps):
         ReactElement {
     return (
         <Tooltip openDelay={1000} label={props.toolTipLabel}>
