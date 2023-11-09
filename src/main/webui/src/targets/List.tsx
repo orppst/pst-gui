@@ -11,12 +11,14 @@ import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
 import {modals} from "@mantine/modals";
+import DeleteButton from "../commonButtons/delete.tsx";
 
 type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
 
 function TargetPanel() {
-    const { selectedProposalCode} = useParams();
-    const {  data , error, isLoading } = useProposalResourceGetTargets({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const {selectedProposalCode} = useParams();
+    const {data, error, isLoading} = useProposalResourceGetTargets(
+            {pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
 
     if (error) {
         return (
@@ -66,7 +68,8 @@ export function TargetTableHeader() {
 export function TargetTableRow(props: TargetProps) {
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
-    const {data, error, isLoading} = useProposalResourceGetTarget(
+    const {data, error, isLoading}
+        = useProposalResourceGetTarget(
         {pathParams:
                 {
                     proposalCode: props.proposalCode,
@@ -152,7 +155,8 @@ export function TargetTableRow(props: TargetProps) {
                                 )
                                 :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
                             <Table.Td>
-                                {props.showRemove && <Button color="red" onClick={openRemoveModal}>Remove</Button>}
+                                {props.showRemove &&<DeleteButton toolTipLabel={"delete"}
+                                                                  onClick={openRemoveModal} />}
                             </Table.Td>
                         </>
                     )}

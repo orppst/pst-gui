@@ -12,6 +12,4 @@ export function RenderTarget(props: TargetProps) {
                 </Table.Tbody>
             </Table>
     );
-
-
 }

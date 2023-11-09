@@ -9,6 +9,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {Box, Button, Grid, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
+import DeleteButton from "../commonButtons/delete.tsx";
 
 type PersonProps = {
     dbid: number
@@ -128,7 +129,8 @@ function InvestigatorsRow(props: PersonProps) {
           <Table.Td>{data?.person?.fullName}</Table.Td>
           <Table.Td>{data?.person?.eMail}</Table.Td>
           <Table.Td>{data?.person?.homeInstitute?.name}</Table.Td>
-          <Table.Td><Button color="red" onClick={openRemoveModal}>Remove</Button></Table.Td></>)}
+          <Table.Td><DeleteButton toolTipLabel={"delete"}
+                                  onClick={openRemoveModal} /></Table.Td></>)}
       </Table.Tr>
     );
 }
