@@ -1,8 +1,9 @@
 import PerformanceParametersForm from "./performance.form.tsx";
 import ViewEditSpectralWindow from "./spectrum.form.tsx";
-import {Space, Grid, Fieldset, Button, Group} from "@mantine/core";
+import {Space, Grid, Fieldset, Group} from "@mantine/core";
 import {TechnicalGoalClose} from "./Goals.tsx";
 import { ReactElement } from 'react';
+import RouteBackButton from '../commonButtons/routeBack.tsx';
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
@@ -41,9 +42,8 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalClose ): Reac
 
             </Grid>
             <Group justify={"flex-end"}>
-                <Button size="sm" onClick={props.close}>
-                    finished editing
-                </Button>
+                <RouteBackButton onClick={props.close}
+                                 toolTipLabel={"Leave this page."}/>
             </Group>
         </>
     )
