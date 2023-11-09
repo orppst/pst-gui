@@ -15,6 +15,14 @@ import DeleteButton from "../commonButtons/delete";
 
 type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
 
+/*
+Renders the target panel containing an add target button (from the add target modal)
+and a table of targets assigned to the current proposal
+
+Takes no parameters
+
+Returns a Mantine Box
+ */
 function TargetPanel() {
     const {selectedProposalCode} = useParams();
     const {data, error, isLoading} = useProposalResourceGetTargets(
@@ -53,6 +61,11 @@ function TargetPanel() {
         );
 }
 
+/*
+Render a table header suitable for rows made by TargetTableRow()
+
+Returns a Mantine Table Header Elemenet
+ */
 export function TargetTableHeader() {
     return (
         <Table.Thead>
@@ -64,7 +77,15 @@ export function TargetTableHeader() {
         </Table.Thead>
     );
 }
+/*
+Render the contents of table row for a given target
 
+Returns a mantine Table Row Element
+
+props: TargetProps: a proposal code number,
+    the dbid of the target,
+    and a boolean to enable or disable the delete/remove icon at the end of the row
+ */
 export function TargetTableRow(props: TargetProps) {
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
@@ -78,7 +99,7 @@ export function TargetTableRow(props: TargetProps) {
         });
 
     if(error) {
-        return <Table.Td>Error loading target</Table.Td>
+        return <Table.Tr><Table.Td>Error loading target</Table.Td></Table.Tr>
     }
 
     //Errors come in as name: "unknown", message: "Network Error" with an object called "stack" that

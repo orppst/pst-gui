@@ -135,6 +135,12 @@ const TargetForm = (props: FormPropsType<{
     );
 };
 
+/*
+Returns a React Element of a visible add button and hidden modal
+
+On click the add button displays the add new target modal
+
+ */
 export default function AddTargetModal() {
     const [opened, { close, open }] = useDisclosure();
     return (

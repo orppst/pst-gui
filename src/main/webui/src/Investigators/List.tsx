@@ -39,7 +39,7 @@ function InvestigatorsPanel() {
             <Text fz="lg" fw={700}>Investigators linked to this proposal</Text>
             <Grid>
                 <Grid.Col span={5}>
-                <AddButton toolTipLabel={"Add new"} onClick={handleAddNew}>Add New</AddButton>
+                <AddButton toolTipLabel={"Add new"} onClick={handleAddNew} />
                     <Table>
                         {data?.length === 0? (<Table.Td>Please add an investigator</Table.Td>) : InvestigatorsHeader()}
                         <Table.Tbody>

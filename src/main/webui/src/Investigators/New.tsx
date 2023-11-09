@@ -11,6 +11,13 @@ import {Box, Button, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "../commonButtons/save";
 
+/*
+Render s form panel to add an investigator to the current proposal.
+
+Does not require props
+
+Returns a React Element.
+ */
 function AddInvestigatorPanel() {
     interface newInvestigatorForm {
       type: InvestigatorKind,
