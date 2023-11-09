@@ -1,4 +1,4 @@
-import {useState, SyntheticEvent} from "react";
+import {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {
     fetchInvestigatorResourceRemoveInvestigator,
@@ -6,10 +6,11 @@ import {
     useInvestigatorResourceGetInvestigators,
 } from "../generated/proposalToolComponents";
 import {useQueryClient} from "@tanstack/react-query";
-import {Box, Button, Grid, Table, Text} from "@mantine/core";
+import {Box, Grid, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
-import DeleteButton from "../commonButtons/delete.tsx";
+import DeleteButton from "../commonButtons/delete";
+import AddButton from "../commonButtons/add";
 
 type PersonProps = {
     dbid: number
@@ -29,8 +30,7 @@ function InvestigatorsPanel() {
         );
     }
 
-    function handleAddNew(event: SyntheticEvent) {
-        event.preventDefault();
+    function handleAddNew() {
         navigate(  "new");
     }
 
@@ -39,7 +39,7 @@ function InvestigatorsPanel() {
             <Text fz="lg" fw={700}>Investigators linked to this proposal</Text>
             <Grid>
                 <Grid.Col span={5}>
-                <Button onClick={handleAddNew} >Add New</Button>
+                <AddButton toolTipLabel={"Add new"} onClick={handleAddNew}>Add New</AddButton>
                     <Table>
                         {data?.length === 0? (<Table.Td>Please add an investigator</Table.Td>) : InvestigatorsHeader()}
                         <Table.Tbody>

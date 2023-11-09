@@ -4,6 +4,7 @@ import {Button, Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {ReactNode} from "react";
+import AddButton from "../commonButtons/add"
 
 import {
     CelestialTarget,
@@ -137,7 +138,7 @@ export default function AddTargetModal() {
     const [opened, { close, open }] = useDisclosure();
     return (
         <>
-            <Button onClick={open}>Add New</Button>
+            <AddButton toolTipLabel={"Add new target"} onClick={open}/>
             <Modal title="New target" opened={opened} onClose={close}>
                 <TargetForm
                     onSubmit={() => {

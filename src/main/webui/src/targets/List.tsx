@@ -5,13 +5,13 @@ import {
 
 import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
-import {Box, Button, Table, Text} from "@mantine/core";
+import {Box, Table, Text} from "@mantine/core";
 import {randomId} from "@mantine/hooks";
 import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
 import {modals} from "@mantine/modals";
-import DeleteButton from "../commonButtons/delete.tsx";
+import DeleteButton from "../commonButtons/delete";
 
 type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
 
