@@ -25,6 +25,12 @@ export const notSet = "not set";
 
 /**
  * interface for the TechnicalGoal Form values.
+ * @param {NumberUnitType} angularResolution the desired angular resolution for the observation
+ * @param {NumberUnitType} largestScale the desired largest scale for the observation
+ * @param {NumberUnitType} sensitivity the desired sensitivity for the observation
+ * @param {NumberUnitType} dynamicRange the desired dynamic range for the observation
+ * @param {NumberUnitType} spectralPoint the representative spectral point of the observation
+ * @param {ScienceSpectralWindowGui[]} spectralWindows array of spectral windows on which to focus for the observation
  */
 export interface TechnicalGoalValues {
     angularResolution: NumberUnitType,

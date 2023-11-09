@@ -19,6 +19,8 @@ export type NumberUnitType =  {
 /**
  * convert NumberUnitType to RealQuantity
  *
+ * @param {NumberUnitType} input
+ * @return {RealQuantity}
  * intention: use before saving a "RealQuantity" to the database
  */
 export const convertToRealQuantity = (input: NumberUnitType) : RealQuantity =>
@@ -35,6 +37,8 @@ export const convertToRealQuantity = (input: NumberUnitType) : RealQuantity =>
 /**
  *  convert RealQuantity to NumberUnitType
  *
+ * @param input {RealQuantity} potentially undefined if a value doesn't exist when read from the database
+ * @return {NumberUnitType}
  *  intention: use after reading a "RealQuantity" from the database which is potentially undefined
  */
 export const convertToNumberUnitType = (input: RealQuantity | undefined) : NumberUnitType =>
@@ -57,6 +61,7 @@ export const convertToNumberUnitType = (input: RealQuantity | undefined) : Numbe
  * @param {number} step the quantity that will be incremented up or down.
  * @param {UseFormReturnType<any>} form the form that contains this input with unit.
  * @param {string} label the label for the input.
+ * @param {boolean} withAsterisk if true puts an asterisk next to the input label.
  * @param {string} toolTip the text shown when hovering over the input.
  * @param {string} valueRoot
  * @param {value: string, label: string[]} the unit values and labels.
