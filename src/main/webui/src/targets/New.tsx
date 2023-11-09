@@ -16,6 +16,7 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
+import {SubmitButton} from "../commonButtons/save";
 
 const TargetForm = (props: FormPropsType<{
         SelectedEpoch: string;
@@ -128,7 +129,7 @@ const TargetForm = (props: FormPropsType<{
                 data={[{label:"J2000",value:"J2000"}]}
                 {...form.getInputProps("SelectedEpoch")} />
             <div>
-                <Button type="submit">Save</Button>
+                <SubmitButton toolTipLabel={"Save"}/>
             </div>
         </form>
     );

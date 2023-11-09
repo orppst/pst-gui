@@ -9,6 +9,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "../generated/proposalToolSchemas.ts";
 import {Box, Button, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
+import {SubmitButton} from "../commonButtons/save";
 
 function AddInvestigatorPanel() {
     interface newInvestigatorForm {
@@ -98,7 +99,7 @@ function AddInvestigatorPanel() {
                         {...form.getInputProps("selectedInvestigator")}
                     />
                     <Grid>
-                        <Grid.Col span={12}><Button type={"submit"}>Add</Button></Grid.Col>
+                        <Grid.Col span={12}><SubmitButton toolTipLabel={"Save"}/></Grid.Col>
                         <Grid.Col span={1}><Button variant="light" onClick={handleCancel}>Cancel</Button></Grid.Col>
                     </Grid>
                 </form>
