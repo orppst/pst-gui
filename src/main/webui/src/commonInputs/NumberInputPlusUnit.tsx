@@ -6,10 +6,16 @@ import {RealQuantity} from "../generated/proposalToolSchemas.ts";
 
 
 /**
- * Type to use with the Mantine 'NumberInput' element embedded in NumberInputPlusUnit function.
- * The Mantine NumberInput requires a number | string type where a "null" number is given by
- * the empty string. The 'unit' member is used in a 'Select' element, which requires 'null'
+ * Type to use with the Mantine 'NumberInput' element embedded in
+ * NumberInputPlusUnit function. The Mantine NumberInput requires a
+ * number | string type where a "null" number is given by the empty string.
+ * The 'unit' member is used in a 'Select' element, which requires 'null'
  * when there is no unit rather than the empty string - confusing much?
+ *
+ * @param {number | string} value the value of the number, which could be a
+ * number or a string.
+ * @param {string | null} unit the unit value, which can be a string or null
+ * if not defined.
  */
 export type NumberUnitType =  {
     value: number | string,
@@ -20,6 +26,9 @@ export type NumberUnitType =  {
  * convert NumberUnitType to RealQuantity
  *
  * intention: use before saving a "RealQuantity" to the database
+ *
+ * @param {NumberUnitType} input the object to convert to a realQuantity.
+ * @return {RealQuantity} the converted real quantity.
  */
 export const convertToRealQuantity = (input: NumberUnitType) : RealQuantity =>
 {
@@ -35,10 +44,15 @@ export const convertToRealQuantity = (input: NumberUnitType) : RealQuantity =>
 /**
  *  convert RealQuantity to NumberUnitType
  *
- *  intention: use after reading a "RealQuantity" from the database which is potentially undefined
+ *  intention: use after reading a "RealQuantity" from the database which is
+ *  potentially undefined
+ *
+ *  @param {RealQuantity | undefined} input the input to convert to number
+ *  unit type.
+ *  @return {NumberUnitType} the converted number unit type.
  */
-export const convertToNumberUnitType = (input: RealQuantity | undefined) : NumberUnitType =>
-{
+export const convertToNumberUnitType = (input: RealQuantity | undefined) :
+        NumberUnitType => {
     return (
         {
             value: input?.value ?? '',
@@ -51,11 +65,13 @@ export const convertToNumberUnitType = (input: RealQuantity | undefined) : Numbe
  * prop for the number input with unit.
  *
  * @param {StyleProp<MantineColor>} color the text color.
- * @param {StyleProp<MantineSpacing>} gap the space between number value and unit.
+ * @param {StyleProp<MantineSpacing>} gap the space between number value and
+ * unit.
  * @param {StyleProp<MantineSpacing>} padding
  * @param {number} decimalPlaces the number of decimal places to display.
  * @param {number} step the quantity that will be incremented up or down.
- * @param {UseFormReturnType<any>} form the form that contains this input with unit.
+ * @param {UseFormReturnType<any>} form the form that contains this input with
+ * unit.
  * @param {string} label the label for the input.
  * @param {string} toolTip the text shown when hovering over the input.
  * @param {string} valueRoot
@@ -77,18 +93,21 @@ export interface NumberInputPlusUnitProps {
 
 /**
  *
- * @param {NumberInputPlusUnitProps} props the data related to this number input with unit.
+ * @param {NumberInputPlusUnitProps} props the data related to this number
+ * input with unit.
  * @return {ReactElement} the html that represents a number input plus unit.
  * @constructor
  */
-export function NumberInputPlusUnit(props: NumberInputPlusUnitProps): ReactElement {
+export function NumberInputPlusUnit(
+        props: NumberInputPlusUnitProps): ReactElement {
     const totalCols = 12;
     const baseCols = totalCols / 2;
 
     return (
         <Grid columns={totalCols} gutter={props.gap}>
             <Grid.Col span={{base: baseCols, sm: 7}}>
-                <Tooltip disabled={props.toolTip == undefined} label={props.toolTip}>
+                <Tooltip disabled={props.toolTip == undefined}
+                         label={props.toolTip}>
                     <NumberInput
                         bg={props.color}
                         label={props.label + ":"}
@@ -99,7 +118,8 @@ export function NumberInputPlusUnit(props: NumberInputPlusUnitProps): ReactEleme
                         hideControls
                         step={props.step ?? 0.1}
                         min={0}
-                        {...props.form.getInputProps(props.valueRoot + ".value" )}
+                        {...props.form.getInputProps(
+                            props.valueRoot + ".value" )}
                     />
                 </Tooltip>
             </Grid.Col>

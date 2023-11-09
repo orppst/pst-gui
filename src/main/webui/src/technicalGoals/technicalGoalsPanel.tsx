@@ -6,16 +6,29 @@ import {useParams} from "react-router-dom";
 import TechnicalGoalRow, {technicalGoalsHeader} from "./technicalGoalTable.tsx";
 import {TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 import TechnicalGoalEditModal from "./edit.modal.tsx";
+import { ReactElement } from 'react';
 
+/**
+ * the data type shared by the edit components.
+ *
+ * @param {TechnicalGoal | undefined} technicalGoal the technical goal data,
+ * or undefined if new technical goal.
+ * @param {() => void}} closeModal the modal to use when closing.
+ */
 export type TechnicalGoalProps = {
     technicalGoal: TechnicalGoal | undefined,
     closeModal?: () => void
 }
 
-function TechnicalGoalsPanel() {
+/**
+ * builds the technical goal panel.
+ *
+ * @return {ReactElement} the dynamic html for the technical goal panel.
+ * @constructor
+ */
+function TechnicalGoalsPanel(): ReactElement {
 
     const { selectedProposalCode } = useParams();
-
     const {
         data: goals,
         error: goalsError,
@@ -24,7 +37,6 @@ function TechnicalGoalsPanel() {
             {pathParams: {proposalCode: Number(selectedProposalCode)},},
             {enabled: true}
         );
-
     const {
         data: titleData,
         error: titleError,
@@ -58,7 +70,6 @@ function TechnicalGoalsPanel() {
                 }
                 : Technical Goals
             </h3>
-
             {goalsLoading ? (`Loading...`) :
                 <Table>
                     {technicalGoalsHeader()}
@@ -75,9 +86,7 @@ function TechnicalGoalsPanel() {
                     </Table.Tbody>
                 </Table>
             }
-
             <Space h={"xs"}/>
-
             <Group justify={'flex-end'}>
                 {goalsLoading ? (`Loading...`) :
                     <TechnicalGoalEditModal
@@ -87,7 +96,6 @@ function TechnicalGoalsPanel() {
             </Group>
         </div>
     );
-
 }
 
 export default TechnicalGoalsPanel

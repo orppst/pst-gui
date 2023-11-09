@@ -1,10 +1,25 @@
-import {convertToRealQuantity, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
-import {ExpectedSpectralLine, PolStateEnum, ScienceSpectralWindow} from "../generated/proposalToolSchemas.ts";
-import {randomId} from "@mantine/hooks";
+import {
+    convertToRealQuantity,
+    NumberUnitType
+} from '../commonInputs/NumberInputPlusUnit.tsx';
+import {
+    ExpectedSpectralLine,
+    PolStateEnum,
+    ScienceSpectralWindow
+} from '../generated/proposalToolSchemas.ts';
+import { randomId } from '@mantine/hooks';
 
 /**
  *  Alternative type for ExpectedSpectralLine using 'NumberUnitType'
  *  in place of 'RealQuantity' for input into Mantine 'NumberInput'
+ *
+ * @param {NumberUnitType} restFrequency the frequency of the spectral line.
+ * @param {string} transition a optional parameter with a transition
+ * description.
+ * @param {string} splatalogId the splatalog id given to this line, if
+ * applicable.
+ * @param {string} description optional parameter with a description of this
+ * line.
  */
 export type ExpectedSpectralLineGui = {
     restFrequency: NumberUnitType,
@@ -18,6 +33,16 @@ export type ExpectedSpectralLineGui = {
  *  in place of 'RealQuantity' for input into Mantine 'NumberInput'.
  *  Notice that we have transferred the members of 'SpectralWindowSetup'
  *  to be direct children of this type.
+ *
+ * @param {number | string} index optional id.
+ * @param {NumberUnitType} start the start of the window.
+ * @param {NumberUnitType} end the end of the window.
+ * @param {NumberUnitType} spectralResolution the resolution of the window.
+ * @param {boolean} isSkyFrequency if the window is in sky frequency mode.
+ * @param {PolStateEnum | null} polarization the type of polarization used
+ * in this window.
+ * @param {ExpectedSpectralLineGui []} the array of line guis.
+ * @param {string} key: the database key.
  */
 export type ScienceSpectralWindowGui = {
     index?: number | string
@@ -31,10 +56,16 @@ export type ScienceSpectralWindowGui = {
 }
 
 /**
- * convert ExpectedSpectralLine type to ExpectedSpectralLineGui type
+ * convert ExpectedSpectralLine type to ExpectedSpectralLineGui type.
+ *
+ * @param {ExpectedSpectralLine} input the line to convert to a GUI.
+ * @return {ExpectedSpectralLineGui} the converted GUI object.
+ *
  */
-export function convertToExpectedSpectralLineGui(input: ExpectedSpectralLine) {
-    let expectedSpectralLineGui : ExpectedSpectralLineGui = {
+export function convertToExpectedSpectralLineGui(
+        input: ExpectedSpectralLine): ExpectedSpectralLineGui {
+    // return the converted gui.
+    return {
         restFrequency: {
             value: input.restFrequency?.value ?? "",
             unit: input.restFrequency?.unit?.value ?? ""
@@ -42,16 +73,19 @@ export function convertToExpectedSpectralLineGui(input: ExpectedSpectralLine) {
         transition: input.transition,
         splatalogId: input.splatalogId?.value,
         description: input.description
-    }
-
-    return expectedSpectralLineGui;
+    };
 }
 
 /**
- * convert ScienceSpectralWindow type to ScienceSpectralWindowGui type
+ * convert ScienceSpectralWindow type to ScienceSpectralWindowGui type.
+ *
+ * @param {ScienceSpectralWindow} input the window to convert to a gui.
+ * @return {ScienceSpectralWindowGui} the converted gui.
  */
-export function convertToScienceSpectralWindowGui(input: ScienceSpectralWindow) {
-    let scienceSpectralWindowGui : ScienceSpectralWindowGui = {
+export function convertToScienceSpectralWindowGui(
+        input: ScienceSpectralWindow): ScienceSpectralWindowGui {
+    // return the converted gui.
+    return {
         index: input.index,
         start: {
             value: input.spectralWindowSetup?.start?.value ?? "",
@@ -63,39 +97,46 @@ export function convertToScienceSpectralWindowGui(input: ScienceSpectralWindow) 
         },
         spectralResolution: {
             value: input.spectralWindowSetup?.spectralResolution?.value ?? "",
-            unit: input.spectralWindowSetup?.spectralResolution?.unit?.value ?? ""
+            unit:
+                input.spectralWindowSetup?.spectralResolution?.unit?.value ?? ""
         },
         isSkyFrequency: input.spectralWindowSetup?.isSkyFrequency ?? false,
         polarization: input.spectralWindowSetup?.polarization ?? null,
         expectedSpectralLines: input.expectedSpectralLine ?
-            input.expectedSpectralLine.map((line) =>{
+            input.expectedSpectralLine.map((line) => {
                 return convertToExpectedSpectralLineGui(line);
             }) : [],
         key: randomId()
-    }
-
-    return scienceSpectralWindowGui;
+    };
 }
 
 /**
- * convert ExpectedSpectralLineGui type to ExpectedSpectralLine type
+ * convert ExpectedSpectralLineGui type to ExpectedSpectralLine type.
+ *
+ * @param {ExpectedSpectralLineGui} input the line gui to convert.
+ * @return {ExpectedSpectralLine} the converted line.
  */
-export function convertToExpectedSpectralLine(input: ExpectedSpectralLineGui) {
-    let expectedSpectralLine : ExpectedSpectralLine = {
+export function convertToExpectedSpectralLine(
+        input: ExpectedSpectralLineGui): ExpectedSpectralLine {
+    // return the converted spectral line.
+    return {
         restFrequency: convertToRealQuantity(input.restFrequency),
         transition: input.transition,
-        splatalogId: {value: input.splatalogId},
+        splatalogId: { value: input.splatalogId },
         description: input.description
-    }
-
-    return expectedSpectralLine;
+    };
 }
 
 /**
- * convert ScienceSpectralWindowGui type tp ScienceSpectralWindow type
+ * convert ScienceSpectralWindowGui type to ScienceSpectralWindow type.
+ *
+ * @param {ScienceSpectralWindowGui} input the window gui to convert.
+ * @return {}ScienceSpectralWindow} the converted window.
  */
-export function convertToScienceSpectralWindow(input: ScienceSpectralWindowGui) {
-    let scienceSpectralWindow : ScienceSpectralWindow = {
+export function convertToScienceSpectralWindow(
+        input: ScienceSpectralWindowGui): ScienceSpectralWindow {
+    // return the new window
+    return {
         index: input.index as number,
         spectralWindowSetup: {
             start: convertToRealQuantity(input.start),
@@ -107,7 +148,5 @@ export function convertToScienceSpectralWindow(input: ScienceSpectralWindowGui) 
         expectedSpectralLine: input.expectedSpectralLines.map((lineAlt) => {
             return convertToExpectedSpectralLine(lineAlt)
         })
-    }
-
-    return scienceSpectralWindow;
+    };
 }
