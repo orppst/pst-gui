@@ -25,7 +25,7 @@ import {
     useNavigate
 } from 'react-router-dom';
 import { useHistoryState } from "./useHistoryState";
-import GoalsPanel from "./technicalGoals/Goals.tsx";
+import TechnicalGoalsPanel from "./technicalGoals/technicalGoalsPanel.tsx";
 import ObservationsPanel from "./observations/observationPanel.tsx";
 import DocumentsPanel from "./proposal/Documents";
 
@@ -106,7 +106,7 @@ function App2() {
                         element:<TargetPanel />} ,
                     {
                         path: "proposal/:selectedProposalCode/goals",
-                        element:<GoalsPanel />} ,
+                        element:<TechnicalGoalsPanel />} ,
                     {
                         path: "proposal/:selectedProposalCode/observations",
                         element:<ObservationsPanel />} ,

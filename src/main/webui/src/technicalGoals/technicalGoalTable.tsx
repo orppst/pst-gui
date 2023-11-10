@@ -1,4 +1,3 @@
-import {TechnicalGoalId} from "./Goals.tsx";
 import {useParams} from "react-router-dom";
 import {Badge, Group, Space, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
@@ -20,8 +19,20 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import {notifications} from "@mantine/notifications";
 import {notSet} from "./edit.group.tsx";
+import {ReactElement} from "react";
 
-export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
+// the technical goal id data holder.
+export type TechnicalGoalId = {id: number};
+
+/**
+ * builds the html for a technical goal row.
+ *
+ * @param {TechnicalGoalId} technicalGoalId the id for this technical goal.
+ * @return {ReactElement} the dynamic html for the technical goal row.
+ * @constructor
+ */
+export default function TechnicalGoalRow(
+        technicalGoalId: TechnicalGoalId): ReactElement {
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
@@ -44,9 +55,10 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     /**
      * processes the actual deletion of a technical goal from the database.
      */
-    const handleDelete = () => {
+    const handleDelete = (): void => {
         fetchTechnicalGoalResourceRemoveTechnicalGoal( {
-            pathParams: {proposalCode: Number(selectedProposalCode), technicalGoalId: technicalGoalId.id}
+            pathParams: {proposalCode: Number(selectedProposalCode),
+                         technicalGoalId: technicalGoalId.id}
         })
             .then(()=>queryClient.invalidateQueries())
             .then(() => {
@@ -61,9 +73,10 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     }
 
     /**
-     * create a safety check with the user to ensure they want to delete a given technical goal.
+     * create a safety check with the user to ensure they want to delete a
+     * given technical goal.
      */
-    const confirmDelete = () => modals.openConfirmModal({
+    const confirmDelete = (): void => modals.openConfirmModal({
         title: 'Delete Technical Goal?',
         children: (
             <>
@@ -81,11 +94,11 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     /**
      * processes the actual cloning of a technical goal.
      */
-    const handleClone = () => {
+    const handleClone = (): void => {
         console.log("Cloning Technical Goal")
 
-        // create a new technicalGoal, which does not have its id set, but contains the spectral and performance
-        // of the selected goal.
+        // create a new technicalGoal, which does not have its id set, but
+        // contains the spectral and performance of the selected goal.
         let clonedGoal: TechnicalGoal = {
             performance: goal?.performance,
             spectrum: goal?.spectrum
@@ -109,9 +122,10 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
     }
 
     /**
-     * create a safety check with the user to ensure they want to clone a given technical goal.
+     * create a safety check with the user to ensure they want to clone a
+     * given technical goal.
      */
-    const confirmClone = () => modals.openConfirmModal({
+    const confirmClone = (): void => modals.openConfirmModal({
         title: 'Clone Technical Goal?',
         children: (
             <>
@@ -120,8 +134,9 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                 </Text>
                 <Space h={"xs"}/>
                 <Text c={"gray.6"} size={"sm"}>
-                    Creates a new technical goal with a clone of this technical goal's properties.
-                    You should edit the cloned technical goal for your needs.
+                    Creates a new technical goal with a clone of this technical
+                    goal's properties. You should edit the cloned technical
+                    goal for your needs.
                 </Text>
             </>
         ),
@@ -208,7 +223,7 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                             <Group position={"right"}>
                                 {
                                     goalLoading ? 'Loading...' :
-                                        <TechnicalGoalEditModal {...goal} />
+                                        <TechnicalGoalEditModal technicalGoal={goal} />
                                 }
                                 <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
                                 <DeleteButton toolTipLabel={"delete"} onClick={confirmDelete} />
@@ -218,5 +233,27 @@ export default function TechnicalGoalRow(technicalGoalId: TechnicalGoalId) {
                 )
             }
         </>
+    )
+}
+
+/**
+ * generates the technical goal header html.
+ *
+ * @return {React.ReactElement} the dynamic html for the table header.
+ */
+export function technicalGoalsHeader() : ReactElement {
+    return (
+        <Table.Thead>
+            <Table.Tr>
+                <Table.Th>ID</Table.Th>
+                <Table.Th>Angular resolution</Table.Th>
+                <Table.Th>Largest scale</Table.Th>
+                <Table.Th>Sensitivity</Table.Th>
+                <Table.Th>Dynamic Range</Table.Th>
+                <Table.Th>Spectral point</Table.Th>
+                <Table.Th>Spectral windows</Table.Th>
+                <Table.Th></Table.Th>
+            </Table.Tr>
+        </Table.Thead>
     )
 }
