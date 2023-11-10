@@ -12,7 +12,7 @@ import { fetchObservationResourceAddNewObservation } from '../generated/proposal
 import { SubmitButton } from '../commonButtons/save.tsx';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { FormEvent, ReactElement } from 'react';
+import { FormEvent, ReactElement, useEffect } from 'react';
 import { randomId } from '@mantine/hooks';
 import { TimingWindowGui } from './timingWindowGui.tsx';
 
@@ -120,6 +120,13 @@ export default function ObservationEditGroup(
                 }
             },
     });
+
+    /**
+     * force the validation to engage once the UI has been rendered.
+     */
+    useEffect(() => {
+        form.errors = form.validate().errors;
+    })
 
     /**
      * handles the saving of the entire form to the database.
