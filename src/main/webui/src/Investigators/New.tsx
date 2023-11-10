@@ -1,4 +1,4 @@
-import {SyntheticEvent, useEffect, useState} from "react";
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
@@ -11,14 +11,13 @@ import {Box, Button, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "../commonButtons/save";
 
-/*
-Render s form panel to add an investigator to the current proposal.
-
-Does not require props
-
-Returns a React Element.
+/**
+ * Render s form panel to add an investigator to the current proposal.
+ * Does not require props
+ * @return {React Element} the dynamic html for the adding new
+ * investigator panel.
  */
-function AddInvestigatorPanel() {
+function AddInvestigatorPanel(): ReactElement {
     interface newInvestigatorForm {
       type: InvestigatorKind,
       forPhD: boolean,

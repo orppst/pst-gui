@@ -3,7 +3,7 @@
 import {Button, Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import {ReactNode} from "react";
+import { ReactElement, ReactNode } from 'react';
 import AddButton from "../commonButtons/add"
 
 import {
@@ -58,8 +58,10 @@ const TargetForm = (props: FormPropsType<{
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: {},
-            lat: {"@type": "ivoa:RealQuantity", value: val.RA, unit: {value: "degrees"}},
-            lon: {"@type": "ivoa:RealQuantity", value: val.Dec, unit: {value: "degrees"}}
+            lat: {"@type": "ivoa:RealQuantity",
+                value: val.RA, unit: {value: "degrees"}},
+            lon: {"@type": "ivoa:RealQuantity",
+                value: val.Dec, unit: {value: "degrees"}}
         }
         const Target: CelestialTarget = {
                 "@type": "proposal:CelestialTarget",
@@ -76,7 +78,9 @@ const TargetForm = (props: FormPropsType<{
 
         fetchSpaceSystemResourceGetSpaceSystem({pathParams: {frameCode: 'ICRS'}})
             .then((spaceSys) => assignSpaceSys(spaceSys))
-            .then(() => fetchProposalResourceAddNewTarget({pathParams:{proposalCode: Number(selectedProposalCode)}, body: Target})
+            .then(() => fetchProposalResourceAddNewTarget({
+                    pathParams:{proposalCode: Number(selectedProposalCode)},
+                    body: Target})
                 .then(() => {return queryClient.invalidateQueries()})
                 .then(() => {props.onSubmit()})
                 .catch(console.log)
@@ -135,13 +139,13 @@ const TargetForm = (props: FormPropsType<{
     );
 };
 
-/*
-Returns a React Element of a visible add button and hidden modal
-
-On click the add button displays the add new target modal
-
+/**
+ * On click the add button displays the add new target modal.
+ *
+ * @return a React Element of a visible add button and hidden modal.
+ *
  */
-export default function AddTargetModal() {
+export default function AddTargetModal(): ReactElement {
     const [opened, { close, open }] = useDisclosure();
     return (
         <>
