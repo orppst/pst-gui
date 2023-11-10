@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { ReactElement, useState } from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {
     fetchInvestigatorResourceRemoveInvestigator,
@@ -12,13 +12,26 @@ import {randomId} from "@mantine/hooks";
 import DeleteButton from "../commonButtons/delete";
 import AddButton from "../commonButtons/add";
 
+/**
+ * the data associated with a given person.
+ *
+ * @param dbid the database id for this person.
+ */
 type PersonProps = {
     dbid: number
 }
 
-function InvestigatorsPanel() {
+/**
+ * generates the entire panel for the investigators.
+ *
+ * @return {ReactElement}: the dynamic html for the investigator panel
+ * @constructor
+ */
+function InvestigatorsPanel(): ReactElement {
     const { selectedProposalCode } = useParams();
-    const { data , error, isLoading } = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const { data , error, isLoading } = useInvestigatorResourceGetInvestigators(
+        {pathParams: {proposalCode: Number(selectedProposalCode)},},
+        {enabled: true});
     const navigate = useNavigate();
 
 
@@ -30,8 +43,11 @@ function InvestigatorsPanel() {
         );
     }
 
+    /**
+     * routes the user to the new investigator page.
+     */
     function handleAddNew() {
-        navigate(  "new");
+        navigate("new");
     }
 
     return (
@@ -41,14 +57,20 @@ function InvestigatorsPanel() {
                 <Grid.Col span={5}>
                 <AddButton toolTipLabel={"Add new"} onClick={handleAddNew} />
                     <Table>
-                        {data?.length === 0? (<Table.Td>Please add an investigator</Table.Td>) : InvestigatorsHeader()}
+                        {data?.length === 0 ?
+                            (<Table.Td>Please add an investigator</Table.Td>) :
+                            InvestigatorsHeader()}
                         <Table.Tbody>
                         {isLoading ? (`Loading...`)
                             : data?.map((item) => {
                                 if(item.dbid !== undefined) {
-                                    return (<InvestigatorsRow dbid={item.dbid} key={item.dbid}/>)
+                                    return (<InvestigatorsRow dbid={item.dbid}
+                                                              key={item.dbid}/>)
                                 } else {
-                                    return (<Box key={randomId()}>Undefined Investigator!</Box>)
+                                    return (
+                                        <Box key={randomId()}>
+                                            Undefined Investigator!
+                                        </Box>)
                                 }
                             } )
                         }
@@ -60,7 +82,14 @@ function InvestigatorsPanel() {
     );
 }
 
-function InvestigatorsHeader() {
+/**
+ * generates the table header for the investigators.
+ *
+ * @return {ReactElement} return the dynamic html for the investigator table
+ * header.
+ * @constructor
+ */
+function InvestigatorsHeader(): ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
@@ -74,7 +103,14 @@ function InvestigatorsHeader() {
     );
 }
 
-function InvestigatorsRow(props: PersonProps) {
+/**
+ * generates a row for a given investigator person.
+ * @param {PersonProps} props the data associated with a given investigator
+ * person.
+ * @return {ReactElement} the dynamic html for a investigator table row.
+ * @constructor
+ */
+function InvestigatorsRow(props: PersonProps): ReactElement {
     const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
     const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
@@ -86,14 +122,18 @@ function InvestigatorsRow(props: PersonProps) {
         });
     const queryClient = useQueryClient();
 
-    //Errors come in as name: "unknown", message: "Network Error" with an object called "stack" that
-    // contains the exception and message set in the API when the exception is thrown
+    //Errors come in as name: "unknown", message: "Network Error" with an object
+    // called "stack" that contains the exception and message set in the API
+    // when the exception is thrown
     const handleError = (error: { stack: { message: any; }; }) => {
         console.error(error);
         alert(error.stack.message);
         setSubmitting(false);
     }
 
+    /**
+     * handles the removal of an investigator.
+     */
     function handleRemove() {
         setSubmitting(true);
         fetchInvestigatorResourceRemoveInvestigator({pathParams:
@@ -106,13 +146,18 @@ function InvestigatorsRow(props: PersonProps) {
             .catch(handleError);
     }
 
+    /**
+     * gives the user an option to verify if they wish to remove an
+     * investigator.
+     */
     const openRemoveModal = () =>
         modals.openConfirmModal({
             title: "Remove investigator",
             centered: true,
             children: (
                 <Text size="sm">
-                    Are you sure you want to remove {data?.person?.fullName} from this proposal?
+                    Are you sure you want to remove {data?.person?.fullName}
+                    from this proposal?
                 </Text>
             ),
             labels: { confirm: "Delete", cancel: "Cancel" },

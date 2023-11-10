@@ -9,24 +9,25 @@ import {Box, Table, Text} from "@mantine/core";
 import {randomId} from "@mantine/hooks";
 import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {useState} from "react";
+import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
 
 type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
 
-/*
-Renders the target panel containing an add target button (from the add target modal)
-and a table of targets assigned to the current proposal
-
-Takes no parameters
-
-Returns a Mantine Box
+/**
+ * Renders the target panel containing an add target button
+ * (from the add target modal) and a table of targets assigned to the
+ * current proposal
+ *
+ *
+ * @return {ReactElement} Returns a Mantine Box
  */
-function TargetPanel() {
+function TargetPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
     const {data, error, isLoading} = useProposalResourceGetTargets(
-            {pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+            {pathParams: {proposalCode: Number(selectedProposalCode)},},
+            {enabled: true});
 
     if (error) {
         return (
@@ -61,12 +62,13 @@ function TargetPanel() {
         );
 }
 
-/*
-Render a table header suitable for rows made by TargetTableRow()
-
-Returns a Mantine Table Header Elemenet
+/**
+ * Render a table header suitable for rows made by TargetTableRow()
+ *
+ * @return {ReactElement} Mantine Table Header Element
+ *
  */
-export function TargetTableHeader() {
+export function TargetTableHeader(): ReactElement {
     return (
         <Table.Thead>
             <Table.Th>Name</Table.Th>
@@ -77,16 +79,14 @@ export function TargetTableHeader() {
         </Table.Thead>
     );
 }
-/*
-Render the contents of table row for a given target
 
-Returns a mantine Table Row Element
-
-props: TargetProps: a proposal code number,
-    the dbid of the target,
-    and a boolean to enable or disable the delete/remove icon at the end of the row
+/**
+ * Render the contents of table row for a given target
+ *
+ * @return {ReactElement} Returns a mantine Table Row Element
+ * @param {TargetProps} props the data associated with a target.
  */
-export function TargetTableRow(props: TargetProps) {
+export function TargetTableRow(props: TargetProps): ReactElement {
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
     const {data, error, isLoading}
@@ -102,15 +102,19 @@ export function TargetTableRow(props: TargetProps) {
         return <Table.Tr><Table.Td>Error loading target</Table.Td></Table.Tr>
     }
 
-    //Errors come in as name: "unknown", message: "Network Error" with an object called "stack" that
-    // contains the exception and message set in the API when the exception is thrown
+    //Errors come in as name: "unknown", message: "Network Error" with an
+    // object called "stack" that contains the exception and message set in
+    // the API when the exception is thrown
     const handleError = (error: { stack: { message: any; }; }) => {
         console.error(error);
         alert(error.stack.message);
         setSubmitting(false);
     }
 
-    function handleRemove() {
+    /**
+     * handles the removal of a target.
+     */
+    function handleRemove(): void {
         setSubmitting(true);
         fetchProposalResourceRemoveTarget({pathParams:
                 {
@@ -122,13 +126,17 @@ export function TargetTableRow(props: TargetProps) {
             .catch(handleError);
     }
 
-    const openRemoveModal = () =>
+    /**
+     * offers the end user a verification if they wish to remove a target.
+     */
+    const openRemoveModal = (): void =>
         modals.openConfirmModal({
             title: "Remove target",
             centered: true,
             children: (
                 <Text size="sm">
-                    Are you sure you want to remove '{data?.sourceName}' from this proposal?
+                    Are you sure you want to remove '{data?.sourceName}'
+                    from this proposal?
                 </Text>
             ),
             labels: { confirm: "Delete", cancel: "Cancel"},
@@ -148,14 +156,19 @@ export function TargetTableRow(props: TargetProps) {
         if(celestialTarget.sourceCoordinates?.lat?.unit?.value === "degrees")
             ra = celestialTarget.sourceCoordinates?.lat?.value+"°";
         else
-            ra = celestialTarget.sourceCoordinates?.lat?.value + " " + celestialTarget.sourceCoordinates?.lat?.unit?.value;
+            ra = celestialTarget.sourceCoordinates?.lat?.value + " " +
+                celestialTarget.sourceCoordinates?.lat?.unit?.value;
 
         if(celestialTarget.sourceCoordinates?.lon?.unit?.value === "degrees")
             dec = celestialTarget.sourceCoordinates?.lon?.value+"°";
         else
-            dec = celestialTarget.sourceCoordinates?.lon?.value + " " + celestialTarget.sourceCoordinates?.lon?.unit?.value;
+            dec = celestialTarget.sourceCoordinates?.lon?.value + " " +
+                celestialTarget.sourceCoordinates?.lon?.unit?.value;
 
-        if(celestialTarget.sourceCoordinates?.coordSys?.["@type"] === "coords:SpaceSys") { spaceFrame = celestialTarget.sourceCoordinates?.coordSys?.frame?.spaceRefFrame; }
+        if(celestialTarget.sourceCoordinates?.coordSys?.["@type"] ===
+            "coords:SpaceSys") {
+            spaceFrame = celestialTarget.sourceCoordinates?.coordSys?.frame?.spaceRefFrame;
+        }
         epoch = celestialTarget.positionEpoch?.value;
     }
 
@@ -176,13 +189,13 @@ export function TargetTableRow(props: TargetProps) {
                                 )
                                 :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
                             <Table.Td>
-                                {props.showRemove &&<DeleteButton toolTipLabel={"delete"}
-                                                                  onClick={openRemoveModal} />}
+                                {props.showRemove && <
+                                    DeleteButton toolTipLabel={"delete"}
+                                                 onClick={openRemoveModal} />}
                             </Table.Td>
                         </>
                     )}
                 </Table.Tr>);
-
 }
 
 export default TargetPanel

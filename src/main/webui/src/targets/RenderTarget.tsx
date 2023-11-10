@@ -1,9 +1,17 @@
 import {Table} from "@mantine/core";
 import {TargetTableHeader, TargetTableRow} from "./List.tsx";
+import { ReactElement } from 'react';
 
 type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
 
-export function RenderTarget(props: TargetProps) {
+/**
+ *
+ * @param {TargetProps} props the data ossicated with all the targets of a
+ * proposal.
+ * @return {ReactElement} the dynamic html for the target table.
+ * @constructor
+ */
+export function RenderTarget(props: TargetProps): ReactElement {
         return (
             <Table>
                 {TargetTableHeader()}
