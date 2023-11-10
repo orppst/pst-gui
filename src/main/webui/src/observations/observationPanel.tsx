@@ -110,8 +110,7 @@ function Observations() {
                     {
                         observations?.map((observation) => {
                             return (
-                                <ObservationRow id={observation.dbid!}
-                                                key={observation.dbid!} />
+                                <ObservationRow id={observation.dbid!}/>
                             )
                         })
                     }
