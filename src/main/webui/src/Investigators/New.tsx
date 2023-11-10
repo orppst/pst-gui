@@ -38,6 +38,7 @@ function AddInvestigatorPanel() {
     );
 
     useEffect(() => {
+        form.errors = form.validate().errors;
         if(status === 'success') {
             setSearchData([]);
             data?.map((item) => (
