@@ -3,7 +3,7 @@
 import {Button, Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import {ReactNode} from "react";
+import { ReactNode, useEffect } from 'react';
 
 import {
     CelestialTarget,
@@ -82,6 +82,13 @@ const TargetForm = (props: FormPropsType<{
             .catch(console.log);
 
     });
+
+    /**
+     * force the validation to engage once the UI has been rendered.
+     */
+    useEffect(() => {
+        form.errors = form.validate().errors;
+    })
 
     return (
         <form onSubmit={createNewTarget}>
