@@ -19,7 +19,7 @@ import {ReactElement} from "react";
  * generates the spectral window panel.
  *
  * @param {UseFormReturnType<TechnicalGoalValues>} form the
- * form containign the spectral windows.
+ * form containing the spectral windows.
  * @return {React.ReactElement} the dynamic html for the spectral window panel.
  * @constructor
  */

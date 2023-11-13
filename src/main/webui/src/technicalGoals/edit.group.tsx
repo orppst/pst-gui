@@ -2,7 +2,7 @@ import PerformanceParametersSection from "./performance.form.tsx";
 import SpectralWindowsSection from "./spectrum.form.tsx";
 import {Grid} from "@mantine/core";
 import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
-import { ReactElement } from 'react';
+import { FormEvent, ReactElement, useEffect } from 'react';
 import {convertToNumberUnitType, convertToRealQuantity, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -42,6 +42,29 @@ export interface TechnicalGoalValues {
 }
 
 /**
+ * does the validation for a number unit pair value.
+ *
+ * @param {string | number} theNumber the number value.
+ * @param {string | null} unit the unit value.
+ * @param {string} name the variable name.
+ * @return {string | null} either a string based error message,
+ * or null if no errors.
+ * @constructor
+ */
+function NumberAndUnitValidation (
+        theNumber: string | number,
+        unit: string | null,
+        name: string): string | null {
+    if (theNumber === "" && unit === null) {
+        return `Please specify the ${name} value`;
+    }
+    if (theNumber === "" && unit !== null) {
+        return "Unit selected but no value given";
+    }
+    return null;
+}
+
+/**
  * creates the Technical Goals form
  * @param {TechnicalGoalProps} props the data needed to create the technical
  * goal edit group.
@@ -53,8 +76,8 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
 
     // integers specifying the proportional number of columns for the performance parameter
     // section and the spectral window section
-    const TOTAL_COLUMNS = 10;
-    const PERFORMANCE_COLUMNS = 4;
+    const TOTAL_COLUMNS = 12;
+    const PERFORMANCE_COLUMNS = 3;
     const SPECTRUM_COLUMNS = TOTAL_COLUMNS - PERFORMANCE_COLUMNS
 
     // setup default values (proposal code, query system,
@@ -101,64 +124,61 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
                 //theUnit: ensure that if the parameter has a numeric value it
                 // also has a unit name
                 angularResolution:{
-                    value: (theNumber, formValues) => (
-                        formValues.angularResolution.unit !== null &&
-                        theNumber === "" ?
-                            "Unit selected but no value given" : null
+                    value: (theNumber: string | number,
+                            formValues: TechnicalGoalValues) => (
+                        NumberAndUnitValidation(
+                            theNumber,
+                            formValues.angularResolution.unit,
+                            "angular resolution")
                     ),
-                    unit:(theUnit, formValues) => (
-                        formValues.angularResolution.value !== "" &&
-                        theUnit === null  ?
-                            'Please pick a unit' : null
+                    unit:(theUnit: string | null) => (
+                        theUnit === null  ? 'Please pick a unit' : null
                     )
                 },
                 largestScale:{
-                    value: (theNumber, formValues) => (
-                        formValues.largestScale.unit !== null &&
-                        theNumber === "" ?
-                            "Unit selected but no value given" : null
+                    value: (theNumber: string | number,
+                            formValues: TechnicalGoalValues) => (
+                        NumberAndUnitValidation(
+                            theNumber,
+                            formValues.largestScale.unit,
+                            "largest scale")
                     ),
-                    unit: (theUnit, formValues) => (
-                        formValues.largestScale.value !== "" &&
-                        theUnit === null ?
-                            'Please pick a unit' : null
+                    unit: (theUnit: string | null) => (
+                        theUnit === null ? 'Please pick a unit' : null
                     )
                 },
                 sensitivity:{
                     value: (theNumber, formValues) => (
-                        formValues.sensitivity.unit !== null &&
-                        theNumber === "" ?
-                            "Unit selected but no value given" : null
+                        NumberAndUnitValidation(
+                            theNumber,
+                            formValues.sensitivity.unit,
+                            "sensitivity")
                     ),
-                    unit: (theUnit, formValues) => (
-                        formValues.sensitivity.value !== "" &&
-                        theUnit === null  ?
-                            'Please pick a unit' : null
+                    unit: (theUnit) => (
+                        theUnit === null  ? 'Please pick a unit' : null
                     )
                 },
                 dynamicRange:{
                     value: (theNumber, formValues) => (
-                        formValues.dynamicRange.unit !== null &&
-                        theNumber === ""?
-                            "Unit selected but no value given" : null
+                        NumberAndUnitValidation(
+                            theNumber,
+                            formValues.dynamicRange.unit,
+                            "dynamic range")
                     ),
-                    unit: (theUnit, formValues) => (
-                        formValues.dynamicRange.value !== "" &&
-                        theUnit === null  ?
-                            'Please pick a unit' : null
+                    unit: (theUnit) => (
+                        theUnit === null  ? 'Please pick a unit' : null
                     )
                 },
                 //a spectral point must be given
                 spectralPoint:{
-                    value: (theNumber) => (
-                        theNumber === "" ?
-                            "A representative spectral point must be given" :
-                            null
+                    value: (theNumber, formValues) => (
+                        NumberAndUnitValidation(
+                            theNumber,
+                            formValues.spectralPoint.unit,
+                            "spectral point")
                     ),
-                    unit:(theUnit, formValues) => (
-                        formValues.spectralPoint.value !== "" &&
-                        theUnit === null  ?
-                            'Please pick a unit' : null
+                    unit:(theUnit: string | null) => (
+                        theUnit === null  ? 'Please pick a unit' : null
                     )
                 },
                 spectralWindows: {
@@ -199,11 +219,19 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
     )
 
     /**
+     * force the validation to engage once the UI has been rendered.
+     */
+    useEffect(() => {
+        form.errors = form.validate().errors;
+    })
+
+    /**
      * handles the submission.
      *
-     * @type {(event?: React.FormEvent<HTMLFormElement>) => void} the new values.
+     * @type {(event?: FormEvent<HTMLFormElement>) => void} the new values.
      */
-    const handleSubmit = form.onSubmit((values) => {
+    const handleSubmit: (event?: FormEvent<HTMLFormElement>) => void =
+            form.onSubmit((values) => {
         console.log(values);
 
         let performanceParameters : PerformanceParameters = {
