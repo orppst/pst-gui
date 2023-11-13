@@ -1,4 +1,4 @@
-import {SyntheticEvent, useEffect, useState} from "react";
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
     fetchInvestigatorResourceAddPersonAsInvestigator,
     fetchPersonResourceGetPerson,
@@ -9,10 +9,16 @@ import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "../generated/proposalToolSchemas.ts";
 import {Box, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import { SubmitButton } from '../commonButtons/save.tsx';
-import DeleteButton from '../commonButtons/delete.tsx';
+import {SubmitButton} from "../commonButtons/save";
+import DeleteButton from '../commonButtons/delete";
 
-function AddInvestigatorPanel() {
+/**
+ * Render s form panel to add an investigator to the current proposal.
+ * Does not require props
+ * @return {React Element} the dynamic html for the adding new
+ * investigator panel.
+ */
+function AddInvestigatorPanel(): ReactElement {
     interface newInvestigatorForm {
       type: InvestigatorKind,
       forPhD: boolean,
