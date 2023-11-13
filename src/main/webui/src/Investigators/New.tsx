@@ -11,7 +11,7 @@ import {Box, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "../commonButtons/save";
 import DeleteButton from "../commonButtons/delete";
-import { JSON_SPACES, MAX_COLUMNS } from '../constants.tsx';
+import { JSON_SPACES } from '../constants.tsx';
 
 /**
  * Render s form panel to add an investigator to the current proposal.
