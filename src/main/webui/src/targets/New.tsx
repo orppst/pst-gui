@@ -1,11 +1,9 @@
 // Test a mantine modal
 
-import {Button, Modal, NumberInput, Select, TextInput} from "@mantine/core";
+import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { ReactElement, ReactNode, useEffect } from 'react';
-import AddButton from "../commonButtons/add"
-
 import {
     CelestialTarget,
     EquatorialPoint, SimbadTargetResult, SpaceSys,
@@ -16,7 +14,9 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
-import {SubmitButton} from "../commonButtons/save";
+import AddButton from '../commonButtons/add';
+import DatabaseSearchButton from '../commonButtons/databaseSearch';
+import { SubmitButton } from '../commonButtons/save';
 
 const TargetForm = (props: FormPropsType<{
         SelectedEpoch: string;
@@ -103,7 +103,10 @@ const TargetForm = (props: FormPropsType<{
                 label="Name"
                 placeholder="name of target"
                 {...form.getInputProps("TargetName")} />
-            <Button onClick={simbadLookup}>Lookup</Button>
+            <DatabaseSearchButton
+                label={"Lookup"}
+                onClick={simbadLookup}
+                toolTipLabel={"Search Simbad database"}/>
             <NumberInput
                 required={true}
                 label={"RA"}
@@ -140,7 +143,9 @@ const TargetForm = (props: FormPropsType<{
                 data={[{label:"J2000",value:"J2000"}]}
                 {...form.getInputProps("SelectedEpoch")} />
             <div>
-                <SubmitButton toolTipLabel={"Save"}/>
+                <SubmitButton
+                    toolTipLabel={"Save this target"}
+                    label={"Save"}/>
             </div>
         </form>
     );
@@ -156,7 +161,8 @@ export default function AddTargetModal(): ReactElement {
     const [opened, { close, open }] = useDisclosure();
     return (
         <>
-            <AddButton toolTipLabel={"Add new target"} onClick={open}/>
+            <AddButton onClick={open}
+                       toolTipLabel={"Add new target."}/>
             <Modal title="New target" opened={opened} onClose={close}>
                 <TargetForm
                     onSubmit={() => {
