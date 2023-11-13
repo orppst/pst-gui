@@ -3,7 +3,6 @@ any column which is set to type "VARCHAR". See
 https://github.com/orppst/pst-gui/issues/21#issuecomment-1786943901 for
  more info.
  */
-import { useMantineTheme } from '@mantine/core';
 
 export const MAX_CHARS_FOR_INPUTS = 255;
 
@@ -20,10 +19,6 @@ export const OPEN_DELAY = 1000;
 
 // built in close delay.
 export const CLOSE_DELAY = 200;
-
-// the colour gray used by the tools.
-const theme = useMantineTheme();
-export const GRAY = theme.colors.gray[6];
 
 // the default stroke used by labels.
 export const STROKE = 1.5

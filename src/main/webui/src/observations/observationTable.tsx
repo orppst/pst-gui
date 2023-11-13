@@ -3,7 +3,14 @@ import {
     fetchObservationResourceRemoveObservation,
     useObservationResourceGetObservation
 } from "../generated/proposalToolComponents.ts";
-import {Text, Space, Badge, Group, Table} from "@mantine/core";
+import {
+    Text,
+    Space,
+    Badge,
+    Group,
+    Table,
+    useMantineTheme
+} from '@mantine/core';
 import {modals} from "@mantine/modals";
 import {
     CalibrationObservation,
@@ -17,7 +24,6 @@ import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import CloneButton from "../commonButtons/clone.tsx";
 import DeleteButton from "../commonButtons/delete.tsx";
 import { ReactElement } from 'react';
-import { GRAY } from '../constants.tsx';
 
 export type ObservationId = {id: number}
 
@@ -31,6 +37,10 @@ export default function ObservationRow(
     observationId: ObservationId): ReactElement {
 
     const queryClient = useQueryClient();
+
+    // the colour gray used by the tools.
+    const theme = useMantineTheme();
+    const GRAY = theme.colors.gray[6];
 
     const { selectedProposalCode} = useParams();
 

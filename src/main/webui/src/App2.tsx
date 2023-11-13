@@ -42,15 +42,15 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip
-} from "@mantine/core";
+    Tooltip, useMantineTheme
+} from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import { IconChevronRight, IconLogout } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
 import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
 import {
-    APP_HEADER_HEIGHT, CLOSE_DELAY, GRAY, ICON_SIZE, JSON_SPACES,
+    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE, JSON_SPACES,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
 } from './constants.tsx';
@@ -85,6 +85,10 @@ function App2() {
     const historyProposalCode= 0;
 
     const [selectedProposalCode] = useState(historyProposalCode)
+
+    // the colour gray used by the tools.
+    const theme = useMantineTheme();
+    const GRAY = theme.colors.gray[6];
 
     const router = createBrowserRouter(
         [

@@ -1,11 +1,13 @@
 import {useMantineColorScheme, Switch, useMantineTheme} from '@mantine/core';
 import {IconSun, IconMoonStars} from '@tabler/icons-react';
 import { Slider } from '@mantine/core';
-import { GRAY, STROKE } from './constants.tsx';
+import { STROKE } from './constants.tsx';
 
 export function SwitchToggle() {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+    // the colour gray used by the tools.
     const theme = useMantineTheme();
+    const GRAY = theme.colors.gray[6];
 
     return (
         <>
