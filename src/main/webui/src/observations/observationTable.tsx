@@ -18,7 +18,13 @@ import CloneButton from "../commonButtons/clone.tsx";
 import DeleteButton from "../commonButtons/delete.tsx";
 import { ReactElement } from 'react';
 
-export type ObservationId = {id: number}
+/**
+ * the observation id.
+ *
+ * @param id: the database id.
+ * @param key: the essential id needed by react.
+ */
+export type ObservationId = {id: number, key:number}
 
 /**
  * creates an Observation row.
