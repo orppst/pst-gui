@@ -1,181 +1,116 @@
 import {
     Accordion, Badge,
-    Box, Checkbox,
+    Checkbox,
     Fieldset, Grid,
     Group,
-    Select,
-    Space, Stack,
-    Text,
-    TextInput
+    Select, useMantineColorScheme,
 } from "@mantine/core";
-import {notSpecified} from "./edit.group.tsx";
-import {
-    ExpectedSpectralLine,
-    PolStateEnum,
-    ScienceSpectralWindow
-} from "../generated/proposalToolSchemas.ts";
-import DeleteButton from "../commonButtons/delete.tsx";
+import {TechnicalGoalValues} from "./edit.group.tsx";
 import AddButton from "../commonButtons/add.tsx";
-import {useForm} from "@mantine/form";
+import {UseFormReturnType} from "@mantine/form";
 import {AccordionDelete} from "../commonButtons/accordianControls.tsx";
-import {SubmitButton} from "../commonButtons/save.tsx";
 import {frequencyUnits} from "../physicalUnits/PhysicalUnits.tsx";
-import {NumberInputPlusUnit, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
+import {NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {randomId} from "@mantine/hooks";
-import { MAX_COLUMNS } from '../constants.tsx';
+import {ScienceSpectralWindowGui} from "./scienceSpectralWindowGui.tsx";
+import {ReactElement} from "react";
+import { MAX_COLUMNS } from '../constants';
 
+/**
+ * generates the spectral window panel.
+ *
+ * @param {UseFormReturnType<TechnicalGoalValues>} form the
+ * form containign the spectral windows.
+ * @return {React.ReactElement} the dynamic html for the spectral window panel.
+ * @constructor
+ */
+export default function SpectralWindowsSection(
+    form: UseFormReturnType<TechnicalGoalValues>
+): ReactElement {
 
-type ExpectedSpectralLineAlt = {
-    restFrequency: NumberUnitType,
-    transition?: string,
-    splatalogId?: string,
-    description?: string
-}
+    // determine color.
+    const {colorScheme} = useMantineColorScheme();
+    const IS_LIGHT = colorScheme === 'light'
 
-type ScienceSpectralWindowAlt = {
-    index?: number | string
-    start: NumberUnitType,
-    end: NumberUnitType,
-    spectralResolution: NumberUnitType,
-    isSkyFrequency: boolean,
-    polarization: PolStateEnum | undefined
-    expectedSpectralLines: ExpectedSpectralLineAlt []
-}
-
-interface SpectrumValues {
-    windows: ScienceSpectralWindowAlt []
-}
-
-function convertExpectedSpectralLineToAlt(input: ExpectedSpectralLine) {
-    let expectedSpectralLineAlt : ExpectedSpectralLineAlt = {
-        restFrequency: {
-            value: input.restFrequency?.value ?? "",
-            unit: input.restFrequency?.unit?.value ?? ""
-        },
-        transition: input.transition,
-        splatalogId: input.splatalogId?.value,
-        description: input.description
-    }
-
-    return expectedSpectralLineAlt;
-}
-
-function convertSpectralWindowSetupAlt(input: ScienceSpectralWindow) {
-    let spectralWindowSetupAlt : ScienceSpectralWindowAlt = {
-        index: input.index,
-        start: {
-            value: input.spectralWindowSetup?.start?.value ?? "",
-            unit: input.spectralWindowSetup?.start?.unit?.value ?? ""
-        },
-        end: {
-            value: input.spectralWindowSetup?.end?.value ?? "",
-            unit: input.spectralWindowSetup?.end?.unit?.value ?? ""
-        },
-        spectralResolution: {
-            value: input.spectralWindowSetup?.spectralResolution?.value ?? "",
-            unit: input.spectralWindowSetup?.spectralResolution?.unit?.value ?? ""
-        },
-        isSkyFrequency: input.spectralWindowSetup?.isSkyFrequency ?? false,
-        polarization: input.spectralWindowSetup?.polarization ?? undefined,
-        expectedSpectralLines: input.expectedSpectralLine ?
-            input.expectedSpectralLine.map((line) =>{
-            return convertExpectedSpectralLineToAlt(line);
-        }) : []
-    }
-
-    return spectralWindowSetupAlt;
-}
-
-export default function ViewEditSpectralWindow(
-        props: {windows: ScienceSpectralWindow[]}) {
-
-    const emptySpectralLine : ExpectedSpectralLineAlt = {
-        restFrequency: {value: "", unit: ""} ,
-        transition: "",
-        splatalogId: "",
-        description: ""
-    }
-
-    const emptyWindow : ScienceSpectralWindowAlt = {
+    // default window settings.
+    const EMPTY_SPECTRAL_WINDOW : ScienceSpectralWindowGui = {
         index: "",
-        start: {value: "", unit: ""},
-        end: {value: "", unit: ""},
-        spectralResolution: {value: "", unit: ""},
+        start: {value: "", unit: null},
+        end: {value: "", unit: null},
+        spectralResolution: {value: "", unit: null},
         isSkyFrequency: false,
-        polarization: undefined,
-        expectedSpectralLines:[]
+        polarization: null,
+        expectedSpectralLines:[],
+        key: randomId()
     }
 
-    let initialSpectrumValues : SpectrumValues = {
-        windows: props.windows ?
-            props.windows.map((window) => {
-                return convertSpectralWindowSetupAlt(window)
-            }) : []
-    }
+    /**
+     * builds a window setup panel.
+     *
+     * @param {number} index the window index.
+     * @return {ReactElement} the dynamic html for the window.
+     */
+    const renderWindowSetup = (index: number): ReactElement => {
+        const TOTAL_COLUMNS = MAX_COLUMNS;
 
-    const form
-        = useForm<SpectrumValues>({
-        initialValues: initialSpectrumValues,
-        validate: {}
-    })
-
-
-    const renderWindowSetup = (props: {index: number}) => {
-        const totalCols = MAX_COLUMNS;
-
+        //spans work out the proportional amount of space for each element and
+        //provide responsiveness in terms of view-port width
         return (
-            <Grid columns={totalCols} gutter={0}>
-                <Grid.Col span={{base: totalCols, xl: 4}}>
+            <Grid columns={TOTAL_COLUMNS} gutter={0}>
+                <Grid.Col span={{base: TOTAL_COLUMNS, xl: TOTAL_COLUMNS / 4}}>
                     <NumberInputPlusUnit
-                        color={"cyan"}
+                        color={IS_LIGHT ? "teal.3" :"teal.7"}
                         gap={0}
                         padding={5}
                         form={form}
                         label={"Start"}
-                        valueRoot={`windows.${props.index}.start`}
+                        valueRoot={`spectralWindows.${index}.start`}
                         units={frequencyUnits}
                     />
                 </Grid.Col>
-                <Grid.Col span={{base: totalCols, xl: 4}}>
+                <Grid.Col span={{base: TOTAL_COLUMNS, xl: TOTAL_COLUMNS/4}}>
                     <NumberInputPlusUnit
-                        color={"indigo"}
+                        color={IS_LIGHT ? "indigo.3" :"indigo.7"}
                         gap={0}
                         padding={5}
                         form={form}
                         label={"End"}
-                        valueRoot={`windows.${props.index}.end`}
+                        valueRoot={`spectralWindows.${index}.end`}
                         units={frequencyUnits}
                     />
                 </Grid.Col>
-                <Grid.Col span={{base: totalCols, xl: 4}}>
+                <Grid.Col span={{base: TOTAL_COLUMNS, xl: TOTAL_COLUMNS/4}}>
                     <NumberInputPlusUnit
-                        color={"violet"}
+                        color={IS_LIGHT ? "violet.3" :"violet.7"}
                         gap={0}
                         padding={5}
                         form={form}
                         label={"Resolution"}
-                        valueRoot={`windows.${props.index}.spectralResolution`}
+                        valueRoot={`spectralWindows.${index}.spectralResolution`}
                         units={frequencyUnits}
                     />
                 </Grid.Col>
-                <Grid.Col span={{base: totalCols/2, xl: 2}}>
+                <Grid.Col span={{base: TOTAL_COLUMNS/2, xl: TOTAL_COLUMNS/2/4}}>
                     <Select
                         label={"Polarization:"}
                         placeholder={"pick one"}
                         px={5}
+                        pt={5}
                         data={[
                             "I","Q","U","V","RR","LL","RL","LR","XX","YY","XY","YX","PF","PP","PA"
                         ]}
-                        {...form.getInputProps(`windows.${props.index}.polarization`)}
+                        {...form.getInputProps(
+                            `spectralWindows.${index}.polarization`)}
                     />
                 </Grid.Col>
-                <Grid.Col span={{base: totalCols/2, xl: 2}}>
+                <Grid.Col span={{base: TOTAL_COLUMNS/2, xl: TOTAL_COLUMNS/2/4}}>
                     <Group justify={"center"}>
                         <Checkbox
                             size={"sm"}
                             label={"sky frequency"}
-                            pt={25}
-                            {...form.getInputProps(`windows.${props.index}.isSkyFrequency`,
+                            pt={35}
+                            {...form.getInputProps(
+                                `spectralWindows.${index}.isSkyFrequency`,
                                 {type: 'checkbox'})}
                         />
                     </Group>
@@ -184,111 +119,67 @@ export default function ViewEditSpectralWindow(
         )
     }
 
-    const renderSpectralLines = (props: {index: number}) => {
+    /**
+     * renders the spectral lines.
+     *
+     * @return {ReactElement} the dynamic html for the spectral lines.
+     */
+    const renderSpectralLines = (): ReactElement => {
         return (
             <Fieldset legend={"Spectral lines"}>
-                <Badge radius={0} color={"teal"}>
-                    Work-in-progress: provide a selectable list of potential spectral lines given the spectral range above
+                <Badge radius={0} color={"red"}>
+                    WIP: select predetermined spectral lines
                 </Badge>
-                {
-                    form.values.windows?.at(props.index)?.expectedSpectralLines?.length! > 0 ?
-                        form.values.windows?.at(props.index)?.expectedSpectralLines?.map((s, index) => {
-                            return (
-                                <Group grow key={s.splatalogId ? s.splatalogId : randomId()}>
-                                    <NumberInputPlusUnit
-                                        label={index == 0 ? "Rest frequency" : ''}
-                                        form={form}
-                                        valueRoot={`windows.${props.index}.expectedSpectralLines.${index}.restFrequency`}
-                                        units={frequencyUnits}
-                                    />
-                                    <TextInput
-                                        label={index == 0 ? "Transition:" : ''}
-                                        placeholder={notSpecified}
-                                        {...form.getInputProps(
-                                            `windows.${props.index}.expectedSpectralLines.${index}.transition`
-                                        )}
-                                    />
-                                    <TextInput
-                                        label={index == 0 ? "Splatalogue id:": ''}
-                                        placeholder={notSpecified}
-                                        {...form.getInputProps(
-                                            `windows.${props.index}.expectedSpectralLines.${index}.splatalogId`
-                                        )}
-                                    />
-                                    <TextInput
-                                        label={index == 0 ? "Description:" : ''}
-                                        placeholder={notSpecified}
-                                        {...form.getInputProps(
-                                            `windows.${props.index}.expectedSpectralLines.${index}.description`
-                                        )}
-                                    />
-                                    <Box style={{ display: 'flex', alignItems: 'center' }}>
-                                        <DeleteButton
-                                            toolTipLabel={"remove spectral line " + (index + 1)}
-                                            onClick={() => form.removeListItem(
-                                                `windows.${props.index}.expectedSpectralLines`, index
-                                            )} />
-                                    </Box>
-                                </Group>
-                            )
-                        })
-                        :
-                        <Text c={"orange.5"}>None specified</Text>
-                }
-                <Space h={"xs"} />
-                <Group justify={"flex-end"}>
-                    <AddButton
-                        toolTipLabel={"add a spectral line"}
-                        onClick={() => form.insertListItem(
-                            `windows.${props.index}.expectedSpectralLine`, {...emptySpectralLine}
-                        )}
-                    />
-                </Group>
             </Fieldset>
         )
     }
 
-    const handleSubmit = form.onSubmit((values) => {
-        console.log(values)
+    /**
+     * handles the deletion of a timing window.
+     *
+     * @param {number} index the index in the table.
+     */
+    const handleDelete = (index: number): void => {
+        alert("Removes the list item only - " +
+            "does not yet delete the spectral window from the database")
+        form.removeListItem('spectralWindows', index);
+        //todo: call API function to delete timing window from the database
+    }
+
+    const windowsList = form.values.spectralWindows.map(
+        (s, mapIndex) => {
+        let labelIndex = (mapIndex + 1).toString();
+        return (
+            <Accordion.Item value={labelIndex} key={s.key}>
+                <AccordionDelete
+                    title={"Window " + labelIndex}
+                    deleteProps={{
+                        toolTipLabel: "remove spectral window " + labelIndex,
+                        onClick: () => handleDelete(mapIndex)
+                    }}
+                />
+                <Accordion.Panel>
+                    {renderWindowSetup(mapIndex)}
+                    {renderSpectralLines()}
+                </Accordion.Panel>
+            </Accordion.Item>
+        )
     })
 
     return(
-        <form onSubmit={handleSubmit}>
+        <Fieldset legend={"Spectral windows"}>
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
-                {
-                    form.values.windows?.map((s, mapIndex) => {
-                        let labelIndex = (mapIndex + 1).toString();
-                        return (
-                            <Accordion.Item value={labelIndex} key={s ? s.index : randomId()}>
-                                <AccordionDelete
-                                    title={"Window " + labelIndex}
-                                    deleteProps={{
-                                        toolTipLabel: "remove spectral window " + labelIndex,
-                                        onClick: ()=>form.removeListItem("windows", mapIndex)
-                                    }}
-                                />
-                                <Accordion.Panel>
-                                    {renderWindowSetup({index: mapIndex})}
-                                    {renderSpectralLines({index: mapIndex})}
-                                </Accordion.Panel>
-                            </Accordion.Item>
-                        )
-                    })
-                }
+                {windowsList}
             </Accordion>
-            <Space h={"xs"}/>
             <Group justify={"flex-end"}>
-                <Stack>
-                    <AddButton
-                        toolTipLabel={"add a spectral window"}
-                        onClick={() => form.insertListItem('windows', {...emptyWindow})}
-                    />
-                    <SubmitButton toolTipLabel={"save changes to spectral windows"} />
-                </Stack>
-
+                <AddButton
+                    toolTipLabel={"add a spectral window"}
+                    onClick={() => form.insertListItem(
+                        'spectralWindows',
+                        {...EMPTY_SPECTRAL_WINDOW, key: randomId()}
+                    )}
+                />
             </Group>
-
-
-        </form>
+        </Fieldset>
     )
 }

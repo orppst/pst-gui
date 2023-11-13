@@ -3,7 +3,8 @@
 import {Button, Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import {ReactNode} from "react";
+import { ReactElement, ReactNode } from 'react';
+import AddButton from "../commonButtons/add"
 
 import {
     CelestialTarget,
@@ -15,6 +16,7 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
+import {SubmitButton} from "../commonButtons/save";
 
 const TargetForm = (props: FormPropsType<{
         SelectedEpoch: string;
@@ -60,14 +62,10 @@ const TargetForm = (props: FormPropsType<{
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: {},
-            lat: {
-                "@type": "ivoa:RealQuantity",
-                value: val.RA,
-                unit: {value: "degrees"}},
-            lon: {
-                "@type": "ivoa:RealQuantity",
-                value: val.Dec,
-                unit: {value: "degrees"}}
+            lat: {"@type": "ivoa:RealQuantity",
+                value: val.RA, unit: {value: "degrees"}},
+            lon: {"@type": "ivoa:RealQuantity",
+                value: val.Dec, unit: {value: "degrees"}}
         }
         const Target: CelestialTarget = {
                 "@type": "proposal:CelestialTarget",
@@ -141,17 +139,23 @@ const TargetForm = (props: FormPropsType<{
                 data={[{label:"J2000",value:"J2000"}]}
                 {...form.getInputProps("SelectedEpoch")} />
             <div>
-                <Button type="submit">Save</Button>
+                <SubmitButton toolTipLabel={"Save"}/>
             </div>
         </form>
     );
 };
 
-export default function AddTargetModal() {
+/**
+ * On click the add button displays the add new target modal.
+ *
+ * @return a React Element of a visible add button and hidden modal.
+ *
+ */
+export default function AddTargetModal(): ReactElement {
     const [opened, { close, open }] = useDisclosure();
     return (
         <>
-            <Button onClick={open}>Add New</Button>
+            <AddButton toolTipLabel={"Add new target"} onClick={open}/>
             <Modal title="New target" opened={opened} onClose={close}>
                 <TargetForm
                     onSubmit={() => {
