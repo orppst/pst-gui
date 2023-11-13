@@ -1,29 +1,29 @@
 import { Button, Tooltip } from '@mantine/core';
-import { IconCopy } from '@tabler/icons-react';
+import { IconAlignLeft } from '@tabler/icons-react';
 import {
     ClickButtonInterfaceProps
 } from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
 
 /**
- * creates a clone button.
+ * creates a routing back button.
  *
  * @param {ClickButtonInterfaceProps} props the button inputs.
- * @return {ReactElement} the dynamic html for the clone button
+ * @return {ReactElement} the dynamic html for the routing back button
  * @constructor
  */
-export default function CloneButton(props: ClickButtonInterfaceProps):
+export default function RouteBackButton(props: ClickButtonInterfaceProps):
         ReactElement {
     return (
-        <Tooltip openDelay={1000} label={props.toolTipLabel}>
-            <Button rightSection={<IconCopy size={"2rem"}/>}
-                    color={"blue"}
+        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
+            <Button rightSection={<IconAlignLeft size={"2rem"}/>}
+                    color={"green.5"}
                     variant={"subtle"}
                     onClick={props.onClick === undefined?
                         props.onClickEvent :
                         props.onClick}
                     disabled={props.disabled}>
-                {props.label === undefined? 'Copy' : props.label}
+                {props.label === undefined? 'finished editing' : props.label}
             </Button>
         </Tooltip>
     )

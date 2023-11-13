@@ -5,12 +5,18 @@ import {
     useSupportingDocumentResourceGetSupportingDocuments
 } from "../generated/proposalToolComponents";
 import {useParams} from "react-router-dom";
-import {Box, Button, FileButton, Table, Text} from "@mantine/core";
+import {Box, FileButton, Table, Text} from "@mantine/core";
 import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import {notifications} from "@mantine/notifications";
 import {randomId} from "@mantine/hooks";
+import UploadButton from '../commonButtons/upload.tsx';
+import DeleteButton from '../commonButtons/delete.tsx';
+import {
+    DownloadButton,
+    DownloadRequestButton
+} from '../commonButtons/download.tsx';
 
 type DocumentProps = {
     dbid: number,
@@ -96,8 +102,12 @@ const DocumentsPanel = () => {
             </Box>
             <Text fz="lg" fw={700}>Upload a document</Text>
             <FileButton onChange={handleUpload}>
-                        {(props) => <Button {...props}>Choose a file</Button>}
+                        {(props) => <UploadButton
+                            toolTipLabel="select a file from disk to upload"
+                            label={"Choose a file"}
+                            onClick={props.onClick}/>}
             </FileButton>
+
             <Result status={status} />
         </Box>
     );
@@ -160,9 +170,22 @@ function RenderDocumentListItem(props: DocumentProps) {
                 <Table.Tr key={props.dbid}>
                     <Table.Td>{props.name}</Table.Td>
                     {downloadReady?
-                        <Table.Td align={"right"}><Button component={"a"} download={props.name} color={"green"} href={downloadLink}>Download</Button></Table.Td>
-                        :<Table.Td align={"right"}><Button component={"a"} download={props.name} color={"blue"} onClick={prepareDownload}>Request download</Button></Table.Td>}
-                    <Table.Td align={"left"}><Button color={"red"} onClick={openRemoveModal}>Remove</Button></Table.Td>
+                        <Table.Td align={"right"}>
+                            <DownloadButton
+                                download={props.name}
+                                toolTipLabel={"Download selected file."}
+                                href={downloadLink}/></Table.Td>
+                        :<Table.Td align={"right"}>
+                            <DownloadRequestButton
+                                download={props.name}
+                                toolTipLabel={'Request the file from the database.'}
+                                onClick={prepareDownload}/>
+                        </Table.Td>}
+                    <Table.Td align={"left"}>
+                        <DeleteButton onClick={openRemoveModal}
+                                      toolTipLabel={"Remove this document."}
+                                      label={"Remove"}/>
+                    </Table.Td>
                 </Table.Tr>
             );
 }

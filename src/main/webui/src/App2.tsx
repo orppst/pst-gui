@@ -1,4 +1,10 @@
-import { createContext, useState, useContext, ReactElement } from 'react';
+import {
+    createContext,
+    useState,
+    useContext,
+    ReactElement,
+    SyntheticEvent
+} from 'react';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
     useProposalResourceGetProposals
@@ -11,7 +17,13 @@ import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
 import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
-import {createBrowserRouter, Link, Outlet, RouterProvider} from "react-router-dom";
+import {
+    createBrowserRouter,
+    Link,
+    Outlet,
+    RouterProvider,
+    useNavigate
+} from 'react-router-dom';
 import { useHistoryState } from "./useHistoryState";
 import TechnicalGoalsPanel from "./technicalGoals/technicalGoalsPanel.tsx";
 import ObservationsPanel from "./observations/observationPanel.tsx";
@@ -21,7 +33,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
 import {
     AppShell,
-    Button,
     NavLink,
     Box,
     Text,
@@ -30,8 +41,10 @@ import {
     useMantineTheme, Burger, ScrollArea, Group, ActionIcon, Tooltip
 } from "@mantine/core";
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
-import {IconChevronRight, IconLogout, IconPlus} from "@tabler/icons-react";
+import { IconChevronRight, IconLogout } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
+import AddButton from './commonButtons/add.tsx';
+import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
 
 
 const queryClient = new QueryClient()
@@ -58,12 +71,6 @@ export const useToken = () => {
     const { token } = useContext(ProposalContext);
     return token;
 };
-
-export const useApiUrl = () => {
-    const { apiUrl } = useContext(ProposalContext);
-    return apiUrl;
-};
-
 
 function App2() {
     const historyProposalCode= 0;
@@ -125,6 +132,27 @@ function App2() {
         const {user, token, apiUrl} = useContext(ProposalContext);
         const theme = useMantineTheme();
         const [opened, {toggle}] = useDisclosure();
+        const navigate = useNavigate();
+
+        /**
+         * resolves the routing for when making a new proposal.
+         *
+         * @param {React.SyntheticEvent} event the event.
+         */
+        function handleAddNew(event: SyntheticEvent): void {
+            event.preventDefault();
+            navigate("proposal/new");
+        }
+
+        /**
+         * resolves the routing for when searching for a proposal.
+         *
+         * @param {React.SyntheticEvent} event the event.
+         */
+        function handleSearch(event: SyntheticEvent): void {
+            event.preventDefault();
+            navigate("/");
+        }
 
         return (
             <ProposalContext.Provider
@@ -152,14 +180,11 @@ function App2() {
                                     <img src={"/pst/gui/public/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
-                                    <Button
-                                        variant="light"
-                                        component={Link}
-                                        to={"/"}
-                                        onClick={opened && toggle}
-                                    >
-                                        Proposals for {user.fullName}
-                                    </Button>
+                                    <DatabaseSearchButton
+                                        toolTipLabel={"Locate proposals by " + user.fullName + "."}
+                                        label={"Proposals for " + user.fullName}
+                                        onClickEvent={handleSearch}
+                                    />
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>
@@ -182,21 +207,10 @@ function App2() {
 
                     <AppShell.Navbar p="md">
                         <AppShell.Section grow component={ScrollArea}>
-                            <Text fz={"sm"}>Create a new proposal</Text>
                             <Group justify={"center"} mb={"5%"}>
-                                <Tooltip label={"new proposal"}
-                                         position={"left"}
-                                         openDelay={1000}>
-                                    <ActionIcon
-                                        color={"green.5"}
-                                        variant={"subtle"}
-                                        component={Link}
-                                        to={"proposal/new"}
-                                        onClick={opened && toggle}
-                                    >
-                                        <IconPlus size={"2rem"}/>
-                                    </ActionIcon>
-                                </Tooltip>
+                                <AddButton toolTipLabel={"new proposal"}
+                                           label={"Create a new proposal"}
+                                           onClickEvent={handleAddNew}/>
                             </Group>
                             <Group justify={"center"}>
                                 <Text fz={"sm"}>-- OR --</Text>
