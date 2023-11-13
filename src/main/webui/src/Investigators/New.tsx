@@ -10,7 +10,7 @@ import {InvestigatorKind} from "../generated/proposalToolSchemas.ts";
 import {Box, Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "../commonButtons/save";
-import DeleteButton from '../commonButtons/delete";
+import DeleteButton from "../commonButtons/delete";
 
 /**
  * Render s form panel to add an investigator to the current proposal.

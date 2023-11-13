@@ -6,7 +6,7 @@ type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
 
 /**
  *
- * @param {TargetProps} props the data ossicated with all the targets of a
+ * @param {TargetProps} props the data associated with all the targets of a
  * proposal.
  * @return {ReactElement} the dynamic html for the target table.
  * @constructor

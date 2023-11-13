@@ -4,8 +4,6 @@ import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { ReactElement, ReactNode } from 'react';
-import AddButton from "../commonButtons/add"
-
 import {
     CelestialTarget,
     EquatorialPoint, SimbadTargetResult, SpaceSys,
