@@ -19,8 +19,8 @@ export type NumberUnitType =  {
 /**
  * convert NumberUnitType to RealQuantity
  *
- * @param {NumberUnitType} input
- * @return {RealQuantity}
+ * @param {NumberUnitType} input type used with NumberInput on forms including a Select for the unit name
+ * @return {RealQuantity} type contained in the database representing a numeric value and a unit
  * intention: use before saving a "RealQuantity" to the database
  */
 export const convertToRealQuantity = (input: NumberUnitType) : RealQuantity =>
@@ -38,7 +38,7 @@ export const convertToRealQuantity = (input: NumberUnitType) : RealQuantity =>
  *  convert RealQuantity to NumberUnitType
  *
  * @param input {RealQuantity} potentially undefined if a value doesn't exist when read from the database
- * @return {NumberUnitType}
+ * @return {NumberUnitType} type to use with the forms
  *  intention: use after reading a "RealQuantity" from the database which is potentially undefined
  */
 export const convertToNumberUnitType = (input: RealQuantity | undefined) : NumberUnitType =>
