@@ -6,8 +6,10 @@ import {
 } from "../generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
-import {Box, Button, Text, Textarea} from "@mantine/core";
+import {Box, Text, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
+import { MAX_CHARS_FOR_INPUTS } from '../constants.tsx';
+import { SubmitButton } from '../commonButtons/save.tsx';
 import {
     HEADER_FONT_WEIGHT,
     JSON_SPACES,
@@ -94,7 +96,8 @@ function SummaryPanel() {
                     {MAX_CHARS_FOR_INPUTS - form.values.summary.length}
                 </small>
                 <br/>
-                <Button type="submit" >Update</Button>
+                <SubmitButton toolTipLabel={"save summary"}
+                              label={'save'}/>
             </form>
             }
         </Box>

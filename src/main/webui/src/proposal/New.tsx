@@ -5,9 +5,10 @@ import {
 } from "../generated/proposalToolComponents";
 import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
-import {Box, Button, Select, Text, Textarea, TextInput} from "@mantine/core";
+import {Box, Select, Text, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
+import { SubmitButton } from '../commonButtons/save.tsx';
 import { TEXTAREA_MAX_ROWS } from '../constants.tsx';
 
 const kindData = [
@@ -81,7 +82,8 @@ const kindData = [
                     {...form.getInputProps("kind")}
                     />
                 </Box>
-                <Button type="submit">Create</Button>
+                <SubmitButton label={"Create"}
+                              toolTipLabel={"Create new proposal"}/>
             </form>
         </Box>
     );

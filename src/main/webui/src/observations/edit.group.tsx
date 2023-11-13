@@ -186,8 +186,10 @@ export default function ObservationEditGroup(
         <>
             <form onSubmit={handleSubmit}>
                 <Group justify={'flex-start'} mt="md">
-                    <SubmitButton toolTipLabel={
-                        hasObservation ? "save changes" : "save"}/>
+                    <SubmitButton
+                        toolTipLabel={hasObservation ? "save changes" : "save"}
+                        label={"Save"}
+                    />
                 </Group>
                 <Grid  columns={5}>
                     <Grid.Col span={{base: 5, lg: 2}}>

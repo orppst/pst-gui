@@ -57,7 +57,8 @@ function InvestigatorsPanel(): ReactElement {
             <Text fz="lg" fw={700}>Investigators linked to this proposal</Text>
             <Grid>
                 <Grid.Col span={5}>
-                <AddButton toolTipLabel={"Add new"} onClick={handleAddNew} />
+                <AddButton toolTipLabel={"Add new"}
+                           onClick={handleAddNew} />
                     <Table>
                         {data?.length === 0 ?
                             (<Table.Td>Please add an investigator</Table.Td>) :
@@ -177,7 +178,8 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
           <Table.Td>{data?.person?.eMail}</Table.Td>
           <Table.Td>{data?.person?.homeInstitute?.name}</Table.Td>
           <Table.Td><DeleteButton toolTipLabel={"delete"}
-                                  onClick={openRemoveModal} /></Table.Td></>)}
+                                  onClick={openRemoveModal} />
+          </Table.Td></>)}
       </Table.Tr>
     );
 }

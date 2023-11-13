@@ -5,9 +5,10 @@ import {
     useProposalResourceGetObservingProposalTitle,
 } from "../generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {Box, Button, Text, TextInput} from "@mantine/core";
+import {Box, Text, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
+import { SubmitButton } from '../commonButtons/save.tsx';
 import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
 
 function TitlePanel() {
@@ -83,7 +84,8 @@ function TitlePanel() {
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>
                 <TextInput name="title" {...form.getInputProps('title')}/>
-                <Button type="submit" >Update</Button>
+                <SubmitButton toolTipLabel={"save title"}
+                              label={"Save"}/>
             </form>
             }
         </Box>

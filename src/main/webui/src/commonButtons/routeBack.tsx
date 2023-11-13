@@ -1,34 +1,29 @@
 import { Button, Tooltip } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { IconAlignLeft } from '@tabler/icons-react';
 import {
     ClickButtonInterfaceProps
 } from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
-import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
-
 
 /**
- * creates an add button.
+ * creates a routing back button.
  *
  * @param {ClickButtonInterfaceProps} props the button inputs.
- * @return {ReactElement} the dynamic html for the add button
+ * @return {ReactElement} the dynamic html for the routing back button
  * @constructor
  */
-export default function AddButton(props: ClickButtonInterfaceProps):
+export default function RouteBackButton(props: ClickButtonInterfaceProps):
         ReactElement {
     return (
-        <Tooltip position={"left"}
-                 label={props.toolTipLabel}
-                 openDelay={OPEN_DELAY}
-                 closeDelay={CLOSE_DELAY}>
-            <Button rightSection={<IconPlus size={ICON_SIZE}/>}
+        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
+            <Button rightSection={<IconAlignLeft size={"2rem"}/>}
                     color={"green.5"}
                     variant={"subtle"}
                     onClick={props.onClick === undefined?
                         props.onClickEvent :
                         props.onClick}
                     disabled={props.disabled}>
-                {props.label === undefined? 'Add' : props.label}
+                {props.label === undefined? 'finished editing' : props.label}
             </Button>
         </Tooltip>
     )
