@@ -3,7 +3,7 @@
 import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { FormEvent, ReactElement, ReactNode, useEffect, useRef } from 'react';
+import { FormEvent, ReactElement, ReactNode, useRef } from 'react';
 import {
     CelestialTarget,
     EquatorialPoint, SimbadTargetResult, SpaceSys,
@@ -42,13 +42,6 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
     const targetNameRef = useRef(null);
-
-    /**
-     * force the validation to engage once the UI has been rendered.
-     */
-    useEffect(() => {
-        form.errors = form.validate().errors;
-    })
 
     /**
      * executes a simbad query.
