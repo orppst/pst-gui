@@ -3,13 +3,13 @@ import {
     useState,
     useContext,
     ReactElement,
-    SyntheticEvent
+    SyntheticEvent, useCallback
 } from 'react';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
-import { Person} from "./generated/proposalToolSchemas";
+import { Person, ProposalSynopsis } from './generated/proposalToolSchemas';
 import TitlePanel from './proposal/Title';
 import TargetPanel from './targets/List';
 import OverviewPanel from "./proposal/Overview";
@@ -45,6 +45,7 @@ import { IconChevronRight, IconLogout } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
 import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
+import ViewEditButton from './commonButtons/viewEdit.tsx';
 
 
 const queryClient = new QueryClient()
@@ -76,6 +77,17 @@ function App2() {
     const historyProposalCode= 0;
 
     const [selectedProposalCode] = useState(historyProposalCode)
+
+    const [state, updateState] = useState();
+    const forceUpdate = useCallback(() => updateState({}), []);
+
+    function handleClick() {
+        forceUpdate();
+    }
+
+
+    const [loadedProposals, setLoadedProposals] =
+        useHistoryState<ProposalSynopsis[]>("loadedProposals", []);
 
     const router = createBrowserRouter(
         [
@@ -185,6 +197,9 @@ function App2() {
                                         label={"Proposals for " + user.fullName}
                                         onClickEvent={handleSearch}
                                     />
+                                    <AddButton toolTipLabel={"new proposal"}
+                                               label={"Create a new proposal"}
+                                               onClickEvent={handleAddNew}/>
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>
@@ -207,18 +222,7 @@ function App2() {
 
                     <AppShell.Navbar p="md">
                         <AppShell.Section grow component={ScrollArea}>
-                            <Group justify={"center"} mb={"5%"}>
-                                <AddButton toolTipLabel={"new proposal"}
-                                           label={"Create a new proposal"}
-                                           onClickEvent={handleAddNew}/>
-                            </Group>
-                            <Group justify={"center"}>
-                                <Text fz={"sm"}>-- OR --</Text>
-                            </Group>
-                            <Text fz="sm">
-                                Filter existing proposals by
-                            </Text>
-                            <Proposals/>
+                            <LoadedProposals/>
                         </AppShell.Section>
                     </AppShell.Navbar>
                     <AppShell.Main pr={"sm"}>
@@ -230,7 +234,65 @@ function App2() {
     }
 
     function PSTStart() {
-        return (<Box><Text fz={"lg"}>Welcome</Text></Box>);
+        return (
+            <Box>
+                <Text fz="sm">
+                    Filter existing proposals by
+                </Text>
+                <Proposals/>
+            </Box>);
+    }
+
+    /**
+     * generates the list of loaded proposals.
+     *
+     * @return {React.ReactElement} the dynamic html for
+     * the navigation part of the ui.
+     * @constructor
+     */
+    function LoadedProposals(): ReactElement {
+        return (
+            <>
+                {loadedProposals?.map((item) => (
+                    <NavLink key={item.code}
+                             label={item.title}
+                             childrenOffset={30}
+                             rightSection={<IconChevronRight
+                                 size="0.8rem"
+                                 stroke={1.5} />}>
+                        <NavLink to={"proposal/" + item.code}
+                                 component={Link}
+                                 label="Overview" />
+                        <NavLink to={"proposal/" + item.code + "/title"}
+                                 component={Link}
+                                 label="Title" />
+                        <NavLink to={
+                            "proposal/" + item.code + "/summary"}
+                                 component={Link}
+                                 label="Summary" />
+                        <NavLink to={
+                            "proposal/" + item.code + "/investigators"}
+                                 component={Link}
+                                 label="Investigators" />
+                        <NavLink to={
+                            "proposal/" + item.code + "/targets"}
+                                 component={Link}
+                                 label="Targets" />
+                        <NavLink to={"proposal/" + item.code + "/goals"}
+                                 component={Link}
+                                 label="Technical Goals" />
+                        <NavLink to={
+                            "proposal/" + item.code + "/observations"}
+                                 component={Link}
+                                 label="Observations" />
+                        <NavLink to={
+                            "proposal/" + item.code + "/documents"}
+                                 component={Link}
+                                 label="Documents" />
+                    </NavLink>
+                ))}
+            </>
+        );
     }
 
     function Proposals(): ReactElement {
@@ -272,43 +334,17 @@ function App2() {
                     <Box>Loading…</Box>
                 ) : (
                     <>
-                        {data?.map((item) => (
-                            <NavLink key={item.code}
-                                     label={item.title}
-                                     childrenOffset={30}
-                                     rightSection={<IconChevronRight
-                                         size="0.8rem"
-                                         stroke={1.5} />}>
-                                <NavLink to={"proposal/" + item.code}
-                                         component={Link}
-                                         label="Overview" />
-                                <NavLink to={"proposal/" + item.code + "/title"}
-                                         component={Link}
-                                         label="Title" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/summary"}
-                                         component={Link}
-                                         label="Summary" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/investigators"}
-                                         component={Link}
-                                         label="Investigators" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/targets"}
-                                         component={Link}
-                                         label="Targets" />
-                                <NavLink to={"proposal/" + item.code + "/goals"}
-                                         component={Link}
-                                         label="Technical Goals" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/observations"}
-                                         component={Link}
-                                         label="Observations" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/documents"}
-                                         component={Link}
-                                         label="Documents" />
-                            </NavLink>
+                        {data?.map((item: ProposalSynopsis) => (
+                            <>
+                                <ViewEditButton
+                                    toolTipLabel={'select proposal for editing'}
+                                    label={item.title}
+                                    onClick={() => {
+                                        loadedProposals.push(item);
+                                        setLoadedProposals(loadedProposals);
+                                    }}/>
+                                <br/>
+                            </>
                         ))}
                     </>
                 )}

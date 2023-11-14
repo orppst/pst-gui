@@ -3,18 +3,26 @@ import {ProposalContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
-import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
+import {
+    Investigator,
+    ObservingProposal,
+    ProposalKind,
+    ProposalSynopsis
+} from '../generated/proposalToolSchemas';
 import {useNavigate} from "react-router-dom";
 import {Box, Select, Text, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import { SubmitButton } from '../commonButtons/save.tsx';
+import { useHistoryState } from '../useHistoryState.ts';
 
 const kindData = [{value: "STANDARD", label: "Standard"}, {value: "TOO", label: "T.O.O"}, {value: "SURVEY", label: "Survey"}];
 
  function NewProposalPanel() {
     const { user} = useContext(ProposalContext) ;
     const [submitting, setSubmitting] = useState(false);
+     const [loadedProposals, setLoadedProposals] =
+         useHistoryState<ProposalSynopsis[]>("loadedProposals", []);
     const navigate = useNavigate();
     const queryClient = useQueryClient()
     const form = useForm({
@@ -46,9 +54,17 @@ const kindData = [{value: "STANDARD", label: "Standard"}, {value: "TOO", label: 
         };
 
         fetchProposalResourceCreateObservingProposal({ body: newProposal})
-            .then((data) => {
+            .then((data: ObservingProposal) => {
                 queryClient.invalidateQueries(["pst","api","proposals"])
                         .then(() => setSubmitting(false));
+                loadedProposals.push({
+                    code: data._id,
+                    title: data.title,
+                    summary: data.summary,
+                    kind: data.kind,
+                    submitted: data.submitted
+                });
+                setLoadedProposals(loadedProposals);
                 navigate("/proposal/" + data?._id);
             })
             .catch(console.log);
