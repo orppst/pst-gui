@@ -24,7 +24,9 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
                 TargetName: "",
                 RA: 0.00,
                 Dec: 0.00,
-                SelectedEpoch: "J2000"
+                SelectedEpoch: "J2000",
+                searching: false,
+                lastSearchName: '',
             },
             validate: {
                 TargetName: (value) => (
@@ -40,8 +42,6 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
     const targetNameRef = useRef(null);
-    let searching: boolean = false;
-    let lastSearchName: string = '';
 
     /**
      * force the validation to engage once the UI has been rendered.
@@ -55,14 +55,16 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
      */
     function simbadLookup() {
         function notFound() {
-            const choice = window.confirm("Unable to match source " + form.values.TargetName + " try again?");
-            searching = false;
+            const choice = window.confirm(
+                "Unable to match source " + form.values.TargetName +
+                " try again?");
+            form.values.searching = false;
             if(!choice)
                 props.onSubmit();
         }
 
-        searching = true;
-        lastSearchName = form.values.TargetName;
+        form.values.searching = true;
+        form.values.lastSearchName = form.values.TargetName;
         fetchSimbadResourceSimbadFindTarget({
                 queryParams: {targetName: form.values.TargetName}})
             .then((data : SimbadTargetResult) => {
@@ -70,7 +72,7 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
                 form.setFieldValue('RA', data.raDegrees?data.raDegrees:0);
                 form.setFieldValue('Dec', data.decDegrees?data.decDegrees:0);
                 form.setFieldValue('SelectedEpoch', data.epoch!);
-                searching = false;
+                form.values.searching = false;
             })
             .catch(() => notFound());
     }
@@ -132,10 +134,12 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
     const handleSubmission: (event?: FormEvent<HTMLFormElement>) => void =
         form.onSubmit((val: newTargetData) => {
             if(document.activeElement === targetNameRef.current) {
-                if (searching || lastSearchName === lastSearchName) {
+                if (form.values.searching &&
+                    val.TargetName === val.lastSearchName) {
                     // do nothing if were already searching.
                 }
-                else if (!searching || lastSearchName === lastSearchName) {
+                else if (!form.values.searching &&
+                        val.TargetName === val.lastSearchName) {
                     // if already searched and same name, assume submission
                     saveToDatabase(val);
                 } else {
@@ -199,7 +203,7 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
                 <SubmitButton
                     toolTipLabel={"Save this target"}
                     label={"Save"}
-                    disabled={!form.isValid() || searching? true : undefined}/>
+                    disabled={!form.isValid() || form.values.searching? true : undefined}/>
             </div>
         </form>
     );
@@ -243,5 +247,7 @@ export type newTargetData = {
     RA: number;
     Dec: number;
     TargetName: string
+    searching: boolean
+    lastSearchName: string
 }
 
