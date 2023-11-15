@@ -9,6 +9,7 @@ import {Box, Select, Text, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import { SubmitButton } from '../commonButtons/save.tsx';
+import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
 
 const kindData = [{value: "STANDARD", label: "Standard"}, {value: "TOO", label: "T.O.O"}, {value: "SURVEY", label: "Survey"}];
 
@@ -62,8 +63,23 @@ const kindData = [{value: "STANDARD", label: "Standard"}, {value: "TOO", label: 
             }
             <form onSubmit={createNewObservingProposal}>
                 <Box>
-                <TextInput name="title" placeholder="Give your proposal a title" withAsterisk label={"Title"} {...form.getInputProps("title")}/>
-                <Textarea rows={3} name="summary" placeholder="A brief summary" withAsterisk label={"Summary"} {...form.getInputProps("summary")} />
+                <TextInput name="title"
+                           maxLength={MAX_CHARS_FOR_INPUTS}
+                           placeholder="Give your proposal a title"
+                           withAsterisk
+                           label={"Title"}
+                           {...form.getInputProps("title")}/>
+                <Textarea name="summary"
+                          rows={3}
+                          maxLength={MAX_CHARS_FOR_INPUTS}
+                          placeholder="A brief summary"
+                          withAsterisk
+                          label={"Summary"}
+                          {...form.getInputProps("summary")} />
+                <small>
+                    Characters remaining:
+                    {MAX_CHARS_FOR_INPUTS - form.values.summary.length}
+                </small>
                 <Select label={"Kind"}
                     data={kindData}
                     {...form.getInputProps("kind")}

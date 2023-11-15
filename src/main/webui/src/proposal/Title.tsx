@@ -9,6 +9,7 @@ import {Box, Text, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import { SubmitButton } from '../commonButtons/save.tsx';
+import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
 
 function TitlePanel() {
     const { selectedProposalCode } = useParams();
@@ -74,7 +75,9 @@ function TitlePanel() {
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>
-                <TextInput name="title" {...form.getInputProps('title')}/>
+                <TextInput name="title"
+                           maxLength={MAX_CHARS_FOR_INPUTS}
+                           {...form.getInputProps('title')}/>
                 <SubmitButton toolTipLabel={"save title"}
                               label={"Save"}/>
             </form>
