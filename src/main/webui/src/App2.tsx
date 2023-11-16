@@ -185,6 +185,9 @@ function App2() {
                                         label={"Proposals for " + user.fullName}
                                         onClickEvent={handleSearch}
                                     />
+                                    <AddButton toolTipLabel={"new proposal"}
+                                               label={"Create a new proposal"}
+                                               onClickEvent={handleAddNew}/>
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>
@@ -205,19 +208,8 @@ function App2() {
                         </Grid>
                     </AppShell.Header>
 
-                    <AppShell.Navbar p="md">
-                        <AppShell.Section grow component={ScrollArea}>
-                            <Group justify={"center"} mb={"5%"}>
-                                <AddButton toolTipLabel={"new proposal"}
-                                           label={"Create a new proposal"}
-                                           onClickEvent={handleAddNew}/>
-                            </Group>
-                            <Group justify={"center"}>
-                                <Text fz={"sm"}>-- OR --</Text>
-                            </Group>
-                            <Text fz="sm">
-                                Filter existing proposals by
-                            </Text>
+                    <AppShell.Navbar p="md"  withBorder={true}>
+                        <AppShell.Section grow component={ScrollArea}  withBorder={true}>
                             <Proposals/>
                         </AppShell.Section>
                     </AppShell.Navbar>
@@ -259,7 +251,14 @@ function App2() {
         }
 
         return (
-            <Box>
+            <>
+                <div style={{
+                    backgroundColor: 'gray-6',
+                    borderStyle: 'double'
+                }}>
+                <Text fz="sm">
+                    Filter existing proposals by:
+                </Text>
                 <TextInput label="Title"
                            value={proposalTitle}
                            onChange={(e: { target: { value: string; }; }) =>
@@ -268,6 +267,7 @@ function App2() {
                            value={investigatorName}
                            onChange={(e: { target: { value: string; }; }) =>
                                setInvestigatorName(e.target.value)} />
+                </div>
                 {isLoading ? (
                     <Box>Loading…</Box>
                 ) : (
@@ -312,7 +312,7 @@ function App2() {
                         ))}
                     </>
                 )}
-            </Box>
+            </>
         );
     }
 
