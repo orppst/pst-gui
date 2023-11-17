@@ -143,7 +143,11 @@ export default function ObservationEditGroup(
                     field: {
                         "@type": "proposal:TargetField",
                         "_id": values.fieldId
-                    }
+                    },
+                    constraints: values.timingWindows.map(
+                        (windowGui) => {
+                            return ConvertToTimingWindowApi(windowGui);
+                    })
                 }
 
                 let targetObservation =
@@ -214,6 +218,11 @@ export default function ObservationEditGroup(
 //We need to convert these to type Date before using them with the
 // 'DateTimePicker' element
 
+/**
+ * Convert the TimingWindow type from the database to a type appropriate for the UI
+ * @param {TimingWindow} input
+ * @return {TimingWindowGui}
+ */
 function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     return ({
         startTime: new Date(input.startTime!),
@@ -224,32 +233,25 @@ function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     })
 }
 
+// Note: API expects the Dates as the number of seconds since the posix epoch
+
+/**
+ * Convert the TimingWindowGui type to a type appropriate to write to the database
+ * @param {TimingWindowGui} input
+ * @return {TimingWindowApi}
+ */
+function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
+    return ({
+        "@type": "proposal:TimingWindow",
+        startTime: input.startTime!.getTime(),
+        endTime: input.endTime!.getTime(),
+        note: input.note,
+        isAvoidConstraint: input.isAvoidConstraint
+    })
+}
+
 /**
  * left as im sure this will be useful once we decide how to save
- *
- * // Note: API expects the Dates as the number of seconds since the posix epoch
- * // @ts-ignore
- * function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
- *     return ({
- *         "@type": "proposal:TimingWindow",
- *         startTime: input.startTime!.getTime(),
- *         endTime: input.endTime!.getTime(),
- *         note: input.note,
- *         isAvoidConstraint: input.isAvoidConstraint
- *     })
- * }
- *
- *
- *
- * //type to use to pass data to the API
- * type TimingWindowApi = {
- *     "@type": string,
- *     startTime: number,
- *     endTime: number,
- *     note: string,
- *     isAvoidConstraint: boolean,
- * }
- *
  *
  *  const handleSave = (timingWindow : TimingWindowApi) => {
  *         console.log(timingWindow)
