@@ -159,14 +159,14 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     });
 
     return (
-        <><Grid columns={ 2 }>
+        <><Grid columns={4}>
             {/* handle aladin */}
-            <Grid.Col span={ 1 }>
+            <Grid.Col span={2}>
                 <AladinViewer/>
             </Grid.Col>
 
             {/* handle input */}
-            <Grid.Col span={ 1 }>
+            <Grid.Col span={ 2 }>
                 <form onSubmit={ handleSubmission }>
                     <TextInput
                         ref={ targetNameRef }
@@ -236,7 +236,10 @@ export default function AddTargetModal(): ReactElement {
         <>
             <AddButton onClick={open}
                        toolTipLabel={"Add new target."}/>
-            <Modal title="New target" opened={opened} onClose={close}>
+            <Modal title="New target"
+                   opened={opened}
+                   onClose={close}
+                   fullScreen>
                 <TargetForm
                     onSubmit={() => {
                         close();
