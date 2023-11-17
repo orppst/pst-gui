@@ -3,10 +3,17 @@ import {
     useState,
     useContext,
     ReactElement,
-    SyntheticEvent
+    SyntheticEvent,
+    Context
 } from 'react';
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
+    QueryClient,
+    QueryClientProvider,
+    UseQueryResult
+} from '@tanstack/react-query';
+import {
+    ProposalResourceGetProposalsError,
+    ProposalResourceGetProposalsResponse,
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
@@ -46,37 +53,58 @@ import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
 import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
 
-
-const queryClient = new QueryClient()
-
+/**
+ * defines the user context type.
+ */
 export type UserContextType = {
     user: Person;
     token: string;
 }
 
+/**
+ * defines the proposal context type.
+ */
 export type ProposalContextType = {
     selectedProposalCode: number;
     apiUrl: string;
 }
 
-export const ProposalContext = createContext<
-    UserContextType & ProposalContextType>({
+/**
+ * generates a proposal context.
+ *
+ * @type {React.Context<UserContextType & ProposalContextType>} the context.
+ */
+export const ProposalContext:
+        Context<UserContextType & ProposalContextType> =
+    createContext<UserContextType & ProposalContextType>({
         user: {},
         token:"",
         selectedProposalCode: 0,
         apiUrl:"http://api" // obviously false as a placeholder
     })
 
-export const useToken = () => {
-    const { token } = useContext(ProposalContext);
-    return token;
+/**
+ * provides an interface for getting the proposal context token.
+ * @return {string} the token.
+ */
+export const useToken = (): string => {
+    return useContext(ProposalContext).token;
 };
 
-function App2() {
+/**
+ * generates the html for the main app.
+ * @return {ReactElement} dynamic html for the main app.
+ * @constructor
+ */
+function App2(): ReactElement {
+    // set proposal code.
     const historyProposalCode= 0;
-
     const [selectedProposalCode] = useState(historyProposalCode)
 
+    // get database query client.
+    const queryClient = new QueryClient()
+
+    // the paths to route to.
     const router = createBrowserRouter(
         [
             {path: "/", element: <PSTRoot/>,
@@ -119,16 +147,21 @@ function App2() {
 
     )
 
-  return (
-      <AuthProvider>
+    return (
+        <AuthProvider>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-      </AuthProvider>
-   );
+        </AuthProvider>
+    );
 
-    function PSTRoot() {
+    /**
+     * main HTML for the UI.
+     * @return {ReactElement} the dynamic html for the main UI.
+     * @constructor
+     */
+    function PSTRoot(): ReactElement {
         const {user, token, apiUrl} = useContext(ProposalContext);
         const theme = useMantineTheme();
         const [opened, {toggle}] = useDisclosure();
@@ -181,7 +214,9 @@ function App2() {
                                          alt="Polaris"
                                          width={60}/>
                                     <DatabaseSearchButton
-                                        toolTipLabel={"Locate proposals by " + user.fullName + "."}
+                                        toolTipLabel={
+                                        "Locate proposals by " +
+                                            user.fullName + "."}
                                         label={"Proposals for " + user.fullName}
                                         onClickEvent={handleSearch}
                                     />
@@ -208,10 +243,27 @@ function App2() {
                         </Grid>
                     </AppShell.Header>
 
-                    <AppShell.Navbar p="md"  withBorder={true}>
-                        <AppShell.Section grow component={ScrollArea}  withBorder={true}>
-                            <Proposals/>
-                        </AppShell.Section>
+                    <AppShell.Navbar>
+                        <Grid columns={1}>
+                            <Grid.Col
+                                span={1}
+                                withBorder={true}
+                                style={{borderBottom: "1px",
+                                        borderStyle: "solid",
+                                        borderColor: theme.colors.gray[6],
+                                        backgroundColor: theme.colors.blue[1]}}>
+                                <AppShell.Section component={ScrollArea}
+                                                  withBorder={true}>
+                                    <ProposalFilter/>
+                                </AppShell.Section>
+                            </Grid.Col>
+                            <Grid.Col span={1}>
+                                <AppShell.Section grow component={ScrollArea}
+                                                  withBorder={true}>
+                                    <ProposalsList/>
+                                </AppShell.Section>
+                            </Grid.Col>
+                        </Grid>
                     </AppShell.Navbar>
                     <AppShell.Main pr={"sm"}>
                         <Outlet/>
@@ -221,58 +273,65 @@ function App2() {
         )
     }
 
-    function PSTStart() {
+    /**
+     * html to show in the main page when "proposals for username" is selected.
+     * @return {ReactElement} the html to display when
+     * "proposals for username" is selected.
+     * @constructor
+     */
+    function PSTStart(): ReactElement {
         return (<Box><Text fz={"lg"}>Welcome</Text></Box>);
     }
 
-    function Proposals(): ReactElement {
-        const [proposalTitle, setProposalTitle] =
-            useHistoryState("proposalTitle", "");
-        const [investigatorName, setInvestigatorName] =
-            useHistoryState("investigatorName", "");
-        const { data , error, isLoading } =
-            useProposalResourceGetProposals(
-                {
-                    queryParams: { title:  "%" + proposalTitle + "%",
-                        investigatorName: "%" + investigatorName + "%"
-                    },
-                },
-                {
-                    enabled: true,
-                }
-            );
+    /**
+     * returns the data from the query to the database for a given
+     * proposal title and investigator.
+     * @return {UseQueryResult<ProposalResourceGetProposalsResponse,
+     *                         ProposalResourceGetProposalsError>} the result
+     *                         from the database query.
+     * @constructor
+     */
+    function GetProposalList():
+            UseQueryResult<ProposalResourceGetProposalsResponse,
+                           ProposalResourceGetProposalsError> {
+        const [proposalTitle] = useHistoryState("proposalTitle", "");
+        const [investigatorName] = useHistoryState("investigatorName", "");
+        return useProposalResourceGetProposals(
+            { queryParams: {
+                title: "%" + proposalTitle + "%",
+                investigatorName: "%" + investigatorName + "%"
+              },
+           },
+            {
+                enabled: true,
+            }
+        );
+    }
 
-        if (error) {
+    /**
+     * generates the html for the proposal list.
+     *
+     * @return {React.ReactElement} the html for the proposal list.
+     * @constructor
+     */
+    function ProposalsList(): ReactElement {
+        const result = GetProposalList();
+
+        // if error produced, present error to user.
+        if (result.error) {
             return (
                 <Box>
-                    <pre>{JSON.stringify(error, null, 2)}</pre>
+                    <pre>{JSON.stringify(result.error, null, 2)}</pre>
                 </Box>
             );
         }
 
+        // generate the html.
         return (
             <>
-                <div style={{
-                    backgroundColor: 'gray-6',
-                    borderStyle: 'double'
-                }}>
-                <Text fz="sm">
-                    Filter existing proposals by:
-                </Text>
-                <TextInput label="Title"
-                           value={proposalTitle}
-                           onChange={(e: { target: { value: string; }; }) =>
-                               setProposalTitle(e.target.value)} />
-                <TextInput label="Investigator name"
-                           value={investigatorName}
-                           onChange={(e: { target: { value: string; }; }) =>
-                               setInvestigatorName(e.target.value)} />
-                </div>
-                {isLoading ? (
-                    <Box>Loading…</Box>
-                ) : (
+                {result.isLoading ? (<Box>Loading…</Box>) : (
                     <>
-                        {data?.map((item) => (
+                        {result.data?.map((item) => (
                             <NavLink key={item.code}
                                      label={item.title}
                                      childrenOffset={30}
@@ -316,6 +375,50 @@ function App2() {
         );
     }
 
+    /**
+     * produces HTML for filtering proposals.
+     *
+     * @return {React.ReactElement} the dynamic html for the proposal filter.
+     * @constructor
+     */
+    function ProposalFilter(): ReactElement {
+        const result = GetProposalList();
+
+        // if error produced, present error to user.
+        if (result.error) {
+            return (
+                <Box>
+                    <pre>{JSON.stringify(result.error, null, 2)}</pre>
+                </Box>
+            );
+        }
+
+        // acquire the state setters for proposal title and investigator name.
+        const [proposalTitle, setProposalTitle] = useHistoryState(
+            "proposalTitle", "");
+        const [investigatorName, setInvestigatorName] = useHistoryState(
+            "investigatorName", "");
+
+        // generate the html.
+        return (
+            <>
+                <div>
+                <Text fz="sm">
+                    Filter existing proposals by:
+                </Text>
+                <TextInput label="Title"
+                           value={proposalTitle}
+                           onChange={(e: { target: { value: string; }; }) =>
+                               setProposalTitle(e.target.value)} />
+                <TextInput label="Investigator name"
+                           value={investigatorName}
+                           onChange={(e: { target: { value: string; }; }) =>
+                               setInvestigatorName(e.target.value)} />
+                </div>
+            </>
+        )
+    }
 }
 
+// export the main app.
 export default App2
