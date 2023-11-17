@@ -1,6 +1,4 @@
-// Test a mantine modal
-
-import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
+import {Modal, NumberInput, Select, TextInput, Grid} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { FormEvent, ReactElement, ReactNode, useRef } from 'react';
@@ -17,8 +15,17 @@ import {useParams} from "react-router-dom";
 import AddButton from '../commonButtons/add';
 import DatabaseSearchButton from '../commonButtons/databaseSearch';
 import { SubmitButton } from '../commonButtons/save';
+import AladinViewer from './aladin/AladinViewer.tsx';
 
-const TargetForm = (props: FormPropsType<newTargetData>) => {
+/**
+ * creates the target new page.
+ *
+ * @param {FormPropsType<newTargetData>} props the data required for the
+ * target page.
+ * @return {ReactElement} the dynamic html for the new target page.
+ * @constructor
+ */
+const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const form = useForm({
             initialValues: props.initialValues ?? {
                 TargetName: "",
@@ -39,6 +46,8 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
                         null)
             }
         });
+
+    // create the database query client and get basic elements.
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
     const targetNameRef = useRef(null);
@@ -95,6 +104,10 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
             positionEpoch: { value: val.SelectedEpoch }
         };
 
+        /**
+         * assign the coord system to the target if feasible.
+         * @param {SpaceSys} ss the coord system to set.
+         */
         function assignSpaceSys(ss: SpaceSys) {
             if (Target.sourceCoordinates != undefined)
                 if (Target.sourceCoordinates.coordSys != undefined)
@@ -146,59 +159,67 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
     });
 
     return (
-        <form onSubmit={handleSubmission}>
-            <TextInput
-                ref={targetNameRef}
-                withAsterisk
-                label="Name"
-                placeholder="name of target"
-                {...form.getInputProps("TargetName")} />
-            <DatabaseSearchButton
-                label={"Lookup"}
-                onClick={simbadLookup}
-                toolTipLabel={"Search Simbad database"}/>
-            <NumberInput
-                required={true}
-                label={"RA"}
-                decimalScale={5}
-                step={0.00001}
-                min={0}
-                max={360}
-                allowNegative={false}
-                suffix="°"
-                stepHoldDelay={500}
-                stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
-                formatter={(value: string) =>
-                    !Number.isNaN(parseFloat(value))
-                        ? `${value}°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-                        : ' °'}
-                {...form.getInputProps("RA")}/>
-            <NumberInput
-                required={true}
-                label={"Dec"}
-                decimalScale={5}
-                step={0.00001}
-                min={-90}
-                max={90}
-                suffix="°"
-                stepHoldDelay={500}
-                stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
-                formatter={(value: string) =>
-                    !Number.isNaN(parseFloat(value))
-                        ? `${value}°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-                        : ' °'}
-                {...form.getInputProps("Dec")} />
-            <Select
-                label={"Coordinate System"}
-                data={[{label:"J2000",value:"J2000"}]}
-                {...form.getInputProps("SelectedEpoch")} />
-            <div>
-                <SubmitButton
-                    toolTipLabel={"Save this target"}
-                    label={"Save"}
-                    disabled={!form.isValid() || form.values.searching? true : undefined}/>
-            </div>
-        </form>
+        <><Grid columns={ 2 }>
+            {/* handle aladin */}
+            <Grid.Col span={ 1 }>
+                <AladinViewer/>
+            </Grid.Col>
+
+            {/* handle input */}
+            <Grid.Col span={ 1 }>
+                <form onSubmit={ handleSubmission }>
+                    <TextInput
+                        ref={ targetNameRef }
+                        withAsterisk
+                        label="Name"
+                        placeholder="name of target"
+                        { ...form.getInputProps('TargetName') } />
+                    <DatabaseSearchButton
+                        label={ 'Lookup' }
+                        onClick={ simbadLookup }
+                        toolTipLabel={ 'Search Simbad database' }/>
+                    <NumberInput
+                        required={ true }
+                        label={ 'RA' }
+                        decimalScale={ 5 }
+                        step={ 0.00001 }
+                        min={ 0 }
+                        max={ 360 }
+                        allowNegative={ false }
+                        suffix="°"
+                        stepHoldDelay={ 500 }
+                        stepHoldInterval={ (t: number) => Math.max(1000 / t ** 2, 1) }
+                        formatter={ (value: string) => !Number.isNaN(parseFloat(value))
+                            ? `${ value }°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                            : ' °' }
+                        { ...form.getInputProps('RA') } />
+                    <NumberInput
+                        required={ true }
+                        label={ 'Dec' }
+                        decimalScale={ 5 }
+                        step={ 0.00001 }
+                        min={ -90 }
+                        max={ 90 }
+                        suffix="°"
+                        stepHoldDelay={ 500 }
+                        stepHoldInterval={ (t: number) => Math.max(1000 / t ** 2, 1) }
+                        formatter={ (value: string) => !Number.isNaN(parseFloat(value))
+                            ? `${ value }°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                            : ' °' }
+                        { ...form.getInputProps('Dec') } />
+                    <Select
+                        label={ 'Coordinate System' }
+                        data={ [ { label: 'J2000', value: 'J2000' } ] }
+                        { ...form.getInputProps('SelectedEpoch') } />
+                    <div>
+                        <SubmitButton
+                            toolTipLabel={ 'Save this target' }
+                            label={ 'Save' }
+                            disabled={ !form.isValid() || form.values.searching ? true : undefined }/>
+                    </div>
+                </form>
+            </Grid.Col>
+        </Grid></>
     );
 };
 
@@ -235,6 +256,16 @@ export type FormPropsType<T> = {
     actions?: ReactNode;
 };
 
+/**
+ * the new data required for target form.
+ *
+ * @param SelectedEpoch which epoch to use.
+ * @param RA the longitude
+ * @param Dec the latitude
+ * @param TargetName the name of the target
+ * @param searching if the system is searching for a target at the moment.
+ * @param lastSearchName: the last name searched for.
+ */
 export type newTargetData = {
     SelectedEpoch: string;
     RA: number;
