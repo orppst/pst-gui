@@ -7,6 +7,7 @@ import {convertToNumberUnitType, convertToRealQuantity, NumberUnitType} from "..
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {
+    convertToScienceSpectralWindow,
     convertToScienceSpectralWindowGui,
     ScienceSpectralWindowGui
 } from "./scienceSpectralWindowGui.tsx";
@@ -96,10 +97,8 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
             },
 
             validate: {
-                //theNumber: check that if a unit has been selected the numeric
-                // component isn't blank
-                //theUnit: ensure that if the parameter has a numeric value it
-                // also has a unit name
+                //theNumber: check that if a unit has been selected the numeric component isn't blank
+                //theUnit: ensure that if the parameter has a numeric value it also has a unit name
                 angularResolution:{
                     value: (theNumber, formValues) => (
                         formValues.angularResolution.unit !== null &&
@@ -198,13 +197,8 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
         }
     )
 
-    /**
-     * handles the submission.
-     *
-     * @type {(event?: React.FormEvent<HTMLFormElement>) => void} the new values.
-     */
+
     const handleSubmit = form.onSubmit((values) => {
-        console.log(values);
 
         let performanceParameters : PerformanceParameters = {
             desiredAngularResolution: convertToRealQuantity(
@@ -220,7 +214,11 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
             //posting a new technical goal to the DB
             let goal : TechnicalGoal = {
                 performance: performanceParameters,
-                spectrum: [] //TODO: implement saving spectral windows, see issue #12
+                spectrum: values.spectralWindows.map(
+                    (windowGui) => {
+                        return convertToScienceSpectralWindow(windowGui);
+                    }
+                )
             }
 
             fetchTechnicalGoalResourceAddTechnicalGoal( {
@@ -252,8 +250,7 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
                 .then(() => form.resetDirty())
                 .catch(console.error);
 
-            //TODO: implement editing existing spectral windows and/or adding
-            // new windows, issue #12
+            //todo: fix issue #60 re: adding-editing-deleting spectral windows in existing goals
         }
     })
 
@@ -274,3 +271,5 @@ export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
         </form>
     )
 }
+
+
