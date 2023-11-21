@@ -8,6 +8,7 @@ import {useParams} from "react-router-dom";
 import { Box, Table, Text } from '@mantine/core';
 import {randomId} from "@mantine/hooks";
 import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
+import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
@@ -93,6 +94,7 @@ export function TargetTableHeader(): ReactElement {
  * @param {TargetProps} props the data associated with a target.
  */
 export function TargetTableRow(props: TargetProps): ReactElement {
+    const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
 
     console.debug(`get target id of ${props.dbid}`)
@@ -132,6 +134,16 @@ export function TargetTableRow(props: TargetProps): ReactElement {
             .then(()=> {
                 setSubmitting(false);
                 console.debug("delete complete");
+                return queryClient.invalidateQueries(
+                    {
+                        predicate: (query) => {
+                            // only invalidate the query for the entire target
+                            // list. not the separate bits.
+                            return query.queryKey.length === 5 &&
+                                query.queryKey[4] === 'targets';
+                        }
+                    }
+                )
             })
             .catch(handleError);
     }
