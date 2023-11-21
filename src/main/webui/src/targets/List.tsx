@@ -13,7 +13,18 @@ import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
 
-type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
+/**
+ * target prop.
+ * @param proposalCode the id for the proposal this target is linked to.
+ * @param dbid the database id for this target.
+ * @param showRemove boolean saying if this target can be removed.
+ * @param key: forced upon us.
+ */
+type TargetProps = {
+    proposalCode: number,
+    dbid: number,
+    showRemove: boolean,
+    key: string };
 
 /**
  * Renders the target panel containing an add target button
@@ -47,13 +58,17 @@ function TargetPanel(): ReactElement {
                         <Table>
                             <TargetTableHeader/>
                             <Table.Tbody>
-                                {isLoading ? (<Table.Tr colSpan={5} key={randomId()}>Loading...</Table.Tr>)
-                                    : data?.map((item) => {
+                                {isLoading ? (
+                                        <Table.Tr colSpan={5} key={randomId()}>
+                                            <Table.Td>Loading...</Table.Td>
+                                        </Table.Tr>) :
+                                    data?.map((item) => {
                                             return (
                                                 <TargetTableRow
                                                         proposalCode={Number(selectedProposalCode)}
                                                         dbid={item.dbid!}
                                                         showRemove={true}
+                                                        key={randomId()}
                                                 />)
                                     })
                                 }
