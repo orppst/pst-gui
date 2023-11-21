@@ -59,7 +59,16 @@ export default function ObservationRow(
                 proposalCode: Number(selectedProposalCode),
                 observationId: observationId.id}
         })
-            .then(() => queryClient.invalidateQueries())
+            .then(() => queryClient.invalidateQueries(
+                {
+                    predicate: (query) => {
+                        // only invalidate the query for the entire list.
+                        // not the separate bits.
+                        return query.queryKey.length === 5 &&
+                            query.queryKey[4] === 'observations';
+                    }
+                }
+            ))
             .catch(console.log);
     }
 
