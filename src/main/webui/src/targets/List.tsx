@@ -8,7 +8,6 @@ import {useParams} from "react-router-dom";
 import { Box, Table, Text } from '@mantine/core';
 import {randomId} from "@mantine/hooks";
 import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
-import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
@@ -94,8 +93,9 @@ export function TargetTableHeader(): ReactElement {
  * @param {TargetProps} props the data associated with a target.
  */
 export function TargetTableRow(props: TargetProps): ReactElement {
-    const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
+
+    console.debug(`get target id of ${props.dbid}`)
     const {data, error, isLoading}
         = useProposalResourceGetTarget(
         {pathParams:
@@ -123,13 +123,16 @@ export function TargetTableRow(props: TargetProps): ReactElement {
      */
     function handleRemove(): void {
         setSubmitting(true);
+        console.debug(`start delete of target ${props.dbid}`);
         fetchProposalResourceRemoveTarget({pathParams:
                 {
                     proposalCode: props.proposalCode,
                     targetId: props.dbid!
                 }})
-            .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries())
+            .then(()=> {
+                setSubmitting(false);
+                console.debug("delete complete");
+            })
             .catch(handleError);
     }
 
