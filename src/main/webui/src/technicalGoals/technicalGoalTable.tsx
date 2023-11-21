@@ -162,90 +162,91 @@ export default function TechnicalGoalRow(
                 'Loading...'
             </Table.Td></Table.Tr>
         )
-    } else {
-        return (
-            <Table.Tr>
-                <Table.Td>
-                    {goal?._id}
-                </Table.Td>
-                {
-                    goal?.performance?.desiredAngularResolution?.value ?
-                        <Table.Td>
-                            {goal?.performance?.desiredAngularResolution?.value}
-                            {` ${ locateLabel(
-                                angularUnits,
-                                goal?.performance?.desiredAngularResolution?.unit?.value)?.label }`}
-                        </Table.Td> :
-                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                }
-                {
-                    goal?.performance?.desiredLargestScale?.value ?
-                        <Table.Td>
-                            {goal?.performance?.desiredLargestScale?.value}
-                            {` ${ locateLabel(
-                                angularUnits,
-                                goal?.performance?.desiredLargestScale?.unit?.value)?.label }`}
-                        </Table.Td> :
-                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                }
-                {
-                    goal?.performance?.desiredSensitivity?.value ?
-                        <Table.Td>
-                            {goal?.performance?.desiredSensitivity?.value}
-                            {` ${ locateLabel(
-                                sensitivityUnits,
-                                goal?.performance?.desiredSensitivity?.unit?.value)?.label}`}
-                        </Table.Td> :
-                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                }
-                {
-                    goal?.performance?.desiredDynamicRange?.value ?
-                        <Table.Td>
-                            {goal?.performance?.desiredDynamicRange?.value}
-                            {` ${ locateLabel(sensitivityUnits,
-                                goal?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
-                        </Table.Td> :
-                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                }
-                {
-                    goal?.performance?.representativeSpectralPoint?.value ?
-                        <Table.Td>
-                            {goal?.performance?.representativeSpectralPoint?.value}
-                            {` ${ locateLabel(frequencyUnits,
-                                goal?.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
-                        </Table.Td> :
-                        <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                }
-                <Table.Td>
-                    {
-                        goal?.spectrum?.length! > 0 ?
-                            <Badge
-                                color={"green"}
-                                radius={0}
-                            >
-                                {goal?.spectrum?.length!}
-                            </Badge>:
-                            <Badge
-                                color={"red"}
-                                radius={0}
-                            >
-                                None
-                            </Badge>
-                    }
-                </Table.Td>
-                <Table.Td>
-                    <Group position={"right"}>
-                        {
-                            goalLoading ? 'Loading...' :
-                                <TechnicalGoalEditModal technicalGoal={goal} />
-                        }
-                        <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
-                        <DeleteButton toolTipLabel={"delete"} onClick={confirmDelete} />
-                    </Group>
-                </Table.Td>
-            </Table.Tr>
-        )
     }
+
+    // return the full row.
+    return (
+        <Table.Tr>
+            <Table.Td>
+                {goal?._id}
+            </Table.Td>
+            {
+                goal?.performance?.desiredAngularResolution?.value ?
+                    <Table.Td>
+                        {goal?.performance?.desiredAngularResolution?.value}
+                        {` ${ locateLabel(
+                            angularUnits,
+                            goal?.performance?.desiredAngularResolution?.unit?.value)?.label }`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            {
+                goal?.performance?.desiredLargestScale?.value ?
+                    <Table.Td>
+                        {goal?.performance?.desiredLargestScale?.value}
+                        {` ${ locateLabel(
+                            angularUnits,
+                            goal?.performance?.desiredLargestScale?.unit?.value)?.label }`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            {
+                goal?.performance?.desiredSensitivity?.value ?
+                    <Table.Td>
+                        {goal?.performance?.desiredSensitivity?.value}
+                        {` ${ locateLabel(
+                            sensitivityUnits,
+                            goal?.performance?.desiredSensitivity?.unit?.value)?.label}`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            {
+                goal?.performance?.desiredDynamicRange?.value ?
+                    <Table.Td>
+                        {goal?.performance?.desiredDynamicRange?.value}
+                        {` ${ locateLabel(sensitivityUnits,
+                            goal?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            {
+                goal?.performance?.representativeSpectralPoint?.value ?
+                    <Table.Td>
+                        {goal?.performance?.representativeSpectralPoint?.value}
+                        {` ${ locateLabel(frequencyUnits,
+                            goal?.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            <Table.Td>
+                {
+                    goal?.spectrum?.length! > 0 ?
+                        <Badge
+                            color={"green"}
+                            radius={0}
+                        >
+                            {goal?.spectrum?.length!}
+                        </Badge>:
+                        <Badge
+                            color={"red"}
+                            radius={0}
+                        >
+                            None
+                        </Badge>
+                }
+            </Table.Td>
+            <Table.Td>
+                <Group position={"right"}>
+                    {
+                        goalLoading ? 'Loading...' :
+                            <TechnicalGoalEditModal technicalGoal={goal} />
+                    }
+                    <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
+                    <DeleteButton toolTipLabel={"delete"} onClick={confirmDelete} />
+                </Group>
+            </Table.Td>
+        </Table.Tr>
+    )
 }
 
 /**

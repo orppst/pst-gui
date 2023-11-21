@@ -194,30 +194,33 @@ export function TargetTableRow(props: TargetProps): ReactElement {
         epoch = celestialTarget.positionEpoch?.value;
     }
 
+    // handle error states.
+    if (isLoading) {
+        return (<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>);
+    } else if (submitting) {
+        return (<Table.Tr><Table.Td>Removing...</Table.Td></Table.Tr>);
+    }
+
+    // generate the full row.
     return (
-        <Table.Tr key={props.dbid}>
-            {isLoading?(<Table.Td>Loading...</Table.Td>):
-                submitting?(<Table.Td>Removing...</Table.Td>):
-                    (<>
-                            <Table.Td>
-                                {data?.sourceName}
-                            </Table.Td>
-                            {data?.["@type"] ===
-                            "proposal:CelestialTarget" ?
-                                (<><Table.Td>{spaceFrame}</Table.Td>
-                                <Table.Td>{ra}</Table.Td>
-                                <Table.Td>{dec}</Table.Td>
-                                <Table.Td>{epoch}</Table.Td></>
-                                )
-                                :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
-                            <Table.Td>
-                                {props.showRemove && <
-                                    DeleteButton toolTipLabel={"delete"}
-                                                 onClick={openRemoveModal} />}
-                            </Table.Td>
-                        </>
-                    )}
-                </Table.Tr>);
+        <Table.Tr>
+            <Table.Td>
+                {data?.sourceName}
+            </Table.Td>
+                {data?.["@type"] ===
+                "proposal:CelestialTarget" ?
+                    (<><Table.Td>{spaceFrame}</Table.Td>
+                    <Table.Td>{ra}</Table.Td>
+                    <Table.Td>{dec}</Table.Td>
+                    <Table.Td>{epoch}</Table.Td></>
+                    )
+                    :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
+            <Table.Td>
+                    {props.showRemove && <
+                        DeleteButton toolTipLabel={"delete"}
+                                     onClick={openRemoveModal} />}
+            </Table.Td>
+        </Table.Tr>);
 }
 
 export default TargetPanel

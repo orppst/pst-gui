@@ -173,6 +173,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
             onConfirm: () => handleRemove(),
         });
 
+    // track error states
     if (isLoading) {
         return (
             <Table.Tr><Table.Td colSpan={ 5 }>
@@ -190,19 +191,20 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
                 Removing...
             </Table.Td></Table.Tr>
         )
-    } else {
-        return (
-            <Table.Tr>
-                <Table.Td>{data?.type}</Table.Td>
-                <Table.Td>{data?.person?.fullName}</Table.Td>
-                <Table.Td>{data?.person?.eMail}</Table.Td>
-                <Table.Td>{data?.person?.homeInstitute?.name}</Table.Td>
-                <Table.Td><DeleteButton toolTipLabel={"delete"}
-                                        onClick={openRemoveModal} />
-                </Table.Td>
-            </Table.Tr>
-        )
     }
+
+    // return the full row.
+    return (
+        <Table.Tr>
+            <Table.Td>{data?.type}</Table.Td>
+            <Table.Td>{data?.person?.fullName}</Table.Td>
+            <Table.Td>{data?.person?.eMail}</Table.Td>
+            <Table.Td>{data?.person?.homeInstitute?.name}</Table.Td>
+            <Table.Td><DeleteButton toolTipLabel={"delete"}
+                                    onClick={openRemoveModal} />
+            </Table.Td>
+        </Table.Tr>
+    )
 }
 
 export default InvestigatorsPanel
