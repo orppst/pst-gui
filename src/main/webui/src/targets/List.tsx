@@ -5,7 +5,7 @@ import {
 
 import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
-import {Box, Table, Text} from "@mantine/core";
+import { Box, Table, Text } from '@mantine/core';
 import {randomId} from "@mantine/hooks";
 import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
@@ -42,21 +42,23 @@ function TargetPanel(): ReactElement {
                 <Text fz="lg" fw={700}>Add and edit targets</Text>
                 <Box>
                     <AddTargetModal/>
-                    <Table>
-                        {data?.length === 0? <Table.Td>Please add your targets</Table.Td> : TargetTableHeader()}
-                        <Table.Tbody>
-                            {isLoading ? (<Table.Tr colSpan={5} key={randomId()}>Loading...</Table.Tr>)
-                                : data?.map((item) => {
-                                        return (
-                                            <TargetTableRow
-                                                    proposalCode={Number(selectedProposalCode)}
-                                                    dbid={item.dbid!}
-                                                    showRemove={true}
-                                            />)
-                                })
-                            }
-                        </Table.Tbody>
-                    </Table>
+                    {data?.length === 0?
+                        <div>Please add your targets</div> :
+                        <Table>
+                            <TargetTableHeader/>
+                            <Table.Tbody>
+                                {isLoading ? (<Table.Tr colSpan={5} key={randomId()}>Loading...</Table.Tr>)
+                                    : data?.map((item) => {
+                                            return (
+                                                <TargetTableRow
+                                                        proposalCode={Number(selectedProposalCode)}
+                                                        dbid={item.dbid!}
+                                                        showRemove={true}
+                                                />)
+                                    })
+                                }
+                            </Table.Tbody>
+                        </Table>}
                 </Box>
             </Box>
         );
@@ -71,11 +73,13 @@ function TargetPanel(): ReactElement {
 export function TargetTableHeader(): ReactElement {
     return (
         <Table.Thead>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Reference system</Table.Th>
-            <Table.Th>RA</Table.Th>
-            <Table.Th>Dec</Table.Th>
-            <Table.Th>Epoch</Table.Th>
+            <Table.Tr>
+                <Table.Th>Name</Table.Th>
+                <Table.Th>Reference system</Table.Th>
+                <Table.Th>RA</Table.Th>
+                <Table.Th>Dec</Table.Th>
+                <Table.Th>Epoch</Table.Th>
+            </Table.Tr>
         </Table.Thead>
     );
 }
