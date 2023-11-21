@@ -57,13 +57,13 @@ function InvestigatorsPanel(): ReactElement {
                 <Grid.Col span={5}>
                 <AddButton toolTipLabel={"Add new"}
                            onClick={handleAddNew} />
+                    {data?.length === 0 ?
+                        <div>Please add an investigator</div>:
+                        isLoading ? (<div>Loading...</div>) :
                     <Table>
-                        {data?.length === 0 ?
-                            (<Table.Td>Please add an investigator</Table.Td>) :
-                            InvestigatorsHeader()}
+                        <InvestigatorsHeader/>
                         <Table.Tbody>
-                        {isLoading ? (`Loading...`)
-                            : data?.map((item) => {
+                            {data?.map((item) => {
                                 if(item.dbid !== undefined) {
                                     return (<InvestigatorsRow dbid={item.dbid}
                                                               key={item.dbid}/>)
@@ -73,10 +73,10 @@ function InvestigatorsPanel(): ReactElement {
                                             Undefined Investigator!
                                         </Box>)
                                 }
-                            } )
-                        }
+                            })
+                            }
                         </Table.Tbody>
-                    </Table>
+                    </Table>}
                 </Grid.Col>
             </Grid>
         </Box>
@@ -166,20 +166,36 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
             onConfirm: () => handleRemove(),
         });
 
-    return (
-      <Table.Tr>
-          {isLoading?(<Table.Td colSpan={5}>Loading...</Table.Td>):
-              error?(<Table.Td colSpan={5}>Error!</Table.Td>):
-                  submitting?(<Table.Td colSpan={5}>Removing...</Table.Td>):(<>
-          <Table.Td>{data?.type}</Table.Td>
-          <Table.Td>{data?.person?.fullName}</Table.Td>
-          <Table.Td>{data?.person?.eMail}</Table.Td>
-          <Table.Td>{data?.person?.homeInstitute?.name}</Table.Td>
-          <Table.Td><DeleteButton toolTipLabel={"delete"}
-                                  onClick={openRemoveModal} />
-          </Table.Td></>)}
-      </Table.Tr>
-    );
+    if (isLoading) {
+        return (
+            <Table.Tr><Table.Td colSpan={ 5 }>
+                Loading...
+            </Table.Td></Table.Tr>)
+    } else if (error !== null) {
+        return (
+            <Table.Tr><Table.Td colSpan={5}>
+                Error!
+            </Table.Td></Table.Tr>
+        )
+    } else if (submitting) {
+        return (
+            <Table.Tr><Table.Td colSpan={5}>
+                Removing...
+            </Table.Td></Table.Tr>
+        )
+    } else {
+        return (
+            <Table.Tr>
+                <Table.Td>{data?.type}</Table.Td>
+                <Table.Td>{data?.person?.fullName}</Table.Td>
+                <Table.Td>{data?.person?.eMail}</Table.Td>
+                <Table.Td>{data?.person?.homeInstitute?.name}</Table.Td>
+                <Table.Td><DeleteButton toolTipLabel={"delete"}
+                                        onClick={openRemoveModal} />
+                </Table.Td>
+            </Table.Tr>
+        )
+    }
 }
 
 export default InvestigatorsPanel
