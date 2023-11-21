@@ -176,7 +176,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     // track error states
     if (isLoading) {
         return (
-            <Table.Tr><Table.Td colSpan={ 5 }>
+            <Table.Tr><Table.Td colSpan={5}>
                 Loading...
             </Table.Td></Table.Tr>)
     } else if (error !== null) {
