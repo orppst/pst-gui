@@ -166,12 +166,6 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
                 max={360}
                 allowNegative={false}
                 suffix="°"
-                stepHoldDelay={500}
-                stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
-                formatter={(value: string) =>
-                    !Number.isNaN(parseFloat(value))
-                        ? `${value}°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-                        : ' °'}
                 {...form.getInputProps("RA")}/>
             <NumberInput
                 required={true}
@@ -181,12 +175,6 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
                 min={-90}
                 max={90}
                 suffix="°"
-                stepHoldDelay={500}
-                stepHoldInterval={(t:number) => Math.max(1000/t**2, 1)}
-                formatter={(value: string) =>
-                    !Number.isNaN(parseFloat(value))
-                        ? `${value}°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-                        : ' °'}
                 {...form.getInputProps("Dec")} />
             <Select
                 label={"Coordinate System"}
