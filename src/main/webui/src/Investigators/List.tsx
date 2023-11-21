@@ -4,7 +4,7 @@ import {
     fetchInvestigatorResourceRemoveInvestigator,
     useInvestigatorResourceGetInvestigator,
     useInvestigatorResourceGetInvestigators,
-} from "../generated/proposalToolComponents";
+} from '../generated/proposalToolComponents';
 import {useQueryClient} from "@tanstack/react-query";
 import {Box, Grid, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
@@ -143,7 +143,14 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
                     proposalCode: Number(selectedProposalCode),
                 }})
             .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries())
+            .then(()=>queryClient.invalidateQueries({
+                predicate: (query) => {
+                    // only invalidate the query for the entire list.
+                    // not the separate bits.
+                    return query.queryKey.length === 5 &&
+                        query.queryKey[4] === 'investigators';
+                }
+            }))
             .catch(handleError);
     }
 
