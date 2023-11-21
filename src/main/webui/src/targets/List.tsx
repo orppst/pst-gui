@@ -12,19 +12,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
-
-/**
- * target prop.
- * @param proposalCode the id for the proposal this target is linked to.
- * @param dbid the database id for this target.
- * @param showRemove boolean saying if this target can be removed.
- * @param key: forced upon us.
- */
-type TargetProps = {
-    proposalCode: number,
-    dbid: number,
-    showRemove: boolean,
-    key: string };
+import { TargetProps } from './targetProps.tsx';
 
 /**
  * Renders the target panel containing an add target button

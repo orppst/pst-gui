@@ -180,7 +180,10 @@ function ObservationAccordionContent(
     return (
         //TODO: consider a Grid instead of Group
         <Group>
-            <RenderTarget proposalCode={proposalCode} dbid={targetId} showRemove={false} />
+            <RenderTarget proposalCode={proposalCode}
+                          dbid={targetId}
+                          showRemove={false}
+                          key={randomId()}/>
             <RenderTechnicalGoal proposalCode={proposalCode} dbid={technicalGoalId} />
         </Group>
     )
