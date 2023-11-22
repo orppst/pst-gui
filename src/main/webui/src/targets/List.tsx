@@ -174,6 +174,21 @@ export function TargetTableRow(props: TargetProps): ReactElement {
     }
 
     /**
+     * provides a tool tip for the delete button. Changing based off if the
+     * target is tied to an observation.
+     *
+     * @param {number | undefined} target the target id.
+     * @return {string} the tooltip contents.
+     * @constructor
+     */
+    const DeleteToolTip = (target: number | undefined): string => {
+        if (IsBound(target)) {
+            return "Please remove this target from corresponding observations.";
+        }
+        return "Click to delete this target from the set";
+    }
+
+    /**
      * offers the end user a verification if they wish to remove a target.
      */
     const openRemoveModal = (): void =>
@@ -242,7 +257,7 @@ export function TargetTableRow(props: TargetProps): ReactElement {
                     :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
             <Table.Td>
                     {props.showRemove && <
-                        DeleteButton toolTipLabel={"delete"}
+                        DeleteButton toolTipLabel={DeleteToolTip(data?._id)}
                                      onClick={openRemoveModal}
                                      disabled={IsBound(data?._id)?
                                          true :

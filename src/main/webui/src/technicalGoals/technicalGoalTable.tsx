@@ -74,6 +74,23 @@ export default function TechnicalGoalRow(
     }
 
     /**
+     * provides a tool tip for the delete button. Changing based off if the
+     * technical goal is tied to an observation.
+     *
+     * @param {number | undefined} technicalGoal the technical goal id.
+     * @return {string} the tooltip contents.
+     * @constructor
+     */
+    const DeleteToolTip = (technicalGoal:  TechnicalGoal | undefined):
+            string => {
+        if (IsBound(technicalGoal)) {
+            return "Please remove this technical goal from " +
+                "corresponding observations.";
+        }
+        return "Click to delete this technical goal from the set";
+    }
+
+    /**
      * processes the actual deletion of a technical goal from the database.
      */
     const handleDelete = (): void => {
@@ -263,7 +280,7 @@ export default function TechnicalGoalRow(
                             <TechnicalGoalEditModal technicalGoal={goal} />
                     }
                     <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
-                    <DeleteButton toolTipLabel={"delete"}
+                    <DeleteButton toolTipLabel={DeleteToolTip(goal)}
                                   onClick={confirmDelete}
                                   disabled={IsBound(goal)?
                                       true :
