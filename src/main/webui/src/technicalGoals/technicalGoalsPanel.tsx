@@ -1,11 +1,15 @@
 import {
-    useProposalResourceGetObservingProposalTitle, useTechnicalGoalResourceGetTechnicalGoals,
-} from "../generated/proposalToolComponents.ts";
-import {Badge, Box, Group, Space, Table} from "@mantine/core";
-import {useParams} from "react-router-dom";
-import TechnicalGoalRow, {technicalGoalsHeader} from "./technicalGoalTable.tsx";
-import {TechnicalGoal} from "../generated/proposalToolSchemas.ts";
-import TechnicalGoalEditModal from "./edit.modal.tsx";
+    useProposalResourceGetObservingProposal,
+    useProposalResourceGetObservingProposalTitle,
+    useTechnicalGoalResourceGetTechnicalGoals,
+} from '../generated/proposalToolComponents.ts';
+import { Badge, Box, Group, Space, Table } from '@mantine/core';
+import { useParams } from 'react-router-dom';
+import TechnicalGoalRow, {
+    technicalGoalsHeader
+} from './technicalGoalTable.tsx';
+import { TechnicalGoal } from '../generated/proposalToolSchemas.ts';
+import TechnicalGoalEditModal from './edit.modal.tsx';
 import { ReactElement } from 'react';
 
 /**
@@ -29,6 +33,14 @@ export type TechnicalGoalProps = {
 function TechnicalGoalsPanel(): ReactElement {
 
     const { selectedProposalCode } = useParams();
+
+    // needed to track which targets are locked into observations.
+    const { data: proposalsData } =
+        useProposalResourceGetObservingProposal({
+                pathParams: {proposalCode: Number(selectedProposalCode)},},
+            {enabled: true}
+        );
+
     const {
         data: goals,
         error: goalsError,
@@ -44,6 +56,15 @@ function TechnicalGoalsPanel(): ReactElement {
         useProposalResourceGetObservingProposalTitle(
             {pathParams: {proposalCode: Number(selectedProposalCode)}}
         );
+
+
+    // acquire all the bound technical ids in observations.
+    let boundTechnicalGoalIds: (number | undefined)[] | undefined = [];
+    boundTechnicalGoalIds = proposalsData?.observations?.map((observation) => {
+        // extract the id. it seems the technical Goal returned here IS a number
+        // not the TechnicalGoal object it advertises.
+        return observation.technicalGoal as number;
+    });
 
     if (goalsError) {
         return (
@@ -77,8 +98,10 @@ function TechnicalGoalsPanel(): ReactElement {
                     {
                         goals?.map((goal) => {
                             return (
-                                <TechnicalGoalRow id={goal.dbid!}
-                                                  key={goal.dbid!}
+                                <TechnicalGoalRow
+                                    id={goal.dbid!}
+                                    key={goal.dbid!}
+                                    boundTechnicalGoalIds={boundTechnicalGoalIds}
                                 />
                             )
                         })

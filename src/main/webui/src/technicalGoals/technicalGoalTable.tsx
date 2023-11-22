@@ -1,38 +1,50 @@
-import {useParams} from "react-router-dom";
-import {Badge, Group, Space, Table, Text} from "@mantine/core";
-import {modals} from "@mantine/modals";
-import TechnicalGoalEditModal from "./edit.modal.tsx";
-import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
-import CloneButton from "../commonButtons/clone.tsx";
-import DeleteButton from "../commonButtons/delete.tsx";
-import {useQueryClient} from "@tanstack/react-query";
+import { useParams } from 'react-router-dom';
+import { Badge, Group, Space, Table, Text } from '@mantine/core';
+import { modals } from '@mantine/modals';
+import TechnicalGoalEditModal from './edit.modal.tsx';
+import getErrorMessage from '../errorHandling/getErrorMessage.tsx';
+import CloneButton from '../commonButtons/clone.tsx';
+import DeleteButton from '../commonButtons/delete.tsx';
+import { useQueryClient } from '@tanstack/react-query';
 import {
     angularUnits,
     frequencyUnits,
-    sensitivityUnits,
-    locateLabel } from '../physicalUnits/PhysicalUnits.tsx';
+    locateLabel,
+    sensitivityUnits
+} from '../physicalUnits/PhysicalUnits.tsx';
 import { TechnicalGoal } from '../generated/proposalToolSchemas.ts';
 import {
     fetchTechnicalGoalResourceAddTechnicalGoal,
     fetchTechnicalGoalResourceRemoveTechnicalGoal,
     useTechnicalGoalResourceGetTechnicalGoal
-} from "../generated/proposalToolComponents.ts";
-import {notifications} from "@mantine/notifications";
-import {notSet} from "./edit.group.tsx";
-import {ReactElement} from "react";
+} from '../generated/proposalToolComponents.ts';
+import { notifications } from '@mantine/notifications';
+import { notSet } from './edit.group.tsx';
+import { ReactElement } from 'react';
 
-// the technical goal id data holder.
-export type TechnicalGoalId = {id: number};
+/** the technical goal id data holder.
+ * @param {number} id the id
+ * @param {number} key the forced key from React.
+ * @param {(number | undefined)[] | undefined} boundTechnicalGoalIds the
+ * technical goal ids that are bound up in observations.
+ */
+export type TechnicalGoalRowProps = {
+    id: number,
+    key: number,
+    boundTechnicalGoalIds: (number | undefined)[] | undefined,
+};
 
 /**
  * builds the html for a technical goal row.
  *
- * @param {TechnicalGoalId} technicalGoalId the id for this technical goal.
+ * @param {TechnicalGoalRowProps} technicalGoalRowProps the
+ * id for this technical goal.
  * @return {ReactElement} the dynamic html for the technical goal row.
  * @constructor
  */
 export default function TechnicalGoalRow(
-        technicalGoalId: TechnicalGoalId): ReactElement {
+        technicalGoalRowProps: TechnicalGoalRowProps):
+    ReactElement {
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
@@ -43,7 +55,7 @@ export default function TechnicalGoalRow(
                 pathParams:
                     {
                         proposalCode: Number(selectedProposalCode),
-                        technicalGoalId: technicalGoalId.id
+                        technicalGoalId: technicalGoalRowProps.id
                     },
             }
         );
@@ -53,12 +65,21 @@ export default function TechnicalGoalRow(
     }
 
     /**
+     * checks if the technical goal is used within any observation.
+     * If so, the delete button is disabled.
+     */
+    const IsBound = (goal: TechnicalGoal | undefined): boolean => {
+        return technicalGoalRowProps.boundTechnicalGoalIds?.includes(
+            goal?._id) as boolean;
+    }
+
+    /**
      * processes the actual deletion of a technical goal from the database.
      */
     const handleDelete = (): void => {
         fetchTechnicalGoalResourceRemoveTechnicalGoal( {
             pathParams: {proposalCode: Number(selectedProposalCode),
-                         technicalGoalId: technicalGoalId.id}
+                         technicalGoalId: technicalGoalRowProps.id}
         })
             .then(()=>queryClient.invalidateQueries(
                 {
@@ -242,7 +263,11 @@ export default function TechnicalGoalRow(
                             <TechnicalGoalEditModal technicalGoal={goal} />
                     }
                     <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
-                    <DeleteButton toolTipLabel={"delete"} onClick={confirmDelete} />
+                    <DeleteButton toolTipLabel={"delete"}
+                                  onClick={confirmDelete}
+                                  disabled={IsBound(goal)?
+                                      true :
+                                      undefined}/>
                 </Group>
             </Table.Td>
         </Table.Tr>
