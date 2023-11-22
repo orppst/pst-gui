@@ -1,13 +1,15 @@
 import {
-    fetchProposalResourceRemoveTarget, useProposalResourceGetTarget,
+    fetchProposalResourceRemoveTarget,
+    useProposalResourceGetObservingProposal,
+    useProposalResourceGetTarget,
     useProposalResourceGetTargets,
-} from "../generated/proposalToolComponents.ts";
+} from '../generated/proposalToolComponents.ts';
 
 import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
 import { Box, Table, Text } from '@mantine/core';
 import {randomId} from "@mantine/hooks";
-import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
+import { CelestialTarget } from '../generated/proposalToolSchemas.ts';
 import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
@@ -27,6 +29,12 @@ function TargetPanel(): ReactElement {
     const {data, error, isLoading} = useProposalResourceGetTargets(
             {pathParams: {proposalCode: Number(selectedProposalCode)},},
             {enabled: true});
+    // needed to track which targets are locked into observations.
+    const { data: proposalsData } =
+        useProposalResourceGetObservingProposal({
+                pathParams: {proposalCode: Number(selectedProposalCode)},},
+            {enabled: true}
+        );
 
     if (error) {
         return (
@@ -35,6 +43,14 @@ function TargetPanel(): ReactElement {
             </Box>
         );
     }
+
+    // acquire all the bound targets ids in observations.
+    let boundTargets: (number | undefined)[] | undefined = [];
+    boundTargets = proposalsData?.observations?.map((observation) => {
+        // extract the id. it seems the technical Goal returned here IS a number
+        // not the TechnicalGoal object it advertises.
+        return observation.target as number;
+    });
 
     return (
             <Box>
@@ -57,6 +73,7 @@ function TargetPanel(): ReactElement {
                                                         dbid={item.dbid!}
                                                         showRemove={true}
                                                         key={randomId()}
+                                                        boundTargets={boundTargets}
                                                 />)
                                     })
                                 }
@@ -149,6 +166,14 @@ export function TargetTableRow(props: TargetProps): ReactElement {
     }
 
     /**
+     * checks if the technical goal is used within any observation.
+     * If so, the delete button is disabled.
+     */
+    const IsBound = (target: number | undefined): boolean => {
+        return props.boundTargets?.includes(target as number) as boolean;
+    }
+
+    /**
      * offers the end user a verification if they wish to remove a target.
      */
     const openRemoveModal = (): void =>
@@ -218,7 +243,10 @@ export function TargetTableRow(props: TargetProps): ReactElement {
             <Table.Td>
                     {props.showRemove && <
                         DeleteButton toolTipLabel={"delete"}
-                                     onClick={openRemoveModal} />}
+                                     onClick={openRemoveModal}
+                                     disabled={IsBound(data?._id)?
+                                         true :
+                                         undefined}/>}
             </Table.Td>
         </Table.Tr>);
 }

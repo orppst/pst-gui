@@ -183,7 +183,8 @@ function ObservationAccordionContent(
             <RenderTarget proposalCode={proposalCode}
                           dbid={targetId}
                           showRemove={false}
-                          key={randomId()}/>
+                          key={randomId()}
+                          boundTargets={[]}/>
             <RenderTechnicalGoal proposalCode={proposalCode} dbid={technicalGoalId} />
         </Group>
     )
