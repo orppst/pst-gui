@@ -176,6 +176,7 @@ export default function TargetTypeForm (
                         dbid={form.values.targetDBId}
                         showRemove={false}
                         key={randomId()}
+                        boundTargets={[]}
                     />
             }
             {SelectTechnicalGoal()}
