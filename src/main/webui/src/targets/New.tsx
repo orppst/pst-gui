@@ -3,7 +3,7 @@
 import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { ReactElement, ReactNode, useEffect } from 'react';
+import { FormEvent, ReactElement, ReactNode, useRef, useEffect } from 'react';
 import {
     CelestialTarget,
     EquatorialPoint, SimbadTargetResult, SpaceSys,
@@ -18,75 +18,131 @@ import AddButton from '../commonButtons/add';
 import DatabaseSearchButton from '../commonButtons/databaseSearch';
 import { SubmitButton } from '../commonButtons/save';
 
-const TargetForm = (props: FormPropsType<{
-        SelectedEpoch: string;
-        RA: number;
-        Dec: number;
-        TargetName: string }>) => {
+const TargetForm = (props: FormPropsType<newTargetData>) => {
     const form = useForm({
             initialValues: props.initialValues ?? {
                 TargetName: "",
                 RA: 0.00,
                 Dec: 0.00,
-                SelectedEpoch: "J2000"
+                SelectedEpoch: "J2000",
+                searching: false,
+                lastSearchName: '',
             },
             validate: {
-                TargetName: (value) => (value.length < 1 ? 'Name cannot be blank ' : null)
+                TargetName: (value) => (
+                    value.length < 1 ?
+                        'Name cannot be blank ' :
+                        null),
+                RA: (value) => (
+                    value === null || value === undefined ?
+                        'RA cannot be blank':
+                        null)
             }
         });
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
+    const targetNameRef = useRef(null);
 
+    /**
+     * executes a simbad query.
+     */
     function simbadLookup() {
         function notFound() {
-            const choice = window.confirm("Unable to match source " + form.values.TargetName + " try again?");
+            const choice = window.confirm(
+                "Unable to match source " + form.values.TargetName +
+                " try again?");
+            form.values.searching = false;
             if(!choice)
                 props.onSubmit();
         }
 
-        fetchSimbadResourceSimbadFindTarget({queryParams: {targetName: form.values.TargetName}})
+        form.values.searching = true;
+        form.values.lastSearchName = form.values.TargetName;
+        fetchSimbadResourceSimbadFindTarget({
+                queryParams: {targetName: form.values.TargetName}})
             .then((data : SimbadTargetResult) => {
                 console.log(data);
                 form.setFieldValue('RA', data.raDegrees?data.raDegrees:0);
                 form.setFieldValue('Dec', data.decDegrees?data.decDegrees:0);
                 form.setFieldValue('SelectedEpoch', data.epoch!);
+                form.values.searching = false;
             })
             .catch(() => notFound());
     }
 
-    const createNewTarget = form.onSubmit((val) => {
+    /**
+     * saves the new target to the database.
+     *
+     * @param {newTargetData} val the new target data.
+     */
+    const saveToDatabase = (val: newTargetData) => {
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: {},
-            lat: {"@type": "ivoa:RealQuantity",
-                value: val.RA, unit: {value: "degrees"}},
-            lon: {"@type": "ivoa:RealQuantity",
-                value: val.Dec, unit: {value: "degrees"}}
+            lat: {
+                "@type": "ivoa:RealQuantity",
+                value: val.RA, unit: { value: "degrees" }
+            },
+            lon: {
+                "@type": "ivoa:RealQuantity",
+                value: val.Dec, unit: { value: "degrees" }
+            }
         }
         const Target: CelestialTarget = {
-                "@type": "proposal:CelestialTarget",
-                sourceName: val.TargetName,
-                sourceCoordinates: sourceCoords,
-                positionEpoch: {value: val.SelectedEpoch}
+            "@type": "proposal:CelestialTarget",
+            sourceName: val.TargetName,
+            sourceCoordinates: sourceCoords,
+            positionEpoch: { value: val.SelectedEpoch }
         };
 
         function assignSpaceSys(ss: SpaceSys) {
-            if(Target.sourceCoordinates != undefined)
-                if(Target.sourceCoordinates.coordSys != undefined)
+            if (Target.sourceCoordinates != undefined)
+                if (Target.sourceCoordinates.coordSys != undefined)
                     Target.sourceCoordinates.coordSys = ss;
         }
 
-        fetchSpaceSystemResourceGetSpaceSystem({pathParams: {frameCode: 'ICRS'}})
+        fetchSpaceSystemResourceGetSpaceSystem({
+            pathParams: { frameCode: 'ICRS' } })
             .then((spaceSys) => assignSpaceSys(spaceSys))
             .then(() => fetchProposalResourceAddNewTarget({
-                    pathParams:{proposalCode: Number(selectedProposalCode)},
-                    body: Target})
-                .then(() => {return queryClient.invalidateQueries()})
-                .then(() => {props.onSubmit()})
-                .catch(console.log)
+                    pathParams: {
+                        proposalCode: Number(selectedProposalCode) },
+                    body: Target
+                })
+                    .then(() => {
+                        return queryClient.invalidateQueries()
+                    })
+                    .then(() => {
+                        props.onSubmit()
+                    })
+                    .catch(console.log)
             )
             .catch(console.log);
+    }
 
+    /**
+     * handles the submission event.
+     * @type {(event?: React.FormEvent<HTMLFormElement>) => void}
+     */
+    const handleSubmission: (event?: FormEvent<HTMLFormElement>) => void =
+        form.onSubmit((val: newTargetData) => {
+            if(document.activeElement === targetNameRef.current) {
+                if (form.values.searching &&
+                    val.TargetName === val.lastSearchName) {
+                    // do nothing if were already searching.
+                }
+                else if (!form.values.searching &&
+                        val.TargetName === val.lastSearchName) {
+                    // if already searched and same name, assume submission
+                    saveToDatabase(val);
+                } else {
+                    // name different, so do a simbad search.
+                    simbadLookup();
+                }
+            } else {
+                // not on target name, so assume submission
+                saveToDatabase(val);
+            }
     });
 
     /**
@@ -97,8 +153,9 @@ const TargetForm = (props: FormPropsType<{
     })
 
     return (
-        <form onSubmit={createNewTarget}>
+        <form onSubmit={handleSubmission}>
             <TextInput
+                ref={targetNameRef}
                 withAsterisk
                 label="Name"
                 placeholder="name of target"
@@ -145,11 +202,13 @@ const TargetForm = (props: FormPropsType<{
             <div>
                 <SubmitButton
                     toolTipLabel={"Save this target"}
-                    label={"Save"}/>
+                    label={"Save"}
+                    disabled={!form.isValid() || form.values.searching? true : undefined}/>
             </div>
         </form>
     );
 };
+
 
 /**
  * On click the add button displays the add new target modal.
@@ -174,9 +233,21 @@ export default function AddTargetModal(): ReactElement {
     );
 }
 
+/**
+ * the form props.
+ */
 export type FormPropsType<T> = {
     initialValues?: T;
     onSubmit: () => void;
     actions?: ReactNode;
 };
+
+export type newTargetData = {
+    SelectedEpoch: string;
+    RA: number;
+    Dec: number;
+    TargetName: string
+    searching: boolean
+    lastSearchName: string
+}
 
