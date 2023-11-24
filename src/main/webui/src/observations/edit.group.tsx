@@ -183,7 +183,7 @@ export default function ObservationEditGroup(
             else {
                 console.log("Editing");
             }
-        console.log(values)
+            console.debug(values)
     });
 
     return (
@@ -212,16 +212,17 @@ export default function ObservationEditGroup(
     )
 }
 
-
-//Type TimingWindow in proposalToolSchemas.ts has 'startTime' and
-// 'endTime' as date strings (ISO8601 strings).
-//We need to convert these to type Date before using them with the
-// 'DateTimePicker' element
-
 /**
- * Convert the TimingWindow type from the database to a type appropriate for the UI
- * @param {TimingWindow} input
- * @return {TimingWindowGui}
+ * Convert the TimingWindow type from the database to a type appropriate for
+ * the UI.
+ * NOTE: This is because the Type TimingWindow in proposalToolSchemas.ts has
+ * 'startTime' and 'endTime' as date strings (ISO8601 strings). We need
+ * to convert these to type Date before using them with the 'DateTimePicker'
+ * element.
+ *
+ * @param {TimingWindow} input the timing window to convert to a timing window
+ * gui.
+ * @return {TimingWindowGui} the converted timing window gui object.
  */
 function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     return ({
@@ -233,12 +234,14 @@ function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     })
 }
 
-// Note: API expects the Dates as the number of seconds since the posix epoch
-
 /**
- * Convert the TimingWindowGui type to a type appropriate to write to the database
- * @param {TimingWindowGui} input
- * @return {TimingWindowApi}
+ * Convert the TimingWindowGui type to a type appropriate to write to the
+ * database.
+ * Note: API expects the Dates as the number of seconds since the posix epoch
+ *
+ * @param {TimingWindowGui} input the timing window gui to convert to a
+ * timing window api.
+ * @return {TimingWindowApi} the converted timing window API object.
  */
 function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
     return ({
