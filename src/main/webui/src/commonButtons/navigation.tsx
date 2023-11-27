@@ -2,6 +2,7 @@ import { Button, Tooltip } from '@mantine/core';
 import { NavigationButtonInterfaceProps } from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
+import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
 
 /**
  * creates a navigation button.
@@ -13,8 +14,11 @@ import { Link } from 'react-router-dom';
 export default function NavigationButton(props: NavigationButtonInterfaceProps):
     ReactElement {
     return (
-        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<props.icon size={"2rem"}/>}
+        <Tooltip position={"left"}
+                 label={props.toolTipLabel}
+                 openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}>
+            <Button rightSection={<props.icon size={ICON_SIZE}/>}
                     p={props.p}
                     ml={props.ml}
                     to={props.to}
