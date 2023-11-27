@@ -4,6 +4,7 @@ Input property for common buttons:
 - onClick function (optional)
  */
 import { SyntheticEvent } from 'react';
+import { TablerIconsProps } from '@tabler/icons-react';
 
 /**
  * basic button interface props. Used by Submit button.
@@ -50,4 +51,15 @@ export interface DownloadButtonInterfaceProps extends BasicButtonInterfaceProps 
 export interface DownloadRequestInterfaceProps extends BasicButtonInterfaceProps {
     download: string
     onClick?: () => void
+}
+
+/**
+ * used to route users around the form from other pages.
+ */
+export interface NavigationButtonInterfaceProps
+        extends BasicButtonInterfaceProps {
+    p: number
+    ml: number
+    to: string
+    icon: (props: TablerIconsProps) => JSX.Element
 }
