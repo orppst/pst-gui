@@ -1,11 +1,10 @@
 import { MouseEvent, ReactElement, useEffect } from 'react';
 import PointingCanvas from './PointingCanvas.tsx';
+import { useHistoryState } from '../../useHistoryState.ts';
 
 // A is a global variable from aladin lite source code.
 // It is declared for the typescript checker to understand it.
 declare var A: any;
-
-let done = false;
 
 // the initial config for the aladin viewer.
 const initialConfig = {
@@ -32,11 +31,13 @@ const initialConfig = {
  * @constructor
  */
 export default function AladinViewer(): ReactElement {
+    let [hasDoneAladin, setHasDoneAladin] =
+        useHistoryState("hasDoneAladin", false);
 
     const LoadScriptIntoDOM = (
             bodyElement: HTMLElement, url: string,
             onloadCallback?: () => void) => {
-        const scriptElement = document.createElement('script');
+        const scriptElement = document.createElement("script");
         scriptElement.setAttribute('src', url);
         scriptElement.async = false;
         if (onloadCallback) {
@@ -47,8 +48,9 @@ export default function AladinViewer(): ReactElement {
 
 
     useEffect(() => {
-        if (!done){
-        done =true;
+        if (!hasDoneAladin) {
+        setHasDoneAladin(true);
+            hasDoneAladin = true;
             // Now the component is mounted we can load aladin lite.
         const bodyElement = document.getElementsByTagName('BODY')[0] as HTMLElement;
         // jQuery is a dependency for aladin-lite and therefore must be inserted in the DOM.
@@ -62,6 +64,7 @@ export default function AladinViewer(): ReactElement {
             //'http://aladin.u-strasbg.fr/AladinLite/api/v3/latest/aladin.min.js',
             'https://aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js',
             () => {
+                setHasDoneAladin(true);
                 // When the import has succeeded we store the aladin js instance
                 // into its component
                 const aladin = A.aladin('#aladin-lite-div', initialConfig);
@@ -70,12 +73,12 @@ export default function AladinViewer(): ReactElement {
                     shape: 'cross',
                     sourceSize: 20,
                 });
-                //aladin.addCatalog(catalogue);
+                aladin.addCatalog(catalogue);
                 const overlay = A.graphicOverlay({
                     color: '#009900',
                     lineWidth: 3
                 });
-                //aladin.addOverlay(overlay);
+                aladin.addOverlay(overlay);
         })
     }});
 

@@ -16,6 +16,7 @@ import AddButton from '../commonButtons/add';
 import DatabaseSearchButton from '../commonButtons/databaseSearch';
 import { SubmitButton } from '../commonButtons/save';
 import AladinViewer from './aladin/AladinViewer.tsx';
+import { useHistoryState } from '../useHistoryState.ts';
 
 /**
  * creates the target new page.
@@ -225,16 +226,23 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
  */
 export default function AddTargetModal(): ReactElement {
     const [opened, { close, open }] = useDisclosure();
+    const [_, setHasDoneAladin] =
+        useHistoryState("hasDoneAladin", false);
+
     return (
         <>
             <AddButton onClick={open}
                        toolTipLabel={"Add new target."}/>
             <Modal title="New target"
                    opened={opened}
-                   onClose={close}
+                   onClose={() => {
+                       setHasDoneAladin(false);
+                       close();
+                   }}
                    fullScreen>
                 <TargetForm
                     onSubmit={() => {
+                        setHasDoneAladin(false);
                         close();
                     }}
                 />
