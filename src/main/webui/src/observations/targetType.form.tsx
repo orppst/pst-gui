@@ -13,6 +13,7 @@ import { ReactElement } from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
 import { JSON_SPACES } from '../constants.tsx';
+import { randomId } from '@mantine/hooks';
 
 /**
  * the entrance to building the target part of the edit panel.
@@ -175,6 +176,8 @@ export default function TargetTypeForm (
                         proposalCode={Number(selectedProposalCode)}
                         dbid={form.values.targetDBId}
                         showRemove={false}
+                        key={randomId()}
+                        boundTargets={[]}
                     />
             }
             {SelectTechnicalGoal()}

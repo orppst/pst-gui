@@ -1,8 +1,7 @@
 import {Table} from "@mantine/core";
 import {TargetTableHeader, TargetTableRow} from "./List.tsx";
 import { ReactElement } from 'react';
-
-type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
+import { TargetProps } from './targetProps.tsx';
 
 /**
  *
