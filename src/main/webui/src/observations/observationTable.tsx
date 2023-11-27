@@ -3,7 +3,14 @@ import {
     fetchObservationResourceRemoveObservation,
     useObservationResourceGetObservation
 } from "../generated/proposalToolComponents.ts";
-import {Text, Space, Badge, Group, Table} from "@mantine/core";
+import {
+    Text,
+    Space,
+    Badge,
+    Group,
+    Table,
+    useMantineTheme
+} from '@mantine/core';
 import {modals} from "@mantine/modals";
 import {
     CalibrationObservation,
@@ -30,6 +37,10 @@ export default function ObservationRow(
     observationId: ObservationId): ReactElement {
 
     const queryClient = useQueryClient();
+
+    // the colour gray used by the tools.
+    const theme = useMantineTheme();
+    const GRAY = theme.colors.gray[6];
 
     const { selectedProposalCode} = useParams();
 
@@ -76,7 +87,7 @@ export default function ObservationRow(
                     Observation of '{observation?.target?.sourceName}'
                 </Text>
                 <Space h={"sm"}/>
-                <Text c={"gray.6"} size={"sm"}>
+                <Text c={GRAY} size={"sm"}>
                     Deletes the observation from the list only.
                     Preserves everything except the timing windows.
                 </Text>
@@ -117,7 +128,7 @@ export default function ObservationRow(
                     Observation of '{observation?.target?.sourceName}'
                 </Text>
                 <Space h={"sm"}/>
-                <Text c={"gray.6"} size={"sm"}>
+                <Text c={GRAY} size={"sm"}>
                     Creates a new observation with a deep copy of this
                     observation's properties. You should edit the copied
                     observation for your needs.
