@@ -41,7 +41,14 @@ import {
     useMantineTheme, Burger, ScrollArea, Group, ActionIcon, Tooltip
 } from "@mantine/core";
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
-import { IconChevronRight, IconLogout } from '@tabler/icons-react';
+import {
+    IconCamera,
+    IconChartLine,
+    IconChevronRight,
+    IconFileCheck,
+    IconFileDescription, IconFiles,
+    IconLogout, IconTarget, IconUsersGroup
+} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
 import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
@@ -276,37 +283,47 @@ function App2() {
                             <NavLink key={item.code}
                                      label={item.title}
                                      childrenOffset={30}
+                                     leftSection={<IconFileDescription/>}
                                      rightSection={<IconChevronRight
                                          size="0.8rem"
                                          stroke={1.5} />}>
                                 <NavLink to={"proposal/" + item.code}
                                          component={Link}
-                                         label="Overview" />
+                                         label="Overview"
+                                         leftSection={<IconFileCheck/>}>
+                                </NavLink>
                                 <NavLink to={"proposal/" + item.code + "/title"}
                                          component={Link}
+                                         leftSection={<IconFileDescription/>}
                                          label="Title" />
                                 <NavLink to={
                                     "proposal/" + item.code + "/summary"}
                                          component={Link}
+                                         leftSection={<IconFileDescription/>}
                                          label="Summary" />
                                 <NavLink to={
                                     "proposal/" + item.code + "/investigators"}
                                          component={Link}
+                                         leftSection={<IconUsersGroup/>}
                                          label="Investigators" />
                                 <NavLink to={
                                     "proposal/" + item.code + "/targets"}
                                          component={Link}
+                                         leftSection={<IconTarget/>}
                                          label="Targets" />
                                 <NavLink to={"proposal/" + item.code + "/goals"}
                                          component={Link}
+                                         leftSection={<IconChartLine/>}
                                          label="Technical Goals" />
                                 <NavLink to={
                                     "proposal/" + item.code + "/observations"}
                                          component={Link}
+                                         leftSection={<IconCamera/>}
                                          label="Observations" />
                                 <NavLink to={
                                     "proposal/" + item.code + "/documents"}
                                          component={Link}
+                                         leftSection={<IconFiles/>}
                                          label="Documents" />
                             </NavLink>
                         ))}
