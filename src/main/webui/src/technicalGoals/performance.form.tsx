@@ -4,6 +4,8 @@ import {angularUnits, frequencyUnits, sensitivityUnits} from "../physicalUnits/P
 import { NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {ReactElement} from "react";
 import {TechnicalGoalValues} from "./edit.group.tsx";
+import { CLOSE_DELAY, OPEN_DELAY } from '../constants.tsx';
+
 
 
 /**
@@ -18,7 +20,7 @@ export default function PerformanceParametersSection(
         ReactElement {
     const PerformanceDetails = () => {
         return (
-            <Tooltip.Group openDelay={1000} closeDelay={200}>
+            <Tooltip.Group openDelay={OPEN_DELAY} closeDelay={CLOSE_DELAY}>
                 <Stack>
                     <Group grow>
                         <NumberInputPlusUnit

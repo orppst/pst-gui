@@ -2,6 +2,7 @@ import { Button, Tooltip } from '@mantine/core';
 import {  IconFileSearch } from '@tabler/icons-react';
 import { ClickButtonInterfaceProps} from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
+import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
 
 /**
  * creates an upload button.
@@ -13,8 +14,11 @@ import { ReactElement } from 'react';
 export default function UploadButton(props: ClickButtonInterfaceProps):
         ReactElement {
     return (
-        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<IconFileSearch size={"2rem"}/>}
+        <Tooltip position={"left"}
+                 label={props.toolTipLabel}
+                 openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}>
+            <Button rightSection={<IconFileSearch size={ICON_SIZE}/>}
                     color={"violet.5"}
                     variant={"subtle"}
                     onClick={props.onClick === undefined?

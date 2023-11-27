@@ -1,10 +1,13 @@
 import {useMantineColorScheme, Switch, useMantineTheme} from '@mantine/core';
 import {IconSun, IconMoonStars} from '@tabler/icons-react';
 import { Slider } from '@mantine/core';
+import { STROKE } from './constants.tsx';
 
 export function SwitchToggle() {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+    // the colour gray used by the tools.
     const theme = useMantineTheme();
+    const GRAY = theme.colors.gray[6];
 
     return (
         <>
@@ -12,8 +15,14 @@ export function SwitchToggle() {
                 checked={colorScheme === 'dark'}
                 onChange={() => toggleColorScheme()}
                 size="md"
-                onLabel={<IconSun color={theme.white} size="1.25rem" stroke={1.5} />}
-                offLabel={<IconMoonStars color={theme.colors.gray[6]} size="1.25rem" stroke={1.5}/>}
+                onLabel={<IconSun
+                    color={theme.white}
+                    size="1.25rem"
+                    stroke={STROKE} />}
+                offLabel={<IconMoonStars
+                    color={GRAY}
+                    size="1.25rem"
+                    stroke={STROKE}/>}
             />
             <Slider miw={120}
                 label={null}

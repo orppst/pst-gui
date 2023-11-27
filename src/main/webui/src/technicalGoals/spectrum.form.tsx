@@ -14,6 +14,7 @@ import {NumberInputPlusUnit} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {randomId} from "@mantine/hooks";
 import {ScienceSpectralWindowGui} from "./scienceSpectralWindowGui.tsx";
 import {ReactElement} from "react";
+import { MAX_COLUMNS } from '../constants';
 
 /**
  * generates the spectral window panel.
@@ -50,7 +51,7 @@ export default function SpectralWindowsSection(
      * @return {ReactElement} the dynamic html for the window.
      */
     const renderWindowSetup = (index: number): ReactElement => {
-        const TOTAL_COLUMNS = 16;
+        const TOTAL_COLUMNS = MAX_COLUMNS;
 
         //spans work out the proportional amount of space for each element and
         //provide responsiveness in terms of view-port width
