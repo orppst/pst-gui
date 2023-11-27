@@ -7,6 +7,7 @@ import TechnicalGoalRow, {technicalGoalsHeader} from "./technicalGoalTable.tsx";
 import {TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 import TechnicalGoalEditModal from "./edit.modal.tsx";
 import { ReactElement } from 'react';
+import { JSON_SPACES } from '../constants.tsx';
 
 /**
  * the data type shared by the edit components.
@@ -48,7 +49,7 @@ function TechnicalGoalsPanel(): ReactElement {
     if (goalsError) {
         return (
             <Box>
-                <pre>{JSON.stringify(goalsError, null, 2)}</pre>
+                <pre>{JSON.stringify(goalsError, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -56,7 +57,7 @@ function TechnicalGoalsPanel(): ReactElement {
     if (titleError) {
         return (
             <Box>
-                <pre>{JSON.stringify(titleError, null, 2)}</pre>
+                <pre>{JSON.stringify(titleError, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -77,8 +78,9 @@ function TechnicalGoalsPanel(): ReactElement {
                     {
                         goals?.map((goal) => {
                             return (
-                                <TechnicalGoalRow id={goal.dbid!}
-                                                  key={goal.dbid!}
+                                <TechnicalGoalRow
+                                    id={goal.dbid!}
+                                    key={goal.dbid!}
                                 />
                             )
                         })

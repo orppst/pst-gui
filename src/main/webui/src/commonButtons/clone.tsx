@@ -4,6 +4,8 @@ import {
     ClickButtonInterfaceProps
 } from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
+import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
+
 
 /**
  * creates a clone button.
@@ -15,8 +17,10 @@ import { ReactElement } from 'react';
 export default function CloneButton(props: ClickButtonInterfaceProps):
         ReactElement {
     return (
-        <Tooltip openDelay={1000} label={props.toolTipLabel}>
-            <Button rightSection={<IconCopy size={"2rem"}/>}
+        <Tooltip openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}
+                 label={props.toolTipLabel}>
+            <Button rightSection={<IconCopy size={ICON_SIZE}/>}
                     color={"blue"}
                     variant={"subtle"}
                     onClick={props.onClick === undefined?

@@ -12,8 +12,13 @@ import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
+import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
 
-type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
+
+type TargetProps = {
+    proposalCode: number,
+    dbid: number,
+    showRemove: boolean };
 
 /**
  * Renders the target panel containing an add target button
@@ -32,27 +37,36 @@ function TargetPanel(): ReactElement {
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
 
     return (
             <Box>
-                <Text fz="lg" fw={700}>Add and edit targets</Text>
+                <Text fz="lg"
+                      fw={HEADER_FONT_WEIGHT}>
+                    Add and edit targets
+                </Text>
                 <Box>
                     <AddTargetModal/>
                     <Table>
-                        {data?.length === 0? <Table.Td>Please add your targets</Table.Td> : TargetTableHeader()}
+                        {data?.length === 0?
+                            <Table.Td>Please add your targets</Table.Td> :
+                            TargetTableHeader()}
                         <Table.Tbody>
-                            {isLoading ? (<Table.Tr colSpan={5} key={randomId()}>Loading...</Table.Tr>)
+                            {isLoading ? (
+                                <Table.Tr colSpan={5}
+                                          key={randomId()}>
+                                    Loading...
+                                </Table.Tr>)
                                 : data?.map((item) => {
-                                        return (
-                                            <TargetTableRow
-                                                    proposalCode={Number(selectedProposalCode)}
-                                                    dbid={item.dbid!}
-                                                    showRemove={true}
-                                            />)
+                                        return (<TargetTableRow
+                                            proposalCode={
+                                                Number(selectedProposalCode)}
+                                            dbid={item.dbid!}
+                                            showRemove={true}
+                                        />)
                                 })
                             }
                         </Table.Tbody>

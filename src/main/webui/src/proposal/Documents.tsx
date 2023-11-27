@@ -17,6 +17,7 @@ import {
     DownloadButton,
     DownloadRequestButton
 } from '../commonButtons/download.tsx';
+import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
 
 type DocumentProps = {
     dbid: number,
@@ -37,7 +38,7 @@ const DocumentsPanel = () => {
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -85,29 +86,40 @@ const DocumentsPanel = () => {
 
     return (
         <Box>
-            <Text fz="lg" fw={700}>View and retrieve documents</Text>
+            <Text fz="lg"
+                  fw={HEADER_FONT_WEIGHT}>
+                View and retrieve documents
+            </Text>
             <Box>
                 <Table>
                     <Table.Tbody>
-                    {isLoading ? (<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>)
+                    {isLoading ? (
+                        <Table.Tr>
+                            <Table.Td>Loading...</Table.Td>
+                        </Table.Tr>)
                     : data?.map((item) => {
                             if (item.dbid !== undefined && item.name !== undefined)
-                                return (<RenderDocumentListItem key={item.dbid} dbid={item.dbid} name={item.name}/>)
+                                return (<RenderDocumentListItem
+                                    key={item.dbid}
+                                    dbid={item.dbid}
+                                    name={item.name}/>)
                             else
-                                return (<Table.Tr key={randomId()}><Table.Td>Empty!</Table.Td></Table.Tr>)
+                                return (
+                                    <Table.Tr key={randomId()}>
+                                        <Table.Td>Empty!</Table.Td>
+                                    </Table.Tr>)
                         })
                     }
                     </Table.Tbody>
                 </Table>
             </Box>
-            <Text fz="lg" fw={700}>Upload a document</Text>
+            <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Upload a document</Text>
             <FileButton onChange={handleUpload}>
                         {(props) => <UploadButton
                             toolTipLabel="select a file from disk to upload"
                             label={"Choose a file"}
                             onClick={props.onClick}/>}
             </FileButton>
-
             <Result status={status} />
         </Box>
     );
@@ -157,14 +169,21 @@ function RenderDocumentListItem(props: DocumentProps) {
 
     //TODO: Do we need to revoke this URL after use?
     const prepareDownload = () => {
-        fetchSupportingDocumentResourceDownloadSupportingDocument({pathParams: {id: props.dbid, proposalCode: Number(selectedProposalCode)}})
-            .then((blob) => setDownloadLink(window.URL.createObjectURL(blob as unknown as Blob)))
+        fetchSupportingDocumentResourceDownloadSupportingDocument(
+            {pathParams: {
+                id: props.dbid,
+                    proposalCode: Number(selectedProposalCode)}})
+            .then((blob) => setDownloadLink(
+                window.URL.createObjectURL(blob as unknown as Blob)))
             .then(() => setDownloadReady(true));
 
     }
 
     if(submitting)
-        return (<Table.Tr key={props.dbid}><Table.Td>DELETING...</Table.Td></Table.Tr>);
+        return (
+            <Table.Tr key={props.dbid}>
+                <Table.Td>DELETING...</Table.Td>
+            </Table.Tr>);
     else
         return (
                 <Table.Tr key={props.dbid}>
