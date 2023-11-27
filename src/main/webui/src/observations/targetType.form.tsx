@@ -12,6 +12,7 @@ import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
 import { ReactElement } from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
+import { JSON_SPACES } from '../constants.tsx';
 import { randomId } from '@mantine/hooks';
 
 /**
@@ -53,7 +54,7 @@ export default function TargetTypeForm (
         if (targetListError) {
             return (
                 <div>
-                    <pre>{JSON.stringify(targetListError, null, 2)}</pre>
+                    <pre>{JSON.stringify(targetListError, null, JSON_SPACES)}</pre>
                 </div>
             )
         }
@@ -91,7 +92,7 @@ export default function TargetTypeForm (
             return (
                 <div>
                     <pre>{JSON.stringify(
-                        technicalGoalsError, null, 2)}
+                        technicalGoalsError, null, JSON_SPACES)}
                     </pre>
                 </div>
             )

@@ -15,6 +15,7 @@ import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
 import { TargetProps } from './targetProps.tsx';
+import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
 
 /**
  * Renders the target panel containing an add target button
@@ -39,7 +40,7 @@ function TargetPanel(): ReactElement {
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -54,7 +55,10 @@ function TargetPanel(): ReactElement {
 
     return (
             <Box>
-                <Text fz="lg" fw={700}>Add and edit targets</Text>
+                <Text fz="lg"
+                      fw={HEADER_FONT_WEIGHT}>
+                    Add and edit targets
+                </Text>
                 <Box>
                     <AddTargetModal/>
                     {data?.length === 0?

@@ -5,6 +5,8 @@ import {
     ClickButtonInterfaceProps
 } from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
+import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
+
 
 /**
  * creates a submit button in the form of a Mantine ActionIcon displaying a
@@ -18,8 +20,11 @@ import { ReactElement } from 'react';
  */
 export function SubmitButton(props: BasicButtonInterfaceProps): ReactElement {
     return (
-        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<IconDeviceFloppy size={"2rem"}/>}
+        <Tooltip position={"left"}
+                 label={props.toolTipLabel}
+                 openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}>
+            <Button rightSection={<IconDeviceFloppy size={ICON_SIZE}/>}
                     color={"violet.5"}
                     variant={"subtle"}
                     type="submit"
@@ -41,8 +46,11 @@ export function SubmitButton(props: BasicButtonInterfaceProps): ReactElement {
  */
 export function SaveButton(props: ClickButtonInterfaceProps): ReactElement {
     return (
-        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<IconDeviceFloppy size={"2rem"}/>}
+        <Tooltip position={"left"}
+                 label={props.toolTipLabel}
+                 openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}>
+            <Button rightSection={<IconDeviceFloppy size={ICON_SIZE}/>}
             color={"violet.5"}
             variant={"subtle"}
             onClick={props.onClick === undefined?

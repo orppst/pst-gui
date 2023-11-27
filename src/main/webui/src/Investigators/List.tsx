@@ -11,6 +11,7 @@ import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
 import DeleteButton from "../commonButtons/delete";
 import AddButton from "../commonButtons/add";
+import { JSON_SPACES } from '../constants.tsx';
 
 /**
  * the data associated with a given person.
@@ -29,16 +30,17 @@ type PersonProps = {
  */
 function InvestigatorsPanel(): ReactElement {
     const { selectedProposalCode } = useParams();
-    const { data , error, isLoading } = useInvestigatorResourceGetInvestigators(
-        {pathParams: {proposalCode: Number(selectedProposalCode)},},
-        {enabled: true});
+    const { data , error, isLoading } =
+        useInvestigatorResourceGetInvestigators(
+            {pathParams: { proposalCode: Number(selectedProposalCode)},},
+            {enabled: true});
     const navigate = useNavigate();
 
 
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }

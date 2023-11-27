@@ -2,13 +2,15 @@ import {Grid, MantineColor, MantineSpacing, NumberInput, Select, StyleProp, Tool
 import {UseFormReturnType} from "@mantine/form";
 import {notSpecified} from "../technicalGoals/edit.group.tsx";
 import { ReactElement } from 'react';
+import { DEFAULT_DECIMAL_PLACE, MAX_COLUMNS } from '../constants.tsx';
 import {RealQuantity} from "../generated/proposalToolSchemas.ts";
 
 
 /**
- * Type to use with the Mantine 'NumberInput' element embedded in NumberInputPlusUnit function.
- * The Mantine NumberInput requires a number | string type where a "null" number is given by
- * the empty string. The 'unit' member is used in a 'Select' element, which requires 'null'
+ * Type to use with the Mantine 'NumberInput' element embedded in
+ * NumberInputPlusUnit function. The Mantine NumberInput requires a
+ * number | string type where a "null" number is given by the empty string.
+ * The 'unit' member is used in a 'Select' element, which requires 'null'
  * when there is no unit rather than the empty string - confusing much?
  */
 export type NumberUnitType =  {
@@ -82,29 +84,36 @@ export interface NumberInputPlusUnitProps {
 
 /**
  *
- * @param {NumberInputPlusUnitProps} props the data related to this number input with unit.
+ * @param {NumberInputPlusUnitProps} props the data related to this number
+ * input with unit.
  * @return {ReactElement} the html that represents a number input plus unit.
  * @constructor
  */
-export function NumberInputPlusUnit(props: NumberInputPlusUnitProps): ReactElement {
-    const totalCols = 12;
+export function NumberInputPlusUnit(
+    props: NumberInputPlusUnitProps): ReactElement {
+    const totalCols = MAX_COLUMNS;
     const baseCols = totalCols / 2;
 
     return (
         <Grid columns={totalCols} gutter={props.gap}>
             <Grid.Col span={{base: baseCols, sm: 7}}>
-                <Tooltip disabled={props.toolTip == undefined} label={props.toolTip}>
+                <Tooltip
+                    disabled={props.toolTip == undefined}
+                    label={props.toolTip}>
+
                     <NumberInput
                         bg={props.color}
                         label={props.label + ":"}
                         p={props.padding}
                         placeholder={notSpecified}
                         withAsterisk={props.withAsterisk}
-                        decimalScale={props.decimalPlaces ?? 3}
+                        decimalScale={
+                            props.decimalPlaces ?? DEFAULT_DECIMAL_PLACE}
                         hideControls
                         step={props.step ?? 0.1}
                         min={0}
-                        {...props.form.getInputProps(props.valueRoot + ".value" )}
+                        {...props.form.getInputProps(
+                            props.valueRoot + ".value" )}
                     />
                 </Tooltip>
             </Grid.Col>

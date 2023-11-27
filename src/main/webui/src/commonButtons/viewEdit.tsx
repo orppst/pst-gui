@@ -2,6 +2,8 @@ import { Button, Tooltip } from '@mantine/core';
 import { IconEyeEdit } from '@tabler/icons-react';
 import { ClickButtonInterfaceProps } from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
+import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
+
 
 /**
  * creates a view/edit button.
@@ -13,8 +15,10 @@ import { ReactElement } from 'react';
 export default function ViewEditButton(props: ClickButtonInterfaceProps):
         ReactElement {
     return (
-        <Tooltip openDelay={1000} label={props.toolTipLabel}>
-            <Button rightSection={<IconEyeEdit size={"2rem"}/>}
+        <Tooltip openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}
+                 label={props.toolTipLabel}>
+            <Button rightSection={<IconEyeEdit size={ICON_SIZE}/>}
                     color={"green"}
                     variant={"subtle"}
                     onClick={props.onClick === undefined?
