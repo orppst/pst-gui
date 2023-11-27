@@ -45,13 +45,22 @@ import {
     Text,
     TextInput,
     Grid,
-    useMantineTheme, Burger, ScrollArea, Group, ActionIcon, Tooltip
-} from "@mantine/core";
+    Burger,
+    ScrollArea,
+    Group,
+    ActionIcon,
+    Tooltip, useMantineTheme
+} from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import { IconChevronRight, IconLogout } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
 import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
+import {
+    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE, JSON_SPACES,
+    NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
+    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
+} from './constants.tsx';
 
 /**
  * defines the user context type.
@@ -103,6 +112,10 @@ function App2(): ReactElement {
 
     // get database query client.
     const queryClient = new QueryClient()
+
+    // the colour gray used by the tools.
+    const theme = useMantineTheme();
+    const GRAY = theme.colors.gray[6];
 
     // the paths to route to.
     const router = createBrowserRouter(
@@ -163,7 +176,6 @@ function App2(): ReactElement {
      */
     function PSTRoot(): ReactElement {
         const {user, token, apiUrl} = useContext(ProposalContext);
-        const theme = useMantineTheme();
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
 
@@ -191,9 +203,12 @@ function App2(): ReactElement {
             <ProposalContext.Provider
                 value={{selectedProposalCode, user, token, apiUrl}}>
                 <AppShell
-                    header={{height: 60}}
+                    header={{height: APP_HEADER_HEIGHT}}
                     navbar={{
-                        width: {base: 300, md: 400, lg: 450},
+                        width: {
+                            base: NAV_BAR_DEFAULT_WIDTH,
+                            md: NAV_BAR_MEDIUM_WIDTH,
+                            lg: NAV_BAR_LARGE_WIDTH},
                         breakpoint: 'sm',
                         collapsed: {mobile: !opened},
                     }}
@@ -206,8 +221,8 @@ function App2(): ReactElement {
                                         opened={opened}
                                         onClick={toggle}
                                         hiddenFrom={"sm"}
-                                        size="sm"
-                                        color={theme.colors.gray[6]}
+                                        size="lg"
+                                        color={GRAY}
                                         mr="xl"
                                     />
                                     <img src={"/pst/gui/public/polaris4.png"}
@@ -228,14 +243,16 @@ function App2(): ReactElement {
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
                                     {SwitchToggle()}
-                                    <Tooltip label={"logout"} openDelay={1000}>
+                                    <Tooltip label={"logout"}
+                                             openDelay={OPEN_DELAY}
+                                             closeDelay={CLOSE_DELAY}>
                                         <ActionIcon
                                             color={"orange.8"}
                                             variant={"subtle"}
                                             component={"a"}
                                             href={"/pst/gui/logout"}
                                         >
-                                            <IconLogout size={"2rem"}/>
+                                            <IconLogout size={ICON_SIZE}/>
                                         </ActionIcon>
                                     </Tooltip>
                                 </Group>
@@ -321,7 +338,7 @@ function App2(): ReactElement {
         if (result.error) {
             return (
                 <Box>
-                    <pre>{JSON.stringify(result.error, null, 2)}</pre>
+                    <pre>{JSON.stringify(result.error, null, JSON_SPACES)}</pre>
                 </Box>
             );
         }
@@ -337,7 +354,7 @@ function App2(): ReactElement {
                                      childrenOffset={30}
                                      rightSection={<IconChevronRight
                                          size="0.8rem"
-                                         stroke={1.5} />}>
+                                         stroke={STROKE} />}>
                                 <NavLink to={"proposal/" + item.code}
                                          component={Link}
                                          label="Overview" />

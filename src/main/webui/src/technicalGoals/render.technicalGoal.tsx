@@ -32,8 +32,9 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
 
     const {data, error, isLoading} =
         useTechnicalGoalResourceGetTechnicalGoal( {
-            pathParams: {proposalCode: props.proposalCode,
-                         technicalGoalId: props.dbid}
+            pathParams: {
+                proposalCode: props.proposalCode,
+                technicalGoalId: props.dbid}
         });
 
     if (error) {
@@ -140,11 +141,17 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
         return (
             <Table.Tr key={window.index}>
                 <Table.Th>Start</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.start?.value} {window.spectralWindowSetup?.start?.unit?.value}</Table.Td>
+                <Table.Td>{window.spectralWindowSetup?.start?.value}
+                    {window.spectralWindowSetup?.start?.unit?.value}
+                </Table.Td>
                 <Table.Th>End</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.end?.value} {window.spectralWindowSetup?.end?.unit?.value}</Table.Td>
+                <Table.Td>{window.spectralWindowSetup?.end?.value}
+                    {window.spectralWindowSetup?.end?.unit?.value}
+                </Table.Td>
                 <Table.Th>Res.</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.spectralResolution?.value} {window.spectralWindowSetup?.spectralResolution?.unit?.value}</Table.Td>
+                <Table.Td>{window.spectralWindowSetup?.spectralResolution?.value}
+                    {window.spectralWindowSetup?.spectralResolution?.unit?.value}
+                </Table.Td>
             </Table.Tr>
         )
     }
@@ -162,7 +169,9 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
         return (
             <Table>
                 <Table.Thead>
-                    <Table.Tr><Table.Th colSpan={6}>Spectral Windows</Table.Th></Table.Tr>
+                    <Table.Tr><Table.Th colSpan={6}>
+                        Spectral Windows
+                    </Table.Th></Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                     {
