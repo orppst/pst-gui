@@ -52,10 +52,13 @@ const populateSupportingDocuments = (
     Array<Promise<void>> => {
     return supportingDocumentData.map(async (item: ObjectIdentifier) => {
         if (item.dbid !== undefined && item.name !== undefined) {
-            // have to destructure this, as otherwise risk of being undefined detected later.
+            // have to destructure this, as otherwise risk of being undefined
+            // detected later.
             const docTitle = item.name;
             await fetchSupportingDocumentResourceDownloadSupportingDocument(
-                { pathParams: { id: item.dbid, proposalCode: Number(selectedProposalCode) } })
+                { pathParams: {
+                    id: item.dbid,
+                        proposalCode: Number(selectedProposalCode) } })
                 .then((blob) => {
                     // ensure we got some data back.
                     if (blob !== undefined) {

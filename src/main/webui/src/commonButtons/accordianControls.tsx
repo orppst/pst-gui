@@ -6,7 +6,8 @@ import { ClickButtonInterfaceProps } from './buttonInterfaceProps.tsx';
 import {SaveButton} from "./save.tsx";
 
 /*
-    functions to simplify Accordion controls when we want to include buttons/actions in the control header
+    functions to simplify Accordion controls when we want to include
+    buttons/actions in the control header
  */
 
 

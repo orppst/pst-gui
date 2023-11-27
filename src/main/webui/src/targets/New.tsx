@@ -37,9 +37,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             },
             validate: {
                 TargetName: (value) => (
-                    value.length < 1 ?
-                        'Name cannot be blank ' :
-                        null),
+                    value.length < 1 ? 'Name cannot be blank ' : null),
                 RA: (value) => (
                     value === null || value === undefined ?
                         'RA cannot be blank':
@@ -67,8 +65,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
         form.values.searching = true;
         form.values.lastSearchName = form.values.TargetName;
-        fetchSimbadResourceSimbadFindTarget({
-                queryParams: {targetName: form.values.TargetName}})
+        fetchSimbadResourceSimbadFindTarget(
+            {queryParams: {targetName: form.values.TargetName}})
             .then((data : SimbadTargetResult) => {
                 console.log(data);
                 form.setFieldValue('RA', data.raDegrees?data.raDegrees:0);
@@ -114,21 +112,16 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     Target.sourceCoordinates.coordSys = ss;
         }
 
-        fetchSpaceSystemResourceGetSpaceSystem({
-            pathParams: { frameCode: 'ICRS' } })
+        fetchSpaceSystemResourceGetSpaceSystem(
+            {pathParams: { frameCode: 'ICRS'}})
             .then((spaceSys) => assignSpaceSys(spaceSys))
-            .then(() => fetchProposalResourceAddNewTarget({
-                    pathParams: {
-                        proposalCode: Number(selectedProposalCode) },
-                    body: Target
-                })
-                    .then(() => {
-                        return queryClient.invalidateQueries()
-                    })
-                    .then(() => {
-                        props.onSubmit()
-                    })
-                    .catch(console.log)
+            .then(() => fetchProposalResourceAddNewTarget(
+                {pathParams:{
+                    proposalCode: Number(selectedProposalCode) },
+                    body: Target})
+                .then(() => {return queryClient.invalidateQueries()})
+                .then(() => {props.onSubmit()})
+                .catch(console.log)
             )
             .catch(console.log);
     }
