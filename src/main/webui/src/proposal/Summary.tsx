@@ -8,12 +8,13 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import {Box, Text, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import { SubmitButton } from '../commonButtons/save.tsx';
+import { SubmitButton } from '../commonButtons/save';
 import {
     HEADER_FONT_WEIGHT,
     JSON_SPACES,
     MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS
-} from '../constants.tsx';
+} from '../constants';
+import MaxCharsForInputRemaining from "../commonInputs/remainingCharacterCount.tsx";
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
@@ -90,10 +91,7 @@ function SummaryPanel() {
                 <Textarea rows={TEXTAREA_MAX_ROWS}
                           maxLength={MAX_CHARS_FOR_INPUTS}
                           name="summary" {...form.getInputProps('summary')} />
-                <small>
-                    Characters remaining:
-                    {MAX_CHARS_FOR_INPUTS - form.values.summary.length}
-                </small>
+                <MaxCharsForInputRemaining length={form.values.summary.length} />
                 <br/>
                 <SubmitButton toolTipLabel={"save summary"}
                               label={'save'}/>

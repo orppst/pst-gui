@@ -10,6 +10,7 @@ import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import { SubmitButton } from '../commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "../constants";
+import MaxCharsForInputRemaining from "../commonInputs/remainingCharacterCount.tsx";
 
 const kindData = [
     {value: "STANDARD", label: "Standard"},
@@ -74,6 +75,7 @@ const kindData = [
                     withAsterisk
                     label={"Title"}
                     {...form.getInputProps("title")}/>
+                <MaxCharsForInputRemaining length={form.values.title.length} />
                 <Textarea name="summary"
                     rows={TEXTAREA_MAX_ROWS}
                     maxLength={MAX_CHARS_FOR_INPUTS}
@@ -81,10 +83,7 @@ const kindData = [
                     withAsterisk
                     label={"Summary"}
                     {...form.getInputProps("summary")} />
-                <small>
-                    Characters remaining:
-                    {MAX_CHARS_FOR_INPUTS - form.values.summary.length}
-                </small>
+                <MaxCharsForInputRemaining length={form.values.summary.length} />
                 <Select label={"Kind"}
                     data={kindData}
                     {...form.getInputProps("kind")}
