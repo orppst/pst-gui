@@ -76,7 +76,16 @@ export default function ObservationRow(
                 proposalCode: Number(selectedProposalCode),
                 observationId: observationId.id}
         })
-            .then(() => queryClient.invalidateQueries())
+            .then(() => queryClient.invalidateQueries(
+                {
+                    predicate: (query) => {
+                        // only invalidate the query for the entire list.
+                        // not the separate bits.
+                        return query.queryKey.length === 5 &&
+                            query.queryKey[4] === 'observations';
+                    }
+                }
+            ))
             .catch(console.log);
     }
 
@@ -175,101 +184,103 @@ export default function ObservationRow(
     suspects.
      */
 
+    // if loading, present a loading.
+    if (observationLoading) {
+        return (
+            <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
+        );
+    }
+
+    // generate the correct row.
     return (
-        <>
-            {observationLoading? ('Loading...') :
-                (
-                    <Table.Tr>
-                        <Table.Td>
-                            {observation?.target?.sourceName}
-                        </Table.Td>
-                        <Table.Td>
-                            {observation?.["@type"]=== 'proposal:TargetObservation' ?
-                                'target' : 'calibration'}
-                        </Table.Td>
-                        <Table.Td>
-                            {observation?.field?.name}
-                        </Table.Td>
-                        <Table.Td>
-                            {
-                                performanceFull ?
-                                    <Badge
-                                        color={"green"}
-                                        radius={0}
-                                    >
-                                        Set
-                                    </Badge>:
-                                    performanceEmpty ?
-                                        <Badge
-                                            color={"orange"}
-                                            radius={0}
-                                        >
-                                            Not Set
-                                        </Badge> :
-                                        <Badge
-                                            color={"yellow"}
-                                            radius={0}
-                                        >
-                                            Partial
-                                        </Badge>
-                            }
-                        </Table.Td>
-                        <Table.Td>
-                            {
-                                observation?.technicalGoal?.spectrum?.length! > 0 ?
-                                    <Badge
-                                        color={"green"}
-                                        radius={0}
-                                    >
-                                        {observation?.technicalGoal?.spectrum?.length!}
-                                    </Badge>:
-                                    <Badge
-                                        color={"red"}
-                                        radius={0}
-                                    >
-                                        None
-                                    </Badge>
-                            }
-                        </Table.Td>
-                        <Table.Td>
-                            <Group>
-                            {
-                                observation?.constraints?.length! > 0 ?
-                                    <Badge
-                                        color={"green"}
-                                        radius={0}
-                                    >
-                                        {observation?.constraints?.length!}
-                                    </Badge> :
-                                    <Badge
-                                        color={"red"}
-                                        radius={0}
-                                    >
-                                        None
-                                    </Badge>
-                            }
-                            </Group>
-                        </Table.Td>
-                        <Table.Td>
-                            <Group position={"right"}>
-                                {
-                                    observationLoading ? 'Loading...' :
-                                    <ObservationEditModal
-                                        observation={observation}
-                                        observationId={observationId.id}
-                                        newObservation={false}
-                                    />
-                                }
-                                <CloneButton toolTipLabel={"clone"}
-                                             onClick={confirmClone} />
-                                <DeleteButton toolTipLabel={"delete"}
-                                              onClick={confirmDeletion} />
-                            </Group>
-                        </Table.Td>
-                    </Table.Tr>
-                )
-            }
-        </>
+        <Table.Tr>
+            <Table.Td>
+                {observation?.target?.sourceName}
+            </Table.Td>
+            <Table.Td>
+                {observation?.["@type"]=== 'proposal:TargetObservation' ?
+                    'target' : 'calibration'}
+            </Table.Td>
+            <Table.Td>
+                {observation?.field?.name}
+            </Table.Td>
+            <Table.Td>
+                {
+                    performanceFull ?
+                        <Badge
+                            color={"green"}
+                            radius={0}
+                        >
+                            Set
+                        </Badge>:
+                        performanceEmpty ?
+                            <Badge
+                                color={"orange"}
+                                radius={0}
+                            >
+                                Not Set
+                            </Badge> :
+                            <Badge
+                                color={"yellow"}
+                                radius={0}
+                            >
+                                Partial
+                            </Badge>
+                }
+            </Table.Td>
+            <Table.Td>
+                {
+                    observation?.technicalGoal?.spectrum?.length! > 0 ?
+                        <Badge
+                            color={"green"}
+                            radius={0}
+                        >
+                            {observation?.technicalGoal?.spectrum?.length!}
+                        </Badge>:
+                        <Badge
+                            color={"red"}
+                            radius={0}
+                        >
+                            None
+                        </Badge>
+                }
+            </Table.Td>
+            <Table.Td>
+                <Group>
+                {
+                    observation?.constraints?.length! > 0 ?
+                        <Badge
+                            color={"green"}
+                            radius={0}
+                        >
+                            {observation?.constraints?.length!}
+                        </Badge> :
+                        <Badge
+                            color={"red"}
+                            radius={0}
+                        >
+                            None
+                        </Badge>
+                }
+                </Group>
+            </Table.Td>
+            <Table.Td>
+                <Group position={"right"}>
+                    {
+                        observationLoading ? 'Loading...' :
+                        <ObservationEditModal
+                            observation={observation}
+                            observationId={observationId.id}
+                            newObservation={false}
+                        />
+                    }
+                    <CloneButton toolTipLabel={"clone"}
+                                 onClick={confirmClone} />
+                    <DeleteButton toolTipLabel={"delete"}
+                                  onClick={confirmDeletion} />
+                </Group>
+            </Table.Td>
+        </Table.Tr>
     )
 }
 

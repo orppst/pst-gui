@@ -17,8 +17,11 @@ import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
 export function DownloadButton(props: DownloadButtonInterfaceProps):
         ReactElement {
     return (
-        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<IconFileDownload size={"2rem"}/>}
+        <Tooltip position={"left"}
+                 label={props.toolTipLabel}
+                 openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}>
+            <Button rightSection={<IconFileDownload size={ICON_SIZE}/>}
                     color={"green"}
                     variant={"subtle"}
                     component={"a"}
