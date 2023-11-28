@@ -1,7 +1,7 @@
 import {Modal, NumberInput, Select, TextInput, Grid} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { FormEvent, ReactElement, ReactNode, useRef } from 'react';
+import { FormEvent, MouseEvent, ReactElement, ReactNode, useEffect, useRef } from 'react';
 import {
     CelestialTarget,
     EquatorialPoint, SimbadTargetResult, SpaceSys,
@@ -15,8 +15,31 @@ import {useParams} from "react-router-dom";
 import AddButton from '../commonButtons/add';
 import DatabaseSearchButton from '../commonButtons/databaseSearch';
 import { SubmitButton } from '../commonButtons/save';
-import AladinViewer from './aladin/AladinViewer.tsx';
 import { useHistoryState } from '../useHistoryState.ts';
+import "./aladin.component.css";
+
+// A is a global variable from aladin lite source code.
+// It is declared for the typescript checker to understand it.
+declare var A: any;
+
+// the initial config for the aladin viewer.
+const initialConfig = {
+    cooFrame: 'ICRS',
+    survey: 'P/DSS2/color',
+    fov: 0.25,
+    showReticle: true,
+    showZoomControl: false,
+    showLayersControl: true,
+    showGotoControl: false,
+    showShareControl: false,
+    showFullscreenControl: false,
+    showFrame: false,
+    fullScreen: false,
+    reticleColor: 'rgb(178, 50, 178)',
+    reticleSize: 22,
+    showCooGridControl: false,
+};
+
 
 /**
  * creates the target new page.
@@ -27,6 +50,7 @@ import { useHistoryState } from '../useHistoryState.ts';
  * @constructor
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
+    let aladin: any;
     const form = useForm({
             initialValues: props.initialValues ?? {
                 TargetName: "",
@@ -45,6 +69,9 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         null)
             }
         });
+
+    let [hasDoneAladin, setHasDoneAladin] =
+        useHistoryState("hasDoneAladin", false);
 
     // create the database query client and get basic elements.
     const queryClient = useQueryClient();
@@ -76,12 +103,12 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 form.values.searching = false;
 
                 // acquire the aladin object.
-                let [aladin, _] = useHistoryState("aladin", null);
+                console.log("outside aladin");
                 if (aladin !== null) {
+                    console.log("inside aladin");
                     // @ts-ignore
-                    aladin.gotoRaDec(
-                        data.raDegrees ? data.raDegrees : 0,
-                        data.decDegrees ? data.decDegrees : 0);
+                    Aladin.prototype.gotoRaDec(data.raDegrees, data.decDegrees);
+                    console.log("complete aladin");
                 }
             })
             .catch(() => notFound());
@@ -161,11 +188,90 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             }
     });
 
+    const LoadScriptIntoDOM = (
+        bodyElement: HTMLElement, url: string,
+        onloadCallback?: () => void) => {
+        const scriptElement = document.createElement("script");
+        scriptElement.setAttribute('src', url);
+        scriptElement.async = false;
+        if (onloadCallback) {
+            scriptElement.onload = onloadCallback;
+        }
+        bodyElement.appendChild(scriptElement);
+    }
+
+    useEffect(() => {
+        if (!hasDoneAladin) {
+            setHasDoneAladin(true);
+            hasDoneAladin = true;
+            // Now the component is mounted we can load aladin lite.
+            const bodyElement = document.getElementsByTagName('BODY')[0] as HTMLElement;
+            // jQuery is a dependency for aladin-lite and therefore must be inserted in the DOM.
+            LoadScriptIntoDOM(
+                bodyElement,
+                'http://code.jquery.com/jquery-1.12.1.min.js');
+            // Then we load the aladin lite script.
+            LoadScriptIntoDOM(
+                bodyElement,
+                //'https://aladin.cds.unistra.fr/AladinLite/api/v3/beta/aladin.js',
+                //'http://aladin.u-strasbg.fr/AladinLite/api/v3/latest/aladin.min.js',
+                'https://aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js',
+                () => {
+                    // to stop reloading aladin into the browser on every render.
+                    setHasDoneAladin(true);
+
+                    // When the import has succeeded we store the aladin js instance
+                    // into its component
+                    aladin = A.aladin('#aladin-lite-div', initialConfig);
+
+                    // add the catalog.
+                    const catalogue = A.catalog({
+                        name: 'Pointing Catalogue',
+                        shape: 'cross',
+                        sourceSize: 20,
+                    });
+
+                    // is not null, created from javascript.
+                    aladin.addCatalog(catalogue);
+
+                    // add the overlay.
+                    const overlay = A.graphicOverlay({
+                        color: '#009900',
+                        lineWidth: 3
+                    });
+
+                    // is not null, created from javascript.
+                    aladin.addOverlay(overlay);
+                })
+        }});
+
+    /**
+     * handles the different mouse event types.
+     * @param {React.MouseEvent<HTMLInputElement>} event the event that occurred.
+     */
+    const handleEvent = (event: MouseEvent<HTMLInputElement>) => {
+        switch (event.type) {
+            case "mousemove":
+                console.log("moved");
+                break;
+            case "mouseleave":
+                console.log("leaved");
+                break;
+            default:
+                console.log(`not caught type ${event.type}`);
+                break;
+        }
+    }
+
     return (
         <><Grid columns={4}>
             {/* handle aladin */}
             <Grid.Col span={2}>
-                <AladinViewer/>
+                <div id="aladin-lite-div"
+                     style={{height: 400}}
+                     onMouseMove={handleEvent}
+                     onMouseLeave={handleEvent}>
+                </div>
             </Grid.Col>
 
             {/* handle input */}
