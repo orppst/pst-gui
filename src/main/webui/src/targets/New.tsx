@@ -74,6 +74,15 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 form.setFieldValue('Dec', data.decDegrees?data.decDegrees:0);
                 form.setFieldValue('SelectedEpoch', data.epoch!);
                 form.values.searching = false;
+
+                // acquire the aladin object.
+                let [aladin, _] = useHistoryState("aladin", null);
+                if (aladin !== null) {
+                    // @ts-ignore
+                    aladin.gotoRaDec(
+                        data.raDegrees ? data.raDegrees : 0,
+                        data.decDegrees ? data.decDegrees : 0);
+                }
             })
             .catch(() => notFound());
     }

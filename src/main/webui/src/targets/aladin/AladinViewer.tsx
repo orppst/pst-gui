@@ -64,20 +64,36 @@ export default function AladinViewer(): ReactElement {
             //'http://aladin.u-strasbg.fr/AladinLite/api/v3/latest/aladin.min.js',
             'https://aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js',
             () => {
+                // to stop reloading aladin into the browser on every render.
                 setHasDoneAladin(true);
+
                 // When the import has succeeded we store the aladin js instance
                 // into its component
-                const aladin = A.aladin('#aladin-lite-div', initialConfig);
+                let [aladin, setAladin] = useHistoryState(
+                    "aladin",
+                    A.aladin('#aladin-lite-div', initialConfig));
+
+                // set the global aladin variable to share around different
+                // components.
+                setAladin(aladin);
+
+                // add the catalog.
                 const catalogue = A.catalog({
                     name: 'Pointing Catalogue',
                     shape: 'cross',
                     sourceSize: 20,
                 });
+
+                // is not null, created from javascript.
                 aladin.addCatalog(catalogue);
+
+                // add the overlay.
                 const overlay = A.graphicOverlay({
                     color: '#009900',
                     lineWidth: 3
                 });
+
+                // is not null, created from javascript.
                 aladin.addOverlay(overlay);
         })
     }});
@@ -89,8 +105,10 @@ export default function AladinViewer(): ReactElement {
     const handleEvent = (event: MouseEvent<HTMLInputElement>) => {
         switch (event.type) {
             case "mousemove":
+                console.log("moved");
                 break;
             case "mouseleave":
+                console.log("leaved");
                 break;
             default:
                 console.log(`not caught type ${event.type}`);
