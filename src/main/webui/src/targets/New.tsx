@@ -1,7 +1,14 @@
 import {Modal, NumberInput, Select, TextInput, Grid} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { FormEvent, MouseEvent, ReactElement, ReactNode, useEffect, useRef } from 'react';
+import {
+    FormEvent,
+    MouseEvent,
+    ReactElement,
+    ReactNode,
+    useEffect,
+    useRef
+} from 'react';
 import {
     CelestialTarget,
     EquatorialPoint, SimbadTargetResult, SpaceSys,
@@ -245,21 +252,37 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         }});
 
     /**
+     * gets some form of offset.
+     *
+     * @param {MouseEvent} event the mouse event that contains a drag.
+     */
+     const GetOffset = (event: MouseEvent): number[] => {
+        let el: HTMLElement = event.target as HTMLElement;
+        let x = 0;
+        let y = 0;
+
+        while (el && !Number.isNaN(el.offsetLeft) && !Number.isNaN(el.offsetTop)) {
+            x += el.offsetLeft - el.scrollLeft;
+            y += el.offsetTop - el.scrollTop;
+            el = el.offsetParent as HTMLElement;
+        }
+
+        x = event.clientX - x;
+        y = event.clientY - y;
+
+        return [x, y];
+    }
+
+    /**
      * handles the different mouse event types.
      * @param {React.MouseEvent<HTMLInputElement>} event the event that occurred.
      */
     const handleEvent = (event: MouseEvent<HTMLInputElement>) => {
-        switch (event.type) {
-            case "mousemove":
-                console.log("moved");
-                break;
-            case "mouseleave":
-                console.log("leaved");
-                break;
-            default:
-                console.log(`not caught type ${event.type}`);
-                break;
-        }
+        const offset = GetOffset(event);
+        const coords = Aladin.pix2world(offset[0], offset[1]);
+        form.setFieldValue('RA', coords[0]);
+        form.setFieldValue('Dec', coords[1]);
+        console.log(coords);
     }
 
     return (
@@ -268,8 +291,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             <Grid.Col span={2}>
                 <div id="aladin-lite-div"
                      style={{height: 400}}
-                     onMouseMove={handleEvent}
-                     onMouseLeave={handleEvent}>
+                     onMouseUpCapture={handleEvent}>
                 </div>
             </Grid.Col>
 
