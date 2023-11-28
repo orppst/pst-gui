@@ -13,6 +13,7 @@ import { ReactElement } from 'react';
 import ObservationEditModal from './edit.modal.tsx';
 import NavigationButton from '../commonButtons/navigation.tsx';
 import { IconTarget, IconChartLine } from '@tabler/icons-react';
+import { randomId } from '@mantine/hooks';
 
 
 
@@ -125,7 +126,7 @@ function Observations() {
                         observations?.map((observation) => {
                             return (
                                 <ObservationRow id={observation.dbid!}
-                                                key={observation.dbid!}/>
+                                                key={randomId()}/>
                             )
                         })
                     }

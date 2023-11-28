@@ -26,21 +26,21 @@ import DeleteButton from "../commonButtons/delete.tsx";
 import { ReactElement } from 'react';
 
 /**
- * the observation id.
+ * the observation prop.
  *
- * @param id: the database id.
- * @param key: the essential id needed by react.
+ * @param {number} id the database id.
+ * @param {string} key the essential id needed by react.
  */
-export type ObservationId = {id: number, key:number}
+export type ObservationProp = {id: number, key:string}
 
 /**
  * creates an Observation row.
- * @param {ObservationId} observationId the observation id.
+ * @param {ObservationProp} props the observation id.
  * @return {ReactElement} the react html for the observation row.
  * @constructor
  */
 export default function ObservationRow(
-    observationId: ObservationId): ReactElement {
+    props: ObservationProp): ReactElement {
 
     const queryClient = useQueryClient();
 
@@ -59,7 +59,7 @@ export default function ObservationRow(
                     pathParams:
                     {
                         proposalCode: Number(selectedProposalCode),
-                        observationId: observationId.id,
+                        observationId: props.id,
                     },
             });
 
@@ -74,7 +74,7 @@ export default function ObservationRow(
         fetchObservationResourceRemoveObservation({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
-                observationId: observationId.id}
+                observationId: props.id}
         })
             .then(() => queryClient.invalidateQueries(
                 {
@@ -270,7 +270,7 @@ export default function ObservationRow(
                         observationLoading ? 'Loading...' :
                         <ObservationEditModal
                             observation={observation}
-                            observationId={observationId.id}
+                            observationId={props.id}
                             newObservation={false}
                         />
                     }
