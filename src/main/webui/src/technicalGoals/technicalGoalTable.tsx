@@ -1,38 +1,50 @@
-import {useParams} from "react-router-dom";
-import {Badge, Group, Space, Table, Text} from "@mantine/core";
-import {modals} from "@mantine/modals";
-import TechnicalGoalEditModal from "./edit.modal.tsx";
-import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
-import CloneButton from "../commonButtons/clone.tsx";
-import DeleteButton from "../commonButtons/delete.tsx";
-import {useQueryClient} from "@tanstack/react-query";
+import { useParams } from 'react-router-dom';
+import { Badge, Group, Space, Table, Text } from '@mantine/core';
+import { modals } from '@mantine/modals';
+import TechnicalGoalEditModal from './edit.modal.tsx';
+import getErrorMessage from '../errorHandling/getErrorMessage.tsx';
+import CloneButton from '../commonButtons/clone.tsx';
+import DeleteButton from '../commonButtons/delete.tsx';
+import { useQueryClient } from '@tanstack/react-query';
 import {
     angularUnits,
     frequencyUnits,
-    sensitivityUnits,
-    locateLabel } from '../physicalUnits/PhysicalUnits.tsx';
+    locateLabel,
+    sensitivityUnits
+} from '../physicalUnits/PhysicalUnits.tsx';
 import { TechnicalGoal } from '../generated/proposalToolSchemas.ts';
 import {
     fetchTechnicalGoalResourceAddTechnicalGoal,
     fetchTechnicalGoalResourceRemoveTechnicalGoal,
     useTechnicalGoalResourceGetTechnicalGoal
-} from "../generated/proposalToolComponents.ts";
-import {notifications} from "@mantine/notifications";
-import {notSet} from "./edit.group.tsx";
-import {ReactElement} from "react";
+} from '../generated/proposalToolComponents.ts';
+import { notifications } from '@mantine/notifications';
+import { notSet } from './edit.group.tsx';
+import { ReactElement } from 'react';
 
-// the technical goal id data holder.
-export type TechnicalGoalId = {id: number};
+/** the technical goal id data holder.
+ * @param {number} id the id
+ * @param {number} key the forced key from React.
+ * @param {(number | undefined)[] | undefined} boundTechnicalGoalIds the
+ * technical goal ids that are bound up in observations.
+ */
+export type TechnicalGoalRowProps = {
+    id: number,
+    key: number,
+    boundTechnicalGoalIds: (number | undefined)[] | undefined,
+};
 
 /**
  * builds the html for a technical goal row.
  *
- * @param {TechnicalGoalId} technicalGoalId the id for this technical goal.
+ * @param {TechnicalGoalRowProps} technicalGoalRowProps the
+ * id for this technical goal.
  * @return {ReactElement} the dynamic html for the technical goal row.
  * @constructor
  */
 export default function TechnicalGoalRow(
-        technicalGoalId: TechnicalGoalId): ReactElement {
+        technicalGoalRowProps: TechnicalGoalRowProps):
+    ReactElement {
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
@@ -43,7 +55,7 @@ export default function TechnicalGoalRow(
                 pathParams:
                     {
                         proposalCode: Number(selectedProposalCode),
-                        technicalGoalId: technicalGoalId.id
+                        technicalGoalId: technicalGoalRowProps.id
                     },
             }
         );
@@ -53,14 +65,49 @@ export default function TechnicalGoalRow(
     }
 
     /**
+     * checks if the technical goal is used within any observation.
+     * If so, the delete button is disabled.
+     */
+    const IsBound = (goal: TechnicalGoal | undefined): boolean => {
+        return technicalGoalRowProps.boundTechnicalGoalIds?.includes(
+            goal?._id) as boolean;
+    }
+
+    /**
+     * provides a tool tip for the delete button. Changing based off if the
+     * technical goal is tied to an observation.
+     *
+     * @param {number | undefined} technicalGoal the technical goal id.
+     * @return {string} the tooltip contents.
+     * @constructor
+     */
+    const DeleteToolTip = (technicalGoal:  TechnicalGoal | undefined):
+            string => {
+        if (IsBound(technicalGoal)) {
+            return "Please remove this technical goal from " +
+                "corresponding observations.";
+        }
+        return "Click to delete this technical goal from the set";
+    }
+
+    /**
      * processes the actual deletion of a technical goal from the database.
      */
     const handleDelete = (): void => {
         fetchTechnicalGoalResourceRemoveTechnicalGoal( {
             pathParams: {proposalCode: Number(selectedProposalCode),
-                         technicalGoalId: technicalGoalId.id}
+                         technicalGoalId: technicalGoalRowProps.id}
         })
-            .then(()=>queryClient.invalidateQueries())
+            .then(()=>queryClient.invalidateQueries(
+                {
+                    predicate: (query) => {
+                        // only invalidate the query for the entire list.
+                        // not the separate bits.
+                        return query.queryKey.length === 5 &&
+                            query.queryKey[4] === 'technicalGoals';
+                    }
+                }
+            ))
             .then(() => {
                 notifications.show({
                     autoClose: false,
@@ -146,93 +193,101 @@ export default function TechnicalGoalRow(
         onCancel:() => console.log('Cancel copy'),
     })
 
+    // if still loading the goal, present a row with the text "loading"
+    if (goalLoading) {
+        return (
+            <Table.Tr><Table.Td>
+                'Loading...'
+            </Table.Td></Table.Tr>
+        )
+    }
+
+    // return the full row.
     return (
-        <>
-            {goalLoading ? ('Loading...') :
-                (
-                    <Table.Tr>
-                        <Table.Td>
-                            {goal?._id}
-                        </Table.Td>
-                        {
-                            goal?.performance?.desiredAngularResolution?.value ?
-                                <Table.Td>
-                                    {goal?.performance?.desiredAngularResolution?.value}
-                                    {` ${ locateLabel(
-                                        angularUnits,
-                                        goal?.performance?.desiredAngularResolution?.unit?.value)?.label }`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                        {
-                            goal?.performance?.desiredLargestScale?.value ?
-                                <Table.Td>
-                                    {goal?.performance?.desiredLargestScale?.value}
-                                    {` ${ locateLabel(
-                                        angularUnits,
-                                        goal?.performance?.desiredLargestScale?.unit?.value)?.label }`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                        {
-                            goal?.performance?.desiredSensitivity?.value ?
-                                <Table.Td>
-                                    {goal?.performance?.desiredSensitivity?.value}
-                                    {` ${ locateLabel(
-                                        sensitivityUnits,
-                                        goal?.performance?.desiredSensitivity?.unit?.value)?.label}`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                        {
-                            goal?.performance?.desiredDynamicRange?.value ?
-                                <Table.Td>
-                                    {goal?.performance?.desiredDynamicRange?.value}
-                                    {` ${ locateLabel(sensitivityUnits,
-                                        goal?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                        {
-                            goal?.performance?.representativeSpectralPoint?.value ?
-                                <Table.Td>
-                                    {goal?.performance?.representativeSpectralPoint?.value}
-                                    {` ${ locateLabel(frequencyUnits,
-                                        goal?.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
-                                </Table.Td> :
-                                <Table.Td c={"yellow"}>{notSet}</Table.Td>
-                        }
-                        <Table.Td>
-                            {
-                                goal?.spectrum?.length! > 0 ?
-                                    <Badge
-                                        color={"green"}
-                                        radius={0}
-                                    >
-                                        {goal?.spectrum?.length!}
-                                    </Badge>:
-                                    <Badge
-                                        color={"red"}
-                                        radius={0}
-                                    >
-                                        None
-                                    </Badge>
-                            }
-                        </Table.Td>
-                        <Table.Td>
-                            <Group position={"right"}>
-                                {
-                                    goalLoading ? 'Loading...' :
-                                        <TechnicalGoalEditModal technicalGoal={goal} />
-                                }
-                                <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
-                                <DeleteButton toolTipLabel={"delete"} onClick={confirmDelete} />
-                            </Group>
-                        </Table.Td>
-                    </Table.Tr>
-                )
+        <Table.Tr>
+            <Table.Td>
+                {goal?._id}
+            </Table.Td>
+            {
+                goal?.performance?.desiredAngularResolution?.value ?
+                    <Table.Td>
+                        {goal?.performance?.desiredAngularResolution?.value}
+                        {` ${ locateLabel(
+                            angularUnits,
+                            goal?.performance?.desiredAngularResolution?.unit?.value)?.label }`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
             }
-        </>
+            {
+                goal?.performance?.desiredLargestScale?.value ?
+                    <Table.Td>
+                        {goal?.performance?.desiredLargestScale?.value}
+                        {` ${ locateLabel(
+                            angularUnits,
+                            goal?.performance?.desiredLargestScale?.unit?.value)?.label }`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            {
+                goal?.performance?.desiredSensitivity?.value ?
+                    <Table.Td>
+                        {goal?.performance?.desiredSensitivity?.value}
+                        {` ${ locateLabel(
+                            sensitivityUnits,
+                            goal?.performance?.desiredSensitivity?.unit?.value)?.label}`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            {
+                goal?.performance?.desiredDynamicRange?.value ?
+                    <Table.Td>
+                        {goal?.performance?.desiredDynamicRange?.value}
+                        {` ${ locateLabel(sensitivityUnits,
+                            goal?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            {
+                goal?.performance?.representativeSpectralPoint?.value ?
+                    <Table.Td>
+                        {goal?.performance?.representativeSpectralPoint?.value}
+                        {` ${ locateLabel(frequencyUnits,
+                            goal?.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
+                    </Table.Td> :
+                    <Table.Td c={"yellow"}>{notSet}</Table.Td>
+            }
+            <Table.Td>
+                {
+                    goal?.spectrum?.length! > 0 ?
+                        <Badge
+                            color={"green"}
+                            radius={0}
+                        >
+                            {goal?.spectrum?.length!}
+                        </Badge>:
+                        <Badge
+                            color={"red"}
+                            radius={0}
+                        >
+                            None
+                        </Badge>
+                }
+            </Table.Td>
+            <Table.Td>
+                <Group position={"right"}>
+                    {
+                        goalLoading ? 'Loading...' :
+                            <TechnicalGoalEditModal technicalGoal={goal} />
+                    }
+                    <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
+                    <DeleteButton toolTipLabel={DeleteToolTip(goal)}
+                                  onClick={confirmDelete}
+                                  disabled={IsBound(goal)?
+                                      true :
+                                      undefined}/>
+                </Group>
+            </Table.Td>
+        </Table.Tr>
     )
 }
 

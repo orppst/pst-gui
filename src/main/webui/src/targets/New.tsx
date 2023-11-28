@@ -161,55 +161,46 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
             {/* handle input */}
             <Grid.Col span={ 2 }>
-                <form onSubmit={ handleSubmission }>
+                <form onSubmit={handleSubmission}>
                     <TextInput
-                        ref={ targetNameRef }
+                        ref={targetNameRef}
                         withAsterisk
                         label="Name"
                         placeholder="name of target"
-                        { ...form.getInputProps('TargetName') } />
+                        {...form.getInputProps("TargetName")} />
                     <DatabaseSearchButton
-                        label={ 'Lookup' }
-                        onClick={ simbadLookup }
-                        toolTipLabel={ 'Search Simbad database' }/>
+                        label={"Lookup"}
+                        onClick={simbadLookup}
+                        toolTipLabel={"Search Simbad database"}/>
                     <NumberInput
-                        required={ true }
-                        label={ 'RA' }
-                        decimalScale={ 5 }
-                        step={ 0.00001 }
-                        min={ 0 }
-                        max={ 360 }
-                        allowNegative={ false }
+                        required={true}
+                        label={"RA"}
+                        decimalScale={5}
+                        step={0.00001}
+                        min={0}
+                        max={360}
+                        allowNegative={false}
                         suffix="°"
-                        stepHoldDelay={ 500 }
-                        stepHoldInterval={ (t: number) => Math.max(1000 / t ** 2, 1) }
-                        formatter={ (value: string) => !Number.isNaN(parseFloat(value))
-                            ? `${ value }°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-                            : ' °' }
-                        { ...form.getInputProps('RA') } />
+                        {...form.getInputProps("RA")}/>
                     <NumberInput
-                        required={ true }
-                        label={ 'Dec' }
-                        decimalScale={ 5 }
-                        step={ 0.00001 }
-                        min={ -90 }
-                        max={ 90 }
+                        required={true}
+                        label={"Dec"}
+                        decimalScale={5}
+                        step={0.00001}
+                        min={-90}
+                        max={90}
                         suffix="°"
-                        stepHoldDelay={ 500 }
-                        stepHoldInterval={ (t: number) => Math.max(1000 / t ** 2, 1) }
-                        formatter={ (value: string) => !Number.isNaN(parseFloat(value))
-                            ? `${ value }°`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
-                            : ' °' }
-                        { ...form.getInputProps('Dec') } />
+                        {...form.getInputProps("Dec")} />
                     <Select
-                        label={ 'Coordinate System' }
-                        data={ [ { label: 'J2000', value: 'J2000' } ] }
-                        { ...form.getInputProps('SelectedEpoch') } />
+                        label={"Coordinate System"}
+                        data={[{label:"J2000",value:"J2000"}]}
+                        {...form.getInputProps("SelectedEpoch")} />
                     <div>
                         <SubmitButton
-                            toolTipLabel={ 'Save this target' }
-                            label={ 'Save' }
-                            disabled={ !form.isValid() || form.values.searching ? true : undefined }/>
+                            toolTipLabel={"Save this target"}
+                            label={"Save"}
+                            disabled={!form.isValid() ||
+                                      form.values.searching? true : undefined}/>
                     </div>
                 </form>
             </Grid.Col>
