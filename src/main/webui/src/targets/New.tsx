@@ -22,6 +22,10 @@ import "./aladin.component.css";
 // It is declared for the typescript checker to understand it.
 declare var A: any;
 
+// NOTE ABS: Aladin seems to be the global holder for the object that we can
+// manipulate. This is different to NGOT, but at this point, ill buy anything.
+declare var Aladin: any;
+
 // the initial config for the aladin viewer.
 const initialConfig = {
     cooFrame: 'ICRS',
@@ -50,7 +54,6 @@ const initialConfig = {
  * @constructor
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
-    let aladin: any;
     const form = useForm({
             initialValues: props.initialValues ?? {
                 TargetName: "",
@@ -102,16 +105,12 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 form.setFieldValue('SelectedEpoch', data.epoch!);
                 form.values.searching = false;
 
-                // acquire the aladin object.
-                console.log("outside aladin");
-                if (aladin !== null) {
-                    console.log("inside aladin");
-                    // @ts-ignore
-                    Aladin.prototype.gotoRaDec(data.raDegrees, data.decDegrees);
-                    console.log("complete aladin");
-                }
+                // acquire the aladin object and set it.
+                Aladin?.gotoRaDec(data.raDegrees, data.decDegrees);
             })
-            .catch(() => notFound());
+            .catch((reason: any) => {
+                console.error(reason);
+                notFound()});
     }
 
     /**
@@ -222,7 +221,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
                     // When the import has succeeded we store the aladin js instance
                     // into its component
-                    aladin = A.aladin('#aladin-lite-div', initialConfig);
+                    Aladin = A.aladin('#aladin-lite-div', initialConfig);
 
                     // add the catalog.
                     const catalogue = A.catalog({
@@ -232,7 +231,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     });
 
                     // is not null, created from javascript.
-                    aladin.addCatalog(catalogue);
+                    Aladin.addCatalog(catalogue);
 
                     // add the overlay.
                     const overlay = A.graphicOverlay({
@@ -241,7 +240,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     });
 
                     // is not null, created from javascript.
-                    aladin.addOverlay(overlay);
+                    Aladin.addOverlay(overlay);
                 })
         }});
 
