@@ -8,19 +8,23 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {Box, Text, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
-import { SubmitButton } from '../commonButtons/save.tsx';
-import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
+import { SubmitButton } from '../commonButtons/save';
+import { MAX_CHARS_FOR_INPUTS, HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants';
 
 function TitlePanel() {
     const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [title, setTitle] = useState("")
-    const { data, error, isLoading, status } = useProposalResourceGetObservingProposalTitle(
-        {pathParams: {proposalCode: Number(selectedProposalCode)},}, {enabled: true});
+    const { data, error, isLoading, status } =
+        useProposalResourceGetObservingProposalTitle(
+            {pathParams:
+                    {proposalCode: Number(selectedProposalCode)},},
+            {enabled: true});
     const form = useForm({
         initialValues: {title: "Loading..."},
         validate: {
-            title: (value) => (value.length < 1 ? 'Title cannot be blank' : null)
+            title: (value) => (
+                value.length < 1 ? 'Title cannot be blank' : null)
         }
     });
 
@@ -28,7 +32,9 @@ function TitlePanel() {
 
     const mutation = useMutation({
         mutationFn: () => {
-            const newTitle : ProposalResourceReplaceTitleVariables = {//IMPL the code generator does not create the correct type signature for API calls where the body is plain text.
+            //IMPL the code generator does not create the correct type
+            // signature for API calls where the body is plain text.
+            const newTitle : ProposalResourceReplaceTitleVariables = {
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: title,
                 // @ts-ignore
@@ -43,7 +49,9 @@ function TitlePanel() {
             console.log("An error occurred trying to update the title")
         },
         onSuccess: () => {
-            queryClient.invalidateQueries(["pst","api","proposals"])//IMPL this is slightly limiting the invalidation - some things should be ok still (users etc).
+            //IMPL this is slightly limiting the invalidation -
+            // some things should be ok still (users etc).
+            queryClient.invalidateQueries(["pst","api","proposals"])
                 .then(()=> setSubmitting(false))
         },
     })
@@ -58,7 +66,7 @@ function TitlePanel() {
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -71,7 +79,7 @@ function TitlePanel() {
 
     return (
         <Box>
-            <Text fz="lg" fw={700}>Update title</Text>
+            <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Update title</Text>
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>

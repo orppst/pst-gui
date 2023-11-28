@@ -4,6 +4,7 @@ import {
     ClickButtonInterfaceProps
 } from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
+import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
 
 /**
  * creates a routing back button.
@@ -15,8 +16,11 @@ import { ReactElement } from 'react';
 export default function RouteBackButton(props: ClickButtonInterfaceProps):
         ReactElement {
     return (
-        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<IconAlignLeft size={"2rem"}/>}
+        <Tooltip position={"left"}
+                 label={props.toolTipLabel}
+                 openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}>
+            <Button rightSection={<IconAlignLeft size={ICON_SIZE}/>}
                     color={"green.5"}
                     variant={"subtle"}
                     onClick={props.onClick === undefined?

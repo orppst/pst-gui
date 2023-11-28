@@ -1,19 +1,21 @@
 import {
-    fetchProposalResourceRemoveTarget, useProposalResourceGetTarget,
+    fetchProposalResourceRemoveTarget,
+    useProposalResourceGetObservingProposal,
+    useProposalResourceGetTarget,
     useProposalResourceGetTargets,
-} from "../generated/proposalToolComponents.ts";
+} from '../generated/proposalToolComponents.ts';
 
 import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
-import {Box, Table, Text} from "@mantine/core";
+import { Box, Table, Text } from '@mantine/core';
 import {randomId} from "@mantine/hooks";
-import {CelestialTarget} from "../generated/proposalToolSchemas.ts";
+import { CelestialTarget } from '../generated/proposalToolSchemas.ts';
 import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
-
-type TargetProps = { proposalCode: number, dbid: number, showRemove: boolean };
+import { TargetProps } from './targetProps.tsx';
+import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
 
 /**
  * Renders the target panel containing an add target button
@@ -28,35 +30,59 @@ function TargetPanel(): ReactElement {
     const {data, error, isLoading} = useProposalResourceGetTargets(
             {pathParams: {proposalCode: Number(selectedProposalCode)},},
             {enabled: true});
+    // needed to track which targets are locked into observations.
+    const { data: proposalsData } =
+        useProposalResourceGetObservingProposal({
+                pathParams: {proposalCode: Number(selectedProposalCode)},},
+            {enabled: true}
+        );
 
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
 
+    // acquire all the bound targets ids in observations.
+    let boundTargets: (number | undefined)[] | undefined = [];
+    boundTargets = proposalsData?.observations?.map((observation) => {
+        // extract the id. it seems the technical Goal returned here IS a number
+        // not the TechnicalGoal object it advertises.
+        return observation.target as number;
+    });
+
     return (
             <Box>
-                <Text fz="lg" fw={700}>Add and edit targets</Text>
+                <Text fz="lg"
+                      fw={HEADER_FONT_WEIGHT}>
+                    Add and edit targets
+                </Text>
                 <Box>
                     <AddTargetModal/>
-                    <Table>
-                        {data?.length === 0? <Table.Td>Please add your targets</Table.Td> : TargetTableHeader()}
-                        <Table.Tbody>
-                            {isLoading ? (<Table.Tr colSpan={5} key={randomId()}>Loading...</Table.Tr>)
-                                : data?.map((item) => {
-                                        return (
-                                            <TargetTableRow
-                                                    proposalCode={Number(selectedProposalCode)}
-                                                    dbid={item.dbid!}
-                                                    showRemove={true}
-                                            />)
-                                })
-                            }
-                        </Table.Tbody>
-                    </Table>
+                    {data?.length === 0?
+                        <div>Please add your targets</div> :
+                        <Table>
+                            <TargetTableHeader/>
+                            <Table.Tbody>
+                                {isLoading ? (
+                                        <Table.Tr colSpan={5} key={randomId()}>
+                                            <Table.Td>Loading...</Table.Td>
+                                        </Table.Tr>) :
+                                    data?.map((item) => {
+                                            return (
+                                                <TargetTableRow
+                                                        proposalCode={Number(selectedProposalCode)}
+                                                        dbid={item.dbid!}
+                                                        showRemove={true}
+                                                        key={randomId()}
+                                                        boundTargets={boundTargets}
+                                                />)
+                                    })
+                                }
+                            </Table.Tbody>
+                        </Table>}
                 </Box>
             </Box>
         );
@@ -71,11 +97,13 @@ function TargetPanel(): ReactElement {
 export function TargetTableHeader(): ReactElement {
     return (
         <Table.Thead>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Reference system</Table.Th>
-            <Table.Th>RA</Table.Th>
-            <Table.Th>Dec</Table.Th>
-            <Table.Th>Epoch</Table.Th>
+            <Table.Tr>
+                <Table.Th>Name</Table.Th>
+                <Table.Th>Reference system</Table.Th>
+                <Table.Th>RA</Table.Th>
+                <Table.Th>Dec</Table.Th>
+                <Table.Th>Epoch</Table.Th>
+            </Table.Tr>
         </Table.Thead>
     );
 }
@@ -89,6 +117,8 @@ export function TargetTableHeader(): ReactElement {
 export function TargetTableRow(props: TargetProps): ReactElement {
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
+
+    console.debug(`get target id of ${props.dbid}`)
     const {data, error, isLoading}
         = useProposalResourceGetTarget(
         {pathParams:
@@ -116,14 +146,50 @@ export function TargetTableRow(props: TargetProps): ReactElement {
      */
     function handleRemove(): void {
         setSubmitting(true);
+        console.debug(`start delete of target ${props.dbid}`);
         fetchProposalResourceRemoveTarget({pathParams:
                 {
                     proposalCode: props.proposalCode,
                     targetId: props.dbid!
                 }})
-            .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries())
+            .then(()=> {
+                setSubmitting(false);
+                console.debug("delete complete");
+                return queryClient.invalidateQueries(
+                    {
+                        predicate: (query) => {
+                            // only invalidate the query for the entire target
+                            // list. not the separate bits.
+                            return query.queryKey.length === 5 &&
+                                query.queryKey[4] === 'targets';
+                        }
+                    }
+                )
+            })
             .catch(handleError);
+    }
+
+    /**
+     * checks if the technical goal is used within any observation.
+     * If so, the delete button is disabled.
+     */
+    const IsBound = (target: number | undefined): boolean => {
+        return props.boundTargets?.includes(target as number) as boolean;
+    }
+
+    /**
+     * provides a tool tip for the delete button. Changing based off if the
+     * target is tied to an observation.
+     *
+     * @param {number | undefined} target the target id.
+     * @return {string} the tooltip contents.
+     * @constructor
+     */
+    const DeleteToolTip = (target: number | undefined): string => {
+        if (IsBound(target)) {
+            return "Please remove this target from corresponding observations.";
+        }
+        return "Click to delete this target from the set";
     }
 
     /**
@@ -172,30 +238,36 @@ export function TargetTableRow(props: TargetProps): ReactElement {
         epoch = celestialTarget.positionEpoch?.value;
     }
 
+    // handle error states.
+    if (isLoading) {
+        return (<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>);
+    } else if (submitting) {
+        return (<Table.Tr><Table.Td>Removing...</Table.Td></Table.Tr>);
+    }
+
+    // generate the full row.
     return (
-        <Table.Tr key={props.dbid}>
-            {isLoading?(<Table.Td>Loading...</Table.Td>):
-                submitting?(<Table.Td>Removing...</Table.Td>):
-                    (<>
-                            <Table.Td>
-                                {data?.sourceName}
-                            </Table.Td>
-                            {data?.["@type"] ===
-                            "proposal:CelestialTarget" ?
-                                (<><Table.Td>{spaceFrame}</Table.Td>
-                                <Table.Td>{ra}</Table.Td>
-                                <Table.Td>{dec}</Table.Td>
-                                <Table.Td>{epoch}</Table.Td></>
-                                )
-                                :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
-                            <Table.Td>
-                                {props.showRemove && <
-                                    DeleteButton toolTipLabel={"delete"}
-                                                 onClick={openRemoveModal} />}
-                            </Table.Td>
-                        </>
-                    )}
-                </Table.Tr>);
+        <Table.Tr>
+            <Table.Td>
+                {data?.sourceName}
+            </Table.Td>
+                {data?.["@type"] ===
+                "proposal:CelestialTarget" ?
+                    (<><Table.Td>{spaceFrame}</Table.Td>
+                    <Table.Td>{ra}</Table.Td>
+                    <Table.Td>{dec}</Table.Td>
+                    <Table.Td>{epoch}</Table.Td></>
+                    )
+                    :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
+            <Table.Td>
+                    {props.showRemove && <
+                        DeleteButton toolTipLabel={DeleteToolTip(data?._id)}
+                                     onClick={openRemoveModal}
+                                     disabled={IsBound(data?._id)?
+                                         true :
+                                         undefined}/>}
+            </Table.Td>
+        </Table.Tr>);
 }
 
 export default TargetPanel

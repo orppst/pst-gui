@@ -3,10 +3,17 @@ import {
     useState,
     useContext,
     ReactElement,
-    SyntheticEvent
+    SyntheticEvent,
+    Context
 } from 'react';
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {
+    QueryClient,
+    QueryClientProvider,
+    UseQueryResult
+} from '@tanstack/react-query';
+import {
+    ProposalResourceGetProposalsError,
+    ProposalResourceGetProposalsResponse,
     useProposalResourceGetProposals
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
@@ -38,45 +45,86 @@ import {
     Text,
     TextInput,
     Grid,
-    useMantineTheme, Burger, ScrollArea, Group, ActionIcon, Tooltip
-} from "@mantine/core";
+    Burger,
+    ScrollArea,
+    Group,
+    ActionIcon,
+    Tooltip, useMantineTheme
+} from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
-import { IconChevronRight, IconLogout } from '@tabler/icons-react';
+import {
+    IconCamera,
+    IconChartLine,
+    IconChevronRight,
+    IconFileCheck,
+    IconFileDescription, IconFiles,
+    IconLogout, IconTarget, IconUsersGroup
+} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
 import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
+import {
+    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE, JSON_SPACES,
+    NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
+    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
+} from './constants.tsx';
 
-
-const queryClient = new QueryClient()
-
+/**
+ * defines the user context type.
+ */
 export type UserContextType = {
     user: Person;
     token: string;
 }
 
+/**
+ * defines the proposal context type.
+ */
 export type ProposalContextType = {
     selectedProposalCode: number;
     apiUrl: string;
 }
 
-export const ProposalContext = createContext<
-    UserContextType & ProposalContextType>({
+/**
+ * generates a proposal context.
+ *
+ * @type {React.Context<UserContextType & ProposalContextType>} the context.
+ */
+export const ProposalContext:
+        Context<UserContextType & ProposalContextType> =
+    createContext<UserContextType & ProposalContextType>({
         user: {},
         token:"",
         selectedProposalCode: 0,
         apiUrl:"http://api" // obviously false as a placeholder
     })
 
-export const useToken = () => {
-    const { token } = useContext(ProposalContext);
-    return token;
+/**
+ * provides an interface for getting the proposal context token.
+ * @return {string} the token.
+ */
+export const useToken = (): string => {
+    return useContext(ProposalContext).token;
 };
 
-function App2() {
+/**
+ * generates the html for the main app.
+ * @return {ReactElement} dynamic html for the main app.
+ * @constructor
+ */
+function App2(): ReactElement {
+    // set proposal code.
     const historyProposalCode= 0;
-
     const [selectedProposalCode] = useState(historyProposalCode)
 
+    // get database query client.
+    const queryClient = new QueryClient()
+
+    // the colour gray used by the tools.
+    const theme = useMantineTheme();
+    const GRAY = theme.colors.gray[6];
+
+    // the paths to route to.
     const router = createBrowserRouter(
         [
             {path: "/", element: <PSTRoot/>,
@@ -119,18 +167,22 @@ function App2() {
 
     )
 
-  return (
-      <AuthProvider>
+    return (
+        <AuthProvider>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-      </AuthProvider>
-   );
+        </AuthProvider>
+    );
 
-    function PSTRoot() {
+    /**
+     * main HTML for the UI.
+     * @return {ReactElement} the dynamic html for the main UI.
+     * @constructor
+     */
+    function PSTRoot(): ReactElement {
         const {user, token, apiUrl} = useContext(ProposalContext);
-        const theme = useMantineTheme();
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
 
@@ -158,9 +210,12 @@ function App2() {
             <ProposalContext.Provider
                 value={{selectedProposalCode, user, token, apiUrl}}>
                 <AppShell
-                    header={{height: 60}}
+                    header={{height: APP_HEADER_HEIGHT}}
                     navbar={{
-                        width: {base: 300, md: 400, lg: 450},
+                        width: {
+                            base: NAV_BAR_DEFAULT_WIDTH,
+                            md: NAV_BAR_MEDIUM_WIDTH,
+                            lg: NAV_BAR_LARGE_WIDTH},
                         breakpoint: 'sm',
                         collapsed: {mobile: !opened},
                     }}
@@ -173,31 +228,38 @@ function App2() {
                                         opened={opened}
                                         onClick={toggle}
                                         hiddenFrom={"sm"}
-                                        size="sm"
-                                        color={theme.colors.gray[6]}
+                                        size="lg"
+                                        color={GRAY}
                                         mr="xl"
                                     />
                                     <img src={"/pst/gui/public/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
                                     <DatabaseSearchButton
-                                        toolTipLabel={"Locate proposals by " + user.fullName + "."}
+                                        toolTipLabel={
+                                        "Locate proposals by " +
+                                            user.fullName + "."}
                                         label={"Proposals for " + user.fullName}
                                         onClickEvent={handleSearch}
                                     />
+                                    <AddButton toolTipLabel={"new proposal"}
+                                               label={"Create a new proposal"}
+                                               onClickEvent={handleAddNew}/>
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
                                     {SwitchToggle()}
-                                    <Tooltip label={"logout"} openDelay={1000}>
+                                    <Tooltip label={"logout"}
+                                             openDelay={OPEN_DELAY}
+                                             closeDelay={CLOSE_DELAY}>
                                         <ActionIcon
                                             color={"orange.8"}
                                             variant={"subtle"}
                                             component={"a"}
                                             href={"/pst/gui/logout"}
                                         >
-                                            <IconLogout size={"2rem"}/>
+                                            <IconLogout size={ICON_SIZE}/>
                                         </ActionIcon>
                                     </Tooltip>
                                 </Group>
@@ -205,21 +267,27 @@ function App2() {
                         </Grid>
                     </AppShell.Header>
 
-                    <AppShell.Navbar p="md">
-                        <AppShell.Section grow component={ScrollArea}>
-                            <Group justify={"center"} mb={"5%"}>
-                                <AddButton toolTipLabel={"new proposal"}
-                                           label={"Create a new proposal"}
-                                           onClickEvent={handleAddNew}/>
-                            </Group>
-                            <Group justify={"center"}>
-                                <Text fz={"sm"}>-- OR --</Text>
-                            </Group>
-                            <Text fz="sm">
-                                Filter existing proposals by
-                            </Text>
-                            <Proposals/>
-                        </AppShell.Section>
+                    <AppShell.Navbar>
+                        <Grid columns={1}>
+                            <Grid.Col
+                                span={1}
+                                withBorder={true}
+                                style={{borderBottom: "1px",
+                                        borderStyle: "solid",
+                                        borderColor: theme.colors.gray[6],
+                                        backgroundColor: theme.colors.blue[1]}}>
+                                <AppShell.Section component={ScrollArea}
+                                                  withBorder={true}>
+                                    <ProposalFilter/>
+                                </AppShell.Section>
+                            </Grid.Col>
+                            <Grid.Col span={1}>
+                                <AppShell.Section grow component={ScrollArea}
+                                                  withBorder={true}>
+                                    <ProposalsList/>
+                                </AppShell.Section>
+                            </Grid.Col>
+                        </Grid>
                     </AppShell.Navbar>
                     <AppShell.Main pr={"sm"}>
                         <Outlet/>
@@ -229,37 +297,149 @@ function App2() {
         )
     }
 
-    function PSTStart() {
+    /**
+     * html to show in the main page when "proposals for username" is selected.
+     * @return {ReactElement} the html to display when
+     * "proposals for username" is selected.
+     * @constructor
+     */
+    function PSTStart(): ReactElement {
         return (<Box><Text fz={"lg"}>Welcome</Text></Box>);
     }
 
-    function Proposals(): ReactElement {
-        const [proposalTitle, setProposalTitle] =
-            useHistoryState("proposalTitle", "");
-        const [investigatorName, setInvestigatorName] =
-            useHistoryState("investigatorName", "");
-        const { data , error, isLoading } =
-            useProposalResourceGetProposals(
-                {
-                    queryParams: { title:  "%" + proposalTitle + "%",
-                        investigatorName: "%" + investigatorName + "%"
-                    },
-                },
-                {
-                    enabled: true,
-                }
-            );
+    /**
+     * returns the data from the query to the database for a given
+     * proposal title and investigator.
+     * @return {UseQueryResult<ProposalResourceGetProposalsResponse,
+     *                         ProposalResourceGetProposalsError>} the result
+     *                         from the database query.
+     * @constructor
+     */
+    function GetProposalList():
+            UseQueryResult<ProposalResourceGetProposalsResponse,
+                           ProposalResourceGetProposalsError> {
+        const [proposalTitle] = useHistoryState("proposalTitle", "");
+        const [investigatorName] = useHistoryState("investigatorName", "");
+        return useProposalResourceGetProposals(
+            { queryParams: {
+                title: "%" + proposalTitle + "%",
+                investigatorName: "%" + investigatorName + "%"
+              },
+           },
+            {
+                enabled: true,
+            }
+        );
+    }
 
-        if (error) {
+    /**
+     * generates the html for the proposal list.
+     *
+     * @return {React.ReactElement} the html for the proposal list.
+     * @constructor
+     */
+    function ProposalsList(): ReactElement {
+        const result = GetProposalList();
+
+        // if error produced, present error to user.
+        if (result.error) {
             return (
                 <Box>
-                    <pre>{JSON.stringify(error, null, 2)}</pre>
+                    <pre>{JSON.stringify(result.error, null, JSON_SPACES)}</pre>
                 </Box>
             );
         }
 
+        // generate the html.
         return (
-            <Box>
+            <>
+                {result.isLoading ? (<Box>Loading…</Box>) : (
+                    <>
+                        {result.data?.map((item) => (
+                            <NavLink key={item.code}
+                                     label={item.title}
+                                     childrenOffset={30}
+                                     leftSection={<IconFileDescription/>}
+                                     rightSection={<IconChevronRight
+                                         size="0.8rem"
+                                         stroke={STROKE} />}>
+                                <NavLink to={"proposal/" + item.code}
+                                         component={Link}
+                                         label="Overview"
+                                         leftSection={<IconFileCheck/>}>
+                                </NavLink>
+                                <NavLink to={"proposal/" + item.code + "/title"}
+                                         component={Link}
+                                         leftSection={<IconFileDescription/>}
+                                         label="Title" />
+                                <NavLink to={
+                                    "proposal/" + item.code + "/summary"}
+                                         component={Link}
+                                         leftSection={<IconFileDescription/>}
+                                         label="Summary" />
+                                <NavLink to={
+                                    "proposal/" + item.code + "/investigators"}
+                                         component={Link}
+                                         leftSection={<IconUsersGroup/>}
+                                         label="Investigators" />
+                                <NavLink to={
+                                    "proposal/" + item.code + "/targets"}
+                                         component={Link}
+                                         leftSection={<IconTarget/>}
+                                         label="Targets" />
+                                <NavLink to={"proposal/" + item.code + "/goals"}
+                                         component={Link}
+                                         leftSection={<IconChartLine/>}
+                                         label="Technical Goals" />
+                                <NavLink to={
+                                    "proposal/" + item.code + "/observations"}
+                                         component={Link}
+                                         leftSection={<IconCamera/>}
+                                         label="Observations" />
+                                <NavLink to={
+                                    "proposal/" + item.code + "/documents"}
+                                         component={Link}
+                                         leftSection={<IconFiles/>}
+                                         label="Documents" />
+                            </NavLink>
+                        ))}
+                    </>
+                )}
+            </>
+        );
+    }
+
+    /**
+     * produces HTML for filtering proposals.
+     *
+     * @return {React.ReactElement} the dynamic html for the proposal filter.
+     * @constructor
+     */
+    function ProposalFilter(): ReactElement {
+        const result = GetProposalList();
+
+        // if error produced, present error to user.
+        if (result.error) {
+            return (
+                <Box>
+                    <pre>{JSON.stringify(result.error, null, 2)}</pre>
+                </Box>
+            );
+        }
+
+        // acquire the state setters for proposal title and investigator name.
+        const [proposalTitle, setProposalTitle] = useHistoryState(
+            "proposalTitle", "");
+        const [investigatorName, setInvestigatorName] = useHistoryState(
+            "investigatorName", "");
+
+        // generate the html.
+        return (
+            <>
+                <div>
+                <Text fz="sm">
+                    Filter existing proposals by:
+                </Text>
                 <TextInput label="Title"
                            value={proposalTitle}
                            onChange={(e: { target: { value: string; }; }) =>
@@ -268,54 +448,11 @@ function App2() {
                            value={investigatorName}
                            onChange={(e: { target: { value: string; }; }) =>
                                setInvestigatorName(e.target.value)} />
-                {isLoading ? (
-                    <Box>Loading…</Box>
-                ) : (
-                    <>
-                        {data?.map((item) => (
-                            <NavLink key={item.code}
-                                     label={item.title}
-                                     childrenOffset={30}
-                                     rightSection={<IconChevronRight
-                                         size="0.8rem"
-                                         stroke={1.5} />}>
-                                <NavLink to={"proposal/" + item.code}
-                                         component={Link}
-                                         label="Overview" />
-                                <NavLink to={"proposal/" + item.code + "/title"}
-                                         component={Link}
-                                         label="Title" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/summary"}
-                                         component={Link}
-                                         label="Summary" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/investigators"}
-                                         component={Link}
-                                         label="Investigators" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/targets"}
-                                         component={Link}
-                                         label="Targets" />
-                                <NavLink to={"proposal/" + item.code + "/goals"}
-                                         component={Link}
-                                         label="Technical Goals" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/observations"}
-                                         component={Link}
-                                         label="Observations" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/documents"}
-                                         component={Link}
-                                         label="Documents" />
-                            </NavLink>
-                        ))}
-                    </>
-                )}
-            </Box>
-        );
+                </div>
+            </>
+        )
     }
-
 }
 
+// export the main app.
 export default App2
