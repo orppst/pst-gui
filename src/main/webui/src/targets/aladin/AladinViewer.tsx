@@ -1,6 +1,6 @@
 import { MouseEvent, ReactElement, useEffect } from 'react';
-import PointingCanvas from './PointingCanvas.tsx';
 import { useHistoryState } from '../../useHistoryState.ts';
+import "./aladin.component.css";
 
 // A is a global variable from aladin lite source code.
 // It is declared for the typescript checker to understand it.
@@ -101,8 +101,8 @@ export default function AladinViewer(): ReactElement {
     // generate the html.
     return (
         <>
-            <PointingCanvas/>
-            <div id="aladin-lite-div" style={{height: 400}}
+            <div id="aladin-lite-div"
+                 style={{height: 400}}
                 onMouseMove={handleEvent}
                 onMouseLeave={handleEvent}>
             </div>
