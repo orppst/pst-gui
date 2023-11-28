@@ -219,8 +219,6 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             // Then we load the aladin lite script.
             LoadScriptIntoDOM(
                 bodyElement,
-                //'https://aladin.cds.unistra.fr/AladinLite/api/v3/beta/aladin.js',
-                //'http://aladin.u-strasbg.fr/AladinLite/api/v3/latest/aladin.min.js',
                 'https://aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js',
                 () => {
                     // to stop reloading aladin into the browser on every render.
@@ -302,7 +300,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         ref={targetNameRef}
                         withAsterisk
                         label="Name"
-                        placeholder="name of target"
+                        placeholder="Name of target"
                         {...form.getInputProps("TargetName")} />
                     <DatabaseSearchButton
                         label={"Lookup"}
