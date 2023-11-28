@@ -80,6 +80,9 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             }
         });
 
+    // this is needed to ensure that aladin is only loaded once, and not each
+    // time the renderer engages. The reason for this is that it makes
+    // duplicates which steal screen restate, making it unusable.
     let [hasDoneAladin, setHasDoneAladin] =
         useHistoryState("hasDoneAladin", false);
 
@@ -92,6 +95,9 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
      * executes a simbad query.
      */
     function simbadLookup() {
+        /**
+         * function for handling when simbad fails to find the target.
+         */
         function notFound() {
             const choice = window.confirm(
                 "Unable to match source " + form.values.TargetName +
@@ -171,7 +177,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
     /**
      * handles the submission event.
-     * @type {(event?: React.FormEvent<HTMLFormElement>) => void}
+     * @type {(event?: React.FormEvent<HTMLFormElement>) => void} the event.
      */
     const handleSubmission: (event?: FormEvent<HTMLFormElement>) => void =
         form.onSubmit((val: newTargetData) => {
@@ -194,6 +200,15 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             }
     });
 
+    /**
+     * code swiped from stack overflow which loads the javascript into the
+     * React HTML.
+     * @param {HTMLElement} bodyElement the main body of the html.
+     * @param {string} url the url where the javascript is located.
+     * @param {() => void} onloadCallback the callback once the script has
+     * been loaded.
+     * @constructor
+     */
     const LoadScriptIntoDOM = (
         bodyElement: HTMLElement, url: string,
         onloadCallback?: () => void) => {
@@ -206,13 +221,20 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         bodyElement.appendChild(scriptElement);
     }
 
+    /**
+     * handler that eventually creates the aladin interface from Javascript.
+     * This code was swiped from stack overflow for loading in the Javascript
+     * to an react system.
+     */
     useEffect(() => {
         if (!hasDoneAladin) {
             setHasDoneAladin(true);
             hasDoneAladin = true;
             // Now the component is mounted we can load aladin lite.
-            const bodyElement = document.getElementsByTagName('BODY')[0] as HTMLElement;
-            // jQuery is a dependency for aladin-lite and therefore must be inserted in the DOM.
+            const bodyElement =
+                document.getElementsByTagName('BODY')[0] as HTMLElement;
+            // jQuery is a dependency for aladin-lite and therefore must be
+            // inserted in the DOM.
             LoadScriptIntoDOM(
                 bodyElement,
                 'http://code.jquery.com/jquery-1.12.1.min.js');
@@ -250,7 +272,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         }});
 
     /**
-     * gets some form of offset.
+     * gets some form of offset. Swiped from the NGOT source code.
      *
      * @param {MouseEvent} event the mouse event that contains a drag.
      */
@@ -259,7 +281,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         let x = 0;
         let y = 0;
 
-        while (el && !Number.isNaN(el.offsetLeft) && !Number.isNaN(el.offsetTop)) {
+        while (el && !Number.isNaN(el.offsetLeft) &&
+               !Number.isNaN(el.offsetTop)) {
             x += el.offsetLeft - el.scrollLeft;
             y += el.offsetTop - el.scrollTop;
             el = el.offsetParent as HTMLElement;
@@ -276,13 +299,13 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
      * @param {React.MouseEvent<HTMLInputElement>} event the event that occurred.
      */
     const handleEvent = (event: MouseEvent<HTMLInputElement>) => {
-        const offset = GetOffset(event);
-        const coords = Aladin.pix2world(offset[0], offset[1]);
-        form.setFieldValue('RA', coords[0]);
-        form.setFieldValue('Dec', coords[1]);
-        console.log(coords);
+        const [ra, dec] = GetOffset(event);
+        const [raCoords, decCoords] = Aladin.pix2world(ra, dec);
+        form.setFieldValue('RA', raCoords);
+        form.setFieldValue('Dec', decCoords);
     }
 
+    // return the dynamic HTML.
     return (
         <><Grid columns={4}>
             {/* handle aladin */}
