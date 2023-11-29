@@ -271,19 +271,16 @@ function App2(): ReactElement {
                         <Grid columns={1}>
                             <Grid.Col
                                 span={1}
-                                withBorder={true}
                                 style={{borderBottom: "1px",
                                         borderStyle: "solid",
                                         borderColor: theme.colors.gray[6],
                                         backgroundColor: theme.colors.blue[1]}}>
-                                <AppShell.Section component={ScrollArea}
-                                                  withBorder={true}>
+                                <AppShell.Section component={ScrollArea}>
                                     <ProposalFilter/>
                                 </AppShell.Section>
                             </Grid.Col>
                             <Grid.Col span={1}>
-                                <AppShell.Section grow component={ScrollArea}
-                                                  withBorder={true}>
+                                <AppShell.Section grow component={ScrollArea}>
                                     <ProposalsList/>
                                 </AppShell.Section>
                             </Grid.Col>
