@@ -8,8 +8,9 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {Box, Text, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
-import { SubmitButton } from '../commonButtons/save.tsx';
-import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
+import { SubmitButton } from '../commonButtons/save';
+import { MAX_CHARS_FOR_INPUTS, HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants';
+import MaxCharsForInputRemaining from "../commonInputs/remainingCharacterCount.tsx";
 
 function TitlePanel() {
     const { selectedProposalCode } = useParams();
@@ -83,7 +84,11 @@ function TitlePanel() {
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>
-                <TextInput name="title" {...form.getInputProps('title')}/>
+                <TextInput name="title"
+                           maxLength={MAX_CHARS_FOR_INPUTS}
+                           {...form.getInputProps('title')}/>
+                <MaxCharsForInputRemaining length={form.values.title.length} />
+                <br/>
                 <SubmitButton toolTipLabel={"save title"}
                               label={"Save"}/>
             </form>
