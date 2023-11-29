@@ -237,7 +237,7 @@ function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
 /**
  * Convert the TimingWindowGui type to a type appropriate to write to the
  * database.
- * Note: API expects the Dates as the number of seconds since the posix epoch
+ * Note: API expects the Dates as the number of milliseconds since the posix epoch
  *
  * @param {TimingWindowGui} input the timing window gui to convert to a
  * timing window api.
@@ -254,7 +254,10 @@ function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
 }
 
 /**
- * left as im sure this will be useful once we decide how to save
+ *
+ * //Piece of code relative to #20 add-edit-delete TimingWindows in existing Observations
+ *
+ * //This adds a new TimingWindow constraint to an existing observation
  *
  *  const handleSave = (timingWindow : TimingWindowApi) => {
  *         console.log(timingWindow)
