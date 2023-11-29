@@ -10,7 +10,6 @@ import {Box} from "@mantine/core";
  */
 interface CharCountInputProps {
     length: number
-    //isDimmed?: boolean
 }
 
 /**
