@@ -11,4 +11,7 @@ export type TargetProps = {
     dbid: number,
     showRemove: boolean,
     key: string,
-    boundTargets: (number | undefined)[] | undefined};
+    boundTargets: (number | undefined)[] | undefined,
+    selectedTarget?: number,
+    setSelectedTarget?: (value: number) => void,
+};

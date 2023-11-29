@@ -16,6 +16,7 @@ import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
 import { TargetProps } from './targetProps.tsx';
 import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
+import { useHistoryState } from '../useHistoryState.ts';
 
 /**
  * Renders the target panel containing an add target button
@@ -36,6 +37,8 @@ function TargetPanel(): ReactElement {
                 pathParams: {proposalCode: Number(selectedProposalCode)},},
             {enabled: true}
         );
+    const [selectedRow, setSelectedRow] =
+        useHistoryState("selectedTargetId", -1);
 
     if (error) {
         return (
@@ -78,6 +81,8 @@ function TargetPanel(): ReactElement {
                                                         showRemove={true}
                                                         key={randomId()}
                                                         boundTargets={boundTargets}
+                                                        selectedTarget={selectedRow}
+                                                        setSelectedTarget={setSelectedRow}
                                                 />)
                                     })
                                 }
@@ -210,6 +215,15 @@ export function TargetTableRow(props: TargetProps): ReactElement {
             onConfirm: () => handleRemove()
         });
 
+    const RowSelector = (targetId: number | undefined): void => {
+        console.log(`row ${targetId} was selected`);
+        if (props.selectedTarget === targetId) {
+            props.setSelectedTarget!(-1);
+        } else {
+            props.setSelectedTarget!(targetId!);
+        }
+    }
+
     let spaceFrame : string | undefined = "unknown";
     let ra : string | undefined = "unknown";
     let dec : string | undefined = "unknown";
@@ -247,7 +261,10 @@ export function TargetTableRow(props: TargetProps): ReactElement {
 
     // generate the full row.
     return (
-        <Table.Tr>
+        <Table.Tr onClick={() => {RowSelector(data?._id);}}
+                  bg={props.selectedTarget === data?._id ?
+                      'var(--mantine-color-blue-light)' :
+                      undefined}>
             <Table.Td>
                 {data?.sourceName}
             </Table.Td>
