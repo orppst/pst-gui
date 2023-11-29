@@ -44,7 +44,7 @@ export default function TechnicalGoalEditModal(
     /**
      * creates the modals dynamic html.
      *
-     * @return {React.ReactElement} the mdoals dynamic html.
+     * @return {React.ReactElement} the modals dynamic html.
      * @constructor
      */
     const ModalHtml = () : ReactElement => {

@@ -51,6 +51,7 @@ function AddInvestigatorPanel(): ReactElement {
     );
 
     useEffect(() => {
+        form.errors = form.validate().errors;
         if(status === 'success') {
             setSearchData([]);
             data?.map((item) => (

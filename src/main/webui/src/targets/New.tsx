@@ -3,7 +3,7 @@
 import {Modal, NumberInput, Select, TextInput} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { FormEvent, ReactElement, ReactNode, useRef } from 'react';
+import { FormEvent, ReactElement, ReactNode, useRef, useEffect } from 'react';
 import {
     CelestialTarget,
     EquatorialPoint, SimbadTargetResult, SpaceSys,
@@ -137,6 +137,13 @@ const TargetForm = (props: FormPropsType<newTargetData>) => {
                 saveToDatabase(val);
             }
     });
+
+    /**
+     * force the validation to engage once the UI has been rendered.
+     */
+    useEffect(() => {
+        form.errors = form.validate().errors;
+    })
 
     return (
         <form onSubmit={handleSubmission}>

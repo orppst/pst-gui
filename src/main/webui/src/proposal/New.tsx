@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from 'react';
 import {ProposalContext} from '../App2'
 import {
     fetchProposalResourceCreateObservingProposal,
@@ -16,7 +16,7 @@ const kindData = [
     {value: "TOO", label: "T.O.O"},
     {value: "SURVEY", label: "Survey"}];
 
- function NewProposalPanel() {
+function NewProposalPanel() {
     const { user} = useContext(ProposalContext) ;
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
@@ -35,7 +35,14 @@ const kindData = [
         }
     });
 
-     const createNewObservingProposal = form.onSubmit((val) => {
+    /**
+     * force the validation to engage once the UI has been rendered.
+     */
+    useEffect(() => {
+        form.errors = form.validate().errors;
+    })
+
+    const createNewObservingProposal = form.onSubmit((val) => {
         form.validate();
 
         setSubmitting(true);
@@ -60,7 +67,7 @@ const kindData = [
             .catch(console.log);
     });
 
-     return (
+    return (
         <Box>
             <Text fz="lg" fw={700}>Create Proposal</Text>
             {submitting &&
