@@ -23,18 +23,24 @@ import AddButton from '../commonButtons/add';
 import DatabaseSearchButton from '../commonButtons/databaseSearch';
 import { SubmitButton } from '../commonButtons/save';
 import { useHistoryState } from '../useHistoryState.ts';
-import "./aladin.component.css";
-
-// A is a global variable from aladin lite source code.
-// It is declared for the typescript checker to understand it.
-declare var A: any;
+import "./aladin.css";
+import {
+    AladinType,
+    IAladinConfig
+} from './aladinTypes.tsx';
+import { ALADIN_SRC_URL, JQUERY_SRC_URL } from '../constants.tsx';
+import {
+    GetOffset,
+    LoadScriptIntoDOM,
+    PopulateAladin
+} from './aladinHelperMethods.tsx';
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
-declare var Aladin: any;
+declare var Aladin: AladinType;
 
 // the initial config for the aladin viewer.
-const initialConfig = {
+const initialConfig: IAladinConfig = {
     cooFrame: 'ICRS',
     survey: 'P/DSS2/color',
     fov: 0.25,
@@ -50,6 +56,9 @@ const initialConfig = {
     reticleSize: 22,
     showCooGridControl: false,
 };
+
+// state name for if aladin has been loaded boolean.
+const ALADIN_STATE_NAME = "hasDoneAladin";
 
 
 /**
@@ -77,14 +86,14 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     value === null || value === undefined ?
                         'RA cannot be blank':
                         null)
-            }
+            },
         });
 
     // this is needed to ensure that aladin is only loaded once, and not each
     // time the renderer engages. The reason for this is that it makes
     // duplicates which steal screen restate, making it unusable.
     let [hasDoneAladin, setHasDoneAladin] =
-        useHistoryState("hasDoneAladin", false);
+        useHistoryState(ALADIN_STATE_NAME, false);
 
     // create the database query client and get basic elements.
     const queryClient = useQueryClient();
@@ -119,7 +128,9 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 form.values.searching = false;
 
                 // acquire the aladin object and set it.
-                Aladin?.gotoRaDec(data.raDegrees, data.decDegrees);
+                Aladin?.gotoRaDec(
+                    data.raDegrees?data.raDegrees:0,
+                    data.decDegrees?data.decDegrees:0);
             })
             .catch((reason: any) => {
                 console.error(reason);
@@ -201,108 +212,60 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     });
 
     /**
-     * code swiped from stack overflow which loads the javascript into the
-     * React HTML.
-     * @param {HTMLElement} bodyElement the main body of the html.
-     * @param {string} url the url where the javascript is located.
-     * @param {() => void} onloadCallback the callback once the script has
-     * been loaded.
-     * @constructor
-     */
-    const LoadScriptIntoDOM = (
-        bodyElement: HTMLElement, url: string,
-        onloadCallback?: () => void) => {
-        const scriptElement = document.createElement("script");
-        scriptElement.setAttribute('src', url);
-        scriptElement.async = false;
-        if (onloadCallback) {
-            scriptElement.onload = onloadCallback;
-        }
-        bodyElement.appendChild(scriptElement);
-    }
-
-    /**
      * handler that eventually creates the aladin interface from Javascript.
      * This code was swiped from stack overflow for loading in the Javascript
-     * to an react system.
+     * to a React system.
      */
     useEffect(() => {
         if (!hasDoneAladin) {
             setHasDoneAladin(true);
             hasDoneAladin = true;
+
             // Now the component is mounted we can load aladin lite.
             const bodyElement =
                 document.getElementsByTagName('BODY')[0] as HTMLElement;
+
             // jQuery is a dependency for aladin-lite and therefore must be
             // inserted in the DOM.
-            LoadScriptIntoDOM(
-                bodyElement,
-                'http://code.jquery.com/jquery-1.12.1.min.js');
+            LoadScriptIntoDOM(bodyElement, JQUERY_SRC_URL);
+
             // Then we load the aladin lite script.
             LoadScriptIntoDOM(
-                bodyElement,
-                'https://aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js',
+                bodyElement, ALADIN_SRC_URL,
                 () => {
                     // to stop reloading aladin into the browser on every render.
                     setHasDoneAladin(true);
-
-                    // When the import has succeeded we store the aladin js instance
-                    // into its component
-                    Aladin = A.aladin('#aladin-lite-div', initialConfig);
-
-                    // add the catalog.
-                    const catalogue = A.catalog({
-                        name: 'Pointing Catalogue',
-                        shape: 'cross',
-                        sourceSize: 20,
-                    });
-
-                    // is not null, created from javascript.
-                    Aladin.addCatalog(catalogue);
-
-                    // add the overlay.
-                    const overlay = A.graphicOverlay({
-                        color: '#009900',
-                        lineWidth: 3
-                    });
-
-                    // is not null, created from javascript.
-                    Aladin.addOverlay(overlay);
+                    Aladin = PopulateAladin(initialConfig);
                 })
         }});
-
-    /**
-     * gets some form of offset. Swiped from the NGOT source code.
-     *
-     * @param {MouseEvent} event the mouse event that contains a drag.
-     */
-     const GetOffset = (event: MouseEvent): number[] => {
-        let el: HTMLElement = event.target as HTMLElement;
-        let x = 0;
-        let y = 0;
-
-        while (el && !Number.isNaN(el.offsetLeft) &&
-               !Number.isNaN(el.offsetTop)) {
-            x += el.offsetLeft - el.scrollLeft;
-            y += el.offsetTop - el.scrollTop;
-            el = el.offsetParent as HTMLElement;
-        }
-
-        x = event.clientX - x;
-        y = event.clientY - y;
-
-        return [x, y];
-    }
 
     /**
      * handles the different mouse event types.
      * @param {React.MouseEvent<HTMLInputElement>} event the event that occurred.
      */
-    const handleEvent = (event: MouseEvent<HTMLInputElement>) => {
+    const HandleEvent = (event: MouseEvent<HTMLInputElement>) => {
         const [ra, dec] = GetOffset(event);
         const [raCoords, decCoords] = Aladin.pix2world(ra, dec);
         form.setFieldValue('RA', raCoords);
         form.setFieldValue('Dec', decCoords);
+    }
+
+    /**
+     * updates the aladin viewer to handle changes to RA.
+     * @param {number | string} value the new RA.
+     */
+    const UpdateAladinRA = (value: number | string) => {
+        // acquire the aladin object and set it.
+        Aladin.gotoRaDec(value as number, form.values.Dec);
+    }
+
+    /**
+     * updates the aladin viewer to handle changes to RA.
+     * @param {number | string} value the new RA.
+     */
+    const UpdateAladinDec = (value: number | string) => {
+        // acquire the aladin object and set it.
+        Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
     // return the dynamic HTML.
@@ -312,7 +275,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             <Grid.Col span={2}>
                 <div id="aladin-lite-div"
                      style={{height: 400}}
-                     onMouseUpCapture={handleEvent}>
+                     onMouseUpCapture={HandleEvent}>
                 </div>
             </Grid.Col>
 
@@ -338,7 +301,12 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         max={360}
                         allowNegative={false}
                         suffix="°"
-                        {...form.getInputProps("RA")}/>
+                        {...form.getInputProps("RA")}
+                        onChange={(e) => {
+                            UpdateAladinRA(e);
+                            if (form.getInputProps("RA").onChange) {
+                                form.getInputProps("RA").onChange(e);
+                        }}}/>
                     <NumberInput
                         required={true}
                         label={"Dec"}
@@ -347,7 +315,12 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         min={-90}
                         max={90}
                         suffix="°"
-                        {...form.getInputProps("Dec")} />
+                        {...form.getInputProps("Dec")}
+                        onChange={(e) => {
+                            UpdateAladinDec(e);
+                            if (form.getInputProps("Dec").onChange) {
+                                form.getInputProps("Dec").onChange(e);
+                            }}}/>
                     <Select
                         label={"Coordinate System"}
                         data={[{label:"J2000",value:"J2000"}]}
@@ -375,7 +348,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 export default function AddTargetModal(): ReactElement {
     const [opened, { close, open }] = useDisclosure();
     const [_, setHasDoneAladin] =
-        useHistoryState("hasDoneAladin", false);
+        useHistoryState(ALADIN_STATE_NAME, false);
 
     return (
         <>
@@ -426,4 +399,5 @@ export type newTargetData = {
     searching: boolean
     lastSearchName: string
 }
+
 

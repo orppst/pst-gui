@@ -44,3 +44,10 @@ export const DIMMED_FONT_WEIGHT = 400;
 /* the number of spaces used for indentation of json
 * used during JSON.stringify */
 export const JSON_SPACES = 2;
+
+/* The source url for the aladin stuff.*/
+export const ALADIN_SRC_URL =
+    'https://aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js';
+
+/* The source url for the aladin jquery */
+export const JQUERY_SRC_URL = 'https://code.jquery.com/jquery-1.12.1.min.js';
