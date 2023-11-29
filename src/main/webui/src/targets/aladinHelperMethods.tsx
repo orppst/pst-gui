@@ -32,6 +32,8 @@ export const LoadScriptIntoDOM = (
 
 /**
  * gets some form of offset. Swiped from the NGOT source code.
+ * Seems to work well. I think its meant to try to coords in the
+ * aladin view off the browser view.
  *
  * @param {MouseEvent} event the mouse event that contains a drag.
  */
@@ -66,23 +68,17 @@ export const PopulateAladin = (initialConfig: IAladinConfig): AladinType => {
     const Aladin: AladinType = A.aladin('#aladin-lite-div', initialConfig);
 
     // add the catalog.
-    const catalogue = A.catalog({
+    Aladin.addCatalog(A.catalog({
         name: 'Pointing Catalogue',
         shape: 'cross',
         sourceSize: 20,
-    });
-
-    // is not null, created from javascript.
-    Aladin.addCatalog(catalogue);
+    }));
 
     // add the overlay.
-    const overlay = A.graphicOverlay({
+    Aladin.addOverlay(A.graphicOverlay({
         color: '#009900',
         lineWidth: 3
-    });
-
-    // is not null, created from javascript.
-    Aladin.addOverlay(overlay);
+    }));
 
     return Aladin;
 }
