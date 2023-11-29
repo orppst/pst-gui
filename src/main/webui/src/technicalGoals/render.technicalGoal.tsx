@@ -24,7 +24,7 @@ type RenderTechnicalGoalProps = {
  * builds the summary table for the technical goals.
  *
  * @param {RenderTechnicalGoalProps} props the data.
- * @return {React.ReactElement} the dynaqmic html for the table.
+ * @return {React.ReactElement} the dynamic html for the table.
  * @constructor
  */
 export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
@@ -131,26 +131,22 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
      */
     function RenderSpectralWindowRow(window: ScienceSpectralWindow):
             ReactElement {
-        /*
-        triggers the warning:
-            Warning: Each child in a list should have a unique "key" prop.
-         This suggests window.index is somehow not unique or the table headers
-         need keys, should investigate
-         */
-
         return (
-            <Table.Tr key={window.index}>
+            <Table.Tr>
                 <Table.Th>Start</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.start?.value}
-                    {window.spectralWindowSetup?.start?.unit?.value}
+                <Table.Td>
+                    {window.spectralWindowSetup?.start?.value + " " +
+                        window.spectralWindowSetup?.start?.unit?.value}
                 </Table.Td>
                 <Table.Th>End</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.end?.value}
-                    {window.spectralWindowSetup?.end?.unit?.value}
+                <Table.Td>
+                    {window.spectralWindowSetup?.end?.value + " " +
+                        window.spectralWindowSetup?.end?.unit?.value}
                 </Table.Td>
                 <Table.Th>Res.</Table.Th>
-                <Table.Td>{window.spectralWindowSetup?.spectralResolution?.value}
-                    {window.spectralWindowSetup?.spectralResolution?.unit?.value}
+                <Table.Td>
+                    {window.spectralWindowSetup?.spectralResolution?.value + " " +
+                        window.spectralWindowSetup?.spectralResolution?.unit?.value}
                 </Table.Td>
             </Table.Tr>
         )
@@ -175,8 +171,11 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
                 </Table.Thead>
                 <Table.Tbody>
                     {
-                        windows.map((window)=>{
-                            return <RenderSpectralWindowRow {...window}/>
+                        windows.map((window, index)=>{
+                            return <RenderSpectralWindowRow
+                                {...window}
+                                key={index} //fixme: key should be database id
+                            />
                         })
                     }
                 </Table.Tbody>
@@ -192,7 +191,9 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
                         <Table.Tbody>
                             <Table.Tr>
                                 <Table.Td>
-                                    <RenderPerformanceParameters {...data?.performance!}/>
+                                    <RenderPerformanceParameters
+                                        {...data?.performance!}
+                                    />
                                 </Table.Td>
                             </Table.Tr>
                             <Table.Tr>
