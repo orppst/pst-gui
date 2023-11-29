@@ -143,7 +143,11 @@ export default function ObservationEditGroup(
                     field: {
                         "@type": "proposal:TargetField",
                         "_id": values.fieldId
-                    }
+                    },
+                    constraints: values.timingWindows.map(
+                        (windowGui) => {
+                            return ConvertToTimingWindowApi(windowGui);
+                    })
                 }
 
                 let targetObservation =
@@ -179,7 +183,7 @@ export default function ObservationEditGroup(
             else {
                 console.log("Editing");
             }
-        console.log(values)
+            console.debug(values)
     });
 
     return (
@@ -208,12 +212,18 @@ export default function ObservationEditGroup(
     )
 }
 
-
-//Type TimingWindow in proposalToolSchemas.ts has 'startTime' and
-// 'endTime' as date strings (ISO8601 strings).
-//We need to convert these to type Date before using them with the
-// 'DateTimePicker' element
-
+/**
+ * Convert the TimingWindow type from the database to a type appropriate for
+ * the UI.
+ * NOTE: This is because the Type TimingWindow in proposalToolSchemas.ts has
+ * 'startTime' and 'endTime' as date strings (ISO8601 strings). We need
+ * to convert these to type Date before using them with the 'DateTimePicker'
+ * element.
+ *
+ * @param {TimingWindow} input the timing window to convert to a timing window
+ * gui.
+ * @return {TimingWindowGui} the converted timing window gui object.
+ */
 function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     return ({
         startTime: new Date(input.startTime!),
@@ -225,31 +235,29 @@ function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
 }
 
 /**
- * left as im sure this will be useful once we decide how to save
+ * Convert the TimingWindowGui type to a type appropriate to write to the
+ * database.
+ * Note: API expects the Dates as the number of milliseconds since the posix epoch
  *
- * // Note: API expects the Dates as the number of seconds since the posix epoch
- * // @ts-ignore
- * function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
- *     return ({
- *         "@type": "proposal:TimingWindow",
- *         startTime: input.startTime!.getTime(),
- *         endTime: input.endTime!.getTime(),
- *         note: input.note,
- *         isAvoidConstraint: input.isAvoidConstraint
- *     })
- * }
+ * @param {TimingWindowGui} input the timing window gui to convert to a
+ * timing window api.
+ * @return {TimingWindowApi} the converted timing window API object.
+ */
+function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
+    return ({
+        "@type": "proposal:TimingWindow",
+        startTime: input.startTime!.getTime(),
+        endTime: input.endTime!.getTime(),
+        note: input.note,
+        isAvoidConstraint: input.isAvoidConstraint
+    })
+}
+
+/**
  *
+ * //Piece of code relative to #20 add-edit-delete TimingWindows in existing Observations
  *
- *
- * //type to use to pass data to the API
- * type TimingWindowApi = {
- *     "@type": string,
- *     startTime: number,
- *     endTime: number,
- *     note: string,
- *     isAvoidConstraint: boolean,
- * }
- *
+ * //This adds a new TimingWindow constraint to an existing observation
  *
  *  const handleSave = (timingWindow : TimingWindowApi) => {
  *         console.log(timingWindow)
