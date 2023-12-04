@@ -205,9 +205,6 @@ export default function TechnicalGoalRow(
     // return the full row.
     return (
         <Table.Tr>
-            <Table.Td>
-                {goal?._id}
-            </Table.Td>
             {
                 goal?.performance?.desiredAngularResolution?.value ?
                     <Table.Td>
@@ -300,7 +297,6 @@ export function technicalGoalsHeader() : ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
-                <Table.Th>ID</Table.Th>
                 <Table.Th>Angular resolution</Table.Th>
                 <Table.Th>Largest scale</Table.Th>
                 <Table.Th>Sensitivity</Table.Th>

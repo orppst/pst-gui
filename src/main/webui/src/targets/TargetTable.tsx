@@ -1,92 +1,16 @@
 import {
     fetchProposalResourceRemoveTarget,
-    useProposalResourceGetObservingProposal,
     useProposalResourceGetTarget,
-    useProposalResourceGetTargets,
 } from '../generated/proposalToolComponents.ts';
 
-import AddTargetModal from "./New";
-import {useParams} from "react-router-dom";
-import { Box, Table, Text } from '@mantine/core';
-import {randomId} from "@mantine/hooks";
+import { Table, Text } from '@mantine/core';
 import { CelestialTarget } from '../generated/proposalToolSchemas.ts';
 import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
-import { TargetProps } from './targetProps.tsx';
-import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
-
-/**
- * Renders the target panel containing an add target button
- * (from the add target modal) and a table of targets assigned to the
- * current proposal
- *
- *
- * @return {ReactElement} Returns a Mantine Box
- */
-function TargetPanel(): ReactElement {
-    const {selectedProposalCode} = useParams();
-    const {data, error, isLoading} = useProposalResourceGetTargets(
-            {pathParams: {proposalCode: Number(selectedProposalCode)},},
-            {enabled: true});
-    // needed to track which targets are locked into observations.
-    const { data: proposalsData } =
-        useProposalResourceGetObservingProposal({
-                pathParams: {proposalCode: Number(selectedProposalCode)},},
-            {enabled: true}
-        );
-
-    if (error) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
-
-    // acquire all the bound targets ids in observations.
-    let boundTargets: (number | undefined)[] | undefined = [];
-    boundTargets = proposalsData?.observations?.map((observation) => {
-        // extract the id. it seems the technical Goal returned here IS a number
-        // not the TechnicalGoal object it advertises.
-        return observation.target as number;
-    });
-
-    return (
-            <Box>
-                <Text fz="lg"
-                      fw={HEADER_FONT_WEIGHT}>
-                    Add and edit targets
-                </Text>
-                <Box>
-                    <AddTargetModal/>
-                    {data?.length === 0?
-                        <div>Please add your targets</div> :
-                        <Table>
-                            <TargetTableHeader/>
-                            <Table.Tbody>
-                                {isLoading ? (
-                                        <Table.Tr colSpan={5} key={randomId()}>
-                                            <Table.Td>Loading...</Table.Td>
-                                        </Table.Tr>) :
-                                    data?.map((item) => {
-                                            return (
-                                                <TargetTableRow
-                                                        proposalCode={Number(selectedProposalCode)}
-                                                        dbid={item.dbid!}
-                                                        showRemove={true}
-                                                        key={randomId()}
-                                                        boundTargets={boundTargets}
-                                                />)
-                                    })
-                                }
-                            </Table.Tbody>
-                        </Table>}
-                </Box>
-            </Box>
-        );
-}
+import { TargetProps, TargetTableProps } from './targetProps.tsx';
+import { randomId } from '@mantine/hooks';
 
 /**
  * Render a table header suitable for rows made by TargetTableRow()
@@ -94,7 +18,7 @@ function TargetPanel(): ReactElement {
  * @return {ReactElement} Mantine Table Header Element
  *
  */
-export function TargetTableHeader(): ReactElement {
+function TargetTableHeader(): ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
@@ -114,7 +38,7 @@ export function TargetTableHeader(): ReactElement {
  * @return {ReactElement} Returns a mantine Table Row Element
  * @param {TargetProps} props the data associated with a target.
  */
-export function TargetTableRow(props: TargetProps): ReactElement {
+function TargetTableRow(props: TargetProps): ReactElement {
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
 
@@ -260,7 +184,7 @@ export function TargetTableRow(props: TargetProps): ReactElement {
                     )
                     :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
             <Table.Td>
-                    {props.showRemove && <
+                    {props.showButtons && <
                         DeleteButton toolTipLabel={DeleteToolTip(data?._id)}
                                      onClick={openRemoveModal}
                                      disabled={IsBound(data?._id)?
@@ -270,4 +194,33 @@ export function TargetTableRow(props: TargetProps): ReactElement {
         </Table.Tr>);
 }
 
-export default TargetPanel
+/**
+ * generates a table for an entire set of targets.
+ * @param {TargetTableProps} props the data required to generate the table.
+ * @return {React.ReactElement} the html that contains the table.
+ * @constructor
+ */
+export function TargetTable(props: TargetTableProps): ReactElement {
+    return (
+        <Table>
+            <TargetTableHeader/>
+            <Table.Tbody>
+                {props.isLoading ? (
+                        <Table.Tr colSpan={5} key={randomId()}>
+                            <Table.Td>Loading...</Table.Td>
+                        </Table.Tr>) :
+                    props.data?.map((item) => {
+                        return (
+                            <TargetTableRow
+                                proposalCode={Number(props.selectedProposalCode)}
+                                dbid={item.dbid!}
+                                showButtons={props.showButtons}
+                                key={randomId()}
+                                boundTargets={props.boundTargets}
+                            />)
+                    })
+                }
+            </Table.Tbody>
+        </Table>
+    )
+}

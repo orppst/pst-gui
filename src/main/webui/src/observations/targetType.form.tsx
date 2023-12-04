@@ -54,7 +54,9 @@ export default function TargetTypeForm (
         if (targetListError) {
             return (
                 <div>
-                    <pre>{JSON.stringify(targetListError, null, JSON_SPACES)}</pre>
+                    <pre>
+                        {JSON.stringify(targetListError, null, JSON_SPACES)}
+                    </pre>
                 </div>
             )
         }
@@ -71,7 +73,7 @@ export default function TargetTypeForm (
                 {selectTargets ?
                     <Select
                         label={"Observation target: "}
-                        placeholder={"pick one"}
+                        placeholder={"Pick one"}
                         searchable
                         data={selectTargets}
                         {...form.getInputProps('targetDBId')}
@@ -111,7 +113,7 @@ export default function TargetTypeForm (
                 { selectTechGoals ?
                     <Select
                         label={"Technical Goal:"}
-                        placeholder={"pick one"}
+                        placeholder={"Pick one"}
                         data={selectTechGoals}
                         {...form.getInputProps('techGoalId')}
                     /> : null
@@ -128,8 +130,8 @@ export default function TargetTypeForm (
     function SelectObservationType(): ReactElement {
         return (
             <Select
-                label={"Observation type: "}
-                placeholder={"select observation type"}
+                label={"Observation Type: "}
+                placeholder={"Select observation type"}
                 data = {[
                     'Target', 'Calibration'
                 ]}
@@ -175,7 +177,7 @@ export default function TargetTypeForm (
                     <RenderTarget
                         proposalCode={Number(selectedProposalCode)}
                         dbid={form.values.targetDBId}
-                        showRemove={false}
+                        showButtons={false}
                         key={randomId()}
                         boundTargets={[]}
                     />

@@ -240,8 +240,6 @@ function Observations() {
         );
     }
 
-
-
     // generate the table as we're in a safe state to do so.
     return (
         <div>

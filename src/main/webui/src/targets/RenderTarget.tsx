@@ -1,5 +1,5 @@
 import {Table} from "@mantine/core";
-import {TargetTableHeader, TargetTableRow} from "./List.tsx";
+import {TargetTableHeader, TargetTableRow} from "./TargetTable.tsx";
 import { ReactElement } from 'react';
 import { TargetProps } from './targetProps.tsx';
 
