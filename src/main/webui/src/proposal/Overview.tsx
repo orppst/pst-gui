@@ -11,13 +11,13 @@ import {
     RealQuantity
 } from '../generated/proposalToolSchemas.ts';
 import { randomId } from '@mantine/hooks';
-import { RenderTarget } from '../targets/RenderTarget.tsx';
 import { IconNorthStar } from '@tabler/icons-react';
 import { RenderTechnicalGoal } from '../technicalGoals/render.technicalGoal.tsx';
 import { ReactElement, useRef } from 'react';
 import { SaveButton } from '../commonButtons/save.tsx';
 import downloadProposal from './downloadProposal.tsx';
 import { DIMMED_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
+import { TargetTable } from '../targets/TargetTable.tsx';
 
 /*
       title    -- string
@@ -183,12 +183,14 @@ function ObservationAccordionContent(
     return (
         //TODO: consider a Grid instead of Group
         <Group>
-            <RenderTarget proposalCode={proposalCode}
-                          dbid={targetId}
-                          showButtons={false}
-                          key={randomId()}
-                          boundTargets={[]}/>
-            <RenderTechnicalGoal proposalCode={proposalCode} dbid={technicalGoalId} />
+            <TargetTable selectedProposalCode={proposalCode.toString()}
+                         isLoading={false}
+                         data = {[{dbid: targetId,
+                                   code: proposalCode.toString()}]}
+                         showButtons={false}
+                         boundTargets={[]}/>
+            <RenderTechnicalGoal proposalCode={proposalCode}
+                                 dbid={technicalGoalId} />
         </Group>
     )
 }

@@ -7,13 +7,12 @@ import {
     Space
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {RenderTarget} from "../targets/RenderTarget.tsx";
 import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
 import { ReactElement } from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
 import { JSON_SPACES } from '../constants.tsx';
-import { randomId } from '@mantine/hooks';
+import { TargetTable } from '../targets/TargetTable.tsx';
 
 /**
  * the entrance to building the target part of the edit panel.
@@ -174,11 +173,13 @@ export default function TargetTypeForm (
             {
                 targetsLoading ? 'loading...' :
                     form.values.targetDBId != undefined &&
-                    <RenderTarget
-                        proposalCode={Number(selectedProposalCode)}
-                        dbid={form.values.targetDBId}
+                    <TargetTable
+                        selectedProposalCode={selectedProposalCode}
+                        data ={[{
+                            dbid: form.values.targetDBId,
+                            code: selectedProposalCode}]}
                         showButtons={false}
-                        key={randomId()}
+                        isLoading={false}
                         boundTargets={[]}
                     />
             }
