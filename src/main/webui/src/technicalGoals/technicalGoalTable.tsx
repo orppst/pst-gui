@@ -236,7 +236,13 @@ function TechnicalGoalRow(
      */
     const RowSelector = (technicalGoalId: number | undefined): void => {
         console.debug(`row ${technicalGoalId} was selected`);
-        // handle deselect
+
+        // handle not having a selection option.
+        if (!technicalGoalRowProps.setSelectedTechnicalGoal) {
+            return;
+        }
+
+        // handle selection
         if (technicalGoalRowProps.selectedTechnicalGoal === technicalGoalId) {
             technicalGoalRowProps.setSelectedTechnicalGoal!(NO_ROW_SELECTED);
         } else {

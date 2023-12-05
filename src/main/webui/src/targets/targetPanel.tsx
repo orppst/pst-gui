@@ -60,7 +60,8 @@ export function TargetPanel(): ReactElement {
                                  data={data}
                                  selectedProposalCode={selectedProposalCode}
                                  boundTargets={boundTargets}
-                                 showButtons={true}/>
+                                 showButtons={true}
+                                 selectedTarget={undefined}/>
                 }
             </Box>
         </Box>
