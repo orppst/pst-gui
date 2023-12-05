@@ -4,13 +4,18 @@ import {
 import {
     Container,
     Select,
-    Space
+    Space,
+    Table
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
 import { ReactElement } from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
-import { JSON_SPACES, NO_ROW_SELECTED } from '../constants.tsx';
+import {
+    JSON_SPACES,
+    NO_ROW_SELECTED, TABLE_MIN_WIDTH,
+    TABLE_SCROLL_HEIGHT
+} from '../constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 
@@ -113,20 +118,23 @@ export default function TargetTypeForm (
             <h3>Please select a target.</h3>
             {
                 targetsLoading ? 'loading...' :
-                    <TargetTable
-                        selectedProposalCode={selectedProposalCode}
-                        data={targets}
-                        showButtons={false}
-                        isLoading={false}
-                        boundTargets={[]}
-                        selectedTarget={
-                        form.values.targetDBId != undefined ?
-                            form.values.targetDBId :
-                            NO_ROW_SELECTED}
-                        setSelectedTarget={(value: number) => {
-                            form.setFieldValue('targetDBId', value);
-                        }}
-                    />
+                    <Table.ScrollContainer h={TABLE_SCROLL_HEIGHT}
+                                           minWidth={TABLE_MIN_WIDTH}>
+                        <TargetTable
+                            selectedProposalCode={selectedProposalCode}
+                            data={targets}
+                            showButtons={false}
+                            isLoading={false}
+                            boundTargets={[]}
+                            selectedTarget={
+                            form.values.targetDBId != undefined ?
+                                form.values.targetDBId :
+                                NO_ROW_SELECTED}
+                            setSelectedTarget={(value: number) => {
+                                form.setFieldValue('targetDBId', value);
+                            }}
+                        />
+                    </Table.ScrollContainer>
             }
 
             <br/>
@@ -134,18 +142,21 @@ export default function TargetTypeForm (
             <h3>Please select a Technical Goal.</h3>
             {
                 technicalGoalsLoading ? 'loading...' :
-                    <TechnicalGoalsTable
-                        goals={technicalGoals}
-                        boundTechnicalGoalIds={[]}
-                        showButtons={false}
-                        selectedTechnicalGoal={
-                            form.values.techGoalId != undefined ?
-                                form.values.techGoalId :
-                                NO_ROW_SELECTED}
-                        setSelectedTechnicalGoal={(value: number) => {
-                            form.setFieldValue('techGoalId', value);
-                        }}
-                        />
+                    <Table.ScrollContainer h={TABLE_SCROLL_HEIGHT}
+                                           minWidth={TABLE_MIN_WIDTH}>
+                        <TechnicalGoalsTable
+                            goals={technicalGoals}
+                            boundTechnicalGoalIds={[]}
+                            showButtons={false}
+                            selectedTechnicalGoal={
+                                form.values.techGoalId != undefined ?
+                                    form.values.techGoalId :
+                                    NO_ROW_SELECTED}
+                            setSelectedTechnicalGoal={(value: number) => {
+                                form.setFieldValue('techGoalId', value);
+                            }}
+                            />
+                    </Table.ScrollContainer>
             }
             <Space h={"xl"}/>
             {SelectObservationType()}

@@ -6,6 +6,13 @@ https://github.com/orppst/pst-gui/issues/21#issuecomment-1786943901 for
 // constant used to indicate no row has been selected.
 export const NO_ROW_SELECTED = -1;
 
+/*the expected size of a table before adding a scroll bar. Aims to show 5.5
+ rows. */
+export const TABLE_SCROLL_HEIGHT = 200;
+
+/* enforced min width needed by scrollable containers. */
+export const TABLE_MIN_WIDTH = 500;
+
 /* color used when a table is in select mode */
 export const TABLE_HIGH_LIGHT_COLOR = 'var(--mantine-color-blue-light)';
 
