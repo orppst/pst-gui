@@ -18,7 +18,7 @@ import { randomId } from '@mantine/hooks';
  * @return {ReactElement} Mantine Table Header Element
  *
  */
-function TargetTableHeader(): ReactElement {
+function TargetTableHeader(props: TargetTableProps): ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
@@ -27,6 +27,9 @@ function TargetTableHeader(): ReactElement {
                 <Table.Th>RA</Table.Th>
                 <Table.Th>Dec</Table.Th>
                 <Table.Th>Epoch</Table.Th>
+                { props.showButtons ?
+                    <Table.Th></Table.Th>
+                    : null}
             </Table.Tr>
         </Table.Thead>
     );
@@ -203,7 +206,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
 export function TargetTable(props: TargetTableProps): ReactElement {
     return (
         <Table>
-            <TargetTableHeader/>
+            {TargetTableHeader(props)}
             <Table.Tbody>
                 {props.isLoading ? (
                         <Table.Tr colSpan={5} key={randomId()}>

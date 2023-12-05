@@ -12,7 +12,10 @@ import {
     locateLabel,
     sensitivityUnits
 } from '../physicalUnits/PhysicalUnits.tsx';
-import { TechnicalGoal } from '../generated/proposalToolSchemas.ts';
+import {
+    ObjectIdentifier,
+    TechnicalGoal
+} from '../generated/proposalToolSchemas.ts';
 import {
     fetchTechnicalGoalResourceAddTechnicalGoal,
     fetchTechnicalGoalResourceRemoveTechnicalGoal,
@@ -27,12 +30,30 @@ import { ReactElement } from 'react';
  * @param {number} key the forced key from React.
  * @param {(number | undefined)[] | undefined} boundTechnicalGoalIds the
  * technical goal ids that are bound up in observations.
+ * @param {boolean} showButtons boolean stating if the table should contain
+ * modification buttons.
  */
 export type TechnicalGoalRowProps = {
     id: number,
     key: number,
     boundTechnicalGoalIds: (number | undefined)[] | undefined,
+    showButtons: boolean,
 };
+
+/**
+ * the technical goal table props.
+ * @param { ObjectIdentifier[] | undefined} goals the array of goals to present.
+ * @param {(number | undefined)[] | undefined} boundTechnicalGoalIds the array
+ * of technical goal ids which are bound to observations.
+ * @param {boolean} showButtons boolean stating if the table should contain
+ * modification buttons.
+ *
+ */
+export type TechnicalGoalsTableProps = {
+    goals: ObjectIdentifier[] | undefined,
+    boundTechnicalGoalIds: (number | undefined)[] | undefined,
+    showButtons: boolean,
+}
 
 /**
  * builds the html for a technical goal row.
@@ -42,7 +63,7 @@ export type TechnicalGoalRowProps = {
  * @return {ReactElement} the dynamic html for the technical goal row.
  * @constructor
  */
-export default function TechnicalGoalRow(
+function TechnicalGoalRow(
         technicalGoalRowProps: TechnicalGoalRowProps):
     ReactElement {
 
@@ -270,20 +291,25 @@ export default function TechnicalGoalRow(
                         </Badge>
                 }
             </Table.Td>
-            <Table.Td>
-                <Group position={"right"}>
-                    {
-                        goalLoading ? 'Loading...' :
-                            <TechnicalGoalEditModal technicalGoal={goal} />
-                    }
-                    <CloneButton toolTipLabel={"clone"} onClick={confirmClone} />
-                    <DeleteButton toolTipLabel={DeleteToolTip(goal)}
-                                  onClick={confirmDelete}
-                                  disabled={IsBound(goal)?
-                                      true :
-                                      undefined}/>
-                </Group>
-            </Table.Td>
+
+            {
+                technicalGoalRowProps.showButtons ?
+                <Table.Td>
+                    <Group position={"right"}>
+                        {
+                            goalLoading ? 'Loading...' :
+                                <TechnicalGoalEditModal technicalGoal={goal} />
+                        }
+                        <CloneButton toolTipLabel={"clone"}
+                                     onClick={confirmClone} />
+                        <DeleteButton toolTipLabel={DeleteToolTip(goal)}
+                                      onClick={confirmDelete}
+                                      disabled={IsBound(goal)?
+                                          true :
+                                          undefined}/>
+                    </Group>
+                </Table.Td>: null
+            }
         </Table.Tr>
     )
 }
@@ -291,9 +317,10 @@ export default function TechnicalGoalRow(
 /**
  * generates the technical goal header html.
  *
+ * @param {TechnicalGoalsTableProps} props the table props.
  * @return {React.ReactElement} the dynamic html for the table header.
  */
-export function technicalGoalsHeader() : ReactElement {
+function technicalGoalsHeader(props: TechnicalGoalsTableProps) : ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
@@ -303,8 +330,42 @@ export function technicalGoalsHeader() : ReactElement {
                 <Table.Th>Dynamic Range</Table.Th>
                 <Table.Th>Spectral point</Table.Th>
                 <Table.Th>Spectral windows</Table.Th>
-                <Table.Th></Table.Th>
+                {
+                    props.showButtons ?
+                        <Table.Th></Table.Th>
+                        : null
+                }
             </Table.Tr>
         </Table.Thead>
+    )
+}
+
+/**
+ * generates the technical goals table.
+ *
+ * @param {TechnicalGoalsTableProps} props the input data to the table.
+ * @return {React.ReactElement} the html for the technical goal table.
+ * @constructor
+ */
+export function TechnicalGoalsTable(props: TechnicalGoalsTableProps): ReactElement {
+    return (
+        <Table>
+            {technicalGoalsHeader(props)}
+            <Table.Tbody>
+                {
+                    props.goals?.map((goal) => {
+                        return (
+                            <TechnicalGoalRow
+                                id={goal.dbid!}
+                                key={goal.dbid!}
+                                boundTechnicalGoalIds={
+                                    props.boundTechnicalGoalIds}
+                                showButtons={props.showButtons}
+                            />
+                        )
+                    })
+                }
+            </Table.Tbody>
+        </Table>
     )
 }

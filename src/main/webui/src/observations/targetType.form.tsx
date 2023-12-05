@@ -7,12 +7,12 @@ import {
     Space
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
 import { ReactElement } from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
 import { JSON_SPACES } from '../constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
+import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 
 /**
  * the entrance to building the target part of the edit panel.
@@ -187,10 +187,12 @@ export default function TargetTypeForm (
             {
                 technicalGoalsLoading ? 'loading...' :
                     form.values.techGoalId != undefined &&
-                    <RenderTechnicalGoal
-                        proposalCode={Number(selectedProposalCode)}
-                        dbid={form.values.techGoalId}
-                    />
+                    <TechnicalGoalsTable
+                        goals={[{
+                            dbid: form.values.techGoalId,
+                            code: selectedProposalCode}]}
+                        boundTechnicalGoalIds={[]}
+                        showButtons={false}/>
             }
             <Space h={"xl"}/>
             {SelectObservationType()}

@@ -17,6 +17,17 @@ export type TargetProps = {
     key: string,
     boundTargets: (number | undefined)[] | undefined};
 
+/**
+ * data to transfer to the table generator.
+ *
+ * @param {boolean} isLoading boolean flagging if the table data is still loading.
+ * @param {ProposalResourceGetTargetsResponse | undefined} data the array of
+ * targets to display.
+ * @param {string | undefined} selectedProposalCode the proposal code.
+ * @param {boolean} showButtons boolean flagging if buttons should be visible.
+ * @param {(number | undefined)[] | undefined} boundTargets array of targets
+ * bound to observations.
+ */
 export type TargetTableProps = {
     isLoading: boolean,
     data:  ProposalResourceGetTargetsResponse | undefined
