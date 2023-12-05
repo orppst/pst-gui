@@ -9,13 +9,20 @@ import {
  * @param {boolean} showButtons boolean saying if this row can show its buttons.
  * @param {string} key forced upon us.
  * @param {number []} boundTargets the target ids bound to observations.
+ * @param {number | undefined} selectedTarget the row to be highlighted in
+ * selected mode. If undefined, the view is selected mode is turned off.
+ * @param {(value: number) => void}} setSelectedTarget function, if defined for
+ * what to do when selected.
  */
 export type TargetProps = {
     proposalCode: number,
     dbid: number,
     showButtons: boolean,
     key: string,
-    boundTargets: (number | undefined)[] | undefined};
+    boundTargets: (number | undefined)[] | undefined,
+    selectedTarget: number | undefined,
+    setSelectedTarget?: (value: number) => void,
+}
 
 /**
  * data to transfer to the table generator.
@@ -27,6 +34,10 @@ export type TargetProps = {
  * @param {boolean} showButtons boolean flagging if buttons should be visible.
  * @param {(number | undefined)[] | undefined} boundTargets array of targets
  * bound to observations.
+ * @param {number | undefined} selectedTarget the row to be highlighted in
+ * selected mode. If undefined, the view is selected mode is turned off.
+ * @param {(value: number) => void}} setSelectedTarget function, if defined for
+ * what to do when selected.
  */
 export type TargetTableProps = {
     isLoading: boolean,
@@ -34,4 +45,6 @@ export type TargetTableProps = {
     selectedProposalCode: string | undefined,
     showButtons: boolean,
     boundTargets: (number | undefined)[] | undefined,
+    selectedTarget: number | undefined,
+    setSelectedTarget?: (value: number) => void,
 }

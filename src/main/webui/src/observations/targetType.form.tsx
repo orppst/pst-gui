@@ -10,14 +10,13 @@ import {useParams} from "react-router-dom";
 import { ReactElement } from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
-import { JSON_SPACES } from '../constants.tsx';
+import { JSON_SPACES, NO_ROW_SELECTED } from '../constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 
 /**
  * the entrance to building the target part of the edit panel.
  *
- * TODO try to find the actual type for the form. as any is a dire type.
  * @param {any} form the form that governs the entire observation edit.
  * @return {ReactElement} the HTML for the observation edit panel.
  * @constructor
@@ -42,84 +41,6 @@ export default function TargetTypeForm (
             useTechnicalGoalResourceGetTechnicalGoals( {
                 pathParams: {proposalCode: Number(selectedProposalCode)}
             });
-
-    /**
-     * produces the HTML for the select targets.
-     *
-     * @return {ReactElement} the html for the select targets.
-     * @constructor
-     */
-    function SelectTargets(): ReactElement {
-        if (targetListError) {
-            return (
-                <div>
-                    <pre>
-                        {JSON.stringify(targetListError, null, JSON_SPACES)}
-                    </pre>
-                </div>
-            )
-        }
-
-        let selectTargets = targets?.map((target) => {
-            return {
-                value: target.dbid!.toString(),
-                label: target.name!
-            }
-        })
-
-        return (
-            <>
-                {selectTargets ?
-                    <Select
-                        label={"Observation target: "}
-                        placeholder={"Pick one"}
-                        searchable
-                        data={selectTargets}
-                        {...form.getInputProps('targetDBId')}
-                    /> : null
-                }
-            </>
-        )
-    }
-
-    /**
-     * generates the html for a technical goal.
-     *
-     * @return {ReactElement} the html for the technical goal.
-     * @constructor
-     */
-    function SelectTechnicalGoal(): ReactElement {
-        if (technicalGoalsError) {
-            return (
-                <div>
-                    <pre>{JSON.stringify(
-                        technicalGoalsError, null, JSON_SPACES)}
-                    </pre>
-                </div>
-            )
-        }
-
-        let selectTechGoals = technicalGoals?.map((goal) => {
-            return {
-                value: goal.dbid!.toString(),
-                //note: for TechnicalGoals name is equivalent to dbid
-                label: goal.name!
-            }
-        })
-
-        return (
-            <>
-                { selectTechGoals ?
-                    <Select
-                        label={"Technical Goal:"}
-                        placeholder={"Pick one"}
-                        data={selectTechGoals}
-                        {...form.getInputProps('techGoalId')}
-                    /> : null
-                }
-            </>
-        )
-    }
 
     /**
      * generates the html for the observation type.
@@ -166,33 +87,65 @@ export default function TargetTypeForm (
         )
     }
 
+    // handle any errors.
+    if (targetListError) {
+        return (
+            <div>
+                    <pre>
+                        {JSON.stringify(targetListError, null, JSON_SPACES)}
+                    </pre>
+            </div>
+        )
+    }
+    if (technicalGoalsError) {
+        return (
+            <div>
+                    <pre>{JSON.stringify(
+                        technicalGoalsError, null, JSON_SPACES)}
+                    </pre>
+            </div>
+        )
+    }
 
+    // return the html for the tables.
     return (
         <Container fluid>
-            {SelectTargets()}
+            <h3>Please select a target.</h3>
             {
                 targetsLoading ? 'loading...' :
-                    form.values.targetDBId != undefined &&
                     <TargetTable
                         selectedProposalCode={selectedProposalCode}
-                        data ={[{
-                            dbid: form.values.targetDBId,
-                            code: selectedProposalCode}]}
+                        data={targets}
                         showButtons={false}
                         isLoading={false}
                         boundTargets={[]}
+                        selectedTarget={
+                        form.values.targetDBId != undefined ?
+                            form.values.targetDBId :
+                            NO_ROW_SELECTED}
+                        setSelectedTarget={(value: number) => {
+                            form.setFieldValue('targetDBId', value);
+                        }}
                     />
             }
-            {SelectTechnicalGoal()}
+
+            <br/>
+
+            <h3>Please select a Technical Goal.</h3>
             {
                 technicalGoalsLoading ? 'loading...' :
-                    form.values.techGoalId != undefined &&
                     <TechnicalGoalsTable
-                        goals={[{
-                            dbid: form.values.techGoalId,
-                            code: selectedProposalCode}]}
+                        goals={technicalGoals}
                         boundTechnicalGoalIds={[]}
-                        showButtons={false}/>
+                        showButtons={false}
+                        selectedTechnicalGoal={
+                            form.values.techGoalId != undefined ?
+                                form.values.techGoalId :
+                                NO_ROW_SELECTED}
+                        setSelectedTechnicalGoal={(value: number) => {
+                            form.setFieldValue('techGoalId', value);
+                        }}
+                        />
             }
             <Space h={"xl"}/>
             {SelectObservationType()}

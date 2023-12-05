@@ -188,10 +188,12 @@ function ObservationAccordionContent(
                          data = {[{dbid: targetId,
                                    code: proposalCode.toString()}]}
                          showButtons={false}
+                         selectedTarget={undefined}
                          boundTargets={[]}/>
             <TechnicalGoalsTable goals={[{dbid: technicalGoalId,
                                           code: proposalCode.toString()}]}
                                  boundTechnicalGoalIds={[]}
+                                 selectedTechnicalGoal={undefined}
                                  showButtons={false}/>
         </Group>
     )

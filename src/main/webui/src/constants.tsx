@@ -3,6 +3,11 @@ any column which is set to type "VARCHAR". See
 https://github.com/orppst/pst-gui/issues/21#issuecomment-1786943901 for
  more info.
  */
+// constant used to indicate no row has been selected.
+export const NO_ROW_SELECTED = -1;
+
+/* color used when a table is in select mode */
+export const TABLE_HIGH_LIGHT_COLOR = 'var(--mantine-color-blue-light)';
 
 export const MAX_CHARS_FOR_INPUTS = 255;
 

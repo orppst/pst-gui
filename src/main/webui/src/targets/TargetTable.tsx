@@ -11,6 +11,7 @@ import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
 import { TargetProps, TargetTableProps } from './targetProps.tsx';
 import { randomId } from '@mantine/hooks';
+import { NO_ROW_SELECTED, TABLE_HIGH_LIGHT_COLOR } from '../constants.tsx';
 
 /**
  * Render a table header suitable for rows made by TargetTableRow()
@@ -120,6 +121,23 @@ function TargetTableRow(props: TargetProps): ReactElement {
     }
 
     /**
+     * function to handle row selection.
+     *
+     * @param {number | undefined} targetId the target database id that the
+     * selected row corresponds to.
+     * @constructor
+     */
+    const RowSelector = (targetId: number | undefined): void => {
+        console.debug(`row ${targetId} was selected`);
+        // handle deselect
+        if (props.selectedTarget === targetId) {
+            props.setSelectedTarget!(NO_ROW_SELECTED);
+        } else {
+            props.setSelectedTarget!(targetId!);
+        }
+    }
+
+    /**
      * offers the end user a verification if they wish to remove a target.
      */
     const openRemoveModal = (): void =>
@@ -174,7 +192,10 @@ function TargetTableRow(props: TargetProps): ReactElement {
 
     // generate the full row.
     return (
-        <Table.Tr>
+        <Table.Tr onClick={() => {RowSelector(data?._id);}}
+                  bg={props.selectedTarget === data?._id ?
+                      TABLE_HIGH_LIGHT_COLOR :
+                      undefined}>
             <Table.Td>
                 {data?.sourceName}
             </Table.Td>
@@ -220,6 +241,8 @@ export function TargetTable(props: TargetTableProps): ReactElement {
                                 showButtons={props.showButtons}
                                 key={randomId()}
                                 boundTargets={props.boundTargets}
+                                selectedTarget={props.selectedTarget}
+                                setSelectedTarget={props.setSelectedTarget}
                             />)
                     })
                 }
