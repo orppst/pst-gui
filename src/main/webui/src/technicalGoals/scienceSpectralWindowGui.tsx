@@ -86,7 +86,6 @@ export function convertToScienceSpectralWindowGui(
         input: ScienceSpectralWindow): ScienceSpectralWindowGui {
     // return the converted gui.
     return {
-        index: input.index,
         start: {
             value: input.spectralWindowSetup?.start?.value ?? "",
             unit: input.spectralWindowSetup?.start?.unit?.value ?? ""
@@ -137,7 +136,6 @@ export function convertToScienceSpectralWindow(
         input: ScienceSpectralWindowGui): ScienceSpectralWindow {
     // return the new window
     return {
-        index: Math.random() * 1000, //work-around: unclear on the semantics of 'index'
         spectralWindowSetup: {
             start: convertToRealQuantity(input.start),
             end: convertToRealQuantity(input.end),
