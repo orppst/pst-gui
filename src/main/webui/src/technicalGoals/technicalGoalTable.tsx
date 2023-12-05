@@ -24,6 +24,7 @@ import {
 import { notifications } from '@mantine/notifications';
 import { notSet } from './edit.group.tsx';
 import { ReactElement } from 'react';
+import { NO_ROW_SELECTED, TABLE_HIGH_LIGHT_COLOR } from '../constants.tsx';
 
 /** the technical goal id data holder.
  * @param {number} id the id
@@ -32,12 +33,18 @@ import { ReactElement } from 'react';
  * technical goal ids that are bound up in observations.
  * @param {boolean} showButtons boolean stating if the table should contain
  * modification buttons.
+ * @param {number | undefined} selectedTechnicalGoal the row to be highlighted
+ * in selected mode. If undefined, the view is selected mode is turned off.
+ * @param {(value: number) => void}} setSelectedTechnicalGoal function, if
+ * defined for what to do when selected.
  */
 export type TechnicalGoalRowProps = {
     id: number,
     key: number,
     boundTechnicalGoalIds: (number | undefined)[] | undefined,
     showButtons: boolean,
+    selectedTechnicalGoal: number | undefined,
+    setSelectedTechnicalGoal?: (value: number) => void,
 };
 
 /**
@@ -47,12 +54,18 @@ export type TechnicalGoalRowProps = {
  * of technical goal ids which are bound to observations.
  * @param {boolean} showButtons boolean stating if the table should contain
  * modification buttons.
+ * @param {number | undefined} selectedTechnicalGoal the row to be highlighted
+ * in selected mode. If undefined, the view is selected mode is turned off.
+ * @param {(value: number) => void}} setSelectedTechnicalGoal function, if
+ * defined for what to do when selected.
  *
  */
 export type TechnicalGoalsTableProps = {
     goals: ObjectIdentifier[] | undefined,
     boundTechnicalGoalIds: (number | undefined)[] | undefined,
     showButtons: boolean,
+    selectedTechnicalGoal: number | undefined,
+    setSelectedTechnicalGoal?: (value: number) => void,
 }
 
 /**
@@ -214,6 +227,23 @@ function TechnicalGoalRow(
         onCancel:() => console.log('Cancel copy'),
     })
 
+    /**
+     * function to handle row selection.
+     *
+     * @param {number | undefined} technicalGoalId the technical goal database
+     * id that the selected row corresponds to.
+     * @constructor
+     */
+    const RowSelector = (technicalGoalId: number | undefined): void => {
+        console.debug(`row ${technicalGoalId} was selected`);
+        // handle deselect
+        if (technicalGoalRowProps.selectedTechnicalGoal === technicalGoalId) {
+            technicalGoalRowProps.setSelectedTechnicalGoal!(NO_ROW_SELECTED);
+        } else {
+            technicalGoalRowProps.setSelectedTechnicalGoal!(technicalGoalId!);
+        }
+    }
+
     // if still loading the goal, present a row with the text "loading"
     if (goalLoading) {
         return (
@@ -225,7 +255,10 @@ function TechnicalGoalRow(
 
     // return the full row.
     return (
-        <Table.Tr>
+        <Table.Tr onClick={() => {RowSelector(goal?._id);}}
+                  bg={technicalGoalRowProps.selectedTechnicalGoal === goal?._id ?
+                      TABLE_HIGH_LIGHT_COLOR:
+                      undefined}>
             {
                 goal?.performance?.desiredAngularResolution?.value ?
                     <Table.Td>
@@ -361,6 +394,10 @@ export function TechnicalGoalsTable(props: TechnicalGoalsTableProps): ReactEleme
                                 boundTechnicalGoalIds={
                                     props.boundTechnicalGoalIds}
                                 showButtons={props.showButtons}
+                                selectedTechnicalGoal={
+                                    props.selectedTechnicalGoal}
+                                setSelectedTechnicalGoal={
+                                    props.setSelectedTechnicalGoal}
                             />
                         )
                     })

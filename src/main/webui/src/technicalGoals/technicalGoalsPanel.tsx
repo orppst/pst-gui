@@ -94,7 +94,8 @@ function TechnicalGoalsPanel(): ReactElement {
                 <TechnicalGoalsTable
                     goals={goals}
                     boundTechnicalGoalIds={boundTechnicalGoalIds}
-                    showButtons={true}/>
+                    showButtons={true}
+                    selectedTechnicalGoal={undefined}/>
             }
             <Space h={"xs"}/>
             <Group justify={'flex-end'}>
