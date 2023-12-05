@@ -59,12 +59,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setTimeout(() =>{
                 //attempting to force access token refresh -ac cess tokens are short lived (5m)  and even if the user is active in the GUI (because SPA), unless this is forced the token as known to JS will become stale
                 // TODO - this might mean that an "inactive" user never gets logged out - need to investigate a way to limit this  - perhaps a last used timestamp that is updated by any api calls
-                //This is still basically done by server side refresh - following the https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-14#name-token-mediating-backend architecture
+                // FIXME should include detection of whether user is active https://developer.mozilla.org/en-US/docs/Web/API/UserActivation
+                // This is still basically done by server side refresh - following the https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-14#name-token-mediating-backend architecture
                 // The server side settings are https://quarkus.io/guides/security-oidc-code-flow-authentication#handling-and-controlling-the-lifetime-of-authentication
                 // quarkus.oidc.token.refresh-token-time-skew=60
                 // quarkus.oidc.token.refresh-expired=true
                 // which means that quarkus will attempt to refresh 60s before actual expiry - we need that as we cannot have a redirect happen
                 // for the javascript fetch because of CORS so we nake the call 10s before expiry.
+                //
 
                 console.log("access token about to expire - forcing re-fetch "+ new Date(Date.now()).toISOString());
                 setLoggedOn(false);
