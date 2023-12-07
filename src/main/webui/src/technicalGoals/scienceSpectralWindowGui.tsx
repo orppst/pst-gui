@@ -34,7 +34,6 @@ export type ExpectedSpectralLineGui = {
  *  Notice that we have transferred the members of 'SpectralWindowSetup'
  *  to be direct children of this type.
  *
- * @param {number | string} index unsure as to the semantics of this - has a non-null constraint in DB.
  * @param {NumberUnitType} start the start of the window.
  * @param {NumberUnitType} end the end of the window.
  * @param {NumberUnitType} spectralResolution the resolution of the window.
@@ -45,7 +44,6 @@ export type ExpectedSpectralLineGui = {
  * @param {string} key: the database key.
  */
 export type ScienceSpectralWindowGui = {
-    index?: number | string
     start: NumberUnitType,
     end: NumberUnitType,
     spectralResolution: NumberUnitType,
