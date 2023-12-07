@@ -139,7 +139,7 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
          */
 
         return (
-            <Table.Tr key={window.index}>
+            <Table.Tr>
                 <Table.Th>Start</Table.Th>
                 <Table.Td>{window.spectralWindowSetup?.start?.value}
                     {window.spectralWindowSetup?.start?.unit?.value}
@@ -175,8 +175,11 @@ export function RenderTechnicalGoal(props: RenderTechnicalGoalProps):
                 </Table.Thead>
                 <Table.Tbody>
                     {
-                        windows.map((window)=>{
-                            return <RenderSpectralWindowRow {...window}/>
+                        windows.map((window, index)=>{
+                            return <RenderSpectralWindowRow
+                                {...window}
+                                key={index} //fixme: using index in-lieu of database id
+                            />
                         })
                     }
                 </Table.Tbody>

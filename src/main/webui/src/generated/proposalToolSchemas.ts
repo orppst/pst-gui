@@ -1171,10 +1171,6 @@ export type Reviewer = {
  */
 export type ScienceSpectralWindow = {
   /**
-   * @format int32
-   */
-  index?: number;
-  /**
    * Science oriented definition of a spectral window.
    */
   spectralWindowSetup?: SpectralWindowSetup;
