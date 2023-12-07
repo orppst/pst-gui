@@ -23,7 +23,6 @@ import {SubmitButton} from "../commonButtons/save.tsx";
 export const notSpecified = "not specified";
 export const notSet = "not set";
 
-
 /**
  * interface for the TechnicalGoal Form values.
  * @param {NumberUnitType} angularResolution the desired angular resolution for the observation
@@ -49,15 +48,14 @@ export interface TechnicalGoalValues {
  * @return {ReactElement} the html for the technical goal edit page.
  * @constructor
  */
-export default function TechnicalGoalEditGroup(props: TechnicalGoalProps ):
-        ReactElement {
+export default function TechnicalGoalEditGroup(
+    props: TechnicalGoalProps ): ReactElement {
 
     // integers specifying the proportional number of columns for the performance parameter
     // section and the spectral window section
     const TOTAL_COLUMNS = 10;
     const PERFORMANCE_COLUMNS = 4;
     const SPECTRUM_COLUMNS = TOTAL_COLUMNS - PERFORMANCE_COLUMNS
-
     // setup default values (proposal code, query system,
     // and the technical goal)
     const {selectedProposalCode} = useParams();

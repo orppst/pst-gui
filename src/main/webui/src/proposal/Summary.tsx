@@ -8,20 +8,27 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import {Box, Text, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import { MAX_CHARS_FOR_INPUTS } from '../constants.tsx';
-import { SubmitButton } from '../commonButtons/save.tsx';
+import { SubmitButton } from '../commonButtons/save';
+import {
+    HEADER_FONT_WEIGHT,
+    JSON_SPACES,
+    MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS
+} from '../constants';
+import MaxCharsForInputRemaining from "../commonInputs/remainingCharacterCount.tsx";
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
-    const { data, error, isLoading, status} = useProposalResourceGetObservingProposal(
-        {pathParams: {proposalCode: Number(selectedProposalCode)},},
-        {enabled: true});
+    const { data, error, isLoading, status} =
+        useProposalResourceGetObservingProposal(
+            {pathParams: {proposalCode: Number(selectedProposalCode)},},
+            {enabled: true});
     const [summary, setSummary] = useState( "");
     const [submitting, setSubmitting] = useState(false);
     const form = useForm({
         initialValues: {summary: "Loading..."},
         validate: {
-            summary: (value) => (value.length < 1 ? 'Your summary cannot be empty' : null)
+            summary: (value) => (
+                value.length < 1 ? 'Your summary cannot be empty' : null)
         }
     });
 
@@ -62,7 +69,7 @@ function SummaryPanel() {
     if (error) {
         return (
             <Box>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -75,18 +82,16 @@ function SummaryPanel() {
 
     return (
         <Box>
-            <Text fz="lg" fw={700}>Update summary</Text>
+            <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Update summary</Text>
             {isLoading ? <Box>loading...</Box>:
               submitting ?
                 <Box>Submitting request</Box> :
 
             <form onSubmit={updateSummary}>
-                <Textarea rows={3} maxLength={MAX_CHARS_FOR_INPUTS}
-                    name="summary" {...form.getInputProps('summary')} />
-                <small>
-                    Characters remaining:
-                    {MAX_CHARS_FOR_INPUTS - form.values.summary.length}
-                </small>
+                <Textarea rows={TEXTAREA_MAX_ROWS}
+                          maxLength={MAX_CHARS_FOR_INPUTS}
+                          name="summary" {...form.getInputProps('summary')} />
+                <MaxCharsForInputRemaining length={form.values.summary.length} />
                 <br/>
                 <SubmitButton toolTipLabel={"save summary"}
                               label={'save'}/>

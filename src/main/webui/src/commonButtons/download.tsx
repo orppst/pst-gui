@@ -5,6 +5,7 @@ import {
     DownloadRequestInterfaceProps
 } from './buttonInterfaceProps.tsx';
 import { ReactElement } from 'react';
+import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
 
 /**
  * creates a download button.
@@ -16,8 +17,11 @@ import { ReactElement } from 'react';
 export function DownloadButton(props: DownloadButtonInterfaceProps):
         ReactElement {
     return (
-        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<IconFileDownload size={"2rem"}/>}
+        <Tooltip position={"left"}
+                 label={props.toolTipLabel}
+                 openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}>
+            <Button rightSection={<IconFileDownload size={ICON_SIZE}/>}
                     color={"green"}
                     variant={"subtle"}
                     component={"a"}
@@ -41,8 +45,11 @@ export function DownloadButton(props: DownloadButtonInterfaceProps):
 export function DownloadRequestButton(props: DownloadRequestInterfaceProps):
     ReactElement {
     return (
-        <Tooltip position={"left"} label={props.toolTipLabel} openDelay={1000}>
-            <Button rightSection={<IconDatabaseSearch size={"2rem"}/>}
+        <Tooltip position={"left"}
+                 label={props.toolTipLabel}
+                 openDelay={OPEN_DELAY}
+                 closeDelay={CLOSE_DELAY}>
+            <Button rightSection={<IconDatabaseSearch size={ICON_SIZE}/>}
                     color={"blue"}
                     variant={"subtle"}
                     component={"a"}
