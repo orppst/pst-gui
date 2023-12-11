@@ -84,7 +84,7 @@ export default function ObservationRow(
     }
 
     /**
-     * handles the confirmation to the user for deletion of an obersation.
+     * handles the confirmation to the user for deletion of an observation.
      */
     const confirmDeletion = () => modals.openConfirmModal({
         title: 'Delete Observation?',
@@ -265,7 +265,6 @@ export default function ObservationRow(
                         <ObservationEditModal
                             observation={observation}
                             observationId={observationId.id}
-                            newObservation={false}
                         />
                     }
                     <CloneButton toolTipLabel={"clone"}

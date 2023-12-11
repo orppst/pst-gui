@@ -21,17 +21,12 @@ import { IconTarget, IconChartLine } from '@tabler/icons-react';
  * @param {Observation | undefined} observation the observation object, or
  * undefined if not populated.
  * @param {number} observationId the observation id.
- * @param {boolean} newObservation a optional parameter stating if it is a new
- * observation.
  * @param {() => void}} closeModal an optional close modal.
  */
 export type ObservationProps = {
     observation: Observation | undefined,
     // needed as 'observation' does not contain its database id
     observationId?: number,
-    // this might be redundant i.e. observation === undefined contains the
-    // information
-    newObservation: boolean,
     closeModal?: () => void
 }
 
@@ -248,10 +243,7 @@ function Observations() {
             <Header/>
             <TableGenerator/>
             <Group justify={'flex-end'}>
-                <ObservationEditModal
-                    observation={undefined}
-                    newObservation={true}
-                />
+                <ObservationEditModal observation={undefined}/>
             </Group>
         </div>
     );

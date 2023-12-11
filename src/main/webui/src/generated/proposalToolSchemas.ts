@@ -130,7 +130,7 @@ export type CalibrationObservation = {
   /**
    * any constraints on the observation
    */
-  constraints?: Constraint[];
+  constraints?: ObservingConstraint[];
   /**
    * A target source
    */
@@ -212,11 +212,6 @@ export type CommitteeMember = {
    */
   member?: Reviewer;
 };
-
-/**
- * a form of constraint on the observation
- */
-export type Constraint = Record<string, any>;
 
 /**
  * Axis description for continuous data. This object describes the domain for a particular axis of the domain space. It allows for the specification of the legal domain range (min,max), and a flag indicating if the axis is cyclic.
@@ -579,7 +574,7 @@ export type Observation = {
   /**
    * any constraints on the observation
    */
-  constraints?: Constraint[];
+  constraints?: ObservingConstraint[];
   /**
    * A target source
    */
@@ -643,6 +638,11 @@ export type ObservingConfiguration = {
    */
   backend?: Backend;
 };
+
+/**
+ * a form of constraint on the observation
+ */
+export type ObservingConstraint = Record<string, any>;
 
 /**
  * a collection of configs that can be chosen to observe with.
@@ -1394,7 +1394,7 @@ export type TargetObservation = {
   /**
    * any constraints on the observation
    */
-  constraints?: Constraint[];
+  constraints?: ObservingConstraint[];
   /**
    * A target source
    */
@@ -1520,6 +1520,9 @@ export type TimingConstraint = {
  */
 export type TimingWindow = {
   "@type"?: string; //proposal:TimingWindow
+
+  _id?: number;
+
   note?: string;
   isAvoidConstraint?: boolean;
   /**

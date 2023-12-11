@@ -8,12 +8,14 @@ import {
     TimingWindow
 } from '../generated/proposalToolSchemas.ts';
 import { useForm, UseFormReturnType } from '@mantine/form';
-import { fetchObservationResourceAddNewObservation } from '../generated/proposalToolComponents.ts';
+import {
+    fetchObservationResourceAddNewConstraint,
+    fetchObservationResourceAddNewObservation, fetchObservationResourceReplaceTimingWindow
+} from '../generated/proposalToolComponents.ts';
 import { SubmitButton } from '../commonButtons/save.tsx';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, ReactElement } from 'react';
-import { randomId } from '@mantine/hooks';
 import { TimingWindowGui } from './timingWindowGui.tsx';
 
 /**
@@ -56,13 +58,12 @@ export default function ObservationEditGroup(
     const queryClient = useQueryClient();
 
     // figures out if we have an observation.
-    const hasObservation = props.observation !== undefined;
+    const newObservation = props.observation === undefined;
 
     // figure out the current observation type.
-    let observationType : ObservationType = hasObservation ?
+    let observationType : ObservationType = newObservation ? '' :
         props.observation!["@type"]
-        === 'proposal:TargetObservation' ? 'Target': 'Calibration' :
-        '';
+        === 'proposal:TargetObservation' ? 'Target': 'Calibration';
 
     // figure out the current calibration use.
     let calibrationUse : CalibrationTargetIntendedUse | undefined =
@@ -80,6 +81,7 @@ export default function ObservationEditGroup(
                     return ConvertToTimingWindowGui(timingWindow);
         });
     }
+
 
     /**
      * builds the form for the united form.
@@ -129,12 +131,11 @@ export default function ObservationEditGroup(
      */
     const handleSubmit: (event?: FormEvent<HTMLFormElement>) => void =
         form.onSubmit((values) => {
-            if (props.newObservation) {
-                console.log("Creating");
-
+            if (newObservation) {
+                //Creating new observation
                 let baseObservation : Observation = {
                     target: {
-                        "@type": "proposal:SolarSystemTarget",
+                        "@type": "proposal:CelestialTarget",
                         "_id": values.targetDBId
                     },
                     technicalGoal: {
@@ -177,11 +178,47 @@ export default function ObservationEditGroup(
                 })
                     .then(()=>queryClient.invalidateQueries())
                     .then(()=>props.closeModal!())
-                    .catch(console.log);
+                    .catch(console.error);
 
             }
             else {
-                console.log("Editing");
+                //Editing an existing observation
+                form.values.timingWindows.map((tw, index) => {
+                    if (tw.id === 0) {
+                        //new timing window - add to the Observation
+                        fetchObservationResourceAddNewConstraint({
+                            pathParams: {
+                                proposalCode: Number(selectedProposalCode),
+                                observationId: props.observationId!,
+                            },
+                            body: ConvertToTimingWindowApi(tw)
+                        })
+                            .then(()=>queryClient.invalidateQueries())
+                            .catch(console.error)
+
+                    } else if (form.isDirty(`timingWindows.${index}`)){
+                        //existing timing window and modified - update in Observation
+
+                        //the ts-ignore is required due to the fetch expecting a TimingWindow type
+                        //with start and end times as ISO-strings but the API excepting only the
+                        //number of milliseconds since the posix epoch
+                        fetchObservationResourceReplaceTimingWindow({
+                            pathParams: {
+                                proposalCode: Number(selectedProposalCode),
+                                observationId: props.observationId!,
+                                timingWindowId: tw.id
+                            },
+                            // @ts-ignore
+                            body: ConvertToTimingWindowApi(tw)
+                        })
+                            .then(()=>queryClient.invalidateQueries())
+                            .catch(console.error)
+                    }
+                    //else do nothing
+                })
+
+                //Todo: include any changes to the other values (target, technical goal, field)
+
             }
             console.debug(values)
     });
@@ -191,8 +228,9 @@ export default function ObservationEditGroup(
             <form onSubmit={handleSubmit}>
                 <Group justify={'flex-start'} mt="md">
                     <SubmitButton
-                        toolTipLabel={hasObservation ? "save changes" : "save"}
+                        toolTipLabel={newObservation ? "save changes" : "save"}
                         label={"Save"}
+                        disabled={!form.isDirty() || !form.isValid()}
                     />
                 </Group>
                 <Grid  columns={5}>
@@ -230,7 +268,8 @@ function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
         endTime: new Date(input.endTime!),
         note: input.note!,
         isAvoidConstraint: input.isAvoidConstraint!,
-        key: randomId()
+        key: String(input._id!),
+        id: input._id!
     })
 }
 
@@ -249,34 +288,8 @@ function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
         startTime: input.startTime!.getTime(),
         endTime: input.endTime!.getTime(),
         note: input.note,
-        isAvoidConstraint: input.isAvoidConstraint
+        isAvoidConstraint: input.isAvoidConstraint,
+        _id: input.id
     })
 }
 
-/**
- *
- * //Piece of code relative to #20 add-edit-delete TimingWindows in existing Observations
- *
- * //This adds a new TimingWindow constraint to an existing observation
- *
- *  const handleSave = (timingWindow : TimingWindowApi) => {
- *         console.log(timingWindow)
- *
- *         fetchObservationResourceAddNewConstraint({
- *             pathParams: {
- *                 proposalCode: Number(selectedProposalCode),
- *                 observationId: form.values.timingWindows.observationId},
- *             body: timingWindow
- *         })
- *             .then(() => queryClient.invalidateQueries())
- *             .then(() => {
- *                 notifications.show({
- *                     autoClose: false,
- *                     title: "Timing Window Saved",
- *                     message: 'The timing window has saved successfully',
- *                     color: "green"
- *                 })
- *             })
- *             .catch(console.error)
- *     }
- */

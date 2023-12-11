@@ -18,16 +18,6 @@ import { TimingWindowGui } from './timingWindowGui.tsx';
 // observation. These are stored as a List of Constraints in the Observation in
 // the backend. TimingWindows may not be the only Constraints.
 
-//FIXME: This currently only ADDS new timing windows to the specified
-// observation.
-// -- for example, it will display all currently added timing windows and if
-// you try to edit one of those (and press the 'save' button) it will instead
-// add a new timing window with the new data (note this won't show up until you
-// close and re-open the modal).
-// We need to be able to edit existing timing windows or at least be able to
-// delete them to replace them with a new window.
-// -- this issue stems from having no access to the timing window database IDs
-
 //As a general reminder, Radio observations can be done at any time but
 // Optical observations can occur only after sunset. In both cases the target
 // must be above the horizon at the time
@@ -47,7 +37,8 @@ export default function TimingWindowsForm(
         endTime: null,
         note: '',
         isAvoidConstraint: false,
-        key: randomId()
+        key: randomId(),
+        id: 0
     }
 
     //Note: using Grid and Grid.Col to get the spacing correct for each element.
@@ -65,6 +56,9 @@ export default function TimingWindowsForm(
 
     // how many columns the note field requires.
     const MAX_COLUMNS_NOTE = 3;
+
+    //character limit for the optional note about the timing window
+    const MAX_CHARS = 150;
 
     /**
      * handles the deletion of a timing window.
@@ -134,10 +128,10 @@ export default function TimingWindowsForm(
                                     autosize
                                     minRows={3}
                                     maxRows={3}
-                                    maxLength={150}
+                                    maxLength={MAX_CHARS}
                                     description={
-                                        150 -
-                                        form.values.timingWindows[index].note.length + "/150"}
+                                        MAX_CHARS -
+                                        form.values.timingWindows[index].note.length + "/" + String(MAX_CHARS)}
                                     inputWrapperOrder={[
                                         'label', 'error', 'input', 'description']}
                                     placeholder={"add optional note"}
