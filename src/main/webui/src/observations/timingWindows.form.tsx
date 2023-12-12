@@ -95,6 +95,11 @@ export default function TimingWindowsForm(
             .catch(console.error);
     }
 
+    /**
+     * Pops up a confirmation modal for the user before deletion
+     * @param {number} index the map index of the timing window
+     * @param {number} timingWindowId the database id of the timing window
+     */
     const confirmDeletion = (index: number, timingWindowId: number) =>
         modals.openConfirmModal( {
             title: 'Delete Timing Window?',
