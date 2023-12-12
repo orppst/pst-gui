@@ -28,7 +28,8 @@ type ObservationType = 'Target' | 'Calibration' | '';
  * the interface for the entire observation form.
  */
 export interface ObservationFormValues {
-    observationType: ObservationType;
+    observationId: number | undefined,
+    observationType: ObservationType,
     calibrationUse: CalibrationTargetIntendedUse | undefined,
     targetDBId: number | undefined,
     techGoalId: number | undefined,
@@ -92,6 +93,7 @@ export default function ObservationEditGroup(
     const form: UseFormReturnType<ObservationFormValues> =
         useForm<ObservationFormValues>({
             initialValues: {
+                observationId: props.observationId, //required for deletion of timing windows
                 observationType: observationType,
                 calibrationUse: calibrationUse,
                 targetDBId: props.observation?.target?._id,
