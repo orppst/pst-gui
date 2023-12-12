@@ -3517,6 +3517,75 @@ export const useProposalCyclesResourceAddAllocatedBlockToAllocatedProposal = (
   );
 };
 
+export type ProposalCyclesResourceGetProposalCycleDatesPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetProposalCycleDatesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetProposalCycleDatesVariables = {
+  pathParams: ProposalCyclesResourceGetProposalCycleDatesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetProposalCycleDates = (
+  variables: ProposalCyclesResourceGetProposalCycleDatesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ProposalCycleDates,
+    ProposalCyclesResourceGetProposalCycleDatesError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetProposalCycleDatesPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/dates",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetProposalCycleDates = <
+  TData = Schemas.ProposalCycleDates
+>(
+  variables: ProposalCyclesResourceGetProposalCycleDatesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ProposalCycleDates,
+      ProposalCyclesResourceGetProposalCycleDatesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ProposalCycleDates,
+    ProposalCyclesResourceGetProposalCycleDatesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/dates",
+      operationId: "proposalCyclesResourceGetProposalCycleDates",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetProposalCycleDates(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type ProposalCyclesResourceGetCycleAllocationGradesPathParams = {
   /**
    * @format int64
@@ -5570,63 +5639,6 @@ export const useObservationResourceGetObservations = <
   );
 };
 
-export type ObservationResourceAddObservationPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type ObservationResourceAddObservationError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ObservationResourceAddObservationVariables = {
-  pathParams: ObservationResourceAddObservationPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchObservationResourceAddObservation = (
-  variables: ObservationResourceAddObservationVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ObservationResourceAddObservationError,
-    undefined,
-    {},
-    {},
-    ObservationResourceAddObservationPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/observations",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useObservationResourceAddObservation = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ObservationResourceAddObservationError,
-      ObservationResourceAddObservationVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ObservationResourceAddObservationError,
-    ObservationResourceAddObservationVariables
-  >(
-    (variables: ObservationResourceAddObservationVariables) =>
-      fetchObservationResourceAddObservation({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    options
-  );
-};
-
 export type ObservationResourceAddNewObservationPathParams = {
   /**
    * @format int64
@@ -5833,7 +5845,8 @@ export type ObservationResourceGetConstraintsPathParams = {
 export type ObservationResourceGetConstraintsError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ObservationResourceGetConstraintsResponse = Schemas.Constraint[];
+export type ObservationResourceGetConstraintsResponse =
+  Schemas.ObservingConstraint[];
 
 export type ObservationResourceGetConstraintsVariables = {
   pathParams: ObservationResourceGetConstraintsPathParams;
@@ -5909,7 +5922,7 @@ export type ObservationResourceAddNewConstraintError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ObservationResourceAddNewConstraintVariables = {
-  body?: Schemas.Constraint;
+  body?: Schemas.ObservingConstraint;
   pathParams: ObservationResourceAddNewConstraintPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -5918,9 +5931,9 @@ export const fetchObservationResourceAddNewConstraint = (
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    Schemas.Constraint,
+    Schemas.ObservingConstraint,
     ObservationResourceAddNewConstraintError,
-    Schemas.Constraint,
+    Schemas.ObservingConstraint,
     {},
     {},
     ObservationResourceAddNewConstraintPathParams
@@ -5934,7 +5947,7 @@ export const fetchObservationResourceAddNewConstraint = (
 export const useObservationResourceAddNewConstraint = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.Constraint,
+      Schemas.ObservingConstraint,
       ObservationResourceAddNewConstraintError,
       ObservationResourceAddNewConstraintVariables
     >,
@@ -5943,7 +5956,7 @@ export const useObservationResourceAddNewConstraint = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    Schemas.Constraint,
+    Schemas.ObservingConstraint,
     ObservationResourceAddNewConstraintError,
     ObservationResourceAddNewConstraintVariables
   >(
@@ -5953,6 +5966,79 @@ export const useObservationResourceAddNewConstraint = (
         ...variables,
       }),
     options
+  );
+};
+
+export type ObservationResourceGetConstraintPathParams = {
+  /**
+   * @format int64
+   */
+  constraintId: number;
+  /**
+   * @format int64
+   */
+  observationId: number;
+};
+
+export type ObservationResourceGetConstraintError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservationResourceGetConstraintVariables = {
+  pathParams: ObservationResourceGetConstraintPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservationResourceGetConstraint = (
+  variables: ObservationResourceGetConstraintVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ObservingConstraint,
+    ObservationResourceGetConstraintError,
+    undefined,
+    {},
+    {},
+    ObservationResourceGetConstraintPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints/{constraintId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservationResourceGetConstraint = <
+  TData = Schemas.ObservingConstraint
+>(
+  variables: ObservationResourceGetConstraintVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ObservingConstraint,
+      ObservationResourceGetConstraintError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ObservingConstraint,
+    ObservationResourceGetConstraintError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints/{constraintId}",
+      operationId: "observationResourceGetConstraint",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchObservationResourceGetConstraint(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
   );
 };
 
@@ -6197,6 +6283,72 @@ export const useObservationResourceReplaceTechnicalGoal = (
   >(
     (variables: ObservationResourceReplaceTechnicalGoalVariables) =>
       fetchObservationResourceReplaceTechnicalGoal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
+export type ObservationResourceReplaceTimingWindowPathParams = {
+  /**
+   * @format int64
+   */
+  observationId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  /**
+   * @format int64
+   */
+  timingWindowId: number;
+};
+
+export type ObservationResourceReplaceTimingWindowError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservationResourceReplaceTimingWindowVariables = {
+  body?: Schemas.TimingWindow;
+  pathParams: ObservationResourceReplaceTimingWindowPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservationResourceReplaceTimingWindow = (
+  variables: ObservationResourceReplaceTimingWindowVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.TimingWindow,
+    ObservationResourceReplaceTimingWindowError,
+    Schemas.TimingWindow,
+    {},
+    {},
+    ObservationResourceReplaceTimingWindowPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/timingWindows/{timingWindowId}",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservationResourceReplaceTimingWindow = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.TimingWindow,
+      ObservationResourceReplaceTimingWindowError,
+      ObservationResourceReplaceTimingWindowVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.TimingWindow,
+    ObservationResourceReplaceTimingWindowError,
+    ObservationResourceReplaceTimingWindowVariables
+  >(
+    (variables: ObservationResourceReplaceTimingWindowVariables) =>
+      fetchObservationResourceReplaceTimingWindow({
         ...fetcherOptions,
         ...variables,
       }),
@@ -8147,6 +8299,11 @@ export type QueryOperation =
       variables: ProposalCyclesResourceGetAllocatedProposalsFromCycleVariables;
     }
   | {
+      path: "/pst/api/proposalCycles/{cycleCode}/dates";
+      operationId: "proposalCyclesResourceGetProposalCycleDates";
+      variables: ProposalCyclesResourceGetProposalCycleDatesVariables;
+    }
+  | {
       path: "/pst/api/proposalCycles/{cycleCode}/grades";
       operationId: "proposalCyclesResourceGetCycleAllocationGrades";
       variables: ProposalCyclesResourceGetCycleAllocationGradesVariables;
@@ -8245,6 +8402,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints";
       operationId: "observationResourceGetConstraints";
       variables: ObservationResourceGetConstraintsVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/observations/{observationId}/constraints/{constraintId}";
+      operationId: "observationResourceGetConstraint";
+      variables: ObservationResourceGetConstraintVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/supportingDocuments";
