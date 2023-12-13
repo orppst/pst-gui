@@ -15,13 +15,12 @@ import NavigationButton from '../commonButtons/navigation.tsx';
 import { IconTarget, IconChartLine } from '@tabler/icons-react';
 
 
-
 /**
  * the observation props.
- * @param {Observation | undefined} observation the observation object, or
- * undefined if not populated.
- * @param {number} observationId the observation id.
- * @param {() => void}} closeModal an optional close modal.
+ * @param {Observation | undefined} observation the observation object or
+ * undefined if not populated
+ * @param {number} observationId the observation id - optional
+ * @param {() => void}} closeModal an optional close modal - optional
  */
 export type ObservationProps = {
     observation: Observation | undefined,
@@ -29,12 +28,6 @@ export type ObservationProps = {
     observationId?: number,
     closeModal?: () => void
 }
-
-/*
-       TODO:
-       1. provide better UX for errors
-       2. provide functionality to edit an observation
- */
 
 /**
  * generates the observation panel.
@@ -219,7 +212,7 @@ function Observations() {
         );
     }
 
-    // if no technical goals or targets available. presnet buttons to route to
+    // if no technical goals or targets available. present buttons to route to
     // either targets or technical goals.
     if (technicalGoals!.length === 0 && targets!.length === 0) {
         return (
@@ -235,14 +228,13 @@ function Observations() {
         );
     }
 
-
-
     // generate the table as we're in a safe state to do so.
     return (
         <div>
             <Header/>
             <TableGenerator/>
-            <Group justify={'flex-end'}>
+            <Space h={"xl"}/>
+            <Group justify={'center'}>
                 <ObservationEditModal observation={undefined}/>
             </Group>
         </div>

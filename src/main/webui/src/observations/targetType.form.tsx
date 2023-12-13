@@ -4,7 +4,7 @@ import {
 import {
     Container,
     Select,
-    Space
+    Space, Tooltip
 } from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {RenderTarget} from "../targets/RenderTarget.tsx";
@@ -12,14 +12,14 @@ import {RenderTechnicalGoal} from "../technicalGoals/render.technicalGoal.tsx";
 import { ReactElement } from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
-import { JSON_SPACES } from '../constants.tsx';
+import {JSON_SPACES, OPEN_DELAY} from '../constants.tsx';
 import { randomId } from '@mantine/hooks';
 
 /**
  * the entrance to building the target part of the edit panel.
  *
- * TODO try to find the actual type for the form. as any is a dire type.
- * @param {any} form the form that governs the entire observation edit.
+ * @param {UseFormReturnType<ObservationFormValues>} form the form that governs
+ * the entire observation edit.
  * @return {ReactElement} the HTML for the observation edit panel.
  * @constructor
  */
@@ -121,20 +121,29 @@ export default function TargetTypeForm (
     }
 
     /**
-     * generates the html for the observation type.
+     * generates the html for the observation type. Notice, disabled if editing
+     * an existing observation
      * @return {ReactElement} the html for the observation type.
-     * @constructor
+     *
      */
     function SelectObservationType(): ReactElement {
         return (
-            <Select
-                label={"Observation type: "}
-                placeholder={"select observation type"}
-                data = {[
-                    'Target', 'Calibration'
-                ]}
-                {...form.getInputProps('observationType')}
-            />
+            <Tooltip
+                label={form.values.observationId !== undefined ?
+                    "Cannot change the type of an existing Observation" :
+                    'Target object or Calibration object'}
+                openDelay={OPEN_DELAY}
+            >
+                <Select
+                    label={"Observation type: "}
+                    placeholder={"select observation type"}
+                    disabled={form.values.observationId !== undefined}
+                    data = {[
+                        'Target', 'Calibration'
+                    ]}
+                    {...form.getInputProps('observationType')}
+                />
+            </Tooltip>
         )
     }
 
@@ -180,6 +189,7 @@ export default function TargetTypeForm (
                         boundTargets={[]}
                     />
             }
+            <Space h={"sm"}/>
             {SelectTechnicalGoal()}
             {
                 technicalGoalsLoading ? 'loading...' :
@@ -189,10 +199,13 @@ export default function TargetTypeForm (
                         dbid={form.values.techGoalId}
                     />
             }
-            <Space h={"xl"}/>
+            <Space h={"sm"}/>
             {SelectObservationType()}
             {form.values.observationType === 'Calibration' &&
-                SelectCalibrationUse()
+                <>
+                    <Space h={"xs"}/>
+                    {SelectCalibrationUse()}
+                </>
             }
         </Container>
     );

@@ -56,8 +56,8 @@ export interface DownloadRequestInterfaceProps extends BasicButtonInterfaceProps
 /**
  * used to route users around the form from other pages.
  *
- * @param {number} p ??????
- * @param {number} ml ????
+ * @param {number} p CSS variable: element padding (left, top, right, and bottom)
+ * @param {number} ml CSS variable: element margin-left
  * @param {string} to the destination to route the user to when clicked.
  * @param {(props: TablerIconsProps) => JSX.Element} icon the mantine icon to
  * present.

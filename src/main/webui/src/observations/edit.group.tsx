@@ -1,7 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import { Fieldset, Grid, Group } from '@mantine/core';
+import { Fieldset, Grid, Group, Text } from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, TargetObservation,
@@ -10,7 +10,9 @@ import {
 import { useForm, UseFormReturnType } from '@mantine/form';
 import {
     fetchObservationResourceAddNewConstraint,
-    fetchObservationResourceAddNewObservation, fetchObservationResourceReplaceTimingWindow
+    fetchObservationResourceAddNewObservation, fetchObservationResourceReplaceField,
+    fetchObservationResourceReplaceTarget, fetchObservationResourceReplaceTechnicalGoal,
+    fetchObservationResourceReplaceTimingWindow
 } from '../generated/proposalToolComponents.ts';
 import { SubmitButton } from '../commonButtons/save.tsx';
 import { useParams } from 'react-router-dom';
@@ -219,10 +221,50 @@ export default function ObservationEditGroup(
                     //else do nothing
                 })
 
-                //Todo: include any changes to the other values (target, technical goal, field)
+                if (form.isDirty('targetDBId')) {
+                    fetchObservationResourceReplaceTarget({
+                        pathParams: {
+                            proposalCode: Number(selectedProposalCode),
+                            observationId: props.observationId!
+                        },
+                        body: {
+                            "@type": "proposal:CelestialTarget",
+                            "_id": form.values.targetDBId
+                        }
+                    })
+                        .then(()=>queryClient.invalidateQueries())
+                        .catch(console.error)
+                }
 
+                if (form.isDirty('techGoalId')) {
+                    fetchObservationResourceReplaceTechnicalGoal({
+                        pathParams: {
+                            proposalCode: Number(selectedProposalCode),
+                            observationId: props.observationId!
+                        },
+                        body: {
+                            "_id": form.values.techGoalId
+                        }
+                    })
+                        .then(()=>queryClient.invalidateQueries())
+                        .catch(console.error)
+                }
+
+                if (form.isDirty('fieldId')) {
+                    fetchObservationResourceReplaceField({
+                        pathParams: {
+                            proposalCode: Number(selectedProposalCode),
+                            observationId: props.observationId!
+                        },
+                        body: {
+                            "@type": "proposal:TargetField",
+                            "_id": form.values.fieldId
+                        }
+                    })
+                        .then(()=>queryClient.invalidateQueries())
+                        .catch(console.error)
+                }
             }
-            console.debug(values)
     });
 
     return (
@@ -243,6 +285,9 @@ export default function ObservationEditGroup(
                     </Grid.Col>
                     <Grid.Col span={{base: 5, lg: 3}}>
                         <Fieldset legend={"Timing windows"}>
+                            <Text ta={"center"}  size={"xs"} c={"gray.6"}>
+                                Timezone set to UTC
+                            </Text>
                             <TimingWindowsForm {...form}/>
                         </Fieldset>
                     </Grid.Col>

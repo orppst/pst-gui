@@ -1,5 +1,5 @@
 import {Accordion, Grid, Group, Space, Switch, Textarea, Text} from "@mantine/core";
-import {DateTimePicker} from "@mantine/dates";
+import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import { UseFormReturnType } from '@mantine/form';
 import {randomId} from "@mantine/hooks";
 
@@ -25,7 +25,7 @@ import {notifications} from "@mantine/notifications";
 
 //As a general reminder, Radio observations can be done at any time but
 // Optical observations can occur only after sunset. In both cases the target
-// must be above the horizon at the time
+// must be above the horizon at the time.
 
 /**
  *
@@ -67,7 +67,7 @@ export default function TimingWindowsForm(
     const MAX_COLUMNS_NOTE = 3;
 
     //character limit for the optional note about the timing window
-    const MAX_CHARS = 150;
+    const MAX_CHARS_NOTE = 150;
 
     /**
      * handles the deletion of a timing window.
@@ -108,7 +108,6 @@ export default function TimingWindowsForm(
                     <Text c={"yellow"} size={"sm"}>
                         Removes Timing Window {index + 1} from the Observation
                     </Text>
-                    <Space h={"sm"}/>
                 </>
             ),
             labels: {confirm: 'Delete', cancel: "No don't delete it"},
@@ -150,6 +149,8 @@ export default function TimingWindowsForm(
                                     minDate={new Date()}
                                     {...form.getInputProps(
                                         `timingWindows.${index}.startTime`)}
+                                    rightSection={<Text>start</Text>}
+                                    rightSectionWidth={50}
                                 />
                                 <Space h={"xs"}/>
                                 <DateTimePicker
@@ -157,6 +158,8 @@ export default function TimingWindowsForm(
                                     minDate={new Date()}
                                     {...form.getInputProps(
                                         `timingWindows.${index}.endTime`)}
+                                    rightSection={<Text>end</Text>}
+                                    rightSectionWidth={50}
                                 />
                             </Grid.Col>
                             <Grid.Col span={{
@@ -181,10 +184,11 @@ export default function TimingWindowsForm(
                                     autosize
                                     minRows={3}
                                     maxRows={3}
-                                    maxLength={MAX_CHARS}
+                                    maxLength={MAX_CHARS_NOTE}
                                     description={
-                                        MAX_CHARS -
-                                        form.values.timingWindows[index].note.length + "/" + String(MAX_CHARS)}
+                                        MAX_CHARS_NOTE -
+                                        form.values.timingWindows[index].note.length +
+                                        "/" + String(MAX_CHARS_NOTE)}
                                     inputWrapperOrder={[
                                         'label', 'error', 'input', 'description']}
                                     placeholder={"add optional note"}
@@ -199,11 +203,12 @@ export default function TimingWindowsForm(
     });
 
     return (
-        <>
+        <DatesProvider settings={{timezone: 'UTC'}}>
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {windowsList}
             </Accordion>
-            <Group justify={"flex-end"}>
+            <Space h={"lg"}/>
+            <Group justify={"center"}>
                 <AddButton
                     toolTipLabel={"add a timing window"}
                     onClick={() => form.insertListItem(
@@ -211,6 +216,6 @@ export default function TimingWindowsForm(
                         {...EMPTY_TIMING_WINDOW, key: randomId()})}
                 />
             </Group>
-        </>
+        </DatesProvider>
     )
 }
