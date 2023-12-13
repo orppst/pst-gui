@@ -3517,6 +3517,75 @@ export const useProposalCyclesResourceAddAllocatedBlockToAllocatedProposal = (
   );
 };
 
+export type ProposalCyclesResourceGetProposalCycleDatesPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetProposalCycleDatesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetProposalCycleDatesVariables = {
+  pathParams: ProposalCyclesResourceGetProposalCycleDatesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetProposalCycleDates = (
+  variables: ProposalCyclesResourceGetProposalCycleDatesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ProposalCycleDates,
+    ProposalCyclesResourceGetProposalCycleDatesError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetProposalCycleDatesPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/dates",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetProposalCycleDates = <
+  TData = Schemas.ProposalCycleDates
+>(
+  variables: ProposalCyclesResourceGetProposalCycleDatesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ProposalCycleDates,
+      ProposalCyclesResourceGetProposalCycleDatesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ProposalCycleDates,
+    ProposalCyclesResourceGetProposalCycleDatesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/dates",
+      operationId: "proposalCyclesResourceGetProposalCycleDates",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalCyclesResourceGetProposalCycleDates(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type ProposalCyclesResourceGetCycleAllocationGradesPathParams = {
   /**
    * @format int64
@@ -8228,6 +8297,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals";
       operationId: "proposalCyclesResourceGetAllocatedProposalsFromCycle";
       variables: ProposalCyclesResourceGetAllocatedProposalsFromCycleVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/dates";
+      operationId: "proposalCyclesResourceGetProposalCycleDates";
+      variables: ProposalCyclesResourceGetProposalCycleDatesVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/grades";
