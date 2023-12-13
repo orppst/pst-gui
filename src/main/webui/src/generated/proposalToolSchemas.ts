@@ -47,12 +47,14 @@ export type AllocationGrade = {
    * what this grade means
    */
   description?: string;
+  xmlId?: string;
 };
 
 /**
  * The AstroCoordSystem object holds a collection of component coordinate system descriptions across all represented physical domains.
  */
 export type AstroCoordSystem = {
+  xmlId?: string;
   /**
    * Coordinate system description for each physical domain (Space, Time, etc).
    */
@@ -88,6 +90,7 @@ export type Backend = {
    * is capable of being run at same time as other backends
    */
   parallel?: boolean;
+  xmlId?: string;
 };
 
 /**
@@ -130,7 +133,7 @@ export type CalibrationObservation = {
   /**
    * any constraints on the observation
    */
-  constraints?: Constraint[];
+  constraints?: ObservingConstraint[];
   /**
    * A target source
    */
@@ -168,6 +171,7 @@ export type CartesianCoordSpace = {
  * The basic target setup for a celestial Target.
  */
 export type CelestialTarget = {
+  xmlId?: string;
   "@type"?: string; // proposal:CelestialTarget
   /**
    * A common name for the source
@@ -212,11 +216,6 @@ export type CommitteeMember = {
    */
   member?: Reviewer;
 };
-
-/**
- * a form of constraint on the observation
- */
-export type Constraint = Record<string, any>;
 
 /**
  * Axis description for continuous data. This object describes the domain for a particular axis of the domain space. It allows for the specification of the legal domain range (min,max), and a flag indicating if the axis is cyclic.
@@ -308,6 +307,7 @@ export type DiscreteSetAxis = {
  * Specialization of a Field for an elliptical map.
  */
 export type Ellipse = {
+  xmlId?: string;
   name?: string;
   /**
    * A real value with a unit.
@@ -367,9 +367,8 @@ export type ExpectedSpectralLine = {
  */
 export type Field = {
   "@type"?: string;
-
   name?: string;
-
+  xmlId?: string;
   _id?: number;
 };
 
@@ -403,6 +402,7 @@ export type GenericFrame = {
  * Specialized coordinate system for generic, one-dimensional domains not covered by other, more concrete objects. If a CoordSpace is not provided, it is assumed to be represented by a Standard 1-Dimensional Coordinate Space as described in Appendix B.
  */
 export type GenericSys = {
+  xmlId?: string;
   /**
    * Abstract head of coordinate spaces related to physical properties.
    */
@@ -477,6 +477,7 @@ export type Instrument = {
    * Science oriented definition of a spectral window.
    */
   frequencyCoverage?: SpectralWindowSetup;
+  xmlId?: string;
 };
 
 export type InstrumentKind = "CONTINUUM" | "SPECTROSCOPIC";
@@ -579,7 +580,7 @@ export type Observation = {
   /**
    * any constraints on the observation
    */
-  constraints?: Constraint[];
+  constraints?: ObservingConstraint[];
   /**
    * A target source
    */
@@ -598,6 +599,7 @@ export type Observation = {
  * An organisation that can perform astronomical observations
  */
 export type Observatory = {
+  xmlId?: string;
   /**
    * The name of the organization
    */
@@ -645,12 +647,18 @@ export type ObservingConfiguration = {
 };
 
 /**
+ * a form of constraint on the observation
+ */
+export type ObservingConstraint = Record<string, any>;
+
+/**
  * a collection of configs that can be chosen to observe with.
  */
 export type ObservingMode = {
   name?: string;
   description?: string;
   configurations?: ObservingConfiguration[];
+  xmlId?: string;
 };
 
 /**
@@ -704,6 +712,7 @@ export type ObservingProposal = {
    * the proposed observations
    */
   observations?: Observation[];
+  xmlId?: string;
 };
 
 export type OfferedCycles = {
@@ -727,6 +736,7 @@ export type Organization = {
    * a WikiData identifier
    */
   wikiId?: WikiDataId;
+  xmlId?: string;
 };
 
 /**
@@ -775,6 +785,7 @@ export type Person = {
    * An institution that is a collection of people
    */
   homeInstitute?: Organization;
+  xmlId?: string;
 };
 
 /**
@@ -791,6 +802,7 @@ export type PhysicalCoordSpace = {
  * Coordinate system description for any physical domain, such as Time, Space, Redshift, Temperature, Flux, etc.
  */
 export type PhysicalCoordSys = {
+  xmlId?: string;
   /**
    * Abstract head of coordinate spaces related to physical properties.
    */
@@ -819,6 +831,7 @@ export type PhysicalCoordinate = {
  * The PixelCoordSystem provides a complete description of the pixel coordinate space. It SHALL contain one PixelSpace instance describing each pixel axis.
  */
 export type PixelCoordSystem = {
+  xmlId?: string;
   /**
    * A PixelSpace SHALL include one or more BinnedAxis objects describing the pixel coordinate space. A handedness value MAY be provided to specify the relative orientation of the axes.
    */
@@ -856,6 +869,7 @@ export type PixelSpace = {
  * Single point on the sky
  */
 export type Point = {
+  xmlId?: string;
   name?: string;
   /**
    * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys). The coordinate values map, in order, to the axes described by the associated CoordSpace. Values for unused/undefined dimensions need not be provided.
@@ -934,6 +948,7 @@ export type PolStateEnum =
  * Polygonal map
  */
 export type Polygon = {
+  xmlId?: string;
   name?: string;
   /**
    * an array of points....
@@ -1002,6 +1017,13 @@ export type ProposalCycle = {
    * An organisation that can perform astronomical observations
    */
   observatory?: Observatory;
+};
+
+export type ProposalCycleDates = {
+  title?: string;
+  submissionDeadline?: Date;
+  observationSessionStart?: Date;
+  observationSessionEnd?: Date;
 };
 
 export type ProposalKind = "STANDARD" | "TOO" | "SURVEY";
@@ -1129,6 +1151,7 @@ export type ResourceType = {
    */
   name?: string;
   unit?: string;
+  xmlId?: string;
 };
 
 /**
@@ -1164,6 +1187,7 @@ export type Reviewer = {
    * person connected with the proposal
    */
   person?: Person;
+  xmlId?: string;
 };
 
 /**
@@ -1200,6 +1224,7 @@ export type SimultaneityConstraint = {
 };
 
 export type SolarSystemTarget = {
+  xmlId?: string;
   /**
    * A common name for the source
    */
@@ -1234,6 +1259,7 @@ export type SpaceFrame = {
  */
 export type SpaceSys = {
   "@type": string; // coords:SpaceSys
+  xmlId?: string;
   /**
    * Abstract head of coordinate spaces related to physical properties.
    */
@@ -1335,6 +1361,7 @@ export type SubmittedProposal = {
    * a complete proposal
    */
   proposal?: ObservingProposal;
+  xmlId?: string;
 };
 
 /**
@@ -1375,7 +1402,7 @@ export type Target = {
    * A common name for the source
    */
   sourceName?: string;
-
+  xmlId?: string;
   _id?: number;
 };
 
@@ -1383,6 +1410,7 @@ export type Target = {
  * the field points to the associated target
  */
 export type TargetField = {
+  xmlId?: string;
   name?: string;
 };
 
@@ -1394,7 +1422,7 @@ export type TargetObservation = {
   /**
    * any constraints on the observation
    */
-  constraints?: Constraint[];
+  constraints?: ObservingConstraint[];
   /**
    * A target source
    */
@@ -1418,8 +1446,8 @@ export type TechnicalGoal = {
    */
   performance?: PerformanceParameters;
   spectrum?: ScienceSpectralWindow[];
-
   _id?: number;
+  xmlId?: string;
 };
 
 export type Telescope = {
@@ -1435,6 +1463,7 @@ export type Telescope = {
    * ITRS earth coordinate
    */
   location?: GeocentricPoint;
+  xmlId?: string;
 };
 
 /**
@@ -1505,7 +1534,9 @@ export type TimeStamp = Record<string, any>;
 /**
  * Specialized coordinate system for the Temporal domain. This object SHOULD include an appropriate TimeFrame. If a CoordSpace is not provided, it is assumed to be represented by a Standard 1-Dimensional Coordinate Space as described in Appendix B.
  */
-export type TimeSys = Record<string, any>;
+export type TimeSys = {
+  xmlId?: string;
+};
 
 /**
  * Any specific timing requirements for the observing

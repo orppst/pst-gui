@@ -1,30 +1,41 @@
-Subject: [PATCH] Patch to add @type to some definitions
----
-Index: src/main/webui/src/generated/proposalToolSchemas.ts
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/src/main/webui/src/generated/proposalToolSchemas.ts b/src/main/webui/src/generated/proposalToolSchemas.ts
---- a/src/main/webui/src/generated/proposalToolSchemas.ts	(revision c487967e5e0da659f2c76006549e53ed8671ffe4)
-+++ b/src/main/webui/src/generated/proposalToolSchemas.ts	(date 1692787671123)
-@@ -159,6 +159,7 @@
+--- src/generated/proposalToolSchemas.ts	2023-12-12 15:34:33
++++ ../../../../../../Documents/proposalToolSchemas.ts	2023-12-12 15:34:26
+@@ -129,6 +129,7 @@
+  * An observation that is intended for calibration
+  */
+ export type CalibrationObservation = {
++  "@type"?: string;
+   /**
+    * any constraints on the observation
+    */
+@@ -162,6 +163,7 @@
   * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
   */
  export type CartesianCoordSpace = {
 +  "@type"?: string; // coords:CartesianCoordSpace
    axis?: Axis[];
  };
-
-@@ -166,6 +167,7 @@
-  * The basic target setup for a celestial Target.
+ 
+@@ -170,6 +172,7 @@
   */
  export type CelestialTarget = {
+   xmlId?: string;
 +  "@type"?: string; // proposal:CelestialTarget
    /**
     * A common name for the source
     */
-@@ -331,6 +333,8 @@
+@@ -254,9 +257,7 @@
+ /**
+  * Abstract head of the coordinate system object tree.
+  */
+-export type CoordSys = {
+-  xmlId?: string;
+-};
++export type CoordSys = Record<string, any>;
+ 
+ /**
+  * Abstract base class for the Coordinate data types which represent an absolute location within a coordinate space. Coordinates MUST refer to a coordinate system, providing additional metadata relevant to interpreting the coordinate value, and its representation.
+@@ -333,6 +334,8 @@
   * A Point on the Unit Sphere
   */
  export type EquatorialPoint = {
@@ -33,7 +44,26 @@ diff --git a/src/main/webui/src/generated/proposalToolSchemas.ts b/src/main/webu
    /**
     * A real value with a unit.
     */
-@@ -645,6 +649,7 @@
+@@ -363,8 +366,10 @@
+  * Definition of an observing field pointing
+  */
+ export type Field = {
++  "@type"?: string;
+   name?: string;
+   xmlId?: string;
++  _id?: number;
+ };
+ 
+ export type FileUpload = Record<string, any>;
+@@ -571,6 +576,7 @@
+ export type ObsType = "TargetObservation" | "CalibrationObservation";
+ 
+ export type Observation = {
++  "@type"?: string; //ObsType (see above)
+   /**
+    * any constraints on the observation
+    */
+@@ -659,6 +665,7 @@
   * a complete proposal
   */
  export type ObservingProposal = {
@@ -41,25 +71,65 @@ diff --git a/src/main/webui/src/generated/proposalToolSchemas.ts b/src/main/webu
    /**
     * the proposal title
     */
-@@ -1049,6 +1054,7 @@
+@@ -1077,6 +1084,7 @@
   * A real value with a unit.
   */
  export type RealQuantity = {
-+  "@type": string; // ivoa:RealQuantity
++  "@type"?: string; // ivoa:RealQuantity
    /**
     * Must conform to definition of unit in VOUnit spec.
     */
-@@ -1186,6 +1192,7 @@
+@@ -1227,6 +1235,7 @@
   * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
   */
  export type SpaceFrame = {
 +  "@type": string; // coords:SpaceFrame
    /**
-    * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' val@@ -1208,6 +1215,7 @@
+    * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
+    */
+@@ -1249,6 +1258,7 @@
   * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
   */
  export type SpaceSys = {
 +  "@type": string; // coords:SpaceSys
+   xmlId?: string;
    /**
     * Abstract head of coordinate spaces related to physical properties.
+@@ -1387,11 +1397,13 @@
+  * A target source
+  */
+ export type Target = {
++  "@type"?: string;
+   /**
+    * A common name for the source
     */
+   sourceName?: string;
+   xmlId?: string;
++  _id?: number;
+ };
+ 
+ /**
+@@ -1406,6 +1418,7 @@
+  * an observation of the scientific target
+  */
+ export type TargetObservation = {
++  "@type"?: string;
+   /**
+    * any constraints on the observation
+    */
+@@ -1433,6 +1446,7 @@
+    */
+   performance?: PerformanceParameters;
+   spectrum?: ScienceSpectralWindow[];
++  _id?: number;
+   xmlId?: string;
+ };
+ 
+@@ -1536,6 +1550,7 @@
+  * particular time range
+  */
+ export type TimingWindow = {
++  "@type"?: string; //proposal:TimingWindow
+   note?: string;
+   isAvoidConstraint?: boolean;
+   /**
