@@ -63,3 +63,6 @@ export const ALADIN_SRC_URL =
 
 /* The source url for the aladin jquery */
 export const JQUERY_SRC_URL = 'https://code.jquery.com/jquery-1.12.1.min.js';
+
+/* the color selection of yellow needed for errors */
+export const ERROR_YELLOW = 6;

@@ -15,7 +15,7 @@ import { ObservationFormValues } from './edit.group.tsx';
 import {
     JSON_SPACES, OPEN_DELAY,
     NO_ROW_SELECTED, TABLE_MIN_WIDTH,
-    TABLE_SCROLL_HEIGHT
+    TABLE_SCROLL_HEIGHT, ERROR_YELLOW
 } from '../constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
@@ -131,7 +131,7 @@ export default function TargetTypeForm (
             when not selected */}
             {form.values.targetDBId === undefined ||
                     form.values.targetDBId === NO_ROW_SELECTED
-                ? <p style={{color:theme.colors.yellow[6]}}>
+                ? <p style={{color:theme.colors.yellow[ERROR_YELLOW]}}>
                     Please select a target.
                   </p>
                 : <></>}
@@ -163,7 +163,7 @@ export default function TargetTypeForm (
             when not selected */}
             {form.values.techGoalId === undefined ||
             form.values.techGoalId === NO_ROW_SELECTED
-                ? <p style={{color:theme.colors.yellow[6]}}>
+                ? <p style={{color:theme.colors.yellow[ERROR_YELLOW]}}>
                     Please select a Technical Goal.
                   </p>
                 : <></>}

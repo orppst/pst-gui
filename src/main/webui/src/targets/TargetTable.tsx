@@ -10,7 +10,11 @@ import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
 import { TargetProps, TargetTableProps } from './targetProps.tsx';
-import { NO_ROW_SELECTED, TABLE_HIGH_LIGHT_COLOR } from '../constants.tsx';
+import {
+    ERROR_YELLOW,
+    NO_ROW_SELECTED,
+    TABLE_HIGH_LIGHT_COLOR
+} from '../constants.tsx';
 
 /**
  * Render a table header suitable for rows made by TargetTableRow()
@@ -233,7 +237,7 @@ export function TargetTable(props: TargetTableProps): ReactElement {
     return (
         <Table borderColor={
                 props.selectedTarget === NO_ROW_SELECTED ?
-                    theme.colors.yellow[6]:
+                    theme.colors.yellow[ERROR_YELLOW]:
                     undefined}>
             {TargetTableHeader(props)}
             <Table.Tbody>

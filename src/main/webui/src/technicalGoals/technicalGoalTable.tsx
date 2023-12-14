@@ -31,7 +31,11 @@ import {
 import { notifications } from '@mantine/notifications';
 import { notSet } from './edit.group.tsx';
 import { ReactElement } from 'react';
-import { NO_ROW_SELECTED, TABLE_HIGH_LIGHT_COLOR } from '../constants.tsx';
+import {
+    ERROR_YELLOW,
+    NO_ROW_SELECTED,
+    TABLE_HIGH_LIGHT_COLOR
+} from '../constants.tsx';
 
 /** the technical goal id data holder.
  * @param {number} id the id
@@ -398,7 +402,7 @@ export function TechnicalGoalsTable(props: TechnicalGoalsTableProps): ReactEleme
     return (
         <Table borderColor={
             props.selectedTechnicalGoal === NO_ROW_SELECTED ?
-                theme.colors.yellow[6]:
+                theme.colors.yellow[ERROR_YELLOW]:
                 undefined}>
             {technicalGoalsHeader(props)}
             <Table.Tbody>
