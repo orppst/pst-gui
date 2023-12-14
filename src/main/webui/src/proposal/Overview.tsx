@@ -151,7 +151,7 @@ function ObservationAccordionLabel(
                 <Text>{targetName}</Text>
                 <Text size={"sm"} c={"dimmed"} fw={DIMMED_FONT_WEIGHT}>
                     {observationType}
-                    {intendedUse && "| " + intendedUse.toLowerCase()} |
+                    {intendedUse && ", " + intendedUse.toLowerCase()} { ", " }
                     {spectralPoint.value} {spectralPoint.unit?.value}
                 </Text>
             </div>
@@ -445,41 +445,44 @@ function OverviewPanel(): ReactElement {
      */
     const DisplayObservations = (): ReactElement => {
 
-        const observations = proposalsData?.observations?.map((observation) => {
+        const observations =
+            proposalsData?.observations?.map((observation, index) => {
 
-            //observation.target and observation.technicalGoal are NOT objects
-            // but numbers here, specifically their DB id
+                //observation.target and observation.technicalGoal are NOT objects
+                // but numbers here, specifically their DB id
 
-            let targetObj = proposalsData?.targets?.find((target) =>
-                target._id === observation.target)!
+                let targetObj = proposalsData?.targets?.find((target) =>
+                    target._id === observation.target)!
 
-            let technicalGoalObj  = proposalsData?.technicalGoals?.find((techGoal) =>
-                techGoal._id === observation.technicalGoal)!
+                let technicalGoalObj  = proposalsData?.technicalGoals?.find((techGoal) =>
+                    techGoal._id === observation.technicalGoal)!
 
-            let observationType = observation["@type"] === 'proposal:TargetObservation' ?
-                'Target Obs.' : 'Calibration Obs.';
+                let observationType = observation["@type"] === 'proposal:TargetObservation' ?
+                    'Target Obs.' : 'Calibration Obs.';
 
-            return(
-                <Accordion.Item key={randomId()} value={targetObj.sourceName!}>
-                    <Accordion.Control>
-                        <ObservationAccordionLabel
-                            targetName={targetObj.sourceName!}
-                            observationType={observationType}
-                            intendedUse={observationType === 'Calibration Obs.' ?
-                                (observation as CalibrationObservation).intent : undefined}
-                            spectralPoint={technicalGoalObj.performance?.representativeSpectralPoint!}
-                        />
-                    </Accordion.Control>
-                    <Accordion.Panel>
-                        <ObservationAccordionContent
-                            proposalCode={Number(selectedProposalCode)}
-                            targetId={targetObj._id!}
-                            technicalGoalId={technicalGoalObj._id!}
-                        />
-                    </Accordion.Panel>
-                </Accordion.Item>
-            )
-        })
+                // Ideally we should use the observation id for the 'key' but we don't have it at this point,
+                // so we use the map index instead
+                return(
+                    <Accordion.Item key={index} value={String(index)}>
+                        <Accordion.Control>
+                            <ObservationAccordionLabel
+                                targetName={targetObj.sourceName!}
+                                observationType={observationType}
+                                intendedUse={observationType === 'Calibration Obs.' ?
+                                    (observation as CalibrationObservation).intent : undefined}
+                                spectralPoint={technicalGoalObj.performance?.representativeSpectralPoint!}
+                            />
+                        </Accordion.Control>
+                        <Accordion.Panel>
+                            <ObservationAccordionContent
+                                proposalCode={Number(selectedProposalCode)}
+                                targetId={targetObj._id!}
+                                technicalGoalId={technicalGoalObj._id!}
+                            />
+                        </Accordion.Panel>
+                    </Accordion.Item>
+                )
+            })
 
         return (
             <>
