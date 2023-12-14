@@ -10,7 +10,6 @@ import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "../commonButtons/delete";
 import { TargetProps, TargetTableProps } from './targetProps.tsx';
-import { randomId } from '@mantine/hooks';
 import { NO_ROW_SELECTED, TABLE_HIGH_LIGHT_COLOR } from '../constants.tsx';
 
 /**
@@ -235,7 +234,7 @@ export function TargetTable(props: TargetTableProps): ReactElement {
             {TargetTableHeader(props)}
             <Table.Tbody>
                 {props.isLoading ? (
-                        <Table.Tr colSpan={5} key={randomId()}>
+                        <Table.Tr colSpan={5}>
                             <Table.Td>Loading...</Table.Td>
                         </Table.Tr>) :
                     props.data?.map((item) => {
@@ -243,8 +242,8 @@ export function TargetTable(props: TargetTableProps): ReactElement {
                             <TargetTableRow
                                 proposalCode={Number(props.selectedProposalCode)}
                                 dbid={item.dbid!}
+                                key={String(item.dbid!)}
                                 showButtons={props.showButtons}
-                                key={randomId()}
                                 boundTargets={props.boundTargets}
                                 selectedTarget={props.selectedTarget}
                                 setSelectedTarget={props.setSelectedTarget}
