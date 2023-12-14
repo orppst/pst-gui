@@ -34,7 +34,6 @@ export default function SpectralWindowsSection(
 
     // default window settings.
     const EMPTY_SPECTRAL_WINDOW : ScienceSpectralWindowGui = {
-        index: "",
         start: {value: "", unit: null},
         end: {value: "", unit: null},
         spectralResolution: {value: "", unit: null},
@@ -47,7 +46,7 @@ export default function SpectralWindowsSection(
     /**
      * builds a window setup panel.
      *
-     * @param {number} index the window index.
+     * @param {number} index the window array index.
      * @return {ReactElement} the dynamic html for the window.
      */
     const renderWindowSetup = (index: number): ReactElement => {

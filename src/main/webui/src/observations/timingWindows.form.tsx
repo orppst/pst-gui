@@ -1,5 +1,5 @@
-import {Accordion, Grid, Group, Space, Switch, Textarea} from "@mantine/core";
-import {DateTimePicker} from "@mantine/dates";
+import {Accordion, Grid, Group, Space, Switch, Textarea, Text} from "@mantine/core";
+import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import { UseFormReturnType } from '@mantine/form';
 import {randomId} from "@mantine/hooks";
 
@@ -9,6 +9,11 @@ import { ObservationFormValues } from './edit.group.tsx';
 import { AccordionDelete } from '../commonButtons/accordianControls.tsx';
 import { ReactElement } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
+import {fetchObservationResourceRemoveConstraint} from "../generated/proposalToolComponents.ts";
+import {useParams} from "react-router-dom";
+import {useQueryClient} from "@tanstack/react-query";
+import {modals} from "@mantine/modals";
+import {notifications} from "@mantine/notifications";
 
 
 //Providing a UI for a TimingWindow:
@@ -18,19 +23,9 @@ import { TimingWindowGui } from './timingWindowGui.tsx';
 // observation. These are stored as a List of Constraints in the Observation in
 // the backend. TimingWindows may not be the only Constraints.
 
-//FIXME: This currently only ADDS new timing windows to the specified
-// observation.
-// -- for example, it will display all currently added timing windows and if
-// you try to edit one of those (and press the 'save' button) it will instead
-// add a new timing window with the new data (note this won't show up until you
-// close and re-open the modal).
-// We need to be able to edit existing timing windows or at least be able to
-// delete them to replace them with a new window.
-// -- this issue stems from having no access to the timing window database IDs
-
 //As a general reminder, Radio observations can be done at any time but
 // Optical observations can occur only after sunset. In both cases the target
-// must be above the horizon at the time
+// must be above the horizon at the time.
 
 /**
  *
@@ -41,13 +36,18 @@ import { TimingWindowGui } from './timingWindowGui.tsx';
  */
 export default function TimingWindowsForm(
         form: UseFormReturnType<ObservationFormValues>): ReactElement {
+
+    const { selectedProposalCode} = useParams();
+    const queryClient = useQueryClient();
+
     // constant used for populating new timing window guis.
     const EMPTY_TIMING_WINDOW : TimingWindowGui = {
         startTime: null,
         endTime: null,
         note: '',
         isAvoidConstraint: false,
-        key: randomId()
+        key: randomId(),
+        id: 0
     }
 
     //Note: using Grid and Grid.Col to get the spacing correct for each element.
@@ -66,30 +66,76 @@ export default function TimingWindowsForm(
     // how many columns the note field requires.
     const MAX_COLUMNS_NOTE = 3;
 
+    //character limit for the optional note about the timing window
+    const MAX_CHARS_NOTE = 150;
+
     /**
      * handles the deletion of a timing window.
      *
-     * @param {number} index the index in the table.
+     * @param {number} timingWindowId the database id for an existing timing window
      */
-    const handleDelete = (index: number) => {
-        alert("Removes the list item only - " +
-            "does not yet delete the timing window from the database")
-        form.removeListItem('timingWindows', index);
-        //todo: call API function to delete timing window from the database
-        // (requires the DB ID)
+    const handleDelete = (timingWindowId: number) => {
+        //existing timing window - remove it from the database
+        fetchObservationResourceRemoveConstraint({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                observationId: form.values.observationId!,
+                constraintId: timingWindowId
+            }
+        })
+            .then(()=>queryClient.invalidateQueries())
+            .then(() => {
+                notifications.show({
+                    autoClose: 3000,
+                    title: "Deletion confirmed",
+                    message: "The selected timing window has been deleted",
+                    color: "green"
+                })
+            })
+            .catch(console.error);
     }
 
+    /**
+     * Pops up a confirmation modal for the user before deletion
+     * @param {number} index the map index of the timing window
+     * @param {number} timingWindowId the database id of the timing window
+     */
+    const confirmDeletion = (index: number, timingWindowId: number) =>
+        modals.openConfirmModal( {
+            title: 'Delete Timing Window?',
+            children: (
+                <>
+                    <Text c={"yellow"} size={"sm"}>
+                        Removes Timing Window {index + 1} from the Observation
+                    </Text>
+                </>
+            ),
+            labels: {confirm: 'Delete', cancel: "No don't delete it"},
+            confirmProps: {color: 'red'},
+            onConfirm: () => handleDelete(timingWindowId),
+            onCancel: () => {
+                notifications.show({
+                    autoClose: false,
+                    title: "Deletion cancelled",
+                    message: "User cancelled deletion of timing window",
+                    color: "orange"
+                })
+            }
+    })
+
     const windowsList = form.values.timingWindows.map(
-        (item: TimingWindowGui, index: number) => {
+        (tw: TimingWindowGui, index: number) => {
             let labelIndex = index + 1;
-            // @ts-ignore
             return (
-                <Accordion.Item value={labelIndex.toString()} key={item.key}>
+                <Accordion.Item value={labelIndex.toString()} key={tw.key}>
                     <AccordionDelete
                         title={"Window " + labelIndex}
                         deleteProps={{
                             toolTipLabel: 'delete timing window ' + labelIndex,
-                            onClick: () => handleDelete(index)
+                            onClick: () => {
+                                tw.id === 0 ? form.removeListItem('timingWindows', index) :
+                                    confirmDeletion(index, tw.id);
+                            }
                         }}
                     />
                     <Accordion.Panel>
@@ -103,6 +149,8 @@ export default function TimingWindowsForm(
                                     minDate={new Date()}
                                     {...form.getInputProps(
                                         `timingWindows.${index}.startTime`)}
+                                    rightSection={<Text>start</Text>}
+                                    rightSectionWidth={50}
                                 />
                                 <Space h={"xs"}/>
                                 <DateTimePicker
@@ -110,6 +158,8 @@ export default function TimingWindowsForm(
                                     minDate={new Date()}
                                     {...form.getInputProps(
                                         `timingWindows.${index}.endTime`)}
+                                    rightSection={<Text>end</Text>}
+                                    rightSectionWidth={50}
                                 />
                             </Grid.Col>
                             <Grid.Col span={{
@@ -134,10 +184,11 @@ export default function TimingWindowsForm(
                                     autosize
                                     minRows={3}
                                     maxRows={3}
-                                    maxLength={150}
+                                    maxLength={MAX_CHARS_NOTE}
                                     description={
-                                        150 -
-                                        form.values.timingWindows[index].note.length + "/150"}
+                                        MAX_CHARS_NOTE -
+                                        form.values.timingWindows[index].note.length +
+                                        "/" + String(MAX_CHARS_NOTE)}
                                     inputWrapperOrder={[
                                         'label', 'error', 'input', 'description']}
                                     placeholder={"add optional note"}
@@ -152,11 +203,12 @@ export default function TimingWindowsForm(
     });
 
     return (
-        <>
+        <DatesProvider settings={{timezone: 'UTC'}}>
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {windowsList}
             </Accordion>
-            <Group justify={"flex-end"}>
+            <Space h={"lg"}/>
+            <Group justify={"center"}>
                 <AddButton
                     toolTipLabel={"add a timing window"}
                     onClick={() => form.insertListItem(
@@ -164,6 +216,6 @@ export default function TimingWindowsForm(
                         {...EMPTY_TIMING_WINDOW, key: randomId()})}
                 />
             </Group>
-        </>
+        </DatesProvider>
     )
 }

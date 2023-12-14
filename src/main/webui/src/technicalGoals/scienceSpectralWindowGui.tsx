@@ -34,7 +34,6 @@ export type ExpectedSpectralLineGui = {
  *  Notice that we have transferred the members of 'SpectralWindowSetup'
  *  to be direct children of this type.
  *
- * @param {number | string} index optional id.
  * @param {NumberUnitType} start the start of the window.
  * @param {NumberUnitType} end the end of the window.
  * @param {NumberUnitType} spectralResolution the resolution of the window.
@@ -45,7 +44,6 @@ export type ExpectedSpectralLineGui = {
  * @param {string} key: the database key.
  */
 export type ScienceSpectralWindowGui = {
-    index?: number | string
     start: NumberUnitType,
     end: NumberUnitType,
     spectralResolution: NumberUnitType,
@@ -86,7 +84,6 @@ export function convertToScienceSpectralWindowGui(
         input: ScienceSpectralWindow): ScienceSpectralWindowGui {
     // return the converted gui.
     return {
-        index: input.index,
         start: {
             value: input.spectralWindowSetup?.start?.value ?? "",
             unit: input.spectralWindowSetup?.start?.unit?.value ?? ""
@@ -131,13 +128,12 @@ export function convertToExpectedSpectralLine(
  * convert ScienceSpectralWindowGui type to ScienceSpectralWindow type.
  *
  * @param {ScienceSpectralWindowGui} input the window gui to convert.
- * @return {}ScienceSpectralWindow} the converted window.
+ * @return {ScienceSpectralWindow} the converted window.
  */
 export function convertToScienceSpectralWindow(
         input: ScienceSpectralWindowGui): ScienceSpectralWindow {
     // return the new window
     return {
-        index: input.index as number,
         spectralWindowSetup: {
             start: convertToRealQuantity(input.start),
             end: convertToRealQuantity(input.end),
