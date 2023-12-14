@@ -10,7 +10,6 @@ import {
     Investigator,
     RealQuantity
 } from '../generated/proposalToolSchemas.ts';
-import { randomId } from '@mantine/hooks';
 import { IconNorthStar } from '@tabler/icons-react';
 import { ReactElement, useRef } from 'react';
 import { SaveButton } from '../commonButtons/save.tsx';

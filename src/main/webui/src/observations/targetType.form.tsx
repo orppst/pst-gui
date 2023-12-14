@@ -19,7 +19,6 @@ import {
 } from '../constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
-import { randomId } from '@mantine/hooks';
 
 /**
  * the entrance to building the target part of the edit panel.
@@ -175,7 +174,7 @@ export default function TargetTypeForm (
             {form.values.observationType === 'Calibration' &&
                 <>
                     <Space h={"xs"}/>
-                    SelectCalibrationUse()
+                    {SelectCalibrationUse()}
                 </>
             }
         </Container>
