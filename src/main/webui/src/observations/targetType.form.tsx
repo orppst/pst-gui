@@ -6,8 +6,8 @@ import {
     Select,
     Space,
     Table,
-    Tooltip
-} from "@mantine/core";
+    Tooltip, useMantineTheme
+} from '@mantine/core';
 import {useParams} from "react-router-dom";
 import { ReactElement } from 'react';
 import { UseFormReturnType } from '@mantine/form';
@@ -31,6 +31,7 @@ import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 export default function TargetTypeForm (
         form: UseFormReturnType<ObservationFormValues>): ReactElement {
     const { selectedProposalCode} = useParams();
+    const theme = useMantineTheme();
 
     const {
         data: targets ,
@@ -126,7 +127,15 @@ export default function TargetTypeForm (
     // return the html for the tables.
     return (
         <Container fluid>
-            <h3>Please select a target.</h3>
+            {/* only present the message about selecting a target
+            when not selected */}
+            {form.values.targetDBId === undefined ||
+                    form.values.targetDBId === NO_ROW_SELECTED
+                ? <p style={{color:theme.colors.yellow[6]}}>
+                    Please select a target.
+                  </p>
+                : <></>}
+
             {
                 targetsLoading ? 'loading...' :
                     <Table.ScrollContainer h={TABLE_SCROLL_HEIGHT}
@@ -150,7 +159,15 @@ export default function TargetTypeForm (
 
             <Space h={"sm"}/>
 
-            <h3>Please select a Technical Goal.</h3>
+            {/* only present the message about selecting a technical
+            when not selected */}
+            {form.values.techGoalId === undefined ||
+            form.values.techGoalId === NO_ROW_SELECTED
+                ? <p style={{color:theme.colors.yellow[6]}}>
+                    Please select a Technical Goal.
+                  </p>
+                : <></>}
+
             {
                 technicalGoalsLoading ? 'loading...' :
                     <Table.ScrollContainer h={TABLE_SCROLL_HEIGHT}
@@ -169,6 +186,7 @@ export default function TargetTypeForm (
                             />
                     </Table.ScrollContainer>
             }
+
             <Space h={"sm"}/>
             {SelectObservationType()}
             {form.values.observationType === 'Calibration' &&
