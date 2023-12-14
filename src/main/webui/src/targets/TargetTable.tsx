@@ -3,7 +3,7 @@ import {
     useProposalResourceGetTarget,
 } from '../generated/proposalToolComponents.ts';
 
-import { Table, Text } from '@mantine/core';
+import { Table, Text, useMantineTheme } from '@mantine/core';
 import { CelestialTarget } from '../generated/proposalToolSchemas.ts';
 import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement, useState } from 'react';
@@ -229,8 +229,12 @@ function TargetTableRow(props: TargetProps): ReactElement {
  * @constructor
  */
 export function TargetTable(props: TargetTableProps): ReactElement {
+    const theme = useMantineTheme();
     return (
-        <Table>
+        <Table borderColor={
+                props.selectedTarget === NO_ROW_SELECTED ?
+                    theme.colors.yellow[6]:
+                    undefined}>
             {TargetTableHeader(props)}
             <Table.Tbody>
                 {props.isLoading ? (

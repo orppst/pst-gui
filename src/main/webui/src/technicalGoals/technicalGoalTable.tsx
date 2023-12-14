@@ -1,5 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { Badge, Group, Space, Table, Text } from '@mantine/core';
+import {
+    Badge,
+    Group,
+    Space,
+    Table,
+    Text,
+    useMantineTheme
+} from '@mantine/core';
 import { modals } from '@mantine/modals';
 import TechnicalGoalEditModal from './edit.modal.tsx';
 import getErrorMessage from '../errorHandling/getErrorMessage.tsx';
@@ -387,8 +394,12 @@ function technicalGoalsHeader(props: TechnicalGoalsTableProps) : ReactElement {
  * @constructor
  */
 export function TechnicalGoalsTable(props: TechnicalGoalsTableProps): ReactElement {
+    const theme = useMantineTheme();
     return (
-        <Table>
+        <Table borderColor={
+            props.selectedTechnicalGoal === NO_ROW_SELECTED ?
+                theme.colors.yellow[6]:
+                undefined}>
             {technicalGoalsHeader(props)}
             <Table.Tbody>
                 {
