@@ -1551,6 +1551,9 @@ export type TimingConstraint = {
  */
 export type TimingWindow = {
   "@type"?: string; //proposal:TimingWindow
+
+  _id?: number;
+
   note?: string;
   isAvoidConstraint?: boolean;
   /**

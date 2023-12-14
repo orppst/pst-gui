@@ -43,7 +43,9 @@ export default function ObservationEditModal(
                 <Modal
                     opened={opened}
                     onClose={props.closeModal}
-                    title={"View/Edit Observation Form"}
+                    title={newObservation ?
+                        "New Observation" :
+                        "View/Edit Observation"}
                     fullScreen
                 >
                     <ObservationEditGroup {...props}/>
@@ -54,20 +56,14 @@ export default function ObservationEditModal(
 
     // main code starts here.
     const [opened, {close, open}] = useDisclosure();
-
     const props = {...observationProps, closeModal: () => {close()}};
+    let newObservation = !observationProps.observation;
 
-    if (props.newObservation) {
-        return (
-            <>
-                <NewButton/>
-                <ModalHtml/>
-            </>
-        );
-    }
     return (
         <>
-            <EditButton/>
+            {newObservation ?
+                <NewButton/> : <EditButton/>
+            }
             <ModalHtml/>
         </>
     )

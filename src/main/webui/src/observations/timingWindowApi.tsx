@@ -6,6 +6,7 @@
  * @param {number} endTime the number of milliseconds since the posix epoch
  * @param {string} note optional description of the timing window
  * @param {boolean} isAvoidConstraint if true avoid observing between the dates
+ * @param {number} _id the database id for the window or zero if new
  * given
  */
 type TimingWindowApi = {
@@ -14,4 +15,5 @@ type TimingWindowApi = {
     endTime: number,
     note: string,
     isAvoidConstraint: boolean,
+    _id: number
 }
