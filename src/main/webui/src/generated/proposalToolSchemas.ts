@@ -1199,6 +1199,8 @@ export type ScienceSpectralWindow = {
    */
   spectralWindowSetup?: SpectralWindowSetup;
   expectedSpectralLine?: ExpectedSpectralLine[];
+
+  _id?: number;
 };
 
 export type SimbadTargetResult = {

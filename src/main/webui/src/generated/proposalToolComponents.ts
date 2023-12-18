@@ -7597,11 +7597,11 @@ export type TechnicalGoalResourceReplaceSpectrumPathParams = {
   /**
    * @format int64
    */
-  technicalGoalId: number;
+  spectralWindowId: number;
   /**
-   * @format int32
+   * @format int64
    */
-  windowIndex: number;
+  technicalGoalId: number;
 };
 
 export type TechnicalGoalResourceReplaceSpectrumError =
@@ -7624,7 +7624,7 @@ export const fetchTechnicalGoalResourceReplaceSpectrum = (
     {},
     TechnicalGoalResourceReplaceSpectrumPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{windowIndex}",
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{spectralWindowId}",
     method: "put",
     ...variables,
     signal,
@@ -7663,11 +7663,11 @@ export type TechnicalGoalResourceRemoveSpectrumPathParams = {
   /**
    * @format int64
    */
-  technicalGoalId: number;
+  spectralWindowId: number;
   /**
-   * @format int32
+   * @format int64
    */
-  windowIndex: number;
+  technicalGoalId: number;
 };
 
 export type TechnicalGoalResourceRemoveSpectrumError =
@@ -7689,7 +7689,7 @@ export const fetchTechnicalGoalResourceRemoveSpectrum = (
     {},
     TechnicalGoalResourceRemoveSpectrumPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{windowIndex}",
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{spectralWindowId}",
     method: "delete",
     ...variables,
     signal,
@@ -7728,11 +7728,11 @@ export type TechnicalGoalResourceAddExpectedSpectralLinePathParams = {
   /**
    * @format int64
    */
-  technicalGoalId: number;
+  spectralWindowId: number;
   /**
-   * @format int32
+   * @format int64
    */
-  windowIndex: number;
+  technicalGoalId: number;
 };
 
 export type TechnicalGoalResourceAddExpectedSpectralLineError =
@@ -7755,7 +7755,7 @@ export const fetchTechnicalGoalResourceAddExpectedSpectralLine = (
     {},
     TechnicalGoalResourceAddExpectedSpectralLinePathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{windowIndex}/expectedSpectralLine",
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{spectralWindowId}/expectedSpectralLine",
     method: "post",
     ...variables,
     signal,
@@ -7798,11 +7798,11 @@ export type TechnicalGoalResourceRemoveExpectedSpectralLinePathParams = {
   /**
    * @format int64
    */
-  technicalGoalId: number;
+  spectralWindowId: number;
   /**
-   * @format int32
+   * @format int64
    */
-  windowIndex: number;
+  technicalGoalId: number;
 };
 
 export type TechnicalGoalResourceRemoveExpectedSpectralLineError =
@@ -7824,7 +7824,7 @@ export const fetchTechnicalGoalResourceRemoveExpectedSpectralLine = (
     {},
     TechnicalGoalResourceRemoveExpectedSpectralLinePathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{windowIndex}/expectedSpectralLine/{lineIndex}",
+    url: "/pst/api/proposals/{proposalCode}/technicalGoals/{technicalGoalId}/spectrum/{spectralWindowId}/expectedSpectralLine/{lineIndex}",
     method: "delete",
     ...variables,
     signal,

@@ -4,6 +4,7 @@ import {
     Fieldset, Grid,
     Group,
     Select, useMantineColorScheme,
+    Text
 } from "@mantine/core";
 import {TechnicalGoalValues} from "./edit.group.tsx";
 import AddButton from "../commonButtons/add.tsx";
@@ -15,18 +16,26 @@ import {randomId} from "@mantine/hooks";
 import {ScienceSpectralWindowGui} from "./scienceSpectralWindowGui.tsx";
 import {ReactElement} from "react";
 import { MAX_COLUMNS } from '../constants';
+import {modals} from "@mantine/modals";
+import {notifications} from "@mantine/notifications";
+import {fetchTechnicalGoalResourceRemoveSpectrum} from "../generated/proposalToolComponents.ts";
+import {useParams} from "react-router-dom";
+import {useQueryClient} from "@tanstack/react-query";
 
 /**
  * generates the spectral window panel.
  *
- * @param {UseFormReturnType<TechnicalGoalValues>} form the
- * form containign the spectral windows.
+ * @param {UseFormReturnType<TechnicalGoalValues>} form the form containing the spectral windows.
  * @return {React.ReactElement} the dynamic html for the spectral window panel.
  * @constructor
  */
 export default function SpectralWindowsSection(
     form: UseFormReturnType<TechnicalGoalValues>
 ): ReactElement {
+
+    //stuff to deal with spectral window deletions
+    const { selectedProposalCode} = useParams();
+    const queryClient = useQueryClient();
 
     // determine color.
     const {colorScheme} = useMantineColorScheme();
@@ -40,7 +49,8 @@ export default function SpectralWindowsSection(
         isSkyFrequency: false,
         polarization: null,
         expectedSpectralLines:[],
-        key: randomId()
+        key: randomId(),
+        id: 0
     }
 
     /**
@@ -136,25 +146,63 @@ export default function SpectralWindowsSection(
     /**
      * handles the deletion of a timing window.
      *
-     * @param {number} index the index in the table.
+     * @param {number} spectralWindowId the index in the table.
      */
-    const handleDelete = (index: number): void => {
-        alert("Removes the list item only - " +
-            "does not yet delete the spectral window from the database")
-        form.removeListItem('spectralWindows', index);
-        //todo: call API function to delete timing window from the database
+    const handleDelete = (spectralWindowId: number): void => {
+        //existing spectral window - remove it from the database
+        fetchTechnicalGoalResourceRemoveSpectrum({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                technicalGoalId: form.values.technicalGoalId!,
+                spectralWindowId: spectralWindowId
+            }
+        })
+            .then(()=>queryClient.invalidateQueries())
+            .then(()=>{
+                notifications.show({
+                    autoClose: 3000,
+                    title: "Deletion successful",
+                    message: "The selected spectral window has been deleted",
+                    color: "green"
+                })
+            })
+            .catch(console.error)
     }
 
+    const confirmDeletion = (index: number, spectralWindowId: number) =>
+        modals.openConfirmModal({
+            title: 'Delete Spectral Window?',
+            children: (
+                <Text c={"yellow"} size={"sm"}>
+                    Removes Spectral Window {index + 1} from the Technical Goal
+                </Text>
+            ),
+            labels: {confirm: 'Delete', cancel: "No don't delete it"},
+            confirmProps: {color: 'red'},
+            onConfirm: () => handleDelete(spectralWindowId),
+            onCancel: () => {
+                notifications.show({
+                    autoClose: false,
+                    title: "Deletion cancelled",
+                    message: "User cancelled deletion of the spectral window",
+                    color: "orange"
+                })
+            }
+        })
+
     const windowsList = form.values.spectralWindows.map(
-        (s, mapIndex) => {
+        (sw, mapIndex) => {
         let labelIndex = (mapIndex + 1).toString();
         return (
-            <Accordion.Item value={labelIndex} key={s.key}>
+            <Accordion.Item value={labelIndex} key={sw.key}>
                 <AccordionDelete
                     title={"Window " + labelIndex}
                     deleteProps={{
                         toolTipLabel: "remove spectral window " + labelIndex,
-                        onClick: () => handleDelete(mapIndex)
+                        onClick: () => {
+                            sw.id === 0 ? form.removeListItem('spectralWindows', mapIndex) :
+                                confirmDeletion(mapIndex, sw.id);
+                        }
                     }}
                 />
                 <Accordion.Panel>
