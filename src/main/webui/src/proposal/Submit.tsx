@@ -1,6 +1,7 @@
 import {ReactElement, useEffect, useState} from "react";
 import {Box, Select, Table, Text} from "@mantine/core";
 import {
+    fetchProposalCyclesResourceGetProposalCycleDates,
     fetchProposalCyclesResourceSubmitProposal,
     ProposalCyclesResourceSubmitProposalVariables,
     useProposalCyclesResourceGetProposalCycles
@@ -14,6 +15,7 @@ import {useQueryClient} from "@tanstack/react-query";
 function SubmitPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
     const [searchData, setSearchData] = useState([]);
+    const [submissionDeadline, setSubmissionDeadline] = useState("undefined");
     const {data, error,  status} =
         useProposalCyclesResourceGetProposalCycles({queryParams: {includeClosed: false}});
     const queryClient = useQueryClient();
@@ -42,8 +44,21 @@ function SubmitPanel(): ReactElement {
         );
     }
 
-    const trySubmitProposal = form.onSubmit((val) => {
-        console.log("Going to submit to cycle " + val.selectedCycle);
+    const changeCycleDates = (value: string | null) => {
+        console.log("Selected cycle is now " + value);
+        fetchProposalCyclesResourceGetProposalCycleDates(
+            {pathParams: {cycleCode: Number(value)}})
+            .then((dates) => {
+                setSubmissionDeadline(dates.submissionDeadline!);
+                console.log(dates)
+            })
+            .catch(console.log)
+
+        form.values.selectedCycle = Number(value)   ;
+    }
+
+    const trySubmitProposal = form.onSubmit(() => {
+        console.log("Going to submit to cycle " + form.values.selectedCycle);
 
         const submissionVariables: ProposalCyclesResourceSubmitProposalVariables = {
             pathParams: {cycleCode: Number(form.values.selectedCycle)},
@@ -81,11 +96,13 @@ function SubmitPanel(): ReactElement {
                 <Select label={"Cycle"}
                     data={searchData}
                     {...form.getInputProps("selectedCycle")}
+                    onChange={changeCycleDates}
                 />
+                <Text>Submission deadline {submissionDeadline}</Text>
                 <SubmitButton
                     disabled={form.values.selectedCycle===0}
                     label={"Submit proposal"}
-                    toolTipLabel={"Hello world"}
+                    toolTipLabel={"Submit your proposal to the selected cycle"}
                 />
             </form>
         </Box>
