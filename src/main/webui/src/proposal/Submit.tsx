@@ -6,14 +6,16 @@ import {
     ProposalCyclesResourceSubmitProposalVariables,
     useProposalCyclesResourceGetProposalCycles
 } from "../generated/proposalToolComponents.ts";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import {JSON_SPACES} from "../constants.tsx";
 import {SubmitButton} from "../commonButtons/save.tsx";
 import {useQueryClient} from "@tanstack/react-query";
+import {notifications} from "@mantine/notifications";
 
 function SubmitPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
+    const navigate = useNavigate();
     const [searchData, setSearchData] = useState([]);
     const [submissionDeadline, setSubmissionDeadline] = useState("undefined");
     const {data, error,  status} =
@@ -58,8 +60,6 @@ function SubmitPanel(): ReactElement {
     }
 
     const trySubmitProposal = form.onSubmit(() => {
-        console.log("Going to submit to cycle " + form.values.selectedCycle);
-
         const submissionVariables: ProposalCyclesResourceSubmitProposalVariables = {
             pathParams: {cycleCode: Number(form.values.selectedCycle)},
             body: Number(selectedProposalCode),
@@ -68,11 +68,26 @@ function SubmitPanel(): ReactElement {
         };
 
         fetchProposalCyclesResourceSubmitProposal(submissionVariables)
-            .then(() => {console.log("Submitted the proposal")})
             .then(()=> {
-                return queryClient.invalidateQueries();
+                notifications.show({
+                    autoClose: 5000,
+                    title: "Submission",
+                    message: 'Your proposal has been submitted',
+                    color: 'green',
+                    className: 'my-notification-class',
+                });
+                queryClient.invalidateQueries().then();
+                navigate("/proposal/" + selectedProposalCode);
             })
-            .catch(console.log);
+            .catch((error) => {
+                notifications.show({
+                    autoClose: 5000,
+                    title: "Submission failed",
+                    message: error.stack.message,
+                    color: 'red',
+                    className: 'my-notification-class',
+                });
+            })
     });
 
     return (
