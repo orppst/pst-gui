@@ -1,5 +1,8 @@
 # pst-gui Project
 
+[![main build](https://github.com/orppst/pst-gui/actions/workflows/gradle.yml/badge.svg)](https://github.com/orppst/pst-gui/actions/workflows/gradle.yml/)
+
+
 This project uses Quarkus - If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
 Note that there is a separate [README](src/main/webui/README.md) for the client side browser application that makes up the 
