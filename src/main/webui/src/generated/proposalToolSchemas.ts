@@ -168,6 +168,24 @@ export type CartesianCoordSpace = {
 };
 
 /**
+ * A spatial coordinate in a Cartesian coordinate space. Any associated CoordSpace MUST be a CartesianCoordSpace. If no CoordSpace is provided, a Standard Cartesian CoordSpace is assumed. Values for unused/undefined dimensions need not be provided.
+ */
+export type CartesianPoint = {
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  x?: Quantity;
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  y?: Quantity;
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  z?: Quantity;
+};
+
+/**
  * The basic target setup for a celestial Target.
  */
 export type CelestialTarget = {
@@ -274,15 +292,15 @@ export type Coordinate = {
  */
 export type CustomRefLocation = {
   /**
-   * We define epoch as a primitive data type with the expected form '$type$year' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
+   * We define epoch as a primitive data type with the expected form '{type}{year}' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
    */
   epoch?: Epoch;
   /**
-   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys). The coordinate values map, in order, to the axes described by the associated CoordSpace. Values for unused/undefined dimensions need not be provided.
+   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata.
    */
   position?: Point1;
   /**
-   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys). The coordinate values map, in order, to the axes described by the associated CoordSpace. Values for unused/undefined dimensions need not be provided.
+   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata.
    */
   velocity?: Point1;
 };
@@ -324,7 +342,7 @@ export type Ellipse = {
 };
 
 /**
- * We define epoch as a primitive data type with the expected form '$type$year' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
+ * We define epoch as a primitive data type with the expected form '{type}{year}' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
  */
 export type Epoch = {
   value?: string;
@@ -356,10 +374,20 @@ export type ExpectedSpectralLine = {
   restFrequency?: RealQuantity;
   transition?: string;
   /**
-   * a string identifier
+   * a string identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
    */
   splatalogId?: StringIdentifier;
   description?: string;
+};
+
+/**
+ * Extension of TimeInstant for time expressed as a structured datetime string. The string representation of a datetime value should follow the FITS convention for representing dates (Hanish and Farris et al, 2001). The FITS standard is effectively ISO8601 format without the 'Z' tag to indicate UTC: YYYY-MM-DD['T'hh:mm:ss[.SSS]]. The TimeScale is provided in the associated TimeFrame.
+ */
+export type FITSTime = {
+  /**
+   * The FITSTime coordinate value.
+   */
+  date?: string;
 };
 
 /**
@@ -399,6 +427,24 @@ export type GenericFrame = {
 };
 
 /**
+ * GenericPoint supports the representation of spatial coordinates in a custom coordinate space, or any space which is not covered by the other specializations. The coordinate values map, in order, to the axes described by the associated CoordSpace. If no CoordSpace is provided, the behavior is undefined. Values for unused/undefined dimensions need not be provided.
+ */
+export type GenericPoint = {
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  axis1?: Quantity;
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  axis2?: Quantity;
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  axis3?: Quantity;
+};
+
+/**
  * Specialized coordinate system for generic, one-dimensional domains not covered by other, more concrete objects. If a CoordSpace is not provided, it is assumed to be represented by a Standard 1-Dimensional Coordinate Space as described in Appendix B.
  */
 export type GenericSys = {
@@ -410,47 +456,9 @@ export type GenericSys = {
 };
 
 /**
- * ITRS earth coordinate
- */
-export type GeocentricPoint = {
-  /**
-   * A real value with a unit.
-   */
-  x?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  y?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  z?: RealQuantity;
-};
-
-/**
  * The handedness of a coordinate space. For most cases, this will be a fixed value in the specification of the coordinate space. We provide this element to allow this flexibility when needed. In this document, it is used in the Pixel domain.
  */
 export type Handedness = "LEFT" | "RIGHT";
-
-/**
- * Extension of TimeInstant for time expressed as a structured datetime string. The string representation of a datetime value should follow the FITS convention for representing dates (Hanish and Farris et al, 2001). The FITS standard is effectively ISO8601 format without the 'Z' tag to indicate UTC: YYYY-MM-DD['T'hh:mm:ss[.SSS]]. The TimeScale is provided in the associated TimeFrame.
- */
-export type ISOTime = {
-  /**
-   * The ISOTime coordinate value.
-   *
-   * @format date
-   * @example "2022-03-10T00:00:00.000Z"
-   */
-  date?: Date;
-};
-
-/**
- * something that an identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
- */
-export type Identifier = {
-  value?: string;
-};
 
 /**
  * An instrument that can be attached to a telescope - e.g. CCD, Radio Receiver
@@ -483,10 +491,13 @@ export type Instrument = {
 export type InstrumentKind = "CONTINUUM" | "SPECTROSCOPIC";
 
 /**
- * an integer identifier
+ * an integer identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
  */
 export type IntIdentifier = {
-  value?: string;
+  /**
+   * @format int32
+   */
+  value?: number;
 };
 
 /**
@@ -550,6 +561,24 @@ export type Justification = {
    * acceptable text formats for document submission
    */
   format?: TextFormats;
+};
+
+/**
+ * A spatial coordinate in a Spherical coordinate space defining a Celestial position in Latitude and Longitude. Any associated CoordSpace MUST conform to this description. If no CoordSpace is provided, a Standard Spherical CoordSpace is assumed. Values for unused/undefined dimensions need not be provided.
+ */
+export type LonLatPoint = {
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  lon?: Quantity;
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  lat?: Quantity;
+  /**
+   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
+   */
+  dist?: Quantity;
 };
 
 /**
@@ -778,7 +807,7 @@ export type Person = {
    */
   eMail?: string;
   /**
-   * a string identifier
+   * a string identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
    */
   orcidId?: StringIdentifier;
   /**
@@ -872,28 +901,15 @@ export type Point = {
   xmlId?: string;
   name?: string;
   /**
-   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys). The coordinate values map, in order, to the axes described by the associated CoordSpace. Values for unused/undefined dimensions need not be provided.
+   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata.
    */
   centre?: Point1;
 };
 
 /**
- * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys). The coordinate values map, in order, to the axes described by the associated CoordSpace. Values for unused/undefined dimensions need not be provided.
+ * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata.
  */
-export type Point1 = {
-  /**
-   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
-   */
-  axis1?: Quantity;
-  /**
-   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
-   */
-  axis2?: Quantity;
-  /**
-   * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
-   */
-  axis3?: Quantity;
-};
+export type Point1 = Record<string, any>;
 
 /**
  * A constraint that limits the telescope pointing
@@ -1081,6 +1097,24 @@ export type Quantity = {
 };
 
 /**
+ * A spatial coordinate in a Cartesian coordinate space. Any associated CoordSpace MUST be a CartesianCoordSpace. If no CoordSpace is provided, a Standard Cartesian CoordSpace is assumed. Real values are used in the cartesian points.
+ */
+export type RealCartesianPoint = {
+  /**
+   * A real value with a unit.
+   */
+  x?: RealQuantity;
+  /**
+   * A real value with a unit.
+   */
+  y?: RealQuantity;
+  /**
+   * A real value with a unit.
+   */
+  z?: RealQuantity;
+};
+
+/**
  * A real value with a unit.
  */
 export type RealQuantity = {
@@ -1245,7 +1279,7 @@ export type SpaceFrame = {
    */
   spaceRefFrame?: string;
   /**
-   * We define epoch as a primitive data type with the expected form '$type$year' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
+   * We define epoch as a primitive data type with the expected form '{type}{year}' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
    */
   equinox?: Epoch;
   /**
@@ -1328,7 +1362,7 @@ export type StdRefLocation = {
 };
 
 /**
- * a string identifier
+ * a string identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
  */
 export type StringIdentifier = {
   value?: string;
@@ -1460,9 +1494,9 @@ export type Telescope = {
    */
   wikiId?: WikiDataId;
   /**
-   * ITRS earth coordinate
+   * A spatial coordinate in a Cartesian coordinate space. Any associated CoordSpace MUST be a CartesianCoordSpace. If no CoordSpace is provided, a Standard Cartesian CoordSpace is assumed. Real values are used in the cartesian points.
    */
-  location?: GeocentricPoint;
+  location?: RealCartesianPoint;
   xmlId?: string;
 };
 
@@ -1508,7 +1542,7 @@ export type TimeFrame = {
 };
 
 /**
- * TimeStamps which specify a specific instant in time. We define three subtypes (ISOTime, JD, MJD), which allow users to explicitly identify the representation and interpretation of the TimeInstant.
+ * TimeStamps which specify a specific instant in time. We define three subtypes (FITSTime, JD, MJD), which allow users to explicitly identify the representation and interpretation of the TimeInstant.
  */
 export type TimeInstant = Record<string, any>;
 
@@ -1521,7 +1555,7 @@ export type TimeOffset = {
    */
   time?: RealQuantity;
   /**
-   * TimeStamps which specify a specific instant in time. We define three subtypes (ISOTime, JD, MJD), which allow users to explicitly identify the representation and interpretation of the TimeInstant.
+   * TimeStamps which specify a specific instant in time. We define three subtypes (FITSTime, JD, MJD), which allow users to explicitly identify the representation and interpretation of the TimeInstant.
    */
   time0?: TimeInstant;
 };
