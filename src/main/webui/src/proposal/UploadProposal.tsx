@@ -111,6 +111,7 @@ const HandleObservations = async (proposalData: ObservingProposal):
     const observationPromises: Promise<void | Observation>[] = [];
     proposalData.observations?.forEach(
         (observation: TargetObservation) => {
+            observation._id = undefined;
             observationPromises.push(
                 fetchObservationResourceAddNewObservation({
                     pathParams:{proposalCode: Number(proposalData._id)},
