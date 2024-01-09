@@ -51,3 +51,7 @@ export const ALADIN_SRC_URL =
 
 /* The source url for the aladin jquery */
 export const JQUERY_SRC_URL = 'https://code.jquery.com/jquery-1.12.1.min.js';
+
+/* this constant is the expected name of the file which contains the json data.
+ */
+export const JSON_FILE_NAME = 'proposal.json';

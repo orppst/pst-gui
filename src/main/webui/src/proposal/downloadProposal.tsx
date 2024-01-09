@@ -8,6 +8,7 @@ import {
     fetchSupportingDocumentResourceDownloadSupportingDocument,
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from '../generated/proposalToolComponents.ts';
+import { JSON_FILE_NAME } from '../constants.tsx';
 
 /**
  * generates a blob for the overview page that contains the pdf.
@@ -97,7 +98,7 @@ async function downloadProposal(
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
     zip = zip.file(title, pdfData);
-    zip = zip.file("json", JSON.stringify(proposalData))
+    zip = zip.file(JSON_FILE_NAME, JSON.stringify(proposalData))
 
     // add supporting documents to the zip.
     const promises = populateSupportingDocuments(

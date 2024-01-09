@@ -12,6 +12,7 @@ import {
     fetchProposalResourceCreateObservingProposal,
     fetchTechnicalGoalResourceAddTechnicalGoal
 } from '../generated/proposalToolComponents.ts';
+import { JSON_FILE_NAME } from '../constants.tsx';
 
 
 /**
@@ -135,7 +136,7 @@ export const handleUploadZip = async (chosenFile: File | null) => {
     if (chosenFile) {
         JSZip.loadAsync(chosenFile).then(function (zip) {
             // check the json file exists.
-            if (!Object.keys(zip.files).includes("json")) {
+            if (!Object.keys(zip.files).includes(JSON_FILE_NAME)) {
                 notifications.show({
                     autoClose: 7000,
                     title: "Upload failed",
@@ -146,7 +147,7 @@ export const handleUploadZip = async (chosenFile: File | null) => {
             }
 
             // extract json data.
-            zip.files['json'].async('text').then(function (fileData) {
+            zip.files[JSON_FILE_NAME].async('text').then(function (fileData) {
                 const jsonObject: ObservingProposal = JSON.parse(fileData)
 
                 // ensure not undefined
