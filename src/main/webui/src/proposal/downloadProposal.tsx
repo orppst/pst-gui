@@ -97,6 +97,7 @@ async function downloadProposal(
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
     zip = zip.file(title, pdfData);
+    zip = zip.file("json", JSON.stringify(proposalData))
 
     // add supporting documents to the zip.
     const promises = populateSupportingDocuments(

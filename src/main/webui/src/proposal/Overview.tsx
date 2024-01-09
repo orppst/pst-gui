@@ -9,7 +9,6 @@ import {
     Badge,
     Box,
     Container,
-    FileButton,
     Group,
     List,
     Table,
@@ -29,7 +28,6 @@ import { ReactElement, useRef } from 'react';
 import { SaveButton } from '../commonButtons/save.tsx';
 import downloadProposal from './downloadProposal.tsx';
 import { DIMMED_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
-import UploadButton from '../commonButtons/upload.tsx';
 
 /*
       title    -- string
@@ -527,16 +525,7 @@ function OverviewPanel(): ReactElement {
             });
     }
 
-    /**
-     * handles looking up a file and uploading it to the system.
-     * @param {File} chosenFile the zip file containing a json representation
-     * of the proposal.
-     */
-    const handleUploadZip = async (chosenFile: File | null) => {
-        if (chosenFile === null) {
 
-        }
-    }
 
     /**
      * returns the HTML structure for the overview page.
@@ -547,13 +536,6 @@ function OverviewPanel(): ReactElement {
                 proposalsIsLoading ? 'Loading...' :
                     <Container fluid>
                         <DownloadButton/>
-                        <FileButton onChange={handleUploadZip}
-                                    accept={".zip"}>
-                            {(props) => <UploadButton
-                                toolTipLabel="select a file from disk to upload"
-                                label={"Import"}
-                                onClick={props.onClick}/>}
-                        </FileButton>
                         <div ref={printRef}>
                             <DisplayTitle/>
                             <DisplayInvestigators/>
