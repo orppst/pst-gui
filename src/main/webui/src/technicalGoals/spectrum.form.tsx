@@ -3,7 +3,7 @@ import {
     Checkbox,
     Fieldset, Grid,
     Group,
-    Select, useMantineColorScheme,
+    Select, Space, useMantineColorScheme,
 } from "@mantine/core";
 import {TechnicalGoalValues} from "./edit.group.tsx";
 import AddButton from "../commonButtons/add.tsx";
@@ -170,7 +170,8 @@ export default function SpectralWindowsSection(
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {windowsList}
             </Accordion>
-            <Group justify={"flex-end"}>
+            <Space h={"sm"}/>
+            <Group justify={"center"}>
                 <AddButton
                     toolTipLabel={"add a spectral window"}
                     onClick={() => form.insertListItem(
