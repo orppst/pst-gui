@@ -1,6 +1,7 @@
 import * as JSZip from 'jszip';
 import { notifications } from '@mantine/notifications';
 import {
+    CalibrationObservation,
     Observation,
     ObservingProposal,
     Target, TargetObservation,
@@ -107,12 +108,42 @@ const HandleObservations = async (proposalData: ObservingProposal):
     const observationPromises: Promise<void | Observation>[] = [];
     proposalData.observations?.forEach(
         (observation: TargetObservation) => {
-            // @ts-ignore
-            observation._id = undefined;
+            let body = {
+                target: {
+                    "@type": "proposal:CelestialTarget",
+                    "_id": observation.target?._id
+                },
+                technicalGoal: {
+                    "_id": observation.technicalGoal?._id
+                },
+                field: {
+                    "@type": "proposal:TargetField",
+                    "_id": observation.field?._id
+                },
+                constraints: []
+            };
+
+            if (observation['@type'] == 'Calibration') {
+                let calibrationObservation =
+                    observation as CalibrationObservation;
+                body = {
+                    ...body, ...{
+                        "@type": "proposal:CalibrationObservation",
+                        intent: calibrationObservation.intent
+                    }
+                }
+            } else {
+                body = {
+                    ...body, ...{
+                        "@type": "proposal:TargetObservation",
+                    }
+                }
+            }
+
             observationPromises.push(
                 fetchObservationResourceAddNewObservation({
                     pathParams:{proposalCode: Number(proposalData._id)},
-                    body: observation
+                    body: body
                 }).then().catch((reason: any) => {
                     notifications.show({
                         autoClose: 7000,
