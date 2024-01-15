@@ -23,13 +23,12 @@ import { JSON_FILE_NAME } from '../constants.tsx';
 const HandleTargets = async (proposalData: ObservingProposal):
         Promise<void> => {
     // save all targets with new proposal id.
-    const targetPromises: Promise<void | Target>[] = [];
-    proposalData.targets?.forEach(
-        (target: Target) => {
-            const oldTargetId = target._id;
-            target._id = undefined;
-            targetPromises.push(
-                fetchProposalResourceAddNewTarget({
+    const targetPromises: Promise<void>[] | undefined =
+            proposalData.targets?.map(
+            async (target: Target) => {
+                const oldTargetId = target._id;
+                target._id = undefined;
+                await fetchProposalResourceAddNewTarget({
                     pathParams: { proposalCode: Number(proposalData._id) },
                     body: target
                 }).then((newTarget: Target) => {
@@ -39,8 +38,9 @@ const HandleTargets = async (proposalData: ObservingProposal):
                     // as it is pointing at the old one currently.
                     proposalData.observations?.forEach(
                         (observation: Observation) => {
-                            if (observation.target?._id === oldTargetId) {
-                                observation.target!._id = target._id;
+                            if (observation.target === oldTargetId) {
+                                // @ts-ignore
+                                observation.target = target._id;
                             }
                     })
                 }).catch((reason: any) => {
@@ -50,11 +50,8 @@ const HandleTargets = async (proposalData: ObservingProposal):
                         message: `The saving of the target failed for reason:${reason.message}.`,
                         color: 'red',
                         className: 'my-notification-class',
-                    })})
-            )
-        }
-    )
-    await Promise.all(targetPromises).then()
+                    })})});
+    await Promise.all(targetPromises!).then()
 }
 
 /**
@@ -65,40 +62,39 @@ const HandleTargets = async (proposalData: ObservingProposal):
 const HandleTechnicalGoals = async (proposalData: ObservingProposal):
         Promise<void> => {
     // process technical goals.
-    const technicalGoalPromises: Promise<void | TechnicalGoal>[] = [];
-    proposalData.technicalGoals?.forEach(
-        (technicalGoal: TechnicalGoal) => {
-            const oldTechnicalGoalId = technicalGoal._id;
-            technicalGoal._id = undefined;
-            technicalGoalPromises.push(
-                fetchTechnicalGoalResourceAddTechnicalGoal({
-                    pathParams: { proposalCode: Number(
-                            proposalData._id) },
-                    body: technicalGoal,
-                }).then((newTechnicalGoal: TechnicalGoal) => {
-                    technicalGoal._id = newTechnicalGoal._id
+    const technicalGoalPromises: Promise<void>[] | undefined =
+        proposalData.technicalGoals?.map(
+            async (technicalGoal: TechnicalGoal) => {
+                const oldTechnicalGoalId = technicalGoal._id;
+                technicalGoal._id = undefined;
+                await fetchTechnicalGoalResourceAddTechnicalGoal({
+                        pathParams: { proposalCode: Number(
+                                proposalData._id) },
+                        body: technicalGoal,
+                    }).then((newTechnicalGoal: TechnicalGoal) => {
+                        technicalGoal._id = newTechnicalGoal._id
 
-                    // update any observations which had this technical goal
-                    // as its id, as it is pointing at the old one currently.
-                    proposalData.observations?.forEach(
-                        (observation: Observation) => {
-                            if (observation.technicalGoal?._id ===
-                                    oldTechnicalGoalId) {
-                                observation.technicalGoal!._id =
-                                    technicalGoal._id;
-                            }
-                        })
-                }).catch((reason: any) => {
-                    notifications.show({
-                        autoClose: 7000,
-                        title: "Upload failed",
-                        message: `The saving of the technical goal failed for reason:${reason.message}.`,
-                        color: 'red',
-                        className: 'my-notification-class',
-                    })}));
-        }
-    )
-    await Promise.all(technicalGoalPromises).then();
+                        // update any observations which had this technical goal
+                        // as its id, as it is pointing at the old one currently.
+                        proposalData.observations?.forEach(
+                            (observation: Observation) => {
+                                if (observation.technicalGoal ===
+                                        oldTechnicalGoalId) {
+                                    // @ts-ignore
+                                    observation.technicalGoal =
+                                        technicalGoal._id;
+                                }
+                            })
+                    }).catch((reason: any) => {
+                        notifications.show({
+                            autoClose: 7000,
+                            title: "Upload failed",
+                            message: `The saving of the technical goal failed` +
+                                     `for reason:${reason.message}.`,
+                            color: 'red',
+                            className: 'my-notification-class',
+                        })})});
+    await Promise.all(technicalGoalPromises!).then();
 }
 
 /**
@@ -111,6 +107,7 @@ const HandleObservations = async (proposalData: ObservingProposal):
     const observationPromises: Promise<void | Observation>[] = [];
     proposalData.observations?.forEach(
         (observation: TargetObservation) => {
+            // @ts-ignore
             observation._id = undefined;
             observationPromises.push(
                 fetchObservationResourceAddNewObservation({
