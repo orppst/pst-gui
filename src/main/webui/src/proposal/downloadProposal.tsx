@@ -8,7 +8,7 @@ import {
     fetchSupportingDocumentResourceDownloadSupportingDocument,
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from '../generated/proposalToolComponents.ts';
-import { JSON_FILE_NAME } from '../constants.tsx';
+import { JSON_FILE_NAME, SUPPORTING_DOC_PREFIX } from '../constants.tsx';
 
 /**
  * generates a blob for the overview page that contains the pdf.
@@ -55,7 +55,7 @@ const populateSupportingDocuments = (
         if (item.dbid !== undefined && item.name !== undefined) {
             // have to destructure this, as otherwise risk of being undefined
             // detected later.
-            const docTitle = item.name;
+            const docTitle = SUPPORTING_DOC_PREFIX + item.name;
             await fetchSupportingDocumentResourceDownloadSupportingDocument(
                 { pathParams: {
                     id: item.dbid,

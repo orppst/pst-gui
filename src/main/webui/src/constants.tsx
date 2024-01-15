@@ -55,3 +55,6 @@ export const JQUERY_SRC_URL = 'https://code.jquery.com/jquery-1.12.1.min.js';
 /* this constant is the expected name of the file which contains the json data.
  */
 export const JSON_FILE_NAME = 'proposal.json';
+
+/* prefix for all supported docs, to ensure no name clash. */
+export const SUPPORTING_DOC_PREFIX = 'SUPPORTING_DOC';
