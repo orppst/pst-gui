@@ -49,7 +49,7 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip, useMantineTheme
+    Tooltip, useMantineTheme, useMantineColorScheme
 } from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {
@@ -122,6 +122,9 @@ function App2(): ReactElement {
 
     // the colour gray used by the tools.
     const theme = useMantineTheme();
+    const {colorScheme} = useMantineColorScheme();
+
+
     const GRAY = theme.colors.gray[6];
 
     // the paths to route to.
@@ -271,10 +274,14 @@ function App2(): ReactElement {
                         <Grid columns={1}>
                             <Grid.Col
                                 span={1}
-                                style={{borderBottom: "1px",
-                                        borderStyle: "solid",
-                                        borderColor: theme.colors.gray[6],
-                                        backgroundColor: theme.colors.blue[1]}}>
+                                style={{
+                                    borderBottom: "1px",
+                                    borderStyle: "solid",
+                                    borderColor: theme.colors.gray[5],
+                                    backgroundColor: colorScheme === "dark" ?
+                                        theme.colors.cyan[9] : theme.colors.blue[1]
+                                }}
+                            >
                                 <AppShell.Section component={ScrollArea}>
                                     <ProposalFilter/>
                                 </AppShell.Section>

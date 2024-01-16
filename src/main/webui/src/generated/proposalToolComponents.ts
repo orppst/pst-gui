@@ -1815,7 +1815,7 @@ export type TelescopeResourceUpdateTelescopeLocationError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type TelescopeResourceUpdateTelescopeLocationVariables = {
-  body?: Schemas.GeocentricPoint;
+  body?: Schemas.RealCartesianPoint;
   pathParams: TelescopeResourceUpdateTelescopeLocationPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -1826,7 +1826,7 @@ export const fetchTelescopeResourceUpdateTelescopeLocation = (
   proposalToolFetch<
     undefined,
     TelescopeResourceUpdateTelescopeLocationError,
-    Schemas.GeocentricPoint,
+    Schemas.RealCartesianPoint,
     {},
     {},
     TelescopeResourceUpdateTelescopeLocationPathParams

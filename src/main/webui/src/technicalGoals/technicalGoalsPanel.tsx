@@ -110,12 +110,10 @@ function TechnicalGoalsPanel(): ReactElement {
                     </Table.Tbody>
                 </Table>
             }
-            <Space h={"xs"}/>
-            <Group justify={'flex-end'}>
+            <Space h={"xl"}/>
+            <Group justify={'center'}>
                 {goalsLoading ? (`Loading...`) :
-                    <TechnicalGoalEditModal
-                        technicalGoal={undefined}
-                    />
+                    <TechnicalGoalEditModal technicalGoal={undefined}/>
                 }
             </Group>
         </div>
