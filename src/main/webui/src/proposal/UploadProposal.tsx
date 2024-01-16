@@ -1,202 +1,67 @@
 import * as JSZip from 'jszip';
 import { notifications } from '@mantine/notifications';
+import { ObservingProposal } from '../generated/proposalToolSchemas.ts';
+import { JSON_FILE_NAME, MAX_ZIP_SIZE } from '../constants.tsx';
+import { modals } from '@mantine/modals';
 import {
-    CalibrationObservation,
-    Observation,
-    ObservingProposal,
-    Target, TargetObservation,
-    TechnicalGoal
-} from '../generated/proposalToolSchemas.ts';
-import {
-    fetchObservationResourceAddNewObservation,
-    fetchProposalResourceAddNewTarget,
-    fetchProposalResourceCreateObservingProposal,
-    fetchTechnicalGoalResourceAddTechnicalGoal
+    fetchUploadProposal,
 } from '../generated/proposalToolComponents.ts';
-import { JSON_FILE_NAME } from '../constants.tsx';
 
 /**
- * uploads new targets with new database ids.
- *
- * @param {ObservingProposal} proposalData the proposal data.
- * @return {Promise<void>} promise when requests completed.
+ * asks the user to confirm if it should be a submitted or new
+ * unsubmitted proposal.
+ * @param {File} chosenFile the zip file containing the proposal data.
  */
-const HandleTargets = async (proposalData: ObservingProposal):
-        Promise<void> => {
-    // save all targets with new proposal id.
-    const targetPromises: Promise<void>[] | undefined =
-            proposalData.targets?.map(
-            async (target: Target) => {
-                const oldTargetId = target._id;
-                target._id = undefined;
-                await fetchProposalResourceAddNewTarget({
-                    pathParams: { proposalCode: Number(proposalData._id) },
-                    body: target
-                }).then((newTarget: Target) => {
-                    target._id = newTarget._id;
-
-                    // update any observations which had this target as its id,
-                    // as it is pointing at the old one currently.
-                    proposalData.observations?.forEach(
-                        (observation: Observation) => {
-                            if (observation.target === oldTargetId) {
-                                // @ts-ignore
-                                observation.target = target._id;
-                            }
-                    })
-                }).catch((reason: any) => {
-                    notifications.show({
-                        autoClose: 7000,
-                        title: "Upload failed",
-                        message: `The saving of the target failed for reason:${reason.message}.`,
-                        color: 'red',
-                        className: 'my-notification-class',
-                    })})});
-    await Promise.all(targetPromises!).then()
+export const GenerateConfirmation = (chosenFile: File): void => {
+    modals.openConfirmModal({
+        title: 'Please confirm proposal state',
+        children: (
+            <div>
+                The proposal your trying to upload is a submitted proposal.
+                Do you wish to keep it as a submitted proposal?
+            </div>
+        ),
+        labels: { confirm: 'Yes', cancel: 'No' },
+        onCancel: () => SendToServer(chosenFile, false),
+        onConfirm: () => SendToServer(chosenFile, true),
+    });
 }
 
 /**
- * uploads new technical goals with new database ids.
- * @param {ObservingProposal} proposalData the proposal data.
- * @return {Promise<void>} the promise when requests completed.
+ * sends the zip file to the server for uploading.
+ * @param {File} chosenFile the zip file containing the proposal data.
+ * @param {boolean} changeSubmission flag for the server to change the
+ * submission field.
  */
-const HandleTechnicalGoals = async (proposalData: ObservingProposal):
-        Promise<void> => {
-    // process technical goals.
-    const technicalGoalPromises: Promise<void>[] | undefined =
-        proposalData.technicalGoals?.map(
-            async (technicalGoal: TechnicalGoal) => {
-                const oldTechnicalGoalId = technicalGoal._id;
-                technicalGoal._id = undefined;
-                await fetchTechnicalGoalResourceAddTechnicalGoal({
-                        pathParams: { proposalCode: Number(
-                                proposalData._id) },
-                        body: technicalGoal,
-                    }).then((newTechnicalGoal: TechnicalGoal) => {
-                        technicalGoal._id = newTechnicalGoal._id
+export const SendToServer = (
+        chosenFile: File, changeSubmission: boolean): void => {
+    const formData = new FormData();
+    formData.append("document", chosenFile);
+    formData.append("changeSubmissionFlag", String(changeSubmission));
 
-                        // update any observations which had this technical goal
-                        // as its id, as it is pointing at the old one currently.
-                        proposalData.observations?.forEach(
-                            (observation: Observation) => {
-                                if (observation.technicalGoal ===
-                                        oldTechnicalGoalId) {
-                                    // @ts-ignore
-                                    observation.technicalGoal =
-                                        technicalGoal._id;
-                                }
-                            })
-                    }).catch((reason: any) => {
-                        notifications.show({
-                            autoClose: 7000,
-                            title: "Upload failed",
-                            message: `The saving of the technical goal failed` +
-                                     `for reason:${reason.message}.`,
-                            color: 'red',
-                            className: 'my-notification-class',
-                        })})});
-    await Promise.all(technicalGoalPromises!).then();
-}
-
-/**
- * uploads new observations with new database ids.
- * @param {ObservingProposal} proposalData the proposal data.
- * @return {Promise<void>} the promise when requests completed.
- */
-const HandleObservations = async (proposalData: ObservingProposal):
-        Promise<void> => {
-    const observationPromises: Promise<void | Observation>[] = [];
-    proposalData.observations?.forEach(
-        (observation: TargetObservation) => {
-            let body = {
-                target: {
-                    "@type": "proposal:CelestialTarget",
-                    "_id": observation.target?._id
-                },
-                technicalGoal: {
-                    "_id": observation.technicalGoal?._id
-                },
-                field: {
-                    "@type": "proposal:TargetField",
-                    "_id": observation.field?._id
-                },
-                constraints: []
-            };
-
-            if (observation['@type'] == 'Calibration') {
-                let calibrationObservation =
-                    observation as CalibrationObservation;
-                body = {
-                    ...body, ...{
-                        "@type": "proposal:CalibrationObservation",
-                        intent: calibrationObservation.intent
-                    }
-                }
-            } else {
-                body = {
-                    ...body, ...{
-                        "@type": "proposal:TargetObservation",
-                    }
-                }
-            }
-
-            observationPromises.push(
-                fetchObservationResourceAddNewObservation({
-                    pathParams:{proposalCode: Number(proposalData._id)},
-                    body: body
-                }).then().catch((reason: any) => {
-                    notifications.show({
-                        autoClose: 7000,
-                        title: "Upload failed",
-                        message: `The saving of the observation failed for reason:${reason.message}.`,
-                        color: 'red',
-                        className: 'my-notification-class',
-                    })}))})
-    await Promise.all(observationPromises).then();
-}
-
-/**
- * uploads new observations with new database ids.
- * @param {ObservingProposal} proposalData the proposal data.
- * @return {Promise<void>} the promise when requests completed.
- */
-const HandleProposal = async (proposalData: ObservingProposal):
-        Promise<void> => {
-    await fetchProposalResourceCreateObservingProposal(
-        { body: {
-            title: proposalData.title,
-            summary: proposalData.summary,
-            kind: proposalData.kind,
-            investigators: []
-            } }).then(
-        (data: ObservingProposal) => {
-            proposalData._id = data._id;
-        }
-    ).catch((reason: any) => {
+    fetchUploadProposal({
+        // @ts-ignore
+        body: formData,
+        // @ts-ignore
+        headers: {"Content-Type": "multipart/form-data"}
+    }).then(() => {
+        notifications.show({
+            autoClose: 5000,
+            title: "Upload successful",
+            message: 'The supporting proposal has been uploaded',
+            color: 'green',
+            className: 'my-notification-class',
+        });
+    }).catch((error: { stack: { message: any; }; }) => {
         notifications.show({
             autoClose: 7000,
             title: "Upload failed",
-            message: `The saving of the proposal failed for reason:${reason.message}.`,
+            message: error.stack.message,
             color: 'red',
             className: 'my-notification-class',
-        })
+        });
     })
 }
-
-/**
- * converts the JSON read proposal data into new objects stored within the
- * database.
- * @param {ObservingProposal} proposalData the JSON proposal data.
- * @constructor
- */
-const SaveAsNew = async (proposalData: ObservingProposal) => {
-    await HandleProposal(proposalData);
-    await HandleTargets(proposalData);
-    await HandleTechnicalGoals(proposalData);
-    await HandleObservations(proposalData);
-
-}
-
 
 
 /**
@@ -205,6 +70,7 @@ const SaveAsNew = async (proposalData: ObservingProposal) => {
  * of the proposal.
  */
 export const handleUploadZip = async (chosenFile: File | null) => {
+    // check for no file.
     if (chosenFile === null) {
         notifications.show({
             autoClose: 7000,
@@ -213,7 +79,21 @@ export const handleUploadZip = async (chosenFile: File | null) => {
             color: 'red',
             className: 'my-notification-class',
         })
-    } else {
+    }
+
+    // check that the zip is not some silly size.
+    if (chosenFile !== null && chosenFile.size >= MAX_ZIP_SIZE) {
+        notifications.show({
+            autoClose: 7000,
+            title: "Upload failed",
+            message: `The zip was too large. Maximum size of zip is 20 MB`,
+            color: 'red',
+            className: 'my-notification-class',
+        })
+    }
+
+    // all simple checks done. Time to verify the internals of the zip.
+    if (chosenFile !== null) {
         JSZip.loadAsync(chosenFile).then(function (zip) {
             // check the json file exists.
             if (!Object.keys(zip.files).includes(JSON_FILE_NAME)) {
@@ -226,21 +106,27 @@ export const handleUploadZip = async (chosenFile: File | null) => {
                 })
             }
 
-            // extract json data.
+            // extract json data to check if its a submitted proposal.
             zip.files[JSON_FILE_NAME].async('text').then(function (fileData) {
                 const jsonObject: ObservingProposal = JSON.parse(fileData)
 
                 // ensure not undefined
                 if (jsonObject) {
-
-                    // log the output, for debugging purposes.
-                    console.debug(jsonObject)
-
-                    // save as new project with new ids.
-                    SaveAsNew(jsonObject);
+                    if (jsonObject.submitted) {
+                        GenerateConfirmation(chosenFile)
+                    } else {
+                        SendToServer(chosenFile, false)
+                    }
+                } else {
+                    notifications.show({
+                        autoClose: 7000,
+                        title: "Upload failed",
+                        message: `The JSON file failed to load correctly.`,
+                        color: 'red',
+                        className: 'my-notification-class',
+                    })
                 }
             })
-
         })
     }
 }

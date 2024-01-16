@@ -57,4 +57,7 @@ export const JQUERY_SRC_URL = 'https://code.jquery.com/jquery-1.12.1.min.js';
 export const JSON_FILE_NAME = 'proposal.json';
 
 /* prefix for all supported docs, to ensure no name clash. */
-export const SUPPORTING_DOC_PREFIX = 'SUPPORTING_DOC';
+export const SUPPORTING_DOC_PREFIX = 'SUPPORTING_DOC_';
+
+/* max size of a upload zip (20 MB)*/
+export const MAX_ZIP_SIZE = 20*1024*1024;

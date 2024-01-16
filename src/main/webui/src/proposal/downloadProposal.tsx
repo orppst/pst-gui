@@ -55,7 +55,15 @@ const populateSupportingDocuments = (
         if (item.dbid !== undefined && item.name !== undefined) {
             // have to destructure this, as otherwise risk of being undefined
             // detected later.
-            const docTitle = SUPPORTING_DOC_PREFIX + item.name;
+            let docTitle = SUPPORTING_DOC_PREFIX + item.name;
+
+            // ensure that if the file exists already, that it's renamed to
+            // avoid issues of overwriting itself in the zip.
+            while (zip.files[docTitle]) {
+                docTitle = docTitle + "1"
+            }
+
+            // extract the document and save into the zip.
             await fetchSupportingDocumentResourceDownloadSupportingDocument(
                 { pathParams: {
                     id: item.dbid,

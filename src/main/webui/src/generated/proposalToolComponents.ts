@@ -6582,6 +6582,77 @@ export const fetchSupportingDocumentResourceUploadSupportingDocument = (
     signal,
   });
 
+/**
+ * makes the request to upload a proposal.
+ * @param {UploadProposalVariables} variables the proposal variables.
+ * @param {AbortSignal} signal what to do when it fails.
+ * @return {Promise<UploadProposal>} promise to resolve uploading.
+ */
+export const fetchUploadProposal = (
+    variables: UploadProposalVariables,
+    signal?: AbortSignal
+): Promise<UploadProposal> =>
+    proposalToolFetch<
+        UploadProposal,
+        UploadProposalError,
+        UploadDocumentRequestBody,
+        {},
+        {},
+        {}
+    >({
+      url: "/pst/api/proposals/uploadProposal",
+      method: "post",
+      ...variables,
+      signal,
+    });
+
+export type UploadDocumentRequestBody = {
+  document?: Schemas.UploadItemSchema;
+  changeSubmissionFlag: boolean;
+};
+
+export type UploadProposalVariables = {
+  body?: UploadDocumentRequestBody;
+} & ProposalToolContext["fetcherOptions"];
+
+export type UploadProposalError =
+    Fetcher.ErrorWrapper<undefined>;
+
+export type UploadProposal = {
+  /**
+   * document title
+   */
+  title?: string;
+  /**
+   * location of document
+   */
+  location?: string;
+};
+
+export const uploadProposal = (
+    options?: Omit<
+        reactQuery.UseMutationOptions<
+            UploadProposal,
+            UploadProposalError,
+            UploadProposalVariables
+        >,
+        "mutationFn"
+    >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+      UploadProposal,
+      UploadProposalError,
+      UploadProposalVariables
+  >((variables: UploadProposalVariables) =>
+          fetchUploadProposal({
+            ...fetcherOptions,
+            ...variables,
+          }),
+      options
+  );
+};
+
 export const useSupportingDocumentResourceUploadSupportingDocument = (
   options?: Omit<
     reactQuery.UseMutationOptions<
