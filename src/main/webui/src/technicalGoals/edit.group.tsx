@@ -3,7 +3,6 @@ import SpectralWindowsSection from "./spectrum.form.tsx";
 import {Grid} from "@mantine/core";
 import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
 import { ReactElement } from 'react';
-import {convertToNumberUnitType, convertToRealQuantity, NumberUnitType} from "../commonInputs/NumberInputPlusUnit.tsx";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {
@@ -14,31 +13,30 @@ import {
 import {useForm} from "@mantine/form";
 import {PerformanceParameters, TechnicalGoal} from "../generated/proposalToolSchemas.ts";
 import {
+    fetchTechnicalGoalResourceAddSpectrum,
     fetchTechnicalGoalResourceAddTechnicalGoal,
-    fetchTechnicalGoalResourceReplacePerformanceParameters
+    fetchTechnicalGoalResourceReplacePerformanceParameters, fetchTechnicalGoalResourceReplaceSpectrum
 } from "../generated/proposalToolComponents.ts";
 import {notifications} from "@mantine/notifications";
 import {SubmitButton} from "../commonButtons/save.tsx";
+import {
+    convertToPerformanceParameters,
+    convertToPerformanceParametersGui,
+    PerformanceParametersGui
+} from "./performanceParametersGui.tsx";
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
 
 /**
  * interface for the TechnicalGoal Form values.
- * @param {NumberUnitType} angularResolution the desired angular resolution for the observation
- * @param {NumberUnitType} largestScale the desired largest scale for the observation
- * @param {NumberUnitType} sensitivity the desired sensitivity for the observation
- * @param {NumberUnitType} dynamicRange the desired dynamic range for the observation
- * @param {NumberUnitType} spectralPoint the representative spectral point of the observation
+ * @param {PerformanceParametersGui} performanceParameters parameters to use with the Mantine form inputs
  * @param {ScienceSpectralWindowGui[]} spectralWindows array of spectral windows on which to focus for the observation
  */
 export interface TechnicalGoalValues {
-    angularResolution: NumberUnitType,
-    largestScale: NumberUnitType,
-    sensitivity: NumberUnitType,
-    dynamicRange: NumberUnitType,
-    spectralPoint: NumberUnitType
-    spectralWindows: ScienceSpectralWindowGui []
+    technicalGoalId: number | undefined,
+    performanceParameters: PerformanceParametersGui,
+    spectralWindows: ScienceSpectralWindowGui [],
 }
 
 /**
@@ -76,87 +74,77 @@ export default function TechnicalGoalEditGroup(
     const form = useForm<TechnicalGoalValues> (
         {
             initialValues: {
-                angularResolution: convertToNumberUnitType(
-                    props.technicalGoal?.performance?.desiredAngularResolution
-                ),
-                largestScale: convertToNumberUnitType(
-                    props.technicalGoal?.performance?.desiredLargestScale
-                ),
-                sensitivity: convertToNumberUnitType(
-                    props.technicalGoal?.performance?.desiredSensitivity
-                ),
-                dynamicRange: convertToNumberUnitType(
-                    props.technicalGoal?.performance?.desiredDynamicRange
-                ),
-                spectralPoint: convertToNumberUnitType(
-                    props.technicalGoal?.performance?.representativeSpectralPoint
-                ),
+                technicalGoalId: props.technicalGoal?._id, //required for deletion of spectral windows
+                performanceParameters:
+                    convertToPerformanceParametersGui(props.technicalGoal?.performance!),
                 spectralWindows: initialSpectralWindows
             },
 
             validate: {
                 //theNumber: check that if a unit has been selected the numeric component isn't blank
                 //theUnit: ensure that if the parameter has a numeric value it also has a unit name
-                angularResolution:{
-                    value: (theNumber, formValues) => (
-                        formValues.angularResolution.unit !== null &&
-                        theNumber === "" ?
-                            "Unit selected but no value given" : null
-                    ),
-                    unit:(theUnit, formValues) => (
-                        formValues.angularResolution.value !== "" &&
-                        theUnit === null  ?
-                            'Please pick a unit' : null
-                    )
-                },
-                largestScale:{
-                    value: (theNumber, formValues) => (
-                        formValues.largestScale.unit !== null &&
-                        theNumber === "" ?
-                            "Unit selected but no value given" : null
-                    ),
-                    unit: (theUnit, formValues) => (
-                        formValues.largestScale.value !== "" &&
-                        theUnit === null ?
-                            'Please pick a unit' : null
-                    )
-                },
-                sensitivity:{
-                    value: (theNumber, formValues) => (
-                        formValues.sensitivity.unit !== null &&
-                        theNumber === "" ?
-                            "Unit selected but no value given" : null
-                    ),
-                    unit: (theUnit, formValues) => (
-                        formValues.sensitivity.value !== "" &&
-                        theUnit === null  ?
-                            'Please pick a unit' : null
-                    )
-                },
-                dynamicRange:{
-                    value: (theNumber, formValues) => (
-                        formValues.dynamicRange.unit !== null &&
-                        theNumber === ""?
-                            "Unit selected but no value given" : null
-                    ),
-                    unit: (theUnit, formValues) => (
-                        formValues.dynamicRange.value !== "" &&
-                        theUnit === null  ?
-                            'Please pick a unit' : null
-                    )
-                },
-                //a spectral point must be given
-                spectralPoint:{
-                    value: (theNumber) => (
-                        theNumber === "" ?
-                            "A representative spectral point must be given" :
-                            null
-                    ),
-                    unit:(theUnit, formValues) => (
-                        formValues.spectralPoint.value !== "" &&
-                        theUnit === null  ?
-                            'Please pick a unit' : null
-                    )
+                performanceParameters: {
+                    angularResolution:{
+                        value: (theNumber, formValues) => (
+                            formValues.performanceParameters.angularResolution.unit !== null &&
+                            theNumber === "" ?
+                                "Unit selected but no value given" : null
+                        ),
+                        unit:(theUnit, formValues) => (
+                            formValues.performanceParameters.angularResolution.value !== "" &&
+                            theUnit === null  ?
+                                'Please pick a unit' : null
+                        )
+                    },
+                    largestScale:{
+                        value: (theNumber, formValues) => (
+                            formValues.performanceParameters.largestScale.unit !== null &&
+                            theNumber === "" ?
+                                "Unit selected but no value given" : null
+                        ),
+                        unit: (theUnit, formValues) => (
+                            formValues.performanceParameters.largestScale.value !== "" &&
+                            theUnit === null ?
+                                'Please pick a unit' : null
+                        )
+                    },
+                    sensitivity:{
+                        value: (theNumber, formValues) => (
+                            formValues.performanceParameters.sensitivity.unit !== null &&
+                            theNumber === "" ?
+                                "Unit selected but no value given" : null
+                        ),
+                        unit: (theUnit, formValues) => (
+                            formValues.performanceParameters.sensitivity.value !== "" &&
+                            theUnit === null  ?
+                                'Please pick a unit' : null
+                        )
+                    },
+                    dynamicRange:{
+                        value: (theNumber, formValues) => (
+                            formValues.performanceParameters.dynamicRange.unit !== null &&
+                            theNumber === ""?
+                                "Unit selected but no value given" : null
+                        ),
+                        unit: (theUnit, formValues) => (
+                            formValues.performanceParameters.dynamicRange.value !== "" &&
+                            theUnit === null  ?
+                                'Please pick a unit' : null
+                        )
+                    },
+                    //a spectral point must be given
+                    spectralPoint:{
+                        value: (theNumber) => (
+                            theNumber === "" ?
+                                "A representative spectral point must be given" :
+                                null
+                        ),
+                        unit:(theUnit, formValues) => (
+                            formValues.performanceParameters.spectralPoint.value !== "" &&
+                            theUnit === null  ?
+                                'Please pick a unit' : null
+                        )
+                    }
                 },
                 spectralWindows: {
                     start: {
@@ -198,18 +186,13 @@ export default function TechnicalGoalEditGroup(
 
     const handleSubmit = form.onSubmit((values) => {
 
-        let performanceParameters : PerformanceParameters = {
-            desiredAngularResolution: convertToRealQuantity(
-                values.angularResolution),
-            desiredDynamicRange: convertToRealQuantity(values.dynamicRange),
-            desiredSensitivity: convertToRealQuantity(values.sensitivity),
-            desiredLargestScale: convertToRealQuantity(values.largestScale),
-            representativeSpectralPoint: convertToRealQuantity(
-                values.spectralPoint)
-        }
-
         if(newTechnicalGoal) {
             //posting a new technical goal to the DB
+
+            let performanceParameters : PerformanceParameters =
+                convertToPerformanceParameters(values.performanceParameters);
+
+
             let goal : TechnicalGoal = {
                 performance: performanceParameters,
                 spectrum: values.spectralWindows.map(
@@ -228,27 +211,60 @@ export default function TechnicalGoalEditGroup(
                 .catch(console.error);
         } else {
             //editing an existing technical goal
-            fetchTechnicalGoalResourceReplacePerformanceParameters({
-                pathParams: {
-                    proposalCode: Number(selectedProposalCode),
-                    technicalGoalId: props.technicalGoal?._id!
-                },
-                body: performanceParameters
-            })
-                .then(()=>queryClient.invalidateQueries())
-                .then(() => {
-                    notifications.show({
-                        autoClose: false,
-                        title: "Edit successful",
-                        message: "performance parameters updated only, " +
-                            "spectral window updates yet to be implemented",
-                        color: "green"
-                    })
-                })
-                .then(() => form.resetDirty())
-                .catch(console.error);
 
-            //todo: fix issue #60 re: adding-editing-deleting spectral windows in existing goals
+            if (form.isDirty('performanceParameters')) {
+                let performanceParameters : PerformanceParameters =
+                    convertToPerformanceParameters(values.performanceParameters);
+
+                fetchTechnicalGoalResourceReplacePerformanceParameters({
+                    pathParams: {
+                        proposalCode: Number(selectedProposalCode),
+                        technicalGoalId: props.technicalGoal?._id!
+                    },
+                    body: performanceParameters
+                })
+                    .then(()=>queryClient.invalidateQueries())
+                    .then(() => {
+                        notifications.show({
+                            autoClose: false,
+                            title: "Edit successful",
+                            message: "performance parameters updated",
+                            color: "green"
+                        })
+                    })
+                    .catch(console.error);
+            }
+
+            if (form.isDirty('spectralWindows')) {
+                form.values.spectralWindows.map((sw, index) => {
+                    if (sw.id === 0) {
+                        //new spectral window - add to the TechnicalGoal
+                        fetchTechnicalGoalResourceAddSpectrum({
+                            pathParams: {
+                                proposalCode: Number(selectedProposalCode),
+                                technicalGoalId: props.technicalGoal?._id!
+                            },
+                            body: convertToScienceSpectralWindow(sw)
+                        })
+                            .then(()=>queryClient.invalidateQueries())
+                            .catch(console.error)
+
+                    } else if (form.isDirty(`spectralWindows.${index}`)) {
+                        //existing spectral window and modified - update in TechnicalGoal
+                        fetchTechnicalGoalResourceReplaceSpectrum({
+                            pathParams: {
+                                proposalCode: Number(selectedProposalCode),
+                                technicalGoalId: props.technicalGoal?._id!,
+                                spectralWindowId: sw.id
+                            },
+                            body: convertToScienceSpectralWindow(sw)
+                        })
+                            .then(()=>queryClient.invalidateQueries())
+                            .catch(console.error)
+
+                    }//else do nothing
+                })
+            }
         }
     })
 

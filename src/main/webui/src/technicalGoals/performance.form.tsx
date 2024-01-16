@@ -27,7 +27,7 @@ export default function PerformanceParametersSection(
                             form={form}
                             label={"Angular resolution"}
                             toolTip={"desired angular resolution"}
-                            valueRoot={'angularResolution'}
+                            valueRoot={'performanceParameters.angularResolution'}
                             units={angularUnits}
                         />
                     </Group>
@@ -36,7 +36,7 @@ export default function PerformanceParametersSection(
                             form={form}
                             label={'Largest scale'}
                             toolTip={"desired largest scale"}
-                            valueRoot={'largestScale'}
+                            valueRoot={'performanceParameters.largestScale'}
                             units={angularUnits}
                         />
                     </Group>
@@ -45,7 +45,7 @@ export default function PerformanceParametersSection(
                             form={form}
                             label={"Sensitivity"}
                             toolTip={"desired sensitivity"}
-                            valueRoot={'sensitivity'}
+                            valueRoot={'performanceParameters.sensitivity'}
                             units={sensitivityUnits} />
                     </Group>
                     <Group grow>
@@ -53,7 +53,7 @@ export default function PerformanceParametersSection(
                             form={form}
                             label={"Dynamic range"}
                             toolTip={"desired dynamic range"}
-                            valueRoot={'dynamicRange'}
+                            valueRoot={'performanceParameters.dynamicRange'}
                             units={sensitivityUnits}
                         />
                     </Group>
@@ -62,9 +62,8 @@ export default function PerformanceParametersSection(
                             form={form}
                             label={"Spectral point"}
                             toolTip={"representative spectral frequency"}
-                            valueRoot={'spectralPoint'}
+                            valueRoot={'performanceParameters.spectralPoint'}
                             units={frequencyUnits}
-                            withAsterisk
                         />
                     </Group>
                 </Stack>

@@ -7,7 +7,6 @@ import {
     PolStateEnum,
     ScienceSpectralWindow
 } from '../generated/proposalToolSchemas.ts';
-import { randomId } from '@mantine/hooks';
 
 /**
  *  Alternative type for ExpectedSpectralLine using 'NumberUnitType'
@@ -50,7 +49,8 @@ export type ScienceSpectralWindowGui = {
     isSkyFrequency: boolean,
     polarization: PolStateEnum | null
     expectedSpectralLines: ExpectedSpectralLineGui [],
-    key: string
+    key: string,
+    id: number
 }
 
 /**
@@ -103,7 +103,8 @@ export function convertToScienceSpectralWindowGui(
             input.expectedSpectralLine.map((line) => {
                 return convertToExpectedSpectralLineGui(line);
             }) : [],
-        key: randomId()
+        key: String(input._id!),
+        id: input._id!
     };
 }
 
@@ -143,6 +144,7 @@ export function convertToScienceSpectralWindow(
         },
         expectedSpectralLine: input.expectedSpectralLines.map((lineAlt) => {
             return convertToExpectedSpectralLine(lineAlt)
-        })
+        }),
+        _id: input.id
     };
 }
