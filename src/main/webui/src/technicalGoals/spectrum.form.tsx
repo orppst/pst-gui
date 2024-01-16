@@ -218,7 +218,6 @@ export default function SpectralWindowsSection(
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {windowsList}
             </Accordion>
-            <Space h={"sm"}/>
             <Group justify={"center"}>
                 <AddButton
                     toolTipLabel={"add a spectral window"}
