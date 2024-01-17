@@ -12,6 +12,7 @@ import {JSON_SPACES} from "../constants.tsx";
 import {SubmitButton} from "../commonButtons/save.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifications} from "@mantine/notifications";
+import ValidationOverview from "./ValidationOverview.tsx";
 
 function SubmitPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
@@ -94,18 +95,7 @@ function SubmitPanel(): ReactElement {
         <Box>
             <Text fz="lg" fw={700}>Submit Proposal</Text>
 
-            <Box m={20}>This is where we can have a validation overview, the following are <b>not</b> real!
-                <Table>
-                    <Table.Tbody>
-                        <Table.Tr><Table.Td>✅</Table.Td><Table.Td>Summary</Table.Td></Table.Tr>
-                        <Table.Tr><Table.Td>✅</Table.Td><Table.Td>Investigators</Table.Td></Table.Tr>
-                        <Table.Tr><Table.Td>✅</Table.Td><Table.Td>Targets</Table.Td></Table.Tr>
-                        <Table.Tr><Table.Td>✅</Table.Td><Table.Td>Technical Goals</Table.Td></Table.Tr>
-                        <Table.Tr><Table.Td>✅</Table.Td><Table.Td>Observations</Table.Td></Table.Tr>
-                        <Table.Tr><Table.Td>✅</Table.Td><Table.Td>Documents</Table.Td></Table.Tr>
-                    </Table.Tbody>
-                </Table>
-            </Box>
+            <ValidationOverview/>
 
             <form onSubmit={trySubmitProposal}>
                 <Select label={"Cycle"}
