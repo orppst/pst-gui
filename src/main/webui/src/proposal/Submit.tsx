@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Box, Select, Table, Text} from "@mantine/core";
+import {Box, Select, Text} from "@mantine/core";
 import {
     fetchProposalCyclesResourceGetProposalCycleDates,
     fetchProposalCyclesResourceSubmitProposal,
