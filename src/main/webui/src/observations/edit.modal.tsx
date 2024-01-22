@@ -7,7 +7,7 @@ import { ReactElement } from 'react';
 import AddButton from '../commonButtons/add.tsx';
 
 export default function ObservationEditModal(
-    observationProps: ObservationProps) {
+        observationProps: ObservationProps) {
     /**
      * generates the html for a new button.
      * @return {React.ReactElement} the html for the new button.
