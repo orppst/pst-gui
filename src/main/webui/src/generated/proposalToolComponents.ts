@@ -12,6 +12,127 @@ import type * as Fetcher from "./proposalToolFetcher";
 import { proposalToolFetch } from "./proposalToolFetcher";
 import type * as Schemas from "./proposalToolSchemas";
 
+export type KeycloakResourceGetRolesError = Fetcher.ErrorWrapper<undefined>;
+
+export type KeycloakResourceGetRolesResponse = Schemas.RoleRepresentation[];
+
+export type KeycloakResourceGetRolesVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchKeycloakResourceGetRoles = (
+  variables: KeycloakResourceGetRolesVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    KeycloakResourceGetRolesResponse,
+    KeycloakResourceGetRolesError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: "/pst/api/admin/roles", method: "get", ...variables, signal });
+
+export const useKeycloakResourceGetRoles = <
+  TData = KeycloakResourceGetRolesResponse
+>(
+  variables: KeycloakResourceGetRolesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      KeycloakResourceGetRolesResponse,
+      KeycloakResourceGetRolesError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    KeycloakResourceGetRolesResponse,
+    KeycloakResourceGetRolesError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/admin/roles",
+      operationId: "keycloakResourceGetRoles",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchKeycloakResourceGetRoles(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type KeycloakResourceGetUserRepresentationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type KeycloakResourceGetUserRepresentationResponse =
+  Schemas.UserRepresentation[];
+
+export type KeycloakResourceGetUserRepresentationVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchKeycloakResourceGetUserRepresentation = (
+  variables: KeycloakResourceGetUserRepresentationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    KeycloakResourceGetUserRepresentationResponse,
+    KeycloakResourceGetUserRepresentationError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/admin/userRepresentations",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useKeycloakResourceGetUserRepresentation = <
+  TData = KeycloakResourceGetUserRepresentationResponse
+>(
+  variables: KeycloakResourceGetUserRepresentationVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      KeycloakResourceGetUserRepresentationResponse,
+      KeycloakResourceGetUserRepresentationError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    KeycloakResourceGetUserRepresentationResponse,
+    KeycloakResourceGetUserRepresentationError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/admin/userRepresentations",
+      operationId: "keycloakResourceGetUserRepresentation",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchKeycloakResourceGetUserRepresentation(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type ObservatoryResourceGetObservatoriesQueryParams = {
   name?: string;
 };
@@ -3114,6 +3235,61 @@ export const usePersonResourceUpdateOrcidId = (
   >(
     (variables: PersonResourceUpdateOrcidIdVariables) =>
       fetchPersonResourceUpdateOrcidId({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type PersonResourceCreatePersonFromKeycloakPathParams = {
+  keycloakUid: string;
+};
+
+export type PersonResourceCreatePersonFromKeycloakError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceCreatePersonFromKeycloakVariables = {
+  body?: Schemas.Person;
+  pathParams: PersonResourceCreatePersonFromKeycloakPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceCreatePersonFromKeycloak = (
+  variables: PersonResourceCreatePersonFromKeycloakVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Person,
+    PersonResourceCreatePersonFromKeycloakError,
+    Schemas.Person,
+    {},
+    {},
+    PersonResourceCreatePersonFromKeycloakPathParams
+  >({
+    url: "/pst/api/people/{keycloakUid}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const usePersonResourceCreatePersonFromKeycloak = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Person,
+      PersonResourceCreatePersonFromKeycloakError,
+      PersonResourceCreatePersonFromKeycloakVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Person,
+    PersonResourceCreatePersonFromKeycloakError,
+    PersonResourceCreatePersonFromKeycloakVariables
+  >(
+    (variables: PersonResourceCreatePersonFromKeycloakVariables) =>
+      fetchPersonResourceCreatePersonFromKeycloak({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
@@ -8164,6 +8340,65 @@ export const useSpaceSystemResourceGetSpaceSystem = <TData = Schemas.SpaceSys>(
   );
 };
 
+export type SubjectMapResourceCheckForNewUsersError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceCheckForNewUsersVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceCheckForNewUsers = (
+  variables: SubjectMapResourceCheckForNewUsersVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    number,
+    SubjectMapResourceCheckForNewUsersError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/subjectMap/newUsers",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceCheckForNewUsers = <TData = number>(
+  variables: SubjectMapResourceCheckForNewUsersVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      number,
+      SubjectMapResourceCheckForNewUsersError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    number,
+    SubjectMapResourceCheckForNewUsersError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/subjectMap/newUsers",
+      operationId: "subjectMapResourceCheckForNewUsers",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchSubjectMapResourceCheckForNewUsers(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type SubjectMapResourceSubjectMapPathParams = {
   id: string;
 };
@@ -8223,6 +8458,16 @@ export const useSubjectMapResourceSubjectMap = <TData = Schemas.SubjectMap>(
 };
 
 export type QueryOperation =
+  | {
+      path: "/pst/api/admin/roles";
+      operationId: "keycloakResourceGetRoles";
+      variables: KeycloakResourceGetRolesVariables;
+    }
+  | {
+      path: "/pst/api/admin/userRepresentations";
+      operationId: "keycloakResourceGetUserRepresentation";
+      variables: KeycloakResourceGetUserRepresentationVariables;
+    }
   | {
       path: "/pst/api/observatories";
       operationId: "observatoryResourceGetObservatories";
@@ -8462,6 +8707,11 @@ export type QueryOperation =
       path: "/pst/api/spaceSystems/{frameCode}";
       operationId: "spaceSystemResourceGetSpaceSystem";
       variables: SpaceSystemResourceGetSpaceSystemVariables;
+    }
+  | {
+      path: "/pst/api/subjectMap/newUsers";
+      operationId: "subjectMapResourceCheckForNewUsers";
+      variables: SubjectMapResourceCheckForNewUsersVariables;
     }
   | {
       path: "/pst/api/subjectMap/{id}";

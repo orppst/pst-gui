@@ -14,7 +14,7 @@ import {
 import {
     ProposalResourceGetProposalsError,
     ProposalResourceGetProposalsResponse,
-    useProposalResourceGetProposals
+    useProposalResourceGetProposals, useSubjectMapResourceCheckForNewUsers
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
 import TitlePanel from './proposal/Title';
@@ -58,7 +58,7 @@ import {
     IconChevronRight,
     IconFileCheck,
     IconFileDescription, IconFiles,
-    IconLogout, IconTarget, IconUsersGroup
+    IconLogout, IconTarget, IconUsers, IconUsersGroup
 } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
@@ -113,6 +113,14 @@ export const useToken = (): string => {
  * @constructor
  */
 function App2(): ReactElement {
+
+    //check for new users
+    const {data: numNewUsers} = useSubjectMapResourceCheckForNewUsers({});
+
+    if (numNewUsers && numNewUsers > 0) {
+        console.log("new users found: " + numNewUsers);
+    }
+
     // set proposal code.
     const historyProposalCode= 0;
     const [selectedProposalCode] = useState(historyProposalCode)
@@ -253,14 +261,28 @@ function App2(): ReactElement {
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
                                     {SwitchToggle()}
+                                    <Tooltip label={"Keycloak administration console"}
+                                             openDelay={OPEN_DELAY}
+                                             closeDelay={CLOSE_DELAY}
+                                    >
+                                        <ActionIcon color={"blue.7"}
+                                                    variant={"filled"}
+                                                    component={"a"}
+                                                    href={"http://localhost:53536/admin"}
+                                                    target={"_blank"}
+                                                    rel={"noopener noreferrer"}
+                                        >
+                                            <IconUsers size={ICON_SIZE}/>
+                                        </ActionIcon>
+                                    </Tooltip>
                                     <Tooltip label={"logout"}
                                              openDelay={OPEN_DELAY}
-                                             closeDelay={CLOSE_DELAY}>
-                                        <ActionIcon
-                                            color={"orange.8"}
-                                            variant={"subtle"}
-                                            component={"a"}
-                                            href={"/pst/gui/logout"}
+                                             closeDelay={CLOSE_DELAY}
+                                    >
+                                        <ActionIcon color={"orange.8"}
+                                                    variant={"subtle"}
+                                                    component={"a"}
+                                                    href={"/pst/gui/logout"}
                                         >
                                             <IconLogout size={ICON_SIZE}/>
                                         </ActionIcon>
