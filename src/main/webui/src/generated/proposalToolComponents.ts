@@ -8340,6 +8340,177 @@ export const useSpaceSystemResourceGetSpaceSystem = <TData = Schemas.SpaceSys>(
   );
 };
 
+export type SubjectMapResourceSubjectMapListQueryParams = {
+  uid?: string;
+};
+
+export type SubjectMapResourceSubjectMapListError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceSubjectMapListResponse = Schemas.SubjectMap[];
+
+export type SubjectMapResourceSubjectMapListVariables = {
+  queryParams?: SubjectMapResourceSubjectMapListQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceSubjectMapList = (
+  variables: SubjectMapResourceSubjectMapListVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    SubjectMapResourceSubjectMapListResponse,
+    SubjectMapResourceSubjectMapListError,
+    undefined,
+    {},
+    SubjectMapResourceSubjectMapListQueryParams,
+    {}
+  >({ url: "/pst/api/subjectMap", method: "get", ...variables, signal });
+
+export const useSubjectMapResourceSubjectMapList = <
+  TData = SubjectMapResourceSubjectMapListResponse
+>(
+  variables: SubjectMapResourceSubjectMapListVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      SubjectMapResourceSubjectMapListResponse,
+      SubjectMapResourceSubjectMapListError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    SubjectMapResourceSubjectMapListResponse,
+    SubjectMapResourceSubjectMapListError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/subjectMap",
+      operationId: "subjectMapResourceSubjectMapList",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchSubjectMapResourceSubjectMapList(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
+export type SubjectMapResourceCleanUsersError = Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceCleanUsersVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceCleanUsers = (
+  variables: SubjectMapResourceCleanUsersVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    SubjectMapResourceCleanUsersError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/subjectMap/cleanUsers",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceCleanUsers = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      SubjectMapResourceCleanUsersError,
+      SubjectMapResourceCleanUsersVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    SubjectMapResourceCleanUsersError,
+    SubjectMapResourceCleanUsersVariables
+  >(
+    (variables: SubjectMapResourceCleanUsersVariables) =>
+      fetchSubjectMapResourceCleanUsers({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type SubjectMapResourceExistingUserUIDsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceExistingUserUIDsResponse = string[];
+
+export type SubjectMapResourceExistingUserUIDsVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceExistingUserUIDs = (
+  variables: SubjectMapResourceExistingUserUIDsVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    SubjectMapResourceExistingUserUIDsResponse,
+    SubjectMapResourceExistingUserUIDsError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/subjectMap/keycloakUserUIDs",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceExistingUserUIDs = <
+  TData = SubjectMapResourceExistingUserUIDsResponse
+>(
+  variables: SubjectMapResourceExistingUserUIDsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      SubjectMapResourceExistingUserUIDsResponse,
+      SubjectMapResourceExistingUserUIDsError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    SubjectMapResourceExistingUserUIDsResponse,
+    SubjectMapResourceExistingUserUIDsError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/subjectMap/keycloakUserUIDs",
+      operationId: "subjectMapResourceExistingUserUIDs",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchSubjectMapResourceExistingUserUIDs(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type SubjectMapResourceCheckForNewUsersError =
   Fetcher.ErrorWrapper<undefined>;
 
@@ -8707,6 +8878,16 @@ export type QueryOperation =
       path: "/pst/api/spaceSystems/{frameCode}";
       operationId: "spaceSystemResourceGetSpaceSystem";
       variables: SpaceSystemResourceGetSpaceSystemVariables;
+    }
+  | {
+      path: "/pst/api/subjectMap";
+      operationId: "subjectMapResourceSubjectMapList";
+      variables: SubjectMapResourceSubjectMapListVariables;
+    }
+  | {
+      path: "/pst/api/subjectMap/keycloakUserUIDs";
+      operationId: "subjectMapResourceExistingUserUIDs";
+      variables: SubjectMapResourceExistingUserUIDsVariables;
     }
   | {
       path: "/pst/api/subjectMap/newUsers";

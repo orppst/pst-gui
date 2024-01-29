@@ -68,6 +68,7 @@ import {
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
 } from './constants.tsx';
+import AdminPanel from "./admin/adminPanel.tsx";
 
 /**
  * defines the user context type.
@@ -142,36 +143,50 @@ function App2(): ReactElement {
                 children: [
                     {index: true, element: <PSTStart/>} ,
                     {
+                        path: "admin",
+                        element: <AdminPanel />
+                    },
+                    {
                         path: "proposal/new",
-                        element: <NewProposalPanel /> },
+                        element: <NewProposalPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode",
-                        element: <OverviewPanel />},
+                        element: <OverviewPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/title",
-                        element: <TitlePanel />} ,
+                        element: <TitlePanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/summary",
-                        element: <SummaryPanel />} ,
+                        element: <SummaryPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/investigators",
-                        element:<InvestigatorsPanel />} ,
+                        element:<InvestigatorsPanel />
+                    },
                     {
                         path:
                             "proposal/:selectedProposalCode/investigators/new",
-                        element:<AddInvestigatorPanel />} ,
+                        element:<AddInvestigatorPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/targets",
-                        element:<TargetPanel />} ,
+                        element:<TargetPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/goals",
-                        element:<TechnicalGoalsPanel />} ,
+                        element:<TechnicalGoalsPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/observations",
-                        element:<ObservationsPanel />} ,
+                        element:<ObservationsPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/documents",
-                        element:<DocumentsPanel />} ,
+                        element:<DocumentsPanel />
+                    },
                 ]}], {
             basename: "/pst/gui/tool/"
         }
@@ -215,6 +230,16 @@ function App2(): ReactElement {
         function handleSearch(event: SyntheticEvent): void {
             event.preventDefault();
             navigate("/");
+        }
+
+        /**
+         * resolves the routing when requesting the Admin Page
+         *
+         * @param {React.SyntheticEvent} event the event (click)
+         */
+        function handleAdminPage(event: SyntheticEvent): void {
+            event.preventDefault();
+            navigate("admin")
         }
 
         return (
@@ -261,16 +286,13 @@ function App2(): ReactElement {
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
                                     {SwitchToggle()}
-                                    <Tooltip label={"Keycloak administration console"}
+                                    <Tooltip label={"Admin page"}
                                              openDelay={OPEN_DELAY}
                                              closeDelay={CLOSE_DELAY}
                                     >
                                         <ActionIcon color={"blue.7"}
                                                     variant={"filled"}
-                                                    component={"a"}
-                                                    href={"http://localhost:53536/admin"}
-                                                    target={"_blank"}
-                                                    rel={"noopener noreferrer"}
+                                                    onClick={handleAdminPage}
                                         >
                                             <IconUsers size={ICON_SIZE}/>
                                         </ActionIcon>

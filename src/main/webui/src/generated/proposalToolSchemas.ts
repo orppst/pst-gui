@@ -1487,6 +1487,7 @@ export type SubjectMap = {
    */
   person?: Person;
   uid?: string;
+  inKeycloakRealm?: boolean;
 };
 
 /**
