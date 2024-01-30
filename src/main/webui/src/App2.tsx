@@ -18,7 +18,6 @@ import {
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
 import TitlePanel from './proposal/Title';
-import TargetPanel from './targets/List';
 import OverviewPanel from "./proposal/Overview";
 import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
@@ -33,6 +32,7 @@ import {
 } from 'react-router-dom';
 import { useHistoryState } from "./useHistoryState";
 import TechnicalGoalsPanel from "./technicalGoals/technicalGoalsPanel.tsx";
+import { TargetPanel } from "./targets/targetPanel.tsx";
 import ObservationsPanel from "./observations/observationPanel.tsx";
 import DocumentsPanel from "./proposal/Documents";
 
