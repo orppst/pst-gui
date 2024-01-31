@@ -24,6 +24,11 @@ function AdminPanel(): ReactElement {
         )
     }
 
+    /**
+     * function to return the ReactElement for a Table displaying the People stored in
+     * the database. The table row background is either green, for those People registered
+     * with Keycloak, or orange, for those People not registered with Keycloak.
+     */
     const SubjectMapsTableGenerator = () : ReactElement => {
         return (
             <Table>
@@ -48,7 +53,8 @@ function AdminPanel(): ReactElement {
 
     /**
      * function to return the ReactElement for an action icon that links to
-     * the keycloak administration console.
+     * the keycloak administration console. Notice this requires an
+     * administrator username and password.
      *
      */
     const DisplayKeycloakAdminConsoleButton = () : ReactElement => {
@@ -62,7 +68,7 @@ function AdminPanel(): ReactElement {
                          closeDelay={CLOSE_DELAY}
                 >
                     <ActionIcon color={"blue.7"}
-                                variant={"filled"}
+                                variant={"outline"}
                                 component={"a"}
                                 href={"http://localhost:53536/admin"}
                                 target={"_blank"}

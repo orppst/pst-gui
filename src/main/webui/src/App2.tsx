@@ -58,7 +58,7 @@ import {
     IconChevronRight,
     IconFileCheck,
     IconFileDescription, IconFiles,
-    IconLogout, IconTarget, IconUsers, IconUsersGroup
+    IconLogout, IconTarget, IconUsersGroup, IconYinYangFilled
 } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
@@ -242,6 +242,12 @@ function App2(): ReactElement {
             navigate("admin")
         }
 
+        /*
+            We only want to show the Administration Panel Button to those users
+            assigned an "administration" role but as user roles have yet to be
+            defined, or at least aren't accessible here, we can't do that.
+         */
+
         return (
             <ProposalContext.Provider
                 value={{selectedProposalCode, user, token, apiUrl}}>
@@ -286,17 +292,6 @@ function App2(): ReactElement {
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
                                     {SwitchToggle()}
-                                    <Tooltip label={"Admin page"}
-                                             openDelay={OPEN_DELAY}
-                                             closeDelay={CLOSE_DELAY}
-                                    >
-                                        <ActionIcon color={"blue.7"}
-                                                    variant={"filled"}
-                                                    onClick={handleAdminPage}
-                                        >
-                                            <IconUsers size={ICON_SIZE}/>
-                                        </ActionIcon>
-                                    </Tooltip>
                                     <Tooltip label={"logout"}
                                              openDelay={OPEN_DELAY}
                                              closeDelay={CLOSE_DELAY}
@@ -307,6 +302,17 @@ function App2(): ReactElement {
                                                     href={"/pst/gui/logout"}
                                         >
                                             <IconLogout size={ICON_SIZE}/>
+                                        </ActionIcon>
+                                    </Tooltip>
+                                    <Tooltip label={"Admin page"}
+                                             openDelay={OPEN_DELAY}
+                                             closeDelay={CLOSE_DELAY}
+                                    >
+                                        <ActionIcon color={"blue.7"}
+                                                    variant={"outline"}
+                                                    onClick={handleAdminPage}
+                                        >
+                                            <IconYinYangFilled size={ICON_SIZE}/>
                                         </ActionIcon>
                                     </Tooltip>
                                 </Group>
