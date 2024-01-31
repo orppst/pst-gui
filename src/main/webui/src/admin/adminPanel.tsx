@@ -6,7 +6,7 @@ import {
     useSubjectMapResourceSubjectMapList
 } from "../generated/proposalToolComponents.ts";
 import {SubjectMap} from "../generated/proposalToolSchemas.ts";
-import SubjectMapRow, {subjectMapsTableHeader} from './subjectMapsTable.tsx';
+import {SubjectMapsTableRow, SubjectMapsTableHeader} from './subjectMapsTable.tsx';
 
 function AdminPanel(): ReactElement {
 
@@ -29,18 +29,15 @@ function AdminPanel(): ReactElement {
      * the database. The table row background is either green, for those People registered
      * with Keycloak, or orange, for those People not registered with Keycloak.
      */
-    const SubjectMapsTableGenerator = () : ReactElement => {
+    const SubjectMapsTable = () : ReactElement => {
         return (
             <Table>
-                {subjectMapsTableHeader()}
+                <SubjectMapsTableHeader />
                 <Table.Tbody>
                     {
                         subjectMaps?.map((subjectMap : SubjectMap) => {
                             return (
-                                <SubjectMapRow
-                                    key={subjectMap.uid}
-                                    {...subjectMap}
-                                />
+                                <SubjectMapsTableRow key={subjectMap.uid} {...subjectMap}/>
                             )
                         })
                     }
@@ -86,7 +83,7 @@ function AdminPanel(): ReactElement {
 
             {
                 subjectMapsIsLoading ? "Loading ..." :
-                    <SubjectMapsTableGenerator />
+                    <SubjectMapsTable />
             }
 
 
