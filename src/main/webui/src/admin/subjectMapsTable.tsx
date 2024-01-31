@@ -2,12 +2,6 @@ import {ReactElement} from "react";
 import {Table} from "@mantine/core"
 import {SubjectMap} from "../generated/proposalToolSchemas.ts";
 
-export type SubjectMapRowProps = {
-    subjectMap: SubjectMap,
-    inKeycloak: Boolean
-}
-
-
 export function subjectMapsTableHeader() : ReactElement {
     return (
         <Table.Thead>
@@ -20,12 +14,12 @@ export function subjectMapsTableHeader() : ReactElement {
     )
 }
 
-export default function SubjectMapRow(rowProps : SubjectMapRowProps) : ReactElement {
+export default function SubjectMapRow(subjectMap: SubjectMap) : ReactElement {
     return (
-        <Table.Tr bg={rowProps.inKeycloak ? "green.9" : "orange.9"}>
-            <Table.Td>{rowProps.subjectMap.person?.fullName}</Table.Td>
-            <Table.Td>{rowProps.subjectMap.person?.eMail}</Table.Td>
-            <Table.Td>{rowProps.subjectMap.person?.homeInstitute?.name}</Table.Td>
+        <Table.Tr bg={subjectMap.inKeycloakRealm ? "green.9" : "orange.9"}>
+            <Table.Td>{subjectMap.person?.fullName}</Table.Td>
+            <Table.Td>{subjectMap.person?.eMail}</Table.Td>
+            <Table.Td>{subjectMap.person?.homeInstitute?.name}</Table.Td>
         </Table.Tr>
     )
 }

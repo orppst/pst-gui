@@ -39,8 +39,7 @@ function AdminPanel(): ReactElement {
                             return (
                                 <SubjectMapRow
                                     key={subjectMap.uid}
-                                    subjectMap={subjectMap}
-                                    inKeycloak={subjectMap.inKeycloakRealm!}
+                                    {...subjectMap}
                                 />
                             )
                         })
