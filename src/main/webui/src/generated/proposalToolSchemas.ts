@@ -1086,6 +1086,18 @@ export type ProposalSynopsis = {
   submitted?: boolean;
 };
 
+export type ProposalValidation = {
+  /**
+   * @format int64
+   */
+  id?: number;
+  title?: string;
+  isValid?: boolean;
+  info?: string;
+  warnings?: string;
+  errors?: string;
+};
+
 /**
  * Meant to represent the value of a numerical physical quantity. Can be mapped in VOTables to FIELDrefs and PARAM(ref)s, in which case the @unit attribute of those VOTable elements is assumed to be mapped to the attribute on the Quantity. Ths is only allowed for these predefined ivoa types.
  */
