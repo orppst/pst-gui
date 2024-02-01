@@ -3,11 +3,9 @@ import {
     useProposalResourceGetObservingProposalTitle,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from '../generated/proposalToolComponents.ts';
-import { Badge, Box, Group, Space, Table } from '@mantine/core';
+import { Badge, Box, Group, Space } from '@mantine/core';
 import { useParams } from 'react-router-dom';
-import TechnicalGoalRow, {
-    technicalGoalsHeader
-} from './technicalGoalTable.tsx';
+import {TechnicalGoalsTable } from './technicalGoalTable.tsx';
 import { TechnicalGoal } from '../generated/proposalToolSchemas.ts';
 import TechnicalGoalEditModal from './edit.modal.tsx';
 import { ReactElement } from 'react';
@@ -60,7 +58,7 @@ function TechnicalGoalsPanel(): ReactElement {
 
 
     // acquire all the bound technical ids in observations.
-    let boundTechnicalGoalIds: (number | undefined)[] | undefined = [];
+    let boundTechnicalGoalIds: (number | undefined)[] | undefined;
     boundTechnicalGoalIds = proposalsData?.observations?.map((observation) => {
         // extract the id. it seems the technical Goal returned here IS a number
         // not the TechnicalGoal object it advertises.
@@ -93,22 +91,11 @@ function TechnicalGoalsPanel(): ReactElement {
                 : Technical Goals
             </h3>
             {goalsLoading ? (`Loading...`) :
-                <Table>
-                    {technicalGoalsHeader()}
-                    <Table.Tbody>
-                    {
-                        goals?.map((goal) => {
-                            return (
-                                <TechnicalGoalRow
-                                    id={goal.dbid!}
-                                    key={goal.dbid!}
-                                    boundTechnicalGoalIds={boundTechnicalGoalIds}
-                                />
-                            )
-                        })
-                    }
-                    </Table.Tbody>
-                </Table>
+                <TechnicalGoalsTable
+                    goals={goals}
+                    boundTechnicalGoalIds={boundTechnicalGoalIds}
+                    showButtons={true}
+                    selectedTechnicalGoal={undefined}/>
             }
             <Space h={"xl"}/>
             <Group justify={'center'}>
