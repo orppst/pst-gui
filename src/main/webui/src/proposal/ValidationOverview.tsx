@@ -26,7 +26,10 @@ export default function ValidationOverview() {
                     <Table.Tbody>
                         <Table.Tr>
                             <Table.Td>
-                                <IconInfoCircle size={ICON_SIZE} />
+                                {data?.isValid?
+                                    (<IconCircleCheck size={ICON_SIZE} />):
+                                    (<IconInfoCircle size={ICON_SIZE} />)
+                                }
                             </Table.Td>
                             <Table.Td>
                                 {data?.info}
