@@ -90,6 +90,7 @@ export const handleUploadZip = async (chosenFile: File | null) => {
             color: 'red',
             className: 'my-notification-class',
         })
+        return;
     }
 
     // all simple checks done. Time to verify the internals of the zip.
