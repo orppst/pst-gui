@@ -18,6 +18,7 @@ function SubmitPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
     const navigate = useNavigate();
     const [searchData, setSearchData] = useState([]);
+    const [selectedCycle , setSelectedCycle] = useState(0);
     const [submissionDeadline, setSubmissionDeadline] = useState("undefined");
     const {data, error,  status} =
         useProposalCyclesResourceGetProposalCycles({queryParams: {includeClosed: false}});
@@ -48,16 +49,17 @@ function SubmitPanel(): ReactElement {
     }
 
     const changeCycleDates = (value: string | null) => {
-        console.log("Selected cycle is now " + value);
+        setSelectedCycle(Number(value));
+        console.log("Selected cycle is now " + selectedCycle);
         fetchProposalCyclesResourceGetProposalCycleDates(
-            {pathParams: {cycleCode: Number(value)}})
+            {pathParams: {cycleCode: selectedCycle}})
             .then((dates) => {
                 setSubmissionDeadline(dates.submissionDeadline!);
                 console.log(dates)
             })
             .catch(console.log)
 
-        form.values.selectedCycle = Number(value)   ;
+        form.values.selectedCycle = selectedCycle;
     }
 
     const trySubmitProposal = form.onSubmit(() => {
@@ -95,7 +97,7 @@ function SubmitPanel(): ReactElement {
         <Box>
             <Text fz="lg" fw={700}>Submit Proposal</Text>
 
-            <ValidationOverview/>
+            <ValidationOverview cycle={selectedCycle}/>
 
             <form onSubmit={trySubmitProposal}>
                 <Select label={"Cycle"}

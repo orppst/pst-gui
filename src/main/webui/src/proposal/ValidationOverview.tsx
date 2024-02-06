@@ -4,11 +4,12 @@ import {ICON_SIZE, JSON_SPACES} from "../constants.tsx";
 import {useProposalResourceValidateObservingProposal} from "../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 
-export default function ValidationOverview() {
+export default function ValidationOverview(props: {cycle: number}) {
     const { selectedProposalCode } = useParams();
-    const {data, error, isLoading, status}
+    const {data, error, isLoading}
         = useProposalResourceValidateObservingProposal(
-        {pathParams: {proposalCode: Number(selectedProposalCode)}}
+        {pathParams: {proposalCode: Number(selectedProposalCode)},
+            queryParams: {cycleId: props.cycle}}
         );
 
     if (error) {

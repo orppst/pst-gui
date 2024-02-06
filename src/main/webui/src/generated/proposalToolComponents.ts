@@ -7982,11 +7982,19 @@ export type ProposalResourceValidateObservingProposalPathParams = {
   proposalCode: number;
 };
 
+export type ProposalResourceValidateObservingProposalQueryParams = {
+  /**
+   * @format int64
+   */
+  cycleId?: number;
+};
+
 export type ProposalResourceValidateObservingProposalError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ProposalResourceValidateObservingProposalVariables = {
   pathParams: ProposalResourceValidateObservingProposalPathParams;
+  queryParams?: ProposalResourceValidateObservingProposalQueryParams;
 } & ProposalToolContext["fetcherOptions"];
 
 export const fetchProposalResourceValidateObservingProposal = (
@@ -7998,7 +8006,7 @@ export const fetchProposalResourceValidateObservingProposal = (
     ProposalResourceValidateObservingProposalError,
     undefined,
     {},
-    {},
+    ProposalResourceValidateObservingProposalQueryParams,
     ProposalResourceValidateObservingProposalPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/validate",
