@@ -49,17 +49,16 @@ function SubmitPanel(): ReactElement {
     }
 
     const changeCycleDates = (value: string | null) => {
-        setSelectedCycle(Number(value));
-        console.log("Selected cycle is now " + selectedCycle);
         fetchProposalCyclesResourceGetProposalCycleDates(
-            {pathParams: {cycleCode: selectedCycle}})
+            {pathParams: {cycleCode: Number(value)}})
             .then((dates) => {
                 setSubmissionDeadline(dates.submissionDeadline!);
                 console.log(dates)
             })
             .catch(console.log)
 
-        form.values.selectedCycle = selectedCycle;
+        form.values.selectedCycle = Number(value);
+        setSelectedCycle(Number(value));
     }
 
     const trySubmitProposal = form.onSubmit(() => {
