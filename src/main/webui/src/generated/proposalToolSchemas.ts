@@ -235,6 +235,22 @@ export type CommitteeMember = {
   member?: Reviewer;
 };
 
+export type Composites = {
+  /**
+   * @uniqueItems true
+   */
+  realm?: string[];
+  client?: {
+    [key: string]: string[];
+  };
+  /**
+   * @deprecated true
+   */
+  application?: {
+    [key: string]: string[];
+  };
+};
+
 /**
  * Axis description for continuous data. This object describes the domain for a particular axis of the domain space. It allows for the specification of the legal domain range (min,max), and a flag indicating if the axis is cyclic.
  */
@@ -285,6 +301,64 @@ export type Coordinate = {
    * Abstract head of the coordinate system object tree.
    */
   coordSys?: CoordSys;
+};
+
+export type CredentialRepresentation = {
+  id?: string;
+  type?: string;
+  userLabel?: string;
+  /**
+   * @format int64
+   */
+  createdDate?: number;
+  secretData?: string;
+  credentialData?: string;
+  /**
+   * @format int32
+   */
+  priority?: number;
+  value?: string;
+  temporary?: boolean;
+  /**
+   * @deprecated true
+   */
+  device?: string;
+  /**
+   * @deprecated true
+   */
+  hashedSaltedValue?: string;
+  /**
+   * @deprecated true
+   */
+  salt?: string;
+  /**
+   * @format int32
+   * @deprecated true
+   */
+  hashIterations?: number;
+  /**
+   * @format int32
+   * @deprecated true
+   */
+  counter?: number;
+  /**
+   * @deprecated true
+   */
+  algorithm?: string;
+  /**
+   * @format int32
+   * @deprecated true
+   */
+  digits?: number;
+  /**
+   * @format int32
+   * @deprecated true
+   */
+  period?: number;
+  /**
+   * @deprecated true
+   */
+  config?: MultivaluedHashMapStringString;
 };
 
 /**
@@ -388,6 +462,12 @@ export type FITSTime = {
    * The FITSTime coordinate value.
    */
   date?: string;
+};
+
+export type FederatedIdentityRepresentation = {
+  identityProvider?: string;
+  userId?: string;
+  userName?: string;
 };
 
 /**
@@ -591,6 +671,10 @@ export type Mjd = {
    * @format double
    */
   date?: number;
+};
+
+export type MultivaluedHashMapStringString = {
+  [key: string]: string[];
 };
 
 export type ObjectIdentifier = {
@@ -1236,6 +1320,23 @@ export type Reviewer = {
   xmlId?: string;
 };
 
+export type RoleRepresentation = {
+  id?: string;
+  name?: string;
+  description?: string;
+  /**
+   * @deprecated true
+   */
+  scopeParamRequired?: boolean;
+  composite?: boolean;
+  composites?: Composites;
+  clientRole?: boolean;
+  containerId?: string;
+  attributes?: {
+    [key: string]: string[];
+  };
+};
+
 /**
  * A spectral window for science use.
  */
@@ -1245,6 +1346,8 @@ export type ScienceSpectralWindow = {
    */
   spectralWindowSetup?: SpectralWindowSetup;
   expectedSpectralLine?: ExpectedSpectralLine[];
+
+  _id?: number;
 };
 
 export type SimbadTargetResult = {
@@ -1267,6 +1370,12 @@ export type SimbadTargetResult = {
 export type SimultaneityConstraint = {
   note?: string;
   isAvoidConstraint?: boolean;
+};
+
+export type SocialLinkRepresentation = {
+  socialProvider?: string;
+  socialUserId?: string;
+  socialUsername?: string;
 };
 
 export type SolarSystemTarget = {
@@ -1388,8 +1497,9 @@ export type SubjectMap = {
   /**
    * person connected with the proposal
    */
-  person?: Person | Person;
+  person?: Person;
   uid?: string;
+  inKeycloakRealm?: boolean;
 };
 
 /**
@@ -1625,6 +1735,106 @@ export type Unit = {
  * @format binary
  */
 export type UploadItemSchema = Blob;
+
+export type UserConsentRepresentation = {
+  clientId?: string;
+  grantedClientScopes?: string[];
+  /**
+   * @format int64
+   */
+  createdDate?: number;
+  /**
+   * @format int64
+   */
+  lastUpdatedDate?: number;
+  /**
+   * @deprecated true
+   */
+  grantedRealmRoles?: string[];
+};
+
+export type UserProfileAttributeGroupMetadata = {
+  name?: string;
+  displayHeader?: string;
+  displayDescription?: string;
+  annotations?: {
+    [key: string]: any;
+  };
+};
+
+export type UserProfileAttributeMetadata = {
+  name?: string;
+  displayName?: string;
+  required?: boolean;
+  readOnly?: boolean;
+  annotations?: {
+    [key: string]: any;
+  };
+  validators?: {
+    [key: string]: {
+      [key: string]: any;
+    };
+  };
+  group?: string;
+};
+
+export type UserProfileMetadata = {
+  attributes?: UserProfileAttributeMetadata[];
+  groups?: UserProfileAttributeGroupMetadata[];
+};
+
+export type UserRepresentation = {
+  self?: string;
+  id?: string;
+  origin?: string;
+  /**
+   * @format int64
+   */
+  createdTimestamp?: number;
+  username?: string;
+  enabled?: boolean;
+  totp?: boolean;
+  emailVerified?: boolean;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  federationLink?: string;
+  serviceAccountClientId?: string;
+  attributes?: {
+    [key: string]: string[];
+  };
+  credentials?: CredentialRepresentation[];
+  /**
+   * @uniqueItems true
+   */
+  disableableCredentialTypes?: string[];
+  requiredActions?: string[];
+  federatedIdentities?: FederatedIdentityRepresentation[];
+  realmRoles?: string[];
+  clientRoles?: {
+    [key: string]: string[];
+  };
+  clientConsents?: UserConsentRepresentation[];
+  /**
+   * @format int32
+   */
+  notBefore?: number;
+  /**
+   * @deprecated true
+   */
+  applicationRoles?: {
+    [key: string]: string[];
+  };
+  /**
+   * @deprecated true
+   */
+  socialLinks?: SocialLinkRepresentation[];
+  groups?: string[];
+  access?: {
+    [key: string]: boolean;
+  };
+  userProfileMetadata?: UserProfileMetadata;
+};
 
 /**
  * a WikiData identifier

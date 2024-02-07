@@ -3,6 +3,18 @@ any column which is set to type "VARCHAR". See
 https://github.com/orppst/pst-gui/issues/21#issuecomment-1786943901 for
  more info.
  */
+// constant used to indicate no row has been selected.
+export const NO_ROW_SELECTED = -1;
+
+/*the expected size of a table before adding a scroll bar. Aims to show 5.5
+ rows. */
+export const TABLE_SCROLL_HEIGHT = 200;
+
+/* enforced min width needed by scrollable containers. */
+export const TABLE_MIN_WIDTH = 500;
+
+/* color used when a table is in select mode */
+export const TABLE_HIGH_LIGHT_COLOR = 'var(--mantine-color-blue-light)';
 
 export const MAX_CHARS_FOR_INPUTS = 255;
 
@@ -51,3 +63,6 @@ export const ALADIN_SRC_URL =
 
 /* The source url for the aladin jquery */
 export const JQUERY_SRC_URL = 'https://code.jquery.com/jquery-1.12.1.min.js';
+
+/* the color selection of yellow needed for errors */
+export const ERROR_YELLOW = 6;

@@ -14,11 +14,10 @@ import {
 import {
     ProposalResourceGetProposalsError,
     ProposalResourceGetProposalsResponse,
-    useProposalResourceGetProposals
+    useProposalResourceGetProposals, useSubjectMapResourceCheckForNewUsers
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
 import TitlePanel from './proposal/Title';
-import TargetPanel from './targets/List';
 import OverviewPanel from "./proposal/Overview";
 import NewProposalPanel from './proposal/New';
 import SummaryPanel from "./proposal/Summary";
@@ -33,6 +32,7 @@ import {
 } from 'react-router-dom';
 import { useHistoryState } from "./useHistoryState";
 import TechnicalGoalsPanel from "./technicalGoals/technicalGoalsPanel.tsx";
+import { TargetPanel } from "./targets/targetPanel.tsx";
 import ObservationsPanel from "./observations/observationPanel.tsx";
 import DocumentsPanel from "./proposal/Documents";
 import SubmitPanel from "./proposal/Submit";
@@ -59,7 +59,7 @@ import {
     IconChevronRight, IconFile,
     IconFileCheck,
     IconFileDescription, IconFiles,
-    IconLogout, IconTarget, IconUsersGroup
+    IconLogout, IconTarget, IconUsersGroup, IconYinYangFilled
 } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
@@ -69,6 +69,7 @@ import {
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
 } from './constants.tsx';
+import AdminPanel from "./admin/adminPanel.tsx";
 
 /**
  * defines the user context type.
@@ -114,6 +115,14 @@ export const useToken = (): string => {
  * @constructor
  */
 function App2(): ReactElement {
+
+    //check for new users
+    const {data: numNewUsers} = useSubjectMapResourceCheckForNewUsers({});
+
+    if (numNewUsers && numNewUsers > 0) {
+        console.log("new users found: " + numNewUsers);
+    }
+
     // set proposal code.
     const historyProposalCode= 0;
     const [selectedProposalCode] = useState(historyProposalCode)
@@ -135,39 +144,53 @@ function App2(): ReactElement {
                 children: [
                     {index: true, element: <PSTStart/>} ,
                     {
+                        path: "admin",
+                        element: <AdminPanel />
+                    },
+                    {
                         path: "proposal/new",
-                        element: <NewProposalPanel /> },
+                        element: <NewProposalPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode",
-                        element: <OverviewPanel />},
+                        element: <OverviewPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/title",
-                        element: <TitlePanel />} ,
+                        element: <TitlePanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/summary",
-                        element: <SummaryPanel />} ,
+                        element: <SummaryPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/investigators",
-                        element:<InvestigatorsPanel />} ,
+                        element:<InvestigatorsPanel />
+                    },
                     {
                         path:
                             "proposal/:selectedProposalCode/investigators/new",
-                        element:<AddInvestigatorPanel />} ,
+                        element:<AddInvestigatorPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/targets",
-                        element:<TargetPanel />} ,
+                        element:<TargetPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/goals",
-                        element:<TechnicalGoalsPanel />} ,
+                        element:<TechnicalGoalsPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/observations",
-                        element:<ObservationsPanel />} ,
+                        element:<ObservationsPanel />
+                    },
                     {
                         path: "proposal/:selectedProposalCode/documents",
                         element:<DocumentsPanel />} ,
                     {
                         path: "proposal/:selectedProposalCode/submit",
                         element:<SubmitPanel />}
+                    },
                 ]}], {
             basename: "/pst/gui/tool/"
         }
@@ -212,6 +235,22 @@ function App2(): ReactElement {
             event.preventDefault();
             navigate("/");
         }
+
+        /**
+         * resolves the routing when requesting the Admin Page
+         *
+         * @param {React.SyntheticEvent} event the event (click)
+         */
+        function handleAdminPage(event: SyntheticEvent): void {
+            event.preventDefault();
+            navigate("admin")
+        }
+
+        /*
+            We only want to show the Administration Panel Button to those users
+            assigned an "administration" role but as user roles have yet to be
+            defined, or at least aren't accessible here, we can't do that.
+         */
 
         return (
             <ProposalContext.Provider
@@ -259,14 +298,25 @@ function App2(): ReactElement {
                                     {SwitchToggle()}
                                     <Tooltip label={"logout"}
                                              openDelay={OPEN_DELAY}
-                                             closeDelay={CLOSE_DELAY}>
-                                        <ActionIcon
-                                            color={"orange.8"}
-                                            variant={"subtle"}
-                                            component={"a"}
-                                            href={"/pst/gui/logout"}
+                                             closeDelay={CLOSE_DELAY}
+                                    >
+                                        <ActionIcon color={"orange.8"}
+                                                    variant={"subtle"}
+                                                    component={"a"}
+                                                    href={"/pst/gui/logout"}
                                         >
                                             <IconLogout size={ICON_SIZE}/>
+                                        </ActionIcon>
+                                    </Tooltip>
+                                    <Tooltip label={"Admin page"}
+                                             openDelay={OPEN_DELAY}
+                                             closeDelay={CLOSE_DELAY}
+                                    >
+                                        <ActionIcon color={"blue.7"}
+                                                    variant={"outline"}
+                                                    onClick={handleAdminPage}
+                                        >
+                                            <IconYinYangFilled size={ICON_SIZE}/>
                                         </ActionIcon>
                                     </Tooltip>
                                 </Group>

@@ -7,6 +7,7 @@ import {ModalsProvider} from "@mantine/modals";
 import {Notifications} from "@mantine/notifications";
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 //if we want to override any parts of theme we can do it here
 // this 'theme' object is merged with the 'theme' property of MantineProvider
@@ -21,13 +22,17 @@ const theme = createTheme({
     defaultRadius: 'sm',
 })
 
+const queryClient = new QueryClient();
+
 function App() {
 
     return (
             <MantineProvider theme={theme}>
                 <ModalsProvider>
                     <Notifications />
-                    <App2/>
+                    <QueryClientProvider client={queryClient}>
+                        <App2/>
+                    </QueryClientProvider>
                 </ModalsProvider>
             </MantineProvider>
     );
