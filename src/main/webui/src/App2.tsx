@@ -190,7 +190,6 @@ function App2(): ReactElement {
                     {
                         path: "proposal/:selectedProposalCode/submit",
                         element:<SubmitPanel />}
-                    },
                 ]}], {
             basename: "/pst/gui/tool/"
         }
