@@ -35,6 +35,7 @@ import TechnicalGoalsPanel from "./technicalGoals/technicalGoalsPanel.tsx";
 import { TargetPanel } from "./targets/targetPanel.tsx";
 import ObservationsPanel from "./observations/observationPanel.tsx";
 import DocumentsPanel from "./proposal/Documents";
+import SubmitPanel from "./proposal/Submit";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
@@ -55,7 +56,7 @@ import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {
     IconCamera,
     IconChartLine,
-    IconChevronRight,
+    IconChevronRight, IconFile,
     IconFileCheck,
     IconFileDescription, IconFiles,
     IconLogout, IconTarget, IconUsersGroup, IconYinYangFilled
@@ -185,8 +186,10 @@ function App2(): ReactElement {
                     },
                     {
                         path: "proposal/:selectedProposalCode/documents",
-                        element:<DocumentsPanel />
-                    },
+                        element:<DocumentsPanel />} ,
+                    {
+                        path: "proposal/:selectedProposalCode/submit",
+                        element:<SubmitPanel />}
                 ]}], {
             basename: "/pst/gui/tool/"
         }
@@ -455,6 +458,11 @@ function App2(): ReactElement {
                                          component={Link}
                                          leftSection={<IconFiles/>}
                                          label="Documents" />
+                                <NavLink to={
+                                    "proposal/" + item.code + "/submit"}
+                                         component={Link}
+                                         leftSection={<IconFile/>}
+                                         label="Submit" />
                             </NavLink>
                         ))}
                     </>

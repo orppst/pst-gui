@@ -8151,6 +8151,83 @@ export const useProposalResourceReplaceTitle = (
   );
 };
 
+export type ProposalResourceValidateObservingProposalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceValidateObservingProposalQueryParams = {
+  /**
+   * @format int64
+   */
+  cycleId?: number;
+};
+
+export type ProposalResourceValidateObservingProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceValidateObservingProposalVariables = {
+  pathParams: ProposalResourceValidateObservingProposalPathParams;
+  queryParams?: ProposalResourceValidateObservingProposalQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceValidateObservingProposal = (
+  variables: ProposalResourceValidateObservingProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ProposalValidation,
+    ProposalResourceValidateObservingProposalError,
+    undefined,
+    {},
+    ProposalResourceValidateObservingProposalQueryParams,
+    ProposalResourceValidateObservingProposalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/validate",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceValidateObservingProposal = <
+  TData = Schemas.ProposalValidation
+>(
+  variables: ProposalResourceValidateObservingProposalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ProposalValidation,
+      ProposalResourceValidateObservingProposalError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ProposalValidation,
+    ProposalResourceValidateObservingProposalError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/validate",
+      operationId: "proposalResourceValidateObservingProposal",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceValidateObservingProposal(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
+  );
+};
+
 export type SimbadResourceSimbadFindTargetQueryParams = {
   targetName?: string;
 };
@@ -8863,6 +8940,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/title";
       operationId: "proposalResourceGetObservingProposalTitle";
       variables: ProposalResourceGetObservingProposalTitleVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/validate";
+      operationId: "proposalResourceValidateObservingProposal";
+      variables: ProposalResourceValidateObservingProposalVariables;
     }
   | {
       path: "/pst/api/simbad";
