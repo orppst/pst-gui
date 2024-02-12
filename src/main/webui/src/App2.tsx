@@ -9,11 +9,8 @@ import {
 import {
     QueryClient,
     QueryClientProvider,
-    UseQueryResult
 } from '@tanstack/react-query';
 import {
-    ProposalResourceGetProposalsError,
-    ProposalResourceGetProposalsResponse,
     useProposalResourceGetProposals, useSubjectMapResourceCheckForNewUsers
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
@@ -65,7 +62,7 @@ import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
 import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
 import {
-    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE, JSON_SPACES,
+    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
 } from './constants.tsx';
@@ -214,6 +211,20 @@ function App2(): ReactElement {
         const {user, token, apiUrl} = useContext(ProposalContext);
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
+        // acquire the state setters for proposal title and investigator name.
+        const [proposalTitle, setProposalTitle] = useHistoryState(
+            "proposalTitle", "");
+        const [investigatorName, setInvestigatorName] = useHistoryState(
+            "investigatorName", "");
+        const result = useProposalResourceGetProposals(
+            { queryParams: {
+                    title: "%" + proposalTitle + "%",
+                    investigatorName: "%" + investigatorName + "%"
+                },
+            },
+            {
+                enabled: true,
+            });
 
         /**
          * resolves the routing for when making a new proposal.
@@ -336,12 +347,78 @@ function App2(): ReactElement {
                                 }}
                             >
                                 <AppShell.Section component={ScrollArea}>
-                                    <ProposalFilter/>
+                                    <Text fz="sm">
+                                        Filter existing proposals by:
+                                    </Text>
+                                    <TextInput label="Title"
+                                               value={proposalTitle}
+                                               onChange={(e: { target: { value: string; }; }) =>
+                                                   setProposalTitle(e.target.value)} />
+                                    <TextInput label="Investigator name"
+                                               value={investigatorName}
+                                               onChange={(e: { target: { value: string; }; }) =>
+                                                   setInvestigatorName(e.target.value)} />
                                 </AppShell.Section>
                             </Grid.Col>
                             <Grid.Col span={1}>
                                 <AppShell.Section grow component={ScrollArea}>
-                                    <ProposalsList/>
+                                    {result.isLoading ? (<Box>Loading…</Box>) : (
+                                        <>
+                                            {result.data?.map((item) => (
+                                                <NavLink key={item.code}
+                                                         label={item.title}
+                                                         childrenOffset={30}
+                                                         leftSection={<IconFileDescription/>}
+                                                         rightSection={<IconChevronRight
+                                                             size="0.8rem"
+                                                             stroke={STROKE} />}>
+                                                    <NavLink to={"proposal/" + item.code}
+                                                             component={Link}
+                                                             label="Overview"
+                                                             leftSection={<IconFileCheck/>}>
+                                                    </NavLink>
+                                                    <NavLink to={"proposal/" + item.code + "/title"}
+                                                             component={Link}
+                                                             leftSection={<IconFileDescription/>}
+                                                             label="Title" />
+                                                    <NavLink to={
+                                                        "proposal/" + item.code + "/summary"}
+                                                             component={Link}
+                                                             leftSection={<IconFileDescription/>}
+                                                             label="Summary" />
+                                                    <NavLink to={
+                                                        "proposal/" + item.code + "/investigators"}
+                                                             component={Link}
+                                                             leftSection={<IconUsersGroup/>}
+                                                             label="Investigators" />
+                                                    <NavLink to={
+                                                        "proposal/" + item.code + "/targets"}
+                                                             component={Link}
+                                                             leftSection={<IconTarget/>}
+                                                             label="Targets" />
+                                                    <NavLink to={"proposal/" + item.code + "/goals"}
+                                                             component={Link}
+                                                             leftSection={<IconChartLine/>}
+                                                             label="Technical Goals" />
+                                                    <NavLink to={
+                                                        "proposal/" + item.code + "/observations"}
+                                                             component={Link}
+                                                             leftSection={<IconCamera/>}
+                                                             label="Observations" />
+                                                    <NavLink to={
+                                                        "proposal/" + item.code + "/documents"}
+                                                             component={Link}
+                                                             leftSection={<IconFiles/>}
+                                                             label="Documents" />
+                                                    <NavLink to={
+                                                        "proposal/" + item.code + "/submit"}
+                                                             component={Link}
+                                                             leftSection={<IconFile/>}
+                                                             label="Submit" />
+                                                </NavLink>
+                                            ))}
+                                        </>
+                                    )}
                                 </AppShell.Section>
                             </Grid.Col>
                         </Grid>
@@ -362,157 +439,6 @@ function App2(): ReactElement {
      */
     function PSTStart(): ReactElement {
         return (<Box><Text fz={"lg"}>Welcome</Text></Box>);
-    }
-
-    /**
-     * returns the data from the query to the database for a given
-     * proposal title and investigator.
-     * @return {UseQueryResult<ProposalResourceGetProposalsResponse,
-     *                         ProposalResourceGetProposalsError>} the result
-     *                         from the database query.
-     * @constructor
-     */
-    function GetProposalList():
-            UseQueryResult<ProposalResourceGetProposalsResponse,
-                           ProposalResourceGetProposalsError> {
-        const [proposalTitle] = useHistoryState("proposalTitle", "");
-        const [investigatorName] = useHistoryState("investigatorName", "");
-        return useProposalResourceGetProposals(
-            { queryParams: {
-                title: "%" + proposalTitle + "%",
-                investigatorName: "%" + investigatorName + "%"
-              },
-           },
-            {
-                enabled: true,
-            }
-        );
-    }
-
-    /**
-     * generates the html for the proposal list.
-     *
-     * @return {React.ReactElement} the html for the proposal list.
-     * @constructor
-     */
-    function ProposalsList(): ReactElement {
-        const result = GetProposalList();
-
-        // if error produced, present error to user.
-        if (result.error) {
-            return (
-                <Box>
-                    <pre>{JSON.stringify(result.error, null, JSON_SPACES)}</pre>
-                </Box>
-            );
-        }
-
-        // generate the html.
-        return (
-            <>
-                {result.isLoading ? (<Box>Loading…</Box>) : (
-                    <>
-                        {result.data?.map((item) => (
-                            <NavLink key={item.code}
-                                     label={item.title}
-                                     childrenOffset={30}
-                                     leftSection={<IconFileDescription/>}
-                                     rightSection={<IconChevronRight
-                                         size="0.8rem"
-                                         stroke={STROKE} />}>
-                                <NavLink to={"proposal/" + item.code}
-                                         component={Link}
-                                         label="Overview"
-                                         leftSection={<IconFileCheck/>}>
-                                </NavLink>
-                                <NavLink to={"proposal/" + item.code + "/title"}
-                                         component={Link}
-                                         leftSection={<IconFileDescription/>}
-                                         label="Title" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/summary"}
-                                         component={Link}
-                                         leftSection={<IconFileDescription/>}
-                                         label="Summary" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/investigators"}
-                                         component={Link}
-                                         leftSection={<IconUsersGroup/>}
-                                         label="Investigators" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/targets"}
-                                         component={Link}
-                                         leftSection={<IconTarget/>}
-                                         label="Targets" />
-                                <NavLink to={"proposal/" + item.code + "/goals"}
-                                         component={Link}
-                                         leftSection={<IconChartLine/>}
-                                         label="Technical Goals" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/observations"}
-                                         component={Link}
-                                         leftSection={<IconCamera/>}
-                                         label="Observations" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/documents"}
-                                         component={Link}
-                                         leftSection={<IconFiles/>}
-                                         label="Documents" />
-                                <NavLink to={
-                                    "proposal/" + item.code + "/submit"}
-                                         component={Link}
-                                         leftSection={<IconFile/>}
-                                         label="Submit" />
-                            </NavLink>
-                        ))}
-                    </>
-                )}
-            </>
-        );
-    }
-
-    /**
-     * produces HTML for filtering proposals.
-     *
-     * @return {React.ReactElement} the dynamic html for the proposal filter.
-     * @constructor
-     */
-    function ProposalFilter(): ReactElement {
-        const result = GetProposalList();
-
-        // if error produced, present error to user.
-        if (result.error) {
-            return (
-                <Box>
-                    <pre>{JSON.stringify(result.error, null, 2)}</pre>
-                </Box>
-            );
-        }
-
-        // acquire the state setters for proposal title and investigator name.
-        const [proposalTitle, setProposalTitle] = useHistoryState(
-            "proposalTitle", "");
-        const [investigatorName, setInvestigatorName] = useHistoryState(
-            "investigatorName", "");
-
-        // generate the html.
-        return (
-            <>
-                <div>
-                <Text fz="sm">
-                    Filter existing proposals by:
-                </Text>
-                <TextInput label="Title"
-                           value={proposalTitle}
-                           onChange={(e: { target: { value: string; }; }) =>
-                               setProposalTitle(e.target.value)} />
-                <TextInput label="Investigator name"
-                           value={investigatorName}
-                           onChange={(e: { target: { value: string; }; }) =>
-                               setInvestigatorName(e.target.value)} />
-                </div>
-            </>
-        )
     }
 }
 
