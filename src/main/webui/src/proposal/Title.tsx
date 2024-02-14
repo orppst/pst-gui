@@ -12,6 +12,14 @@ import { SubmitButton } from '../commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants';
 import MaxCharsForInputRemaining from "../commonInputs/remainingCharacterCount.tsx";
 
+const titleFormJSON =  {
+    initialValues: {title: "Loading..."},
+    validate: {
+        title: (value : string) => (
+            value.length < 1 ? 'Title cannot be blank' : null)
+    }
+};
+
 function TitlePanel() {
     const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
@@ -21,13 +29,7 @@ function TitlePanel() {
             {pathParams:
                     {proposalCode: Number(selectedProposalCode)},},
             {enabled: true});
-    const form = useForm({
-        initialValues: {title: "Loading..."},
-        validate: {
-            title: (value) => (
-                value.length < 1 ? 'Title cannot be blank' : null)
-        }
-    });
+    const form = useForm(titleFormJSON);
 
     const queryClient = useQueryClient()
 
