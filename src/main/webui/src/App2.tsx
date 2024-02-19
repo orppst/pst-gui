@@ -290,7 +290,7 @@ function App2(): ReactElement {
                                         color={GRAY}
                                         mr="xl"
                                     />
-                                    <img src={"/pst/gui/public/polaris4.png"}
+                                    <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
                                     <DatabaseSearchButton
