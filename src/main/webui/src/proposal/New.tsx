@@ -48,7 +48,7 @@ const kindData = [
             "person": user
         };
 
-        //Add a blank field for testing
+        //Add a blank field, FIXME: replace with a real field
          const field : TargetField = {
              name: "A field"
          };
