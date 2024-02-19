@@ -1,4 +1,3 @@
-import {StrictMode} from 'react'
 import { createRoot } from 'react-dom/client';
 import {createTheme, MantineProvider} from "@mantine/core";
 import App2 from "./App2.tsx"
@@ -39,7 +38,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root') as HTMLElement).render(
-    <StrictMode>
+
         <App />
-    </StrictMode>,
+   ,
 )
