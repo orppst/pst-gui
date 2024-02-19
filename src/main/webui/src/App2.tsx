@@ -4,7 +4,7 @@ import {
     useContext,
     ReactElement,
     SyntheticEvent,
-    Context
+    Context, StrictMode
 } from 'react';
 import {
     QueryClient,
@@ -195,10 +195,12 @@ function App2(): ReactElement {
 
     return (
         <AuthProvider>
+            <StrictMode>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
+            </StrictMode>
         </AuthProvider>
     );
 
