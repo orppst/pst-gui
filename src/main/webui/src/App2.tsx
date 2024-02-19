@@ -73,7 +73,7 @@ import AdminPanel from "./admin/adminPanel.tsx";
  */
 export type UserContextType = {
     user: Person;
-    token: string;
+    getToken: () => string;
 }
 
 /**
@@ -93,7 +93,7 @@ export const ProposalContext:
         Context<UserContextType & ProposalContextType> =
     createContext<UserContextType & ProposalContextType>({
         user: {},
-        token:"",
+        getToken: ()=>{return ""},
         selectedProposalCode: 0,
         apiUrl:"http://api" // obviously false as a placeholder
     })
@@ -103,7 +103,7 @@ export const ProposalContext:
  * @return {string} the token.
  */
 export const useToken = (): string => {
-    return useContext(ProposalContext).token;
+    return useContext(ProposalContext).getToken();
 };
 
 /**
@@ -210,7 +210,7 @@ function App2(): ReactElement {
      * @constructor
      */
     function PSTRoot(): ReactElement {
-        const {user, token, apiUrl} = useContext(ProposalContext);
+        const {user, getToken, apiUrl} = useContext(ProposalContext);
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
         // acquire the state setters for proposal title and investigator name.
@@ -266,7 +266,7 @@ function App2(): ReactElement {
 
         return (
             <ProposalContext.Provider
-                value={{selectedProposalCode, user, token, apiUrl}}>
+                value={{selectedProposalCode, user, getToken, apiUrl}}>
                 <AppShell
                     header={{height: APP_HEADER_HEIGHT}}
                     navbar={{

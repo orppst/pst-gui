@@ -39,6 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
 
+    const getToken = () => {return token.current}
+
     const idleTimer = useIdleTimer({
         onPresenceChange,
         timeout: 60000,
@@ -133,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <ProposalContext.Provider value={{user:user.current, token:token.current, selectedProposalCode:0, apiUrl:apiURL.current}}>
+        <ProposalContext.Provider value={{user:user.current, getToken:getToken, selectedProposalCode:0, apiUrl:apiURL.current}}>
             {loggedOn ? (
            <>
                <Modal
