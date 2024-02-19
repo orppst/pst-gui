@@ -372,7 +372,7 @@ function App2(): ReactElement {
                                                          childrenOffset={30}
                                                          leftSection={<IconFileDescription/>}
                                                          rightSection={<IconChevronRight
-                                                             size="0.8rem"
+                                                             size="0.8em"
                                                              stroke={STROKE} />}>
                                                     <NavLink to={"proposal/" + item.code}
                                                              component={Link}
