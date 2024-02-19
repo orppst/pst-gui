@@ -1,9 +1,10 @@
 import { useContext, useState } from "react";
 import {ProposalContext} from '../App2'
 import {
+    fetchProposalResourceAddNewField,
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
-import {Investigator, ObservingProposal, ProposalKind} from "../generated/proposalToolSchemas";
+import {Investigator, ObservingProposal, ProposalKind, TargetField} from "../generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
 import {Box, Select, Text, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
@@ -47,6 +48,11 @@ const kindData = [
             "person": user
         };
 
+        //Add a blank field for testing
+         const field : TargetField = {
+             name: "A field"
+         };
+
         const newProposal :ObservingProposal = {
             ...val,
             "investigators": [investigator]
@@ -55,9 +61,18 @@ const kindData = [
         fetchProposalResourceCreateObservingProposal({ body: newProposal})
             .then((data) => {
                 queryClient.invalidateQueries(["pst","api","proposals"])
-                        .then(() => setSubmitting(false));
-                navigate("/proposal/" + data?._id);
+                        .then();
+                if(Number(data?._id) > 0) {
+                    let newProposalId = Number(data?._id);
+                    fetchProposalResourceAddNewField({
+                        pathParams: {proposalCode: newProposalId},
+                        body: field
+                    })
+                        .then(() => navigate("/proposal/" + newProposalId))
+                        .catch(console.log);
+                }
             })
+            .then(() => setSubmitting(false))
             .catch(console.log);
     });
 
