@@ -144,7 +144,7 @@ function ObservationAccordionLabel(
     return(
         <Group wrap={"nowrap"}>
             <Avatar radius={"sm"}>
-                <IconNorthStar size={"1rem"}/>
+                <IconNorthStar size={"1em"}/>
             </Avatar>
             <div>
                 <Text>{targetName}</Text>

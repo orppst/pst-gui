@@ -17,11 +17,11 @@ export function SwitchToggle() {
                 size="md"
                 onLabel={<IconSun
                     color={theme.white}
-                    size="1.25rem"
+                    size="1.25em"
                     stroke={STROKE} />}
                 offLabel={<IconMoonStars
                     color={GRAY}
-                    size="1.25rem"
+                    size="1.25em"
                     stroke={STROKE}/>}
             />
             <Slider miw={120}
