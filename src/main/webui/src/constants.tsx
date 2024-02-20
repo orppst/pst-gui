@@ -36,7 +36,7 @@ export const CLOSE_DELAY = 200;
 export const STROKE = 1.5
 
 // the default size of icons
-export const ICON_SIZE = "2rem";
+export const ICON_SIZE = "2em";
 
 // the max number of columns on a page
 export const MAX_COLUMNS = 12;

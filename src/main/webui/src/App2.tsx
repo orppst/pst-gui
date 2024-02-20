@@ -4,7 +4,7 @@ import {
     useContext,
     ReactElement,
     SyntheticEvent,
-    Context
+    Context, StrictMode
 } from 'react';
 import {
     QueryClient,
@@ -197,10 +197,12 @@ function App2(): ReactElement {
 
     return (
         <AuthProvider>
+            <StrictMode>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
+            </StrictMode>
         </AuthProvider>
     );
 
@@ -290,7 +292,7 @@ function App2(): ReactElement {
                                         color={GRAY}
                                         mr="xl"
                                     />
-                                    <img src={"/pst/gui/public/polaris4.png"}
+                                    <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
                                     <DatabaseSearchButton
