@@ -125,7 +125,7 @@ async function downloadProposal(
                 // Create a download link for the zip file
                 const link = document.createElement("a");
                 link.href = window.URL.createObjectURL(zipData);
-                link.download = "proposal.zip";
+                link.download=proposalData.title?.replace(/\s/g,"").substring(0,31)+".zip";
                 link.click();
             })
         }
