@@ -1,8 +1,8 @@
-* {
-    align-content: center;
+
+body {
 
 }
-body {
+.greeting {
     background-image: url(orp_background_image_small.png);
     height: 100%;
 
@@ -13,22 +13,49 @@ body {
     background-color: black;
     justify-content: center;
     display: flex;
+    flex-direction: column;
+
+
 }
 .logo {
     display: flex;
     justify-content: center;
 }
-img {
+img.intromessage {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
     width:50%;
+
 }
-h1 {
+.intromessage {
+
     color: white;
+    justify-content: center;
+    font-size: 4vw;
+    margin-left: auto;
+    margin-right: auto;
+
 }
 .signout {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width:90%;
     color: white;
     font-size: 4vw;
 }
+.introback {
+    color: black;
+    height: 100vh;
+}
 
+.greeting a:visited {
+    color:yellow;
+}
+.greeting a:link {
+    color:green;
+}
 
 /* Tooltip text */
 .logo .tooltiptext {

@@ -5,6 +5,7 @@ import {setFetcherApiURL} from "../generated/proposalToolFetcher.ts"
 import { Modal, Button } from '@mantine/core'
 import { useIdleTimer } from 'react-idle-timer'
 import type {PresenceType} from 'react-idle-timer'
+import '../../public/greeting.css'
 
 export type AuthMapping = {
     subjectMap:SubjectMap;
@@ -47,12 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throttle: 500
     })
     async function getUser() {
-        const apiResponse = await window.fetch("/pst/gui/api-info")
+        const apiResponse = await window.fetch("/pst/gui/api-info", {mode:"no-cors"}) //FIXME reintroduce CORS when keycloak is implementing it properly
         const localbaseUrl = await apiResponse.text()
         setFetcherApiURL(localbaseUrl)
         apiURL.current=localbaseUrl
 
-        const response = await window.fetch("/pst/gui/aai/"); //IMPL would be nice to have this URL parameterized
+        const response = await window.fetch("/pst/gui/aai/", {mode:"no-cors"}); //FIXME reintroduce CORS when keycloak is implementing it properly
         let error;
         if (response.ok) {
             setLoggedOn(true);
@@ -159,7 +160,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
            </>
                 ) : (
                     <>
-                    <div>Need to Authenticate..</div>
+                        <div className='introback'>
+                        <div className='greeting'>
+
+                            <img className="intromessage" src="/pst/gui/polaris4.png"/>
+                            <h1 className='intromessage'><a href={'/pst/gui/tool/'}>Click</a> to login</h1>
+
+                        </div>
+                        </div>
                     </>
             )
             }
