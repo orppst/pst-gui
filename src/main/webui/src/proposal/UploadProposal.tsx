@@ -101,7 +101,7 @@ export const handleUploadZip = async (chosenFile: File | null) => {
                 notifications.show({
                     autoClose: 7000,
                     title: "Upload failed",
-                    message: `There was no file called 'json' within the zip`,
+                    message: "There was no file called '"+JSON_FILE_NAME+"' within the zip",
                     color: 'red',
                     className: 'my-notification-class',
                 })
@@ -128,6 +128,7 @@ export const handleUploadZip = async (chosenFile: File | null) => {
                     })
                 }
             })
+            .catch(() => console.log("Unable to extract " + JSON_FILE_NAME + " from zip file"))
         })
     }
 }
