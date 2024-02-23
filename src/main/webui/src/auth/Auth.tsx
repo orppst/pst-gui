@@ -2,6 +2,7 @@ import {ReactNode, useState, useRef} from "react"
 import {Person, SubjectMap} from "../generated/proposalToolSchemas.ts"
 import {ProposalContext} from "../App2.tsx"
 import {setFetcherApiURL} from "../generated/proposalToolFetcher.ts"
+import {NewUser} from "./NewUser.tsx";
 import { Modal, Button } from '@mantine/core'
 import { useIdleTimer } from 'react-idle-timer'
 import type {PresenceType} from 'react-idle-timer'
@@ -11,6 +12,8 @@ export type AuthMapping = {
     subjectMap:SubjectMap;
     token: string;
     expiry: string;
+    nameFromAuth: string;
+    emailFromAuth: string;
 }
 
 // This is still basically done by server side refresh - following the https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-14#name-token-mediating-backend architecture
@@ -25,6 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const [loggedOn, setLoggedOn] = useState(false)
     const [expiringSoon, setExpiring] = useState(false)
+    const [isNewUser, setIsNewUser] = useState(false);
 
     const expiry = useRef(new Date(Date.now()+600000))
     const user  = useRef({fullName:"Unknown"} as Person)
@@ -32,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const logoutTimer = useRef<NodeJS.Timeout>()
     const expiryTimer = useRef<NodeJS.Timeout>()
     const token= useRef<string>("")//TODO what to do if token bad....
+    const uuid =  useRef<string>("")
 
 
 
@@ -100,9 +105,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log("clear expiryTimer", expiryTimer.current)
             clearTimeout(expiryTimer.current)
             expiryTimer.current = setTimeout(() =>{
-
-                // FIXME should include detection of whether user is active https://developer.mozilla.org/en-US/docs/Web/API/UserActivation
-
                 console.log("access token about to expire - "+ expiry.current.toISOString());
                 if(idleTimer.isIdle()) {
                     setExpiring(true);
@@ -116,15 +118,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     redoAuthentication()
                 }
 
-            }, expiry.current.getTime()-Date.now() -55000)
+            }, expiry.current.getTime()-Date.now() - 55000)
             console.log("setting new expiry reminder", expiryTimer.current)
 
-            if(s.subjectMap.person) {
+            if(s.subjectMap.inKeycloakRealm && s.subjectMap.person) {
                 user.current= s.subjectMap.person
             }
             else {
-                //FIXME what to do it the person is not properly registered?
-                console.error("authenticated person is not registered with database")
+                console.warn("authenticated person ",s.nameFromAuth," is not registered with database")
+                setIsNewUser(true)
+                user.current = {fullName: s.nameFromAuth, eMail: s.emailFromAuth}
+                console.log("new user", user.current)
             }
         })
             .catch(console.log);
@@ -135,9 +139,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       redoAuthentication()
     }
 
+
+    function userConfirmed(p :Person)
+    {
+        user.current = p
+        setIsNewUser(false)
+    }
+
     return (
         <ProposalContext.Provider value={{user:user.current, getToken:getToken, selectedProposalCode:0, apiUrl:apiURL.current}}>
-            {loggedOn ? (
+            {loggedOn ? ( isNewUser ? (
+
+                  <NewUser proposed={user.current} uuid={uuid.current} userConfirmed={userConfirmed}/>
+
+                ) : (
            <>
                <Modal
                    opened={expiringSoon && idleTimer.isIdle()}
@@ -158,7 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                {children}
            </>
-                ) : (
+                ) ) : (
                     <>
                         <div className='introback'>
                         <div className='greeting'>

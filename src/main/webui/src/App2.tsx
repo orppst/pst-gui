@@ -11,7 +11,7 @@ import {
     QueryClientProvider,
 } from '@tanstack/react-query';
 import {
-    useProposalResourceGetProposals, useSubjectMapResourceCheckForNewUsers
+    useProposalResourceGetProposals,
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
 import TitlePanel from './proposal/Title';
@@ -113,12 +113,6 @@ export const useToken = (): string => {
  */
 function App2(): ReactElement {
 
-    //check for new users
-    const {data: numNewUsers} = useSubjectMapResourceCheckForNewUsers({});
-
-    if (numNewUsers && numNewUsers > 0) {
-        console.log("new users found: " + numNewUsers);
-    }
 
     // set proposal code.
     const historyProposalCode= 0;

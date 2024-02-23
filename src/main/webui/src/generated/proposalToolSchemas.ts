@@ -1346,8 +1346,6 @@ export type ScienceSpectralWindow = {
    */
   spectralWindowSetup?: SpectralWindowSetup;
   expectedSpectralLine?: ExpectedSpectralLine[];
-
-  _id?: number;
 };
 
 export type SimbadTargetResult = {
@@ -1497,7 +1495,7 @@ export type SubjectMap = {
   /**
    * person connected with the proposal
    */
-  person?: Person;
+  person?: Person | Person;
   uid?: string;
   inKeycloakRealm?: boolean;
 };

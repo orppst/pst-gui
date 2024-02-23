@@ -8480,47 +8480,52 @@ export const useSubjectMapResourceSubjectMapList = <
   );
 };
 
-export type SubjectMapResourceCleanUsersError = Fetcher.ErrorWrapper<undefined>;
+export type SubjectMapResourceCreateFromUserQueryParams = {
+  uuid?: string;
+};
 
-export type SubjectMapResourceCleanUsersVariables =
-  ProposalToolContext["fetcherOptions"];
+export type SubjectMapResourceCreateFromUserError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export const fetchSubjectMapResourceCleanUsers = (
-  variables: SubjectMapResourceCleanUsersVariables,
+export type SubjectMapResourceCreateFromUserVariables = {
+  body?: Schemas.Person;
+  queryParams?: SubjectMapResourceCreateFromUserQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceCreateFromUser = (
+  variables: SubjectMapResourceCreateFromUserVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
-    SubjectMapResourceCleanUsersError,
-    undefined,
+    Schemas.SubjectMap,
+    SubjectMapResourceCreateFromUserError,
+    Schemas.Person,
     {},
-    {},
+    SubjectMapResourceCreateFromUserQueryParams,
     {}
-  >({
-    url: "/pst/api/subjectMap/cleanUsers",
-    method: "delete",
-    ...variables,
-    signal,
-  });
+  >({ url: "/pst/api/subjectMap", method: "post", ...variables, signal });
 
-export const useSubjectMapResourceCleanUsers = (
+export const useSubjectMapResourceCreateFromUser = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
-      SubjectMapResourceCleanUsersError,
-      SubjectMapResourceCleanUsersVariables
+      Schemas.SubjectMap,
+      SubjectMapResourceCreateFromUserError,
+      SubjectMapResourceCreateFromUserVariables
     >,
     "mutationFn"
   >
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
-    SubjectMapResourceCleanUsersError,
-    SubjectMapResourceCleanUsersVariables
+    Schemas.SubjectMap,
+    SubjectMapResourceCreateFromUserError,
+    SubjectMapResourceCreateFromUserVariables
   >(
-    (variables: SubjectMapResourceCleanUsersVariables) =>
-      fetchSubjectMapResourceCleanUsers({ ...fetcherOptions, ...variables }),
+    (variables: SubjectMapResourceCreateFromUserVariables) =>
+      fetchSubjectMapResourceCreateFromUser({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
