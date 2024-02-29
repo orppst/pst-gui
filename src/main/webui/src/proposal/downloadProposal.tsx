@@ -1,21 +1,23 @@
 import { ObjectIdentifier, ObservingProposal } from '../generated/proposalToolSchemas.ts';
-import html2canvas from 'html2canvas';
+//import html2canvas from 'html2canvas';
 // renamed to bypass ESlint issues about constructors needing to be capital letters.
-import { jsPDF as JSPDF } from 'jspdf';
+//import { jsPDF as JSPDF } from 'jspdf';
 // used the import * as it bypasses a fault with how this is meant to be imported.
 import * as JSZip from 'jszip';
 import {
+    fetchProposalResourceExportProposal,
     fetchSupportingDocumentResourceDownloadSupportingDocument,
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from '../generated/proposalToolComponents.ts';
 import { JSON_FILE_NAME, SUPPORTING_DOC_PREFIX } from '../constants.tsx';
+
 
 /**
  * generates a blob for the overview page that contains the pdf.
  *
  * @param {HTMLInputElement} element the top page to turn into a pdf blob.
  * @return {Promise<Blob>} the blob of the pdf.
- */
+ *
 const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
     // convert overview to png.
     const canvas = await html2canvas(element);
@@ -39,44 +41,42 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
     // get pdf data.
     return pdfGenerator.output('blob');
 }
-
+*/
 /**
  * goes through the proposals supporting documents and adds them to the zip.
  * @param {JSZip} zip the zip object.
  * @param supportingDocumentData the data for supporting documents.
  * @param selectedProposalCode the selected proposal code.
  */
-const populateSupportingDocuments = (
-    zip: JSZip,
+const populateSupportingDocuments = (zip: JSZip,
     supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
-    selectedProposalCode: String):
-    Array<Promise<void>> => {
-    return supportingDocumentData.map(async (item: ObjectIdentifier) => {
-        if (item.dbid !== undefined && item.name !== undefined) {
-            // have to destructure this, as otherwise risk of being undefined
-            // detected later.
-            let docTitle = SUPPORTING_DOC_PREFIX + item.name;
+    selectedProposalCode: String): Array<Promise<void>> => {
+        return supportingDocumentData.map(async (item: ObjectIdentifier) => {
+            if (item.dbid !== undefined && item.name !== undefined) {
+                // have to destructure this, as otherwise risk of being undefined
+                // detected later.
+                let docTitle = SUPPORTING_DOC_PREFIX + item.name;
 
-            // ensure that if the file exists already, that it's renamed to
-            // avoid issues of overwriting itself in the zip.
-            while (zip.files[docTitle]) {
-                docTitle = docTitle + "1"
+                // ensure that if the file exists already, that it's renamed to
+                // avoid issues of overwriting itself in the zip.
+                while (zip.files[docTitle]) {
+                    docTitle = docTitle + "1"
+                }
+
+                // extract the document and save into the zip.
+                await fetchSupportingDocumentResourceDownloadSupportingDocument(
+                    { pathParams: {
+                        id: item.dbid,
+                            proposalCode: Number(selectedProposalCode) } })
+                    .then((blob) => {
+                        // ensure we got some data back.
+                        if (blob !== undefined) {
+                            zip.file(docTitle, blob)
+                        }
+                    })
             }
-
-            // extract the document and save into the zip.
-            await fetchSupportingDocumentResourceDownloadSupportingDocument(
-                { pathParams: {
-                    id: item.dbid,
-                        proposalCode: Number(selectedProposalCode) } })
-                .then((blob) => {
-                    // ensure we got some data back.
-                    if (blob !== undefined) {
-                        zip.file(docTitle, blob)
-                    }
-                })
-        }
-    });
-}
+        });
+    }
 
 
 /**
@@ -94,6 +94,7 @@ async function downloadProposal(
         selectedProposalCode: String):
     Promise<void> {
 
+/*
     // determine correct title for the pdf.
     let title = 'UnNamedProposal.pdf';
     if (proposalData?.title) {
@@ -102,15 +103,22 @@ async function downloadProposal(
 
     // get pdf data.
     const pdfData = generatePdf(element);
-
+*/
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
-    //zip = zip.file(title, pdfData);
-    zip = zip.file(JSON_FILE_NAME, JSON.stringify(proposalData))
 
     // add supporting documents to the zip.
     const promises = populateSupportingDocuments(
         zip, supportingDocumentData, selectedProposalCode
+    );
+
+    promises.push(
+        fetchProposalResourceExportProposal({pathParams: {proposalCode: Number(selectedProposalCode) }})
+            .then((blob) => {
+                // ensure we got some data back.
+                if (blob !== undefined) {
+                    zip.file(JSON_FILE_NAME, blob)
+                }})
     );
 
     // ensure all supporting docs populated before making zip.

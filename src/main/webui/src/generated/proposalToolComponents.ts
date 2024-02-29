@@ -4781,6 +4781,100 @@ export const useProposalResourceCreateObservingProposal = (
   );
 };
 
+export type ProposalResourceImportProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceImportProposalVariables = {
+  body?: Schemas.ObservingProposal;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceImportProposal = (
+  variables: ProposalResourceImportProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ObservingProposal,
+    ProposalResourceImportProposalError,
+    Schemas.ObservingProposal,
+    {},
+    {},
+    {}
+  >({ url: "/pst/api/proposals/import", method: "post", ...variables, signal });
+
+export const useProposalResourceImportProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ObservingProposal,
+      ProposalResourceImportProposalError,
+      ProposalResourceImportProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ObservingProposal,
+    ProposalResourceImportProposalError,
+    ProposalResourceImportProposalVariables
+  >(
+    (variables: ProposalResourceImportProposalVariables) =>
+      fetchProposalResourceImportProposal({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type ProposalResourceUploadProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceUploadProposalRequestBody = {
+  document?: Schemas.UploadItemSchema;
+  updateSubmittedFlag?: string;
+};
+
+export type ProposalResourceUploadProposalVariables = {
+  body?: ProposalResourceUploadProposalRequestBody;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceUploadProposal = (
+  variables: ProposalResourceUploadProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceUploadProposalError,
+    ProposalResourceUploadProposalRequestBody,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/proposals/uploadProposal",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceUploadProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalResourceUploadProposalError,
+      ProposalResourceUploadProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalResourceUploadProposalError,
+    ProposalResourceUploadProposalVariables
+  >(
+    (variables: ProposalResourceUploadProposalVariables) =>
+      fetchProposalResourceUploadProposal({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
 export type ProposalResourceGetObservingProposalPathParams = {
   /**
    * @format int64
@@ -4904,6 +4998,73 @@ export const useProposalResourceDeleteObservingProposal = (
         ...variables,
       }),
     options
+  );
+};
+
+export type ProposalResourceExportProposalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceExportProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceExportProposalVariables = {
+  pathParams: ProposalResourceExportProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceExportProposal = (
+  variables: ProposalResourceExportProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceExportProposalError,
+    undefined,
+    {},
+    {},
+    ProposalResourceExportProposalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/export",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceExportProposal = <TData = undefined>(
+  variables: ProposalResourceExportProposalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      ProposalResourceExportProposalError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    ProposalResourceExportProposalError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/export",
+      operationId: "proposalResourceExportProposal",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceExportProposal(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
   );
 };
 
@@ -6758,77 +6919,6 @@ export const fetchSupportingDocumentResourceUploadSupportingDocument = (
     signal,
   });
 
-/**
- * makes the request to upload a proposal.
- * @param {UploadProposalVariables} variables the proposal variables.
- * @param {AbortSignal} signal what to do when it fails.
- * @return {Promise<UploadProposal>} promise to resolve uploading.
- */
-export const fetchUploadProposal = (
-    variables: UploadProposalVariables,
-    signal?: AbortSignal
-): Promise<UploadProposal> =>
-    proposalToolFetch<
-        UploadProposal,
-        UploadProposalError,
-        UploadDocumentRequestBody,
-        {},
-        {},
-        {}
-    >({
-      url: "/pst/api/proposals/uploadProposal",
-      method: "post",
-      ...variables,
-      signal,
-    });
-
-export type UploadDocumentRequestBody = {
-  document?: Schemas.UploadItemSchema;
-  changeSubmissionFlag: boolean;
-};
-
-export type UploadProposalVariables = {
-  body?: UploadDocumentRequestBody;
-} & ProposalToolContext["fetcherOptions"];
-
-export type UploadProposalError =
-    Fetcher.ErrorWrapper<undefined>;
-
-export type UploadProposal = {
-  /**
-   * document title
-   */
-  title?: string;
-  /**
-   * location of document
-   */
-  location?: string;
-};
-
-export const uploadProposal = (
-    options?: Omit<
-        reactQuery.UseMutationOptions<
-            UploadProposal,
-            UploadProposalError,
-            UploadProposalVariables
-        >,
-        "mutationFn"
-    >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-      UploadProposal,
-      UploadProposalError,
-      UploadProposalVariables
-  >((variables: UploadProposalVariables) =>
-          fetchUploadProposal({
-            ...fetcherOptions,
-            ...variables,
-          }),
-      options
-  );
-};
-
 export const useSupportingDocumentResourceUploadSupportingDocument = (
   options?: Omit<
     reactQuery.UseMutationOptions<
@@ -8551,47 +8641,52 @@ export const useSubjectMapResourceSubjectMapList = <
   );
 };
 
-export type SubjectMapResourceCleanUsersError = Fetcher.ErrorWrapper<undefined>;
+export type SubjectMapResourceCreateFromUserQueryParams = {
+  uuid?: string;
+};
 
-export type SubjectMapResourceCleanUsersVariables =
-  ProposalToolContext["fetcherOptions"];
+export type SubjectMapResourceCreateFromUserError =
+  Fetcher.ErrorWrapper<undefined>;
 
-export const fetchSubjectMapResourceCleanUsers = (
-  variables: SubjectMapResourceCleanUsersVariables,
+export type SubjectMapResourceCreateFromUserVariables = {
+  body?: Schemas.Person;
+  queryParams?: SubjectMapResourceCreateFromUserQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceCreateFromUser = (
+  variables: SubjectMapResourceCreateFromUserVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    undefined,
-    SubjectMapResourceCleanUsersError,
-    undefined,
+    Schemas.SubjectMap,
+    SubjectMapResourceCreateFromUserError,
+    Schemas.Person,
     {},
-    {},
+    SubjectMapResourceCreateFromUserQueryParams,
     {}
-  >({
-    url: "/pst/api/subjectMap/cleanUsers",
-    method: "delete",
-    ...variables,
-    signal,
-  });
+  >({ url: "/pst/api/subjectMap", method: "post", ...variables, signal });
 
-export const useSubjectMapResourceCleanUsers = (
+export const useSubjectMapResourceCreateFromUser = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
-      SubjectMapResourceCleanUsersError,
-      SubjectMapResourceCleanUsersVariables
+      Schemas.SubjectMap,
+      SubjectMapResourceCreateFromUserError,
+      SubjectMapResourceCreateFromUserVariables
     >,
     "mutationFn"
   >
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    undefined,
-    SubjectMapResourceCleanUsersError,
-    SubjectMapResourceCleanUsersVariables
+    Schemas.SubjectMap,
+    SubjectMapResourceCreateFromUserError,
+    SubjectMapResourceCreateFromUserVariables
   >(
-    (variables: SubjectMapResourceCleanUsersVariables) =>
-      fetchSubjectMapResourceCleanUsers({ ...fetcherOptions, ...variables }),
+    (variables: SubjectMapResourceCreateFromUserVariables) =>
+      fetchSubjectMapResourceCreateFromUser({
+        ...fetcherOptions,
+        ...variables,
+      }),
     options
   );
 };
@@ -8926,6 +9021,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}";
       operationId: "proposalResourceGetObservingProposal";
       variables: ProposalResourceGetObservingProposalVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/export";
+      operationId: "proposalResourceExportProposal";
+      variables: ProposalResourceExportProposalVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/fields";

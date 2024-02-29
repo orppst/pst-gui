@@ -4,7 +4,7 @@ import { ObservingProposal } from '../generated/proposalToolSchemas.ts';
 import { JSON_FILE_NAME, MAX_ZIP_SIZE } from '../constants.tsx';
 import { modals } from '@mantine/modals';
 import {
-    fetchUploadProposal,
+    fetchProposalResourceUploadProposal,
 } from '../generated/proposalToolComponents.ts';
 
 /**
@@ -39,7 +39,7 @@ export const SendToServer = (
     formData.append("document", chosenFile);
     formData.append("changeSubmissionFlag", String(changeSubmission));
 
-    fetchUploadProposal({
+    fetchProposalResourceUploadProposal({
         // @ts-ignore
         body: formData,
         // @ts-ignore
