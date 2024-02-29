@@ -4,6 +4,7 @@ import { ObservingProposal } from '../generated/proposalToolSchemas.ts';
 import { JSON_FILE_NAME, MAX_ZIP_SIZE } from '../constants.tsx';
 import { modals } from '@mantine/modals';
 import {
+    fetchProposalResourceImportProposal,
     fetchProposalResourceUploadProposal,
 } from '../generated/proposalToolComponents.ts';
 
@@ -63,6 +64,26 @@ export const SendToServer = (
     })
 }
 
+const SendToImportAPI = (observingProposal: ObservingProposal) => {
+    fetchProposalResourceImportProposal({body: observingProposal})
+        .then(() => {
+            notifications.show({
+                autoClose: 5000,
+                title: "Upload successful",
+                message: 'The proposal has been uploaded',
+                color: 'green',
+                className: 'my-notification-class',
+            });
+        }).catch((error: { stack: { message: any; }; }) => {
+        notifications.show({
+            autoClose: 7000,
+            title: "Upload failed",
+            message: error.stack.message,
+            color: 'red',
+            className: 'my-notification-class',
+        });
+    })
+}
 
 /**
  * handles looking up a file and uploading it to the system.
@@ -113,11 +134,13 @@ export const handleUploadZip = async (chosenFile: File | null) => {
 
                 // ensure not undefined
                 if (jsonObject) {
+                    SendToImportAPI(jsonObject);
+                    /*
                     if (jsonObject.submitted) {
                         GenerateConfirmation(chosenFile)
                     } else {
                         SendToServer(chosenFile, false)
-                    }
+                    }*/
                 } else {
                     notifications.show({
                         autoClose: 7000,

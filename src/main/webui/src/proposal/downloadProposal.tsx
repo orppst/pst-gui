@@ -55,7 +55,7 @@ const populateSupportingDocuments = (zip: JSZip,
             if (item.dbid !== undefined && item.name !== undefined) {
                 // have to destructure this, as otherwise risk of being undefined
                 // detected later.
-                let docTitle = SUPPORTING_DOC_PREFIX + item.name;
+                let docTitle = item.name;
 
                 // ensure that if the file exists already, that it's renamed to
                 // avoid issues of overwriting itself in the zip.
