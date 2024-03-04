@@ -6,6 +6,7 @@ import { modals } from '@mantine/modals';
 import {
     fetchProposalResourceImportProposal,
     fetchProposalResourceUploadProposal,
+    fetchSupportingDocumentResourceUploadSupportingDocument,
 } from '../generated/proposalToolComponents.ts';
 
 /**
@@ -64,16 +65,59 @@ export const SendToServer = (
     })
 }
 
-const SendToImportAPI = (observingProposal: ObservingProposal) => {
-    fetchProposalResourceImportProposal({body: observingProposal})
-        .then(() => {
-            notifications.show({
-                autoClose: 5000,
-                title: "Upload successful",
-                message: 'The proposal has been uploaded',
-                color: 'green',
-                className: 'my-notification-class',
-            });
+const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => {
+    const formData = new FormData();
+    zip.file(filename).async("blob")
+        .then((document) => {
+            formData.append("document", document);
+            formData.append("title", filename);
+            fetchSupportingDocumentResourceUploadSupportingDocument(
+                {
+                    //@ts-ignore
+                    body: formData,
+                    pathParams: {proposalCode: proposalCode},
+                    // @ts-ignore
+                    headers: {"Content-Type": "multipart/form-data"}
+                },
+            )
+            .catch((error: { stack: { message: any; }; }) => {
+                notifications.show({
+                    autoClose: 7000,
+                    title: "Upload a document failed",
+                    message: error.stack.message,
+                    color: 'red',
+                    className: 'my-notification-class',
+                })
+            })
+        });
+};
+
+const SendToImportAPI = (observingProposal: ObservingProposal, zip: JSZip)=> {
+     fetchProposalResourceImportProposal({body: observingProposal})
+        .then((uploadedProposal) => {
+            if(uploadedProposal._id === undefined) {
+                notifications.show({
+                    autoClose: 7000,
+                    title: "Upload failed",
+                    message: "An unidentified response from the API",
+                    color: 'red',
+                    className: 'my-notification-class',
+                });
+            } else {
+                Object.keys(zip.files).forEach(function (filename) {
+                        console.log("Found file " + filename);
+                        if(filename !== JSON_FILE_NAME) {
+                            UploadADocument(Number(uploadedProposal._id), zip, filename);
+                        }
+                    })
+                notifications.show({
+                    autoClose: 5000,
+                    title: "Upload successful",
+                    message: 'The proposal has been uploaded',
+                    color: 'green',
+                    className: 'my-notification-class',
+                });
+            }
         }).catch((error: { stack: { message: any; }; }) => {
         notifications.show({
             autoClose: 7000,
@@ -134,13 +178,16 @@ export const handleUploadZip = async (chosenFile: File | null) => {
 
                 // ensure not undefined
                 if (jsonObject) {
-                    SendToImportAPI(jsonObject);
+                    //jsonObject.investigators = [{}];
+                    //jsonObject.supportingDocuments = [{}];
+                    SendToImportAPI(jsonObject, zip);
                     /*
                     if (jsonObject.submitted) {
                         GenerateConfirmation(chosenFile)
                     } else {
                         SendToServer(chosenFile, false)
                     }*/
+
                 } else {
                     notifications.show({
                         autoClose: 7000,
