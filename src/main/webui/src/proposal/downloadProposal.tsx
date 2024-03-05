@@ -1,7 +1,7 @@
 import { ObjectIdentifier, ObservingProposal } from '../generated/proposalToolSchemas.ts';
-//import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas';
 // renamed to bypass ESlint issues about constructors needing to be capital letters.
-//import { jsPDF as JSPDF } from 'jspdf';
+import { jsPDF as JSPDF } from 'jspdf';
 // used the import * as it bypasses a fault with how this is meant to be imported.
 import * as JSZip from 'jszip';
 import {
@@ -9,7 +9,7 @@ import {
     fetchSupportingDocumentResourceDownloadSupportingDocument,
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from '../generated/proposalToolComponents.ts';
-import { JSON_FILE_NAME, SUPPORTING_DOC_PREFIX } from '../constants.tsx';
+import { JSON_FILE_NAME } from '../constants.tsx';
 
 
 /**
@@ -17,7 +17,7 @@ import { JSON_FILE_NAME, SUPPORTING_DOC_PREFIX } from '../constants.tsx';
  *
  * @param {HTMLInputElement} element the top page to turn into a pdf blob.
  * @return {Promise<Blob>} the blob of the pdf.
- *
+ */
 const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
     // convert overview to png.
     const canvas = await html2canvas(element);
@@ -41,7 +41,7 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
     // get pdf data.
     return pdfGenerator.output('blob');
 }
-*/
+
 /**
  * goes through the proposals supporting documents and adds them to the zip.
  * @param {JSZip} zip the zip object.
@@ -94,7 +94,7 @@ async function downloadProposal(
         selectedProposalCode: String):
     Promise<void> {
 
-/*
+
     // determine correct title for the pdf.
     let title = 'UnNamedProposal.pdf';
     if (proposalData?.title) {
@@ -103,9 +103,10 @@ async function downloadProposal(
 
     // get pdf data.
     const pdfData = generatePdf(element);
-*/
+
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
+    zip = zip.file(title, pdfData);
 
     // add supporting documents to the zip.
     const promises = populateSupportingDocuments(
