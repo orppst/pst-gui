@@ -21,6 +21,9 @@ import java.time.Instant;
 
 @Path("/aai/")
 @Produces(MediaType.APPLICATION_JSON)
+/**
+ * Interacts with the authentication to return identity tokens and metadata.
+ */
 public class ProtectedResource {
 
 
@@ -47,10 +50,15 @@ public class ProtectedResource {
 
         public String expiry;
 
-        public AAIInfo(SubjectMap subjectMap, String token, long seconds) {
+        public String nameFromAuth;
+        public String emailFromAuth;
+
+        public AAIInfo(SubjectMap subjectMap, String token, long seconds, String name, String email) {
             this.subjectMap = subjectMap;
             this.token = token;
             this.expiry = Instant.ofEpochSecond(seconds).toString();
+            this.emailFromAuth = email;
+            this.nameFromAuth = name;
         }
     }
     @GET
@@ -69,7 +77,10 @@ public class ProtectedResource {
         return new AAIInfo(
               userService.getUser((String) accessToken.claim(Claims.sub).orElse("")), // the subject is the AAI "unique identifier" - for keycloak anyway....
               accessToken.getRawToken(),
-              accessToken.getExpirationTime()
+              accessToken.getExpirationTime(),
+              //TODO perhaps this needs to also look for full_name
+              (String)(accessToken.claim(Claims.given_name).orElse("") + " " + accessToken.claim(Claims.family_name).orElse("")),
+              (String)accessToken.claim(Claims.email).orElse("")
         );
     }
 

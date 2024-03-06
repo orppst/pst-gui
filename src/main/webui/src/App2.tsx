@@ -11,7 +11,7 @@ import {
     QueryClientProvider,
 } from '@tanstack/react-query';
 import {
-    useProposalResourceGetProposals, useSubjectMapResourceCheckForNewUsers
+    useProposalResourceGetProposals,
 } from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
 import TitlePanel from './proposal/Title';
@@ -75,7 +75,7 @@ import AdminPanel from "./admin/adminPanel.tsx";
  */
 export type UserContextType = {
     user: Person;
-    token: string;
+    getToken: () => string;
 }
 
 /**
@@ -95,7 +95,7 @@ export const ProposalContext:
         Context<UserContextType & ProposalContextType> =
     createContext<UserContextType & ProposalContextType>({
         user: {},
-        token:"",
+        getToken: ()=>{return ""},
         selectedProposalCode: 0,
         apiUrl:"http://api" // obviously false as a placeholder
     })
@@ -105,7 +105,7 @@ export const ProposalContext:
  * @return {string} the token.
  */
 export const useToken = (): string => {
-    return useContext(ProposalContext).token;
+    return useContext(ProposalContext).getToken();
 };
 
 /**
@@ -115,12 +115,6 @@ export const useToken = (): string => {
  */
 function App2(): ReactElement {
 
-    //check for new users
-    const {data: numNewUsers} = useSubjectMapResourceCheckForNewUsers({});
-
-    if (numNewUsers && numNewUsers > 0) {
-        console.log("new users found: " + numNewUsers);
-    }
 
     // set proposal code.
     const historyProposalCode= 0;
@@ -212,7 +206,7 @@ function App2(): ReactElement {
      * @constructor
      */
     function PSTRoot(): ReactElement {
-        const {user, token, apiUrl} = useContext(ProposalContext);
+        const {user, getToken, apiUrl} = useContext(ProposalContext);
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
         // acquire the state setters for proposal title and investigator name.
@@ -268,7 +262,7 @@ function App2(): ReactElement {
 
         return (
             <ProposalContext.Provider
-                value={{selectedProposalCode, user, token, apiUrl}}>
+                value={{selectedProposalCode, user, getToken, apiUrl}}>
                 <AppShell
                     header={{height: APP_HEADER_HEIGHT}}
                     navbar={{
@@ -381,7 +375,7 @@ function App2(): ReactElement {
                                                          childrenOffset={30}
                                                          leftSection={<IconFileDescription/>}
                                                          rightSection={<IconChevronRight
-                                                             size="0.8rem"
+                                                             size="0.8em"
                                                              stroke={STROKE} />}>
                                                     <NavLink to={"proposal/" + item.code}
                                                              component={Link}
