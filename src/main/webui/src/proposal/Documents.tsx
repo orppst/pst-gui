@@ -17,7 +17,7 @@ import {
     DownloadButton,
     DownloadRequestButton
 } from '../commonButtons/download.tsx';
-import { HEADER_FONT_WEIGHT, JSON_SPACES } from '../constants.tsx';
+import {HEADER_FONT_WEIGHT, JSON_SPACES, MAX_SUPPORTING_DOCUMENT_SIZE} from '../constants.tsx';
 
 type DocumentProps = {
     dbid: number,
@@ -45,42 +45,54 @@ const DocumentsPanel = () => {
 
     const handleUpload = async (chosenFile: File | null) => {
         if (chosenFile) {
-            setStatus("uploading");
-
-            const formData = new FormData();
-            formData.append("document", chosenFile);
-            formData.append("title", chosenFile.name);
-
-            fetchSupportingDocumentResourceUploadSupportingDocument(
-                {
-                    // @ts-ignore
-                    body: formData,
-                    pathParams: {proposalCode: Number(selectedProposalCode)},
-                    // @ts-ignore
-                    headers: {"Content-Type": "multipart/form-data"}
-                }
-            )
-            .then(() => {
-                setStatus("success");
-                queryClient.invalidateQueries();
-                notifications.show({
-                    autoClose: 5000,
-                    title: "Upload successful",
-                    message: 'The supporting document has been uploaded',
-                    color: 'green',
-                    className: 'my-notification-class',
-                });
-            })
-            .catch((error) => {
-                setStatus("fail");
+            if(chosenFile.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
                 notifications.show({
                     autoClose: 7000,
-                    title: "Upload failed",
-                    message: error.stack.message,
+                    title: "File upload failed",
+                    message: "The supporting document " + chosenFile.name
+                        + " is too large. Maximum size is "
+                        + MAX_SUPPORTING_DOCUMENT_SIZE/1024/1024 + "MB",
                     color: 'red',
                     className: 'my-notification-class',
-                });
-            })
+                })
+            } else {
+                setStatus("uploading");
+
+                const formData = new FormData();
+                formData.append("document", chosenFile);
+                formData.append("title", chosenFile.name);
+
+                fetchSupportingDocumentResourceUploadSupportingDocument(
+                    {
+                        // @ts-ignore
+                        body: formData,
+                        pathParams: {proposalCode: Number(selectedProposalCode)},
+                        // @ts-ignore
+                        headers: {"Content-Type": "multipart/form-data"}
+                    }
+                )
+                    .then(() => {
+                        setStatus("success");
+                        queryClient.invalidateQueries();
+                        notifications.show({
+                            autoClose: 5000,
+                            title: "Upload successful",
+                            message: 'The supporting document has been uploaded',
+                            color: 'green',
+                            className: 'my-notification-class',
+                        });
+                    })
+                    .catch((error) => {
+                        setStatus("fail");
+                        notifications.show({
+                            autoClose: 7000,
+                            title: "Upload failed",
+                            message: error.stack.message,
+                            color: 'red',
+                            className: 'my-notification-class',
+                        });
+                    })
+            }
         }
     };
 
