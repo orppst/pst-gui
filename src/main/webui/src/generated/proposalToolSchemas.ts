@@ -1344,6 +1344,8 @@ export type ScienceSpectralWindow = {
   /**
    * Science oriented definition of a spectral window.
    */
+  _id?: number;
+
   spectralWindowSetup?: SpectralWindowSetup;
   expectedSpectralLine?: ExpectedSpectralLine[];
 };
@@ -1495,7 +1497,7 @@ export type SubjectMap = {
   /**
    * person connected with the proposal
    */
-  person?: Person | Person;
+  person?: Person;
   uid?: string;
   inKeycloakRealm?: boolean;
 };

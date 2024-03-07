@@ -47,7 +47,7 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton
+    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container
 } from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {
@@ -443,7 +443,19 @@ function App2(): ReactElement {
      * @constructor
      */
     function PSTStart(): ReactElement {
-        return (<Box><Text fz={"lg"}>Welcome</Text></Box>);
+        return (
+            <Container pt={10}>
+
+                <Text fz={"lg"} fw={"bold"} c={"teal.7"}>
+                    Polaris Landing Page
+                </Text>
+
+                <img src={"/pst/gui/temporary-ufo-landing.png"}
+                     alt={"welcome image of a ufo crash landing"}
+                     width={"100%"}
+                />
+            </Container>
+        );
     }
 }
 
