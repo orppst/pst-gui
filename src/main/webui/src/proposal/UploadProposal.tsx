@@ -6,7 +6,6 @@ import {
     fetchProposalResourceImportProposal,
     fetchSupportingDocumentResourceUploadSupportingDocument,
 } from '../generated/proposalToolComponents.ts';
-import {useQueryClient} from "@tanstack/react-query";
 
 /**
  * Upload a document in a zip file to the given proposal.
