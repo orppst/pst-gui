@@ -75,4 +75,4 @@ export const JSON_FILE_NAME = 'proposal.json';
 export const SUPPORTING_DOC_PREFIX = 'SUPPORTING_DOC_';
 
 /* max size of a upload zip (20 MB)*/
-export const MAX_SUPPORTING_DOCUMENT_SIZE = 20*1024*1024;
+export const MAX_SUPPORTING_DOCUMENT_SIZE = 100*1024*1024;
