@@ -10,6 +10,7 @@ import {
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from '../generated/proposalToolComponents.ts';
 import { JSON_FILE_NAME } from '../constants.tsx';
+import {notifications} from "@mantine/notifications";
 
 
 /**
@@ -119,7 +120,15 @@ async function downloadProposal(
                 // ensure we got some data back.
                 if (blob !== undefined) {
                     zip.file(JSON_FILE_NAME, blob)
-                }})
+                }
+                notifications.show({
+                    autoClose: 7000,
+                    title: "Proposal Export",
+                    message: 'An export has begun and the download will start automatically in a few moments.',
+                    color: 'green',
+                    className: 'my-notification-class',
+                });
+            })
     );
 
     // ensure all supporting docs populated before making zip.

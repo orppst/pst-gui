@@ -6,6 +6,7 @@ import {
     fetchProposalResourceImportProposal,
     fetchSupportingDocumentResourceUploadSupportingDocument,
 } from '../generated/proposalToolComponents.ts';
+import {useQueryClient} from "@tanstack/react-query";
 
 /**
  * Upload a document in a zip file to the given proposal.
@@ -144,7 +145,16 @@ export const handleUploadZip = async (chosenFile: File | null) => {
                     })
                 }
             })
-            .catch(() => console.log("Unable to extract " + JSON_FILE_NAME + " from zip file"))
+            .catch(() => {
+                console.log("Unable to extract " + JSON_FILE_NAME + " from zip file");
+                notifications.show({
+                    autoClose: 7000,
+                    title: "Upload failed",
+                    message: "Unable to extract " + JSON_FILE_NAME + " from zip file",
+                    color: 'red',
+                    className: 'my-notification-class',
+                })
+            })
         })
     }
 }
