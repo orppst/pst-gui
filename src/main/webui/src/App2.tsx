@@ -47,7 +47,7 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, Container
+    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container
 } from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {
@@ -66,6 +66,8 @@ import {
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
 } from './constants.tsx';
+import { handleUploadZip } from './proposal/UploadProposal.tsx';
+import UploadButton from './commonButtons/upload.tsx';
 import AdminPanel from "./admin/adminPanel.tsx";
 
 /**
@@ -297,6 +299,13 @@ function App2(): ReactElement {
                                     <AddButton toolTipLabel={"new proposal"}
                                                label={"Create a new proposal"}
                                                onClickEvent={handleAddNew}/>
+                                    <FileButton onChange={handleUploadZip}
+                                                accept={".zip"}>
+                                        {(props) => <UploadButton
+                                            toolTipLabel="select a file from disk to upload"
+                                            label={"Import"}
+                                            onClick={props.onClick}/>}
+                                    </FileButton>
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>

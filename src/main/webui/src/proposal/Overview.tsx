@@ -3,7 +3,17 @@ import {
     useProposalResourceGetObservingProposal,
     useSupportingDocumentResourceGetSupportingDocuments,
 } from '../generated/proposalToolComponents';
-import { Accordion, Avatar, Badge, Box, Container, Group, List, Table, Text } from '@mantine/core';
+import {
+    Accordion,
+    Avatar,
+    Badge,
+    Box,
+    Container,
+    Group,
+    List,
+    Table,
+    Text
+} from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse,
@@ -516,9 +526,11 @@ function OverviewPanel(): ReactElement {
                 toolTipLabel: `download proposal`,
                 disabled: false,
                 onClick: handleDownloadPdf,
-                label: "Save to disk",
+                label: "Export",
             });
     }
+
+
 
     /**
      * returns the HTML structure for the overview page.

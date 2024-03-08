@@ -4781,6 +4781,100 @@ export const useProposalResourceCreateObservingProposal = (
   );
 };
 
+export type ProposalResourceImportProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceImportProposalVariables = {
+  body?: Schemas.ObservingProposal;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceImportProposal = (
+  variables: ProposalResourceImportProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.ObservingProposal,
+    ProposalResourceImportProposalError,
+    Schemas.ObservingProposal,
+    {},
+    {},
+    {}
+  >({ url: "/pst/api/proposals/import", method: "post", ...variables, signal });
+
+export const useProposalResourceImportProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ObservingProposal,
+      ProposalResourceImportProposalError,
+      ProposalResourceImportProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ObservingProposal,
+    ProposalResourceImportProposalError,
+    ProposalResourceImportProposalVariables
+  >(
+    (variables: ProposalResourceImportProposalVariables) =>
+      fetchProposalResourceImportProposal({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
+export type ProposalResourceUploadProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceUploadProposalRequestBody = {
+  document?: Schemas.UploadItemSchema;
+  updateSubmittedFlag?: string;
+};
+
+export type ProposalResourceUploadProposalVariables = {
+  body?: ProposalResourceUploadProposalRequestBody;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceUploadProposal = (
+  variables: ProposalResourceUploadProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceUploadProposalError,
+    ProposalResourceUploadProposalRequestBody,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/proposals/uploadProposal",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceUploadProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalResourceUploadProposalError,
+      ProposalResourceUploadProposalVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalResourceUploadProposalError,
+    ProposalResourceUploadProposalVariables
+  >(
+    (variables: ProposalResourceUploadProposalVariables) =>
+      fetchProposalResourceUploadProposal({ ...fetcherOptions, ...variables }),
+    options
+  );
+};
+
 export type ProposalResourceGetObservingProposalPathParams = {
   /**
    * @format int64
@@ -4904,6 +4998,73 @@ export const useProposalResourceDeleteObservingProposal = (
         ...variables,
       }),
     options
+  );
+};
+
+export type ProposalResourceExportProposalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceExportProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceExportProposalVariables = {
+  pathParams: ProposalResourceExportProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceExportProposal = (
+  variables: ProposalResourceExportProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceExportProposalError,
+    undefined,
+    {},
+    {},
+    ProposalResourceExportProposalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/export",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceExportProposal = <TData = undefined>(
+  variables: ProposalResourceExportProposalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      ProposalResourceExportProposalError,
+      TData
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    ProposalResourceExportProposalError,
+    TData
+  >(
+    queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/export",
+      operationId: "proposalResourceExportProposal",
+      variables,
+    }),
+    ({ signal }) =>
+      fetchProposalResourceExportProposal(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    {
+      ...options,
+      ...queryOptions,
+    }
   );
 };
 
@@ -8860,6 +9021,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}";
       operationId: "proposalResourceGetObservingProposal";
       variables: ProposalResourceGetObservingProposalVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/export";
+      operationId: "proposalResourceExportProposal";
+      variables: ProposalResourceExportProposalVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/fields";

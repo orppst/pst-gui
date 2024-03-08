@@ -66,3 +66,13 @@ export const JQUERY_SRC_URL = 'https://code.jquery.com/jquery-1.12.1.min.js';
 
 /* the color selection of yellow needed for errors */
 export const ERROR_YELLOW = 6;
+
+/* this constant is the expected name of the file which contains the json data.
+ */
+export const JSON_FILE_NAME = 'proposal.json';
+
+/* prefix for all supported docs, to ensure no name clash. */
+export const SUPPORTING_DOC_PREFIX = 'SUPPORTING_DOC_';
+
+/* max size of a upload zip (20 MB)*/
+export const MAX_SUPPORTING_DOCUMENT_SIZE = 100*1024*1024;

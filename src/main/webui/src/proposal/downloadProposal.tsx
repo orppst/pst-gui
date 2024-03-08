@@ -5,9 +5,13 @@ import { jsPDF as JSPDF } from 'jspdf';
 // used the import * as it bypasses a fault with how this is meant to be imported.
 import * as JSZip from 'jszip';
 import {
+    fetchProposalResourceExportProposal,
     fetchSupportingDocumentResourceDownloadSupportingDocument,
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from '../generated/proposalToolComponents.ts';
+import { JSON_FILE_NAME } from '../constants.tsx';
+import {notifications} from "@mantine/notifications";
+
 
 /**
  * generates a blob for the overview page that contains the pdf.
@@ -45,29 +49,35 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
  * @param supportingDocumentData the data for supporting documents.
  * @param selectedProposalCode the selected proposal code.
  */
-const populateSupportingDocuments = (
-    zip: JSZip,
+const populateSupportingDocuments = (zip: JSZip,
     supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
-    selectedProposalCode: String):
-    Array<Promise<void>> => {
-    return supportingDocumentData.map(async (item: ObjectIdentifier) => {
-        if (item.dbid !== undefined && item.name !== undefined) {
-            // have to destructure this, as otherwise risk of being undefined
-            // detected later.
-            const docTitle = item.name;
-            await fetchSupportingDocumentResourceDownloadSupportingDocument(
-                { pathParams: {
-                    id: item.dbid,
-                        proposalCode: Number(selectedProposalCode) } })
-                .then((blob) => {
-                    // ensure we got some data back.
-                    if (blob !== undefined) {
-                        zip.file(docTitle, blob)
-                    }
-                })
-        }
-    });
-}
+    selectedProposalCode: String): Array<Promise<void>> => {
+        return supportingDocumentData.map(async (item: ObjectIdentifier) => {
+            if (item.dbid !== undefined && item.name !== undefined) {
+                // have to destructure this, as otherwise risk of being undefined
+                // detected later.
+                let docTitle = item.name;
+
+                // ensure that if the file exists already, that it's renamed to
+                // avoid issues of overwriting itself in the zip.
+                while (zip.files[docTitle]) {
+                    docTitle = docTitle + "1"
+                }
+
+                // extract the document and save into the zip.
+                await fetchSupportingDocumentResourceDownloadSupportingDocument(
+                    { pathParams: {
+                        id: item.dbid,
+                            proposalCode: Number(selectedProposalCode) } })
+                    .then((blob) => {
+                        // ensure we got some data back.
+                        if (blob !== undefined) {
+                            zip.file(docTitle, blob)
+                        }
+                    })
+            }
+        });
+    }
 
 
 /**
@@ -84,6 +94,7 @@ async function downloadProposal(
         supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
         selectedProposalCode: String):
     Promise<void> {
+
 
     // determine correct title for the pdf.
     let title = 'UnNamedProposal.pdf';
@@ -103,6 +114,23 @@ async function downloadProposal(
         zip, supportingDocumentData, selectedProposalCode
     );
 
+    promises.push(
+        fetchProposalResourceExportProposal({pathParams: {proposalCode: Number(selectedProposalCode) }})
+            .then((blob) => {
+                // ensure we got some data back.
+                if (blob !== undefined) {
+                    zip.file(JSON_FILE_NAME, blob)
+                }
+                notifications.show({
+                    autoClose: 7000,
+                    title: "Proposal Export",
+                    message: 'An export has begun and the download will start automatically in a few moments.',
+                    color: 'green',
+                    className: 'my-notification-class',
+                });
+            })
+    );
+
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(
         () => {
@@ -115,7 +143,7 @@ async function downloadProposal(
                 // Create a download link for the zip file
                 const link = document.createElement("a");
                 link.href = window.URL.createObjectURL(zipData);
-                link.download = "proposal.zip";
+                link.download=proposalData.title?.replace(/\s/g,"").substring(0,31)+".zip";
                 link.click();
             })
         }
