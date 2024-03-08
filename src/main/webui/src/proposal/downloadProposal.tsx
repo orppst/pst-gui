@@ -116,20 +116,29 @@ async function downloadProposal(
 
     promises.push(
         fetchProposalResourceExportProposal({pathParams: {proposalCode: Number(selectedProposalCode) }})
-            .then((blob) => {
-                // ensure we got some data back.
-                if (blob !== undefined) {
-                    zip.file(JSON_FILE_NAME, blob)
+            .then((blob)=>{
+                //ensure we got some data back.
+                if(blob!==undefined){
+                    zip.file(JSON_FILE_NAME,blob)
+                    notifications.show({
+                        autoClose:7000,
+                        title:"Export",
+                        message:'An export has started and the download will begin shortly',
+                        color:"green",
+                        className:"my-notification-class",
+                    });
+                }else{
+                    notifications.show({
+                        autoClose:7000,
+                        title:"Export Error",
+                        message:"An unknown error has occurred exporting this proposal",
+                        color:"red",
+                        className:'my-notifications-class'
+                    })
                 }
-                notifications.show({
-                    autoClose: 7000,
-                    title: "Proposal Export",
-                    message: 'An export has begun and the download will start automatically in a few moments.',
-                    color: 'green',
-                    className: 'my-notification-class',
-                });
             })
     );
+
 
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(
