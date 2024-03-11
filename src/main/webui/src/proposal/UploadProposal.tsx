@@ -16,6 +16,7 @@ import {
  */
 const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => {
     const formData = new FormData();
+    const skipFiles = new RegExp('^Thumbs.db$|^__MACOS|^.DS_Store$');
     zip.file(filename).async('blob')
         .then((document) => {
             if(document.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
@@ -28,6 +29,8 @@ const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => 
                     color: 'red',
                     className: 'my-notification-class',
                 })
+            } else if(skipFiles.test(filename)) {
+                console.log("Skip system file " + filename);
             } else {
                 formData.append("title", filename);
                 formData.append("document", document);
