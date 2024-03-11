@@ -51,12 +51,11 @@ import {
 } from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {
-    IconCamera,
     IconChartLine,
-    IconChevronRight, IconFile,
+    IconChevronRight,
     IconFileCheck,
-    IconFileDescription, IconFiles,
-    IconLogout, IconTarget, IconUsersGroup, IconYinYangFilled
+    IconFiles, IconLetterS, IconLetterT, IconLicense,
+    IconLogout, IconSend, IconTarget, IconTelescope, IconUfo, IconUsersGroup, IconYinYangFilled
 } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
@@ -67,6 +66,7 @@ import {
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
 } from './constants.tsx';
 import AdminPanel from "./admin/adminPanel.tsx";
+import JustificationsPanel from "./justifications/JustificationsPanel.tsx";
 
 /**
  * defines the user context type.
@@ -162,6 +162,10 @@ function App2(): ReactElement {
                         path:
                             "proposal/:selectedProposalCode/investigators/new",
                         element:<AddInvestigatorPanel />
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/justifications",
+                        element: <JustificationsPanel />
                     },
                     {
                         path: "proposal/:selectedProposalCode/targets",
@@ -363,30 +367,34 @@ function App2(): ReactElement {
                                             {result.data?.map((item) => (
                                                 <NavLink key={item.code}
                                                          label={item.title}
-                                                         childrenOffset={30}
-                                                         leftSection={<IconFileDescription/>}
+                                                         leftSection={<IconLicense/>}
                                                          rightSection={<IconChevronRight
                                                              size="0.8em"
-                                                             stroke={STROKE} />}>
+                                                             stroke={STROKE} />}
+                                                >
                                                     <NavLink to={"proposal/" + item.code}
                                                              component={Link}
                                                              label="Overview"
-                                                             leftSection={<IconFileCheck/>}>
+                                                             leftSection={<IconUfo/>}>
                                                     </NavLink>
                                                     <NavLink to={"proposal/" + item.code + "/title"}
                                                              component={Link}
-                                                             leftSection={<IconFileDescription/>}
+                                                             leftSection={<IconLetterT/>}
                                                              label="Title" />
                                                     <NavLink to={
                                                         "proposal/" + item.code + "/summary"}
                                                              component={Link}
-                                                             leftSection={<IconFileDescription/>}
+                                                             leftSection={<IconLetterS/>}
                                                              label="Summary" />
                                                     <NavLink to={
                                                         "proposal/" + item.code + "/investigators"}
                                                              component={Link}
                                                              leftSection={<IconUsersGroup/>}
                                                              label="Investigators" />
+                                                    <NavLink to={"proposal/" + item.code + "/justifications"}
+                                                             component={Link}
+                                                             leftSection={<IconFileCheck/>}
+                                                             label="Justifcations" />
                                                     <NavLink to={
                                                         "proposal/" + item.code + "/targets"}
                                                              component={Link}
@@ -399,7 +407,7 @@ function App2(): ReactElement {
                                                     <NavLink to={
                                                         "proposal/" + item.code + "/observations"}
                                                              component={Link}
-                                                             leftSection={<IconCamera/>}
+                                                             leftSection={<IconTelescope/>}
                                                              label="Observations" />
                                                     <NavLink to={
                                                         "proposal/" + item.code + "/documents"}
@@ -409,7 +417,7 @@ function App2(): ReactElement {
                                                     <NavLink to={
                                                         "proposal/" + item.code + "/submit"}
                                                              component={Link}
-                                                             leftSection={<IconFile/>}
+                                                             leftSection={<IconSend/>}
                                                              label="Submit" />
                                                 </NavLink>
                                             ))}

@@ -5615,6 +5615,65 @@ export const useProposalResourceUpdateJustification = (
   );
 };
 
+export type ProposalResourceAddJustificationPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type ProposalResourceAddJustificationError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceAddJustificationVariables = {
+  body?: Schemas.Justification;
+  pathParams: ProposalResourceAddJustificationPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceAddJustification = (
+  variables: ProposalResourceAddJustificationVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Justification,
+    ProposalResourceAddJustificationError,
+    Schemas.Justification,
+    {},
+    {},
+    ProposalResourceAddJustificationPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceAddJustification = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Justification,
+      ProposalResourceAddJustificationError,
+      ProposalResourceAddJustificationVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Justification,
+    ProposalResourceAddJustificationError,
+    ProposalResourceAddJustificationVariables
+  >(
+    (variables: ProposalResourceAddJustificationVariables) =>
+      fetchProposalResourceAddJustification({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    options
+  );
+};
+
 export type ProposalResourceGetObservingProposalKindPathParams = {
   /**
    * @format int64
