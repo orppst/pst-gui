@@ -1,4 +1,4 @@
-import {ReactElement} from "react";
+import {ReactElement, useEffect, useState} from "react";
 import {Box, Container, Group, Select, Textarea} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useProposalResourceGetJustification} from "../generated/proposalToolComponents.ts";
@@ -23,10 +23,15 @@ type Which = 'scientific' | 'technical';
 export default function JustificationsPanel() : ReactElement {
     const { selectedProposalCode } = useParams();
 
+    //we need these states to set the texts correctly on first visit to the JustificationsPanel
+    const [_scientificText, setScientificText] = useState("");
+    const [_technicalText, setTechnicalText] = useState("");
+
     const {
         data : scientific,
         error : scientificError,
-        isLoading : scientificIsLoading
+        isLoading : scientificIsLoading,
+        status : scientificStatus
     } = useProposalResourceGetJustification(
         { pathParams: {
             proposalCode: Number(selectedProposalCode), which: "scientific"
@@ -34,18 +39,11 @@ export default function JustificationsPanel() : ReactElement {
         }
     );
 
-    if (scientificError) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(scientificError, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
-
     const {
         data : technical,
         error : technicalError,
-        isLoading : technicalIsLoading
+        isLoading : technicalIsLoading,
+        status: technicalStatus
     } = useProposalResourceGetJustification(
         { pathParams: {
                 proposalCode: Number(selectedProposalCode), which: "technical"
@@ -53,13 +51,17 @@ export default function JustificationsPanel() : ReactElement {
         }
     );
 
-    if (technicalError) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(technicalError, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
+    //required to set the texts correctly on first time visit
+    useEffect(() => {
+        if(scientificStatus === 'success') {
+            setScientificText(scientific?.text ?? "");
+            form.values.scientific.text = scientific?.text ?? "";
+        }
+        if(technicalStatus === 'success') {
+            setTechnicalText(technical?.text ?? "");
+            form.values.technical.text = technical?.text ?? "";
+        }
+    }, [scientificStatus, scientific, technicalStatus, technical]);
 
     const form: UseFormReturnType<JustificationsFormValues> =
         useForm<JustificationsFormValues>({
@@ -90,6 +92,25 @@ export default function JustificationsPanel() : ReactElement {
                 }
             }
         });
+
+
+    if (scientificError) {
+        return (
+            <Box>
+                Scientific Error
+                <pre>{JSON.stringify(scientificError, null, JSON_SPACES)}</pre>
+            </Box>
+        );
+    }
+
+    if (technicalError) {
+        return (
+            <Box>
+                Technical Error
+                <pre>{JSON.stringify(technicalError, null, JSON_SPACES)}</pre>
+            </Box>
+        );
+    }
 
 
     function JustificationTextArea(which: Which) : ReactElement {
