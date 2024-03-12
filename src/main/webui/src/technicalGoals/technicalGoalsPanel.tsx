@@ -81,6 +81,9 @@ function TechnicalGoalsPanel(): ReactElement {
         );
     }
 
+
+    //<TechnicalGoalEditModal technicalGoal={undefined}/> is an alias for the "Add +" button,
+    // the "view/edit" button is found in TechnicalGoalsTable, specifically one per row
     return (
         <div>
             <h3>
