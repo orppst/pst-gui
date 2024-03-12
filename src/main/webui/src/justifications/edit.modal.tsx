@@ -6,8 +6,6 @@ import JustificationForm from "./justification.form.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 
 
-
-
 export default function JustificationsEditModal(justificationProps : JustificationProps)
     : ReactElement {
 
@@ -21,11 +19,11 @@ export default function JustificationsEditModal(justificationProps : Justificati
     }
 
 
-    const ModalHtml = (props: JustificationProps) : ReactElement => {
+    const ModalHtml = () : ReactElement => {
         return (
             <Modal
                 opened={opened}
-                onClose={props.closeModal!}
+                onClose={props.closeModal}
                 title={"View/Edit " + props.which + " Justification"}
                 fullScreen
             >
@@ -41,7 +39,7 @@ export default function JustificationsEditModal(justificationProps : Justificati
     return (
         <>
             <EditButton/>
-            <ModalHtml {...props}/>
+            <ModalHtml/>
         </>
     )
 }

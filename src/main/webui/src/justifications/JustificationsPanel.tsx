@@ -58,7 +58,7 @@ export default function JustificationsPanel() : ReactElement {
 
     return (
         <Container fluid>
-            {scientificIsLoading && technicalIsLoading ? (`Loading justifications...`) :
+            {scientificIsLoading || technicalIsLoading ? (`Loading justifications...`) :
                 <JustificationsTable scientific={scientific!} technical={technical!} />
             }
         </Container>
