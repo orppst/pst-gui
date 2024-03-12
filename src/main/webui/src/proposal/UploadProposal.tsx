@@ -1,7 +1,9 @@
 import * as JSZip from 'jszip';
 import { notifications } from '@mantine/notifications';
 import { ObservingProposal } from '../generated/proposalToolSchemas.ts';
-import { JSON_FILE_NAME, MAX_SUPPORTING_DOCUMENT_SIZE } from '../constants.tsx';
+import {
+    JSON_FILE_NAME, OVERVIEW_PDF_FILENAME, MAX_SUPPORTING_DOCUMENT_SIZE
+} from '../constants.tsx';
 import {
     fetchProposalResourceImportProposal,
     fetchSupportingDocumentResourceUploadSupportingDocument,
@@ -16,7 +18,9 @@ import {
  */
 const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => {
     const formData = new FormData();
-    const skipFiles = new RegExp('^Thumbs.db$|^__MACOS|^.DS_Store$');
+    //Files to skip
+    const skipFiles
+        = new RegExp("^Thumbs.db$|^__MACOS|^.DS_Store$|^"+OVERVIEW_PDF_FILENAME+"$");
     zip.file(filename).async('blob')
         .then((document) => {
             if(document.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
@@ -30,7 +34,7 @@ const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => 
                     className: 'my-notification-class',
                 })
             } else if(skipFiles.test(filename)) {
-                console.log("Skip system file " + filename);
+                console.log("Skipped file " + filename);
             } else {
                 formData.append("title", filename);
                 formData.append("document", document);
