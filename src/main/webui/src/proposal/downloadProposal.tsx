@@ -9,7 +9,7 @@ import {
     fetchSupportingDocumentResourceDownloadSupportingDocument,
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from '../generated/proposalToolComponents.ts';
-import { JSON_FILE_NAME } from '../constants.tsx';
+import { JSON_FILE_NAME, OVERVIEW_PDF_FILENAME } from '../constants.tsx';
 import {notifications} from "@mantine/notifications";
 
 
@@ -95,19 +95,12 @@ async function downloadProposal(
         selectedProposalCode: String):
     Promise<void> {
 
-
-    // determine correct title for the pdf.
-    let title = 'UnNamedProposal.pdf';
-    if (proposalData?.title) {
-        title = `${proposalData.title}.pdf`;
-    }
-
     // get pdf data.
     const pdfData = generatePdf(element);
 
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
-    zip = zip.file(title, pdfData);
+    zip = zip.file(OVERVIEW_PDF_FILENAME, pdfData);
 
     // add supporting documents to the zip.
     const promises = populateSupportingDocuments(

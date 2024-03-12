@@ -71,8 +71,8 @@ export const ERROR_YELLOW = 6;
  */
 export const JSON_FILE_NAME = 'proposal.json';
 
-/* prefix for all supported docs, to ensure no name clash. */
-export const SUPPORTING_DOC_PREFIX = 'SUPPORTING_DOC_';
+/* the filename of the overview pdf to be exported, but not imported. */
+export const OVERVIEW_PDF_FILENAME = 'ProposalOverview.pdf';
 
 /* max size of a upload zip (20 MB)*/
 export const MAX_SUPPORTING_DOCUMENT_SIZE = 100*1024*1024;
