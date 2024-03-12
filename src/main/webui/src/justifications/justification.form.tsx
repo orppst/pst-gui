@@ -1,17 +1,11 @@
 import {ReactElement} from "react";
 import {Grid, Select, Textarea} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
-import {JustificationProps, Which} from "./justifications.table.tsx";
+import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "../generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
 
-
-type whichForm = {
-    which : Which,
-    form : UseFormReturnType<Justification>
-}
-
-const JustificationTextArea = (props: whichForm) => {
+const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     return (
         <Textarea
             autosize
@@ -19,26 +13,26 @@ const JustificationTextArea = (props: whichForm) => {
             maxRows={10}
             maxLength={MAX_CHARS_FOR_INPUTS}
             description={
-                MAX_CHARS_FOR_INPUTS - props.form.values.text!.length
+                MAX_CHARS_FOR_INPUTS - form.values.text!.length
                 + "/" + String(MAX_CHARS_FOR_INPUTS)
             }
             inputWrapperOrder={['label', 'error', 'input', 'description']}
-            placeholder={props.which + " justification text"}
-            {...props.form.getInputProps('text')}
+            placeholder={"justification text"}
+            {...form.getInputProps('text')}
         />
     )
 }
 
-const SelectTextFormat = (props: whichForm) => {
+const SelectTextFormat = (form: UseFormReturnType<Justification>) => {
     return (
         <Select
-            placeholder={props.which + " text format"}
+            placeholder={"text format"}
             data = {[
                 {value: 'LATEX', label: 'Latex'},
                 {value: 'RST', label: 'RST'},
                 {value: 'ASCIIDOC', label: 'ASCIIDOC'}
             ]}
-            {...props.form.getInputProps('format')}
+            {...form.getInputProps('format')}
         />
     )
 }
@@ -69,10 +63,10 @@ export default function JustificationForm(props: JustificationProps)
         <form onSubmit={handleSubmit}>
             <Grid span={10} grow>
                 <Grid.Col span={{base: 6, md: 8, lg: 9}}>
-                    <JustificationTextArea which={props.which} form={form} />
+                    <JustificationTextArea {...form} />
                 </Grid.Col>
                 <Grid.Col span={{base: 4, md: 2, lg: 1}}>
-                    <SelectTextFormat which={props.which} form={form} />
+                    <SelectTextFormat {...form} />
                 </Grid.Col>
             </Grid>
         </form>

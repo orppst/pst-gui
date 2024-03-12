@@ -21,10 +21,7 @@ export default function JustificationsPanel() : ReactElement {
         error : scientificError,
         isLoading : scientificIsLoading,
     } = useProposalResourceGetJustification(
-        { pathParams: {
-            proposalCode: Number(selectedProposalCode), which: "scientific"
-            }
-        }
+        { pathParams: { proposalCode: Number(selectedProposalCode), which: "scientific" } }
     );
 
     const {
@@ -32,10 +29,7 @@ export default function JustificationsPanel() : ReactElement {
         error : technicalError,
         isLoading : technicalIsLoading,
     } = useProposalResourceGetJustification(
-        { pathParams: {
-                proposalCode: Number(selectedProposalCode), which: "technical"
-            }
-        }
+        { pathParams: { proposalCode: Number(selectedProposalCode), which: "technical" } }
     );
 
     if (scientificError) {

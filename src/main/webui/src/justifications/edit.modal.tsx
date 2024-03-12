@@ -6,6 +6,10 @@ import JustificationForm from "./justification.form.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 
 
+function capitalizeFirstChar(string : string) : string {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export default function JustificationsEditModal(justificationProps : JustificationProps)
     : ReactElement {
 
@@ -24,7 +28,7 @@ export default function JustificationsEditModal(justificationProps : Justificati
             <Modal
                 opened={opened}
                 onClose={props.closeModal}
-                title={"View/Edit " + props.which + " Justification"}
+                title={"View/Edit " + capitalizeFirstChar(props.which) + " Justification"}
                 fullScreen
             >
                 <JustificationForm {...props} />

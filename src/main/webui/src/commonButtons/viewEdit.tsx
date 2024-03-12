@@ -25,7 +25,7 @@ export default function ViewEditButton(props: ClickButtonInterfaceProps):
                         props.onClickEvent :
                         props.onClick}
                     disabled={props.disabled}>
-                {props.label === undefined? 'edit' : props.label}
+                {props.label === undefined? 'Edit' : props.label}
             </Button>
         </Tooltip>
     )

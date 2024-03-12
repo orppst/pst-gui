@@ -4,11 +4,8 @@ import {Justification} from "../generated/proposalToolSchemas.ts";
 import {Table} from "@mantine/core";
 import JustificationsEditModal from "./edit.modal.tsx";
 
-
-export type Which = 'scientific' | 'technical';
-
 export type JustificationProps = {
-    which : Which,
+    which : 'scientific' | 'technical',
     justification: Justification,
     closeModal?: () => void
 }
