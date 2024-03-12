@@ -6,20 +6,6 @@ import JustificationForm from "./justification.form.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 
 
-const [opened, {close, open}] = useDisclosure();
-
-const ModalHtml = (props : JustificationProps) : ReactElement => {
-    return (
-        <Modal
-            opened={opened}
-            onClose={props.closeModal!}
-            title={"View/Edit " + props.which + " Justification"}
-            fullScreen
-        >
-            <JustificationForm {...props} />
-        </Modal>
-    )
-}
 
 
 export default function JustificationsEditModal(justificationProps : JustificationProps)
@@ -34,6 +20,22 @@ export default function JustificationsEditModal(justificationProps : Justificati
         )
     }
 
+
+    const ModalHtml = (props: JustificationProps) : ReactElement => {
+        return (
+            <Modal
+                opened={opened}
+                onClose={props.closeModal!}
+                title={"View/Edit " + props.which + " Justification"}
+                fullScreen
+            >
+                <JustificationForm {...props} />
+            </Modal>
+        )
+    }
+
+
+    const [opened, {close, open}] = useDisclosure();
     const props = {...justificationProps, closeModal: () =>{close()}}
 
     return (
