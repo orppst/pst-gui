@@ -1,7 +1,10 @@
 import {ReactElement} from "react";
-import {Box, Container} from "@mantine/core";
+import {Badge, Box, Container, Title} from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {useProposalResourceGetJustification} from "../generated/proposalToolComponents.ts";
+import {
+    useProposalResourceGetJustification,
+    useProposalResourceGetObservingProposalTitle
+} from "../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../constants.tsx";
 import {Justification} from "../generated/proposalToolSchemas.ts";
 import JustificationsTable from "./justifications.table.tsx";
@@ -15,6 +18,14 @@ export type JustificationKinds = {
 export default function JustificationsPanel() : ReactElement {
 
     const { selectedProposalCode } = useParams();
+
+    const {
+        data: title,
+        error: titleError,
+        isLoading: titleIsLoading
+    } = useProposalResourceGetObservingProposalTitle(
+        {pathParams: {proposalCode: Number(selectedProposalCode)}}
+    )
 
     const {
         data : scientific,
@@ -32,10 +43,18 @@ export default function JustificationsPanel() : ReactElement {
         { pathParams: { proposalCode: Number(selectedProposalCode), which: "technical" } }
     );
 
+    if (titleError) {
+        return (
+            <Box>
+                <pre>{JSON.stringify(scientificError, null, JSON_SPACES)}</pre>
+            </Box>
+        );
+    }
+
+
     if (scientificError) {
         return (
             <Box>
-                Scientific Error
                 <pre>{JSON.stringify(scientificError, null, JSON_SPACES)}</pre>
             </Box>
         );
@@ -44,7 +63,6 @@ export default function JustificationsPanel() : ReactElement {
     if (technicalError) {
         return (
             <Box>
-                Technical Error
                 <pre>{JSON.stringify(technicalError, null, JSON_SPACES)}</pre>
             </Box>
         );
@@ -52,6 +70,13 @@ export default function JustificationsPanel() : ReactElement {
 
     return (
         <Container fluid>
+            <Title order={3}>
+                { titleIsLoading ?
+                    <Badge size={"xl"} radius={0}>...</Badge> :
+                    <Badge size={"xl"} radius={0}>{title}</Badge>
+                } : Justifications
+            </Title>
+
             {scientificIsLoading || technicalIsLoading ? (`Loading justifications...`) :
                 <JustificationsTable scientific={scientific!} technical={technical!} />
             }

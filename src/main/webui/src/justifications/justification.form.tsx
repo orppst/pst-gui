@@ -4,6 +4,11 @@ import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "../generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
+import {fetchProposalResourceUpdateJustification} from "../generated/proposalToolComponents.ts";
+import {useParams} from "react-router-dom";
+import {useQueryClient} from "@tanstack/react-query";
+import {notifications} from "@mantine/notifications";
+import {SubmitButton} from "../commonButtons/save.tsx";
 
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     return (
@@ -41,6 +46,9 @@ const SelectTextFormat = (form: UseFormReturnType<Justification>) => {
 export default function JustificationForm(props: JustificationProps)
     :ReactElement {
 
+    const {selectedProposalCode} = useParams();
+    const queryClient = useQueryClient();
+
     const DEFAULT_JUSTIFICATION : Justification = {text: "", format: "ASCIIDOC" };
 
     const form: UseFormReturnType<Justification> =
@@ -57,10 +65,34 @@ export default function JustificationForm(props: JustificationProps)
         });
 
 
-    const handleSubmit = () =>{}
+    const handleSubmit = form.onSubmit((values) => {
+        //create new proposal does not permit having null justifications i.e.,
+        //here we only ever 'update' an existing proposal
+        fetchProposalResourceUpdateJustification({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                which: props.which
+            },
+            body: {text: values.text, format: values.format}
+        })
+            .then(()=>queryClient.invalidateQueries())
+            .then(() => {
+                notifications.show({
+                    autoClose: false,
+                    title: "Update successful",
+                    message: props.which + " justification updated",
+                    color: "green"
+                })
+            })
+            .catch(console.error);
+    });
 
     return (
         <form onSubmit={handleSubmit}>
+            <SubmitButton
+                toolTipLabel={"save updates"}
+                disabled={!form.isDirty() || !form.isValid()}
+            />
             <Grid span={10} grow>
                 <Grid.Col span={{base: 6, md: 8, lg: 9}}>
                     <JustificationTextArea {...form} />
