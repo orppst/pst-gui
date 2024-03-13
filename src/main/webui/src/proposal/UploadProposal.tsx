@@ -18,9 +18,7 @@ import {
  */
 const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => {
     const formData = new FormData();
-    //Files to skip
-    const skipFiles
-        = new RegExp("^Thumbs.db$|^__MACOS|^.DS_Store$|^"+OVERVIEW_PDF_FILENAME+"$");
+    console.log("Upload supporting document " + filename);
     zip.file(filename).async('blob')
         .then((document) => {
             if(document.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
@@ -33,8 +31,6 @@ const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => 
                     color: 'red',
                     className: 'my-notification-class',
                 })
-            } else if(skipFiles.test(filename)) {
-                console.log("Skipped file " + filename);
             } else {
                 formData.append("title", filename);
                 formData.append("document", document);
@@ -67,24 +63,28 @@ const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => 
  * @param {JSZip} zip zip file containing any supporting documents
  */
 const SendToImportAPI = (observingProposal: ObservingProposal, zip: JSZip)=> {
-     fetchProposalResourceImportProposal({body: observingProposal})
+    //Files to skip
+    const skipFiles
+        = new RegExp("^Thumbs.db$|^__MACOS|^.DS_Store$|^"
+        + OVERVIEW_PDF_FILENAME + "$");
+
+    fetchProposalResourceImportProposal({body: observingProposal})
         .then((uploadedProposal) => {
             if(uploadedProposal._id === undefined) {
                 notifications.show({
-                    autoClose: 7000,
-                    title: "Upload failed",
-                    message: "An unidentified response from the API",
-                    color: 'red',
-                    className: 'my-notification-class',
+                autoClose: 7000,
+                title: "Upload failed",
+                message: "An unidentified response from the API",
+                color: 'red',
+                className: 'my-notification-class',
                 });
             } else {
                 Object.keys(zip.files).forEach(function (filename) {
-                        console.log("Found file " + filename);
-                        if(filename !== JSON_FILE_NAME) {
-                            UploadADocument(Number(uploadedProposal._id), zip, filename);
-                        }
-                    })
-                notifications.show({
+                if(filename !== JSON_FILE_NAME && !skipFiles.test(filename)) {
+                    UploadADocument(Number(uploadedProposal._id), zip, filename);
+                }
+            })
+            notifications.show({
                     autoClose: 5000,
                     title: "Upload successful",
                     message: 'The proposal has been uploaded',
@@ -93,7 +93,7 @@ const SendToImportAPI = (observingProposal: ObservingProposal, zip: JSZip)=> {
                 });
             }
         }).catch((error: { stack: { message: any; }; }) => {
-        notifications.show({
+            notifications.show({
             autoClose: 7000,
             title: "Upload failed",
             message: error.stack.message,
@@ -134,10 +134,9 @@ export const handleUploadZip = async (chosenFile: File | null) => {
                 })
             }
 
-            // extract json data to check if its a submitted proposal.
+            // extract json data to import proposal definition.
             zip.files[JSON_FILE_NAME].async('text').then(function (fileData) {
                 const jsonObject: ObservingProposal = JSON.parse(fileData)
-
                 // ensure not undefined
                 if (jsonObject) {
                     SendToImportAPI(jsonObject, zip);
