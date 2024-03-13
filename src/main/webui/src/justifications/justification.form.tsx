@@ -84,6 +84,7 @@ export default function JustificationForm(props: JustificationProps)
                     color: "green"
                 })
             })
+            .then(props.closeModal)
             .catch(console.error);
     });
 

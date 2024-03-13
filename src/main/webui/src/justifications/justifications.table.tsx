@@ -10,6 +10,12 @@ export type JustificationProps = {
     closeModal?: () => void
 }
 
+function WordCount(text: string): number {
+    return text.split(' ')
+        .filter(function (n) {return n != ''})
+        .length;
+}
+
 export default function JustificationsTable(justifications: JustificationKinds)
     : ReactElement {
 
@@ -33,18 +39,22 @@ export default function JustificationsTable(justifications: JustificationKinds)
             <Table.Tbody>
                 <Table.Tr>
                     <Table.Td>Scientific</Table.Td>
-                    <Table.Td>???</Table.Td>
+                    <Table.Td>{WordCount(justifications.scientific.text!)}</Table.Td>
                     <Table.Td>{justifications.scientific.format}</Table.Td>
                     <Table.Td>
-                        <JustificationsEditModal which={'scientific'} justification={justifications.scientific}/>
+                        <JustificationsEditModal
+                            which={'scientific'}
+                            justification={justifications.scientific}/>
                     </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
                     <Table.Td>Technical</Table.Td>
-                    <Table.Td>???</Table.Td>
+                    <Table.Td>{WordCount(justifications.technical.text!)}</Table.Td>
                     <Table.Td>{justifications.technical.format}</Table.Td>
                     <Table.Td>
-                        <JustificationsEditModal which={'technical'} justification={justifications.technical}/>
+                        <JustificationsEditModal
+                            which={'technical'}
+                            justification={justifications.technical}/>
                     </Table.Td>
                 </Table.Tr>
             </Table.Tbody>

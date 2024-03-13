@@ -4,30 +4,47 @@ import {
     fetchProposalResourceAddNewField,
     fetchProposalResourceCreateObservingProposal,
 } from "../generated/proposalToolComponents";
-import {Investigator, ObservingProposal, ProposalKind, TargetField} from "../generated/proposalToolSchemas";
+import {
+    Investigator,
+    Justification,
+    ObservingProposal,
+    ProposalKind,
+    TargetField
+} from "../generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
-import {Box, Select, Text, Textarea, TextInput} from "@mantine/core";
+import {Box, Container, Select, Text, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import { SubmitButton } from '../commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "../constants";
 import MaxCharsForInputRemaining from "../commonInputs/remainingCharacterCount.tsx";
 
+
 const kindData = [
     {value: "STANDARD", label: "Standard"},
     {value: "TOO", label: "T.O.O"},
-    {value: "SURVEY", label: "Survey"}];
+    {value: "SURVEY", label: "Survey"}
+];
+
+const textFormatData = [
+    {value: 'LATEX', label: 'Latex'},
+    {value: 'RST', label: 'RST'},
+    {value: 'ASCIIDOC', label: 'ASCIIDOC'}
+]
 
  function NewProposalPanel() {
     const { user} = useContext(ProposalContext) ;
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
+    const emptyJustification : Justification = {text: "", format: "ASCIIDOC"};
     const form = useForm({
         initialValues: {
             title: "",
             summary: "",
             kind: "STANDARD" as ProposalKind,
+            scientificJustification: emptyJustification,
+            technicalJustification: emptyJustification
         },
         validate: {
             title: (value) => (
@@ -38,7 +55,6 @@ const kindData = [
     });
 
      const createNewObservingProposal = form.onSubmit((val) => {
-        form.validate();
 
         setSubmitting(true);
 
@@ -83,29 +99,75 @@ const kindData = [
                 <Box>Submitting request</Box>
             }
             <form onSubmit={createNewObservingProposal}>
-                <Box>
-                <TextInput name="title"
-                    maxLength={MAX_CHARS_FOR_INPUTS}
-                    placeholder="Give your proposal a title"
-                    withAsterisk
-                    label={"Title"}
-                    {...form.getInputProps("title")}/>
-                <MaxCharsForInputRemaining length={form.values.title.length} />
-                <Textarea name="summary"
-                    rows={TEXTAREA_MAX_ROWS}
-                    maxLength={MAX_CHARS_FOR_INPUTS}
-                    placeholder="A brief summary"
-                    withAsterisk
-                    label={"Summary"}
-                    {...form.getInputProps("summary")} />
-                <MaxCharsForInputRemaining length={form.values.summary.length} />
-                <Select label={"Kind"}
-                    data={kindData}
-                    {...form.getInputProps("kind")}
+                <Container fluid>
+                    <TextInput name="title"
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        placeholder="Give your proposal a title"
+                        withAsterisk
+                        label={"Title"}
+                        {...form.getInputProps("title")}
                     />
-                </Box>
-                <SubmitButton label={"Create"}
-                              toolTipLabel={"Create new proposal"}/>
+                    <MaxCharsForInputRemaining
+                        length={form.values.title.length}
+                    />
+                    <Textarea name="summary"
+                        rows={TEXTAREA_MAX_ROWS}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        placeholder="A brief summary"
+                        withAsterisk
+                        label={"Summary"}
+                        {...form.getInputProps("summary")}
+                    />
+                    <MaxCharsForInputRemaining
+                        length={form.values.summary.length}
+                    />
+                    <Select label={"Kind"}
+                        data={kindData}
+                        {...form.getInputProps("kind")}
+                    />
+                    <Text size={"sm"} c={"cyan"} my={"md"}>
+                        Justifications are optional here, the text format defaults to "ASCIIDOC"
+                    </Text>
+                    <Textarea
+                        rows={TEXTAREA_MAX_ROWS}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        placeholder={"Scientific Justification"}
+                        label={"Scientific Justification"}
+                        {...form.getInputProps('scientificJustification.text')}
+                    />
+                    <MaxCharsForInputRemaining
+                        length={form.values.scientificJustification.text?.length!}
+                    />
+                    <Select
+                        label={"Scientific Justification text format"}
+                        placeholder={"pick one"}
+                        data={textFormatData}
+                        pt={"sm"} pb={"lg"}
+                        {...form.getInputProps('scientificJustification.format')}
+                    />
+                    <Textarea
+                        rows={TEXTAREA_MAX_ROWS}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        placeholder={"Technical Justification"}
+                        label={"Technical Justification"}
+                        {...form.getInputProps('technicalJustification.text')}
+                    />
+                    <MaxCharsForInputRemaining
+                        length={form.values.technicalJustification.text?.length!}
+                    />
+                    <Select
+                        label={"Technical Justification text format"}
+                        placeholder={"pick one"}
+                        data={textFormatData}
+                        pt={"sm"} pb={"lg"}
+                        {...form.getInputProps('technicalJustification.format')}
+                    />
+                </Container>
+                <SubmitButton
+                    label={"Create"}
+                    toolTipLabel={"Create new proposal"}
+                    disabled={!form.isValid()}
+                />
             </form>
         </Box>
     );
