@@ -3,7 +3,7 @@ import {
     useProposalResourceGetObservingProposalTitle,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from '../generated/proposalToolComponents.ts';
-import { Badge, Box, Group, Space } from '@mantine/core';
+import {Badge, Box, Container, Group, Space, Title} from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import {TechnicalGoalsTable } from './technicalGoalTable.tsx';
 import { TechnicalGoal } from '../generated/proposalToolSchemas.ts';
@@ -85,14 +85,14 @@ function TechnicalGoalsPanel(): ReactElement {
     //<TechnicalGoalEditModal technicalGoal={undefined}/> is an alias for the "Add +" button,
     // the "view/edit" button is found in TechnicalGoalsTable, specifically one per row
     return (
-        <div>
-            <h3>
+        <Container fluid>
+            <Title order={3}>
                 {titleLoading ?
                     <Badge size={"xl"} radius={0}>...</Badge> :
                     <Badge size={"xl"} radius={0}>{titleData}</Badge>
                 }
                 : Technical Goals
-            </h3>
+            </Title>
             {goalsLoading ? (`Loading...`) :
                 <TechnicalGoalsTable
                     goals={goals}
@@ -106,7 +106,7 @@ function TechnicalGoalsPanel(): ReactElement {
                     <TechnicalGoalEditModal technicalGoal={undefined}/>
                 }
             </Group>
-        </div>
+        </Container>
     );
 }
 
