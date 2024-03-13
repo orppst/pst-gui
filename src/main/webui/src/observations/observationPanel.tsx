@@ -6,7 +6,7 @@ import {
 } from '../generated/proposalToolComponents';
 import {useParams} from "react-router-dom";
 import ObservationRow, { observationTableHeader } from './observationTable.tsx';
-import {Badge, Group, Space, Table} from "@mantine/core";
+import {Badge, Container, Group, Space, Table, Title} from "@mantine/core";
 import {Observation} from "../generated/proposalToolSchemas.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import { ReactElement } from 'react';
@@ -88,13 +88,13 @@ function Observations() {
      */
     const Header = (): ReactElement => {
         return (
-            <h3>
+            <Title order={3}>
                 { titleLoading ?
                     <Badge size={"xl"} radius={0}>...</Badge> :
                     <Badge size={"xl"} radius={0}>{titleData}</Badge>
                 }
                 : Observations
-            </h3>
+            </Title>
         )
     }
 
@@ -174,71 +174,49 @@ function Observations() {
     // if still loading. present a loading screen.
     if (targetsLoading || observationsLoading || technicalGaolsLoading ) {
         return (
-            <div>
+            <Container fluid>
                 <Header/>
                 <Space h={"xs"}/>
                 <Group justify={'flex-end'}>
                     `Loading...`
                 </Group>
-            </div>
+            </Container>
         )
     }
 
-    // if no targets available, but technical goals exist, present a button to
-    // route the user back to targets
-    if (targets!.length === 0 && technicalGoals!.length !== 0) {
+    if (targets?.length === 0 || technicalGoals?.length === 0) {
         return (
-            <div>
+            <Container fluid>
                 <Header/>
                 <Group>
-                    To create an observation please add:
-                    <TargetButton/>
+                    To create an observation please add
+                    {
+                        targets?.length === 0 &&
+                        <>
+                            <TargetButton/>
+                            {technicalGoals?.length === 0 && " and "}
+                        </>
+                    }
+                    {
+                        technicalGoals?.length == 0 &&
+                        <TechnicalGaolButton/>
+                    }
                 </Group>
-            </div>
-        );
-    }
-
-    // if no technical goals available, but targets exist, present a button to
-    // route the user back to technical goals
-    if (technicalGoals!.length === 0 && targets!.length !== 0) {
+            </Container>
+        )
+    } else {
+        //both targets.length and technicalGoals.length are greater than zero here
         return (
-            <div>
+            <Container fluid>
                 <Header/>
-                <Group>
-                    To create an observation please add:
-                    <TechnicalGaolButton/>
+                <TableGenerator/>
+                <Space h={"xl"}/>
+                <Group justify={'center'}>
+                    <ObservationEditModal observation={undefined}/>
                 </Group>
-            </div>
-        );
+            </Container>
+        )
     }
-
-    // if no technical goals or targets available. present buttons to route to
-    // either targets or technical goals.
-    if (technicalGoals!.length === 0 && targets!.length === 0) {
-        return (
-            <div>
-                <Header/>
-                <Group>
-                    To create an observation please add:
-                    <TargetButton/>
-                    and
-                    <TechnicalGaolButton/>
-                </Group>
-            </div>
-        );
-    }
-
-    // generate the table as we're in a safe state to do so.
-    return (
-        <div>
-            <Header/>
-            <TableGenerator/>
-            <Space h={"xl"}/>
-            <Group justify={'center'}>
-                <ObservationEditModal observation={undefined}/>
-            </Group>
-        </div>
-    );
 }
 
 export default ObservationsPanel
