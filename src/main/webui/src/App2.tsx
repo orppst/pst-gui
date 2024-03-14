@@ -152,28 +152,7 @@ function App2(): ReactElement {
     const {colorScheme} = useMantineColorScheme();
 
     //active state for the NavLink sections
-    const [active, setActive] = useState(0);
-
-    const getNavLinks = (proposalCode: string) => {
-        const links = navLinkData.map((link, linkIndex) => (
-            <NavLink
-                key={link.label + proposalCode}
-                active={linkIndex === active}
-                label={link.label}
-                to={"proposal/" + proposalCode + link.path}
-                component={Link}
-                leftSection={link.icon}
-                onClick={() => setActive(linkIndex)}
-            />
-        ))
-        return <>{links}</>
-    }
-
-    const getNavLink = () => {
-        return (
-            <NavLink label={"this displays"} />
-        )
-    }
+    const [active, setActive] = useState("");
 
 
     const GRAY = theme.colors.gray[6];
@@ -428,11 +407,82 @@ function App2(): ReactElement {
                                                              size="0.8em"
                                                              stroke={STROKE} />}
                                                 >
-                                                    {
-                                                        //this complains about objects not valid as React child
-                                                        //getNavLinks(String(proposal.code))
-                                                        getNavLink()
-                                                    }
+                                                    <NavLink to={"proposal/" + proposal.code}
+                                                             component={Link}
+                                                             label="Overview"
+                                                             leftSection={<IconUfo/>}
+                                                             active={"Overview" + proposal.code === active}
+                                                             onClick={()=>setActive("Overview" + proposal.code)}
+                                                    />
+                                                    <NavLink to={"proposal/" + proposal.code + "/title"}
+                                                             component={Link}
+                                                             leftSection={<IconLetterT/>}
+                                                             label="Title"
+                                                             active={"Title" + proposal.code === active}
+                                                             onClick={()=>setActive("Title" + proposal.code)}
+                                                    />
+                                                    <NavLink to={
+                                                        "proposal/" + proposal.code + "/summary"}
+                                                             component={Link}
+                                                             leftSection={<IconLetterS/>}
+                                                             label="Summary"
+                                                             active={"Summary" + proposal.code === active}
+                                                             onClick={()=>setActive("Summary" + proposal.code)}
+                                                    />
+                                                    <NavLink to={
+                                                        "proposal/" + proposal.code + "/investigators"}
+                                                             component={Link}
+                                                             leftSection={<IconUsersGroup/>}
+                                                             label="Investigators"
+                                                             active={"Investigators" + proposal.code === active}
+                                                             onClick={()=>setActive("Investigators" + proposal.code)}
+                                                    />
+                                                    <NavLink to={"proposal/" + proposal.code + "/justifications"}
+                                                             component={Link}
+                                                             leftSection={<IconFileCheck/>}
+                                                             label="Justifications"
+                                                             active={"Justifications" + proposal.code === active}
+                                                             onClick={()=>setActive("Justifications" + proposal.code)}
+                                                    />
+                                                    <NavLink to={
+                                                        "proposal/" + proposal.code + "/targets"}
+                                                             component={Link}
+                                                             leftSection={<IconTarget/>}
+                                                             label="Targets"
+                                                             active={"Targets" + proposal.code === active}
+                                                             onClick={()=>setActive("Targets" + proposal.code)}
+                                                    />
+                                                    <NavLink to={"proposal/" + proposal.code + "/goals"}
+                                                             component={Link}
+                                                             leftSection={<IconChartLine/>}
+                                                             label="Technical Goals"
+                                                             active={"Technical Goals" + proposal.code === active}
+                                                             onClick={()=>setActive("Technical Goals" + proposal.code)}
+                                                    />
+                                                    <NavLink to={
+                                                        "proposal/" + proposal.code + "/observations"}
+                                                             component={Link}
+                                                             leftSection={<IconTelescope/>}
+                                                             label="Observations"
+                                                             active={"Observations" + proposal.code === active}
+                                                             onClick={()=>setActive("Observations" + proposal.code)}
+                                                    />
+                                                    <NavLink to={
+                                                        "proposal/" + proposal.code + "/documents"}
+                                                             component={Link}
+                                                             leftSection={<IconFiles/>}
+                                                             label="Documents"
+                                                             active={"Documents" + proposal.code === active}
+                                                             onClick={()=>setActive("Documents" + proposal.code)}
+                                                    />
+                                                    <NavLink to={
+                                                        "proposal/" + proposal.code + "/submit"}
+                                                             component={Link}
+                                                             leftSection={<IconSend/>}
+                                                             label="Submit"
+                                                             active={"Submit" + proposal.code === active}
+                                                             onClick={()=>setActive("Submit" + proposal.code)}
+                                                    />
                                                 </NavLink>
                                             ))}
                                         </>
