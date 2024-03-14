@@ -39,7 +39,6 @@ import {AuthProvider} from "./auth/Auth.tsx";
 import {
     AppShell,
     NavLink,
-    Box,
     Text,
     TextInput,
     Grid,
@@ -109,6 +108,31 @@ export const useToken = (): string => {
 };
 
 /**
+ *  Data array to hold the NavLinks for the sections of a proposal.
+ *  This allows us to use the array index to highlight the currently
+ *  selected section in the navigation pane.
+ *
+ *  overview, title, summary, investigators, justifications, targets,
+ *  technical goals, observations, documents, submit
+ *
+ */
+const navLinkData = [
+    {icon: IconUfo, label: 'Overview'},
+    {icon: IconLetterT, label: 'Title', path: "/title"},
+    {icon: IconLetterS, label: 'Summary', path: "/summary"},
+    {icon: IconUsersGroup, label: 'Investigators', path: "/investigators"},
+    {icon: IconFileCheck, label: 'Justifications', path: "/justifications"},
+    {icon: IconTarget, label: 'Targets', path: "/targets"},
+    {icon: IconChartLine, label: 'Technical Goals', path: "/goals"},
+    {icon: IconTelescope, label: 'Observations', path: "/observations"},
+    {icon: IconFiles, label: 'Documents', path: "/documents"},
+    {icon: IconSend, label: 'Submit', path: "/submit"}
+]
+
+
+
+
+/**
  * generates the html for the main app.
  * @return {ReactElement} dynamic html for the main app.
  * @constructor
@@ -126,6 +150,30 @@ function App2(): ReactElement {
     // the colour gray used by the tools.
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();
+
+    //active state for the NavLink sections
+    const [active, setActive] = useState(0);
+
+    const getNavLinks = (proposalCode: string) => {
+        const links = navLinkData.map((link, linkIndex) => (
+            <NavLink
+                key={link.label + proposalCode}
+                active={linkIndex === active}
+                label={link.label}
+                to={"proposal/" + proposalCode + link.path}
+                component={Link}
+                leftSection={link.icon}
+                onClick={() => setActive(linkIndex)}
+            />
+        ))
+        return <>{links}</>
+    }
+
+    const getNavLink = () => {
+        return (
+            <NavLink label={"this displays"} />
+        )
+    }
 
 
     const GRAY = theme.colors.gray[6];
@@ -371,67 +419,23 @@ function App2(): ReactElement {
                             </Grid.Col>
                             <Grid.Col span={1}>
                                 <AppShell.Section grow component={ScrollArea}>
-                                    {result.isLoading ? (<Box>Loading…</Box>) : (
                                         <>
-                                            {result.data?.map((item) => (
-                                                <NavLink key={item.code}
-                                                         label={item.title}
+                                            {result.data?.map((proposal) => (
+                                                <NavLink key={proposal.code}
+                                                         label={proposal.title}
                                                          leftSection={<IconLicense/>}
                                                          rightSection={<IconChevronRight
                                                              size="0.8em"
                                                              stroke={STROKE} />}
                                                 >
-                                                    <NavLink to={"proposal/" + item.code}
-                                                             component={Link}
-                                                             label="Overview"
-                                                             leftSection={<IconUfo/>}>
-                                                    </NavLink>
-                                                    <NavLink to={"proposal/" + item.code + "/title"}
-                                                             component={Link}
-                                                             leftSection={<IconLetterT/>}
-                                                             label="Title" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/summary"}
-                                                             component={Link}
-                                                             leftSection={<IconLetterS/>}
-                                                             label="Summary" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/investigators"}
-                                                             component={Link}
-                                                             leftSection={<IconUsersGroup/>}
-                                                             label="Investigators" />
-                                                    <NavLink to={"proposal/" + item.code + "/justifications"}
-                                                             component={Link}
-                                                             leftSection={<IconFileCheck/>}
-                                                             label="Justifcations" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/targets"}
-                                                             component={Link}
-                                                             leftSection={<IconTarget/>}
-                                                             label="Targets" />
-                                                    <NavLink to={"proposal/" + item.code + "/goals"}
-                                                             component={Link}
-                                                             leftSection={<IconChartLine/>}
-                                                             label="Technical Goals" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/observations"}
-                                                             component={Link}
-                                                             leftSection={<IconTelescope/>}
-                                                             label="Observations" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/documents"}
-                                                             component={Link}
-                                                             leftSection={<IconFiles/>}
-                                                             label="Documents" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/submit"}
-                                                             component={Link}
-                                                             leftSection={<IconSend/>}
-                                                             label="Submit" />
+                                                    {
+                                                        //this complains about objects not valid as React child
+                                                        //getNavLinks(String(proposal.code))
+                                                        getNavLink()
+                                                    }
                                                 </NavLink>
                                             ))}
                                         </>
-                                    )}
                                 </AppShell.Section>
                             </Grid.Col>
                         </Grid>
