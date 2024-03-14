@@ -125,11 +125,6 @@ function App2(): ReactElement {
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();
 
-    //active state for the NavLink sections
-    const [active, setActive] = useState("");
-    const [accordionValue, setAccordionValue]
-        = useState<string | null>(null);
-
     const GRAY = theme.colors.gray[6];
 
     // the paths to route to.
@@ -230,6 +225,10 @@ function App2(): ReactElement {
                 enabled: true,
             });
 
+        //active state for the NavLink sections
+        const [active, setActive] = useState("");
+        const [accordionValue, setAccordionValue]
+            = useState<string | null>(null);
 
         /*
             Developer Note: trying to do a nested map of the 'NavLink' elements resulted in an
