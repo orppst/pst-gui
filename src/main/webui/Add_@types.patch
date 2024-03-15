@@ -80,6 +80,14 @@
    /**
     * the proposal title
     */
+@@ -836,6 +836,7 @@ export type OfferedCycles = {
+  * An institution that is a collection of people
+  */
+ export type Organization = {
++  "@type"?: string; // proposal:Organization
+   /**
+    * The name of the organization
+    */
 @@ -1207,6 +1214,7 @@
   * A real value with a unit.
   */
