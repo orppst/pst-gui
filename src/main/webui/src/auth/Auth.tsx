@@ -10,6 +10,7 @@ import '../../public/greeting.css'
 
 export type AuthMapping = {
     subjectMap:SubjectMap;
+    kc_uuid: string;
     token: string;
     expiry: string;
     nameFromAuth: string;
@@ -128,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 console.warn("authenticated person ",s.nameFromAuth," is not registered with database")
                 setIsNewUser(true)
                 user.current = {fullName: s.nameFromAuth, eMail: s.emailFromAuth}
+                uuid.current = s.kc_uuid
                 console.log("new user", user.current)
             }
         })
@@ -179,7 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         <div className='greeting'>
 
                             <img className="intromessage" src="/pst/gui/polaris4.png"/>
-                            <h1 className='intromessage'><a href={'/pst/gui/tool/'}>Click</a> to login</h1>
+                            <h1 className='intromessage'><a href={'/pst/gui/tool/'}>Login</a></h1>
 
                         </div>
                         </div>

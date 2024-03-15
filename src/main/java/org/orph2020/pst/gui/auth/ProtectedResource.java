@@ -19,11 +19,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import java.time.Instant;
 
-@Path("/aai/")
-@Produces(MediaType.APPLICATION_JSON)
 /**
  * Interacts with the authentication to return identity tokens and metadata.
  */
+@Path("/aai/")
+@Produces(MediaType.APPLICATION_JSON)
 public class ProtectedResource {
 
 
@@ -46,6 +46,9 @@ public class ProtectedResource {
 
     public static class AAIInfo {
         public SubjectMap subjectMap;
+
+        public String kc_uuid;
+
         public String token;
 
         public String expiry;
@@ -53,8 +56,16 @@ public class ProtectedResource {
         public String nameFromAuth;
         public String emailFromAuth;
 
-        public AAIInfo(SubjectMap subjectMap, String token, long seconds, String name, String email) {
+        public AAIInfo(
+                SubjectMap subjectMap,
+                String kc_uuid,
+                String token,
+                long seconds,
+                String name,
+                String email
+        ) {
             this.subjectMap = subjectMap;
+            this.kc_uuid = kc_uuid;
             this.token = token;
             this.expiry = Instant.ofEpochSecond(seconds).toString();
             this.emailFromAuth = email;
@@ -70,17 +81,18 @@ public class ProtectedResource {
         if(LaunchMode.current().isDevOrTest()){
             LOGGER.info("id expiry="+Instant.ofEpochSecond(idToken.getExpirationTime()).toString());
             LOGGER.info("auth time="+ Instant.ofEpochSecond((Long) accessToken.claim(Claims.auth_time).orElse(0)).toString());
-           LOGGER.info(accessToken.getRawToken());
-           LOGGER.info(Instant.ofEpochSecond(accessToken.getExpirationTime()).toString());
+            LOGGER.info(accessToken.getRawToken());
+            LOGGER.info(Instant.ofEpochSecond(accessToken.getExpirationTime()).toString());
         }
 
         return new AAIInfo(
-              userService.getUser((String) accessToken.claim(Claims.sub).orElse("")), // the subject is the AAI "unique identifier" - for keycloak anyway....
-              accessToken.getRawToken(),
-              accessToken.getExpirationTime(),
-              //TODO perhaps this needs to also look for full_name
-              (String)(accessToken.claim(Claims.given_name).orElse("") + " " + accessToken.claim(Claims.family_name).orElse("")),
-              (String)accessToken.claim(Claims.email).orElse("")
+                userService.getUser((String) accessToken.claim(Claims.sub).orElse("")), // the subject is the AAI "unique identifier" - for keycloak anyway....
+                accessToken.claim(Claims.sub).orElse("").toString(),
+                accessToken.getRawToken(),
+                accessToken.getExpirationTime(),
+                //TODO perhaps this needs to also look for full_name
+                accessToken.claim(Claims.given_name).orElse("") + " " + accessToken.claim(Claims.family_name).orElse(""),
+                (String)accessToken.claim(Claims.email).orElse("")
         );
     }
 
