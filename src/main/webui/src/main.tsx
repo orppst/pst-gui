@@ -16,7 +16,7 @@ const theme = createTheme({
     respectReducedMotion: false,
     fontFamily: 'Open Sans, sans-serif',
     primaryColor: 'yellow',
-    focusRing: 'always',
+    focusRing: 'auto',
     fontSmoothing: true,
     defaultRadius: 'sm',
 })

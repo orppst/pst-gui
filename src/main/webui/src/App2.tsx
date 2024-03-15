@@ -39,7 +39,6 @@ import {AuthProvider} from "./auth/Auth.tsx";
 import {
     AppShell,
     NavLink,
-    Box,
     Text,
     TextInput,
     Grid,
@@ -47,12 +46,11 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container
+    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container, Accordion
 } from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {
     IconChartLine,
-    IconChevronRight,
     IconFileCheck,
     IconFiles, IconLetterS, IconLetterT, IconLicense,
     IconLogout, IconSend, IconTarget, IconTelescope, IconUfo, IconUsersGroup, IconYinYangFilled
@@ -63,7 +61,7 @@ import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
 import {
     APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
-    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, STROKE
+    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
 } from './constants.tsx';
 import { handleUploadZip } from './proposal/UploadProposal.tsx';
 import UploadButton from './commonButtons/upload.tsx';
@@ -126,7 +124,6 @@ function App2(): ReactElement {
     // the colour gray used by the tools.
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();
-
 
     const GRAY = theme.colors.gray[6];
 
@@ -227,6 +224,111 @@ function App2(): ReactElement {
             {
                 enabled: true,
             });
+
+        //active state for the NavLink sections
+        const [active, setActive] = useState("");
+        const [accordionValue, setAccordionValue]
+            = useState<string | null>(null);
+
+        /*
+            Developer Note: trying to do a nested map of the 'NavLink' elements resulted in an
+            "Objects are invalid as React child" exception. Perhaps there is another way of doing
+            loop for an array of objects to create the 'NavLink' elements nested in a map but this
+            works so... left as an exercise for the reader :)
+         */
+
+        const proposalsList =
+            result.data?.map((proposal) => {
+                return (
+                    <Accordion.Item value={String(proposal.code)} key={proposal.code}>
+                        <Accordion.Control>
+                            <Group>
+                                <IconLicense/>
+                                {proposal.title}
+                            </Group>
+                        </Accordion.Control>
+                        <Accordion.Panel>
+                            <NavLink to={"proposal/" + proposal.code}
+                                     component={Link}
+                                     label="Overview"
+                                     leftSection={<IconUfo/>}
+                                     active={"Overview" + proposal.code === active}
+                                     onClick={()=>setActive("Overview" + proposal.code)}
+                            />
+                            <NavLink to={"proposal/" + proposal.code + "/title"}
+                                     component={Link}
+                                     leftSection={<IconLetterT/>}
+                                     label="Title"
+                                     active={"Title" + proposal.code === active}
+                                     onClick={()=>setActive("Title" + proposal.code)}
+                            />
+                            <NavLink to={
+                                "proposal/" + proposal.code + "/summary"}
+                                     component={Link}
+                                     leftSection={<IconLetterS/>}
+                                     label="Summary"
+                                     active={"Summary" + proposal.code === active}
+                                     onClick={()=>setActive("Summary" + proposal.code)}
+                            />
+                            <NavLink to={
+                                "proposal/" + proposal.code + "/investigators"}
+                                     component={Link}
+                                     leftSection={<IconUsersGroup/>}
+                                     label="Investigators"
+                                     active={"Investigators" + proposal.code === active}
+                                     onClick={()=>setActive("Investigators" + proposal.code)}
+                            />
+                            <NavLink to={"proposal/" + proposal.code + "/justifications"}
+                                     component={Link}
+                                     leftSection={<IconFileCheck/>}
+                                     label="Justifications"
+                                     active={"Justifications" + proposal.code === active}
+                                     onClick={()=>setActive("Justifications" + proposal.code)}
+                            />
+                            <NavLink to={
+                                "proposal/" + proposal.code + "/targets"}
+                                     component={Link}
+                                     leftSection={<IconTarget/>}
+                                     label="Targets"
+                                     active={"Targets" + proposal.code === active}
+                                     onClick={()=>setActive("Targets" + proposal.code)}
+                            />
+                            <NavLink to={"proposal/" + proposal.code + "/goals"}
+                                     component={Link}
+                                     leftSection={<IconChartLine/>}
+                                     label="Technical Goals"
+                                     active={"Technical Goals" + proposal.code === active}
+                                     onClick={()=>setActive("Technical Goals" + proposal.code)}
+                            />
+                            <NavLink to={
+                                "proposal/" + proposal.code + "/observations"}
+                                     component={Link}
+                                     leftSection={<IconTelescope/>}
+                                     label="Observations"
+                                     active={"Observations" + proposal.code === active}
+                                     onClick={()=>setActive("Observations" + proposal.code)}
+                            />
+                            <NavLink to={
+                                "proposal/" + proposal.code + "/documents"}
+                                     component={Link}
+                                     leftSection={<IconFiles/>}
+                                     label="Documents"
+                                     active={"Documents" + proposal.code === active}
+                                     onClick={()=>setActive("Documents" + proposal.code)}
+                            />
+                            <NavLink to={
+                                "proposal/" + proposal.code + "/submit"}
+                                     component={Link}
+                                     leftSection={<IconSend/>}
+                                     label="Submit"
+                                     active={"Submit" + proposal.code === active}
+                                     onClick={()=>setActive("Submit" + proposal.code)}
+                            />
+                        </Accordion.Panel>
+                    </Accordion.Item>
+                )
+            });
+
 
         /**
          * resolves the routing for when making a new proposal.
@@ -344,97 +446,33 @@ function App2(): ReactElement {
                     </AppShell.Header>
 
                     <AppShell.Navbar>
-                        <Grid columns={1}>
-                            <Grid.Col
-                                span={1}
-                                style={{
-                                    borderBottom: "1px",
-                                    borderStyle: "solid",
-                                    borderColor: theme.colors.gray[5],
-                                    backgroundColor: colorScheme === "dark" ?
-                                        theme.colors.cyan[9] : theme.colors.blue[1]
-                                }}
+                        <AppShell.Section>
+                            <Container fluid bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}>
+                                <Text fz="sm">
+                                    Filter existing proposals by:
+                                </Text>
+                                <TextInput label="Title"
+                                           value={proposalTitle}
+                                           onChange={(e: { target: { value: string; }; }) =>
+                                               setProposalTitle(e.target.value)}
+                                />
+                                <TextInput label="Investigator name"
+                                           value={investigatorName}
+                                           onChange={(e: { target: { value: string; }; }) =>
+                                               setInvestigatorName(e.target.value)}
+                                           pb={"md"}
+                                />
+                            </Container>
+                        </AppShell.Section>
+                        <AppShell.Section component={ScrollArea}>
+                            <Accordion
+                                value={accordionValue}
+                                onChange={setAccordionValue}
+                                variant={"filled"}
                             >
-                                <AppShell.Section component={ScrollArea}>
-                                    <Text fz="sm">
-                                        Filter existing proposals by:
-                                    </Text>
-                                    <TextInput label="Title"
-                                               value={proposalTitle}
-                                               onChange={(e: { target: { value: string; }; }) =>
-                                                   setProposalTitle(e.target.value)} />
-                                    <TextInput label="Investigator name"
-                                               value={investigatorName}
-                                               onChange={(e: { target: { value: string; }; }) =>
-                                                   setInvestigatorName(e.target.value)} />
-                                </AppShell.Section>
-                            </Grid.Col>
-                            <Grid.Col span={1}>
-                                <AppShell.Section grow component={ScrollArea}>
-                                    {result.isLoading ? (<Box>Loading…</Box>) : (
-                                        <>
-                                            {result.data?.map((item) => (
-                                                <NavLink key={item.code}
-                                                         label={item.title}
-                                                         leftSection={<IconLicense/>}
-                                                         rightSection={<IconChevronRight
-                                                             size="0.8em"
-                                                             stroke={STROKE} />}
-                                                >
-                                                    <NavLink to={"proposal/" + item.code}
-                                                             component={Link}
-                                                             label="Overview"
-                                                             leftSection={<IconUfo/>}>
-                                                    </NavLink>
-                                                    <NavLink to={"proposal/" + item.code + "/title"}
-                                                             component={Link}
-                                                             leftSection={<IconLetterT/>}
-                                                             label="Title" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/summary"}
-                                                             component={Link}
-                                                             leftSection={<IconLetterS/>}
-                                                             label="Summary" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/investigators"}
-                                                             component={Link}
-                                                             leftSection={<IconUsersGroup/>}
-                                                             label="Investigators" />
-                                                    <NavLink to={"proposal/" + item.code + "/justifications"}
-                                                             component={Link}
-                                                             leftSection={<IconFileCheck/>}
-                                                             label="Justifcations" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/targets"}
-                                                             component={Link}
-                                                             leftSection={<IconTarget/>}
-                                                             label="Targets" />
-                                                    <NavLink to={"proposal/" + item.code + "/goals"}
-                                                             component={Link}
-                                                             leftSection={<IconChartLine/>}
-                                                             label="Technical Goals" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/observations"}
-                                                             component={Link}
-                                                             leftSection={<IconTelescope/>}
-                                                             label="Observations" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/documents"}
-                                                             component={Link}
-                                                             leftSection={<IconFiles/>}
-                                                             label="Documents" />
-                                                    <NavLink to={
-                                                        "proposal/" + item.code + "/submit"}
-                                                             component={Link}
-                                                             leftSection={<IconSend/>}
-                                                             label="Submit" />
-                                                </NavLink>
-                                            ))}
-                                        </>
-                                    )}
-                                </AppShell.Section>
-                            </Grid.Col>
-                        </Grid>
+                                {proposalsList}
+                            </Accordion>
+                        </AppShell.Section>
                     </AppShell.Navbar>
                     <AppShell.Main pr={"sm"}>
                         <Outlet/>
