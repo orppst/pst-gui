@@ -837,6 +837,7 @@ export type OfferedCycles = {
  */
 export type Organization = {
   "@type"?: string; // proposal:Organization
+  _id?: number;
   /**
    * The name of the organization
    */
