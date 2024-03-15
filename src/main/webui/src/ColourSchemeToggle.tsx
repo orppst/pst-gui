@@ -1,6 +1,5 @@
 import {useMantineColorScheme, Switch, useMantineTheme} from '@mantine/core';
 import {IconSun, IconMoonStars} from '@tabler/icons-react';
-import { Slider } from '@mantine/core';
 import { STROKE } from './constants.tsx';
 
 export function SwitchToggle() {
@@ -23,16 +22,6 @@ export function SwitchToggle() {
                     color={GRAY}
                     size="1.25em"
                     stroke={STROKE}/>}
-            />
-            <Slider miw={120}
-                label={null}
-                showLabelOnHover={false}
-                defaultValue={100}
-                min={70}
-                max={130}
-                onChange={(value) => {
-                    document.documentElement.style.fontSize = `${value}%`;
-                }}
             />
         </>
     );
