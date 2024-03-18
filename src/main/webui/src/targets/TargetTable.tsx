@@ -235,7 +235,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
 export function TargetTable(props: TargetTableProps): ReactElement {
     const theme = useMantineTheme();
     return (
-        <Table borderColor={
+        <Table highlightOnHover borderColor={
                 props.selectedTarget === NO_ROW_SELECTED ?
                     theme.colors.yellow[ERROR_YELLOW]:
                     undefined}>
