@@ -1,16 +1,24 @@
 import {Person} from "../generated/proposalToolSchemas.ts";
-import {TextInput, Checkbox, Button, Group, Box, Select} from '@mantine/core';
+import {TextInput, Checkbox, Button, Group, Box, Select, Text, Modal, Space} from '@mantine/core';
 import {useForm} from '@mantine/form';
 import {
     fetchPersonResourceCreatePerson,
     fetchSubjectMapResourceCreateFromUser, useOrganizationResourceGetOrganizations
 } from "../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../constants.tsx";
-
-//TODO create new organisation if necessary.
-//TODO better error handling.
+import AddButton from "../commonButtons/add.tsx";
+import {useDisclosure} from "@mantine/hooks";
+import NewOrganization from "./NewOrganization.tsx";
+import {modals} from "@mantine/modals";
 
 export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:Person)=>void}){
+
+    interface FormValues {
+        fullName : string
+        email : string
+        termsOfService : boolean
+        organizationId: number | undefined
+    }
 
     //grab the list of known organizations
     const {
@@ -18,6 +26,28 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
         error: organizationsError,
         isLoading: organizationsIsLoading
     } = useOrganizationResourceGetOrganizations({});
+
+    const [opened, {close, open}] = useDisclosure();
+
+
+    const form = useForm<FormValues>({
+        initialValues: {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            fullName : props.proposed.fullName!,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            email: props.proposed.eMail!,
+            termsOfService: false,
+            organizationId: undefined
+        },
+
+        validate: {
+            email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+            termsOfService: (value) => value ?
+                null : 'Please agree to the terms-of-service (I\'m pretty certain we removed the clause about selling your soul)',
+            organizationId: (value) =>
+                value === undefined ? 'Please select an Organization': null
+        },
+    });
 
     if (organizationsError) {
         return (
@@ -27,13 +57,6 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
         );
     }
 
-    interface FormValues {
-        fullName : string
-        email : string
-        termsOfService : boolean
-        organizationId: number
-    }
-
     let organizationsData : {value: string, label: string}[] = []
     if (!organizationsIsLoading) {
         organizationsData
@@ -41,23 +64,6 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
             return {value: String(org.dbid!), label: org.name!}
         })
     }
-
-    const form = useForm<FormValues>({
-        initialValues: {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            fullName : props.proposed.fullName!,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            email: props.proposed.eMail!,
-            termsOfService: false,
-            organizationId: 0
-        },
-
-        validate: {
-            email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-            termsOfService: (value) => value ?
-                null : 'Please agree to the terms-of-service (I\'m pretty certain we removed the clause about selling your soul)'
-        },
-    });
 
     function createUser(values:FormValues, id:string)
     {
@@ -84,8 +90,28 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
              }).catch(console.error)
     }
 
+    const okayOrganizationAddition = (): void =>
+        modals.open( {
+            title: "Organization added",
+            centered: true,
+            children: (
+                <Group justify={"center"}>
+                    <Text size={"sm"}>
+                        New Organization added to the list
+                    </Text>
+                    <Button
+                        color={"green"}
+                        onClick={()=>{modals.closeAll(); location.reload();}}
+                    >
+                        Okay
+                    </Button>
+                </Group>
+            ),
+            withCloseButton: false
+        })
+
     return (
-        <Box maw={340} mx="auto">
+        <Box maw={450} mx="auto">
             <h1>Confirm details to be entered into Polaris</h1>
             <form onSubmit={form.onSubmit((values) => createUser(values,props.uuid))}>
                 <TextInput
@@ -107,7 +133,6 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
                     {...form.getInputProps('organizationId')}
                 />
 
-
                 <Checkbox
                     mt="md"
                     label="I agree to the terms"
@@ -119,6 +144,31 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
                 </Group>
 
             </form>
+
+            <Space h={"sm"}/>
+            <Group justify={"center"} gap={"xs"}>
+                <Text size={"sm"} c={"teal"}>
+                    If your organization is not listed please
+                </Text>
+                <AddButton
+                    toolTipLabel={"opens New Organization modal"}
+                    label={"add it"}
+                    onClick={open}
+                />
+            </Group>
+            <Modal
+                opened={opened}
+                onClose={close}
+                title={"Add New Organization"}
+                size={"30%"}
+            >
+                {
+                    NewOrganization(() => {
+                        close();
+                        okayOrganizationAddition();
+                    })
+                }
+            </Modal>
         </Box>
     )
 }
