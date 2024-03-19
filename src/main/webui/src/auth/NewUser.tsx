@@ -1,15 +1,16 @@
-import {Person} from "../generated/proposalToolSchemas.ts";
+import {ObjectIdentifier, Person} from "../generated/proposalToolSchemas.ts";
 import {TextInput, Checkbox, Button, Group, Box, Select, Text, Modal, Space} from '@mantine/core';
 import {useForm} from '@mantine/form';
 import {
     fetchPersonResourceCreatePerson,
-    fetchSubjectMapResourceCreateFromUser, useOrganizationResourceGetOrganizations
+    fetchSubjectMapResourceCreateFromUser
 } from "../generated/proposalToolComponents.ts";
-import {JSON_SPACES} from "../constants.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import {useDisclosure} from "@mantine/hooks";
 import NewOrganization from "./NewOrganization.tsx";
-import {modals} from "@mantine/modals";
+import {useEffect, useState} from "react";
+import {notifications} from "@mantine/notifications";
+import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 
 export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:Person)=>void}){
 
@@ -20,12 +21,33 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
         organizationId: number | undefined
     }
 
-    //grab the list of known organizations
-    const {
-        data: organizations,
-        error: organizationsError,
-        isLoading: organizationsIsLoading
-    } = useOrganizationResourceGetOrganizations({});
+    const [organizationsData, setOrganizationsData]
+        = useState<{value: string, label: string}[]>([]);
+
+
+    //use this to trigger a re-fetch of organisations on "New Organization" modal close
+    const [count, setCount] = useState(0);
+
+    useEffect( () => {
+        //grab the list of known organizations
+        fetch("http://localhost:8084/pst/api/organizations")
+            .then(res => res.json())
+            .then((data: ObjectIdentifier[]) => {
+                setOrganizationsData(
+                    data?.map((org) => (
+                        {value: String(org.dbid), label: org.name!}
+                    ))
+                );
+            })
+            .catch((error) => {
+                notifications.show({
+                    autoClose: false,
+                    title: "Loading Organizations failed",
+                    message: "Cannot load Organizations, caused by " + getErrorMessage(error)
+                });
+            })
+    }, [count])
+
 
     const [opened, {close, open}] = useDisclosure();
 
@@ -48,22 +70,6 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
                 value === undefined ? 'Please select an Organization': null
         },
     });
-
-    if (organizationsError) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(organizationsError, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
-
-    let organizationsData : {value: string, label: string}[] = []
-    if (!organizationsIsLoading) {
-        organizationsData
-            = organizations!.map((org) =>{
-            return {value: String(org.dbid!), label: org.name!}
-        })
-    }
 
     function createUser(values:FormValues, id:string)
     {
@@ -90,25 +96,6 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
              }).catch(console.error)
     }
 
-    const okayOrganizationAddition = (): void =>
-        modals.open( {
-            title: "Organization added",
-            centered: true,
-            children: (
-                <Group justify={"center"}>
-                    <Text size={"sm"}>
-                        New Organization added to the list
-                    </Text>
-                    <Button
-                        color={"green"}
-                        onClick={()=>{modals.closeAll(); location.reload();}}
-                    >
-                        Okay
-                    </Button>
-                </Group>
-            ),
-            withCloseButton: false
-        })
 
     return (
         <Box maw={450} mx="auto">
@@ -165,7 +152,7 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
                 {
                     NewOrganization(() => {
                         close();
-                        okayOrganizationAddition();
+                        setCount(count + 1); // triggers a re-fetch of organisations
                     })
                 }
             </Modal>
