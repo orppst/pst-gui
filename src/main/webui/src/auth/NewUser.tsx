@@ -48,6 +48,15 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
             })
     }, [count])
 
+    useEffect(() => {
+        if (count > 0)
+            notifications.show({
+                autoClose: false,
+                message: "New Organization added",
+                color: "green"
+            })
+    }, [organizationsData.length]);
+
 
     const [opened, {close, open}] = useDisclosure();
 
