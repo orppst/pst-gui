@@ -34,6 +34,10 @@ Other client side libraries used
 
 * https://reactrouter.com/ - see https://tkdodo.eu/blog/react-query-meets-react-router
 
+## Security
+
+follows  https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-14#name-token-mediating-backend architecture where the refresh token is not exposed to the javascript.
+
 ## Misc
 
 * see https://github.com/quarkiverse/quarkus-quinoa/issues/299 for issues regarding serving 
