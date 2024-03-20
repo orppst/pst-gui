@@ -2,6 +2,7 @@ import {ObjectIdentifier, Person} from "../generated/proposalToolSchemas.ts";
 import {TextInput, Checkbox, Button, Group, Box, Select, Text, Modal, Space} from '@mantine/core';
 import {useForm} from '@mantine/form';
 import {
+    fetchOrganizationResourceGetOrganizations,
     fetchPersonResourceCreatePerson,
     fetchSubjectMapResourceCreateFromUser
 } from "../generated/proposalToolComponents.ts";
@@ -30,8 +31,7 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
 
     useEffect( () => {
         //grab the list of known organizations
-        fetch("http://localhost:8084/pst/api/organizations")
-            .then(res => res.json())
+        fetchOrganizationResourceGetOrganizations({})
             .then((data: ObjectIdentifier[]) => {
                 setOrganizationsData(
                     data?.map((org) => (
