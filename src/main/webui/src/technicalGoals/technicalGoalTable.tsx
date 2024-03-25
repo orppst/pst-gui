@@ -400,7 +400,7 @@ function technicalGoalsHeader(props: TechnicalGoalsTableProps) : ReactElement {
 export function TechnicalGoalsTable(props: TechnicalGoalsTableProps): ReactElement {
     const theme = useMantineTheme();
     return (
-        <Table borderColor={
+        <Table highlightOnHover borderColor={
             props.selectedTechnicalGoal === NO_ROW_SELECTED ?
                 theme.colors.yellow[ERROR_YELLOW]:
                 undefined}>
