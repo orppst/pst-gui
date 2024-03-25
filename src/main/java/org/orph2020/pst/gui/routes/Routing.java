@@ -1,5 +1,6 @@
 package org.orph2020.pst.gui.routes;
 
+import io.quarkus.runtime.LaunchMode;
 import io.quarkus.vertx.web.RoutingExchange;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -25,17 +26,23 @@ public class Routing {
 
    // put some routes before all the others to sort out the spa routing.
    void spa (@Observes Router router) {
-      router.get("/").order(1).handler(rc ->{
-         rc.reroute("/pst/gui/index.html");
-      });
-      router.get("/tool/*").order(2).handler(rc -> {
-         final String path = rc.normalizedPath();
-         log.debugf("SPA redirection "+ path);
-         if(path.equals("/pst/gui/tool/index.html"))
-            rc.next();
-         else
-            rc.reroute("/pst/gui/tool/index.html");
-      });
+      if(!LaunchMode.current().isDevOrTest()) {
+         router.get("/").order(1).handler(rc -> {
+            rc.reroute("/pst/gui/index.html");
+         });
+         router.get("/tool/*").order(2).handler(rc -> {
+            final String path = rc.normalizedPath();
+            log.debugf("SPA redirection " + path);
+            if (path.equals("/pst/gui/tool/index.html"))
+               rc.next();
+            else
+               rc.reroute("/pst/gui/tool/index.html");
+         });
+      }
+      else
+      {
+         log.info("not putting in routing kudge");
+      }
 
       for (var r: router.getRoutes())
       {
