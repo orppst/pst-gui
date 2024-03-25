@@ -12,6 +12,7 @@ import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 @Path("/api-info")
 public class PathInfo {
@@ -33,7 +34,8 @@ public class PathInfo {
       }
       else {
          //when deployed the api is on same server (as far as the client side can see things).
-         URI uriLoc = UriBuilder.fromUri(requestUri.resolve("../../../")).scheme("https").build();
+
+         URI uriLoc = UriBuilder.fromPath("/").scheme("https").host(requestUri.getHost()).build();
          return Response.ok(uriLoc).build();
       }
    }

@@ -166,8 +166,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
             centered: true,
             children: (
                 <Text size="sm">
-                    Are you sure you want to remove {data?.person?.fullName}
-                    from this proposal?
+                    Are you sure you want to remove {data?.person?.fullName} from this proposal?
                 </Text>
             ),
             labels: { confirm: "Delete", cancel: "Cancel" },
