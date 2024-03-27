@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await window.fetch("/pst/gui/aai/", {mode:"no-cors"}); //FIXME reintroduce CORS when keycloak is implementing it properly
         let error;
         if (response.ok) {
-            setLoggedOn(true);
+
             return await response.json() as AuthMapping
         } else {
             console.log("authentication failed");
@@ -98,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const resp = getUser();
         resp.then((s) => {
             token.current=s.token
+            setLoggedOn(true);
             expiry.current = new Date(s.expiry)
             console.log("access token will expire - "+ expiry.current.toISOString())
             setExpiring(false)
@@ -149,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <ProposalContext.Provider value={{user:user.current, getToken:getToken, selectedProposalCode:0, apiUrl:apiURL.current}}>
+        <ProposalContext.Provider value={{user:user.current, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
             {loggedOn ? ( isNewUser ? (
 
                   <NewUser proposed={user.current} uuid={uuid.current} userConfirmed={userConfirmed}/>

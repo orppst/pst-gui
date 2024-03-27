@@ -10,9 +10,6 @@ import {
     QueryClient,
     QueryClientProvider,
 } from '@tanstack/react-query';
-import {
-    useProposalResourceGetProposals,
-} from './generated/proposalToolComponents'
 import { Person} from "./generated/proposalToolSchemas";
 import TitlePanel from './proposal/Title';
 import OverviewPanel from "./proposal/Overview";
@@ -22,7 +19,6 @@ import InvestigatorsPanel from "./Investigators/List";
 import AddInvestigatorPanel from "./Investigators/New";
 import {
     createBrowserRouter,
-    Link,
     Outlet,
     RouterProvider,
     useNavigate
@@ -38,7 +34,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
 import {
     AppShell,
-    NavLink,
     Text,
     TextInput,
     Grid,
@@ -46,14 +41,11 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container, Accordion
+    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container
 } from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {
-    IconChartLine,
-    IconFileCheck,
-    IconFiles, IconLetterS, IconLetterT, IconLicense,
-    IconLogout, IconSend, IconTarget, IconTelescope, IconUfo, IconUsersGroup, IconYinYangFilled
+    IconLogout,  IconYinYangFilled
 } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
@@ -67,6 +59,7 @@ import { handleUploadZip } from './proposal/UploadProposal.tsx';
 import UploadButton from './commonButtons/upload.tsx';
 import AdminPanel from "./admin/adminPanel.tsx";
 import JustificationsPanel from "./justifications/JustificationsPanel.tsx";
+import {ProposalList} from "./ProposalList.tsx";
 
 /**
  * defines the user context type.
@@ -74,6 +67,7 @@ import JustificationsPanel from "./justifications/JustificationsPanel.tsx";
 export type UserContextType = {
     user: Person;
     getToken: () => string;
+    authenticated: boolean;
 }
 
 /**
@@ -94,6 +88,7 @@ export const ProposalContext:
     createContext<UserContextType & ProposalContextType>({
         user: {},
         getToken: ()=>{return ""},
+        authenticated: false,
         selectedProposalCode: 0,
         apiUrl:"http://api" // obviously false as a placeholder
     })
@@ -192,12 +187,12 @@ function App2(): ReactElement {
 
     return (
         <AuthProvider>
-            <StrictMode>
+
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-            </StrictMode>
+
         </AuthProvider>
     );
 
@@ -207,128 +202,16 @@ function App2(): ReactElement {
      * @constructor
      */
     function PSTRoot(): ReactElement {
-        const {user, getToken, apiUrl} = useContext(ProposalContext);
+        const {user, getToken, authenticated, apiUrl} = useContext(ProposalContext);
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
         // acquire the state setters for proposal title and investigator name.
-        const [proposalTitle, setProposalTitle] = useHistoryState(
+        const [proposalTitleFilter, setProposalTitleFilter] = useHistoryState(
             "proposalTitle", "");
-        const [investigatorName, setInvestigatorName] = useHistoryState(
+        const [investigatorNameFilter, setInvestigatorNameFilter] = useHistoryState(
             "investigatorName", "");
-        const result = useProposalResourceGetProposals(
-            { queryParams: {
-                    title: "%" + proposalTitle + "%",
-                    investigatorName: "%" + investigatorName + "%"
-                },
-            },
-            {
-                enabled: true,
-            });
 
         //active state for the NavLink sections
-        const [active, setActive] = useState("");
-        const [accordionValue, setAccordionValue]
-            = useState<string | null>(null);
-
-        /*
-            Developer Note: trying to do a nested map of the 'NavLink' elements resulted in an
-            "Objects are invalid as React child" exception. Perhaps there is another way of doing
-            loop for an array of objects to create the 'NavLink' elements nested in a map but this
-            works so... left as an exercise for the reader :)
-         */
-
-        const proposalsList =
-            result.data?.map((proposal) => {
-                return (
-                    <Accordion.Item value={String(proposal.code)} key={proposal.code}>
-                        <Accordion.Control>
-                            <Group>
-                                <IconLicense/>
-                                {proposal.title}
-                            </Group>
-                        </Accordion.Control>
-                        <Accordion.Panel>
-                            <NavLink to={"proposal/" + proposal.code}
-                                     component={Link}
-                                     label="Overview"
-                                     leftSection={<IconUfo/>}
-                                     active={"Overview" + proposal.code === active}
-                                     onClick={()=>setActive("Overview" + proposal.code)}
-                            />
-                            <NavLink to={"proposal/" + proposal.code + "/title"}
-                                     component={Link}
-                                     leftSection={<IconLetterT/>}
-                                     label="Title"
-                                     active={"Title" + proposal.code === active}
-                                     onClick={()=>setActive("Title" + proposal.code)}
-                            />
-                            <NavLink to={
-                                "proposal/" + proposal.code + "/summary"}
-                                     component={Link}
-                                     leftSection={<IconLetterS/>}
-                                     label="Summary"
-                                     active={"Summary" + proposal.code === active}
-                                     onClick={()=>setActive("Summary" + proposal.code)}
-                            />
-                            <NavLink to={
-                                "proposal/" + proposal.code + "/investigators"}
-                                     component={Link}
-                                     leftSection={<IconUsersGroup/>}
-                                     label="Investigators"
-                                     active={"Investigators" + proposal.code === active}
-                                     onClick={()=>setActive("Investigators" + proposal.code)}
-                            />
-                            <NavLink to={"proposal/" + proposal.code + "/justifications"}
-                                     component={Link}
-                                     leftSection={<IconFileCheck/>}
-                                     label="Justifications"
-                                     active={"Justifications" + proposal.code === active}
-                                     onClick={()=>setActive("Justifications" + proposal.code)}
-                            />
-                            <NavLink to={
-                                "proposal/" + proposal.code + "/targets"}
-                                     component={Link}
-                                     leftSection={<IconTarget/>}
-                                     label="Targets"
-                                     active={"Targets" + proposal.code === active}
-                                     onClick={()=>setActive("Targets" + proposal.code)}
-                            />
-                            <NavLink to={"proposal/" + proposal.code + "/goals"}
-                                     component={Link}
-                                     leftSection={<IconChartLine/>}
-                                     label="Technical Goals"
-                                     active={"Technical Goals" + proposal.code === active}
-                                     onClick={()=>setActive("Technical Goals" + proposal.code)}
-                            />
-                            <NavLink to={
-                                "proposal/" + proposal.code + "/observations"}
-                                     component={Link}
-                                     leftSection={<IconTelescope/>}
-                                     label="Observations"
-                                     active={"Observations" + proposal.code === active}
-                                     onClick={()=>setActive("Observations" + proposal.code)}
-                            />
-                            <NavLink to={
-                                "proposal/" + proposal.code + "/documents"}
-                                     component={Link}
-                                     leftSection={<IconFiles/>}
-                                     label="Documents"
-                                     active={"Documents" + proposal.code === active}
-                                     onClick={()=>setActive("Documents" + proposal.code)}
-                            />
-                            <NavLink to={
-                                "proposal/" + proposal.code + "/submit"}
-                                     component={Link}
-                                     leftSection={<IconSend/>}
-                                     label="Submit"
-                                     active={"Submit" + proposal.code === active}
-                                     onClick={()=>setActive("Submit" + proposal.code)}
-                            />
-                        </Accordion.Panel>
-                    </Accordion.Item>
-                )
-            });
-
 
         /**
          * resolves the routing for when making a new proposal.
@@ -368,7 +251,7 @@ function App2(): ReactElement {
 
         return (
             <ProposalContext.Provider
-                value={{selectedProposalCode, user, getToken, apiUrl}}>
+                value={{selectedProposalCode, user, getToken, authenticated, apiUrl}}>
                 <AppShell
                     header={{height: APP_HEADER_HEIGHT}}
                     navbar={{
@@ -452,26 +335,20 @@ function App2(): ReactElement {
                                     Filter existing proposals by:
                                 </Text>
                                 <TextInput label="Title"
-                                           value={proposalTitle}
+                                           value={proposalTitleFilter}
                                            onChange={(e: { target: { value: string; }; }) =>
-                                               setProposalTitle(e.target.value)}
+                                               setProposalTitleFilter(e.target.value)}
                                 />
                                 <TextInput label="Investigator name"
-                                           value={investigatorName}
+                                           value={investigatorNameFilter}
                                            onChange={(e: { target: { value: string; }; }) =>
-                                               setInvestigatorName(e.target.value)}
+                                               setInvestigatorNameFilter(e.target.value)}
                                            pb={"md"}
                                 />
                             </Container>
                         </AppShell.Section>
                         <AppShell.Section component={ScrollArea}>
-                            <Accordion
-                                value={accordionValue}
-                                onChange={setAccordionValue}
-                                variant={"filled"}
-                            >
-                                {proposalsList}
-                            </Accordion>
+                            <ProposalListWrapper proposalTitle={proposalTitleFilter} investigatorName={investigatorNameFilter} auth={authenticated}/>
                         </AppShell.Section>
                     </AppShell.Navbar>
                     <AppShell.Main pr={"sm"}>
@@ -482,6 +359,15 @@ function App2(): ReactElement {
         )
     }
 
+    function ProposalListWrapper(props:{proposalTitle: string, investigatorName:string, auth:boolean}) : ReactElement {
+
+        if (props.auth) {
+            return <ProposalList proposalTitle={props.proposalTitle} investigatorName={props.investigatorName} />
+        }
+        else {
+            return <></>
+        }
+    }
     /**
      * html to show in the main page when "proposals for username" is selected.
      * @return {ReactElement} the html to display when
