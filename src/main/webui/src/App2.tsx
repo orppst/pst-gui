@@ -187,12 +187,12 @@ function App2(): ReactElement {
 
     return (
         <AuthProvider>
-
+            <StrictMode>
             <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router}/>
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-
+            </StrictMode>
         </AuthProvider>
     );
 
@@ -312,17 +312,8 @@ function App2(): ReactElement {
                                             <IconLogout size={ICON_SIZE}/>
                                         </ActionIcon>
                                     </Tooltip>
-                                    <Tooltip label={"Admin page"}
-                                             openDelay={OPEN_DELAY}
-                                             closeDelay={CLOSE_DELAY}
-                                    >
-                                        <ActionIcon color={"blue.7"}
-                                                    variant={"outline"}
-                                                    onClick={handleAdminPage}
-                                        >
-                                            <IconYinYangFilled size={ICON_SIZE}/>
-                                        </ActionIcon>
-                                    </Tooltip>
+
+
                                 </Group>
                             </Grid.Col>
                         </Grid>
