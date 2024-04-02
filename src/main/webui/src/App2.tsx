@@ -45,7 +45,7 @@ import {
 } from '@mantine/core';
 import {SwitchToggle} from "./ColourSchemeToggle.tsx";
 import {
-    IconLogout,  IconYinYangFilled
+    IconLogout
 } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add.tsx';
@@ -238,10 +238,10 @@ function App2(): ReactElement {
          *
          * @param {React.SyntheticEvent} event the event (click)
          */
-        function handleAdminPage(event: SyntheticEvent): void {
-            event.preventDefault();
-            navigate("admin")
-        }
+        // function handleAdminPage(event: SyntheticEvent): void {
+        //     event.preventDefault();
+        //     navigate("admin")
+        // }
 
         /*
             We only want to show the Administration Panel Button to those users
