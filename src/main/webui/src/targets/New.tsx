@@ -312,7 +312,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         label="Name"
                         placeholder="Name of target"
                         {...form.getInputProps("TargetName")}
-                        onChange={(e) => {
+                        onChange={(e: string) => {
                             setNameUnique(true);
                             if(form.getInputProps("TargetName").onChange)
                                 form.getInputProps("TargetName").onChange(e);
