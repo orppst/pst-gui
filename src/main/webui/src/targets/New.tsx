@@ -7,7 +7,7 @@ import {
     ReactElement,
     ReactNode,
     useEffect,
-    useRef
+    useRef, useState
 } from 'react';
 import {
     CelestialTarget,
@@ -71,6 +71,7 @@ const ALADIN_STATE_NAME = "hasDoneAladin";
  * @constructor
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
+    const [nameUnique, setNameUnique] = useState(true);
     const form = useForm({
             initialValues: props.initialValues ?? {
                 TargetName: "",
@@ -82,7 +83,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             },
             validate: {
                 TargetName: (value) => (
-                    value.length < 1 ? 'Name cannot be blank ' : null),
+                    value.length < 1 ? 'Name cannot be blank ' : nameUnique? null : 'Source name must be unique'),
                 RA: (value) => (
                     value === null || value === undefined ?
                         'RA cannot be blank':
@@ -179,6 +180,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 queryParams: {sourceName: val.TargetName}})
             .then((data) => {
                 if(data.length == 0) {
+                    setNameUnique(true);
                     fetchSpaceSystemResourceGetSpaceSystem(
                         {pathParams: { frameCode: 'ICRS'}})
                         .then((spaceSys) => assignSpaceSys(spaceSys))
@@ -193,6 +195,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         .catch(console.log);
                 } else {
                     //Target already exists on this proposal
+                    setNameUnique(false);
                     notifications.show({
                         autoClose:5000,
                         title:"Duplicate target",
@@ -308,7 +311,13 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         withAsterisk
                         label="Name"
                         placeholder="Name of target"
-                        {...form.getInputProps("TargetName")} />
+                        {...form.getInputProps("TargetName")}
+                        onChange={(e) => {
+                            setNameUnique(true);
+                            if(form.getInputProps("TargetName").onChange)
+                                form.getInputProps("TargetName").onChange(e);
+                        }}
+                    />
                     <DatabaseSearchButton
                         label={"Lookup"}
                         onClick={simbadLookup}
