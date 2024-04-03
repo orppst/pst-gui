@@ -49,7 +49,6 @@ function TargetTableRow(props: TargetProps): ReactElement {
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
 
-    console.debug(`get target id of ${props.dbid}`)
     const {data, error, isLoading}
         = useProposalResourceGetTarget(
         {pathParams:
@@ -77,7 +76,6 @@ function TargetTableRow(props: TargetProps): ReactElement {
      */
     function handleRemove(): void {
         setSubmitting(true);
-        console.debug(`start delete of target ${props.dbid}`);
         fetchProposalResourceRemoveTarget({pathParams:
                 {
                     proposalCode: props.proposalCode,
@@ -85,7 +83,6 @@ function TargetTableRow(props: TargetProps): ReactElement {
                 }})
             .then(()=> {
                 setSubmitting(false);
-                console.debug("delete complete");
                 return queryClient.invalidateQueries(
                     {
                         predicate: (query) => {

@@ -7,14 +7,14 @@ import {
     ReactElement,
     ReactNode,
     useEffect,
-    useRef
+    useRef, useState
 } from 'react';
 import {
     CelestialTarget,
     EquatorialPoint, SimbadTargetResult, SpaceSys,
 } from "../generated/proposalToolSchemas.ts";
 import {
-    fetchProposalResourceAddNewTarget,
+    fetchProposalResourceAddNewTarget, fetchProposalResourceGetTargets,
     fetchSimbadResourceSimbadFindTarget, fetchSpaceSystemResourceGetSpaceSystem
 } from "../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
@@ -34,6 +34,7 @@ import {
     LoadScriptIntoDOM,
     PopulateAladin
 } from './aladinHelperMethods.tsx';
+import {notifications} from "@mantine/notifications";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -70,6 +71,7 @@ const ALADIN_STATE_NAME = "hasDoneAladin";
  * @constructor
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
+    const [nameUnique, setNameUnique] = useState(true);
     const form = useForm({
             initialValues: props.initialValues ?? {
                 TargetName: "",
@@ -81,7 +83,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             },
             validate: {
                 TargetName: (value) => (
-                    value.length < 1 ? 'Name cannot be blank ' : null),
+                    value.length < 1 ? 'Name cannot be blank ' : nameUnique? null : 'Source name must be unique'),
                 RA: (value) => (
                     value === null || value === undefined ?
                         'RA cannot be blank':
@@ -138,7 +140,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     }
 
     /**
-     * saves the new target to the database.
+     * saves the new target to the database, if it doesn't already exist on this proposal.
      *
      * @param {newTargetData} val the new target data.
      */
@@ -172,18 +174,40 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     Target.sourceCoordinates.coordSys = ss;
         }
 
-        fetchSpaceSystemResourceGetSpaceSystem(
-            {pathParams: { frameCode: 'ICRS'}})
-            .then((spaceSys) => assignSpaceSys(spaceSys))
-            .then(() => fetchProposalResourceAddNewTarget(
-                {pathParams:{
-                    proposalCode: Number(selectedProposalCode) },
-                    body: Target})
-                .then(() => {return queryClient.invalidateQueries()})
-                .then(() => {props.onSubmit()})
-                .catch(console.log)
-            )
+
+        fetchProposalResourceGetTargets({
+                pathParams: {proposalCode: Number(selectedProposalCode) },
+                queryParams: {sourceName: val.TargetName}})
+            .then((data) => {
+                if(data.length == 0) {
+                    setNameUnique(true);
+                    fetchSpaceSystemResourceGetSpaceSystem(
+                        {pathParams: { frameCode: 'ICRS'}})
+                        .then((spaceSys) => assignSpaceSys(spaceSys))
+                        .then(() => fetchProposalResourceAddNewTarget(
+                            {pathParams:{
+                                    proposalCode: Number(selectedProposalCode) },
+                                body: Target})
+                            .then(() => {return queryClient.invalidateQueries()})
+                            .then(() => {props.onSubmit()})
+                            .catch(console.log)
+                        )
+                        .catch(console.log);
+                } else {
+                    //Target already exists on this proposal
+                    setNameUnique(false);
+                    notifications.show({
+                        autoClose:5000,
+                        title:"Duplicate target",
+                        message:"A target called '"+val.TargetName+"' already exists",
+                        color:"red",
+                        className:'my-notifications-class'
+                    })
+                }
+            })
             .catch(console.log);
+
+
     }
 
     /**
@@ -287,7 +311,13 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         withAsterisk
                         label="Name"
                         placeholder="Name of target"
-                        {...form.getInputProps("TargetName")} />
+                        {...form.getInputProps("TargetName")}
+                        onChange={(e: string) => {
+                            setNameUnique(true);
+                            if(form.getInputProps("TargetName").onChange)
+                                form.getInputProps("TargetName").onChange(e);
+                        }}
+                    />
                     <DatabaseSearchButton
                         label={"Lookup"}
                         onClick={simbadLookup}
