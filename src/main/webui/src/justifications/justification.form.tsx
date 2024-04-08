@@ -33,9 +33,9 @@ const SelectTextFormat = (form: UseFormReturnType<Justification>) => {
         <Select
             placeholder={"text format"}
             data = {[
-                {value: 'LATEX', label: 'Latex'},
+                {value: 'latex', label: 'Latex'},
                 {value: 'RST', label: 'RST'},
-                {value: 'ASCIIDOC', label: 'ASCIIDOC'}
+                {value: 'ascidoc', label: 'ASCIIDOC'}
             ]}
             {...form.getInputProps('format')}
         />
@@ -49,7 +49,7 @@ export default function JustificationForm(props: JustificationProps)
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
 
-    const DEFAULT_JUSTIFICATION : Justification = {text: "", format: "ASCIIDOC" };
+    const DEFAULT_JUSTIFICATION : Justification = {text: "", format: "asciidoc" };
 
     const form: UseFormReturnType<Justification> =
         useForm<Justification>({
@@ -59,8 +59,8 @@ export default function JustificationForm(props: JustificationProps)
                     (value === "" || value === undefined ?
                         "Text cannot be empty for a" + props.which + " justification" : null),
                 format: (value: TextFormats | undefined ) =>
-                    (value !== "LATEX" && value !== "RST" && value !== "ASCIIDOC" ?
-                        'Text format one of: LATEX, RST, or ASCIIDOC' : null)
+                    (value !== "latex" && value !== "rst" && value !== "asciidoc" ?
+                        'Text format one of: latex, rsr, or asciidoc' : null)
             }
         });
 

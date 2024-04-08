@@ -150,14 +150,14 @@ export type CalibrationObservation = {
 };
 
 export type CalibrationTargetIntendedUse =
-  | "AMPLITUDE"
-  | "ATMOSPHERIC"
-  | "BANDPASS"
-  | "PHASE"
-  | "POINTING"
-  | "FOCUS"
-  | "POLARIZATION"
-  | "DELAY";
+  | "Amplitude"
+  | "Atmospheric"
+  | "Bandpass"
+  | "Phase"
+  | "Pointing"
+  | "Focus"
+  | "Polarization"
+  | "Delay";
 
 /**
  * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
@@ -568,7 +568,7 @@ export type Instrument = {
   xmlId?: string;
 };
 
-export type InstrumentKind = "CONTINUUM" | "SPECTROSCOPIC";
+export type InstrumentKind = "continuum" | "spectroscopic";
 
 /**
  * an integer identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
@@ -1128,7 +1128,7 @@ export type ProposalCycleDates = {
   observationSessionEnd?: Date;
 };
 
-export type ProposalKind = "STANDARD" | "TOO" | "SURVEY";
+export type ProposalKind = "Standard" | "ToO" | "Survey";
 
 /**
  * A review of a proposal
@@ -1567,7 +1567,7 @@ export type Tac = {
 /**
  * A role within the timeAllocation committee
  */
-export type TacRole = "TECHNICALREVIEWER" | "SCIENCEREVIEWER" | "CHAIR";
+export type TacRole = "TechnicalReviewer" | "ScienceReviewer" | "Chair";
 
 /**
  * A target source
@@ -1663,7 +1663,7 @@ export type TelescopeArrayMember = {
 /**
  * acceptable text formats for document submission
  */
-export type TextFormats = "LATEX" | "RST" | "ASCIIDOC";
+export type TextFormats = "latex" | "rst" | "asciidoc";
 
 /**
  * A TimeFrame SHALL include a time scale and reference position. It MAY also include a reference direction.

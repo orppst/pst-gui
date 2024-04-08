@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2024-03-15 11:40:39
-+++ proposalToolSchemas.ts	2024-03-15 12:02:03
+--- proposalToolSchemas.ts.orig	2024-04-08 14:56:39
++++ proposalToolSchemas.ts	2024-04-08 14:57:40
 @@ -129,6 +129,7 @@
   * An observation that is intended for calibration
   */
@@ -97,7 +97,7 @@
    /**
     * Must conform to definition of unit in VOUnit spec.
     */
-@@ -1336,6 +1346,8 @@
+@@ -1354,6 +1364,8 @@
    /**
     * Science oriented definition of a spectral window.
     */
@@ -106,7 +106,7 @@
    spectralWindowSetup?: SpectralWindowSetup;
    expectedSpectralLine?: ExpectedSpectralLine[];
  };
-@@ -1380,6 +1392,7 @@
+@@ -1398,6 +1410,7 @@
   * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
   */
  export type SpaceFrame = {
@@ -114,7 +114,7 @@
    /**
     * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
     */
-@@ -1402,6 +1415,7 @@
+@@ -1420,6 +1433,7 @@
   * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
   */
  export type SpaceSys = {
@@ -122,7 +122,7 @@
    xmlId?: string;
    /**
     * Abstract head of coordinate spaces related to physical properties.
-@@ -1485,7 +1499,7 @@
+@@ -1503,7 +1517,7 @@
    /**
     * person connected with the proposal
     */
@@ -131,7 +131,7 @@
    uid?: string;
    inKeycloakRealm?: boolean;
  };
-@@ -1541,11 +1555,13 @@
+@@ -1559,11 +1573,13 @@
   * A target source
   */
  export type Target = {
@@ -145,7 +145,7 @@
  };
  
  /**
-@@ -1560,6 +1576,7 @@
+@@ -1578,6 +1594,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -153,7 +153,7 @@
    /**
     * any constraints on the observation
     */
-@@ -1587,6 +1604,7 @@
+@@ -1605,6 +1622,7 @@
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -161,7 +161,7 @@
    xmlId?: string;
  };
  
-@@ -1690,6 +1708,10 @@
+@@ -1708,6 +1726,10 @@
   * particular time range
   */
  export type TimingWindow = {

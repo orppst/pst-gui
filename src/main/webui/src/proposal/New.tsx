@@ -21,15 +21,15 @@ import MaxCharsForInputRemaining from "../commonInputs/remainingCharacterCount.t
 
 
 const kindData = [
-    {value: "STANDARD", label: "Standard"},
-    {value: "TOO", label: "T.O.O"},
-    {value: "SURVEY", label: "Survey"}
+    {value: "Standard", label: "Standard"},
+    {value: "ToO", label: "T.O.O"},
+    {value: "Survey", label: "Survey"}
 ];
 
 const textFormatData = [
-    {value: 'LATEX', label: 'Latex'},
-    {value: 'RST', label: 'RST'},
-    {value: 'ASCIIDOC', label: 'ASCIIDOC'}
+    {value: 'latex', label: 'Latex'},
+    {value: 'rst', label: 'RST'},
+    {value: 'asciidoc', label: 'ASCIIDOC'}
 ]
 
  function NewProposalPanel() {
@@ -37,12 +37,12 @@ const textFormatData = [
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const emptyJustification : Justification = {text: "", format: "ASCIIDOC"};
+    const emptyJustification : Justification = {text: "", format: "asciidoc"};
     const form = useForm({
         initialValues: {
             title: "",
             summary: "",
-            kind: "STANDARD" as ProposalKind,
+            kind: "Standard" as ProposalKind,
             scientificJustification: emptyJustification,
             technicalJustification: emptyJustification
         },
