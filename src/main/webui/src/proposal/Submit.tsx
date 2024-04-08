@@ -2,8 +2,8 @@ import {ReactElement, useEffect, useState} from "react";
 import {Box, Select, Text} from "@mantine/core";
 import {
     fetchProposalCyclesResourceGetProposalCycleDates,
-    fetchProposalCyclesResourceSubmitProposal,
-    ProposalCyclesResourceSubmitProposalVariables,
+    fetchSubmittedProposalResourceSubmitProposal,
+    SubmittedProposalResourceSubmitProposalVariables,
     useProposalCyclesResourceGetProposalCycles
 } from "../generated/proposalToolComponents.ts";
 import {useNavigate, useParams} from "react-router-dom";
@@ -62,14 +62,14 @@ function SubmitPanel(): ReactElement {
     }
 
     const trySubmitProposal = form.onSubmit(() => {
-        const submissionVariables: ProposalCyclesResourceSubmitProposalVariables = {
+        const submissionVariables: SubmittedProposalResourceSubmitProposalVariables = {
             pathParams: {cycleCode: Number(form.values.selectedCycle)},
             body: Number(selectedProposalCode),
             // @ts-ignore
             headers: {"Content-Type": "text/plain"}
         };
 
-        fetchProposalCyclesResourceSubmitProposal(submissionVariables)
+        fetchSubmittedProposalResourceSubmitProposal(submissionVariables)
             .then(()=> {
                 notifications.show({
                     autoClose: 5000,
