@@ -57,10 +57,10 @@ export default function JustificationForm(props: JustificationProps)
             validate: {
                 text: (value: string | undefined) =>
                     (value === "" || value === undefined ?
-                        "Text cannot be empty for a" + props.which + " justification" : null),
+                        "Text cannot be empty for a " + props.which + " justification" : null),
                 format: (value: TextFormats | undefined ) =>
                     (value !== "latex" && value !== "rst" && value !== "asciidoc" ?
-                        'Text format one of: latex, rsr, or asciidoc' : null)
+                        'Text format one of: latex, rst, or asciidoc' : null)
             }
         });
 

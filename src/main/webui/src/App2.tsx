@@ -1,10 +1,8 @@
 import {
     createContext,
-    useState,
     useContext,
     ReactElement,
-    SyntheticEvent,
-    Context, StrictMode
+    Context, StrictMode, SyntheticEvent
 } from 'react';
 import {
     QueryClient,
@@ -19,11 +17,8 @@ import InvestigatorsPanel from "./ProposalEditorView/Investigators/List";
 import AddInvestigatorPanel from "./ProposalEditorView/Investigators/New";
 import {
     createBrowserRouter,
-    Outlet,
-    RouterProvider,
-    useNavigate
+    RouterProvider, useNavigate,
 } from 'react-router-dom';
-import { useHistoryState } from "./useHistoryState";
 import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGoalsPanel.tsx";
 import { TargetPanel } from "./ProposalEditorView/targets/targetPanel.tsx";
 import ObservationsPanel from "./ProposalEditorView/observations/observationPanel.tsx";
@@ -33,33 +28,14 @@ import SubmitPanel from "./ProposalEditorView/proposal/Submit";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
 import {
-    AppShell,
-    Text,
-    TextInput,
-    Grid,
-    Burger,
-    ScrollArea,
-    Group,
-    ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container
+    Text, Container, Group, ActionIcon
 } from '@mantine/core';
-import {SwitchToggle} from "./ColourSchemeToggle.tsx";
-import {
-    IconLogout
-} from '@tabler/icons-react';
-import {useDisclosure} from "@mantine/hooks";
-import AddButton from './commonButtons/add.tsx';
-import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
-import {
-    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
-    NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
-    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
-} from './constants.tsx';
-import { handleUploadZip } from './ProposalEditorView/proposal/UploadProposal.tsx';
-import UploadButton from './commonButtons/upload.tsx';
 import AdminPanel from "./admin/adminPanel.tsx";
 import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel.tsx";
-import {ProposalList} from "./ProposalList.tsx";
+import EditorAppShell from "./EditorAppShell.tsx";
+import ManagementAppShell from "./ManagementAppShell.tsx";
+import * as React from "react";
+import {IconEdit, IconUniverse} from "@tabler/icons-react";
 
 /**
  * defines the user context type.
@@ -101,6 +77,18 @@ export const useToken = (): string => {
     return useContext(ProposalContext).getToken();
 };
 
+export type CycleContextType = {
+    selectedCycleCode: number;
+}
+export const CycleContext: Context<CycleContextType>  = createContext({
+    selectedCycleCode: 0
+});
+
+export type PSTAppShellProps = {
+    setEditorMode: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+
 /**
  * generates the html for the main app.
  * @return {ReactElement} dynamic html for the main app.
@@ -108,30 +96,25 @@ export const useToken = (): string => {
  */
 function App2(): ReactElement {
 
-
-    // set proposal code.
-    const historyProposalCode= 0;
-    const [selectedProposalCode] = useState(historyProposalCode)
-
     // get database query client.
-    const queryClient = new QueryClient()
-
-    // the colour gray used by the tools.
-    const theme = useMantineTheme();
-    const {colorScheme} = useMantineColorScheme();
-
-    const GRAY = theme.colors.gray[6];
+    const queryClient = new QueryClient();
 
     // the paths to route to.
-    const router = createBrowserRouter(
-        [
-            {path: "/", element: <PSTRoot/>,
+    const router = createBrowserRouter([
+            {
+              path: "/", element: <PSTRoot />,
+            },
+            {
+                path: "editor", element: <PSTEditor />,
                 children: [
                     {index: true, element: <PSTStart/>} ,
                     {
                         path: "admin",
                         element: <AdminPanel />
                     },
+
+                    // ---- Proposal Editor routes -------
+
                     {
                         path: "proposal/new",
                         element: <NewProposalPanel />
@@ -175,14 +158,21 @@ function App2(): ReactElement {
                     },
                     {
                         path: "proposal/:selectedProposalCode/documents",
-                        element:<DocumentsPanel />} ,
+                        element:<DocumentsPanel />
+                    } ,
                     {
                         path: "proposal/:selectedProposalCode/submit",
-                        element:<SubmitPanel />}
-                ]}], {
-            basename: "/pst/gui/tool/"
-        }
+                        element:<SubmitPanel />
+                    },
 
+                    // ---- Proposal Management routes -------
+                ]
+            },
+            {
+                path: "manager", element: <PSTManager />,
+            }
+            ],
+        {basename: "/pst/gui/tool/"}
     )
 
     return (
@@ -196,169 +186,52 @@ function App2(): ReactElement {
         </AuthProvider>
     );
 
+
+    function PSTRoot() : ReactElement {
+        const navigate = useNavigate();
+        return (
+            <Container fluid>
+                <Group>
+                    <ActionIcon
+                        onClick={(e : SyntheticEvent)=>{e.preventDefault(); navigate("editor")}}
+                    >
+                        <IconEdit/>
+                    </ActionIcon>
+                    <ActionIcon
+                        onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("manager")}}
+                    >
+                        <IconUniverse/>
+                    </ActionIcon>
+                </Group>
+            </Container>
+        )
+    }
+
+
     /**
      * main HTML for the UI.
      * @return {ReactElement} the dynamic html for the main UI.
      * @constructor
      */
-    function PSTRoot(): ReactElement {
-        const {user, getToken, authenticated, apiUrl} = useContext(ProposalContext);
-        const [opened, {toggle}] = useDisclosure();
-        const navigate = useNavigate();
-        // acquire the state setters for proposal title and investigator name.
-        const [proposalTitleFilter, setProposalTitleFilter] = useHistoryState(
-            "proposalTitle", "");
-        const [investigatorNameFilter, setInvestigatorNameFilter] = useHistoryState(
-            "investigatorName", "");
-
-        //active state for the NavLink sections
-
-        /**
-         * resolves the routing for when making a new proposal.
-         *
-         * @param {React.SyntheticEvent} event the event.
-         */
-        function handleAddNew(event: SyntheticEvent): void {
-            event.preventDefault();
-            navigate("proposal/new");
-        }
-
-        /**
-         * resolves the routing for when searching for a proposal.
-         *
-         * @param {React.SyntheticEvent} event the event.
-         */
-        function handleSearch(event: SyntheticEvent): void {
-            event.preventDefault();
-            navigate("/");
-        }
-
-        /**
-         * resolves the routing when requesting the Admin Page
-         *
-         * @param {React.SyntheticEvent} event the event (click)
-         */
-        // function handleAdminPage(event: SyntheticEvent): void {
-        //     event.preventDefault();
-        //     navigate("admin")
-        // }
-
-        /*
-            We only want to show the Administration Panel Button to those users
-            assigned an "administration" role but as user roles have yet to be
-            defined, or at least aren't accessible here, we can't do that.
-         */
-
+    function PSTEditor(): ReactElement {
+        const proposalContext = useContext(ProposalContext);
         return (
-            <ProposalContext.Provider
-                value={{selectedProposalCode, user, getToken, authenticated, apiUrl}}>
-                <AppShell
-                    header={{height: APP_HEADER_HEIGHT}}
-                    navbar={{
-                        width: {
-                            base: NAV_BAR_DEFAULT_WIDTH,
-                            md: NAV_BAR_MEDIUM_WIDTH,
-                            lg: NAV_BAR_LARGE_WIDTH},
-                        breakpoint: 'sm',
-                        collapsed: {mobile: !opened},
-                    }}
-                >
-                    <AppShell.Header p="md">
-                        <Grid columns={2}>
-                            <Grid.Col span={1}>
-                                <Group h="100%" px="md" wrap={"nowrap"}>
-                                    <Burger
-                                        opened={opened}
-                                        onClick={toggle}
-                                        hiddenFrom={"sm"}
-                                        size="lg"
-                                        color={GRAY}
-                                        mr="xl"
-                                    />
-                                    <img src={"/pst/gui/polaris4.png"}
-                                         alt="Polaris"
-                                         width={60}/>
-                                    <DatabaseSearchButton
-                                        toolTipLabel={
-                                        "Locate proposals by " +
-                                            user.fullName + "."}
-                                        label={"Proposals for " + user.fullName}
-                                        onClickEvent={handleSearch}
-                                    />
-                                    <AddButton toolTipLabel={"new proposal"}
-                                               label={"Create a new proposal"}
-                                               onClickEvent={handleAddNew}/>
-                                    <FileButton onChange={handleUploadZip}
-                                                accept={".zip"}>
-                                        {(props) => <UploadButton
-                                            toolTipLabel="select a file from disk to upload"
-                                            label={"Import"}
-                                            onClick={props.onClick}/>}
-                                    </FileButton>
-                                </Group>
-                            </Grid.Col>
-                            <Grid.Col span={1}>
-                                <Group justify={"flex-end"}>
-                                    {SwitchToggle()}
-                                    <Tooltip label={"logout"}
-                                             openDelay={OPEN_DELAY}
-                                             closeDelay={CLOSE_DELAY}
-                                    >
-                                        <ActionIcon color={"orange.8"}
-                                                    variant={"subtle"}
-                                                    component={"a"}
-                                                    href={"/pst/gui/logout"}
-                                        >
-                                            <IconLogout size={ICON_SIZE}/>
-                                        </ActionIcon>
-                                    </Tooltip>
-
-
-                                </Group>
-                            </Grid.Col>
-                        </Grid>
-                    </AppShell.Header>
-
-                    <AppShell.Navbar>
-                        <AppShell.Section>
-                            <Container fluid bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}>
-                                <Text fz="sm">
-                                    Filter existing proposals by:
-                                </Text>
-                                <TextInput label="Title"
-                                           value={proposalTitleFilter}
-                                           onChange={(e: { target: { value: string; }; }) =>
-                                               setProposalTitleFilter(e.target.value)}
-                                />
-                                <TextInput label="Investigator name"
-                                           value={investigatorNameFilter}
-                                           onChange={(e: { target: { value: string; }; }) =>
-                                               setInvestigatorNameFilter(e.target.value)}
-                                           pb={"md"}
-                                />
-                            </Container>
-                        </AppShell.Section>
-                        <AppShell.Section component={ScrollArea}>
-                            <ProposalListWrapper proposalTitle={proposalTitleFilter} investigatorName={investigatorNameFilter} auth={authenticated}/>
-                        </AppShell.Section>
-                    </AppShell.Navbar>
-                    <AppShell.Main pr={"sm"}>
-                        <Outlet/>
-                    </AppShell.Main>
-                </AppShell>
+            <ProposalContext.Provider value={proposalContext}>
+                <EditorAppShell />
             </ProposalContext.Provider>
         )
     }
 
-    function ProposalListWrapper(props:{proposalTitle: string, investigatorName:string, auth:boolean}) : ReactElement {
-
-        if (props.auth) {
-            return <ProposalList proposalTitle={props.proposalTitle} investigatorName={props.investigatorName} />
-        }
-        else {
-            return <></>
-        }
+    function PSTManager() : ReactElement {
+        const cycleContext = useContext(CycleContext);
+        return (
+            <CycleContext.Provider value={cycleContext}>
+                <ManagementAppShell />
+            </CycleContext.Provider>
+        )
     }
+
+
     /**
      * html to show in the main page when "proposals for username" is selected.
      * @return {ReactElement} the html to display when

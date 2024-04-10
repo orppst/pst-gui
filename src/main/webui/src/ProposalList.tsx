@@ -33,7 +33,6 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
         return  <ProposalItem key={proposal.code} proposal={proposal}/>
     })
     return (
-        <>
         <Accordion
             value={accordionValue}
             onChange={setAccordionValue}
@@ -41,7 +40,6 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
         >
             {proposalsList}
         </Accordion>
-        </>
     )
 }
 
@@ -74,8 +72,7 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                          active={"Title" + proposal.code === active}
                          onClick={()=>setActive("Title" + proposal.code)}
                 />
-                <NavLink to={
-                    "proposal/" + proposal.code + "/summary"}
+                <NavLink to={"proposal/" + proposal.code + "/summary"}
                          component={Link}
                          leftSection={<IconLetterS/>}
                          label="Summary"
@@ -83,8 +80,7 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                          active={"Summary" + proposal.code === active}
                          onClick={()=>setActive("Summary" + proposal.code)}
                 />
-                <NavLink to={
-                    "proposal/" + proposal.code + "/investigators"}
+                <NavLink to={"proposal/" + proposal.code + "/investigators"}
                          component={Link}
                          leftSection={<IconUsersGroup/>}
                          label="Investigators"
@@ -100,8 +96,7 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                          active={"Justifications" + proposal.code === active}
                          onClick={()=>setActive("Justifications" + proposal.code)}
                 />
-                <NavLink to={
-                    "proposal/" + proposal.code + "/targets"}
+                <NavLink to={"proposal/" + proposal.code + "/targets"}
                          component={Link}
                          leftSection={<IconTarget/>}
                          label="Targets"
@@ -117,8 +112,7 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                          active={"Technical Goals" + proposal.code === active}
                          onClick={()=>setActive("Technical Goals" + proposal.code)}
                 />
-                <NavLink to={
-                    "proposal/" + proposal.code + "/observations"}
+                <NavLink to={"proposal/" + proposal.code + "/observations"}
                          component={Link}
                          leftSection={<IconTelescope/>}
                          label="Observations"
@@ -126,8 +120,7 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                          active={"Observations" + proposal.code === active}
                          onClick={()=>setActive("Observations" + proposal.code)}
                 />
-                <NavLink to={
-                    "proposal/" + proposal.code + "/documents"}
+                <NavLink to={"proposal/" + proposal.code + "/documents"}
                          component={Link}
                          leftSection={<IconFiles/>}
                          label="Documents"
@@ -135,8 +128,7 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                          active={"Documents" + proposal.code === active}
                          onClick={()=>setActive("Documents" + proposal.code)}
                 />
-                <NavLink to={
-                    "proposal/" + proposal.code + "/submit"}
+                <NavLink to={"proposal/" + proposal.code + "/submit"}
                          component={Link}
                          leftSection={<IconSend/>}
                          label="Submit"
