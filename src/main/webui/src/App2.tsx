@@ -11,12 +11,12 @@ import {
     QueryClientProvider,
 } from '@tanstack/react-query';
 import { Person} from "./generated/proposalToolSchemas";
-import TitlePanel from './proposal/Title';
-import OverviewPanel from "./proposal/Overview";
-import NewProposalPanel from './proposal/New';
-import SummaryPanel from "./proposal/Summary";
-import InvestigatorsPanel from "./Investigators/List";
-import AddInvestigatorPanel from "./Investigators/New";
+import TitlePanel from './ProposalEditorView/proposal/Title';
+import OverviewPanel from "./ProposalEditorView/proposal/Overview";
+import NewProposalPanel from './ProposalEditorView/proposal/New';
+import SummaryPanel from "./ProposalEditorView/proposal/Summary";
+import InvestigatorsPanel from "./ProposalEditorView/Investigators/List";
+import AddInvestigatorPanel from "./ProposalEditorView/Investigators/New";
 import {
     createBrowserRouter,
     Outlet,
@@ -24,11 +24,11 @@ import {
     useNavigate
 } from 'react-router-dom';
 import { useHistoryState } from "./useHistoryState";
-import TechnicalGoalsPanel from "./technicalGoals/technicalGoalsPanel.tsx";
-import { TargetPanel } from "./targets/targetPanel.tsx";
-import ObservationsPanel from "./observations/observationPanel.tsx";
-import DocumentsPanel from "./proposal/Documents";
-import SubmitPanel from "./proposal/Submit";
+import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGoalsPanel.tsx";
+import { TargetPanel } from "./ProposalEditorView/targets/targetPanel.tsx";
+import ObservationsPanel from "./ProposalEditorView/observations/observationPanel.tsx";
+import DocumentsPanel from "./ProposalEditorView/proposal/Documents";
+import SubmitPanel from "./ProposalEditorView/proposal/Submit";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
@@ -55,10 +55,10 @@ import {
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
 } from './constants.tsx';
-import { handleUploadZip } from './proposal/UploadProposal.tsx';
+import { handleUploadZip } from './ProposalEditorView/proposal/UploadProposal.tsx';
 import UploadButton from './commonButtons/upload.tsx';
 import AdminPanel from "./admin/adminPanel.tsx";
-import JustificationsPanel from "./justifications/JustificationsPanel.tsx";
+import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel.tsx";
 import {ProposalList} from "./ProposalList.tsx";
 
 /**
