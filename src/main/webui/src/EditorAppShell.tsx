@@ -52,7 +52,7 @@ export default function EditorAppShell()
      */
     function handleAddNew(event: SyntheticEvent): void {
         event.preventDefault();
-        navigate("editor/proposal/new");
+        navigate("proposal/new");
     }
 
     /**

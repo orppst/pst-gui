@@ -105,7 +105,7 @@ function App2(): ReactElement {
               path: "/", element: <PSTRoot />,
             },
             {
-                path: "editor", element: <PSTEditor />,
+                path: "/editor", element: <PSTEditor />,
                 children: [
                     {index: true, element: <PSTStart/>} ,
                     {
