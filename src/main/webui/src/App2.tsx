@@ -121,10 +121,16 @@ function App2(): ReactElement {
     const router = createBrowserRouter(
         [
             {
-                path: "manager",
+                path: "/",
+                element: <PSTInitial />
+            },
+            {
+                path: "/manager",
                 element: <PSTManager />
             },
-            {path: "/", element: <PSTRoot/>,
+            {
+                path: "/editor",
+                element: <PSTEditor/>,
                 children: [
                     {index: true, element: <PSTStart/>} ,
                     {
@@ -203,7 +209,7 @@ function App2(): ReactElement {
      * @return {ReactElement} the dynamic html for the main UI.
      * @constructor
      */
-    function PSTRoot(): ReactElement {
+    function PSTEditor(): ReactElement {
         const proposalContext = useContext(ProposalContext);
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
@@ -232,7 +238,7 @@ function App2(): ReactElement {
          */
         function handleSearch(event: SyntheticEvent): void {
             event.preventDefault();
-            navigate("/");
+            navigate("/editor");
         }
 
         return (
@@ -381,10 +387,24 @@ function App2(): ReactElement {
         const navigate = useNavigate();
         return (
             <ActionIcon
-                onClick={(e: SyntheticEvent) => {e.preventDefault(); navigate("/")}}
+                onClick={() => {navigate("/editor")}}
             >
                 <IconLicense />
             </ActionIcon>
+        )
+    }
+
+    function PSTInitial() : ReactElement {
+        const navigate = useNavigate();
+        return (
+            <Group>
+                <ActionIcon onClick={()=>navigate("/editor")}>
+                    <IconLicense />
+                </ActionIcon>
+                <ActionIcon onClick={()=>navigate("/manager")}>
+                    <IconUniverse />
+                </ActionIcon>
+            </Group>
         )
     }
 }
