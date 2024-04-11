@@ -1,6 +1,6 @@
 import {useMantineColorScheme, Switch, useMantineTheme} from '@mantine/core';
 import {IconSun, IconMoonStars} from '@tabler/icons-react';
-import { STROKE } from './constants.tsx';
+import { STROKE } from './constants';
 
 export function ColourSchemeToggle() {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
