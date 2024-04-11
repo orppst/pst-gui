@@ -241,6 +241,13 @@ function App2(): ReactElement {
             navigate("/editor");
         }
 
+        /*
+        DJW:
+        I'd like to move the 'AppShell' stuff to its own file, however in doing so the
+        Accordion used to navigate the proposal in the left-hand navbar seems not to
+        remember state; the accordion item does not get highlighted and, more fundamentally,
+        the accordion collapses, and I can't figure out why.
+         */
         return (
             <ProposalContext.Provider value={proposalContext}>
                 <AppShell
