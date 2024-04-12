@@ -83,15 +83,15 @@ export interface IAladinConfig {
     cooFrame: string;
     survey: string;
     fov: number;
-    showReticle: boolean;
+    showReticule: boolean;
     showZoomControl: boolean;
     showLayersControl: boolean;
     showGotoControl: boolean;
     showShareControl: boolean;
     showFrame: boolean;
     fullScreen: boolean;
-    reticleColor: string;
-    reticleSize: number;
+    reticuleColor: string;
+    reticuleSize: number;
     showFullscreenControl: boolean;
     showCooGridControl: boolean;
 }

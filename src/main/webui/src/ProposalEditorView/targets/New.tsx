@@ -45,7 +45,7 @@ const initialConfig: IAladinConfig = {
     cooFrame: 'ICRS',
     survey: 'P/DSS2/color',
     fov: 0.25,
-    showReticle: true,
+    showReticule: true,
     showZoomControl: false,
     showLayersControl: true,
     showGotoControl: false,
@@ -53,8 +53,8 @@ const initialConfig: IAladinConfig = {
     showFullscreenControl: false,
     showFrame: false,
     fullScreen: false,
-    reticleColor: 'rgb(178, 50, 178)',
-    reticleSize: 22,
+    reticuleColor: 'rgb(178, 50, 178)',
+    reticuleSize: 22,
     showCooGridControl: false,
 };
 

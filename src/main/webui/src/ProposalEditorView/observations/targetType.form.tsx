@@ -90,14 +90,14 @@ export default function TargetTypeForm (
                 placeholder={"pick one"}
                 maxDropdownHeight={150}
                 data = {[
-                    {value: 'AMPLITUDE', label: 'Amplitude'},
-                    {value: 'ATMOSPHERIC', label: 'Atmospheric'},
-                    {value: 'BANDPASS', label: 'Bandpass'},
-                    {value: 'PHASE', label: 'Phase'},
-                    {value: 'POINTING', label: 'Pointing'},
-                    {value: 'FOCUS', label: 'Focus'},
-                    {value: 'POLARIZATION', label: 'Polarization'},
-                    {value: 'DELAY', label: 'Delay'},
+                    'Amplitude',
+                    'Atmospheric',
+                    'Bandpass',
+                    'Phase',
+                    'Pointing',
+                    'Focus',
+                    'Polarization',
+                    'Delay',
                 ]}
                 {...form.getInputProps('calibrationUse')}
             />

@@ -34,8 +34,8 @@ const SelectTextFormat = (form: UseFormReturnType<Justification>) => {
             placeholder={"text format"}
             data = {[
                 {value: 'latex', label: 'Latex'},
-                {value: 'RST', label: 'RST'},
-                {value: 'ascidoc', label: 'ASCIIDOC'}
+                {value: 'rst', label: 'RST'},
+                {value: 'asciidoc', label: 'ASCIIDOC'}
             ]}
             {...form.getInputProps('format')}
         />

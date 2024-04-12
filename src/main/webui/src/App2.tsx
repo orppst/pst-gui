@@ -234,7 +234,7 @@ function App2(): ReactElement {
          */
         function handleSearch(event: SyntheticEvent): void {
             event.preventDefault();
-            navigate("/editor");
+            navigate("/");
         }
 
         /*
