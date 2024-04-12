@@ -1,6 +1,5 @@
 import {
     createContext,
-    useState,
     useContext,
     ReactElement,
     SyntheticEvent,
@@ -10,13 +9,13 @@ import {
     QueryClient,
     QueryClientProvider,
 } from '@tanstack/react-query';
-import { Person} from "./generated/proposalToolSchemas";
-import TitlePanel from './proposal/Title';
-import OverviewPanel from "./proposal/Overview";
-import NewProposalPanel from './proposal/New';
-import SummaryPanel from "./proposal/Summary";
-import InvestigatorsPanel from "./Investigators/List";
-import AddInvestigatorPanel from "./Investigators/New";
+import { Person} from "./generated/proposalToolSchemas.ts";
+import TitlePanel from './ProposalEditorView/proposal/Title.tsx';
+import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
+import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
+import SummaryPanel from "./ProposalEditorView/proposal/Summary.tsx";
+import InvestigatorsPanel from "./ProposalEditorView/Investigators/List.tsx";
+import AddInvestigatorPanel from "./ProposalEditorView/Investigators/New.tsx";
 import {
     createBrowserRouter,
     Outlet,
@@ -24,11 +23,11 @@ import {
     useNavigate
 } from 'react-router-dom';
 import { useHistoryState } from "./useHistoryState";
-import TechnicalGoalsPanel from "./technicalGoals/technicalGoalsPanel.tsx";
-import { TargetPanel } from "./targets/targetPanel.tsx";
-import ObservationsPanel from "./observations/observationPanel.tsx";
-import DocumentsPanel from "./proposal/Documents";
-import SubmitPanel from "./proposal/Submit";
+import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGoalsPanel.tsx";
+import { TargetPanel } from "./ProposalEditorView/targets/targetPanel.tsx";
+import ObservationsPanel from "./ProposalEditorView/observations/observationPanel.tsx";
+import DocumentsPanel from "./ProposalEditorView/proposal/Documents.tsx";
+import SubmitPanel from "./ProposalEditorView/proposal/Submit.tsx";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
@@ -43,23 +42,24 @@ import {
     ActionIcon,
     Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container
 } from '@mantine/core';
-import {SwitchToggle} from "./ColourSchemeToggle.tsx";
+import {ColourSchemeToggle} from "./ColourSchemeToggle";
 import {
-    IconLogout
+    IconLicense,
+    IconLogout, IconUniverse
 } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
-import AddButton from './commonButtons/add.tsx';
-import DatabaseSearchButton from './commonButtons/databaseSearch.tsx';
+import AddButton from './commonButtons/add';
+import DatabaseSearchButton from './commonButtons/databaseSearch';
 import {
     APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
-} from './constants.tsx';
-import { handleUploadZip } from './proposal/UploadProposal.tsx';
-import UploadButton from './commonButtons/upload.tsx';
-import AdminPanel from "./admin/adminPanel.tsx";
-import JustificationsPanel from "./justifications/JustificationsPanel.tsx";
-import {ProposalList} from "./ProposalList.tsx";
+} from './constants';
+import { handleUploadZip } from './ProposalEditorView/proposal/UploadProposal';
+import UploadButton from './commonButtons/upload';
+import AdminPanel from "./admin/adminPanel";
+import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
+import {ProposalList} from "./ProposalList";
 
 /**
  * defines the user context type.
@@ -84,7 +84,7 @@ export type ProposalContextType = {
  * @type {React.Context<UserContextType & ProposalContextType>} the context.
  */
 export const ProposalContext:
-        Context<UserContextType & ProposalContextType> =
+    Context<UserContextType & ProposalContextType> =
     createContext<UserContextType & ProposalContextType>({
         user: {},
         getToken: ()=>{return ""},
@@ -108,11 +108,6 @@ export const useToken = (): string => {
  */
 function App2(): ReactElement {
 
-
-    // set proposal code.
-    const historyProposalCode= 0;
-    const [selectedProposalCode] = useState(historyProposalCode)
-
     // get database query client.
     const queryClient = new QueryClient()
 
@@ -125,7 +120,13 @@ function App2(): ReactElement {
     // the paths to route to.
     const router = createBrowserRouter(
         [
-            {path: "/", element: <PSTRoot/>,
+            {
+                path: "/manager",
+                element: <PSTManager />
+            },
+            {
+                path: "/",
+                element: <PSTEditor/>,
                 children: [
                     {index: true, element: <PSTStart/>} ,
                     {
@@ -175,10 +176,13 @@ function App2(): ReactElement {
                     },
                     {
                         path: "proposal/:selectedProposalCode/documents",
-                        element:<DocumentsPanel />} ,
+                        element:<DocumentsPanel />
+                    } ,
                     {
                         path: "proposal/:selectedProposalCode/submit",
-                        element:<SubmitPanel />}
+                        element:<SubmitPanel />
+                    },
+
                 ]}], {
             basename: "/pst/gui/tool/"
         }
@@ -188,10 +192,10 @@ function App2(): ReactElement {
     return (
         <AuthProvider>
             <StrictMode>
-            <QueryClientProvider client={queryClient}>
-                <RouterProvider router={router}/>
-                <ReactQueryDevtools initialIsOpen={false} />
-            </QueryClientProvider>
+                <QueryClientProvider client={queryClient}>
+                    <RouterProvider router={router}/>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                </QueryClientProvider>
             </StrictMode>
         </AuthProvider>
     );
@@ -201,8 +205,8 @@ function App2(): ReactElement {
      * @return {ReactElement} the dynamic html for the main UI.
      * @constructor
      */
-    function PSTRoot(): ReactElement {
-        const {user, getToken, authenticated, apiUrl} = useContext(ProposalContext);
+    function PSTEditor(): ReactElement {
+        const proposalContext = useContext(ProposalContext);
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
         // acquire the state setters for proposal title and investigator name.
@@ -230,28 +234,18 @@ function App2(): ReactElement {
          */
         function handleSearch(event: SyntheticEvent): void {
             event.preventDefault();
-            navigate("/");
+            navigate("/editor");
         }
 
-        /**
-         * resolves the routing when requesting the Admin Page
-         *
-         * @param {React.SyntheticEvent} event the event (click)
-         */
-        // function handleAdminPage(event: SyntheticEvent): void {
-        //     event.preventDefault();
-        //     navigate("admin")
-        // }
-
         /*
-            We only want to show the Administration Panel Button to those users
-            assigned an "administration" role but as user roles have yet to be
-            defined, or at least aren't accessible here, we can't do that.
+        DJW:
+        I'd like to move the 'AppShell' stuff to its own file, however in doing so the
+        Accordion used to navigate the proposal in the left-hand navbar seems not to
+        remember state; the accordion item does not get highlighted and, more fundamentally,
+        the accordion collapses, and I can't figure out why.
          */
-
         return (
-            <ProposalContext.Provider
-                value={{selectedProposalCode, user, getToken, authenticated, apiUrl}}>
+            <ProposalContext.Provider value={proposalContext}>
                 <AppShell
                     header={{height: APP_HEADER_HEIGHT}}
                     navbar={{
@@ -278,11 +272,23 @@ function App2(): ReactElement {
                                     <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
+                                    <Tooltip
+                                        label={"go to proposal management view"}
+                                        openDelay={OPEN_DELAY}
+                                    >
+                                        <ActionIcon
+                                            color={"pink"}
+                                            variant={"subtle"}
+                                            onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
+                                        >
+                                            <IconUniverse />
+                                        </ActionIcon>
+                                    </Tooltip>
                                     <DatabaseSearchButton
                                         toolTipLabel={
-                                        "Locate proposals by " +
-                                            user.fullName + "."}
-                                        label={"Proposals for " + user.fullName}
+                                            "Locate proposals by " +
+                                            proposalContext.user.fullName + "."}
+                                        label={"Proposals for " + proposalContext.user.fullName}
                                         onClickEvent={handleSearch}
                                     />
                                     <AddButton toolTipLabel={"new proposal"}
@@ -299,7 +305,7 @@ function App2(): ReactElement {
                             </Grid.Col>
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
-                                    {SwitchToggle()}
+                                    {ColourSchemeToggle()}
                                     <Tooltip label={"logout"}
                                              openDelay={OPEN_DELAY}
                                              closeDelay={CLOSE_DELAY}
@@ -339,7 +345,11 @@ function App2(): ReactElement {
                             </Container>
                         </AppShell.Section>
                         <AppShell.Section component={ScrollArea}>
-                            <ProposalListWrapper proposalTitle={proposalTitleFilter} investigatorName={investigatorNameFilter} auth={authenticated}/>
+                            <ProposalListWrapper
+                                proposalTitle={proposalTitleFilter}
+                                investigatorName={investigatorNameFilter}
+                                auth={proposalContext.authenticated}
+                            />
                         </AppShell.Section>
                     </AppShell.Navbar>
                     <AppShell.Main pr={"sm"}>
@@ -380,6 +390,23 @@ function App2(): ReactElement {
             </Container>
         );
     }
+
+    function PSTManager() : ReactElement {
+        const navigate = useNavigate();
+        return (
+            <Tooltip
+                label={"go to proposal editor view"}
+                openDelay={OPEN_DELAY}
+            >
+                <ActionIcon
+                    onClick={() => {navigate("/")}}
+                >
+                    <IconLicense />
+                </ActionIcon>
+            </Tooltip>
+        )
+    }
+
 }
 
 // export the main app.

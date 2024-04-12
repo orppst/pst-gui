@@ -1,6 +1,5 @@
 import {Grid, MantineColor, MantineSpacing, NumberInput, Select, StyleProp, Tooltip} from "@mantine/core";
 import {UseFormReturnType} from "@mantine/form";
-import {notSpecified} from "../technicalGoals/edit.group.tsx";
 import { ReactElement } from 'react';
 import { DEFAULT_DECIMAL_PLACE, MAX_COLUMNS } from '../constants.tsx';
 import {RealQuantity} from "../generated/proposalToolSchemas.ts";
@@ -105,7 +104,7 @@ export function NumberInputPlusUnit(
                         bg={props.color}
                         label={props.label + ":"}
                         p={props.padding}
-                        placeholder={notSpecified}
+                        placeholder={"not specified"}
                         withAsterisk={props.withAsterisk}
                         decimalScale={
                             props.decimalPlaces ?? DEFAULT_DECIMAL_PLACE}
