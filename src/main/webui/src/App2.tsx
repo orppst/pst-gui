@@ -121,15 +121,11 @@ function App2(): ReactElement {
     const router = createBrowserRouter(
         [
             {
-                path: "/",
-                element: <PSTInitial />
-            },
-            {
                 path: "/manager",
                 element: <PSTManager />
             },
             {
-                path: "/editor",
+                path: "/",
                 element: <PSTEditor/>,
                 children: [
                     {index: true, element: <PSTStart/>} ,
@@ -276,13 +272,18 @@ function App2(): ReactElement {
                                     <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
-                                    <ActionIcon
-                                        color={"pink"}
-                                        variant={"subtle"}
-                                        onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
+                                    <Tooltip
+                                        label={"go to proposal management view"}
+                                        openDelay={OPEN_DELAY}
                                     >
-                                        <IconUniverse />
-                                    </ActionIcon>
+                                        <ActionIcon
+                                            color={"pink"}
+                                            variant={"subtle"}
+                                            onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
+                                        >
+                                            <IconUniverse />
+                                        </ActionIcon>
+                                    </Tooltip>
                                     <DatabaseSearchButton
                                         toolTipLabel={
                                             "Locate proposals by " +
@@ -393,27 +394,19 @@ function App2(): ReactElement {
     function PSTManager() : ReactElement {
         const navigate = useNavigate();
         return (
-            <ActionIcon
-                onClick={() => {navigate("/editor")}}
+            <Tooltip
+                label={"go to proposal editor view"}
+                openDelay={OPEN_DELAY}
             >
-                <IconLicense />
-            </ActionIcon>
+                <ActionIcon
+                    onClick={() => {navigate("/")}}
+                >
+                    <IconLicense />
+                </ActionIcon>
+            </Tooltip>
         )
     }
 
-    function PSTInitial() : ReactElement {
-        const navigate = useNavigate();
-        return (
-            <Group>
-                <ActionIcon onClick={()=>navigate("/editor")}>
-                    <IconLicense />
-                </ActionIcon>
-                <ActionIcon onClick={()=>navigate("/manager")}>
-                    <IconUniverse />
-                </ActionIcon>
-            </Group>
-        )
-    }
 }
 
 // export the main app.
