@@ -44,7 +44,6 @@ import {
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
 import {
-    IconLicense,
     IconLogout, IconUniverse
 } from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
@@ -60,6 +59,7 @@ import UploadButton from './commonButtons/upload';
 import AdminPanel from "./admin/adminPanel";
 import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
 import {ProposalList} from "./ProposalList";
+import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
 
 /**
  * defines the user context type.
@@ -122,7 +122,10 @@ function App2(): ReactElement {
         [
             {
                 path: "/manager",
-                element: <PSTManager />
+                element: <PSTManager />,
+                children: [
+                    {index: true, element: <PSTManagerStart />}
+                ]
             },
             {
                 path: "/",
@@ -392,18 +395,24 @@ function App2(): ReactElement {
     }
 
     function PSTManager() : ReactElement {
-        const navigate = useNavigate();
         return (
-            <Tooltip
-                label={"go to proposal editor view"}
-                openDelay={OPEN_DELAY}
-            >
-                <ActionIcon
-                    onClick={() => {navigate("/")}}
-                >
-                    <IconLicense />
-                </ActionIcon>
-            </Tooltip>
+            <ProposalManagerStartPage/>
+        );
+    }
+
+    function PSTManagerStart() : ReactElement {
+        return(
+            <Container pt={10}>
+
+                <Text fz={"lg"} fw={"bold"} c={"teal.7"}>
+                    Polaris Management Page
+                </Text>
+
+                <img src={"/pst/gui/ufo-mother-ship-earth.png"}
+                     alt={"welcome image of a mother-ship orbiting Earth"}
+                     width={"100%"}
+                />
+            </Container>
         )
     }
 
