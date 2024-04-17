@@ -82,8 +82,6 @@ export default function ProposalManagerStartPage() : ReactElement {
                                     <IconLogout size={ICON_SIZE}/>
                                 </ActionIcon>
                             </Tooltip>
-
-
                         </Group>
                     </Grid.Col>
                 </Grid>
