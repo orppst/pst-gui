@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2024-04-08 14:56:39
-+++ proposalToolSchemas.ts	2024-04-08 14:57:40
+--- proposalToolSchemas.ts.orig	2024-04-08 13:41:12
++++ proposalToolSchemas.ts	2024-04-19 12:26:18
 @@ -129,6 +129,7 @@
   * An observation that is intended for calibration
   */
@@ -8,7 +8,28 @@
    /**
     * any constraints on the observation
     */
-@@ -162,6 +163,7 @@
+@@ -149,19 +150,20 @@
+ };
+ 
+ export type CalibrationTargetIntendedUse =
+-  | "AMPLITUDE"
+-  | "ATMOSPHERIC"
+-  | "BANDPASS"
+-  | "PHASE"
+-  | "POINTING"
+-  | "FOCUS"
+-  | "POLARIZATION"
+-  | "DELAY";
++  | "Amplitude"
++  | "Atmospheric"
++  | "Bandpass"
++  | "Phase"
++  | "Pointing"
++  | "Focus"
++  | "Polarization"
++  | "Delay";
+ 
+ /**
   * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
   */
  export type CartesianCoordSpace = {
@@ -64,6 +85,15 @@
  };
  
  export type FileUpload = Record<string, any>;
+@@ -563,7 +568,7 @@
+   xmlId?: string;
+ };
+ 
+-export type InstrumentKind = "CONTINUUM" | "SPECTROSCOPIC";
++export type InstrumentKind = "continuum" | "spectroscopic";
+ 
+ /**
+  * an integer identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
 @@ -684,6 +689,7 @@
  export type ObsType = "TargetObservation" | "CalibrationObservation";
  
@@ -72,7 +102,17 @@
    /**
     * any constraints on the observation
     */
-@@ -772,6 +778,7 @@
+@@ -706,6 +712,9 @@
+  * An organisation that can perform astronomical observations
+  */
+ export type Observatory = {
++  "@type"?: string;
++  "_id"?: number;
++
+   xmlId?: string;
+   /**
+    * The name of the organization
+@@ -772,6 +781,7 @@
   * a complete proposal
   */
  export type ObservingProposal = {
@@ -80,7 +120,7 @@
    /**
     * the proposal title
     */
-@@ -829,6 +836,8 @@
+@@ -829,6 +839,8 @@
   * An institution that is a collection of people
   */
  export type Organization = {
@@ -89,7 +129,25 @@
    /**
     * The name of the organization
     */
-@@ -1207,6 +1216,7 @@
+@@ -1053,6 +1065,8 @@
+  * Defines collection of resources and proposals for a particular observing season
+  */
+ export type ProposalCycle = {
++  _id?: number
++
+   /**
+    * a human readable description of the cycle
+    */
+@@ -1119,7 +1133,7 @@
+   observationSessionEnd?: Date;
+ };
+ 
+-export type ProposalKind = "STANDARD" | "TOO" | "SURVEY";
++export type ProposalKind = "Standard" | "ToO" | "Survey";
+ 
+ /**
+  * A review of a proposal
+@@ -1207,6 +1221,7 @@
   * A real value with a unit.
   */
  export type RealQuantity = {
@@ -97,7 +155,7 @@
    /**
     * Must conform to definition of unit in VOUnit spec.
     */
-@@ -1354,6 +1364,8 @@
+@@ -1354,6 +1369,8 @@
    /**
     * Science oriented definition of a spectral window.
     */
@@ -106,7 +164,7 @@
    spectralWindowSetup?: SpectralWindowSetup;
    expectedSpectralLine?: ExpectedSpectralLine[];
  };
-@@ -1398,6 +1410,7 @@
+@@ -1398,6 +1415,7 @@
   * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
   */
  export type SpaceFrame = {
@@ -114,7 +172,7 @@
    /**
     * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
     */
-@@ -1420,6 +1433,7 @@
+@@ -1420,6 +1438,7 @@
   * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
   */
  export type SpaceSys = {
@@ -122,7 +180,7 @@
    xmlId?: string;
    /**
     * Abstract head of coordinate spaces related to physical properties.
-@@ -1503,7 +1517,7 @@
+@@ -1503,7 +1522,7 @@
    /**
     * person connected with the proposal
     */
@@ -131,7 +189,14 @@
    uid?: string;
    inKeycloakRealm?: boolean;
  };
-@@ -1559,11 +1573,13 @@
+@@ -1553,17 +1572,19 @@
+ /**
+  * A role within the timeAllocation committee
+  */
+-export type TacRole = "TECHNICALREVIEWER" | "SCIENCEREVIEWER" | "CHAIR";
++export type TacRole = "TechnicalReviewer" | "ScienceReviewer" | "Chair";
+ 
+ /**
   * A target source
   */
  export type Target = {
@@ -145,7 +210,7 @@
  };
  
  /**
-@@ -1578,6 +1594,7 @@
+@@ -1578,6 +1599,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -153,7 +218,7 @@
    /**
     * any constraints on the observation
     */
-@@ -1605,6 +1622,7 @@
+@@ -1605,6 +1627,7 @@
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -161,7 +226,16 @@
    xmlId?: string;
  };
  
-@@ -1708,6 +1726,10 @@
+@@ -1645,7 +1668,7 @@
+ /**
+  * acceptable text formats for document submission
+  */
+-export type TextFormats = "LATEX" | "RST" | "ASCIIDOC";
++export type TextFormats = "latex" | "rst" | "asciidoc";
+ 
+ /**
+  * A TimeFrame SHALL include a time scale and reference position. It MAY also include a reference direction.
+@@ -1708,6 +1731,10 @@
   * particular time range
   */
  export type TimingWindow = {

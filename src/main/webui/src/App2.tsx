@@ -60,6 +60,16 @@ import AdminPanel from "./admin/adminPanel";
 import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
 import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
+import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
+import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
+import CycleObservingModesPanel from "./ProposalManagerView/observingModes/observingModesPanel.tsx";
+import CycleAvailableResourcesPanel from "./ProposalManagerView/availableResources/availableResourcesPanel.tsx";
+import CyclePossibleGradesPanel from "./ProposalManagerView/proposalCycle/possibleGrades.tsx";
+import CycleReviewsPanel from "./ProposalManagerView/reviews/reviewsPanel.tsx";
+import CycleAllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
+import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observatory.tsx";
+import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
+import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
 
 /**
  * defines the user context type.
@@ -124,7 +134,47 @@ function App2(): ReactElement {
                 path: "/manager",
                 element: <PSTManager />,
                 children: [
-                    {index: true, element: <PSTManagerStart />}
+                    {index: true, element: <PSTManagerStart />},
+                    {
+                        path: "cycle/:selectedCycleCode",
+                        element: <CycleOverviewPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/title",
+                        element: <CycleTitlePanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/tac",
+                        element: <CycleTACPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/dates",
+                        element: <CycleDatesPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/observingModes",
+                        element: <CycleObservingModesPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/availableResources",
+                        element: <CycleAvailableResourcesPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/possibleGrades",
+                        element: <CyclePossibleGradesPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/reviews",
+                        element: <CycleReviewsPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/allocations",
+                        element: <CycleAllocationsPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/observatory",
+                        element: <CycleObservatoryPanel />
+                    }
                 ]
             },
             {
