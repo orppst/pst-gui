@@ -712,6 +712,9 @@ export type Observation = {
  * An organisation that can perform astronomical observations
  */
 export type Observatory = {
+  "@type"?: string;
+  "_id"?: number;
+
   xmlId?: string;
   /**
    * The name of the organization
@@ -1062,6 +1065,8 @@ export type Polygon = {
  * Defines collection of resources and proposals for a particular observing season
  */
 export type ProposalCycle = {
+  _id?: number
+
   /**
    * a human readable description of the cycle
    */

@@ -76,8 +76,9 @@ export default function ProposalManagerStartPage() : ReactElement {
                             <Modal
                                 opened={modalOpened}
                                 onClose={close}
-                                title={"New Proposal Cycle"}
-                                fullScreen
+                                title={"New Proposal Cycle Form"}
+                                size={"40%"}
+                                closeOnClickOutside={false}
                             >
                                 <NewCycleForm closeModal={close}/>
                             </Modal>
@@ -128,6 +129,5 @@ export default function ProposalManagerStartPage() : ReactElement {
                 <Outlet/>
             </AppShell.Main>
         </AppShell>
-
     )
 }

@@ -1,14 +1,17 @@
 import {ReactElement, useEffect, useState} from "react";
 import {SubmitButton} from "../commonButtons/save.tsx";
 import {useForm} from "@mantine/form";
-import {ObjectIdentifier} from "../generated/proposalToolSchemas.ts";
-import {Select, Text, TextInput} from "@mantine/core";
+import {ObjectIdentifier, ProposalCycle} from "../generated/proposalToolSchemas.ts";
+import {Group, Select, Stack, Text, TextInput} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
-import MaxCharsForInputRemaining from "../commonInputs/remainingCharacterCount.tsx";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
-import {fetchObservatoryResourceGetObservatories} from "../generated/proposalToolComponents.ts";
+import {
+    fetchObservatoryResourceGetObservatories,
+    fetchProposalCyclesResourceCreateProposalCycle
+} from "../generated/proposalToolComponents.ts";
 import {notifications} from "@mantine/notifications";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
+import {useNavigate} from "react-router-dom";
 
 interface NewCycleFormProps {
     closeModal?: () => void
@@ -23,6 +26,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         sessionEnd: Date | null,
         observatoryId: number | undefined
     }
+    const navigate = useNavigate();
 
     const [observatories, setObservatories]
         = useState<{ value: string, label: string }[]>([]);
@@ -49,6 +53,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
 
     const form = useForm<NewCycleFormType>(
         {
+            validateInputOnChange: true,
             initialValues: {
                 title: "",
                 submissionDeadline: null,
@@ -73,50 +78,88 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     );
 
     function createCycle(values: NewCycleFormType) {
-        //we will have to convert dates to number of seconds since posix epoch
-        console.log(values);
+        //ts-ignores required as API expects dates as a number (milliseconds since posix epoch),
+        //not an ISO string which is the given type for dates in ProposalCycle.
+
+        const newCycle: ProposalCycle = {
+            title: values.title,
+            observatory: {
+                "@type": "proposal:Observatory",
+                _id: values.observatoryId!
+            },
+            // @ts-ignore
+            submissionDeadline: values.submissionDeadline!.getTime(),
+            // @ts-ignore
+            observationSessionStart: values.sessionStart!.getTime(),
+            // @ts-ignore
+            observationSessionEnd: values.sessionEnd!.getTime()
+        }
+
+        fetchProposalCyclesResourceCreateProposalCycle({body: newCycle})
+            .then(()=> {
+                window.location.reload();
+                navigate("/manager");
+            })
+            .catch(console.error);
+
 
         closeModal && closeModal();
     }
 
     return (
         <form onSubmit={form.onSubmit((values) => createCycle(values))}>
-            <SubmitButton toolTipLabel={"save a new proposal cycle"}
-                          disabled={!form.isValid()}
-            />
             <DatesProvider settings={{timezone: 'UTC'}}>
-                <TextInput
-                    name={"title"}
-                    maxLength={MAX_CHARS_FOR_INPUTS}
-                    placeholder={"Proposal Cycle title"}
-                    label={"Title"}
-                    {...form.getInputProps('title')}
-                />
-                <MaxCharsForInputRemaining length={form.values.title.length}/>
-                <DateTimePicker
-                    placeholder={"submission deadline"}
-                    minDate={new Date()}
-                    rightSection={<Text>submission deadline</Text>}
-                    {...form.getInputProps('submissionDeadline')}
-                />
-                <DateTimePicker
-                    placeholder={"session start"}
-                    minDate={new Date()}
-                    rightSection={<Text>session start</Text>}
-                    {...form.getInputProps('sessionStart')}
-                />
-                <DateTimePicker
-                    placeholder={"session end"}
-                    minDate={new Date()}
-                    rightSection={<Text>session end</Text>}
-                    {...form.getInputProps('sessionEnd')}
-                />
-                <Select
-                    label={"Observatory"}
-                    placeholder={"pick one"}
-                    data={observatories}
-                    {...form.getInputProps('observatoryId')}
-                />
+                <Stack>
+                    <Text size={"md"} c={"gray.6"}>Please complete all fields</Text>
+                    <TextInput
+                        name={"title"}
+                        label={"Title"}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        description={
+                            MAX_CHARS_FOR_INPUTS -
+                            form.values.title.length +
+                            "/" + String(MAX_CHARS_FOR_INPUTS)}
+                        inputWrapperOrder={[
+                            'label', 'error', 'input', 'description']}
+                        placeholder={"Give the proposal cycle a title"}
+                        {...form.getInputProps('title')}
+                    />
+                    <Select
+                        label={"Observatory"}
+                        placeholder={"pick one"}
+                        data={observatories}
+                        {...form.getInputProps('observatoryId')}
+                    />
+                    <Group justify={"center"}>
+                        <Text size={"sm"} c={"teal"}> Dates and times are treated as UTC</Text>
+                    </Group>
+                    <DateTimePicker
+                        valueFormat={"YYYY/MM/DD HH:mm"}
+                        label={"Submission deadline"}
+                        placeholder={"select a proposal submission deadline"}
+                        minDate={new Date()}
+                        {...form.getInputProps('submissionDeadline')}
+                    />
+                    <DateTimePicker
+                        valueFormat={"YYYY/MM/DD HH:mm"}
+                        label={"Observation session start"}
+                        placeholder={"select an observation session start"}
+                        minDate={new Date()}
+                        {...form.getInputProps('sessionStart')}
+                    />
+                    <DateTimePicker
+                        valueFormat={"YYYY/MM/DD HH:mm"}
+                        label={"Observation session end"}
+                        placeholder={"select an observation session end"}
+                        minDate={new Date()}
+                        {...form.getInputProps('sessionEnd')}
+                    />
+                    <SubmitButton
+                        label={"Create Proposal Cycle"}
+                        toolTipLabel={"saves the proposal cycle"}
+                        disabled={!form.isValid()}
+                    />
+                </Stack>
             </DatesProvider>
         </form>
     )
