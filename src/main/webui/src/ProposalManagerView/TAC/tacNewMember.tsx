@@ -20,20 +20,20 @@ import { JSON_SPACES } from 'src/constants.tsx';
  */
 function CycleTACAddMemberPanel(): ReactElement {
     interface newMemberForm {
-        type: TacRole,
+        role: TacRole,
         selectedMember: number
     }
 
     const form = useForm<newMemberForm>({
         initialValues: {
-            type: "Chair" as TacRole,
+            role: "CHAIR" as TacRole,
             selectedMember: 0},
         validate: {
             selectedMember: (value) => (
                 value === 0 ? 'Please select a member' : null)
         }
     });
-    const typeData = [{value: "TechnicalReviewer", label: "Technical Reviewer"}, {value: "ScienceReviewer", label: "Science Reviewer"}, {value: "Chair", label: "Chair"}];
+    const typeData = [{value: "TECHNICALREVIEWER", label: "Technical Reviewer"}, {value: "SCIENCEREVIEWER", label: "Science Reviewer"}, {value: "CHAIR", label: "Chair"}];
     const [searchData, setSearchData] = useState([]);
     const navigate = useNavigate();
     const { selectedCycleCode } = useParams();
@@ -73,7 +73,7 @@ function CycleTACAddMemberPanel(): ReactElement {
             .then((data) => fetchTACResourceAddCommitteeMember(
                 {pathParams:{cycleCode: Number(selectedCycleCode)},
                     body:{
-                        role: val.type,
+                        role: val.role,
                         member: {person: data},
                     }})
                 .then(()=> {
