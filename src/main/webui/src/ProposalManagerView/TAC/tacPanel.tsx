@@ -22,6 +22,10 @@ type MemberProps = {
     dbid: number
 }
 
+/**
+ * Lists the time allocation committee members for this cycle with links to add and remove
+ * @return ReactElement in a Container
+ */
 export default function CycleTACPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const {data, error, isLoading} =
