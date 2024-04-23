@@ -87,6 +87,9 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                 "@type": "proposal:Observatory",
                 _id: values.observatoryId!
             },
+            tac: {
+                members: []
+            },
             // @ts-ignore
             submissionDeadline: values.submissionDeadline!.getTime(),
             // @ts-ignore
