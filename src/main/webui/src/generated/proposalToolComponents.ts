@@ -7993,6 +7993,68 @@ export const useObservationResourceRemoveObservation = (
   });
 };
 
+export type ObservationResourceReplaceIntendedUsePathParams = {
+  /**
+   * @format int64
+   */
+  observationId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ObservationResourceReplaceIntendedUseError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservationResourceReplaceIntendedUseVariables = {
+  body?: Schemas.CalibrationTargetIntendedUse;
+  pathParams: ObservationResourceReplaceIntendedUsePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservationResourceReplaceIntendedUse = (
+  variables: ObservationResourceReplaceIntendedUseVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservationResourceReplaceIntendedUseError,
+    Schemas.CalibrationTargetIntendedUse,
+    {},
+    {},
+    ObservationResourceReplaceIntendedUsePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/calibrationIntendedUse",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservationResourceReplaceIntendedUse = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservationResourceReplaceIntendedUseError,
+      ObservationResourceReplaceIntendedUseVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservationResourceReplaceIntendedUseError,
+    ObservationResourceReplaceIntendedUseVariables
+  >({
+    mutationFn: (variables: ObservationResourceReplaceIntendedUseVariables) =>
+      fetchObservationResourceReplaceIntendedUse({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type ObservationResourceGetConstraintsPathParams = {
   /**
    * @format int64

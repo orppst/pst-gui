@@ -69,6 +69,7 @@ import CycleReviewsPanel from "./ProposalManagerView/reviews/reviewsPanel.tsx";
 import CycleAllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
 import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observatory.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
+import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
 
 /**
@@ -146,6 +147,10 @@ function App2(): ReactElement {
                     {
                         path: "cycle/:selectedCycleCode/tac",
                         element: <CycleTACPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/tac/new",
+                        element: <CycleTACAddMemberPanel />
                     },
                     {
                         path: "cycle/:selectedCycleCode/dates",
