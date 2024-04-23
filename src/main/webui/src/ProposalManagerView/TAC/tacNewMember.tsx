@@ -1,7 +1,7 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchPersonResourceGetPerson, fetchTACResourceAddCommitteeMember,
-    usePersonResourceGetPeople,
+    fetchReviewerResourceGetReviewer, fetchTACResourceAddCommitteeMember,
+    useReviewerResourceGetReviewers,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -13,10 +13,10 @@ import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
 
 /**
- * Render s form panel to add an investigator to the current proposal.
+ * Renders form panel to add a reviewer to the TAC of the current cycle.
  * Does not require props
  * @return {React Element} the dynamic html for the adding new
- * investigator panel.
+ * Add TAC member panel.
  */
 function CycleTACAddMemberPanel(): ReactElement {
     interface newMemberForm {
@@ -33,12 +33,15 @@ function CycleTACAddMemberPanel(): ReactElement {
                 value === 0 ? 'Please select a member' : null)
         }
     });
-    const typeData = [{value: "TECHNICALREVIEWER", label: "Technical Reviewer"}, {value: "SCIENCEREVIEWER", label: "Science Reviewer"}, {value: "CHAIR", label: "Chair"}];
+    const typeData =
+        [{value: "TECHNICALREVIEWER", label: "Technical Reviewer"},
+            {value: "SCIENCEREVIEWER", label: "Science Reviewer"},
+            {value: "CHAIR", label: "Chair"}];
     const [searchData, setSearchData] = useState([]);
     const navigate = useNavigate();
     const { selectedCycleCode } = useParams();
     const queryClient = useQueryClient();
-    const { data, error, status } = usePersonResourceGetPeople(
+    const { data, error, status } = useReviewerResourceGetReviewers(
         {
             queryParams: { name: '%' },
         },
@@ -68,13 +71,13 @@ function CycleTACAddMemberPanel(): ReactElement {
 
     const handleAdd = form.onSubmit((val) => {
         //Get full investigator from API and add back to proposal
-        fetchPersonResourceGetPerson(
-            {pathParams:{id: form.values.selectedMember}})
+        fetchReviewerResourceGetReviewer(
+            {pathParams:{reviewerId: form.values.selectedMember}})
             .then((data) => fetchTACResourceAddCommitteeMember(
                 {pathParams:{cycleCode: Number(selectedCycleCode)},
                     body:{
                         role: val.role,
-                        member: {person: data},
+                        member: data,
                     }})
                 .then(()=> {
                     return queryClient.invalidateQueries();
