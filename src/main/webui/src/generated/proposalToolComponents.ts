@@ -6364,6 +6364,131 @@ export const useSubmittedProposalResourceSubmitProposal = (
   });
 };
 
+export type ProposalCyclesResourceGetProposalCycleTitlePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetProposalCycleTitleError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetProposalCycleTitleVariables = {
+  pathParams: ProposalCyclesResourceGetProposalCycleTitlePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetProposalCycleTitle = (
+  variables: ProposalCyclesResourceGetProposalCycleTitleVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceGetProposalCycleTitleError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetProposalCycleTitlePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/title",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetProposalCycleTitle = <
+  TData = undefined
+>(
+  variables: ProposalCyclesResourceGetProposalCycleTitleVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      ProposalCyclesResourceGetProposalCycleTitleError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    ProposalCyclesResourceGetProposalCycleTitleError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/title",
+      operationId: "proposalCyclesResourceGetProposalCycleTitle",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalCyclesResourceGetProposalCycleTitle(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ProposalCyclesResourceReplaceCycleTitlePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceReplaceCycleTitleError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceReplaceCycleTitleVariables = {
+  body?: string;
+  pathParams: ProposalCyclesResourceReplaceCycleTitlePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceReplaceCycleTitle = (
+  variables: ProposalCyclesResourceReplaceCycleTitleVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceReplaceCycleTitleError,
+    string,
+    {},
+    {},
+    ProposalCyclesResourceReplaceCycleTitlePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/title",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceReplaceCycleTitle = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalCyclesResourceReplaceCycleTitleError,
+      ProposalCyclesResourceReplaceCycleTitleVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalCyclesResourceReplaceCycleTitleError,
+    ProposalCyclesResourceReplaceCycleTitleVariables
+  >({
+    mutationFn: (variables: ProposalCyclesResourceReplaceCycleTitleVariables) =>
+      fetchProposalCyclesResourceReplaceCycleTitle({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type ObservingModeResourceGetCycleObservingModesPathParams = {
   /**
    * @format int64
@@ -11336,6 +11461,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals";
       operationId: "submittedProposalResourceGetSubmittedProposals";
       variables: SubmittedProposalResourceGetSubmittedProposalsVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/title";
+      operationId: "proposalCyclesResourceGetProposalCycleTitle";
+      variables: ProposalCyclesResourceGetProposalCycleTitleVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleId}/observingModes";
