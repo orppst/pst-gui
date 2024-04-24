@@ -12,7 +12,7 @@ import {HEADER_FONT_WEIGHT, JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../const
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 
-const titleFormJSON =  {
+const cycleTitleFormJSON =  {
     initialValues: {title: "Loading..."},
     validate: {
         title: (value : string) => (
@@ -20,16 +20,22 @@ const titleFormJSON =  {
     }
 };
 
+/**
+ * Update the title of a proposal cycle, count and limit the characters to MAX_CHARS_FOR_INPUTS
+ * Works in almost the same way as TitlePanel for proposals.
+ *
+ * @return ReactElement of the title edit panel
+ */
 export default function CycleTitlePanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const [submitting, setSubmitting] = useState(false);
-    const [title, setTitle] = useState("")
+    const [cycleTitle, setCycleTitle] = useState("")
     const { data, error, isLoading, status } =
         useProposalCyclesResourceGetProposalCycleTitle(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
         );
 
-    const form = useForm(titleFormJSON);
+    const form = useForm(cycleTitleFormJSON);
 
     const queryClient = useQueryClient()
 
@@ -39,7 +45,7 @@ export default function CycleTitlePanel() : ReactElement {
             // signature for API calls where the body is plain text.
             const newTitle : ProposalCyclesResourceReplaceCycleTitleVariables = {
                 pathParams: {cycleCode: Number(selectedCycleCode)},
-                body: title,
+                body: cycleTitle,
                 // @ts-ignore
                 headers: {"Content-Type": "text/plain"}
             }
@@ -52,31 +58,29 @@ export default function CycleTitlePanel() : ReactElement {
             console.log("An error occurred trying to update the title")
         },
         onSuccess: () => {
-            //IMPL this is slightly limiting the invalidation -
-            // some things should be ok still (users etc).
-            queryClient.invalidateQueries(["pst","api","proposals"])
+            queryClient.invalidateQueries(["pst", "api", "proposalCycles"])
                 .then(()=> setSubmitting(false))
         },
     })
 
     useEffect(() => {
         if (status === 'success') {
-            setTitle(data as unknown as string);
+            setCycleTitle(data as unknown as string);
             form.values.title = data as unknown as string;
         }
     }, [status,data]);
 
     if (error) {
         return (
-            <Box>
+            <Container>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
+            </Container>
         );
     }
 
     const updateTitle = form.onSubmit((val) => {
         form.validate();
-        setTitle(val.title);
+        setCycleTitle(val.title);
         mutation.mutate();
     });
 
