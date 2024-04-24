@@ -122,7 +122,12 @@ function TACMemberRow(props: MemberProps): ReactElement {
                     cycleCode: Number(selectedCycleCode),
                 }})
             .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries())
+            .then(()=>queryClient.invalidateQueries({
+                predicate: (query) => {
+                    return query.queryKey.length === 6
+                        && query.queryKey[4] === 'TAC';
+                    }
+            }))
             .catch(handleError);
     }
 
