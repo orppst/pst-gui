@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Box, Container, Text, TextInput} from "@mantine/core";
+import {Container, Text, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
     fetchProposalCyclesResourceReplaceCycleTitle,
@@ -22,7 +22,7 @@ const cycleTitleFormJSON =  {
 
 /**
  * Update the title of a proposal cycle, count and limit the characters to MAX_CHARS_FOR_INPUTS
- * Works in almost the same way as TitlePanel for proposals.
+ * Works the same way as TitlePanel for proposals.
  *
  * @return ReactElement of the title edit panel
  */
