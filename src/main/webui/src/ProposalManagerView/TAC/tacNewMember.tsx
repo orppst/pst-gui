@@ -34,9 +34,9 @@ function CycleTACAddMemberPanel(): ReactElement {
         }
     });
     const typeData =
-        [{value: "TECHNICALREVIEWER", label: "Technical Reviewer"},
-            {value: "SCIENCEREVIEWER", label: "Science Reviewer"},
-            {value: "CHAIR", label: "Chair"}];
+        [{value: "TechnicalReviewer", label: "Technical Reviewer"},
+            {value: "ScienceReview", label: "Science Reviewer"},
+            {value: "Chair", label: "Chair"}];
     const [searchData, setSearchData] = useState([]);
     const navigate = useNavigate();
     const { selectedCycleCode } = useParams();
