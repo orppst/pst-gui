@@ -1283,6 +1283,7 @@ export type ResourceBlock = {
  * a type of resource
  */
 export type ResourceType = {
+  _id?: number;
   /**
    * the name of the resource type
    */
