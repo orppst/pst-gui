@@ -1253,6 +1253,8 @@ export type RelatedProposal = {
  * A resource that will be consumed by allocating an observation from a proposal
  */
 export type Resource = {
+  _id?: number;
+
   /**
    * The amount of the resource
    *
