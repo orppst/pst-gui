@@ -4,7 +4,9 @@ import {AvailableResourcesProps} from "./availableResourcesPanel.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {NumberInput, Select, Stack} from "@mantine/core";
 import {
-    fetchAvailableResourcesResourceAddCycleResource, fetchAvailableResourcesResourceGetCycleResourceTypes,
+    fetchAvailableResourcesResourceAddCycleResource,
+    fetchAvailableResourcesResourceGetCycleResourceTypes,
+    fetchAvailableResourcesResourceUpdateCycleResourceAmount,
     fetchResourceTypeResourceGetAllResourceTypes
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
@@ -13,8 +15,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 
-export default function AvailableResourcesForm(props: AvailableResourcesProps) :
-    ReactElement {
+export default function AvailableResourcesForm(props: AvailableResourcesProps) : ReactElement {
 
     interface AvailableResourcesValues {
         resourceTypeId: number | undefined,
@@ -63,7 +64,7 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
 
     const form  = useForm<AvailableResourcesValues>({
         initialValues: {
-            resourceTypeId: undefined,
+            resourceTypeId: props.resource?.type?._id,
             amount: props.resource?.amount ?? 1
         },
         validate: {
@@ -75,29 +76,53 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
     });
 
     const handleSubmit = form.onSubmit((values) => {
-        console.log(values);
-
-        fetchAvailableResourcesResourceAddCycleResource({
-            pathParams: {
-                cycleCode: Number(selectedCycleCode)
-            },
-            body: {
-                amount: values.amount,
-                type: {
-                    "_id": values.resourceTypeId
-                }
-            }
-        })
-            .then( ()=>queryClient.invalidateQueries() )
-            .then( () => props.closeModal!() )
-            .catch((error) => {
-                notifications.show({
-                    title: "Adding available resource failed",
-                    message: "cause: " + getErrorMessage(error),
-                    autoClose: 5000,
-                    color: 'red'
-                })
+        if (props.resource) {
+            //editing an existing 'available resource' i.e., changing the 'amount' only
+            fetchAvailableResourcesResourceUpdateCycleResourceAmount({
+                pathParams: {
+                    cycleCode: Number(selectedCycleCode),
+                    resourceId: props.resource._id!
+                },
+                body: values.amount,
+                //@ts-ignore
+                headers: {"Content-Type": "text/plain"}
             })
+                .then(()=>queryClient.invalidateQueries())
+                .then( () => props.closeModal!() )
+                .then(() => {
+                    notifications.show({
+                        autoClose: 5000,
+                        title: "Update successful",
+                        message: "Resource amount updated",
+                        color: 'green',
+                    });
+                })
+        } else {
+            //adding a new 'available resource'
+            fetchAvailableResourcesResourceAddCycleResource({
+                pathParams: {
+                    cycleCode: Number(selectedCycleCode)
+                },
+                body: {
+                    amount: values.amount,
+                    type: {
+                        "_id": values.resourceTypeId
+                    }
+                }
+            })
+                .then( ()=>queryClient.invalidateQueries() )
+                .then( () => props.closeModal!() )
+                .catch((error) => {
+                    notifications.show({
+                        title: "Adding available resource failed",
+                        message: "cause: " + getErrorMessage(error),
+                        autoClose: 5000,
+                        color: 'red'
+                    })
+                })
+        }
+
+
     })
 
     return (
@@ -113,7 +138,10 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                 <Select
                     label={"Resource Type"}
                     placeholder={"pick one"}
+                    description={!props.resource ? "Select a named resource" :
+                        "You cannot change an existing resource's type" }
                     data={resourceTypeData}
+                    disabled={!!props.resource}
                     {...form.getInputProps('resourceTypeId')}
                 />
                 <SubmitButton
