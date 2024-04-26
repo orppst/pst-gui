@@ -12,7 +12,11 @@ export default function AvailableResourcesModal(props: AvailableResourcesProps) 
 
     const NewButton = () : ReactElement => {
         return (
-            <AddButton toolTipLabel={"new resource"} onClick={open} />
+            <AddButton
+                toolTipLabel={props.disableAdd ? "All resource types used":"new resource"}
+                onClick={open}
+                disabled={props.disableAdd}
+            />
         )
     }
 
@@ -23,16 +27,17 @@ export default function AvailableResourcesModal(props: AvailableResourcesProps) 
     }
 
     const isNewResource : boolean = !props.resource;
+    const formProps = {...props, closeModal: () => {close()}}
 
     const ModalContent = () : ReactElement => {
         return(
             <Modal
                 opened={opened}
-                onClose={props.closeModal? props.closeModal : close}
+                onClose={formProps.closeModal}
                 title={isNewResource ? "New Resource Form" : "View/Edit Resource Form"}
                 size={"30%"}
             >
-                <AvailableResourcesForm {...props}/>
+                <AvailableResourcesForm {...formProps}/>
             </Modal>
         )
     }

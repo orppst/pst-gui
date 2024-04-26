@@ -1,6 +1,9 @@
 import {ReactElement} from "react";
 import {Group, Table} from "@mantine/core";
-import {useAvailableResourcesResourceGetCycleAvailableResources} from "src/generated/proposalToolComponents.ts";
+import {
+    useAvailableResourcesResourceGetCycleAvailableResources,
+    useResourceTypeResourceGetAllResourceTypes
+} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {notifications} from "@mantine/notifications";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -8,9 +11,16 @@ import {randomId} from "@mantine/hooks";
 import {Resource} from "../../generated/proposalToolSchemas.ts";
 import AvailableResourcesModal from "./availableResources.modal.tsx";
 
+/*
+get all resource types in the database, compare to the resource types already used in this cycle,
+if all resource types have been used disable the "Add" button. Compare lengths of lists.
+ */
+
+
 export type AvailableResourcesProps  = {
     resource: Resource | undefined,
-    closeModal?: () => void
+    closeModal?: () => void,
+    disableAdd?: boolean
 }
 
 export default function CycleAvailableResourcesPanel() : ReactElement {
@@ -24,6 +34,10 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         }
     });
 
+    const resourceTypes =
+        useResourceTypeResourceGetAllResourceTypes({});
+
+
     if (availableResources.error) {
         notifications.show({
             message: "cause " + getErrorMessage(availableResources.error),
@@ -32,6 +46,16 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
             color: 'red'
         })
     }
+
+    if (resourceTypes.error) {
+        notifications.show({
+            message: "cause: " + getErrorMessage(resourceTypes.error),
+            title: "Error loading resource types",
+            autoClose: 5000,
+            color: 'red'
+        })
+    }
+
 
     const AvailableResourcesRows = () => {
         return (
@@ -57,6 +81,9 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         )
     }
 
+    //<AvailableResourceModal resource={undefined} /> can be treated as an alias
+    //for the "Add" button. We want to disable it if the number of available resources
+    //in this Cycle equals the total number of resource types added to the Tool.
     return (
         <>
             <Table>
@@ -68,7 +95,11 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
                 </Table.Tbody>
             </Table>
             <Group justify={"center"}>
-                <AvailableResourcesModal resource={undefined} />
+                <AvailableResourcesModal
+                    resource={undefined}
+                    disableAdd={resourceTypes.data?.length ==
+                        availableResources.data?.resources?.length}
+                />
             </Group>
         </>
     )
