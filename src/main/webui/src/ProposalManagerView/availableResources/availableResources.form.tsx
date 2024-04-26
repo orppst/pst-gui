@@ -40,7 +40,7 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                         let diff =
                             allTypes.filter(rType => {
                                 let result : boolean = false
-                                if(cycleTypes.find(cType => cType.name == rType.name))
+                                if(cycleTypes.find(cType => cType.dbid == rType.dbid))
                                     result = true
                                 return !result;
                             })
