@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Badge, Container, Fieldset, Grid, Group, List, Space, Table, Text, Title} from "@mantine/core";
+import {Badge, Container, Fieldset, Grid, Group, Space, Stack, Table, Text, Title} from "@mantine/core";
 import {
     fetchAvailableResourcesResourceRemoveCycleResource,
     useAvailableResourcesResourceGetCycleAvailableResources, useProposalCyclesResourceGetProposalCycleDates,
@@ -13,6 +13,7 @@ import AvailableResourcesModal from "./availableResources.modal.tsx";
 import DeleteButton from "../../commonButtons/delete.tsx";
 import {modals} from "@mantine/modals";
 import {useQueryClient} from "@tanstack/react-query";
+import ResourceTypeModal from "./resourceType.modal.tsx";
 
 
 export type AvailableResourcesProps  = {
@@ -21,8 +22,13 @@ export type AvailableResourcesProps  = {
     disableAdd?: boolean
 }
 
-export default function CycleAvailableResourcesPanel() : ReactElement {
+export type ResourceTypeProps = {
+    resourceTypeId: number | undefined,
+    closeModal?: () => void,
+    disableAdd?: boolean
+}
 
+export default function CycleAvailableResourcesPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
@@ -112,21 +118,18 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     })
 
 
-    const AllResourceTypesListItems = () => {
+    const AllResourceTypesTextLinks = () => {
         return (
             resourceTypes.data?.map((rType) => {
 
-                let itemColour : string =
+                let textColour : string =
                     !availableResources.data?.resources!.find(res => res.type!._id == rType.dbid ) ?
                         'green' : 'orange';
 
                 return (
-                    <List.Item
-                        key={rType.dbid}
-                        c={itemColour}
-                    >
+                    <Text key={rType.dbid} c={textColour}>
                         {rType.name}
-                    </List.Item>
+                    </Text>
                 )
             })
         )
@@ -181,7 +184,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
             <Space h={"xl"}/>
             <Grid columns={10}>
                 <Grid.Col span={7}>
-                    <Fieldset legend={"Proposal Cycle Available Resources"}>
+                    <Fieldset legend={"Current Resource Amounts"}>
                         <Table>
                             <Table.Thead>
                                 <AvailableResourceHeader/>
@@ -201,9 +204,14 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
                 </Grid.Col>
                 <Grid.Col span={3}>
                     <Fieldset legend={"Defined Resource Types"}>
-                        <List>
-                            <AllResourceTypesListItems />
-                        </List>
+                        <Stack gap={"xs"}>
+                            <AllResourceTypesTextLinks />
+                        </Stack>
+
+                        <Group justify={"center"}>
+                            <ResourceTypeModal resourceTypeId={undefined}/>
+                        </Group>
+
                     </Fieldset>
                 </Grid.Col>
             </Grid>

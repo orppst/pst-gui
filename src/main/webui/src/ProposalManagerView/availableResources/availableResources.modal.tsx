@@ -34,7 +34,7 @@ export default function AvailableResourcesModal(props: AvailableResourcesProps) 
             <Modal
                 opened={opened}
                 onClose={formProps.closeModal}
-                title={isNewResource ? "New Resource Form" : "View/Edit Resource Form"}
+                title={isNewResource ? "New Resource Form" : "Edit Resource Form"}
                 size={"30%"}
             >
                 <AvailableResourcesForm {...formProps}/>
