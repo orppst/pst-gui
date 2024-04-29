@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2024-04-24 10:15:03
-+++ proposalToolSchemas.ts	2024-04-24 10:15:43
+--- proposalToolSchemas.ts.orig	2024-04-08 13:41:12
++++ proposalToolSchemas.ts	2024-04-26 14:15:12
 @@ -129,6 +129,7 @@
   * An observation that is intended for calibration
   */
@@ -155,7 +155,24 @@
    /**
     * Must conform to definition of unit in VOUnit spec.
     */
-@@ -1354,6 +1369,8 @@
+@@ -1238,6 +1253,8 @@
+  * A resource that will be consumed by allocating an observation from a proposal
+  */
+ export type Resource = {
++  _id?: number;
++
+   /**
+    * The amount of the resource
+    *
+@@ -1268,6 +1285,7 @@
+  * a type of resource
+  */
+ export type ResourceType = {
++  _id?: number;
+   /**
+    * the name of the resource type
+    */
+@@ -1354,6 +1372,8 @@
    /**
     * Science oriented definition of a spectral window.
     */
@@ -164,7 +181,7 @@
    spectralWindowSetup?: SpectralWindowSetup;
    expectedSpectralLine?: ExpectedSpectralLine[];
  };
-@@ -1398,6 +1415,7 @@
+@@ -1398,6 +1418,7 @@
   * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
   */
  export type SpaceFrame = {
@@ -172,7 +189,7 @@
    /**
     * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
     */
-@@ -1420,6 +1438,7 @@
+@@ -1420,6 +1441,7 @@
   * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
   */
  export type SpaceSys = {
@@ -180,7 +197,7 @@
    xmlId?: string;
    /**
     * Abstract head of coordinate spaces related to physical properties.
-@@ -1503,7 +1522,7 @@
+@@ -1503,7 +1525,7 @@
    /**
     * person connected with the proposal
     */
@@ -189,7 +206,7 @@
    uid?: string;
    inKeycloakRealm?: boolean;
  };
-@@ -1553,17 +1572,19 @@
+@@ -1553,17 +1575,19 @@
  /**
   * A role within the timeAllocation committee
   */
@@ -210,7 +227,7 @@
  };
  
  /**
-@@ -1578,6 +1599,7 @@
+@@ -1578,6 +1602,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -218,7 +235,7 @@
    /**
     * any constraints on the observation
     */
-@@ -1605,6 +1627,7 @@
+@@ -1605,6 +1630,7 @@
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -226,7 +243,7 @@
    xmlId?: string;
  };
  
-@@ -1645,7 +1668,7 @@
+@@ -1645,7 +1671,7 @@
  /**
   * acceptable text formats for document submission
   */
@@ -235,7 +252,7 @@
  
  /**
   * A TimeFrame SHALL include a time scale and reference position. It MAY also include a reference direction.
-@@ -1708,6 +1731,10 @@
+@@ -1708,6 +1734,10 @@
   * particular time range
   */
  export type TimingWindow = {
