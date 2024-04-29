@@ -88,7 +88,7 @@ export default function CycleDatesPanel() : ReactElement {
                 body: val.sessionEnd?.getTime()
             }))
         }
-
+        // FIXME: Make this .catch() work correctly
         Promise.all(promises).then(()=>{
                 notifications.show({
                     autoClose:5000,
