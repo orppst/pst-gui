@@ -137,11 +137,11 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                 />
                 <Select
                     label={"Resource Type"}
-                    placeholder={"pick one"}
+                    disabled={!!props.resource}
+                    placeholder={!props.resource ? "pick one" : props.resource.type?.name}
                     description={!props.resource ? "Select a named resource" :
                         "You cannot change an existing resource's type" }
                     data={resourceTypeData}
-                    disabled={!!props.resource}
                     {...form.getInputProps('resourceTypeId')}
                 />
                 <SubmitButton
