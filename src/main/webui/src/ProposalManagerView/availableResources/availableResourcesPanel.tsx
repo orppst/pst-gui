@@ -1,8 +1,8 @@
 import {ReactElement} from "react";
-import {Box, Group, Table, Text} from "@mantine/core";
+import {Badge, Container, Fieldset, Grid, Group, List, Space, Table, Text, Title} from "@mantine/core";
 import {
     fetchAvailableResourcesResourceRemoveCycleResource,
-    useAvailableResourcesResourceGetCycleAvailableResources,
+    useAvailableResourcesResourceGetCycleAvailableResources, useProposalCyclesResourceGetProposalCycleDates,
     useResourceTypeResourceGetAllResourceTypes
 } from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
@@ -36,6 +36,13 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     const resourceTypes =
         useResourceTypeResourceGetAllResourceTypes({});
 
+    //Cycle Dates object contains the cycle title, along with the dates
+    const cycleTitle =
+        useProposalCyclesResourceGetProposalCycleDates({
+            pathParams:{
+                cycleCode: Number(selectedCycleCode)
+            }
+        })
 
     if (availableResources.error) {
         notifications.show({
@@ -50,6 +57,15 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         notifications.show({
             message: "cause: " + getErrorMessage(resourceTypes.error),
             title: "Error loading resource types",
+            autoClose: 5000,
+            color: 'red'
+        })
+    }
+
+    if (cycleTitle.error) {
+        notifications.show({
+            message: "cause: " + getErrorMessage(cycleTitle.error),
+            title: "Error loading cycle title",
             autoClose: 5000,
             color: 'red'
         })
@@ -96,11 +112,31 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     })
 
 
+    const AllResourceTypesListItems = () => {
+        return (
+            resourceTypes.data?.map((rType) => {
+
+                let itemColour : string =
+                    !availableResources.data?.resources!.find(res => res.type!._id == rType.dbid ) ?
+                        'green' : 'orange';
+
+                return (
+                    <List.Item
+                        key={rType.dbid}
+                        c={itemColour}
+                    >
+                        {rType.name}
+                    </List.Item>
+                )
+            })
+        )
+    }
+
+
     //<AvailableResourceModal resource={resource} /> can be treated as an alias for the "Edit" button
     const AvailableResourcesRows = () => {
         return (
-            availableResources.data?.resources?.map((resource) => {
-                return (
+            availableResources.data?.resources?.map((resource) => (
                     <Table.Tr key={resource._id}>
                         <Table.Td>{resource.type?.name} </Table.Td>
                         <Table.Td>{resource.amount}</Table.Td>
@@ -115,8 +151,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
                             </Group>
                         </Table.Td>
                     </Table.Tr>
-                )
-            })
+            ))
         )
     }
 
@@ -135,22 +170,43 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     //for the "Add" button. We want to disable it if the number of available resources
     //in this Cycle equals the total number of resource types added to the Tool.
     return (
-        <Box>
-            <Table>
-                <Table.Thead>
-                    <AvailableResourceHeader/>
-                </Table.Thead>
-                <Table.Tbody>
-                    <AvailableResourcesRows/>
-                </Table.Tbody>
-            </Table>
-            <Group justify={"center"}>
-                <AvailableResourcesModal
-                    resource={undefined}
-                    disableAdd={resourceTypes.data?.length ==
-                        availableResources.data?.resources?.length}
-                />
-            </Group>
-        </Box>
+        <Container fluid>
+            <Title order={3}>
+                {cycleTitle.isLoading ?
+                    <Badge size={"xl"} radius={0}>...</Badge> :
+                    <Badge size={"xl"} radius={0}>{cycleTitle.data?.title}</Badge>
+                }
+                : Available Resources
+            </Title>
+            <Space h={"xl"}/>
+            <Grid columns={10}>
+                <Grid.Col span={7}>
+                    <Fieldset legend={"Proposal Cycle Available Resources"}>
+                        <Table>
+                            <Table.Thead>
+                                <AvailableResourceHeader/>
+                            </Table.Thead>
+                            <Table.Tbody>
+                                <AvailableResourcesRows/>
+                            </Table.Tbody>
+                        </Table>
+                        <Group justify={"center"}>
+                            <AvailableResourcesModal
+                                resource={undefined}
+                                disableAdd={resourceTypes.data?.length ==
+                                    availableResources.data?.resources?.length}
+                            />
+                        </Group>
+                    </Fieldset>
+                </Grid.Col>
+                <Grid.Col span={3}>
+                    <Fieldset legend={"Defined Resource Types"}>
+                        <List>
+                            <AllResourceTypesListItems />
+                        </List>
+                    </Fieldset>
+                </Grid.Col>
+            </Grid>
+        </Container>
     )
 }

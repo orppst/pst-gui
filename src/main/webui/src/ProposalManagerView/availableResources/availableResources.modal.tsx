@@ -13,7 +13,7 @@ export default function AvailableResourcesModal(props: AvailableResourcesProps) 
     const NewButton = () : ReactElement => {
         return (
             <AddButton
-                toolTipLabel={props.disableAdd ? "All resource types used":"new resource"}
+                toolTipLabel={props.disableAdd ? "All defined resource types used":"new resource"}
                 onClick={open}
                 disabled={props.disableAdd}
             />
