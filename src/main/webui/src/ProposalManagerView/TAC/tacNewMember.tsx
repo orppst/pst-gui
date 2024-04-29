@@ -26,7 +26,7 @@ function CycleTACAddMemberPanel(): ReactElement {
 
     const form = useForm<newMemberForm>({
         initialValues: {
-            role: "CHAIR" as TacRole,
+            role: "Chair" as TacRole,
             selectedMember: 0},
         validate: {
             selectedMember: (value) => (
@@ -35,7 +35,7 @@ function CycleTACAddMemberPanel(): ReactElement {
     });
     const typeData =
         [{value: "TechnicalReviewer", label: "Technical Reviewer"},
-            {value: "ScienceReview", label: "Science Reviewer"},
+            {value: "ScienceReviewer", label: "Science Reviewer"},
             {value: "Chair", label: "Chair"}];
     const [searchData, setSearchData] = useState([]);
     const navigate = useNavigate();
@@ -80,7 +80,12 @@ function CycleTACAddMemberPanel(): ReactElement {
                         member: data,
                     }})
                 .then(()=> {
-                    return queryClient.invalidateQueries();
+                    return queryClient.invalidateQueries({
+                        predicate: (query) => {
+                            return query.queryKey.length === 5
+                                && query.queryKey[4] === 'TAC';
+                        }
+                    });
                 })
                 .then(()=>navigate(  "../", {relative:"path"})) // see https://stackoverflow.com/questions/72537159/react-router-v6-and-relative-links-from-page-within-route
                 .catch(console.log)
