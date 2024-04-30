@@ -18,6 +18,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import { SubmitButton } from 'src/commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "src/constants";
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
+import {PanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 
 const kindData = [
@@ -94,7 +95,7 @@ const textFormatData = [
 
      return (
         <Box>
-            <Text fz="lg" fw={700}>Create Proposal</Text>
+            <PanelTitle itemName={"NEW"} panelTitle={"Create Proposal"} />
             {submitting &&
                 <Box>Submitting request</Box>
             }

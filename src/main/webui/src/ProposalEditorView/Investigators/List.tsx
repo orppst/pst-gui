@@ -12,6 +12,7 @@ import {randomId} from "@mantine/hooks";
 import DeleteButton from "src/commonButtons/delete";
 import AddButton from "src/commonButtons/add";
 import { JSON_SPACES } from 'src/constants.tsx';
+import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * the data associated with a given person.
@@ -54,7 +55,7 @@ function InvestigatorsPanel(): ReactElement {
 
     return (
         <Box>
-            <Text fz="lg" fw={700}>Investigators linked to this proposal</Text>
+            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Investigators"}/>
             <Grid>
                 <Grid.Col span={5}>
                 <AddButton toolTipLabel={"Add new"}

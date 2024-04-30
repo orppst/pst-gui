@@ -13,6 +13,7 @@ import {SubmitButton} from "src/commonButtons/save.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifications} from "@mantine/notifications";
 import ValidationOverview from "./ValidationOverview.tsx";
+import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 function SubmitPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
@@ -94,7 +95,7 @@ function SubmitPanel(): ReactElement {
 
     return (
         <Box>
-            <Text fz="lg" fw={700}>Submit Proposal</Text>
+            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Submit"} />
 
             <ValidationOverview cycle={selectedCycle}/>
 

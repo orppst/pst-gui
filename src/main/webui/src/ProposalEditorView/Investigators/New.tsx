@@ -12,6 +12,7 @@ import {useForm} from "@mantine/form";
 import {SubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
+import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * Render s form panel to add an investigator to the current proposal.
@@ -96,7 +97,7 @@ function AddInvestigatorPanel(): ReactElement {
 
     return (
             <Box>
-                <h3>Add an investigator</h3>
+                <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Add an investigator"} />
                 <form onSubmit={handleAdd}>
                     <Select label={"Type"}
                         data={typeData}
