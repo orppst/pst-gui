@@ -90,6 +90,9 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
             tac: {
                 members: []
             },
+            availableResources: {
+                resources: []
+            },
             // @ts-ignore
             submissionDeadline: values.submissionDeadline!.getTime(),
             // @ts-ignore
