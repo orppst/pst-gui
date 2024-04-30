@@ -6,11 +6,10 @@ import {
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
-import {Box, Text, Textarea} from "@mantine/core";
+import {Box, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import { SubmitButton } from 'src/commonButtons/save';
 import {
-    HEADER_FONT_WEIGHT,
     JSON_SPACES,
     MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS
 } from 'src/constants';

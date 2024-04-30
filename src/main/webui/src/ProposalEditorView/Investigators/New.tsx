@@ -114,7 +114,7 @@ function AddInvestigatorPanel(): ReactElement {
                         {...form.getInputProps("selectedInvestigator")}
                     />
                     <Grid>
-                        <Grid.Col span={1}>
+                        <Grid.Col span={2}>
                             <SubmitButton
                                 label={"Add"}
                                 toolTipLabel={"Add new investigator"}/>

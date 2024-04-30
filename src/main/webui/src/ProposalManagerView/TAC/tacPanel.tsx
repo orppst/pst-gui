@@ -12,7 +12,7 @@ import {JSON_SPACES} from "../../constants.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import DeleteButton from "../../commonButtons/delete";
-import {ManagerPanelTitle, PanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * the data associated with a given member.

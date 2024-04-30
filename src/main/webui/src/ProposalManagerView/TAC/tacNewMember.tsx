@@ -11,6 +11,7 @@ import {useForm} from "@mantine/form";
 import {SubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
+import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * Renders form panel to add a reviewer to the TAC of the current cycle.
@@ -100,7 +101,7 @@ function CycleTACAddMemberPanel(): ReactElement {
 
     return (
         <Box>
-            <h3>Add an investigator</h3>
+            <ManagerPanelTitle proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Add a reviewer"} />
             <form onSubmit={handleAdd}>
                 <Select label={"Role"}
                         data={typeData}
@@ -113,7 +114,7 @@ function CycleTACAddMemberPanel(): ReactElement {
                     {...form.getInputProps("selectedMember")}
                 />
                 <Grid>
-                    <Grid.Col span={1}>
+                    <Grid.Col span={2}>
                         <SubmitButton
                             label={"Add"}
                             toolTipLabel={"Add new committee member"}/>
