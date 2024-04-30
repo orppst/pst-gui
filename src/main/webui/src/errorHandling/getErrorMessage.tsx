@@ -10,8 +10,31 @@
         }
  */
 
+/*
+    API error message format
+    {
+        message: string,
+        name: string,
+        stack: {
+            exceptionType: string,
+            message: string,
+            statusCode: number
+        }
+    }
+    where statusCode is the relevant internet error code.
+    We need to display the stack.message string NOT the top level message string
+ */
+
 type ErrorWithMessage = {
     message: string
+}
+
+type ErrorWithStack = {
+    stack: {
+        exceptionType: string,
+        message: string,
+        statusCode: number
+    }
 }
 
 function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
@@ -23,7 +46,25 @@ function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
     )
 }
 
+function isErrorWithStack(error: unknown): error is ErrorWithStack {
+    return (
+        typeof error === 'object' &&
+            error !== null &&
+            'stack' in error &&
+            typeof (error as Record<string, unknown>).stack === 'object'
+    )
+}
+
 function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
+
+    if (isErrorWithStack(maybeError)) {
+        console.log("error object: " + maybeError.stack);
+        if (isErrorWithMessage(maybeError.stack)) {
+            console.log("stack message: " + maybeError.stack.message)
+            return maybeError.stack
+        }
+    }
+
     if (isErrorWithMessage(maybeError)) return maybeError
 
     try {

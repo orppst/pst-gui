@@ -51,6 +51,14 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                             ))
                         )
                     })
+                    .catch((error) => {
+                        notifications.show({
+                            message: "cause: " + getErrorMessage(error),
+                            title: "Loading cycle resource types failed",
+                            autoClose: 5000,
+                            color: 'red'
+                        })
+                    })
             })
             .catch((error) => {
                 notifications.show({
