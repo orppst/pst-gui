@@ -1,8 +1,8 @@
 import {ReactElement} from "react";
-import {Badge, Container, Fieldset, Grid, Group, Space, Stack, Table, Text, Title} from "@mantine/core";
+import {Container, Fieldset, Grid, Group, Space, Stack, Table, Text} from "@mantine/core";
 import {
     fetchAvailableResourcesResourceRemoveCycleResource,
-    useAvailableResourcesResourceGetCycleAvailableResources, useProposalCyclesResourceGetProposalCycleDates,
+    useAvailableResourcesResourceGetCycleAvailableResources,
     useResourceTypeResourceGetAllResourceTypes
 } from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
@@ -14,6 +14,7 @@ import DeleteButton from "../../commonButtons/delete.tsx";
 import {modals} from "@mantine/modals";
 import {useQueryClient} from "@tanstack/react-query";
 import ResourceTypeModal from "./resourceType.modal.tsx";
+import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 
 export type AvailableResourcesProps  = {
@@ -42,14 +43,6 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     const resourceTypes =
         useResourceTypeResourceGetAllResourceTypes({});
 
-    //Cycle Dates object contains the cycle title, along with the dates
-    const cycleTitle =
-        useProposalCyclesResourceGetProposalCycleDates({
-            pathParams:{
-                cycleCode: Number(selectedCycleCode)
-            }
-        })
-
     if (availableResources.error) {
         notifications.show({
             message: "cause " + getErrorMessage(availableResources.error),
@@ -63,15 +56,6 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         notifications.show({
             message: "cause: " + getErrorMessage(resourceTypes.error),
             title: "Error loading resource types",
-            autoClose: 5000,
-            color: 'red'
-        })
-    }
-
-    if (cycleTitle.error) {
-        notifications.show({
-            message: "cause: " + getErrorMessage(cycleTitle.error),
-            title: "Error loading cycle title",
             autoClose: 5000,
             color: 'red'
         })
@@ -174,13 +158,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     //in this Cycle equals the total number of resource types added to the Tool.
     return (
         <Container fluid>
-            <Title order={3}>
-                {cycleTitle.isLoading ?
-                    <Badge size={"xl"} radius={0}>...</Badge> :
-                    <Badge size={"xl"} radius={0}>{cycleTitle.data?.title}</Badge>
-                }
-                : Available Resources
-            </Title>
+            <ManagerPanelTitle proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Available Resources"} />
             <Space h={"xl"}/>
             <Grid columns={10}>
                 <Grid.Col span={7}>
