@@ -5,22 +5,12 @@ import {
     useProposalResourceGetObservingProposalTitle
 } from "../generated/proposalToolComponents.ts";
 
-interface titleInterfaceProps {
-    isLoading?: boolean
-    itemName: string
-    panelTitle: string
-}
+import {titleInterfaceProps, editorPanelTitleInterfaceProps, managerPanelTitleInterfaceProps} from "./panelFeatureInterfaceProps.tsx";
 
-interface editorPanelTitleInterfaceProps {
-    proposalCode: number
-    panelTitle: string
-}
-
-interface managerPanelTitleInterfaceProps {
-    proposalCycleCode: number
-    panelTitle: string
-}
-
+/**
+ * Render a panel title or ellipsis if still loading.
+ * @param {titleInterfaceProps} props
+ */
 export function PanelTitle(props: titleInterfaceProps): ReactElement {
     return (
         <Title order={3}>
@@ -31,6 +21,10 @@ export function PanelTitle(props: titleInterfaceProps): ReactElement {
         </Title>);
 }
 
+/**
+ * Lookup a proposal title then call PanelTitle() to render
+ * @param {editorPanelTitleInterfaceProps} props
+ */
 export function EditorPanelTitle(props: editorPanelTitleInterfaceProps) {
     const {data, error, isLoading} =
         useProposalResourceGetObservingProposalTitle(
@@ -52,6 +46,10 @@ export function EditorPanelTitle(props: editorPanelTitleInterfaceProps) {
 
 }
 
+/**
+ * Lookup an observing cycle title then call PanelTitle() to render
+ * @param {managerPanelTitleInterfaceProps} props
+ */
 export function ManagerPanelTitle(props: managerPanelTitleInterfaceProps) {
     const {data, error, isLoading} =
         useProposalCyclesResourceGetProposalCycleTitle(
