@@ -6,15 +6,15 @@ import {
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
-import {Box, Text, Textarea} from "@mantine/core";
+import {Box, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import { SubmitButton } from 'src/commonButtons/save';
 import {
-    HEADER_FONT_WEIGHT,
     JSON_SPACES,
     MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS
 } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
+import {PanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
@@ -82,7 +82,7 @@ function SummaryPanel() {
 
     return (
         <Box>
-            <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Update summary</Text>
+            <PanelTitle isLoading={isLoading} itemName={data?.title as string} panelTitle={"Summary"} />
             {isLoading ? <Box>loading...</Box>:
               submitting ?
                 <Box>Submitting request</Box> :

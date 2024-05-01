@@ -12,6 +12,7 @@ import {JSON_SPACES} from "../../constants.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import DeleteButton from "../../commonButtons/delete";
+import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * the data associated with a given member.
@@ -46,7 +47,7 @@ export default function CycleTACPanel() : ReactElement {
 
     return (
         <Container fluid>
-            <Text fz={"lg"} fw={700}> Time Allocation Committee for this cycle</Text>
+            <ManagerPanelTitle proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Time Allocation Committee"}/>
             <Grid>
                 <Grid.Col span={5}>
                     <AddButton toolTipLabel={"Add new"}

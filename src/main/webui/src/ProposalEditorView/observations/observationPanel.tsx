@@ -1,18 +1,18 @@
 import {
     useObservationResourceGetObservations,
-    useProposalResourceGetObservingProposalTitle,
     useProposalResourceGetTargets,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from 'src/generated/proposalToolComponents';
 import {useParams} from "react-router-dom";
 import ObservationRow, { observationTableHeader } from './observationTable.tsx';
-import {Badge, Container, Group, Space, Table, Title} from "@mantine/core";
+import {Container, Group, Space, Table} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import { ReactElement } from 'react';
 import ObservationEditModal from './edit.modal.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
 import { IconTarget, IconChartLine } from '@tabler/icons-react';
+import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 
 /**
@@ -74,12 +74,6 @@ function Observations() {
             {enabled: true}
         );
 
-    // get the title of the proposal.
-    const {data: titleData, error: titleError, isLoading: titleLoading} =
-        useProposalResourceGetObservingProposalTitle(
-            {pathParams: {proposalCode: Number(selectedProposalCode)}}
-        );
-
     /**
      * generates the top header part of the panel.
      *
@@ -88,13 +82,7 @@ function Observations() {
      */
     const Header = (): ReactElement => {
         return (
-            <Title order={3}>
-                { titleLoading ?
-                    <Badge size={"xl"} radius={0}>...</Badge> :
-                    <Badge size={"xl"} radius={0}>{titleData}</Badge>
-                }
-                : Observations
-            </Title>
+            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Observations"} />
         )
     }
 
@@ -160,7 +148,7 @@ function Observations() {
     // process any errors.
     const possibleErrors: (
         {status: "unknown", payload: string} | null | undefined) [] = [
-            observationsError, targetsError, titleError, technicalGoalError];
+            observationsError, targetsError, technicalGoalError];
     const filtered: {status: "unknown", payload: string}[] =
         possibleErrors.flatMap(f => f ? [f] : []);
     if (filtered.length !== 0) {

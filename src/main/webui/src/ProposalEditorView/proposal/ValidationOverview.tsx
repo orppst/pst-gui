@@ -21,7 +21,7 @@ export default function ValidationOverview(props: {cycle: number}) {
     }
 
     return (
-        <Box m={20}>Server side validation overview
+        <Box m={20}>Validation overview
             {isLoading?(<Text>Loading...</Text>):(
                 <Table>
                     <Table.Tbody>

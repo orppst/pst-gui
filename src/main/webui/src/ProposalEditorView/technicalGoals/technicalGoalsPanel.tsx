@@ -1,15 +1,15 @@
 import {
     useProposalResourceGetObservingProposal,
-    useProposalResourceGetObservingProposalTitle,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from 'src/generated/proposalToolComponents.ts';
-import {Badge, Box, Container, Group, Space, Title} from '@mantine/core';
+import {Box, Container, Group, Space} from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import {TechnicalGoalsTable } from './technicalGoalTable.tsx';
 import { TechnicalGoal } from 'src/generated/proposalToolSchemas.ts';
 import TechnicalGoalEditModal from './edit.modal.tsx';
 import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
+import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * the data type shared by the edit components.
@@ -48,14 +48,6 @@ function TechnicalGoalsPanel(): ReactElement {
             {pathParams: {proposalCode: Number(selectedProposalCode)},},
             {enabled: true}
         );
-    const {
-        data: titleData,
-        error: titleError,
-        isLoading: titleLoading} =
-        useProposalResourceGetObservingProposalTitle(
-            {pathParams: {proposalCode: Number(selectedProposalCode)}}
-        );
-
 
     // acquire all the bound technical ids in observations.
     let boundTechnicalGoalIds: (number | undefined)[] | undefined;
@@ -73,26 +65,11 @@ function TechnicalGoalsPanel(): ReactElement {
         );
     }
 
-    if (titleError) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(titleError, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
-
-
     //<TechnicalGoalEditModal technicalGoal={undefined}/> is an alias for the "Add +" button,
     // the "view/edit" button is found in TechnicalGoalsTable, specifically one per row
     return (
         <Container fluid>
-            <Title order={3}>
-                {titleLoading ?
-                    <Badge size={"xl"} radius={0}>...</Badge> :
-                    <Badge size={"xl"} radius={0}>{titleData}</Badge>
-                }
-                : Technical Goals
-            </Title>
+            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Technical Goals"} />
             {goalsLoading ? (`Loading...`) :
                 <TechnicalGoalsTable
                     goals={goals}

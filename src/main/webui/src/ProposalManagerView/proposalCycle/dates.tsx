@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Badge, Container, Group, Stack, Text, Title} from "@mantine/core";
+import {Container, Group, Stack, Text} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {SubmitButton} from "../../commonButtons/save.tsx";
@@ -12,6 +12,7 @@ import {
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
 import {notifications} from "@mantine/notifications";
+import {PanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
@@ -112,12 +113,7 @@ export default function CycleDatesPanel() : ReactElement {
 
     return (
         <Container fluid>
-            <Title order={3}>
-                { isLoading ?
-                    <Badge size={"xl"} radius={0}>...</Badge> :
-                    <Badge size={"xl"} radius={0}>{proposalCycleTitle}</Badge>
-                } : Dates
-            </Title>
+            <PanelTitle isLoading={isLoading} itemName={proposalCycleTitle} panelTitle={"Dates"}/>
 
             <form onSubmit={handleSave}>
                 <DatesProvider settings={{timezone: 'UTC'}}>

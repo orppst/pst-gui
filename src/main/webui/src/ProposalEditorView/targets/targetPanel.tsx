@@ -5,10 +5,11 @@ import {
 
 import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
-import { Box, Text } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { ReactElement } from 'react';
-import { HEADER_FONT_WEIGHT, JSON_SPACES } from 'src/constants.tsx';
+import { JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from './TargetTable.tsx';
+import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * Renders the target panel containing an add target button
@@ -48,10 +49,7 @@ export function TargetPanel(): ReactElement {
 
     return (
         <Box>
-            <Text fz="lg"
-                  fw={HEADER_FONT_WEIGHT}>
-                Add and edit targets
-            </Text>
+            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Targets"} />
             <Box>
                 <AddTargetModal/>
                 {data?.length === 0?
