@@ -40,7 +40,7 @@ const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => 
                     },
                 )
                     .catch((error: { stack: { message: any; }; }) => {
-                        notifyError("Upload a document failed", getErrorMessage(error.stack.message));
+                        notifyError("Upload a document failed", getErrorMessage(error));
                     })
             }
         });

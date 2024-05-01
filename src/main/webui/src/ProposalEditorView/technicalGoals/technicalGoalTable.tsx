@@ -28,7 +28,6 @@ import {
     fetchTechnicalGoalResourceRemoveTechnicalGoal,
     useTechnicalGoalResourceGetTechnicalGoal
 } from 'src/generated/proposalToolComponents.ts';
-import { notifications } from '@mantine/notifications';
 import { notSet } from './edit.group.tsx';
 import { ReactElement } from 'react';
 import {
@@ -36,6 +35,7 @@ import {
     NO_ROW_SELECTED,
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
+import {notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 /** the technical goal id data holder.
  * @param {number} id the id
@@ -153,14 +153,8 @@ function TechnicalGoalRow(
                     }
                 }
             ))
-            .then(() => {
-                notifications.show({
-                    autoClose: false,
-                    title: "TechnicalGoal deleted",
-                    message: 'The selected technical goal has been deleted',
-                    color: "green"
-                })
-            })
+            .then(() => notifySuccess("TechnicalGoal deleted",
+                    "message: The selected technical goal has been deleted"))
             .catch(console.error);
     }
 
@@ -202,14 +196,8 @@ function TechnicalGoalRow(
             body: clonedGoal
         })
             .then(()=> queryClient.invalidateQueries())
-            .then(() => {
-                notifications.show({
-                    autoClose: false,
-                    title: "Technical Goal Cloned",
-                    message: 'The selected technical goal has been cloned',
-                    color: "green"
-                })
-            })
+            .then(() => notifySuccess("Goal Cloned",
+                    "The selected technical goal has been cloned"))
             .catch(console.error);
     }
 

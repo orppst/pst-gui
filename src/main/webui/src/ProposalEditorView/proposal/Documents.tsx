@@ -75,7 +75,7 @@ const DocumentsPanel = () => {
                     })
                     .catch((error) => {
                         setStatus("fail");
-                        notifyError("Upload failed", getErrorMessage(error.stack.message));
+                        notifyError("Upload failed", getErrorMessage(error));
                     })
             }
         }

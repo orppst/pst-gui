@@ -15,6 +15,8 @@ import {
     NO_ROW_SELECTED,
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
+import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
  * Render a table header suitable for rows made by TargetTableRow()
@@ -67,7 +69,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
     // the API when the exception is thrown
     const handleError = (error: { stack: { message: any; }; }) => {
         console.error(error);
-        alert(error.stack.message);
+        notifyError("Error deleting", getErrorMessage(error));
         setSubmitting(false);
     }
 

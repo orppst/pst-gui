@@ -77,7 +77,7 @@ function SubmitPanel(): ReactElement {
                 queryClient.invalidateQueries().then();
                 navigate("/proposal/" + selectedProposalCode);
             })
-            .catch((error) => notifyError("Submission failed", getErrorMessage(error.stack.message))
+            .catch((error) => notifyError("Submission failed", getErrorMessage(error))
             )
     });
 

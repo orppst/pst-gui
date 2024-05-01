@@ -17,13 +17,13 @@ import {
     fetchTechnicalGoalResourceAddTechnicalGoal,
     fetchTechnicalGoalResourceReplacePerformanceParameters, fetchTechnicalGoalResourceReplaceSpectrum
 } from "src/generated/proposalToolComponents.ts";
-import {notifications} from "@mantine/notifications";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import {
     convertToPerformanceParameters,
     convertToPerformanceParametersGui,
     PerformanceParametersGui
 } from "./performanceParametersGui.tsx";
+import {notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
@@ -224,14 +224,9 @@ export default function TechnicalGoalEditGroup(
                     body: performanceParameters
                 })
                     .then(()=>queryClient.invalidateQueries())
-                    .then(() => {
-                        notifications.show({
-                            autoClose: false,
-                            title: "Edit successful",
-                            message: "performance parameters updated",
-                            color: "green"
-                        })
-                    })
+                    .then(() =>
+                        notifySuccess("Edit successful",
+                            "performance parameters updated"))
                     .catch(console.error);
             }
 
