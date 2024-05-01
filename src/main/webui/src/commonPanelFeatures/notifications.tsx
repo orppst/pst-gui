@@ -5,7 +5,8 @@ function notify(title: string, message: string, colour: string) {
         title: title,
         message: message,
         autoClose: colour==='green'?5000:7000,
-        color: colour
+        color: colour,
+        className: 'my-notification-class'
     });
 }
 

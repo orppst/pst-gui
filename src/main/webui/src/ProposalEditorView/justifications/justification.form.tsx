@@ -7,8 +7,8 @@ import {useForm, UseFormReturnType} from "@mantine/form";
 import {fetchProposalResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {notifications} from "@mantine/notifications";
 import {SubmitButton} from "src/commonButtons/save.tsx";
+import {notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     return (
@@ -77,12 +77,7 @@ export default function JustificationForm(props: JustificationProps)
         })
             .then(()=>queryClient.invalidateQueries())
             .then(() => {
-                notifications.show({
-                    autoClose: false,
-                    title: "Update successful",
-                    message: props.which + " justification updated",
-                    color: "green"
-                })
+                notifySuccess("Update successful", props.which + " justification updated");
             })
             .then(props.closeModal)
             .catch(console.error);

@@ -13,6 +13,7 @@ import DeleteButton from "src/commonButtons/delete";
 import AddButton from "src/commonButtons/add";
 import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
 
 /**
  * the data associated with a given person.
@@ -131,7 +132,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     // when the exception is thrown
     const handleError = (error: { stack: { message: any; }; }) => {
         console.error(error);
-        alert(error.stack.message);
+        notifyError("Error deleting", error.stack.message);
         setSubmitting(false);
     }
 
