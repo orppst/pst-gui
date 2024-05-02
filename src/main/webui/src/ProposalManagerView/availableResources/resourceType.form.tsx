@@ -5,9 +5,9 @@ import {useForm} from "@mantine/form";
 import {ResourceTypeFormValues} from "./resourceType.modal.tsx";
 import {fetchResourceTypeResourceAddNewResourceType} from "../../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {notifications} from "@mantine/notifications";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
+import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 export default function ResourceTypeForm(props: ResourceTypeFormValues) : ReactElement {
 
@@ -39,28 +39,16 @@ export default function ResourceTypeForm(props: ResourceTypeFormValues) : ReactE
                 name: values.name,
                 unit: values.unit
             },
-            //@ts-ignore
+            //@ts-ignore-
             headers: {"Content-Type": "application/json"}
         })
             .then(() => queryClient.invalidateQueries())
             .then(() => props.closeModal!())
-            .then(() => {
-                notifications.show({
-                    autoClose: 5000,
-                    title: "Creation Successful",
-                    message: "Added " + values.name + " (" + values.unit + ") to the resource types",
-                    color: "green"
-                })
-            })
-            .catch((error) => {
-                notifications.show({
-                    autoClose: 5000,
-                    title: "Creation Failed",
-                    message: "Unable to add " + values.name + " (" + values.unit + ") due to: "
-                        + getErrorMessage(error),
-                    color: "red"
-                })
-            })
+            .then(() => notifySuccess("Creation Successful",
+                "Added " + values.name + " (" + values.unit + ") to the resource types"))
+            .catch((error) =>notifyError("Creation Failed",
+                "Unable to add " + values.name + " (" + values.unit + ") due to: "
+                + getErrorMessage(error)))
     })
 
     return (
