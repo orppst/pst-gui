@@ -1,10 +1,15 @@
 import {ReactElement} from "react";
-import {Box, Container, Divider, Group, Stack, Text} from "@mantine/core";
+import { Container, Divider, Fieldset, Group, Space, Stack, Text} from "@mantine/core";
 import {
     useProposalCyclesResourceGetProposalCycle
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {JSON_SPACES} from "../../constants.tsx";
+import AllocationGradesTable from "./allocationGradesTable.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import TACMembersTable from "./TACMembersTable.tsx";
+import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
+import AvailableResourcesTable from "./availableResourcesTable.tsx";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -18,69 +23,104 @@ function prettyDateTime(input : string ) : string {
     return date + " " + time + " GMT";
 }
 
-
 export default function CycleOverviewPanel() : ReactElement {
 
     const {selectedCycleCode} = useParams();
 
-    const cycle = useProposalCyclesResourceGetProposalCycle(
+    const cycleSynopsis = useProposalCyclesResourceGetProposalCycle(
         {pathParams: {cycleCode: Number(selectedCycleCode)}}
     )
 
-    if (cycle.error) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(cycle.error, null, JSON_SPACES)}</pre>
-            </Box>
-        );
+    if (cycleSynopsis.error) {
+        notifyError("Failed to load proposal cycle synopsis",
+            "cause " + getErrorMessage(cycleSynopsis.error))
     }
+
 
     const DisplayTitle = () : ReactElement => {
         return(
-            <h1>{cycle.data?.title}</h1>
+            <h1>{cycleSynopsis.data?.title}</h1>
         )
     }
 
     const DisplayDates = () : ReactElement => {
         return (
-            <Stack>
-                <h3>Important Dates</h3>
-                <Group grow>
-                <Text>Submission deadline:</Text>
-                    {
-                        cycle.data?.submissionDeadline &&
-                        <Text c={"orange"}> {prettyDateTime(cycle.data.submissionDeadline)}</Text>
-                    }
-                </Group>
-                <Divider />
-                <Group grow>
-                    <Text>Observation session start:</Text>
-                    {
-                        cycle.data?.observationSessionStart &&
-                        <Text c={"orange"}>{prettyDateTime(cycle.data.observationSessionStart)}</Text>
-                    }
-                </Group>
-                <Divider />
-                <Group grow>
-                    <Text>Observation session end:</Text>
-                    {
-                        cycle.data?.observationSessionEnd &&
-                        <Text c={"orange"}>{prettyDateTime(cycle.data.observationSessionEnd)}</Text>
-                    }
-                </Group>
-            </Stack>
+            <Fieldset legend={"Important Dates"}>
+                <Stack>
+                    <Group grow>
+                        <Text>Submission deadline:</Text>
+                        {
+                            cycleSynopsis.data?.submissionDeadline &&
+                            <Text c={"orange"}> {prettyDateTime(cycleSynopsis.data.submissionDeadline)}</Text>
+                        }
+                    </Group>
+                    <Divider />
+                    <Group grow>
+                        <Text>Observation session start:</Text>
+                        {
+                            cycleSynopsis.data?.observationSessionStart &&
+                            <Text c={"orange"}>{prettyDateTime(cycleSynopsis.data.observationSessionStart)}</Text>
+                        }
+                    </Group>
+                    <Divider />
+                    <Group grow>
+                        <Text>Observation session end:</Text>
+                        {
+                            cycleSynopsis.data?.observationSessionEnd &&
+                            <Text c={"orange"}>{prettyDateTime(cycleSynopsis.data.observationSessionEnd)}</Text>
+                        }
+                    </Group>
+                </Stack>
+            </Fieldset>
 
+        )
+    }
+
+    const DisplayAllocationGrades = () : ReactElement => {
+        return (
+            <Fieldset legend={"Allocation Grades"}>
+                {AllocationGradesTable(Number(selectedCycleCode))}
+            </Fieldset>
+        )
+    }
+
+    const DisplayTACMembers = () : ReactElement => {
+        return (
+            <Fieldset legend={"TAC Members"}>
+                {TACMembersTable(Number(selectedCycleCode))}
+            </Fieldset>
+        )
+    }
+
+    const DisplaySubmittedProposals = () : ReactElement => {
+        return (
+            <Fieldset legend={"Submitted Proposals"}>
+                {SubmittedProposalsTable(Number(selectedCycleCode))}
+            </Fieldset>
+        )
+    }
+
+    const DisplayAvailableResources = () : ReactElement => {
+        return (
+            <Fieldset legend={"Available Resources"}>
+                {AvailableResourcesTable(Number(selectedCycleCode))}
+            </Fieldset>
         )
     }
 
 
     return (
-        <Container fluid>
+        <Container>
             <DisplayTitle />
             <DisplayDates />
-            {
-                //ToDo: display functions for other fields of a proposal cycle e.g., tac members, resources,...
-            }
+            <Space h={"xl"}/>
+            <DisplayAllocationGrades />
+            <Space h={"xl"}/>
+            <DisplayTACMembers />
+            <Space h={"xl"}/>
+            <DisplaySubmittedProposals />
+            <Space h={"xl"}/>
+            <DisplayAvailableResources />
         </Container>
     )
 }
