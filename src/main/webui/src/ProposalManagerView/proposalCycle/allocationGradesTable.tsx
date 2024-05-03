@@ -1,20 +1,22 @@
 import {ReactElement} from "react";
 import {Table} from "@mantine/core";
-import {useParams} from "react-router-dom";
 import {
     useProposalCyclesResourceGetCycleAllocatedGrade,
     useProposalCyclesResourceGetCycleAllocationGrades
 } from "../../generated/proposalToolComponents.ts";
-import {notifications} from "@mantine/notifications";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
 
-export default function AllocationGradesTable() : ReactElement {
-
-    const {selectedCycleCode} = useParams();
+export default function AllocationGradesTable(selectedCycleCode: number) : ReactElement {
 
     const allocationGrades = useProposalCyclesResourceGetCycleAllocationGrades(
-        {pathParams: {cycleCode: Number(selectedCycleCode)}}
+        {pathParams: {cycleCode: selectedCycleCode}}
     )
+
+    if (allocationGrades.error) {
+        notifyError("Failed to load allocation grades list",
+            "cause: " + getErrorMessage(allocationGrades.error))
+    }
 
     const AllocationGradesTableHeader = () : ReactElement => {
         return (
@@ -30,16 +32,12 @@ export default function AllocationGradesTable() : ReactElement {
     const AllocationGradeTableRow = (id: number) : ReactElement  => {
 
         const allocationGrade = useProposalCyclesResourceGetCycleAllocatedGrade(
-            {pathParams:{cycleCode: Number(selectedCycleCode), gradeId: id}}
+            {pathParams:{cycleCode: selectedCycleCode, gradeId: id}}
         )
 
         if (allocationGrade.error) {
-            notifications.show({
-                message: "cause: " + getErrorMessage(allocationGrade.error),
-                title: "Failed to load allocation grade",
-                autoClose: 5000,
-                color: 'red'
-            })
+            notifyError("Failed to load allocation grade",
+                "cause: " + getErrorMessage(allocationGrade.error))
         }
 
         return (

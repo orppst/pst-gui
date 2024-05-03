@@ -4,9 +4,12 @@ import {
     useProposalCyclesResourceGetProposalCycle
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import AllocationGradesTable from "./possibleGrades.tsx";
-import {notifications} from "@mantine/notifications";
+import AllocationGradesTable from "./allocationGradesTable.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import TACMembersTable from "./TACMembersTable.tsx";
+import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
+import AvailableResourcesTable from "./availableResourcesTable.tsx";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -20,7 +23,6 @@ function prettyDateTime(input : string ) : string {
     return date + " " + time + " GMT";
 }
 
-
 export default function CycleOverviewPanel() : ReactElement {
 
     const {selectedCycleCode} = useParams();
@@ -30,12 +32,8 @@ export default function CycleOverviewPanel() : ReactElement {
     )
 
     if (cycleSynopsis.error) {
-        notifications.show({
-            message: "cause " + getErrorMessage(cycleSynopsis.error),
-            title: "Failed to load proposal cycle synopsis",
-            autoClose: 5000,
-            color: 'red'
-        })
+        notifyError("Failed to load proposal cycle synopsis",
+            "cause " + getErrorMessage(cycleSynopsis.error))
     }
 
 
@@ -81,7 +79,7 @@ export default function CycleOverviewPanel() : ReactElement {
     const DisplayAllocationGrades = () : ReactElement => {
         return (
             <Fieldset legend={"Allocation Grades"}>
-                <AllocationGradesTable />
+                {AllocationGradesTable(Number(selectedCycleCode))}
             </Fieldset>
         )
     }
@@ -89,6 +87,7 @@ export default function CycleOverviewPanel() : ReactElement {
     const DisplayTACMembers = () : ReactElement => {
         return (
             <Fieldset legend={"TAC Members"}>
+                {TACMembersTable(Number(selectedCycleCode))}
             </Fieldset>
         )
     }
@@ -96,6 +95,7 @@ export default function CycleOverviewPanel() : ReactElement {
     const DisplaySubmittedProposals = () : ReactElement => {
         return (
             <Fieldset legend={"Submitted Proposals"}>
+                {SubmittedProposalsTable(Number(selectedCycleCode))}
             </Fieldset>
         )
     }
@@ -103,6 +103,7 @@ export default function CycleOverviewPanel() : ReactElement {
     const DisplayAvailableResources = () : ReactElement => {
         return (
             <Fieldset legend={"Available Resources"}>
+                {AvailableResourcesTable(Number(selectedCycleCode))}
             </Fieldset>
         )
     }
