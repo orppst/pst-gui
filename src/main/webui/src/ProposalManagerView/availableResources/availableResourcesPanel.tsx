@@ -6,7 +6,6 @@ import {
     useResourceTypeResourceGetAllResourceTypes
 } from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {notifications} from "@mantine/notifications";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {Resource} from "../../generated/proposalToolSchemas.ts";
 import AvailableResourcesModal from "./availableResources.modal.tsx";
@@ -15,6 +14,7 @@ import {modals} from "@mantine/modals";
 import {useQueryClient} from "@tanstack/react-query";
 import ResourceTypeModal from "./resourceType.modal.tsx";
 import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 
 export type AvailableResourcesProps  = {
@@ -44,21 +44,11 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         useResourceTypeResourceGetAllResourceTypes({});
 
     if (availableResources.error) {
-        notifications.show({
-            message: "cause " + getErrorMessage(availableResources.error),
-            title: "Error loading available resources",
-            autoClose: 5000,
-            color: 'red'
-        })
+        notifyError("Error loading available resources", "cause " + getErrorMessage(availableResources.error));
     }
 
     if (resourceTypes.error) {
-        notifications.show({
-            message: "cause: " + getErrorMessage(resourceTypes.error),
-            title: "Error loading resource types",
-            autoClose: 5000,
-            color: 'red'
-        })
+        notifyError("Error loading resource types", "cause: " + getErrorMessage(resourceTypes.error));
     }
 
     const handleDelete = (id: number) => {
@@ -70,21 +60,11 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         })
             .then(() => queryClient.invalidateQueries())
             .then(()=>{
-                notifications.show({
-                    autoClose: 5000,
-                    title: "Available Resource Deleted",
-                    message: "The selected available resource has been removed",
-                    color: "green"
-                })
+                notifySuccess("Available Resource Deleted", "The selected available resource has been removed")
             })
             .catch((error) => {
-                notifications.show({
-                    autoClose: 5000,
-                    title: "Deletion Failed",
-                    message: "Unable to remove the selected available resource, cause: "
-                        + getErrorMessage(error),
-                    color: 'red'
-                })
+                    notifyError("Deletion Failed", "Unable to remove the selected available resource, cause: "
+                        + getErrorMessage(error))
             })
     }
 

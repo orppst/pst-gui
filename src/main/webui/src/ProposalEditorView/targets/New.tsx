@@ -34,7 +34,7 @@ import {
     LoadScriptIntoDOM,
     PopulateAladin
 } from './aladinHelperMethods.tsx';
-import {notifications} from "@mantine/notifications";
+import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -196,13 +196,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 } else {
                     //Target already exists on this proposal
                     setNameUnique(false);
-                    notifications.show({
-                        autoClose:5000,
-                        title:"Duplicate target",
-                        message:"A target called '"+val.TargetName+"' already exists",
-                        color:"red",
-                        className:'my-notifications-class'
-                    })
+                    notifyError("Duplicate target",
+                        "A target called '"+val.TargetName+"' already exists");
                 }
             })
             .catch(console.log);

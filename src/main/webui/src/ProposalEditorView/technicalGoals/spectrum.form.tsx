@@ -17,10 +17,10 @@ import {ScienceSpectralWindowGui} from "./scienceSpectralWindowGui.tsx";
 import {ReactElement} from "react";
 import { MAX_COLUMNS } from 'src/constants';
 import {modals} from "@mantine/modals";
-import {notifications} from "@mantine/notifications";
 import {fetchTechnicalGoalResourceRemoveSpectrum} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
+import {notifyInfo, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 /**
  * generates the spectral window panel.
@@ -158,14 +158,8 @@ export default function SpectralWindowsSection(
             }
         })
             .then(()=>queryClient.invalidateQueries())
-            .then(()=>{
-                notifications.show({
-                    autoClose: 3000,
-                    title: "Deletion successful",
-                    message: "The selected spectral window has been deleted",
-                    color: "green"
-                })
-            })
+            .then(()=> notifySuccess("Deletion successful",
+                    "The selected spectral window has been deleted"))
             .catch(console.error)
     }
 
@@ -180,14 +174,8 @@ export default function SpectralWindowsSection(
             labels: {confirm: 'Delete', cancel: "No don't delete it"},
             confirmProps: {color: 'red'},
             onConfirm: () => handleDelete(spectralWindowId),
-            onCancel: () => {
-                notifications.show({
-                    autoClose: false,
-                    title: "Deletion cancelled",
-                    message: "User cancelled deletion of the spectral window",
-                    color: "orange"
-                })
-            }
+            onCancel: () => notifyInfo("Deletion cancelled",
+                    "User cancelled deletion of the spectral window")
         })
 
     const windowsList = form.values.spectralWindows.map(

@@ -9,9 +9,9 @@ import {
     fetchObservatoryResourceGetObservatories,
     fetchProposalCyclesResourceCreateProposalCycle
 } from "../generated/proposalToolComponents.ts";
-import {notifications} from "@mantine/notifications";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import {useNavigate} from "react-router-dom";
+import {notifyError} from "../commonPanelFeatures/notifications.tsx";
 
 interface NewCycleFormProps {
     closeModal?: () => void
@@ -41,11 +41,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                 );
             })
             .catch((error) => {
-                notifications.show({
-                    autoClose: false,
-                    title: "Loading Observatories failed",
-                    message: "Cannot load Observatories, caused by " + getErrorMessage(error)
-                });
+                notifyError("Loading Observatories failed", "Cannot load Observatories, caused by " + getErrorMessage(error));
             });
 
     }, []);

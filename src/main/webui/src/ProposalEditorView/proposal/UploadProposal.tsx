@@ -1,5 +1,4 @@
 import * as JSZip from 'jszip';
-import { notifications } from '@mantine/notifications';
 import { ObservingProposal } from 'src/generated/proposalToolSchemas.ts';
 import {
     JSON_FILE_NAME, OVERVIEW_PDF_FILENAME, MAX_SUPPORTING_DOCUMENT_SIZE
@@ -8,6 +7,8 @@ import {
     fetchProposalResourceImportProposal,
     fetchSupportingDocumentResourceUploadSupportingDocument,
 } from 'src/generated/proposalToolComponents.ts';
+import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
  * Upload a document in a zip file to the given proposal.
@@ -22,15 +23,10 @@ const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => 
     zip.file(filename).async('blob')
         .then((document) => {
             if(document.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
-                notifications.show({
-                    autoClose: 7000,
-                    title: "A file upload failed",
-                    message: "The supporting document " + filename
+                notifyError("A file upload failed",
+                    "The supporting document " + filename
                         + " is too large. Maximum size of zip is "
-                        + MAX_SUPPORTING_DOCUMENT_SIZE/1024/1024 + "MB",
-                    color: 'red',
-                    className: 'my-notification-class',
-                })
+                        + MAX_SUPPORTING_DOCUMENT_SIZE/1024/1024 + "MB")
             } else {
                 formData.append("title", filename);
                 formData.append("document", document);
@@ -44,13 +40,7 @@ const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => 
                     },
                 )
                     .catch((error: { stack: { message: any; }; }) => {
-                        notifications.show({
-                            autoClose: 7000,
-                            title: "Upload a document failed",
-                            message: error.stack.message,
-                            color: 'red',
-                            className: 'my-notification-class',
-                        })
+                        notifyError("Upload a document failed", getErrorMessage(error));
                     })
             }
         });
@@ -70,37 +60,19 @@ const SendToImportAPI = (observingProposal: ObservingProposal, zip: JSZip)=> {
 
     fetchProposalResourceImportProposal({body: observingProposal})
         .then((uploadedProposal) => {
-            if(uploadedProposal._id === undefined) {
-                notifications.show({
-                autoClose: 7000,
-                title: "Upload failed",
-                message: "An unidentified response from the API",
-                color: 'red',
-                className: 'my-notification-class',
-                });
+            if (uploadedProposal._id === undefined) {
+                notifyError("Upload failed", "An unidentified response from the API");
             } else {
                 Object.keys(zip.files).forEach(function (filename) {
-                if(filename !== JSON_FILE_NAME && !skipFiles.test(filename)) {
-                    UploadADocument(Number(uploadedProposal._id), zip, filename);
-                }
-            })
-            notifications.show({
-                    autoClose: 5000,
-                    title: "Upload successful",
-                    message: 'The proposal has been uploaded',
-                    color: 'green',
-                    className: 'my-notification-class',
-                });
+                    if (filename !== JSON_FILE_NAME && !skipFiles.test(filename)) {
+                        UploadADocument(Number(uploadedProposal._id), zip, filename);
+                    }
+                })
+                notifySuccess("Upload successful", "The proposal has been uploaded");
             }
         }).catch((error: { stack: { message: any; }; }) => {
-            notifications.show({
-            autoClose: 7000,
-            title: "Upload failed",
-            message: error.stack.message,
-            color: 'red',
-            className: 'my-notification-class',
-        });
-    })
+            notifyError("Upload failed", getErrorMessage(error.stack.message));
+        })
 }
 
 /**
@@ -111,13 +83,7 @@ const SendToImportAPI = (observingProposal: ObservingProposal, zip: JSZip)=> {
 export const handleUploadZip = async (chosenFile: File | null) => {
     // check for no file.
     if (chosenFile === null) {
-        notifications.show({
-            autoClose: 7000,
-            title: "Upload failed",
-            message: `There was no file to upload`,
-            color: 'red',
-            className: 'my-notification-class',
-        })
+        notifyError("Upload failed", "There was no file to upload")
     }
 
     // all simple checks done. Time to verify the internals of the zip.
@@ -125,13 +91,8 @@ export const handleUploadZip = async (chosenFile: File | null) => {
         JSZip.loadAsync(chosenFile).then(function (zip) {
             // check the json file exists.
             if (!Object.keys(zip.files).includes(JSON_FILE_NAME)) {
-                notifications.show({
-                    autoClose: 7000,
-                    title: "Upload failed",
-                    message: "There was no file called '"+JSON_FILE_NAME+"' within the zip",
-                    color: 'red',
-                    className: 'my-notification-class',
-                })
+                notifyError("Upload failed",
+                    "There was no file called '"+JSON_FILE_NAME+"' within the zip")
             }
 
             // extract json data to import proposal definition.
@@ -141,24 +102,13 @@ export const handleUploadZip = async (chosenFile: File | null) => {
                 if (jsonObject) {
                     SendToImportAPI(jsonObject, zip);
                 } else {
-                    notifications.show({
-                        autoClose: 7000,
-                        title: "Upload failed",
-                        message: `The JSON file failed to load correctly.`,
-                        color: 'red',
-                        className: 'my-notification-class',
-                    })
+                    notifyError("Upload failed", "The JSON file failed to load correctly")
                 }
             })
             .catch(() => {
                 console.log("Unable to extract " + JSON_FILE_NAME + " from zip file");
-                notifications.show({
-                    autoClose: 7000,
-                    title: "Upload failed",
-                    message: "Unable to extract " + JSON_FILE_NAME + " from zip file",
-                    color: 'red',
-                    className: 'my-notification-class',
-                })
+                notifyError("Upload failed",
+                    "Unable to extract " + JSON_FILE_NAME + " from zip file");
             })
         })
     }
