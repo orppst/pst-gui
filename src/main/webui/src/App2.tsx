@@ -14,8 +14,8 @@ import TitlePanel from './ProposalEditorView/proposal/Title.tsx';
 import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
 import SummaryPanel from "./ProposalEditorView/proposal/Summary.tsx";
-import InvestigatorsPanel from "./ProposalEditorView/Investigators/List.tsx";
-import AddInvestigatorPanel from "./ProposalEditorView/Investigators/New.tsx";
+import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
+import AddInvestigatorPanel from "./ProposalEditorView/investigators/New.tsx";
 import {
     createBrowserRouter,
     Outlet,

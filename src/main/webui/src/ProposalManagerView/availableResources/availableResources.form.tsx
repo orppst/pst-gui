@@ -10,10 +10,10 @@ import {
     fetchResourceTypeResourceGetAllResourceTypes
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {notifications} from "@mantine/notifications";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
+import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 export default function AvailableResourcesForm(props: AvailableResourcesProps) : ReactElement {
 
@@ -51,23 +51,11 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                             ))
                         )
                     })
-                    .catch((error) => {
-                        notifications.show({
-                            message: "cause: " + getErrorMessage(error),
-                            title: "Loading cycle resource types failed",
-                            autoClose: 5000,
-                            color: 'red'
-                        })
-                    })
+                    .catch((error) => notifyError("Loading cycle resource types failed",
+                        "cause: " + getErrorMessage(error)))
             })
-            .catch((error) => {
-                notifications.show({
-                    title: "Loading resource types failed",
-                    message: "cause: " + getErrorMessage(error),
-                    autoClose: 5000,
-                    color: 'red'
-                })
-            })
+            .catch((error) => notifyError("Loading resource types failed",
+                "cause: " + getErrorMessage(error)))
     }, []);
 
     const form  = useForm<AvailableResourcesValues>({
@@ -97,14 +85,8 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
             })
                 .then(()=>queryClient.invalidateQueries())
                 .then( () => props.closeModal!() )
-                .then(() => {
-                    notifications.show({
-                        autoClose: 5000,
-                        title: "Update successful",
-                        message: "Resource amount updated",
-                        color: 'green',
-                    });
-                })
+                .then(() => notifySuccess("Update successful",
+                    "Resource amount updated"))
         } else {
             //adding a new 'available resource'
             fetchAvailableResourcesResourceAddCycleResource({
@@ -120,14 +102,8 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
             })
                 .then( ()=>queryClient.invalidateQueries() )
                 .then( () => props.closeModal!() )
-                .catch((error) => {
-                    notifications.show({
-                        title: "Adding available resource failed",
-                        message: "cause: " + getErrorMessage(error),
-                        autoClose: 5000,
-                        color: 'red'
-                    })
-                })
+                .catch((error) => notifyError("Adding available resource failed",
+                    "cause: " + getErrorMessage(error)))
         }
 
 

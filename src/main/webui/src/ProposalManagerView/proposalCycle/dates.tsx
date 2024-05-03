@@ -11,8 +11,8 @@ import {
     useProposalCyclesResourceGetProposalCycleDates
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
-import {notifications} from "@mantine/notifications";
 import {PanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
@@ -90,25 +90,12 @@ export default function CycleDatesPanel() : ReactElement {
             }))
         }
         // FIXME: Make this .catch() work correctly
-        Promise.all(promises).then(()=>{
-                notifications.show({
-                    autoClose:5000,
-                    title: "Update dates",
-                    message: "Changes saved",
-                    color:"green",
-                    className:'my-notifications-class'
-                });
+        Promise.all(promises)
+            .then(()=> {
+                notifySuccess("Update dates", "Changes saved");
                 form.resetDirty();
             })
-            .catch((fault)=>
-                notifications.show({
-                    autoClose:5000,
-                    title:"Update dates",
-                    message:"Error saving " + fault,
-                    color:"red",
-                    className:'my-notifications-class'
-                }));
-
+            .catch((fault)=>notifyError("Update dates", "Error saving " + fault))
     });
 
     return (

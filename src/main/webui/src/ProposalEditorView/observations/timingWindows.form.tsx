@@ -13,7 +13,7 @@ import {fetchObservationResourceRemoveConstraint} from "src/generated/proposalTo
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
-import {notifications} from "@mantine/notifications";
+import {notifyInfo, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
 
 
 //Providing a UI for a TimingWindow:
@@ -85,13 +85,8 @@ export default function TimingWindowsForm(
         })
             .then(()=>queryClient.invalidateQueries())
             .then(() => {
-                notifications.show({
-                    autoClose: 3000,
-                    title: "Deletion confirmed",
-                    message: "The selected timing window has been deleted",
-                    color: "green"
+                    notifySuccess("Deletion confirmed", "The selected timing window has been deleted")
                 })
-            })
             .catch(console.error);
     }
 
@@ -114,12 +109,7 @@ export default function TimingWindowsForm(
             confirmProps: {color: 'red'},
             onConfirm: () => handleDelete(timingWindowId),
             onCancel: () => {
-                notifications.show({
-                    autoClose: false,
-                    title: "Deletion cancelled",
-                    message: "User cancelled deletion of timing window",
-                    color: "orange"
-                })
+                notifyInfo("Deletion cancelled", "User cancelled deletion of timing window")
             }
     })
 

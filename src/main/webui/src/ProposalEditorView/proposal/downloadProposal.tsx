@@ -10,7 +10,7 @@ import {
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from 'src/generated/proposalToolComponents.ts';
 import { JSON_FILE_NAME, OVERVIEW_PDF_FILENAME } from 'src/constants.tsx';
-import {notifications} from "@mantine/notifications";
+import {notifyError, notifyInfo} from "../../commonPanelFeatures/notifications.tsx";
 
 
 /**
@@ -113,21 +113,9 @@ async function downloadProposal(
                 //ensure we got some data back.
                 if(blob!==undefined){
                     zip.file(JSON_FILE_NAME,blob)
-                    notifications.show({
-                        autoClose:7000,
-                        title:"Export",
-                        message:'An export has started and the download will begin shortly',
-                        color:"green",
-                        className:"my-notification-class",
-                    });
+                    notifyInfo("Export", "An export has started and the download will begin shortly");
                 }else{
-                    notifications.show({
-                        autoClose:7000,
-                        title:"Export Error",
-                        message:"An unknown error has occurred exporting this proposal",
-                        color:"red",
-                        className:'my-notifications-class'
-                    })
+                    notifyError("Export Error", "An unknown error has occurred exporting this proposal");
                 }
             })
     );

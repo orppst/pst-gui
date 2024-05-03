@@ -13,6 +13,8 @@ import {SubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
  * Render s form panel to add an investigator to the current proposal.
@@ -85,9 +87,15 @@ function AddInvestigatorPanel(): ReactElement {
                     return queryClient.invalidateQueries();
                 })
                 .then(()=>navigate(  "../", {relative:"path"})) // see https://stackoverflow.com/questions/72537159/react-router-v6-and-relative-links-from-page-within-route
-                .catch(console.log)
+                .catch((error)=>{
+                    console.log(error);
+                    notifyError("Add investigator error", getErrorMessage(error));
+                })
             )
-            .catch(console.log);
+            .catch((error)=> {
+                console.log(error);
+                notifyError("Add investigator error", getErrorMessage(error));
+            })
     });
 
     function handleCancel(event: SyntheticEvent) {
