@@ -1,11 +1,16 @@
-import {Badge, Title} from "@mantine/core";
-import {ReactElement} from "react";
+import {
+    Badge, Container,
+    ContainerProps,
+    Title,
+} from "@mantine/core";
+import {forwardRef, ReactElement} from "react";
 import {
     useProposalCyclesResourceGetProposalCycleTitle,
     useProposalResourceGetObservingProposalTitle
 } from "../generated/proposalToolComponents.ts";
 
 import {titleInterfaceProps, editorPanelTitleInterfaceProps, managerPanelTitleInterfaceProps} from "./panelFeatureInterfaceProps.tsx";
+
 
 /**
  * Render a panel title or ellipsis if still loading.
@@ -70,3 +75,16 @@ export function ManagerPanelTitle(props: managerPanelTitleInterfaceProps) {
         panelTitle={props.panelTitle} />);
 
 }
+
+/**
+ * A wrapper element for whatever we want to use to contain the contents of each panel
+ * this is a Mantine Container, but can easily be modified here
+ */
+
+export const PanelFrame =
+    forwardRef<HTMLDivElement, ContainerProps>((props, ref)=> (
+            <Container ref={ref}>
+                {props.children}
+            </Container>
+        )
+    );

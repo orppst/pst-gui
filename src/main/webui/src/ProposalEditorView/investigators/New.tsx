@@ -12,7 +12,7 @@ import {useForm} from "@mantine/form";
 import {SubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
 import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
@@ -104,7 +104,7 @@ function AddInvestigatorPanel(): ReactElement {
     }
 
     return (
-            <Box>
+            <PanelFrame>
                 <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Add an investigator"} />
                 <form onSubmit={handleAdd}>
                     <Select label={"Type"}
@@ -135,7 +135,7 @@ function AddInvestigatorPanel(): ReactElement {
                         </Grid.Col>
                     </Grid>
                 </form>
-            </Box>
+            </PanelFrame>
     )
 }
 

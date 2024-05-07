@@ -7,7 +7,7 @@ import {
 import {JSON_SPACES} from "src/constants.tsx";
 import {Justification} from "src/generated/proposalToolSchemas.ts";
 import JustificationsTable from "./justifications.table.tsx";
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
 
 //no need to use an array, only two "kinds" of Justification 'scientific' and 'technical'
 export type JustificationKinds = {
@@ -53,12 +53,12 @@ export default function JustificationsPanel() : ReactElement {
     }
 
     return (
-        <Container fluid>
+        <PanelFrame fluid>
             <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Justifications"} />
 
             {scientificIsLoading || technicalIsLoading ? (`Loading justifications...`) :
                 <JustificationsTable scientific={scientific!} technical={technical!} />
             }
-        </Container>
+        </PanelFrame>
     )
 }
