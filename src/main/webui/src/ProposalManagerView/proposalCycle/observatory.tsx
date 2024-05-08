@@ -7,7 +7,7 @@ export default function CycleObservatoryPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
     return (
-        <PanelFrame fluid>
+        <PanelFrame>
             <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Observatory"} />
             <Text>WIP: this is where you view/edit the observatory used for the cycle</Text>
         </PanelFrame>

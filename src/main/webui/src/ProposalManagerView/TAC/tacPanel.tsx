@@ -46,7 +46,7 @@ export default function CycleTACPanel() : ReactElement {
     }
 
     return (
-        <PanelFrame fluid>
+        <PanelFrame>
             <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Time Allocation Committee"}/>
             <Grid>
                 <Grid.Col span={5}>

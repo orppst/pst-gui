@@ -99,7 +99,7 @@ export default function CycleDatesPanel() : ReactElement {
     });
 
     return (
-        <PanelFrame fluid>
+        <PanelFrame>
             <PanelHeader isLoading={isLoading} itemName={proposalCycleTitle} panelTitle={"Dates"}/>
 
             <form onSubmit={handleSave}>

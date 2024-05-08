@@ -86,7 +86,7 @@ export default function CycleTitlePanel() : ReactElement {
     });
 
     return (
-        <PanelFrame fluid>
+        <PanelFrame>
             <PanelHeader isLoading={isLoading} itemName={data as unknown as string} panelTitle={"Title"} />
             { isLoading ? ("Loading..") :
                 submitting ? ("Submitting..."):

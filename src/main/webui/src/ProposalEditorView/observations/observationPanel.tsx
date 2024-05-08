@@ -5,7 +5,7 @@ import {
 } from 'src/generated/proposalToolComponents';
 import {useParams} from "react-router-dom";
 import ObservationRow, { observationTableHeader } from './observationTable.tsx';
-import {Container, Group, Space, Table} from "@mantine/core";
+import {Group, Space, Table} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import { ReactElement } from 'react';
@@ -162,19 +162,19 @@ function Observations() {
     // if still loading. present a loading screen.
     if (targetsLoading || observationsLoading || technicalGaolsLoading ) {
         return (
-            <Container fluid>
+            <PanelFrame>
                 <Header/>
                 <Space h={"xs"}/>
                 <Group justify={'flex-end'}>
                     `Loading...`
                 </Group>
-            </Container>
+            </PanelFrame>
         )
     }
 
     if (targets?.length === 0 || technicalGoals?.length === 0) {
         return (
-            <Container fluid>
+            <PanelFrame>
                 <Header/>
                 <Group>
                     To create an observation please add
@@ -190,12 +190,12 @@ function Observations() {
                         <TechnicalGaolButton/>
                     }
                 </Group>
-            </Container>
+            </PanelFrame>
         )
     } else {
         //both targets.length and technicalGoals.length are greater than zero here
         return (
-            <PanelFrame fluid>
+            <PanelFrame>
                 <Header/>
                 <TableGenerator/>
                 <Space h={"xl"}/>

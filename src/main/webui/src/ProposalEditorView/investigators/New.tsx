@@ -66,9 +66,9 @@ function AddInvestigatorPanel(): ReactElement {
 
     if (error) {
         return (
-            <div>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </div>
+            </PanelFrame>
         );
     }
 

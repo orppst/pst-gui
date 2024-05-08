@@ -1,5 +1,4 @@
 import {ReactElement} from "react";
-import {Box} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
     useProposalResourceGetJustification,
@@ -38,22 +37,22 @@ export default function JustificationsPanel() : ReactElement {
 
     if (scientificError) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(scientificError, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
     if (technicalError) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(technicalError, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
     return (
-        <PanelFrame fluid>
+        <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Justifications"} />
 
             {scientificIsLoading || technicalIsLoading ? (`Loading justifications...`) :

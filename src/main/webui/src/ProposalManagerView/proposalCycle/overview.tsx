@@ -76,7 +76,7 @@ export default function CycleOverviewPanel() : ReactElement {
 
 
     return (
-        <PanelFrame fluid>
+        <PanelFrame>
             <DisplayTitle />
             <DisplayDates />
             {

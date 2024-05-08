@@ -3,7 +3,7 @@ import {
     ContainerProps,
     Title,
 } from "@mantine/core";
-import {forwardRef, ReactElement} from "react";
+import {ReactElement} from "react";
 import {
     useProposalCyclesResourceGetProposalCycleTitle,
     useProposalResourceGetObservingProposalTitle
@@ -79,13 +79,11 @@ export function ManagerPanelHeader(props: managerPanelHeaderInterfaceProps) {
 /**
  * A wrapper element for whatever we want to use to contain the contents of each panel
  * this is a Mantine Container, but can easily be modified here to be a different
- * component or have default properties.
+ * component or have default properties, such as 'fluid'
  */
 
-export const PanelFrame =
-    forwardRef<HTMLDivElement, ContainerProps>((props, ref)=> (
-            <Container ref={ref} size={"lg"}>
-                {props.children}
-            </Container>
-        )
+export function PanelFrame(props: ContainerProps): ReactElement {
+    return (
+        <Container fluid {...props} />
     );
+}

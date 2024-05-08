@@ -2,7 +2,7 @@ import {
     useProposalResourceGetObservingProposal,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from 'src/generated/proposalToolComponents.ts';
-import {Box, Group, Space} from '@mantine/core';
+import {Group, Space} from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import {TechnicalGoalsTable } from './technicalGoalTable.tsx';
 import { TechnicalGoal } from 'src/generated/proposalToolSchemas.ts';
@@ -59,9 +59,9 @@ function TechnicalGoalsPanel(): ReactElement {
 
     if (goalsError) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(goalsError, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 

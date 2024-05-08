@@ -137,7 +137,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     //for the "Add" button. We want to disable it if the number of available resources
     //in this Cycle equals the total number of resource types added to the Tool.
     return (
-        <PanelFrame fluid>
+        <PanelFrame>
             <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Available Resources"} />
             <Space h={"xl"}/>
             <Grid columns={10}>
