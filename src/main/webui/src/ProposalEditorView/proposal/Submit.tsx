@@ -83,7 +83,7 @@ function SubmitPanel(): ReactElement {
 
     return (
         <PanelFrame>
-            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Submit"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Submit"} />
 
             <ValidationOverview cycle={selectedCycle}/>
 

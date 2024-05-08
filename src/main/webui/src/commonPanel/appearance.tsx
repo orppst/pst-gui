@@ -22,7 +22,7 @@ export function PanelHeader(props: headerInterfaceProps): ReactElement {
             { props.isLoading ?
                 <Badge size={"xl"} radius={0}>...</Badge> :
                 <Badge size={"xl"} radius={0}>{props.itemName}</Badge>
-            } : {props.panelTitle}
+            } : {props.panelHeading}
         </Title>);
 }
 
@@ -39,7 +39,7 @@ export function EditorPanelHeader(props: editorPanelHeaderInterfaceProps) {
         return (
             <Title order={3}>
                 <Badge size={"xl"} radius={0}>UNKNOWN</Badge>
-                : {props.panelTitle}
+                : {props.panelHeading}
             </Title>
         );
     }
@@ -47,7 +47,7 @@ export function EditorPanelHeader(props: editorPanelHeaderInterfaceProps) {
     return (<PanelHeader
         isLoading={isLoading}
         itemName={data as unknown as string}
-        panelTitle={props.panelTitle} />);
+        panelHeading={props.panelHeading} />);
 
 }
 
@@ -64,7 +64,7 @@ export function ManagerPanelHeader(props: managerPanelHeaderInterfaceProps) {
         return (
             <Title order={3}>
                 <Badge size={"xl"} radius={0}>UNKNOWN</Badge>
-                : {props.panelTitle}
+                : {props.panelHeading}
             </Title>
         );
     }
@@ -72,7 +72,7 @@ export function ManagerPanelHeader(props: managerPanelHeaderInterfaceProps) {
     return (<PanelHeader
         isLoading={isLoading}
         itemName={data as unknown as string}
-        panelTitle={props.panelTitle} />);
+        panelHeading={props.panelHeading} />);
 
 }
 

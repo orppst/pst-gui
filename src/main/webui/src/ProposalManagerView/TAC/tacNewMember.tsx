@@ -109,7 +109,7 @@ function CycleTACAddMemberPanel(): ReactElement {
 
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Add a reviewer"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Add a reviewer"} />
             <form onSubmit={handleAdd}>
                 <Select label={"Role"}
                         data={typeData}

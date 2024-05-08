@@ -47,7 +47,7 @@ export default function CycleTACPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Time Allocation Committee"}/>
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Time Allocation Committee"}/>
             <Grid>
                 <Grid.Col span={5}>
                     <AddButton toolTipLabel={"Add new"}

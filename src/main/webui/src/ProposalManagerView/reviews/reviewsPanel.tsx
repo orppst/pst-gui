@@ -8,7 +8,7 @@ export default function CycleReviewsPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Reviews"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Reviews"} />
             <Text>WIP: this is where you view/edit reviews of submitted proposals</Text>
         </PanelFrame>
     )

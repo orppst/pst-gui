@@ -69,7 +69,7 @@ function TechnicalGoalsPanel(): ReactElement {
     // the "view/edit" button is found in TechnicalGoalsTable, specifically one per row
     return (
         <PanelFrame fluid>
-            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Technical Goals"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Technical Goals"} />
             {goalsLoading ? (`Loading...`) :
                 <TechnicalGoalsTable
                     goals={goals}

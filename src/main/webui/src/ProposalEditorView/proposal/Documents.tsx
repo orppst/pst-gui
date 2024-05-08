@@ -83,7 +83,7 @@ const DocumentsPanel = () => {
 
     return (
         <PanelFrame>
-            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Documents"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Documents"} />
             <Box>
                 <Table>
                     <Table.Tbody>

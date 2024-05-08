@@ -8,7 +8,7 @@ export default function CycleObservatoryPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Observatory"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Observatory"} />
             <Text>WIP: this is where you view/edit the observatory used for the cycle</Text>
         </PanelFrame>
     )

@@ -49,7 +49,7 @@ export function TargetPanel(): ReactElement {
 
     return (
         <PanelFrame>
-            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Targets"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Targets"} />
             <Box>
                 <AddTargetModal/>
                 {data?.length === 0?

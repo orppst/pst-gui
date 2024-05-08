@@ -82,7 +82,7 @@ function SummaryPanel() {
 
     return (
         <PanelFrame>
-            <PanelHeader isLoading={isLoading} itemName={data?.title as string} panelTitle={"Summary"} />
+            <PanelHeader isLoading={isLoading} itemName={data?.title as string} panelHeading={"Summary"} />
             {isLoading ? <Box>loading...</Box>:
               submitting ?
                 <Box>Submitting request</Box> :

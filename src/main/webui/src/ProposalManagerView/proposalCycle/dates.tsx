@@ -100,7 +100,7 @@ export default function CycleDatesPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <PanelHeader isLoading={isLoading} itemName={proposalCycleTitle} panelTitle={"Dates"}/>
+            <PanelHeader isLoading={isLoading} itemName={proposalCycleTitle} panelHeading={"Dates"}/>
 
             <form onSubmit={handleSave}>
                 <DatesProvider settings={{timezone: 'UTC'}}>

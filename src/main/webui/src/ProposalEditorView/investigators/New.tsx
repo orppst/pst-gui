@@ -105,7 +105,7 @@ function AddInvestigatorPanel(): ReactElement {
 
     return (
             <PanelFrame>
-                <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Add an investigator"} />
+                <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Add an investigator"} />
                 <form onSubmit={handleAdd}>
                     <Select label={"Type"}
                         data={typeData}

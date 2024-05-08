@@ -8,7 +8,7 @@ export default function CyclePossibleGradesPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Grades"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Grades"} />
             <Text>WIP: this is where you view/edit the possible grades of a proposal cycle</Text>
         </PanelFrame>
     )

@@ -95,7 +95,7 @@ const textFormatData = [
 
      return (
         <PanelFrame>
-            <PanelHeader itemName={"NEW"} panelTitle={"Create Proposal"} />
+            <PanelHeader itemName={"NEW"} panelHeading={"Create Proposal"} />
             {submitting &&
                 <Box>Submitting request</Box>
             }

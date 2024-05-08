@@ -138,7 +138,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     //in this Cycle equals the total number of resource types added to the Tool.
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Available Resources"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Available Resources"} />
             <Space h={"xl"}/>
             <Grid columns={10}>
                 <Grid.Col span={7}>

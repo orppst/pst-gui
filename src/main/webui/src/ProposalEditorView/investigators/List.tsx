@@ -56,7 +56,7 @@ function InvestigatorsPanel(): ReactElement {
 
     return (
         <PanelFrame>
-            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Investigators"}/>
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Investigators"}/>
             <Grid>
                 <Grid.Col span={5}>
                 <AddButton toolTipLabel={"Add new"}

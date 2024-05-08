@@ -8,7 +8,7 @@ export default function CycleAllocationsPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Allocations"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Allocations"} />
             <Text>WIP: this is where you view/edit the allocation of reviewed proposals</Text>
         </PanelFrame>
     )

@@ -53,7 +53,7 @@ export default function JustificationsPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Justifications"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Justifications"} />
 
             {scientificIsLoading || technicalIsLoading ? (`Loading justifications...`) :
                 <JustificationsTable scientific={scientific!} technical={technical!} />

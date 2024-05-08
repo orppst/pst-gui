@@ -8,7 +8,7 @@ export default function CycleObservingModesPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Observing Modes"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Observing Modes"} />
             <Text>WIP: this is where you view/edit the observing modes of a cycle</Text>
         </PanelFrame>
     )

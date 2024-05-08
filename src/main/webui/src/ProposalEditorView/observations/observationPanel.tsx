@@ -82,7 +82,7 @@ function Observations() {
      */
     const Header = (): ReactElement => {
         return (
-            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Observations"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Observations"} />
         )
     }
 
