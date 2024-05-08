@@ -17,8 +17,8 @@ import {
     DownloadRequestButton
 } from 'src/commonButtons/download.tsx';
 import {HEADER_FONT_WEIGHT, JSON_SPACES, MAX_SUPPORTING_DOCUMENT_SIZE} from 'src/constants.tsx';
-import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 type DocumentProps = {
@@ -83,7 +83,7 @@ const DocumentsPanel = () => {
 
     return (
         <PanelFrame>
-            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Documents"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Documents"} />
             <Box>
                 <Table>
                     <Table.Tbody>

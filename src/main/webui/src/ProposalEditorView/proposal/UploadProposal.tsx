@@ -7,7 +7,7 @@ import {
     fetchProposalResourceImportProposal,
     fetchSupportingDocumentResourceUploadSupportingDocument,
 } from 'src/generated/proposalToolComponents.ts';
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**

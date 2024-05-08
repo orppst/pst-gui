@@ -71,7 +71,7 @@ import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observato
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
-import {PanelFrame} from "./commonPanelFeatures/title.tsx";
+import {PanelFrame} from "./commonPanel/appearance.tsx";
 
 /**
  * defines the user context type.

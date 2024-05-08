@@ -11,8 +11,8 @@ import {
     useProposalCyclesResourceGetProposalCycleDates
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
-import {PanelFrame, PanelTitle} from "../../commonPanelFeatures/title.tsx";
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
@@ -100,7 +100,7 @@ export default function CycleDatesPanel() : ReactElement {
 
     return (
         <PanelFrame fluid>
-            <PanelTitle isLoading={isLoading} itemName={proposalCycleTitle} panelTitle={"Dates"}/>
+            <PanelHeader isLoading={isLoading} itemName={proposalCycleTitle} panelTitle={"Dates"}/>
 
             <form onSubmit={handleSave}>
                 <DatesProvider settings={{timezone: 'UTC'}}>

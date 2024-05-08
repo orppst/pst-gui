@@ -11,7 +11,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
-import {PanelFrame, PanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 
 const cycleTitleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -87,7 +87,7 @@ export default function CycleTitlePanel() : ReactElement {
 
     return (
         <PanelFrame fluid>
-            <PanelTitle isLoading={isLoading} itemName={data as unknown as string} panelTitle={"Title"} />
+            <PanelHeader isLoading={isLoading} itemName={data as unknown as string} panelTitle={"Title"} />
             { isLoading ? ("Loading..") :
                 submitting ? ("Submitting..."):
                     <form onSubmit={updateTitle}>

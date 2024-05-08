@@ -12,8 +12,8 @@ import {useForm} from "@mantine/form";
 import {SubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
-import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
@@ -105,7 +105,7 @@ function AddInvestigatorPanel(): ReactElement {
 
     return (
             <PanelFrame>
-                <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Add an investigator"} />
+                <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Add an investigator"} />
                 <form onSubmit={handleAdd}>
                     <Select label={"Type"}
                         data={typeData}

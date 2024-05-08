@@ -10,7 +10,7 @@ import {
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from 'src/generated/proposalToolComponents.ts';
 import { JSON_FILE_NAME, OVERVIEW_PDF_FILENAME } from 'src/constants.tsx';
-import {notifyError, notifyInfo} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError, notifyInfo} from "../../commonPanel/notifications.tsx";
 
 
 /**

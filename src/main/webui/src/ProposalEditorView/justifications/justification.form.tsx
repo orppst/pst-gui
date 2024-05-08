@@ -8,7 +8,7 @@ import {fetchProposalResourceUpdateJustification} from "src/generated/proposalTo
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {SubmitButton} from "src/commonButtons/save.tsx";
-import {notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {notifySuccess} from "../../commonPanel/notifications.tsx";
 
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     return (

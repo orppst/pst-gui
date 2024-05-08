@@ -5,7 +5,7 @@ import {
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {JSON_SPACES} from "../../constants.tsx";
-import {PanelFrame} from "../../commonPanelFeatures/title.tsx";
+import {PanelFrame} from "../../commonPanel/appearance.tsx";
 
 
 //ASSUMES input string is ISO date-time at GMT+0

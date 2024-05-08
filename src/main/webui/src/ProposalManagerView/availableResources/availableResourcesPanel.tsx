@@ -13,8 +13,8 @@ import DeleteButton from "../../commonButtons/delete.tsx";
 import {modals} from "@mantine/modals";
 import {useQueryClient} from "@tanstack/react-query";
 import ResourceTypeModal from "./resourceType.modal.tsx";
-import {ManagerPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 
 export type AvailableResourcesProps  = {
@@ -138,7 +138,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     //in this Cycle equals the total number of resource types added to the Tool.
     return (
         <PanelFrame fluid>
-            <ManagerPanelTitle proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Available Resources"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Available Resources"} />
             <Space h={"xl"}/>
             <Grid columns={10}>
                 <Grid.Col span={7}>

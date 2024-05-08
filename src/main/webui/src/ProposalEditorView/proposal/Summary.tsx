@@ -14,7 +14,7 @@ import {
     MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS
 } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
-import {PanelFrame, PanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
@@ -82,7 +82,7 @@ function SummaryPanel() {
 
     return (
         <PanelFrame>
-            <PanelTitle isLoading={isLoading} itemName={data?.title as string} panelTitle={"Summary"} />
+            <PanelHeader isLoading={isLoading} itemName={data?.title as string} panelTitle={"Summary"} />
             {isLoading ? <Box>loading...</Box>:
               submitting ?
                 <Box>Submitting request</Box> :

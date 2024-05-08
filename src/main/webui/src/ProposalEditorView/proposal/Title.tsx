@@ -11,7 +11,7 @@ import {useForm} from "@mantine/form";
 import { SubmitButton } from 'src/commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, JSON_SPACES } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
-import {PanelFrame, PanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 
 const titleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -83,7 +83,7 @@ function TitlePanel() {
 
     return (
         <PanelFrame>
-            <PanelTitle isLoading={isLoading} itemName={data as unknown as string} panelTitle={"Title"} />
+            <PanelHeader isLoading={isLoading} itemName={data as unknown as string} panelTitle={"Title"} />
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>

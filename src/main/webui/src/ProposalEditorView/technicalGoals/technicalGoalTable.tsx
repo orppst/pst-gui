@@ -35,7 +35,7 @@ import {
     NO_ROW_SELECTED,
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
-import {notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {notifySuccess} from "../../commonPanel/notifications.tsx";
 
 /** the technical goal id data holder.
  * @param {number} id the id

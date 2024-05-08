@@ -34,7 +34,7 @@ import {
     LoadScriptIntoDOM,
     PopulateAladin
 } from './aladinHelperMethods.tsx';
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.

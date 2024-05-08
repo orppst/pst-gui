@@ -12,7 +12,7 @@ import { ReactElement } from 'react';
 import ObservationEditModal from './edit.modal.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
 import { IconTarget, IconChartLine } from '@tabler/icons-react';
-import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 
 
 /**
@@ -82,7 +82,7 @@ function Observations() {
      */
     const Header = (): ReactElement => {
         return (
-            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Observations"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Observations"} />
         )
     }
 

@@ -9,7 +9,7 @@ import { TechnicalGoal } from 'src/generated/proposalToolSchemas.ts';
 import TechnicalGoalEditModal from './edit.modal.tsx';
 import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
-import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 
 /**
  * the data type shared by the edit components.
@@ -69,7 +69,7 @@ function TechnicalGoalsPanel(): ReactElement {
     // the "view/edit" button is found in TechnicalGoalsTable, specifically one per row
     return (
         <PanelFrame fluid>
-            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Technical Goals"} />
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelTitle={"Technical Goals"} />
             {goalsLoading ? (`Loading...`) :
                 <TechnicalGoalsTable
                     goals={goals}

@@ -20,7 +20,7 @@ import {modals} from "@mantine/modals";
 import {fetchTechnicalGoalResourceRemoveSpectrum} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {notifyInfo, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 /**
  * generates the spectral window panel.

@@ -13,7 +13,7 @@ import {fetchObservationResourceRemoveConstraint} from "src/generated/proposalTo
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
-import {notifyInfo, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 
 //Providing a UI for a TimingWindow:

@@ -11,7 +11,7 @@ import {
 } from "../generated/proposalToolComponents.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import {useNavigate} from "react-router-dom";
-import {notifyError} from "../commonPanelFeatures/notifications.tsx";
+import {notifyError} from "../commonPanel/notifications.tsx";
 
 interface NewCycleFormProps {
     closeModal?: () => void

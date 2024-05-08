@@ -3,7 +3,7 @@ import {Box, Table, Text} from "@mantine/core";
 import {ICON_SIZE, JSON_SPACES} from "src/constants.tsx";
 import {useProposalResourceValidateObservingProposal} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {PanelFrame} from "../../commonPanelFeatures/title.tsx";
+import {PanelFrame} from "../../commonPanel/appearance.tsx";
 
 export default function ValidationOverview(props: {cycle: number}) {
     const { selectedProposalCode } = useParams();
