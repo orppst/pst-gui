@@ -12,7 +12,7 @@ import {randomId} from "@mantine/hooks";
 import DeleteButton from "src/commonButtons/delete";
 import AddButton from "src/commonButtons/add";
 import { JSON_SPACES } from 'src/constants.tsx';
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
 import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
 
 /**
@@ -55,7 +55,7 @@ function InvestigatorsPanel(): ReactElement {
     }
 
     return (
-        <Box>
+        <PanelFrame>
             <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Investigators"}/>
             <Grid>
                 <Grid.Col span={5}>
@@ -83,7 +83,7 @@ function InvestigatorsPanel(): ReactElement {
                     </Table>}
                 </Grid.Col>
             </Grid>
-        </Box>
+        </PanelFrame>
     );
 }
 

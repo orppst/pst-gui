@@ -9,7 +9,7 @@ import { Box } from '@mantine/core';
 import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from './TargetTable.tsx';
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * Renders the target panel containing an add target button
@@ -48,7 +48,7 @@ export function TargetPanel(): ReactElement {
     });
 
     return (
-        <Box>
+        <PanelFrame>
             <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Targets"} />
             <Box>
                 <AddTargetModal/>
@@ -62,6 +62,6 @@ export function TargetPanel(): ReactElement {
                                  selectedTarget={undefined}/>
                 }
             </Box>
-        </Box>
+        </PanelFrame>
     );
 }

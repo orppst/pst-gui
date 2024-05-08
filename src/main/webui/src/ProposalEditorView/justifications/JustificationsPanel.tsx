@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Box, Container} from "@mantine/core";
+import {Box} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
     useProposalResourceGetJustification,

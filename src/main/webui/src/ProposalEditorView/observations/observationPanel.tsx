@@ -12,7 +12,7 @@ import { ReactElement } from 'react';
 import ObservationEditModal from './edit.modal.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
 import { IconTarget, IconChartLine } from '@tabler/icons-react';
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
 
 
 /**
@@ -195,14 +195,14 @@ function Observations() {
     } else {
         //both targets.length and technicalGoals.length are greater than zero here
         return (
-            <Container fluid>
+            <PanelFrame fluid>
                 <Header/>
                 <TableGenerator/>
                 <Space h={"xl"}/>
                 <Group justify={'center'}>
                     <ObservationEditModal observation={undefined}/>
                 </Group>
-            </Container>
+            </PanelFrame>
         )
     }
 }

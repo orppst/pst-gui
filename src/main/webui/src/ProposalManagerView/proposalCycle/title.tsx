@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Container, TextInput} from "@mantine/core";
+import {TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
     fetchProposalCyclesResourceReplaceCycleTitle,
@@ -11,7 +11,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
-import {PanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {PanelFrame, PanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 const cycleTitleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -73,9 +73,9 @@ export default function CycleTitlePanel() : ReactElement {
 
     if (error) {
         return (
-            <Container>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Container>
+            </PanelFrame>
         );
     }
 
@@ -86,7 +86,7 @@ export default function CycleTitlePanel() : ReactElement {
     });
 
     return (
-        <Container fluid>
+        <PanelFrame fluid>
             <PanelTitle isLoading={isLoading} itemName={data as unknown as string} panelTitle={"Title"} />
             { isLoading ? ("Loading..") :
                 submitting ? ("Submitting..."):
@@ -100,6 +100,6 @@ export default function CycleTitlePanel() : ReactElement {
                                       label={"Save"}/>
                     </form>
             }
-        </Container>
+        </PanelFrame>
     )
 }

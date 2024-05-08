@@ -78,12 +78,13 @@ export function ManagerPanelTitle(props: managerPanelTitleInterfaceProps) {
 
 /**
  * A wrapper element for whatever we want to use to contain the contents of each panel
- * this is a Mantine Container, but can easily be modified here
+ * this is a Mantine Container, but can easily be modified here to be a different
+ * component or have default properties.
  */
 
 export const PanelFrame =
     forwardRef<HTMLDivElement, ContainerProps>((props, ref)=> (
-            <Container ref={ref}>
+            <Container ref={ref} size={"lg"}>
                 {props.children}
             </Container>
         )

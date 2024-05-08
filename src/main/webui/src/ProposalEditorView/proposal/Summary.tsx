@@ -14,7 +14,7 @@ import {
     MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS
 } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
-import {PanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {PanelFrame, PanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
@@ -68,9 +68,9 @@ function SummaryPanel() {
 
     if (error) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
@@ -81,7 +81,7 @@ function SummaryPanel() {
     });
 
     return (
-        <Box>
+        <PanelFrame>
             <PanelTitle isLoading={isLoading} itemName={data?.title as string} panelTitle={"Summary"} />
             {isLoading ? <Box>loading...</Box>:
               submitting ?
@@ -97,7 +97,7 @@ function SummaryPanel() {
                               label={'save'}/>
             </form>
             }
-        </Box>
+        </PanelFrame>
     );
 
 }

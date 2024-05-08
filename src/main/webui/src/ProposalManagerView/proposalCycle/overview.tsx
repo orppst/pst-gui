@@ -1,10 +1,11 @@
 import {ReactElement} from "react";
-import {Box, Container, Divider, Group, Stack, Text} from "@mantine/core";
+import {Box, Divider, Group, Stack, Text} from "@mantine/core";
 import {
     useProposalCyclesResourceGetProposalCycle
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {JSON_SPACES} from "../../constants.tsx";
+import {PanelFrame} from "../../commonPanelFeatures/title.tsx";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -75,12 +76,12 @@ export default function CycleOverviewPanel() : ReactElement {
 
 
     return (
-        <Container fluid>
+        <PanelFrame fluid>
             <DisplayTitle />
             <DisplayDates />
             {
                 //ToDo: display functions for other fields of a proposal cycle e.g., tac members, resources,...
             }
-        </Container>
+        </PanelFrame>
     )
 }

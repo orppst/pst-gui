@@ -5,13 +5,13 @@ import {
     useProposalResourceGetObservingProposalTitle,
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {Box, TextInput} from "@mantine/core";
+import {TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import { SubmitButton } from 'src/commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, JSON_SPACES } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
-import {PanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {PanelFrame, PanelTitle} from "../../commonPanelFeatures/title.tsx";
 
 const titleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -69,9 +69,9 @@ function TitlePanel() {
 
     if (error) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
@@ -82,7 +82,7 @@ function TitlePanel() {
     });
 
     return (
-        <Box>
+        <PanelFrame>
             <PanelTitle isLoading={isLoading} itemName={data as unknown as string} panelTitle={"Title"} />
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
@@ -96,7 +96,7 @@ function TitlePanel() {
                               label={"Save"}/>
             </form>
             }
-        </Box>
+        </PanelFrame>
     );
 
 }

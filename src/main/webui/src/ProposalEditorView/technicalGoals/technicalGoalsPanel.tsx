@@ -2,14 +2,14 @@ import {
     useProposalResourceGetObservingProposal,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from 'src/generated/proposalToolComponents.ts';
-import {Box, Container, Group, Space} from '@mantine/core';
+import {Box, Group, Space} from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import {TechnicalGoalsTable } from './technicalGoalTable.tsx';
 import { TechnicalGoal } from 'src/generated/proposalToolSchemas.ts';
 import TechnicalGoalEditModal from './edit.modal.tsx';
 import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelTitle, PanelFrame} from "../../commonPanelFeatures/title.tsx";
 
 /**
  * the data type shared by the edit components.
@@ -68,7 +68,7 @@ function TechnicalGoalsPanel(): ReactElement {
     //<TechnicalGoalEditModal technicalGoal={undefined}/> is an alias for the "Add +" button,
     // the "view/edit" button is found in TechnicalGoalsTable, specifically one per row
     return (
-        <Container fluid>
+        <PanelFrame fluid>
             <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Technical Goals"} />
             {goalsLoading ? (`Loading...`) :
                 <TechnicalGoalsTable
@@ -83,7 +83,7 @@ function TechnicalGoalsPanel(): ReactElement {
                     <TechnicalGoalEditModal technicalGoal={undefined}/>
                 }
             </Group>
-        </Container>
+        </PanelFrame>
     );
 }
 
