@@ -70,7 +70,6 @@ import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observato
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
-import {PanelFrame} from "./commonPanel/appearance.tsx";
 
 /**
  * defines the user context type.
@@ -431,7 +430,7 @@ function App2(): ReactElement {
      */
     function PSTStart(): ReactElement {
         return (
-            <PanelFrame pt={10}>
+            <Container pt={10}>
 
                 <Text fz={"lg"} fw={"bold"} c={"teal.7"}>
                     Polaris Landing Page
@@ -441,7 +440,7 @@ function App2(): ReactElement {
                      alt={"welcome image of a ufo crash landing"}
                      width={"100%"}
                 />
-            </PanelFrame>
+            </Container>
         );
     }
 
