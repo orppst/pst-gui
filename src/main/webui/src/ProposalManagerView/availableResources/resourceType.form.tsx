@@ -7,7 +7,7 @@ import {fetchResourceTypeResourceAddNewResourceType} from "../../generated/propo
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 export default function ResourceTypeForm(props: ResourceTypeFormValues) : ReactElement {
 

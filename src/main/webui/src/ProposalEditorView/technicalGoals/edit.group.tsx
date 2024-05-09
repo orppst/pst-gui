@@ -23,7 +23,7 @@ import {
     convertToPerformanceParametersGui,
     PerformanceParametersGui
 } from "./performanceParametersGui.tsx";
-import {notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {notifySuccess} from "../../commonPanel/notifications.tsx";
 
 export const notSpecified = "not specified";
 export const notSet = "not set";

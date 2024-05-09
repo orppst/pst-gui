@@ -4,7 +4,7 @@ import {
     useTACResourceGetCommitteeMember,
     useTACResourceGetCommitteeMembers
 } from "../../generated/proposalToolComponents.ts";
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 export default function TACMembersTable(selectedCycleCode: number) : ReactElement {

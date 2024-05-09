@@ -1,5 +1,4 @@
 import {ReactElement} from "react";
-import {Box, Container} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
     useProposalResourceGetJustification,
@@ -7,7 +6,7 @@ import {
 import {JSON_SPACES} from "src/constants.tsx";
 import {Justification} from "src/generated/proposalToolSchemas.ts";
 import JustificationsTable from "./justifications.table.tsx";
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 
 //no need to use an array, only two "kinds" of Justification 'scientific' and 'technical'
 export type JustificationKinds = {
@@ -38,27 +37,27 @@ export default function JustificationsPanel() : ReactElement {
 
     if (scientificError) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(scientificError, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
     if (technicalError) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(technicalError, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
     return (
-        <Container fluid>
-            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Justifications"} />
+        <PanelFrame>
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Justifications"} />
 
             {scientificIsLoading || technicalIsLoading ? (`Loading justifications...`) :
                 <JustificationsTable scientific={scientific!} technical={technical!} />
             }
-        </Container>
+        </PanelFrame>
     )
 }

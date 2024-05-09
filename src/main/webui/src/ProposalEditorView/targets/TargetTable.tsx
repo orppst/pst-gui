@@ -15,7 +15,7 @@ import {
     NO_ROW_SELECTED,
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**

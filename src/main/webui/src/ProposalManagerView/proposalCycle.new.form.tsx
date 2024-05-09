@@ -10,7 +10,7 @@ import {
     fetchProposalCyclesResourceCreateProposalCycle
 } from "../generated/proposalToolComponents.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
-import {notifyError, notifySuccess} from "../commonPanelFeatures/notifications.tsx";
+import {notifyError, notifySuccess} from "../commonPanel/notifications.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 
 interface NewCycleFormProps {

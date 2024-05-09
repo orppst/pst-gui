@@ -7,13 +7,13 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
-import {Box, Checkbox, Grid, Select} from "@mantine/core";
+import {Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
@@ -66,9 +66,9 @@ function AddInvestigatorPanel(): ReactElement {
 
     if (error) {
         return (
-            <div>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </div>
+            </PanelFrame>
         );
     }
 
@@ -104,8 +104,8 @@ function AddInvestigatorPanel(): ReactElement {
     }
 
     return (
-            <Box>
-                <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Add an investigator"} />
+            <PanelFrame>
+                <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Add an investigator"} />
                 <form onSubmit={handleAdd}>
                     <Select label={"Type"}
                         data={typeData}
@@ -135,7 +135,7 @@ function AddInvestigatorPanel(): ReactElement {
                         </Grid.Col>
                     </Grid>
                 </form>
-            </Box>
+            </PanelFrame>
     )
 }
 

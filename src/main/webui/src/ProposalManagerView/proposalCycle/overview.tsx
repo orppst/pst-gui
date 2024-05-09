@@ -1,12 +1,13 @@
 import {ReactElement} from "react";
-import { Container, Divider, Fieldset, Group, Space, Stack, Text} from "@mantine/core";
+import {Divider, Fieldset, Group, Space, Stack, Text} from "@mantine/core";
 import {
     useProposalCyclesResourceGetProposalCycle
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
+import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocationGradesTable from "./allocationGradesTable.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 import TACMembersTable from "./TACMembersTable.tsx";
 import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
 import AvailableResourcesTable from "./availableResourcesTable.tsx";
@@ -110,7 +111,7 @@ export default function CycleOverviewPanel() : ReactElement {
 
 
     return (
-        <Container>
+        <PanelFrame>
             <DisplayTitle />
             <DisplayDates />
             <Space h={"xl"}/>
@@ -121,6 +122,6 @@ export default function CycleOverviewPanel() : ReactElement {
             <DisplaySubmittedProposals />
             <Space h={"xl"}/>
             <DisplayAvailableResources />
-        </Container>
+        </PanelFrame>
     )
 }

@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Container, Group, Stack, Text} from "@mantine/core";
+import {Group, Stack, Text} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {SubmitButton} from "../../commonButtons/save.tsx";
@@ -11,8 +11,8 @@ import {
     useProposalCyclesResourceGetProposalCycleDates
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
-import {PanelTitle} from "../../commonPanelFeatures/title.tsx";
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
@@ -59,9 +59,9 @@ export default function CycleDatesPanel() : ReactElement {
 
     if (error) {
         return (
-            <Container>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Container>
+            </PanelFrame>
         );
     }
 
@@ -77,7 +77,7 @@ export default function CycleDatesPanel() : ReactElement {
         }
         if(val.sessionStart?.getTime() !== new Date(data?.observationSessionStart as string).getTime()) {
             promises.push(fetchProposalCyclesResourceReplaceCycleSessionStart({
-                pathParams: {cycleCode: Number(selectedCycleCode)+6},
+                pathParams: {cycleCode: Number(selectedCycleCode)},
                 //@ts-ignore
                 body: val.sessionStart?.getTime()
             }));
@@ -99,8 +99,8 @@ export default function CycleDatesPanel() : ReactElement {
     });
 
     return (
-        <Container fluid>
-            <PanelTitle isLoading={isLoading} itemName={proposalCycleTitle} panelTitle={"Dates"}/>
+        <PanelFrame>
+            <PanelHeader isLoading={isLoading} itemName={proposalCycleTitle} panelHeading={"Dates"}/>
 
             <form onSubmit={handleSave}>
                 <DatesProvider settings={{timezone: 'UTC'}}>
@@ -138,6 +138,6 @@ export default function CycleDatesPanel() : ReactElement {
                 </DatesProvider>
 
             </form>
-        </Container>
+        </PanelFrame>
     )
 }

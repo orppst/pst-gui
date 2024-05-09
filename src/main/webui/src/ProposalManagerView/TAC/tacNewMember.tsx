@@ -6,13 +6,13 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {TacRole} from "src/generated/proposalToolSchemas.ts";
-import {Box, Grid, Select} from "@mantine/core";
+import {Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
-import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
@@ -66,9 +66,9 @@ function CycleTACAddMemberPanel(): ReactElement {
 
     if (error) {
         return (
-            <div>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </div>
+            </PanelFrame>
         );
     }
 
@@ -108,8 +108,8 @@ function CycleTACAddMemberPanel(): ReactElement {
     }
 
     return (
-        <Box>
-            <ManagerPanelTitle proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Add a reviewer"} />
+        <PanelFrame>
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Add a reviewer"} />
             <form onSubmit={handleAdd}>
                 <Select label={"Role"}
                         data={typeData}
@@ -135,7 +135,7 @@ function CycleTACAddMemberPanel(): ReactElement {
                     </Grid.Col>
                 </Grid>
             </form>
-        </Box>
+        </PanelFrame>
     )
 }
 

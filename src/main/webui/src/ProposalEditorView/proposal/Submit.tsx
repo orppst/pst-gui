@@ -12,8 +12,8 @@ import {JSON_SPACES} from "src/constants.tsx";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import ValidationOverview from "./ValidationOverview.tsx";
-import {EditorPanelTitle} from "../../commonPanelFeatures/title.tsx";
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 function SubmitPanel(): ReactElement {
@@ -82,8 +82,8 @@ function SubmitPanel(): ReactElement {
     });
 
     return (
-        <Box>
-            <EditorPanelTitle proposalCode={Number(selectedProposalCode)} panelTitle={"Submit"} />
+        <PanelFrame>
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Submit"} />
 
             <ValidationOverview cycle={selectedCycle}/>
 
@@ -100,7 +100,7 @@ function SubmitPanel(): ReactElement {
                     toolTipLabel={"Submit your proposal to the selected cycle"}
                 />
             </form>
-        </Box>
+        </PanelFrame>
     )
 }
 

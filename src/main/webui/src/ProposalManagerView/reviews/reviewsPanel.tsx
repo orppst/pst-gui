@@ -1,15 +1,15 @@
 import {ReactElement} from "react";
-import {Container, Text} from "@mantine/core";
+import {Text} from "@mantine/core";
 import {useParams} from "react-router-dom";
-import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 
 export default function CycleReviewsPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
     return (
-        <Container fluid>
-            <ManagerPanelTitle proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Reviews"} />
+        <PanelFrame>
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Reviews"} />
             <Text>WIP: this is where you view/edit reviews of submitted proposals</Text>
-        </Container>
+        </PanelFrame>
     )
 }

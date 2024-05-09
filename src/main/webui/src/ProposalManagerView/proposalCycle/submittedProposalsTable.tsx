@@ -1,7 +1,7 @@
 import {ReactElement} from "react";
 import {Table} from "@mantine/core";
 import {useSubmittedProposalResourceGetSubmittedProposals} from "../../generated/proposalToolComponents.ts";
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /*

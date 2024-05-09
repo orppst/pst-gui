@@ -13,7 +13,7 @@ import {useParams} from "react-router-dom";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 export default function AvailableResourcesForm(props: AvailableResourcesProps) : ReactElement {
 

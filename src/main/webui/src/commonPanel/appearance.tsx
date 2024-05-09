@@ -1,31 +1,36 @@
-import {Badge, Title} from "@mantine/core";
+import {
+    Badge, Container,
+    ContainerProps,
+    Title,
+} from "@mantine/core";
 import {ReactElement} from "react";
 import {
     useProposalCyclesResourceGetProposalCycleTitle,
     useProposalResourceGetObservingProposalTitle
 } from "../generated/proposalToolComponents.ts";
 
-import {titleInterfaceProps, editorPanelTitleInterfaceProps, managerPanelTitleInterfaceProps} from "./panelFeatureInterfaceProps.tsx";
+import {headerInterfaceProps, editorPanelHeaderInterfaceProps, managerPanelHeaderInterfaceProps} from "./panelFeatureInterfaceProps.tsx";
+
 
 /**
  * Render a panel title or ellipsis if still loading.
- * @param {titleInterfaceProps} props
+ * @param {headerInterfaceProps} props
  */
-export function PanelTitle(props: titleInterfaceProps): ReactElement {
+export function PanelHeader(props: headerInterfaceProps): ReactElement {
     return (
         <Title order={3}>
             { props.isLoading ?
                 <Badge size={"xl"} radius={0}>...</Badge> :
                 <Badge size={"xl"} radius={0}>{props.itemName}</Badge>
-            } : {props.panelTitle}
+            } : {props.panelHeading}
         </Title>);
 }
 
 /**
  * Lookup a proposal title then call PanelTitle() to render
- * @param {editorPanelTitleInterfaceProps} props
+ * @param {editorPanelHeaderInterfaceProps} props
  */
-export function EditorPanelTitle(props: editorPanelTitleInterfaceProps) {
+export function EditorPanelHeader(props: editorPanelHeaderInterfaceProps) {
     const {data, error, isLoading} =
         useProposalResourceGetObservingProposalTitle(
             {pathParams: {proposalCode: props.proposalCode}});
@@ -34,23 +39,23 @@ export function EditorPanelTitle(props: editorPanelTitleInterfaceProps) {
         return (
             <Title order={3}>
                 <Badge size={"xl"} radius={0}>UNKNOWN</Badge>
-                : {props.panelTitle}
+                : {props.panelHeading}
             </Title>
         );
     }
 
-    return (<PanelTitle
+    return (<PanelHeader
         isLoading={isLoading}
         itemName={data as unknown as string}
-        panelTitle={props.panelTitle} />);
+        panelHeading={props.panelHeading} />);
 
 }
 
 /**
  * Lookup an observing cycle title then call PanelTitle() to render
- * @param {managerPanelTitleInterfaceProps} props
+ * @param {managerPanelHeaderInterfaceProps} props
  */
-export function ManagerPanelTitle(props: managerPanelTitleInterfaceProps) {
+export function ManagerPanelHeader(props: managerPanelHeaderInterfaceProps) {
     const {data, error, isLoading} =
         useProposalCyclesResourceGetProposalCycleTitle(
             {pathParams: {cycleCode: props.proposalCycleCode}});
@@ -59,14 +64,26 @@ export function ManagerPanelTitle(props: managerPanelTitleInterfaceProps) {
         return (
             <Title order={3}>
                 <Badge size={"xl"} radius={0}>UNKNOWN</Badge>
-                : {props.panelTitle}
+                : {props.panelHeading}
             </Title>
         );
     }
 
-    return (<PanelTitle
+    return (<PanelHeader
         isLoading={isLoading}
         itemName={data as unknown as string}
-        panelTitle={props.panelTitle} />);
+        panelHeading={props.panelHeading} />);
 
+}
+
+/**
+ * A wrapper element for whatever we want to use to contain the contents of each panel
+ * this is a Mantine Container, but can easily be modified here to be a different
+ * component or have default properties, such as 'fluid'
+ */
+
+export function PanelFrame(props: ContainerProps): ReactElement {
+    return (
+        <Container fluid {...props} />
+    );
 }

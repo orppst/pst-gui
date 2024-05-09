@@ -5,7 +5,7 @@ import {
     useProposalCyclesResourceGetCycleAllocationGrades
 } from "../../generated/proposalToolComponents.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {notifyError} from "../../commonPanelFeatures/notifications.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 
 export default function AllocationGradesTable(selectedCycleCode: number) : ReactElement {
 

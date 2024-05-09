@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Container, Fieldset, Grid, Group, Space, Stack, Table, Text} from "@mantine/core";
+import {Fieldset, Grid, Group, Space, Stack, Table, Text} from "@mantine/core";
 import {
     fetchAvailableResourcesResourceRemoveCycleResource,
     useAvailableResourcesResourceGetCycleAvailableResources,
@@ -13,8 +13,8 @@ import DeleteButton from "../../commonButtons/delete.tsx";
 import {modals} from "@mantine/modals";
 import {useQueryClient} from "@tanstack/react-query";
 import ResourceTypeModal from "./resourceType.modal.tsx";
-import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
-import {notifyError, notifySuccess} from "../../commonPanelFeatures/notifications.tsx";
+import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 
 export type AvailableResourcesProps  = {
@@ -137,8 +137,8 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     //for the "Add" button. We want to disable it if the number of available resources
     //in this Cycle equals the total number of resource types added to the Tool.
     return (
-        <Container fluid>
-            <ManagerPanelTitle proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Available Resources"} />
+        <PanelFrame>
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Available Resources"} />
             <Space h={"xl"}/>
             <Grid columns={10}>
                 <Grid.Col span={7}>
@@ -173,6 +173,6 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
                     </Fieldset>
                 </Grid.Col>
             </Grid>
-        </Container>
+        </PanelFrame>
     )
 }

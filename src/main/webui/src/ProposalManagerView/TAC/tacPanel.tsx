@@ -1,5 +1,5 @@
 import {ReactElement, useState} from "react";
-import {Box, Container, Grid, Table, Text} from "@mantine/core";
+import {Box, Grid, Table, Text} from "@mantine/core";
 import AddButton from "../../commonButtons/add.tsx";
 import {randomId} from "@mantine/hooks";
 import {useNavigate, useParams} from "react-router-dom";
@@ -12,7 +12,7 @@ import {JSON_SPACES} from "../../constants.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import DeleteButton from "../../commonButtons/delete";
-import {ManagerPanelTitle} from "../../commonPanelFeatures/title.tsx";
+import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 
 /**
  * the data associated with a given member.
@@ -35,9 +35,9 @@ export default function CycleTACPanel() : ReactElement {
 
     if (error) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
@@ -46,8 +46,8 @@ export default function CycleTACPanel() : ReactElement {
     }
 
     return (
-        <Container fluid>
-            <ManagerPanelTitle proposalCycleCode={Number(selectedCycleCode)} panelTitle={"Time Allocation Committee"}/>
+        <PanelFrame>
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Time Allocation Committee"}/>
             <Grid>
                 <Grid.Col span={5}>
                     <AddButton toolTipLabel={"Add new"}
@@ -75,7 +75,7 @@ export default function CycleTACPanel() : ReactElement {
                 </Grid.Col>
             </Grid>
 
-        </Container>
+        </PanelFrame>
     )
 }
 
