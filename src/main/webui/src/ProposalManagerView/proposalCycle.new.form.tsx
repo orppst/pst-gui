@@ -10,8 +10,8 @@ import {
     fetchProposalCyclesResourceCreateProposalCycle
 } from "../generated/proposalToolComponents.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
-import {useNavigate} from "react-router-dom";
-import {notifyError} from "../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../commonPanel/notifications.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 interface NewCycleFormProps {
     closeModal?: () => void
@@ -26,7 +26,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         sessionEnd: Date | null,
         observatoryId: number | undefined
     }
-    const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     const [observatories, setObservatories]
         = useState<{ value: string, label: string }[]>([]);
@@ -98,12 +98,9 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         }
 
         fetchProposalCyclesResourceCreateProposalCycle({body: newCycle})
-            .then(()=> {
-                window.location.reload();
-                navigate("/manager");
-            })
+            .then(()=> queryClient.invalidateQueries())
+            .then(() => notifySuccess("Success", "Proposal Cycle " + newCycle.title + " created"))
             .catch(console.error);
-
 
         closeModal && closeModal();
     }

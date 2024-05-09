@@ -3,7 +3,7 @@ import {Accordion, Group, NavLink} from "@mantine/core";
 import {
     IconBike,
     IconCalendar, IconEgg, IconLetterA,
-    IconLetterG, IconLetterO, IconLetterR,
+    IconLetterO, IconLetterR,
     IconLetterT,
     IconTeapot,
     IconUfo,
@@ -67,14 +67,6 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconLetterT/>}
                          active={"Title" + cycle.code === active}
                          onClick={()=>setActive("Title" + cycle.code)}
-                />
-                <NavLink to={"cycle/" + cycle.dbid + "/possibleGrades"}
-                         component={Link}
-                         key={"Grades"}
-                         label={"Grades"}
-                         leftSection={<IconLetterG/>}
-                         active={"Grades" + cycle.code === active}
-                         onClick={()=>setActive("Grades" + cycle.code)}
                 />
                 <NavLink to={"cycle/" + cycle.dbid + "/dates"}
                          component={Link}
