@@ -77,7 +77,7 @@ export default function CycleDatesPanel() : ReactElement {
         }
         if(val.sessionStart?.getTime() !== new Date(data?.observationSessionStart as string).getTime()) {
             promises.push(fetchProposalCyclesResourceReplaceCycleSessionStart({
-                pathParams: {cycleCode: Number(selectedCycleCode)+6},
+                pathParams: {cycleCode: Number(selectedCycleCode)},
                 //@ts-ignore
                 body: val.sessionStart?.getTime()
             }));
