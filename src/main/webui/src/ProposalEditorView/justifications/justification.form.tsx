@@ -11,7 +11,7 @@ import {SubmitButton} from "src/commonButtons/save.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css";
+import "katex/dist/katex.min.css";
 // @ts-ignore
 import Latex from "react-latex";
 
@@ -105,18 +105,19 @@ export default function JustificationForm(props: JustificationProps)
 
             {form.values.format === 'asciidoc' && (
                 <Box>Syntax highlight:
-                    <SyntaxHighlighter language={form.values.format} style={dark}>
+                    <SyntaxHighlighter language={form.values.format}>
                         {form.values.text!}
                     </SyntaxHighlighter>
                 </Box>
             )}
             {form.values.format === "latex" && (
-                <Box>
-                Preview:<br/>
+                <>Preview:
+                <Box bg={"gray.2"} p={"md"}>
                     <Latex displayMode={true}>
                         {form.values.text}
                     </Latex>
                 </Box>
+                </>
             )}
 
         </form>
