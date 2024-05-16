@@ -96,8 +96,10 @@ export default function CycleTitlePanel() : ReactElement {
                                    {...form.getInputProps('title')}/>
                         <MaxCharsForInputRemaining length={form.values.title.length} />
                         <br/>
-                        <SubmitButton toolTipLabel={"save title"}
-                                      label={"Save"}/>
+                        <SubmitButton toolTipLabel={"Update proposal cycle title"}
+                                      label={"Save"}
+                                      disabled={!form.isDirty() || !form.isValid()}
+                        />
                     </form>
             }
         </PanelFrame>

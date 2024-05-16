@@ -86,7 +86,8 @@ export default function JustificationForm(props: JustificationProps)
     return (
         <form onSubmit={handleSubmit}>
             <SubmitButton
-                toolTipLabel={"save updates"}
+                label={"Save"}
+                toolTipLabel={"Save updates"}
                 disabled={!form.isDirty() || !form.isValid()}
             />
             <Grid span={10} grow>

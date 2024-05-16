@@ -523,7 +523,7 @@ function OverviewPanel(): ReactElement {
     const DownloadButton = (): ReactElement => {
         return SaveButton(
             {
-                toolTipLabel: `download proposal`,
+                toolTipLabel: `Export to a file for download`,
                 disabled: false,
                 onClick: handleDownloadPdf,
                 label: "Export",
