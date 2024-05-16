@@ -353,7 +353,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     <div>
                         <SubmitButton
                             toolTipLabel={"Save this target"}
-                            label={"Save"}
+                            label={"Add"}
                             disabled={!form.isValid() ||
                                       form.values.searching? true : undefined}/>
                     </div>

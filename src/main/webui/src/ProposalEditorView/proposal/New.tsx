@@ -167,7 +167,7 @@ const textFormatData = [
                 <SubmitButton
                     label={"Create"}
                     toolTipLabel={"Create new proposal"}
-                    disabled={!form.isValid()}
+                    disabled={!form.isDirty() || !form.isValid()}
                 />
             </form>
         </PanelFrame>
