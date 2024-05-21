@@ -27,6 +27,7 @@ import downloadProposal from './downloadProposal.tsx';
 import { DIMMED_FONT_WEIGHT, JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 /*
       title    -- string
@@ -325,8 +326,32 @@ function OverviewPanel(): ReactElement {
         )
     }
 
+    const DisplayJustification = (format: string, text: string) => {
+        switch (format) {
+            case 'asciidoc':
+                return (<>
+                    <Badge>{format}</Badge>
+                    <SyntaxHighlighter language={'asciidoc'}>
+                        {text}
+                    </SyntaxHighlighter>
+                </>);
+
+            case 'latex':
+                return (<>
+                            <Badge>{format}</Badge>
+                            <Text>{text}</Text>
+                        </>);
+
+            default:
+                return (<>
+                            <Badge>{format}</Badge>
+                            <Text>{text}</Text>
+                        </>);
+        }
+    }
+
     /**
-     * handles the scientific justification panel.
+     * handles the scientific justification panel
      * @return {React.ReactElement} the html for the scientific justification panel.
      * @constructor
      */
@@ -334,8 +359,10 @@ function OverviewPanel(): ReactElement {
         return (
             <>
                 <h3>Scientific Justification</h3>
-                <Badge>{proposalsData?.scientificJustification?.format}</Badge>
-                <Text>{proposalsData?.scientificJustification?.text}</Text>
+                {DisplayJustification(
+                    proposalsData?.scientificJustification?.format!,
+                    proposalsData?.scientificJustification?.text!)
+                }
             </>
         )
     }
@@ -349,8 +376,10 @@ function OverviewPanel(): ReactElement {
         return (
             <>
                 <h3>Technical Justification</h3>
-                <Badge>{proposalsData?.technicalJustification?.format}</Badge>
-                <Text>{proposalsData?.technicalJustification?.text}</Text>
+                {DisplayJustification(
+                    proposalsData?.technicalJustification?.format!,
+                    proposalsData?.technicalJustification?.text!)
+                }
             </>
         )
     }
@@ -415,6 +444,7 @@ function OverviewPanel(): ReactElement {
                     proposalsData.supportingDocuments.length > 0 ?
                         <List style={{whiteSpace: 'pre-wrap',
                                       overflowWrap: 'break-word'}}>
+
                             {documents}
                         </List> :
                         <Text c={"yellow"}>No supporting documents added</Text>

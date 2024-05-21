@@ -10,7 +10,6 @@ import {useQueryClient} from "@tanstack/react-query";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import "katex/dist/katex.min.css";
 // @ts-ignore
 import Latex from "react-latex";
