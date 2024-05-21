@@ -28,6 +28,7 @@ import { DIMMED_FONT_WEIGHT, JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import Latex from "react-latex";
 
 /*
       title    -- string
@@ -337,10 +338,11 @@ function OverviewPanel(): ReactElement {
                 </>);
 
             case 'latex':
-                return (<>
-                            <Badge>{format}</Badge>
-                            <Text>{text}</Text>
-                        </>);
+                return (<Box bg={"gray.2"} p={"md"}>
+                            <Latex displayMode={true}>
+                                {text}
+                            </Latex>
+                        </Box>);
 
             default:
                 return (<>
