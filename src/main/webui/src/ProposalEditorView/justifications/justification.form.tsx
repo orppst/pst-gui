@@ -12,7 +12,7 @@ import {notifySuccess} from "../../commonPanel/notifications.tsx";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import "katex/dist/katex.min.css";
 // @ts-ignore
-import Latex from "react-latex";
+import Latex from "react-latex-next";
 
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     return (
@@ -112,8 +112,8 @@ export default function JustificationForm(props: JustificationProps)
             {form.values.format === "latex" && (
                 <>Preview:
                 <Box bg={"gray.2"} p={"md"}>
-                    <Latex displayMode={true}>
-                        {form.values.text}
+                    <Latex>
+                        {form.values.text!}
                     </Latex>
                 </Box>
                 </>

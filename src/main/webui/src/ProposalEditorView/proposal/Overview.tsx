@@ -28,7 +28,8 @@ import { DIMMED_FONT_WEIGHT, JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import Latex from "react-latex";
+import Latex from "react-latex-next";
+import "katex/dist/katex.min.css";
 
 /*
       title    -- string
@@ -339,7 +340,7 @@ function OverviewPanel(): ReactElement {
 
             case 'latex':
                 return (<Box bg={"gray.2"} p={"md"}>
-                            <Latex displayMode={true}>
+                            <Latex>
                                 {text}
                             </Latex>
                         </Box>);
