@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Box, Grid, Select, Textarea} from "@mantine/core";
+import {Grid, Select, Textarea} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -9,10 +9,7 @@ import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import "katex/dist/katex.min.css";
-// @ts-ignore
-import Latex from "react-latex-next";
+import {DisplayJustification} from "../proposal/Overview.tsx";
 
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     return (
@@ -102,22 +99,7 @@ export default function JustificationForm(props: JustificationProps)
                 </Grid.Col>
             </Grid>
 
-            {form.values.format === 'asciidoc' && (
-                <Box>Syntax highlight:
-                    <SyntaxHighlighter language={form.values.format}>
-                        {form.values.text!}
-                    </SyntaxHighlighter>
-                </Box>
-            )}
-            {form.values.format === "latex" && (
-                <>Preview:
-                <Box bg={"gray.2"} p={"md"}>
-                    <Latex>
-                        {form.values.text!}
-                    </Latex>
-                </Box>
-                </>
-            )}
+            {DisplayJustification(form.values.format!, form.values.text!)}
 
         </form>
     )

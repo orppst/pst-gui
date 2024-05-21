@@ -59,6 +59,31 @@ import "katex/dist/katex.min.css";
         of the overview plus the supporting document files
  */
 
+export const DisplayJustification = (format: string, text: string) => {
+    switch (format) {
+        case 'asciidoc':
+            return (<>
+                <Badge>{format}</Badge>
+                <SyntaxHighlighter language={'asciidoc'}>
+                    {text}
+                </SyntaxHighlighter>
+            </>);
+
+        case 'latex':
+            return (<Box bg={"gray.2"} p={"md"}>
+                <Latex>
+                    {text}
+                </Latex>
+            </Box>);
+
+        default:
+            return (<>
+                <Badge>{format}</Badge>
+                <Text>{text}</Text>
+            </>);
+    }
+}
+
 
 /**
  * internal interface for the investigator.
@@ -326,31 +351,6 @@ function OverviewPanel(): ReactElement {
                 <Text>{proposalsData?.submitted ? 'yes' : 'no'}</Text>
             </Group>
         )
-    }
-
-    const DisplayJustification = (format: string, text: string) => {
-        switch (format) {
-            case 'asciidoc':
-                return (<>
-                    <Badge>{format}</Badge>
-                    <SyntaxHighlighter language={'asciidoc'}>
-                        {text}
-                    </SyntaxHighlighter>
-                </>);
-
-            case 'latex':
-                return (<Box bg={"gray.2"} p={"md"}>
-                            <Latex>
-                                {text}
-                            </Latex>
-                        </Box>);
-
-            default:
-                return (<>
-                            <Badge>{format}</Badge>
-                            <Text>{text}</Text>
-                        </>);
-        }
     }
 
     /**
