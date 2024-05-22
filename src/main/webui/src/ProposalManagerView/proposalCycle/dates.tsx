@@ -131,8 +131,8 @@ export default function CycleDatesPanel() : ReactElement {
                         />
                         <SubmitButton
                             label={"Save"}
-                            toolTipLabel={"Update the proposal cycle dates"}
-                            disabled={!form.isDirty()}
+                            toolTipLabel={"Update proposal cycle dates"}
+                            disabled={!form.isDirty() || !form.isValid()}
                         />
                     </Stack>
                 </DatesProvider>

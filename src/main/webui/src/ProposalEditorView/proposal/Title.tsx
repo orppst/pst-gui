@@ -92,8 +92,10 @@ function TitlePanel() {
                            {...form.getInputProps('title')}/>
                 <MaxCharsForInputRemaining length={form.values.title.length} />
                 <br/>
-                <SubmitButton toolTipLabel={"save title"}
-                              label={"Save"}/>
+                <SubmitButton toolTipLabel={"Update title"}
+                              label={"Save"}
+                              disabled={!form.isDirty() || !form.isValid()}
+                />
             </form>
             }
         </PanelFrame>

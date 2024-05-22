@@ -72,9 +72,9 @@ export const PreviewJustification = (format: TextFormats, content: string) => {
             return (<>
                 <Badge>{format}</Badge>
                 <Box bg={"gray.2"} c={"black"} p={"md"} m={"xs"}>
-                <SyntaxHighlighter language={'asciidoc'}>
-                    {content}
-                </SyntaxHighlighter>
+                    <SyntaxHighlighter language={'asciidoc'}>
+                        {content}
+                    </SyntaxHighlighter>
                 </Box>
             </>);
 
@@ -574,7 +574,7 @@ function OverviewPanel(): ReactElement {
     const DownloadButton = (): ReactElement => {
         return SaveButton(
             {
-                toolTipLabel: `download proposal`,
+                toolTipLabel: `Export to a file for download`,
                 disabled: false,
                 onClick: handleDownloadPdf,
                 label: "Export",

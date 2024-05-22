@@ -93,8 +93,10 @@ function SummaryPanel() {
                           name="summary" {...form.getInputProps('summary')} />
                 <MaxCharsForInputRemaining length={form.values.summary.length} />
                 <br/>
-                <SubmitButton toolTipLabel={"save summary"}
-                              label={'save'}/>
+                <SubmitButton toolTipLabel={"Update summary"}
+                              label={"Save"}
+                              disabled={!form.isDirty() || !form.isValid()}
+                />
             </form>
             }
         </PanelFrame>

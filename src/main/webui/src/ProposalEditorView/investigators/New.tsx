@@ -125,7 +125,9 @@ function AddInvestigatorPanel(): ReactElement {
                         <Grid.Col span={2}>
                             <SubmitButton
                                 label={"Add"}
-                                toolTipLabel={"Add new investigator"}/>
+                                toolTipLabel={"Add new investigator"}
+                                disabled={!form.isDirty() || !form.isValid()}
+                            />
                         </Grid.Col>
                         <Grid.Col span={1}>
                             <DeleteButton

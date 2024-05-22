@@ -125,7 +125,9 @@ function CycleTACAddMemberPanel(): ReactElement {
                     <Grid.Col span={2}>
                         <SubmitButton
                             label={"Add"}
-                            toolTipLabel={"Add new committee member"}/>
+                            toolTipLabel={"Add new committee member"}
+                            disabled={!form.isDirty() || !form.isValid()}
+                        />
                     </Grid.Col>
                     <Grid.Col span={1}>
                         <DeleteButton

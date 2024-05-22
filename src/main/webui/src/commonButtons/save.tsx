@@ -29,7 +29,7 @@ export function SubmitButton(props: BasicButtonInterfaceProps): ReactElement {
                     variant={"subtle"}
                     type="submit"
                     disabled={props.disabled}>
-                {props.label === undefined? 'Submit' : props.label}
+                {props.label === undefined? 'Save' : props.label}
             </Button>
         </Tooltip>
     )
