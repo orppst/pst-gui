@@ -9,7 +9,7 @@ import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
-import {DisplayJustification} from "../proposal/Overview.tsx";
+import {PreviewJustification} from "../proposal/Overview.tsx";
 
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     return (
@@ -85,22 +85,22 @@ export default function JustificationForm(props: JustificationProps)
     });
 
     return (
-        <form onSubmit={handleSubmit}>
-            <SubmitButton
-                toolTipLabel={"save updates"}
-                disabled={!form.isDirty() || !form.isValid()}
-            />
-            <Grid span={10} grow>
-                <Grid.Col span={{base: 6, md: 8, lg: 9}}>
-                    <JustificationTextArea {...form} />
-                </Grid.Col>
-                <Grid.Col span={{base: 4, md: 2, lg: 1}}>
-                    <SelectTextFormat {...form} />
-                </Grid.Col>
-            </Grid>
-
-            {DisplayJustification(form.values.format!, form.values.text!)}
-
-        </form>
+        <>
+            <form onSubmit={handleSubmit}>
+                <SubmitButton
+                    toolTipLabel={"save updates"}
+                    disabled={!form.isDirty() || !form.isValid()}
+                />
+                <Grid span={10} grow>
+                    <Grid.Col span={{base: 6, md: 8, lg: 9}}>
+                        <JustificationTextArea {...form} />
+                    </Grid.Col>
+                    <Grid.Col span={{base: 4, md: 2, lg: 1}}>
+                        <SelectTextFormat {...form} />
+                    </Grid.Col>
+                </Grid>
+            </form>
+            {PreviewJustification(form.values.format!, form.values.text!)}
+        </>
     )
 }

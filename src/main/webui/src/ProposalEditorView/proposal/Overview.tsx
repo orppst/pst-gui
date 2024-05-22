@@ -18,7 +18,7 @@ import {
     CalibrationObservation,
     CalibrationTargetIntendedUse,
     Investigator,
-    RealQuantity
+    RealQuantity, TextFormats
 } from 'src/generated/proposalToolSchemas.ts';
 import { IconNorthStar } from '@tabler/icons-react';
 import { ReactElement, useRef } from 'react';
@@ -59,28 +59,46 @@ import "katex/dist/katex.min.css";
         of the overview plus the supporting document files
  */
 
-export const DisplayJustification = (format: string, text: string) => {
+/**
+ * Displays a preview of a justification, either with syntax highlighting or rendered preview
+ *
+ * @param {TextFormats} format enum of possible formats (asciitext, latex etc)
+ * @param {string} content the actual justification text to be previewed
+ * @constructor
+ */
+export const PreviewJustification = (format: TextFormats, content: string) => {
     switch (format) {
         case 'asciidoc':
             return (<>
                 <Badge>{format}</Badge>
+                <Box bg={"gray.2"} c={"black"} p={"md"} m={"xs"}>
                 <SyntaxHighlighter language={'asciidoc'}>
-                    {text}
+                    {content}
                 </SyntaxHighlighter>
+                </Box>
             </>);
 
         case 'latex':
-            return (<Box bg={"gray.2"} p={"md"}>
-                <Latex>
-                    {text}
-                </Latex>
-            </Box>);
+            return (
+                <>
+                    <Badge>{format}</Badge>
+                    <Box bg={"gray.2"} c={"black"} p={"md"} m={"xs"}>
+                        <Latex>
+                            {content}
+                        </Latex>
+                    </Box>
+                </>);
 
         default:
-            return (<>
-                <Badge>{format}</Badge>
-                <Text>{text}</Text>
-            </>);
+            return (
+                <>
+                    <Badge>{format}</Badge>
+                    <Box bg={"gray.2"} c={"black"} p={"md"} m={"xs"}>
+                        <Text>
+                            {content}
+                        </Text>
+                    </Box>
+                </>);
     }
 }
 
@@ -362,7 +380,7 @@ function OverviewPanel(): ReactElement {
         return (
             <>
                 <h3>Scientific Justification</h3>
-                {DisplayJustification(
+                {PreviewJustification(
                     proposalsData?.scientificJustification?.format!,
                     proposalsData?.scientificJustification?.text!)
                 }
@@ -379,7 +397,7 @@ function OverviewPanel(): ReactElement {
         return (
             <>
                 <h3>Technical Justification</h3>
-                {DisplayJustification(
+                {PreviewJustification(
                     proposalsData?.technicalJustification?.format!,
                     proposalsData?.technicalJustification?.text!)
                 }
