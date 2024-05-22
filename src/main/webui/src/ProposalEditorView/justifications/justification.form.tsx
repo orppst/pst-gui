@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Grid, Select, Textarea} from "@mantine/core";
+import {Grid, Select} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -11,22 +11,47 @@ import {SubmitButton} from "src/commonButtons/save.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
 import {PreviewJustification} from "../proposal/Overview.tsx";
 
+import Editor from "react-simple-code-editor";
+import { languages, highlight } from "prismjs";
+import "prismjs/themes/prism.css";
+import "prismjs/components/prism-latex.js";
+import "prismjs/components/prism-rest.js";
+import "prismjs/components/prism-asciidoc.js";
+
+
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
-    return (
-        <Textarea
-            autosize
-            minRows={3}
-            maxRows={10}
-            maxLength={MAX_CHARS_FOR_INPUTS}
-            description={
-                MAX_CHARS_FOR_INPUTS - form.values.text!.length
-                + "/" + String(MAX_CHARS_FOR_INPUTS)
-            }
-            inputWrapperOrder={['label', 'error', 'input', 'description']}
-            placeholder={"justification text"}
-            {...form.getInputProps('text')}
-        />
-    )
+    switch(form.values.format) {
+        case "asciidoc":
+            return (
+                <Editor
+                    value={form.values.text!}
+                    onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                    highlight={code => highlight(code, languages.asciidoc, 'asciidoc')}
+                    maxLength={MAX_CHARS_FOR_INPUTS}
+                    {...form.getInputProps('text')}
+                />
+            );
+        case "latex":
+            return (
+                <Editor
+                    value={form.values.text!}
+                    onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                    highlight={code => highlight(code, languages.latex, 'latex')}
+                    maxLength={MAX_CHARS_FOR_INPUTS}
+                    {...form.getInputProps('text')}
+                />
+            );
+        case "rst":
+            return (
+                <Editor
+                    value={form.values.text!}
+                    onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                    highlight={code => highlight(code, languages.rest, 'rest')}
+                    maxLength={MAX_CHARS_FOR_INPUTS}
+                    {...form.getInputProps('text')}
+                />
+            );
+    }
 }
 
 const SelectTextFormat = (form: UseFormReturnType<Justification>) => {
@@ -101,7 +126,7 @@ export default function JustificationForm(props: JustificationProps)
                     </Grid.Col>
                 </Grid>
             </form>
-            {PreviewJustification(form.values.format!, form.values.text!)}
+            {form.values.format==='latex' && PreviewJustification(form.values.format!, form.values.text!)}
         </>
-    )
+    );
 }
