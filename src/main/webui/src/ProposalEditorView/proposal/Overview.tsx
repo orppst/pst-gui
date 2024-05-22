@@ -62,7 +62,7 @@ import "katex/dist/katex.min.css";
 /**
  * Displays a preview of a justification, either with syntax highlighting or rendered preview
  *
- * @param {TextFormats} format enum of possible formats (asciitext, latex etc)
+ * @param {TextFormats} format enum of possible formats (asciitext, latex etc.)
  * @param {string} content the actual justification text to be previewed
  * @constructor
  */
@@ -94,9 +94,9 @@ export const PreviewJustification = (format: TextFormats, content: string) => {
                 <>
                     <Badge>{format}</Badge>
                     <Box bg={"gray.2"} c={"black"} p={"md"} m={"xs"}>
-                        <Text>
+                        <SyntaxHighlighter language={'asciidoc'}>
                             {content}
-                        </Text>
+                        </SyntaxHighlighter>
                     </Box>
                 </>);
     }

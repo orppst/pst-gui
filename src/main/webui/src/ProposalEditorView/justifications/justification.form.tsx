@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Grid, Select} from "@mantine/core";
+import {Box, Grid, Select} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -23,33 +23,39 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     switch(form.values.format) {
         case "asciidoc":
             return (
-                <Editor
-                    value={form.values.text!}
-                    onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
-                    highlight={code => highlight(code, languages.asciidoc, 'asciidoc')}
-                    maxLength={MAX_CHARS_FOR_INPUTS}
-                    {...form.getInputProps('text')}
-                />
+                <Box p={"xs"} m={"xs"}>
+                    <Editor
+                        value={form.values.text!}
+                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        highlight={code => highlight(code, languages.asciidoc, 'asciidoc')}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        {...form.getInputProps('text')}
+                    />
+                </Box>
             );
         case "latex":
             return (
-                <Editor
-                    value={form.values.text!}
-                    onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
-                    highlight={code => highlight(code, languages.latex, 'latex')}
-                    maxLength={MAX_CHARS_FOR_INPUTS}
-                    {...form.getInputProps('text')}
-                />
+                <Box p={"xs"} m={"xs"}>
+                    <Editor
+                        value={form.values.text!}
+                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        highlight={code => highlight(code, languages.latex, 'latex')}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        {...form.getInputProps('text')}
+                    />
+                </Box>
             );
         case "rst":
             return (
-                <Editor
-                    value={form.values.text!}
-                    onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
-                    highlight={code => highlight(code, languages.rest, 'rest')}
-                    maxLength={MAX_CHARS_FOR_INPUTS}
-                    {...form.getInputProps('text')}
-                />
+                <Box p={"xs"} m={"xs"}>
+                    <Editor
+                        value={form.values.text!}
+                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        highlight={code => highlight(code, languages.rest, 'rest')}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        {...form.getInputProps('text')}
+                    />
+                </Box>
             );
     }
 }
