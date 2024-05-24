@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Grid, Select, Textarea} from "@mantine/core";
+import {Box, Grid, Select} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -9,23 +9,55 @@ import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
+import {PreviewJustification} from "./justification.preview.tsx";
+
+import Editor from "react-simple-code-editor";
+import { languages, highlight } from "prismjs";
+import "prismjs/themes/prism.css";
+import "prismjs/components/prism-latex.js";
+import "prismjs/components/prism-rest.js";
+import "prismjs/components/prism-asciidoc.js";
+
 
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
-    return (
-        <Textarea
-            autosize
-            minRows={3}
-            maxRows={10}
-            maxLength={MAX_CHARS_FOR_INPUTS}
-            description={
-                MAX_CHARS_FOR_INPUTS - form.values.text!.length
-                + "/" + String(MAX_CHARS_FOR_INPUTS)
-            }
-            inputWrapperOrder={['label', 'error', 'input', 'description']}
-            placeholder={"justification text"}
-            {...form.getInputProps('text')}
-        />
-    )
+    switch(form.values.format) {
+        case "asciidoc":
+            return (
+                <Box p={"xs"} m={"xs"}>
+                    <Editor
+                        value={form.values.text!}
+                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        highlight={code => highlight(code, languages.asciidoc, 'asciidoc')}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        {...form.getInputProps('text')}
+                    />
+                </Box>
+            );
+        case "latex":
+            return (
+                <Box p={"xs"} m={"xs"}>
+                    <Editor
+                        value={form.values.text!}
+                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        highlight={code => highlight(code, languages.latex, 'latex')}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        {...form.getInputProps('text')}
+                    />
+                </Box>
+            );
+        case "rst":
+            return (
+                <Box p={"xs"} m={"xs"}>
+                    <Editor
+                        value={form.values.text!}
+                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        highlight={code => highlight(code, languages.rest, 'rest')}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        {...form.getInputProps('text')}
+                    />
+                </Box>
+            );
+    }
 }
 
 const SelectTextFormat = (form: UseFormReturnType<Justification>) => {
@@ -84,20 +116,22 @@ export default function JustificationForm(props: JustificationProps)
     });
 
     return (
-        <form onSubmit={handleSubmit}>
-            <SubmitButton
-                label={"Save"}
-                toolTipLabel={"Save updates"}
-                disabled={!form.isDirty() || !form.isValid()}
-            />
-            <Grid span={10} grow>
-                <Grid.Col span={{base: 6, md: 8, lg: 9}}>
-                    <JustificationTextArea {...form} />
-                </Grid.Col>
-                <Grid.Col span={{base: 4, md: 2, lg: 1}}>
-                    <SelectTextFormat {...form} />
-                </Grid.Col>
-            </Grid>
-        </form>
-    )
+        <>
+            <form onSubmit={handleSubmit}>
+                <SubmitButton
+                    toolTipLabel={"Save updates"}
+                    disabled={!form.isDirty() || !form.isValid()}
+                />
+                <Grid span={10} grow>
+                    <Grid.Col span={{base: 6, md: 8, lg: 9}}>
+                        <JustificationTextArea {...form} />
+                    </Grid.Col>
+                    <Grid.Col span={{base: 4, md: 2, lg: 1}}>
+                        <SelectTextFormat {...form} />
+                    </Grid.Col>
+                </Grid>
+            </form>
+            {form.values.format==='latex' && PreviewJustification(form.values.format!, form.values.text!)}
+        </>
+    );
 }
