@@ -107,17 +107,15 @@ export default function ObservationEditGroup(
 
             validate: {
                 targetDBId: (value: number | undefined | string ) =>
-                    (value === undefined ?
-                        'Please select a target' : null),
+                    (value === undefined ? 'Please select a target' : null),
                 techGoalId: (value: number | undefined | string) =>
-                    (value === undefined ?
-                        'Please select a technical goal' : null),
+                    (value === undefined ? 'Please select a technical goal' : null),
+                fieldId: (value: number | undefined | string ) =>
+                    (value === undefined ? 'Please select a field' : null),
                 observationType: (value: ObservationType) =>
-                    (value === '' ?
-                        'Please select the observation type' : null),
+                    (value === '' ? 'Please select the observation type' : null),
                 calibrationUse: (value, values) =>
-                    ((values.observationType === "Calibration" &&
-                        value === undefined) ?
+                    ((values.observationType === "Calibration" && value === undefined) ?
                         'Please select the calibration use' : null),
                 timingWindows: {
                     startTime: (value) => (
