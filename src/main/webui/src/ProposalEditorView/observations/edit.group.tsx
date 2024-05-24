@@ -101,7 +101,7 @@ export default function ObservationEditGroup(
                 calibrationUse: calibrationUse,
                 targetDBId: props.observation?.target?._id,
                 techGoalId: props.observation?.technicalGoal?._id,
-                fieldId: 1, //FIXME: need a user selected value
+                fieldId: props.observation?.field?._id,
                 timingWindows: initialTimingWindows
             },
 
@@ -258,7 +258,6 @@ export default function ObservationEditGroup(
                             observationId: props.observationId!
                         },
                         body: {
-                            "@type": "proposal:TargetField",
                             "_id": form.values.fieldId
                         }
                     })

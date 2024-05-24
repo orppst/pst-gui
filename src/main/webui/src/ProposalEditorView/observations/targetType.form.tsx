@@ -1,4 +1,5 @@
 import {
+    fetchProposalResourceGetFields,
     useProposalResourceGetTargets, useTechnicalGoalResourceGetTechnicalGoals,
 } from "src/generated/proposalToolComponents.ts";
 import {
@@ -9,16 +10,19 @@ import {
     Tooltip, useMantineTheme
 } from '@mantine/core';
 import {useParams} from "react-router-dom";
-import { ReactElement } from 'react';
+import {ReactElement, useEffect, useState} from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
 import {
-    JSON_SPACES, OPEN_DELAY,
+    OPEN_DELAY,
     NO_ROW_SELECTED, TABLE_MIN_WIDTH,
     TABLE_SCROLL_HEIGHT, ERROR_YELLOW
 } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
+import {notifyError} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 
 /**
  * the entrance to building the target part of the edit panel.
@@ -32,6 +36,9 @@ export default function TargetTypeForm (
         form: UseFormReturnType<ObservationFormValues>): ReactElement {
     const { selectedProposalCode} = useParams();
     const theme = useMantineTheme();
+
+    const [fieldsData, setFieldsData]
+        = useState<{value: string, label: string}[]>([])
 
     const {
         data: targets ,
@@ -49,6 +56,22 @@ export default function TargetTypeForm (
             useTechnicalGoalResourceGetTechnicalGoals( {
                 pathParams: {proposalCode: Number(selectedProposalCode)}
             });
+
+    useEffect(() => {
+        fetchProposalResourceGetFields({
+            pathParams: {proposalCode: Number(selectedProposalCode)}
+        })
+            .then((data: ObjectIdentifier[]) => {
+                setFieldsData(
+                    data?.map(field => (
+                        {value: String(field.dbid!), label: field.name!}
+                    ))
+                )
+            })
+            .catch(error => {console.error(error); notifyError("Error loading fields",
+                "cause: " + getErrorMessage(error))}
+            )
+    }, []);
 
     /**
      * generates the html for the observation type. Notice, disabled if editing
@@ -104,24 +127,13 @@ export default function TargetTypeForm (
         )
     }
 
-    // handle any errors.
     if (targetListError) {
-        return (
-            <div>
-                    <pre>
-                        {JSON.stringify(targetListError, null, JSON_SPACES)}
-                    </pre>
-            </div>
-        )
+        notifyError("Error loading targets",
+            "cause: " + getErrorMessage(targetListError));
     }
     if (technicalGoalsError) {
-        return (
-            <div>
-                    <pre>{JSON.stringify(
-                        technicalGoalsError, null, JSON_SPACES)}
-                    </pre>
-            </div>
-        )
+        notifyError("Error loading technical goals",
+            "cause: " + getErrorMessage(technicalGoalsError));
     }
 
     // return the html for the tables.
@@ -187,7 +199,14 @@ export default function TargetTypeForm (
                     </Table.ScrollContainer>
             }
 
-            <Space h={"sm"}/>
+            <Select
+                label={"Select an Observation field"}
+                placeholder={"pick one"}
+                data={fieldsData}
+                {...form.getInputProps('fieldId')}
+            />
+
+            <Space h={"xl"}/>
             {SelectObservationType()}
             {form.values.observationType === 'Calibration' &&
                 <>

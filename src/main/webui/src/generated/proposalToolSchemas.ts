@@ -1594,6 +1594,7 @@ export type Target = {
  * the field points to the associated target
  */
 export type TargetField = {
+  "@type"?: string;
   xmlId?: string;
   name?: string;
 };

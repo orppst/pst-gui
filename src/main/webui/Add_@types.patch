@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2024-04-08 13:41:12
-+++ proposalToolSchemas.ts	2024-04-26 14:15:12
+--- proposalToolSchemas.ts.orig	2024-05-22 14:45:57
++++ proposalToolSchemas.ts	2024-05-24 15:08:20
 @@ -129,6 +129,7 @@
   * An observation that is intended for calibration
   */
@@ -8,28 +8,7 @@
    /**
     * any constraints on the observation
     */
-@@ -149,19 +150,20 @@
- };
- 
- export type CalibrationTargetIntendedUse =
--  | "AMPLITUDE"
--  | "ATMOSPHERIC"
--  | "BANDPASS"
--  | "PHASE"
--  | "POINTING"
--  | "FOCUS"
--  | "POLARIZATION"
--  | "DELAY";
-+  | "Amplitude"
-+  | "Atmospheric"
-+  | "Bandpass"
-+  | "Phase"
-+  | "Pointing"
-+  | "Focus"
-+  | "Polarization"
-+  | "Delay";
- 
- /**
+@@ -162,6 +163,7 @@
   * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
   */
  export type CartesianCoordSpace = {
@@ -85,15 +64,6 @@
  };
  
  export type FileUpload = Record<string, any>;
-@@ -563,7 +568,7 @@
-   xmlId?: string;
- };
- 
--export type InstrumentKind = "CONTINUUM" | "SPECTROSCOPIC";
-+export type InstrumentKind = "continuum" | "spectroscopic";
- 
- /**
-  * an integer identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
 @@ -684,6 +689,7 @@
  export type ObsType = "TargetObservation" | "CalibrationObservation";
  
@@ -138,15 +108,6 @@
    /**
     * a human readable description of the cycle
     */
-@@ -1119,7 +1133,7 @@
-   observationSessionEnd?: Date;
- };
- 
--export type ProposalKind = "STANDARD" | "TOO" | "SURVEY";
-+export type ProposalKind = "Standard" | "ToO" | "Survey";
- 
- /**
-  * A review of a proposal
 @@ -1207,6 +1221,7 @@
   * A real value with a unit.
   */
@@ -206,14 +167,7 @@
    uid?: string;
    inKeycloakRealm?: boolean;
  };
-@@ -1553,17 +1575,19 @@
- /**
-  * A role within the timeAllocation committee
-  */
--export type TacRole = "TECHNICALREVIEWER" | "SCIENCEREVIEWER" | "CHAIR";
-+export type TacRole = "TechnicalReviewer" | "ScienceReviewer" | "Chair";
- 
- /**
+@@ -1559,17 +1581,20 @@
   * A target source
   */
  export type Target = {
@@ -227,7 +181,14 @@
  };
  
  /**
-@@ -1578,6 +1602,7 @@
+  * the field points to the associated target
+  */
+ export type TargetField = {
++  "@type"?: string;
+   xmlId?: string;
+   name?: string;
+ };
+@@ -1578,6 +1603,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -235,7 +196,7 @@
    /**
     * any constraints on the observation
     */
-@@ -1605,6 +1630,7 @@
+@@ -1605,6 +1631,7 @@
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -243,16 +204,7 @@
    xmlId?: string;
  };
  
-@@ -1645,7 +1671,7 @@
- /**
-  * acceptable text formats for document submission
-  */
--export type TextFormats = "LATEX" | "RST" | "ASCIIDOC";
-+export type TextFormats = "latex" | "rst" | "asciidoc";
- 
- /**
-  * A TimeFrame SHALL include a time scale and reference position. It MAY also include a reference direction.
-@@ -1708,6 +1734,10 @@
+@@ -1708,6 +1735,10 @@
   * particular time range
   */
  export type TimingWindow = {
