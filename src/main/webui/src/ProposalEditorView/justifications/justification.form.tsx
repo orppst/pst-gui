@@ -9,7 +9,7 @@ import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
-import {PreviewJustification} from "../proposal/Overview.tsx";
+import {PreviewJustification} from "./justification.preview.tsx";
 
 import Editor from "react-simple-code-editor";
 import { languages, highlight } from "prismjs";
@@ -119,7 +119,6 @@ export default function JustificationForm(props: JustificationProps)
         <>
             <form onSubmit={handleSubmit}>
                 <SubmitButton
-                    label={"Save"}
                     toolTipLabel={"Save updates"}
                     disabled={!form.isDirty() || !form.isValid()}
                 />
