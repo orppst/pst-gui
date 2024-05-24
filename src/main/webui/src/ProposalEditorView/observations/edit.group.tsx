@@ -35,7 +35,7 @@ export interface ObservationFormValues {
     calibrationUse: CalibrationTargetIntendedUse | undefined,
     targetDBId: number | undefined,
     techGoalId: number | undefined,
-    fieldId: number | undefined
+    fieldId: string | undefined, //string for Select to show existing value in edit-form
     timingWindows: TimingWindowGui[],
 }
 
@@ -101,7 +101,7 @@ export default function ObservationEditGroup(
                 calibrationUse: calibrationUse,
                 targetDBId: props.observation?.target?._id,
                 techGoalId: props.observation?.technicalGoal?._id,
-                fieldId: props.observation?.field?._id,
+                fieldId: props.observation?.field?._id ? String(props.observation?.field?._id) : undefined,
                 timingWindows: initialTimingWindows
             },
 
@@ -110,7 +110,7 @@ export default function ObservationEditGroup(
                     (value === undefined ? 'Please select a target' : null),
                 techGoalId: (value: number | undefined | string) =>
                     (value === undefined ? 'Please select a technical goal' : null),
-                fieldId: (value: number | undefined | string ) =>
+                fieldId: (value: string | undefined) =>
                     (value === undefined ? 'Please select a field' : null),
                 observationType: (value: ObservationType) =>
                     (value === '' ? 'Please select the observation type' : null),
@@ -146,7 +146,7 @@ export default function ObservationEditGroup(
                     },
                     field: {
                         "@type": "proposal:TargetField",
-                        "_id": values.fieldId
+                        "_id": Number(values.fieldId)
                     },
                     constraints: values.timingWindows.map(
                         (windowGui) => {
@@ -171,8 +171,6 @@ export default function ObservationEditGroup(
                         ...targetObservation,
                         "@type": "proposal:TargetObservation"}
                 }
-
-                console.log(JSON.stringify(baseObservation));
 
                 fetchObservationResourceAddNewObservation({
                     pathParams:{proposalCode: Number(selectedProposalCode)},
@@ -256,7 +254,7 @@ export default function ObservationEditGroup(
                             observationId: props.observationId!
                         },
                         body: {
-                            "_id": form.values.fieldId
+                            "_id": Number(form.values.fieldId)
                         }
                     })
                         .then(()=>queryClient.invalidateQueries())
