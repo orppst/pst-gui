@@ -70,6 +70,7 @@ import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observato
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
+import ObservationFieldsPanel from "./ProposalEditorView/observationFields/ObservationFieldsPanel.tsx";
 
 /**
  * defines the user context type.
@@ -222,6 +223,10 @@ function App2(): ReactElement {
                     {
                         path: "proposal/:selectedProposalCode/goals",
                         element:<TechnicalGoalsPanel />
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/observationFields",
+                        element: <ObservationFieldsPanel />
                     },
                     {
                         path: "proposal/:selectedProposalCode/observations",
