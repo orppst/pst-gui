@@ -5298,342 +5298,6 @@ export const useProposalCyclesResourceReplaceCycleAllocationGradeName = (
   });
 };
 
-export type ReviewedProposalResourceGetReviewedProposalsPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type ReviewedProposalResourceGetReviewedProposalsQueryParams = {
-  title?: string;
-};
-
-export type ReviewedProposalResourceGetReviewedProposalsError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ReviewedProposalResourceGetReviewedProposalsResponse =
-  Schemas.ObjectIdentifier[];
-
-export type ReviewedProposalResourceGetReviewedProposalsVariables = {
-  pathParams: ReviewedProposalResourceGetReviewedProposalsPathParams;
-  queryParams?: ReviewedProposalResourceGetReviewedProposalsQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReviewedProposalResourceGetReviewedProposals = (
-  variables: ReviewedProposalResourceGetReviewedProposalsVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    ReviewedProposalResourceGetReviewedProposalsResponse,
-    ReviewedProposalResourceGetReviewedProposalsError,
-    undefined,
-    {},
-    ReviewedProposalResourceGetReviewedProposalsQueryParams,
-    ReviewedProposalResourceGetReviewedProposalsPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useReviewedProposalResourceGetReviewedProposals = <
-  TData = ReviewedProposalResourceGetReviewedProposalsResponse
->(
-  variables: ReviewedProposalResourceGetReviewedProposalsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      ReviewedProposalResourceGetReviewedProposalsResponse,
-      ReviewedProposalResourceGetReviewedProposalsError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    ReviewedProposalResourceGetReviewedProposalsResponse,
-    ReviewedProposalResourceGetReviewedProposalsError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
-      operationId: "reviewedProposalResourceGetReviewedProposals",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchReviewedProposalResourceGetReviewedProposals(
-        { ...fetcherOptions, ...variables },
-        signal
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type ReviewedProposalResourceUpgradeSubmittedProposalToReviewPathParams =
-  {
-    /**
-     * @format int64
-     */
-    cycleCode: number;
-  };
-
-export type ReviewedProposalResourceUpgradeSubmittedProposalToReviewError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ReviewedProposalResourceUpgradeSubmittedProposalToReviewVariables =
-  {
-    body?: number;
-    pathParams: ReviewedProposalResourceUpgradeSubmittedProposalToReviewPathParams;
-  } & ProposalToolContext["fetcherOptions"];
-
-export const fetchReviewedProposalResourceUpgradeSubmittedProposalToReview = (
-  variables: ReviewedProposalResourceUpgradeSubmittedProposalToReviewVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.ReviewedProposalSynopsis,
-    ReviewedProposalResourceUpgradeSubmittedProposalToReviewError,
-    number,
-    {},
-    {},
-    ReviewedProposalResourceUpgradeSubmittedProposalToReviewPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReviewedProposalResourceUpgradeSubmittedProposalToReview = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ReviewedProposalSynopsis,
-      ReviewedProposalResourceUpgradeSubmittedProposalToReviewError,
-      ReviewedProposalResourceUpgradeSubmittedProposalToReviewVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.ReviewedProposalSynopsis,
-    ReviewedProposalResourceUpgradeSubmittedProposalToReviewError,
-    ReviewedProposalResourceUpgradeSubmittedProposalToReviewVariables
-  >({
-    mutationFn: (
-      variables: ReviewedProposalResourceUpgradeSubmittedProposalToReviewVariables
-    ) =>
-      fetchReviewedProposalResourceUpgradeSubmittedProposalToReview({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
-export type ReviewedProposalResourceGetReviewedProposalPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-  /**
-   * @format int64
-   */
-  reviewedProposalId: number;
-};
-
-export type ReviewedProposalResourceGetReviewedProposalError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ReviewedProposalResourceGetReviewedProposalVariables = {
-  pathParams: ReviewedProposalResourceGetReviewedProposalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReviewedProposalResourceGetReviewedProposal = (
-  variables: ReviewedProposalResourceGetReviewedProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.ReviewedProposal,
-    ReviewedProposalResourceGetReviewedProposalError,
-    undefined,
-    {},
-    {},
-    ReviewedProposalResourceGetReviewedProposalPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewedProposalId}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useReviewedProposalResourceGetReviewedProposal = <
-  TData = Schemas.ReviewedProposal
->(
-  variables: ReviewedProposalResourceGetReviewedProposalVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.ReviewedProposal,
-      ReviewedProposalResourceGetReviewedProposalError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    Schemas.ReviewedProposal,
-    ReviewedProposalResourceGetReviewedProposalError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewedProposalId}",
-      operationId: "reviewedProposalResourceGetReviewedProposal",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchReviewedProposalResourceGetReviewedProposal(
-        { ...fetcherOptions, ...variables },
-        signal
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type ReviewedProposalResourceRemoveReviewedProposalPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-  /**
-   * @format int64
-   */
-  reviewedProposalId: number;
-};
-
-export type ReviewedProposalResourceRemoveReviewedProposalError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ReviewedProposalResourceRemoveReviewedProposalVariables = {
-  pathParams: ReviewedProposalResourceRemoveReviewedProposalPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReviewedProposalResourceRemoveReviewedProposal = (
-  variables: ReviewedProposalResourceRemoveReviewedProposalVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    ReviewedProposalResourceRemoveReviewedProposalError,
-    undefined,
-    {},
-    {},
-    ReviewedProposalResourceRemoveReviewedProposalPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewedProposalId}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useReviewedProposalResourceRemoveReviewedProposal = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ReviewedProposalResourceRemoveReviewedProposalError,
-      ReviewedProposalResourceRemoveReviewedProposalVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    ReviewedProposalResourceRemoveReviewedProposalError,
-    ReviewedProposalResourceRemoveReviewedProposalVariables
-  >({
-    mutationFn: (
-      variables: ReviewedProposalResourceRemoveReviewedProposalVariables
-    ) =>
-      fetchReviewedProposalResourceRemoveReviewedProposal({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
-export type ReviewedProposalResourceUpdateReviewedProposalCompleteDatePathParams =
-  {
-    /**
-     * @format int64
-     */
-    cycleCode: number;
-    /**
-     * @format int64
-     */
-    reviewedProposalId: number;
-  };
-
-export type ReviewedProposalResourceUpdateReviewedProposalCompleteDateError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ReviewedProposalResourceUpdateReviewedProposalCompleteDateVariables =
-  {
-    pathParams: ReviewedProposalResourceUpdateReviewedProposalCompleteDatePathParams;
-  } & ProposalToolContext["fetcherOptions"];
-
-export const fetchReviewedProposalResourceUpdateReviewedProposalCompleteDate = (
-  variables: ReviewedProposalResourceUpdateReviewedProposalCompleteDateVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.ReviewedProposalSynopsis,
-    ReviewedProposalResourceUpdateReviewedProposalCompleteDateError,
-    undefined,
-    {},
-    {},
-    ReviewedProposalResourceUpdateReviewedProposalCompleteDatePathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewedProposalId}/completeDate",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReviewedProposalResourceUpdateReviewedProposalCompleteDate = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ReviewedProposalSynopsis,
-      ReviewedProposalResourceUpdateReviewedProposalCompleteDateError,
-      ReviewedProposalResourceUpdateReviewedProposalCompleteDateVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.ReviewedProposalSynopsis,
-    ReviewedProposalResourceUpdateReviewedProposalCompleteDateError,
-    ReviewedProposalResourceUpdateReviewedProposalCompleteDateVariables
-  >({
-    mutationFn: (
-      variables: ReviewedProposalResourceUpdateReviewedProposalCompleteDateVariables
-    ) =>
-      fetchReviewedProposalResourceUpdateReviewedProposalCompleteDate({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
 export type ProposalReviewResourceGetReviewsPathParams = {
   /**
    * @format int64
@@ -6173,70 +5837,6 @@ export const useProposalReviewResourceUpdateReviewFeasibility = (
   });
 };
 
-export type ReviewedProposalResourceUpdateReviewedProposalSuccessPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-  /**
-   * @format int64
-   */
-  reviewedProposalId: number;
-};
-
-export type ReviewedProposalResourceUpdateReviewedProposalSuccessError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ReviewedProposalResourceUpdateReviewedProposalSuccessVariables = {
-  body?: boolean;
-  pathParams: ReviewedProposalResourceUpdateReviewedProposalSuccessPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchReviewedProposalResourceUpdateReviewedProposalSuccess = (
-  variables: ReviewedProposalResourceUpdateReviewedProposalSuccessVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.ReviewedProposalSynopsis,
-    ReviewedProposalResourceUpdateReviewedProposalSuccessError,
-    boolean,
-    {},
-    {},
-    ReviewedProposalResourceUpdateReviewedProposalSuccessPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewedProposalId}/success",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useReviewedProposalResourceUpdateReviewedProposalSuccess = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ReviewedProposalSynopsis,
-      ReviewedProposalResourceUpdateReviewedProposalSuccessError,
-      ReviewedProposalResourceUpdateReviewedProposalSuccessVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.ReviewedProposalSynopsis,
-    ReviewedProposalResourceUpdateReviewedProposalSuccessError,
-    ReviewedProposalResourceUpdateReviewedProposalSuccessVariables
-  >({
-    mutationFn: (
-      variables: ReviewedProposalResourceUpdateReviewedProposalSuccessVariables
-    ) =>
-      fetchReviewedProposalResourceUpdateReviewedProposalSuccess({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
 export type SubmittedProposalResourceGetSubmittedProposalsPathParams = {
   /**
    * @format int64
@@ -6442,7 +6042,6 @@ export type ProposalCyclesResourceReplaceCycleTitleError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ProposalCyclesResourceReplaceCycleTitleVariables = {
-  body?: string;
   pathParams: ProposalCyclesResourceReplaceCycleTitlePathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -6453,7 +6052,7 @@ export const fetchProposalCyclesResourceReplaceCycleTitle = (
   proposalToolFetch<
     undefined,
     ProposalCyclesResourceReplaceCycleTitleError,
-    string,
+    undefined,
     {},
     {},
     ProposalCyclesResourceReplaceCycleTitlePathParams
@@ -7091,6 +6690,74 @@ export const useProposalResourceAddNewField = (
     mutationFn: (variables: ProposalResourceAddNewFieldVariables) =>
       fetchProposalResourceAddNewField({ ...fetcherOptions, ...variables }),
     ...options,
+  });
+};
+
+export type ProposalResourceGetFieldPathParams = {
+  /**
+   * @format int64
+   */
+  fieldId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceGetFieldError = Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceGetFieldVariables = {
+  pathParams: ProposalResourceGetFieldPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceGetField = (
+  variables: ProposalResourceGetFieldVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Field,
+    ProposalResourceGetFieldError,
+    undefined,
+    {},
+    {},
+    ProposalResourceGetFieldPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/fields/{fieldId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceGetField = <TData = Schemas.Field>(
+  variables: ProposalResourceGetFieldVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Field,
+      ProposalResourceGetFieldError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Field,
+    ProposalResourceGetFieldError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/fields/{fieldId}",
+      operationId: "proposalResourceGetField",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalResourceGetField(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
   });
 };
 
@@ -11438,16 +11105,6 @@ export type QueryOperation =
       variables: ProposalCyclesResourceGetCycleAllocatedGradeVariables;
     }
   | {
-      path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview";
-      operationId: "reviewedProposalResourceGetReviewedProposals";
-      variables: ReviewedProposalResourceGetReviewedProposalsVariables;
-    }
-  | {
-      path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewedProposalId}";
-      operationId: "reviewedProposalResourceGetReviewedProposal";
-      variables: ReviewedProposalResourceGetReviewedProposalVariables;
-    }
-  | {
       path: "/pst/api/proposalCycles/{cycleCode}/proposalsInReview/{reviewedProposalId}/reviews";
       operationId: "proposalReviewResourceGetReviews";
       variables: ProposalReviewResourceGetReviewsVariables;
@@ -11496,6 +11153,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/fields";
       operationId: "proposalResourceGetFields";
       variables: ProposalResourceGetFieldsVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/fields/{fieldId}";
+      operationId: "proposalResourceGetField";
+      variables: ProposalResourceGetFieldVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/investigators";
