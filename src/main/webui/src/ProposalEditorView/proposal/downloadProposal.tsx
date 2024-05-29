@@ -23,6 +23,7 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
     // convert overview to png.
     const canvas = await html2canvas(element);
     const data = canvas.toDataURL('image/png');
+    const pdfMargin = 2;
 
     // convert png to pdf.
     const pdfGenerator = new JSPDF();
@@ -31,13 +32,16 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
         pdfGenerator.getImageProperties(data);
     // noinspection JSUnresolvedReference
     const pdfWidth =
-        pdfGenerator.internal.pageSize.getWidth();
+        pdfGenerator.internal.pageSize.getWidth() - 2 * pdfMargin;
     const pdfHeight =
         (imgProperties.height * pdfWidth) /
-        imgProperties.width;
+        imgProperties.width - 2 * pdfMargin;
     // noinspection JSUnresolvedReference
     pdfGenerator.addImage(
-        data, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, "SLOW");
+        data, 'PNG',
+        pdfMargin, pdfMargin,
+        pdfWidth, pdfHeight,
+        undefined, "SLOW");
 
     // get pdf data.
     return pdfGenerator.output('blob');
