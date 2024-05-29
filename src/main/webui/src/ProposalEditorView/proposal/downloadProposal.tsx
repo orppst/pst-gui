@@ -37,7 +37,7 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
         imgProperties.width;
     // noinspection JSUnresolvedReference
     pdfGenerator.addImage(
-        data, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        data, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, "SLOW");
 
     // get pdf data.
     return pdfGenerator.output('blob');
