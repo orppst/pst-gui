@@ -3,6 +3,16 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import {useProposalResourceGetObservingProposal} from "../../generated/proposalToolComponents.ts";
 import ObservationFieldsTable from "./observationFieldsTable.tsx";
+import {Field} from "../../generated/proposalToolSchemas.ts";
+import ObservationFieldModal from "./observationFields.modal.tsx";
+import {Group, Space} from "@mantine/core";
+
+export type ObservationFieldsProps = {
+    observationField: Field | undefined
+    closeModal?: () => void
+}
+
+
 
 export default function ObservationFieldsPanel() : ReactElement {
 
@@ -22,6 +32,12 @@ export default function ObservationFieldsPanel() : ReactElement {
             />
 
             <ObservationFieldsTable/>
+
+            <Space h={"xl"}/>
+
+            <Group justify={'center'}>
+                <ObservationFieldModal observationField={undefined} />
+            </Group>
 
         </PanelFrame>
     )
