@@ -1113,10 +1113,6 @@ export type ProposalCycle = {
    */
   submittedProposals?: SubmittedProposal[];
   /**
-   * the proposals that have been reviewed in this cycle
-   */
-  reviewedProposals?: ReviewedProposal[];
-  /**
    * the proposals that have been successful and allocated time
    */
   allocatedProposals?: AllocatedProposal[];
@@ -1292,49 +1288,6 @@ export type ResourceType = {
   name?: string;
   unit?: string;
   xmlId?: string;
-};
-
-/**
- * an instance of a proposal that is in review
- */
-export type ReviewedProposal = {
-  /**
-   * the proposal can go on to allocation
-   */
-  successful?: boolean;
-  /**
-   * the date when all the proposals are due
-   *
-   * @format date
-   * @example "2022-03-10T00:00:00.000Z"
-   */
-  reviewsCompleteDate?: Date;
-  /**
-   * the reviews
-   */
-  reviews?: ProposalReview[];
-  /**
-   * an instance of a proposal that has been submitted
-   */
-  submitted?: SubmittedProposal;
-};
-
-export type ReviewedProposalSynopsis = {
-  /**
-   * @format int64
-   */
-  dbId?: number;
-  completedDate?: Date;
-  successStatus?: boolean;
-  /**
-   * @format int64
-   */
-  numberOfReviewers?: number;
-  /**
-   * @format int64
-   */
-  reviewsCompleted?: number;
-  proposalTitle?: string;
 };
 
 /**
@@ -1541,6 +1494,21 @@ export type SubmittedProposal = {
    * @example "2022-03-10T00:00:00.000Z"
    */
   submissionDate?: Date;
+  /**
+   * the proposal can go on to allocation
+   */
+  successful?: boolean;
+  /**
+   * the date when all the proposals are due
+   *
+   * @format date
+   * @example "2022-03-10T00:00:00.000Z"
+   */
+  reviewsCompleteDate?: Date;
+  /**
+   * the reviews
+   */
+  reviews?: ProposalReview[];
   /**
    * a complete proposal
    */
