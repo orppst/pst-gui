@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Box, Grid, Select} from "@mantine/core";
+import {Grid, Paper, Select} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -23,7 +23,7 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
     switch(form.values.format) {
         case "asciidoc":
             return (
-                <Box p={"xs"} m={"xs"}>
+                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
                         value={form.values.text!}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
@@ -31,11 +31,11 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
                         maxLength={MAX_CHARS_FOR_INPUTS}
                         {...form.getInputProps('text')}
                     />
-                </Box>
+                </Paper>
             );
         case "latex":
             return (
-                <Box p={"xs"} m={"xs"}>
+                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
                         value={form.values.text!}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
@@ -43,11 +43,11 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
                         maxLength={MAX_CHARS_FOR_INPUTS}
                         {...form.getInputProps('text')}
                     />
-                </Box>
+                </Paper>
             );
         case "rst":
             return (
-                <Box p={"xs"} m={"xs"}>
+                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
                         value={form.values.text!}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
@@ -55,7 +55,7 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
                         maxLength={MAX_CHARS_FOR_INPUTS}
                         {...form.getInputProps('text')}
                     />
-                </Box>
+                </Paper>
             );
     }
 }

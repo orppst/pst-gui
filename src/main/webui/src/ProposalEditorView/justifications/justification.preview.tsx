@@ -17,7 +17,7 @@ export const PreviewJustification = (format: TextFormats, content: string) => {
         case 'asciidoc':
             return (<>
                 <Badge>{format}</Badge>
-                <Box bg={"gray.2"} c={"black"} p={"md"} m={"xs"}>
+                <Box bg={"gray.3"} c={"black"} p={"md"} m={"xs"}>
                     <SyntaxHighlighter language={'asciidoc'}>
                         {content}
                     </SyntaxHighlighter>
@@ -28,7 +28,7 @@ export const PreviewJustification = (format: TextFormats, content: string) => {
             return (
                 <>
                     <Badge>{format}</Badge>
-                    <Box bg={"gray.2"} c={"black"} p={"md"} m={"xs"}>
+                    <Box bg={"gray.3"} c={"black"} p={"md"} m={"xs"}>
                         <Latex>
                             {content}
                         </Latex>
@@ -39,7 +39,7 @@ export const PreviewJustification = (format: TextFormats, content: string) => {
             return (
                 <>
                     <Badge>{format}</Badge>
-                    <Box bg={"gray.2"} c={"black"} p={"md"} m={"xs"}>
+                    <Box bg={"gray.3"} c={"black"} p={"md"} m={"xs"}>
                         <SyntaxHighlighter language={'asciidoc'}>
                             {content}
                         </SyntaxHighlighter>
