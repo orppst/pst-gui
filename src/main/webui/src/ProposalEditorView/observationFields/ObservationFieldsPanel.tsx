@@ -5,7 +5,7 @@ import {useProposalResourceGetObservingProposal} from "../../generated/proposalT
 import ObservationFieldsTable from "./observationFieldsTable.tsx";
 import {Field} from "../../generated/proposalToolSchemas.ts";
 import ObservationFieldModal from "./observationFields.modal.tsx";
-import {Group, Space} from "@mantine/core";
+import {Badge, Card, Group, Space, Text} from "@mantine/core";
 
 export type ObservationFieldsProps = {
     observationField: Field | undefined
@@ -23,6 +23,8 @@ export default function ObservationFieldsPanel() : ReactElement {
     })
 
 
+    //Remove the "Card" once we have this fully implemented
+
     return (
         <PanelFrame>
             <PanelHeader
@@ -30,6 +32,20 @@ export default function ObservationFieldsPanel() : ReactElement {
                 itemName={proposal.data?.title!}
                 panelHeading={"Observation Fields"}
             />
+
+            <Group justify={"center"}>
+                <Card shadow={"sm"} padding={"xs"} radius={"md"} withBorder w={"50%"} m={"lg"}>
+                    <Card.Section>
+                        <Badge bg={"blue"} radius={0}>
+                            Prototype Version: Observation Fields not fully implemented
+                        </Badge>
+                    </Card.Section>
+                    <Text>
+                        Presently you can define a "TargetField" that takes a name input only.
+                        Other "Field" types will be added in due time.
+                    </Text>
+                </Card>
+            </Group>
 
             <ObservationFieldsTable/>
 
