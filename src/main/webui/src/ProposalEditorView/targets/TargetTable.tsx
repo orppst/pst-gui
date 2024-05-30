@@ -117,9 +117,9 @@ function TargetTableRow(props: TargetProps): ReactElement {
      */
     const DeleteToolTip = (target: number | undefined): string => {
         if (IsBound(target)) {
-            return "Please remove this target from corresponding observations.";
+            return "Delete disabled: Target in use by an Observation";
         }
-        return "Click to delete this target from the set";
+        return "Remove this Target from the Proposal";
     }
 
     /**

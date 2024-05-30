@@ -12,7 +12,9 @@ export type ObservationFieldsProps = {
     closeModal?: () => void
 }
 
-
+export type ObservationFieldsTableProps = {
+    boundFields: number[] | undefined
+}
 
 export default function ObservationFieldsPanel() : ReactElement {
 
@@ -22,6 +24,11 @@ export default function ObservationFieldsPanel() : ReactElement {
         pathParams:{proposalCode: Number(selectedProposalCode)}
     })
 
+
+    let boundFields : number[] | undefined;
+    boundFields = proposal.data?.observations?.map(obs => (
+        obs.field! as number)
+    )
 
     //Remove the "Card" once we have this fully implemented
 
@@ -34,20 +41,20 @@ export default function ObservationFieldsPanel() : ReactElement {
             />
 
             <Group justify={"center"}>
-                <Card shadow={"sm"} padding={"xs"} radius={"md"} withBorder w={"50%"} m={"lg"}>
+                <Card shadow={"sm"} padding={"xs"} radius={"md"} withBorder w={"60%"} m={"lg"}>
                     <Card.Section>
                         <Badge bg={"blue"} radius={0}>
                             Prototype Version: Observation Fields not fully implemented
                         </Badge>
                     </Card.Section>
-                    <Text>
+                    <Text c={"pink"} size={"sm"}>
                         Presently you can define a "TargetField" that takes a name input only.
                         Other "Field" types will be added in due time.
                     </Text>
                 </Card>
             </Group>
 
-            <ObservationFieldsTable/>
+            <ObservationFieldsTable boundFields={boundFields} />
 
             <Space h={"xl"}/>
 

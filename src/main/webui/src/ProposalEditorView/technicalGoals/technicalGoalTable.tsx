@@ -129,10 +129,9 @@ function TechnicalGoalRow(
     const DeleteToolTip = (technicalGoal:  TechnicalGoal | undefined):
             string => {
         if (IsBound(technicalGoal)) {
-            return "Please remove this technical goal from " +
-                "corresponding observations.";
+            return "Delete disabled: Technical Goal in use by an Observation";
         }
-        return "Click to delete this technical goal from the set";
+        return "Remove this Goal from the Proposal";
     }
 
     /**

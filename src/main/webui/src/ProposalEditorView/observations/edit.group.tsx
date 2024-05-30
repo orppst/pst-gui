@@ -96,7 +96,7 @@ export default function ObservationEditGroup(
     const form: UseFormReturnType<ObservationFormValues> =
         useForm<ObservationFormValues>({
             initialValues: {
-                observationId: props.observationId, //required for deletion of timing windows
+                observationId: props.observation?._id, //required for deletion of timing windows
                 observationType: observationType,
                 calibrationUse: calibrationUse,
                 targetDBId: props.observation?.target?._id,
@@ -190,7 +190,7 @@ export default function ObservationEditGroup(
                         fetchObservationResourceAddNewConstraint({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observationId!,
+                                observationId: props.observation?._id!,
                             },
                             body: ConvertToTimingWindowApi(tw)
                         })
@@ -206,7 +206,7 @@ export default function ObservationEditGroup(
                         fetchObservationResourceReplaceTimingWindow({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observationId!,
+                                observationId: props.observation?._id!,
                                 timingWindowId: tw.id
                             },
                             // @ts-ignore
@@ -222,7 +222,7 @@ export default function ObservationEditGroup(
                     fetchObservationResourceReplaceTarget({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observationId!
+                            observationId: props.observation?._id!
                         },
                         body: {
                             "@type": "proposal:CelestialTarget",
@@ -237,7 +237,7 @@ export default function ObservationEditGroup(
                     fetchObservationResourceReplaceTechnicalGoal({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observationId!
+                            observationId: props.observation?._id!
                         },
                         body: {
                             "_id": form.values.techGoalId
@@ -251,7 +251,7 @@ export default function ObservationEditGroup(
                     fetchObservationResourceReplaceField({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observationId!
+                            observationId: props.observation?._id!
                         },
                         body: {
                             "_id": Number(form.values.fieldId)

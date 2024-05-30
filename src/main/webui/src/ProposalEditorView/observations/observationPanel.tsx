@@ -1,18 +1,16 @@
 import {
-    useObservationResourceGetObservations,
-    useProposalResourceGetTargets,
-    useTechnicalGoalResourceGetTechnicalGoals,
+    useProposalResourceGetObservingProposal,
 } from 'src/generated/proposalToolComponents';
 import {useParams} from "react-router-dom";
 import ObservationRow, { observationTableHeader } from './observationTable.tsx';
-import {Group, Space, Table} from "@mantine/core";
+import {Container, Group, List, Space, Table} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import { ReactElement } from 'react';
 import ObservationEditModal from './edit.modal.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
-import { IconTarget, IconChartLine } from '@tabler/icons-react';
-import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {IconTarget, IconChartLine, IconGeometry} from '@tabler/icons-react';
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 
 
 /**
@@ -24,8 +22,6 @@ import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
  */
 export type ObservationProps = {
     observation: Observation | undefined,
-    // needed as 'observation' does not contain its database id
-    observationId?: number,
     closeModal?: () => void
 }
 
@@ -48,31 +44,17 @@ function ObservationsPanel(): ReactElement {
 function Observations() {
     const { selectedProposalCode} = useParams();
 
-    // get any observations from the database.
-    const {
-        data: observations ,
-        error: observationsError,
-        isLoading: observationsLoading } =
-            useObservationResourceGetObservations(
-                {pathParams: {proposalCode: Number(selectedProposalCode)},},
-                {enabled: true}
-            );
+    const proposal = useProposalResourceGetObservingProposal({
+        pathParams: {proposalCode: Number(selectedProposalCode)}
+    })
 
-
-    // get any targets.
-    const {data: targets, error: targetsError, isLoading: targetsLoading} =
-        useProposalResourceGetTargets(
-            {pathParams: {proposalCode: Number(selectedProposalCode)}},
-            {enabled: true}
-        );
-
-    // get any technical goals.
-    const {data: technicalGoals, error: technicalGoalError,
-           isLoading: technicalGaolsLoading} =
-        useTechnicalGoalResourceGetTechnicalGoals(
-            {pathParams: {proposalCode: Number(selectedProposalCode)}},
-            {enabled: true}
-        );
+    if (proposal.isError) {
+        return (
+            <Container>
+                Unable to load proposal: {getErrorMessage(proposal.error)}
+            </Container>
+        )
+    }
 
     /**
      * generates the top header part of the panel.
@@ -82,7 +64,10 @@ function Observations() {
      */
     const Header = (): ReactElement => {
         return (
-            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Observations"} />
+            <PanelHeader
+                isLoading={proposal.isLoading}
+                itemName={proposal.data?.title!}
+                panelHeading={"Observations"} />
         )
     }
 
@@ -98,10 +83,10 @@ function Observations() {
                 { observationTableHeader() }
                 <Table.Tbody>
                     {
-                        observations?.map((observation) => {
+                        proposal.data?.observations?.map((observation) => {
                             return (
-                                <ObservationRow id={observation.dbid!}
-                                                key={observation.dbid!} />
+                                <ObservationRow id={observation._id!}
+                                                key={observation._id!} />
                             )
                         })
                     }
@@ -115,11 +100,10 @@ function Observations() {
      * @return {React.ReactElement} the dynamic html for the button.
      * @constructor
      */
-    const TechnicalGaolButton = (): ReactElement => {
+    const TechnicalGoalButton = (): ReactElement => {
         return (
             <NavigationButton
-                toolTipLabel={
-                    "Click to be routed to the technical goal page."}
+                toolTipLabel={"Go to Technical Goals page"}
                 p={5}
                 ml={-5}
                 icon={IconChartLine}
@@ -136,7 +120,7 @@ function Observations() {
     const TargetButton = (): ReactElement => {
         return (
             <NavigationButton
-                toolTipLabel={"Click to be routed to the target page."}
+                toolTipLabel={"Go to Targets page"}
                 p={5}
                 ml={-5}
                 icon={IconTarget}
@@ -145,22 +129,23 @@ function Observations() {
         )
     }
 
-    // process any errors.
-    const possibleErrors: (
-        {status: "unknown", payload: string} | null | undefined) [] = [
-            observationsError, targetsError, technicalGoalError];
-    const filtered: {status: "unknown", payload: string}[] =
-        possibleErrors.flatMap(f => f ? [f] : []);
-    if (filtered.length !== 0) {
-        let messages = "";
-        filtered.forEach((error: { status: "unknown", payload: string }) => {
-            messages = messages + " " + getErrorMessage(error);
-        })
-        return (<pre>messages</pre>);
+    const ObservationFieldButton = () : ReactElement => {
+        return (
+            <NavigationButton
+                p={5}
+                ml={-5}
+                to={"../proposal/" + selectedProposalCode + "/observationFields"}
+                icon={IconGeometry}
+                toolTipLabel={"Go to Observation Fields page"}
+                label={"at least one observation field"}
+            />
+        )
     }
 
+
+
     // if still loading. present a loading screen.
-    if (targetsLoading || observationsLoading || technicalGaolsLoading ) {
+    if (proposal.isLoading) {
         return (
             <PanelFrame>
                 <Header/>
@@ -172,28 +157,38 @@ function Observations() {
         )
     }
 
-    if (targets?.length === 0 || technicalGoals?.length === 0) {
+    if (proposal.data?.targets?.length === 0 ||
+        proposal.data?.technicalGoals?.length === 0 ||
+        proposal.data?.fields?.length === 0) {
         return (
             <PanelFrame>
                 <Header/>
-                <Group>
-                    To create an observation please add
-                    {
-                        targets?.length === 0 &&
-                        <>
-                            <TargetButton/>
-                            {technicalGoals?.length === 0 && " and "}
-                        </>
-                    }
-                    {
-                        technicalGoals?.length == 0 &&
-                        <TechnicalGaolButton/>
-                    }
-                </Group>
+                    To create an observation please add the following:
+                    <List>
+                        {
+                            proposal.data?.targets?.length === 0 &&
+                            <List.Item>
+                                <TargetButton/>
+                            </List.Item>
+                        }
+                        {
+                            proposal.data?.technicalGoals?.length == 0 &&
+                            <List.Item>
+                                <TechnicalGoalButton/>
+                            </List.Item>
+                        }
+                        {
+                            proposal.data.fields?.length == 0 &&
+                            <List.Item>
+                                <ObservationFieldButton/>
+                            </List.Item>
+                        }
+                    </List>
+
             </PanelFrame>
         )
     } else {
-        //both targets.length and technicalGoals.length are greater than zero here
+        //all requirements met
         return (
             <PanelFrame>
                 <Header/>

@@ -70,7 +70,7 @@ const textFormatData = [
         //Add a blank field, FIXME: replace with a real field
          const field : TargetField = {
              "@type": 'proposal:TargetField',
-             name: "A field"
+             name: "Default Field"
          };
 
         const newProposal :ObservingProposal = {
