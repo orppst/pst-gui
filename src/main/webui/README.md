@@ -27,7 +27,7 @@ patch src/generated/proposalToolSchemas.ts Add_@types.patch
 To create a new patch file
 
 ```shell
-diff -Naur proposalToolSchemas.ts.orig proposalToolSchemas.ts > ../../Add_@types.patch 
+cd src/generated;diff -Naur proposalToolSchemas.ts.orig proposalToolSchemas.ts > ../../Add_@types.patch 
 ```
 
 Other client side libraries used
