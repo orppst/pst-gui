@@ -43,7 +43,6 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
             <Accordion.Item
                 value={String(proposal.code)}
                 key={proposal.code}
-                bg={colorScheme === 'dark' ? theme.colors.gray[9] : theme.colors.gray[1]}
             >
                 <Accordion.Control>
                     <NavLink to={"proposal/" + proposal.code}
@@ -56,7 +55,9 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                              ml={-10}
                     />
                 </Accordion.Control>
-                <Accordion.Panel>
+                <Accordion.Panel
+                    bg={colorScheme === 'dark' ? theme.colors.gray[9] : theme.colors.gray[1]}
+                >
                     <NavLink to={"proposal/" + proposal.code}
                              component={Link}
                              key="Overview"
@@ -158,7 +159,6 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
             value={accordionValue}
             onChange={setAccordionValue}
             variant={"filled"}
-            bg={colorScheme === 'dark' ? theme.colors.gray[9] : theme.colors.gray[1]}
         >
             {proposalsList}
         </Accordion>
