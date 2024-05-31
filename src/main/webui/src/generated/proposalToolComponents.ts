@@ -7019,6 +7019,64 @@ export const useProposalResourceRemoveField = (
   });
 };
 
+export type ProposalResourceChangeFieldNamePathParams = {
+  /**
+   * @format int64
+   */
+  fieldId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceChangeFieldNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceChangeFieldNameVariables = {
+  pathParams: ProposalResourceChangeFieldNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceChangeFieldName = (
+  variables: ProposalResourceChangeFieldNameVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceChangeFieldNameError,
+    undefined,
+    {},
+    {},
+    ProposalResourceChangeFieldNamePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/fields/{fieldId}/name",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceChangeFieldName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalResourceChangeFieldNameError,
+      ProposalResourceChangeFieldNameVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalResourceChangeFieldNameError,
+    ProposalResourceChangeFieldNameVariables
+  >({
+    mutationFn: (variables: ProposalResourceChangeFieldNameVariables) =>
+      fetchProposalResourceChangeFieldName({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
 export type InvestigatorResourceGetInvestigatorsPathParams = {
   /**
    * @format int64

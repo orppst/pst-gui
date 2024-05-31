@@ -2,7 +2,7 @@ import {ReactElement, useState} from "react";
 import {Accordion, Group, NavLink} from "@mantine/core";
 import {
     IconChartLine,
-    IconFileCheck, IconFiles,
+    IconFileCheck, IconFiles, IconGeometry,
     IconLetterS,
     IconLetterT,
     IconLicense, IconSend,
@@ -111,6 +111,14 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                          key="Technical Goals"
                          active={"Technical Goals" + proposal.code === active}
                          onClick={()=>setActive("Technical Goals" + proposal.code)}
+                />
+                <NavLink to={"proposal/" + proposal.code + "/observationFields"}
+                         component={Link}
+                         leftSection={<IconGeometry/>}
+                         label="Observation Fields"
+                         key="Observation Fields"
+                         active={"Observation Fields" + proposal.code === active}
+                         onClick={()=>setActive("Observation Fields" + proposal.code)}
                 />
                 <NavLink to={"proposal/" + proposal.code + "/observations"}
                          component={Link}

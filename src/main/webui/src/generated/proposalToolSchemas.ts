@@ -690,6 +690,7 @@ export type ObsType = "TargetObservation" | "CalibrationObservation";
 
 export type Observation = {
   "@type"?: string; //ObsType (see above)
+  _id?: number;
   /**
    * any constraints on the observation
    */
@@ -1562,6 +1563,7 @@ export type Target = {
  * the field points to the associated target
  */
 export type TargetField = {
+  "@type"?: string;
   xmlId?: string;
   name?: string;
 };

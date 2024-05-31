@@ -35,7 +35,7 @@ export interface ObservationFormValues {
     calibrationUse: CalibrationTargetIntendedUse | undefined,
     targetDBId: number | undefined,
     techGoalId: number | undefined,
-    fieldId: number | undefined
+    fieldId: string | undefined, //string for Select to show existing value in edit-form
     timingWindows: TimingWindowGui[],
 }
 
@@ -96,28 +96,26 @@ export default function ObservationEditGroup(
     const form: UseFormReturnType<ObservationFormValues> =
         useForm<ObservationFormValues>({
             initialValues: {
-                observationId: props.observationId, //required for deletion of timing windows
+                observationId: props.observation?._id, //required for deletion of timing windows
                 observationType: observationType,
                 calibrationUse: calibrationUse,
                 targetDBId: props.observation?.target?._id,
                 techGoalId: props.observation?.technicalGoal?._id,
-                fieldId: 1, //FIXME: need a user selected value
+                fieldId: props.observation?.field?._id ? String(props.observation?.field?._id) : undefined,
                 timingWindows: initialTimingWindows
             },
 
             validate: {
                 targetDBId: (value: number | undefined | string ) =>
-                    (value === undefined ?
-                        'Please select a target' : null),
+                    (value === undefined ? 'Please select a target' : null),
                 techGoalId: (value: number | undefined | string) =>
-                    (value === undefined ?
-                        'Please select a technical goal' : null),
+                    (value === undefined ? 'Please select a technical goal' : null),
+                fieldId: (value: string | undefined) =>
+                    (value === undefined ? 'Please select a field' : null),
                 observationType: (value: ObservationType) =>
-                    (value === '' ?
-                        'Please select the observation type' : null),
+                    (value === '' ? 'Please select the observation type' : null),
                 calibrationUse: (value, values) =>
-                    ((values.observationType === "Calibration" &&
-                        value === undefined) ?
+                    ((values.observationType === "Calibration" && value === undefined) ?
                         'Please select the calibration use' : null),
                 timingWindows: {
                     startTime: (value) => (
@@ -148,7 +146,7 @@ export default function ObservationEditGroup(
                     },
                     field: {
                         "@type": "proposal:TargetField",
-                        "_id": values.fieldId
+                        "_id": Number(values.fieldId)
                     },
                     constraints: values.timingWindows.map(
                         (windowGui) => {
@@ -174,8 +172,6 @@ export default function ObservationEditGroup(
                         "@type": "proposal:TargetObservation"}
                 }
 
-                console.log(JSON.stringify(baseObservation));
-
                 fetchObservationResourceAddNewObservation({
                     pathParams:{proposalCode: Number(selectedProposalCode)},
                     body: values.observationType == 'Target' ?
@@ -194,7 +190,7 @@ export default function ObservationEditGroup(
                         fetchObservationResourceAddNewConstraint({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observationId!,
+                                observationId: props.observation?._id!,
                             },
                             body: ConvertToTimingWindowApi(tw)
                         })
@@ -210,7 +206,7 @@ export default function ObservationEditGroup(
                         fetchObservationResourceReplaceTimingWindow({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observationId!,
+                                observationId: props.observation?._id!,
                                 timingWindowId: tw.id
                             },
                             // @ts-ignore
@@ -226,7 +222,7 @@ export default function ObservationEditGroup(
                     fetchObservationResourceReplaceTarget({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observationId!
+                            observationId: props.observation?._id!
                         },
                         body: {
                             "@type": "proposal:CelestialTarget",
@@ -241,7 +237,7 @@ export default function ObservationEditGroup(
                     fetchObservationResourceReplaceTechnicalGoal({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observationId!
+                            observationId: props.observation?._id!
                         },
                         body: {
                             "_id": form.values.techGoalId
@@ -255,11 +251,10 @@ export default function ObservationEditGroup(
                     fetchObservationResourceReplaceField({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observationId!
+                            observationId: props.observation?._id!
                         },
                         body: {
-                            "@type": "proposal:TargetField",
-                            "_id": form.values.fieldId
+                            "_id": Number(form.values.fieldId)
                         }
                     })
                         .then(()=>queryClient.invalidateQueries())

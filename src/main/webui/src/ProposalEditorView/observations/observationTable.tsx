@@ -24,6 +24,7 @@ import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import CloneButton from "src/commonButtons/clone.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
 import { ReactElement } from 'react';
+import {notifyError} from "../../commonPanel/notifications.tsx";
 
 export type ObservationId = {id: number}
 
@@ -33,8 +34,7 @@ export type ObservationId = {id: number}
  * @return {ReactElement} the react html for the observation row.
  * @constructor
  */
-export default function ObservationRow(
-    observationId: ObservationId): ReactElement {
+export default function ObservationRow(observationId: ObservationId): ReactElement {
 
     const queryClient = useQueryClient();
 
@@ -70,17 +70,8 @@ export default function ObservationRow(
                 proposalCode: Number(selectedProposalCode),
                 observationId: observationId.id}
         })
-            .then(() => queryClient.invalidateQueries(
-                {
-                    predicate: (query) => {
-                        // only invalidate the query for the entire list.
-                        // not the separate bits.
-                        return query.queryKey.length === 5 &&
-                            query.queryKey[4] === 'observations';
-                    }
-                }
-            ))
-            .catch(console.log);
+            .then(() => queryClient.invalidateQueries())
+            .catch(error => notifyError("Deletion Failed", getErrorMessage(error)));
     }
 
     /**
@@ -252,10 +243,7 @@ export default function ObservationRow(
                 <Group position={"right"}>
                     {
                         observationLoading ? 'Loading...' :
-                        <ObservationEditModal
-                            observation={observation}
-                            observationId={observationId.id}
-                        />
+                        <ObservationEditModal observation={observation}/>
                     }
                     <CloneButton toolTipLabel={"clone"}
                                  onClick={confirmClone} />
