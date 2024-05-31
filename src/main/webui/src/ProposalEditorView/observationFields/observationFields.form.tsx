@@ -21,6 +21,12 @@ import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
+/**
+ * Function to return the "Observation Fields" form to either create a new "Field" or edit an existing one.
+ * @param props ObservationFieldProps contains the Field for editing or undefined to create new, and a
+ *              closeModal function callback.
+ *
+ */
 export default function ObservationFieldsForm(props: ObservationFieldsProps) : ReactElement {
 
     const {selectedProposalCode} = useParams();
@@ -28,8 +34,8 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
 
 
     /*
-        Developer note: If more field types are added to the underlying data model then this array
-        must be edited to match. There is another field type named "Point" not listed in this array
+        Developer note: If more Field types are added to the underlying data model then this array
+        must be edited to match. There is another Field type named "Point" not listed in this array
         that consist of a member called "centre" with a Java Type of "Coordinate", but I am unsure
         how this differs from the "TargetField" type.
      */
@@ -169,6 +175,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
     })
 
 
+    //Reminder: Once fully implemented remove the type-checking conditions in the Submit disable property
     return (
         <form onSubmit={handleSubmit}>
             <Stack>

@@ -16,6 +16,9 @@ export type ObservationFieldsTableProps = {
     boundFields: number[] | undefined
 }
 
+/**
+ * Function to return the page elements for "Observation Fields"
+ */
 export default function ObservationFieldsPanel() : ReactElement {
 
     const {selectedProposalCode} = useParams();
@@ -32,6 +35,8 @@ export default function ObservationFieldsPanel() : ReactElement {
 
     //Remove the "Card" once we have this fully implemented
 
+    // <ObservationFieldModal observationField={undefined}/> can be treated as
+    // an alias for the "Add +" button
     return (
         <PanelFrame>
             <PanelHeader

@@ -97,6 +97,11 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
     )
 }
 
+/**
+ * Function to return a Table element containing the rows of Observation Fields defined in the proposal
+ * @param props ObservationFieldsTableProps contains an array of Field ids referenced by "Observations" in
+ *              the current proposal. This allows us to disable the delete button for those Fields.
+ */
 export default function ObservationFieldsTable(props: ObservationFieldsTableProps) : ReactElement {
 
     const {selectedProposalCode} = useParams();
@@ -125,6 +130,7 @@ export default function ObservationFieldsTable(props: ObservationFieldsTableProp
             {
                 fields.data?.map(fieldId => (
                     <ObservationFieldsRow
+                        key={fieldId.dbid}
                         fieldId={fieldId.dbid!}
                         proposalCode={Number(selectedProposalCode)}
                         disableDelete={isFieldBound(fieldId.dbid!)}
