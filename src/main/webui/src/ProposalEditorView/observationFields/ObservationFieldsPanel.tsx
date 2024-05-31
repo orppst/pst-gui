@@ -43,7 +43,7 @@ export default function ObservationFieldsPanel() : ReactElement {
             <Group justify={"center"}>
                 <Card shadow={"sm"} padding={"xs"} radius={"md"} withBorder w={"60%"} m={"lg"}>
                     <Card.Section>
-                        <Badge bg={"blue"} radius={0}>
+                        <Badge bg={"blue"} c={"yellow"} radius={0}>
                             Prototype Version: Observation Fields not fully implemented
                         </Badge>
                     </Card.Section>
