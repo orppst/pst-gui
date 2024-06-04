@@ -3,6 +3,7 @@ import {Box, Table, Text} from "@mantine/core";
 import {ICON_SIZE, JSON_SPACES} from "src/constants.tsx";
 import {useProposalResourceValidateObservingProposal} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
+import {PanelFrame} from "../../commonPanel/appearance.tsx";
 
 export default function ValidationOverview(props: {cycle: number}) {
     const { selectedProposalCode } = useParams();
@@ -21,7 +22,7 @@ export default function ValidationOverview(props: {cycle: number}) {
     }
 
     return (
-        <Box m={20}>Server side validation overview
+        <PanelFrame m={20}>Validation overview
             {isLoading?(<Text>Loading...</Text>):(
                 <Table>
                     <Table.Tbody>
@@ -57,6 +58,6 @@ export default function ValidationOverview(props: {cycle: number}) {
                     </Table.Tbody>
                 </Table>
                 )}
-        </Box>
+        </PanelFrame>
     );
 }

@@ -18,6 +18,9 @@ import {useQueryClient} from "@tanstack/react-query";
 import { SubmitButton } from 'src/commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "src/constants";
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 
 const kindData = [
@@ -66,7 +69,8 @@ const textFormatData = [
 
         //Add a blank field, FIXME: replace with a real field
          const field : TargetField = {
-             name: "A field"
+             "@type": 'proposal:TargetField',
+             name: "Default Field"
          };
 
         const newProposal :ObservingProposal = {
@@ -85,7 +89,9 @@ const textFormatData = [
                         body: field
                     })
                         .then(() => navigate("/proposal/" + newProposalId))
-                        .catch(console.log);
+                        .catch(error => notifyError("Error creating field",
+                            "cause: " + getErrorMessage(error))
+                        );
                 }
             })
             .then(() => setSubmitting(false))
@@ -93,8 +99,8 @@ const textFormatData = [
     });
 
      return (
-        <Box>
-            <Text fz="lg" fw={700}>Create Proposal</Text>
+        <PanelFrame>
+            <PanelHeader itemName={"NEW"} panelHeading={"Create Proposal"} />
             {submitting &&
                 <Box>Submitting request</Box>
             }
@@ -166,10 +172,10 @@ const textFormatData = [
                 <SubmitButton
                     label={"Create"}
                     toolTipLabel={"Create new proposal"}
-                    disabled={!form.isValid()}
+                    disabled={!form.isDirty() || !form.isValid()}
                 />
             </form>
-        </Box>
+        </PanelFrame>
     );
 }
 

@@ -7,11 +7,14 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
-import {Box, Checkbox, Grid, Select} from "@mantine/core";
+import {Checkbox, Grid, Select} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
  * Render s form panel to add an investigator to the current proposal.
@@ -63,9 +66,9 @@ function AddInvestigatorPanel(): ReactElement {
 
     if (error) {
         return (
-            <div>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </div>
+            </PanelFrame>
         );
     }
 
@@ -84,9 +87,15 @@ function AddInvestigatorPanel(): ReactElement {
                     return queryClient.invalidateQueries();
                 })
                 .then(()=>navigate(  "../", {relative:"path"})) // see https://stackoverflow.com/questions/72537159/react-router-v6-and-relative-links-from-page-within-route
-                .catch(console.log)
+                .catch((error)=>{
+                    console.log(error);
+                    notifyError("Add investigator error", getErrorMessage(error));
+                })
             )
-            .catch(console.log);
+            .catch((error)=> {
+                console.log(error);
+                notifyError("Add investigator error", getErrorMessage(error));
+            })
     });
 
     function handleCancel(event: SyntheticEvent) {
@@ -95,8 +104,8 @@ function AddInvestigatorPanel(): ReactElement {
     }
 
     return (
-            <Box>
-                <h3>Add an investigator</h3>
+            <PanelFrame>
+                <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Add an investigator"} />
                 <form onSubmit={handleAdd}>
                     <Select label={"Type"}
                         data={typeData}
@@ -113,10 +122,12 @@ function AddInvestigatorPanel(): ReactElement {
                         {...form.getInputProps("selectedInvestigator")}
                     />
                     <Grid>
-                        <Grid.Col span={1}>
+                        <Grid.Col span={2}>
                             <SubmitButton
                                 label={"Add"}
-                                toolTipLabel={"Add new investigator"}/>
+                                toolTipLabel={"Add new investigator"}
+                                disabled={!form.isDirty() || !form.isValid()}
+                            />
                         </Grid.Col>
                         <Grid.Col span={1}>
                             <DeleteButton
@@ -126,7 +137,7 @@ function AddInvestigatorPanel(): ReactElement {
                         </Grid.Col>
                     </Grid>
                 </form>
-            </Box>
+            </PanelFrame>
     )
 }
 

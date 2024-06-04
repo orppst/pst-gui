@@ -1,43 +1,130 @@
-import {ReactElement} from "react";
-import {Accordion, Group} from "@mantine/core";
-import {IconBike} from "@tabler/icons-react";
+import {ReactElement, useState} from "react";
+import {Accordion, Group, NavLink} from "@mantine/core";
+import {
+    IconBike,
+    IconCalendar, IconEgg, IconLetterA,
+    IconLetterO, IconLetterR,
+    IconLetterT,
+    IconTeapot,
+    IconUfo,
+    IconUsersGroup
+} from "@tabler/icons-react";
+import {useProposalCyclesResourceGetProposalCycles} from "src/generated/proposalToolComponents.ts";
+import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
+import {Link} from "react-router-dom";
 
 export default function CycleList() : ReactElement {
+
+    //FIXME: use an actual query
+
+    const cycles = useProposalCyclesResourceGetProposalCycles(
+        {queryParams: {includeClosed: true}}
+    )
+
+    const [accordionValue, setAccordionValue]
+        = useState<string | null>(null);
+
+
+    const cyclesList = cycles.data?.map((cycle) => {
+        return <CycleItem key={cycle.dbid} cycle={cycle} />
+    })
+
     return (
-        <Accordion>
-            <Accordion.Item value={"cycle1"} key={"cycle1"}>
-                <Accordion.Control>
-                    <Group>
-                        <IconBike />
-                        Cycle 1
-                    </Group>
-                </Accordion.Control>
-                <Accordion.Panel>
-                    Nav links to the bits of Cycle 1
-                </Accordion.Panel>
-            </Accordion.Item>
-            <Accordion.Item value={"cycle2"} key={"cycle2"}>
-                <Accordion.Control>
-                    <Group>
-                        <IconBike />
-                        Cycle 2
-                    </Group>
-                </Accordion.Control>
-                <Accordion.Panel>
-                    Nav links to the bits of Cycle 2
-                </Accordion.Panel>
-            </Accordion.Item>
-            <Accordion.Item value={"etc"} key={"etc"}>
-                <Accordion.Control>
-                    <Group>
-                        <IconBike />
-                        and so on
-                    </Group>
-                </Accordion.Control>
-                <Accordion.Panel>
-                    ...
-                </Accordion.Panel>
-            </Accordion.Item>
+        <Accordion value={accordionValue}
+                   onChange={setAccordionValue}
+                   variant={"filled"}
+        >
+            {cyclesList}
         </Accordion>
+    )
+}
+
+function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
+    const cycle = props.cycle;
+    const [active, setActive] = useState("");
+
+    return (
+        <Accordion.Item value={String(cycle.dbid)}>
+            <Accordion.Control>
+                <Group>
+                    <IconBike/>
+                    {cycle.name}
+                </Group>
+            </Accordion.Control>
+            <Accordion.Panel>
+                <NavLink to={"cycle/" + cycle.dbid}
+                         component={Link}
+                         key={"Overview"}
+                         label={"Overview"}
+                         leftSection={<IconUfo/>}
+                         active={"Overview" + cycle.code === active}
+                         onClick={()=>setActive("Overview" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/title"}
+                         component={Link}
+                         key={"Title"}
+                         label={"Title"}
+                         leftSection={<IconLetterT/>}
+                         active={"Title" + cycle.code === active}
+                         onClick={()=>setActive("Title" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/dates"}
+                         component={Link}
+                         key={"Dates"}
+                         label={"Dates"}
+                         leftSection={<IconCalendar/>}
+                         active={"Dates" + cycle.code === active}
+                         onClick={()=>setActive("Dates" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/observatory"}
+                         component={Link}
+                         key={"Observatory"}
+                         label={"Observatory"}
+                         leftSection={<IconTeapot/>}
+                         active={"Observatory" + cycle.code === active}
+                         onClick={()=>setActive("Observatory" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/tac"}
+                         component={Link}
+                         key={"TAC"}
+                         label={"TAC"}
+                         leftSection={<IconUsersGroup/>}
+                         active={"TAC" + cycle.code === active}
+                         onClick={()=>setActive("TAC" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/availableResources"}
+                         component={Link}
+                         key={"AvailableResources"}
+                         label={"Available Resources"}
+                         leftSection={<IconEgg/>}
+                         active={"AvailableResources" + cycle.code === active}
+                         onClick={()=>setActive("AvailableResources" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/observingModes"}
+                         component={Link}
+                         key={"ObservingModes"}
+                         label={"Observing Modes"}
+                         leftSection={<IconLetterO/>}
+                         active={"ObservingModes" + cycle.code === active}
+                         onClick={()=>setActive("ObservingModes" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/reviews"}
+                         component={Link}
+                         key={"Reviews"}
+                         label={"Reviews"}
+                         leftSection={<IconLetterR/>}
+                         active={"Reviews" + cycle.code === active}
+                         onClick={()=>setActive("Reviews" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/allocations"}
+                         component={Link}
+                         key={"Allocations"}
+                         label={"Allocations"}
+                         leftSection={<IconLetterA/>}
+                         active={"Allocations" + cycle.code === active}
+                         onClick={()=>setActive("Allocations" + cycle.code)}
+                />
+            </Accordion.Panel>
+        </Accordion.Item>
     )
 }

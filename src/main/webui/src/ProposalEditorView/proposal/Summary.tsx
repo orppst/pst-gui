@@ -6,15 +6,15 @@ import {
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
-import {Box, Text, Textarea} from "@mantine/core";
+import {Box, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import { SubmitButton } from 'src/commonButtons/save';
 import {
-    HEADER_FONT_WEIGHT,
     JSON_SPACES,
     MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS
 } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
@@ -68,9 +68,9 @@ function SummaryPanel() {
 
     if (error) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
@@ -81,8 +81,8 @@ function SummaryPanel() {
     });
 
     return (
-        <Box>
-            <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Update summary</Text>
+        <PanelFrame>
+            <PanelHeader isLoading={isLoading} itemName={data?.title as string} panelHeading={"Summary"} />
             {isLoading ? <Box>loading...</Box>:
               submitting ?
                 <Box>Submitting request</Box> :
@@ -93,11 +93,13 @@ function SummaryPanel() {
                           name="summary" {...form.getInputProps('summary')} />
                 <MaxCharsForInputRemaining length={form.values.summary.length} />
                 <br/>
-                <SubmitButton toolTipLabel={"save summary"}
-                              label={'save'}/>
+                <SubmitButton toolTipLabel={"Update summary"}
+                              label={"Save"}
+                              disabled={!form.isDirty() || !form.isValid()}
+                />
             </form>
             }
-        </Box>
+        </PanelFrame>
     );
 
 }

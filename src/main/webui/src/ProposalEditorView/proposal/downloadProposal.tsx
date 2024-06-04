@@ -10,7 +10,7 @@ import {
     SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from 'src/generated/proposalToolComponents.ts';
 import { JSON_FILE_NAME, OVERVIEW_PDF_FILENAME } from 'src/constants.tsx';
-import {notifications} from "@mantine/notifications";
+import {notifyError, notifyInfo} from "../../commonPanel/notifications.tsx";
 
 
 /**
@@ -23,6 +23,7 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
     // convert overview to png.
     const canvas = await html2canvas(element);
     const data = canvas.toDataURL('image/png');
+    const pdfMargin = 2;
 
     // convert png to pdf.
     const pdfGenerator = new JSPDF();
@@ -31,13 +32,16 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
         pdfGenerator.getImageProperties(data);
     // noinspection JSUnresolvedReference
     const pdfWidth =
-        pdfGenerator.internal.pageSize.getWidth();
+        pdfGenerator.internal.pageSize.getWidth() - 2 * pdfMargin;
     const pdfHeight =
         (imgProperties.height * pdfWidth) /
-        imgProperties.width;
+        imgProperties.width - 2 * pdfMargin;
     // noinspection JSUnresolvedReference
     pdfGenerator.addImage(
-        data, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        data, 'PNG',
+        pdfMargin, pdfMargin,
+        pdfWidth, pdfHeight,
+        undefined, "SLOW");
 
     // get pdf data.
     return pdfGenerator.output('blob');
@@ -113,21 +117,9 @@ async function downloadProposal(
                 //ensure we got some data back.
                 if(blob!==undefined){
                     zip.file(JSON_FILE_NAME,blob)
-                    notifications.show({
-                        autoClose:7000,
-                        title:"Export",
-                        message:'An export has started and the download will begin shortly',
-                        color:"green",
-                        className:"my-notification-class",
-                    });
+                    notifyInfo("Export", "An export has started and the download will begin shortly");
                 }else{
-                    notifications.show({
-                        autoClose:7000,
-                        title:"Export Error",
-                        message:"An unknown error has occurred exporting this proposal",
-                        color:"red",
-                        className:'my-notifications-class'
-                    })
+                    notifyError("Export Error", "An unknown error has occurred exporting this proposal");
                 }
             })
     );

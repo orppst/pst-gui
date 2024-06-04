@@ -12,6 +12,8 @@ import {randomId} from "@mantine/hooks";
 import DeleteButton from "src/commonButtons/delete";
 import AddButton from "src/commonButtons/add";
 import { JSON_SPACES } from 'src/constants.tsx';
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError} from "../../commonPanel/notifications.tsx";
 
 /**
  * the data associated with a given person.
@@ -53,8 +55,8 @@ function InvestigatorsPanel(): ReactElement {
     }
 
     return (
-        <Box>
-            <Text fz="lg" fw={700}>Investigators linked to this proposal</Text>
+        <PanelFrame>
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Investigators"}/>
             <Grid>
                 <Grid.Col span={5}>
                 <AddButton toolTipLabel={"Add new"}
@@ -81,7 +83,7 @@ function InvestigatorsPanel(): ReactElement {
                     </Table>}
                 </Grid.Col>
             </Grid>
-        </Box>
+        </PanelFrame>
     );
 }
 
@@ -130,7 +132,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     // when the exception is thrown
     const handleError = (error: { stack: { message: any; }; }) => {
         console.error(error);
-        alert(error.stack.message);
+        notifyError("Error deleting", error.stack.message);
         setSubmitting(false);
     }
 

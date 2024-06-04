@@ -6,7 +6,6 @@ import {
 import {
     Accordion,
     Avatar,
-    Badge,
     Box,
     Container,
     Group,
@@ -18,7 +17,7 @@ import {
     CalibrationObservation,
     CalibrationTargetIntendedUse,
     Investigator,
-    RealQuantity
+    RealQuantity,
 } from 'src/generated/proposalToolSchemas.ts';
 import { IconNorthStar } from '@tabler/icons-react';
 import { ReactElement, useRef } from 'react';
@@ -27,6 +26,7 @@ import downloadProposal from './downloadProposal.tsx';
 import { DIMMED_FONT_WEIGHT, JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
+import {PreviewJustification} from "../justifications/justification.preview.tsx";
 
 /*
       title    -- string
@@ -55,6 +55,7 @@ import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
         TODO: provide a means to download the 'proposal' as a zipped/tar balled file containing a PDF
         of the overview plus the supporting document files
  */
+
 
 
 /**
@@ -326,7 +327,7 @@ function OverviewPanel(): ReactElement {
     }
 
     /**
-     * handles the scientific justification panel.
+     * handles the scientific justification panel
      * @return {React.ReactElement} the html for the scientific justification panel.
      * @constructor
      */
@@ -334,8 +335,10 @@ function OverviewPanel(): ReactElement {
         return (
             <>
                 <h3>Scientific Justification</h3>
-                <Badge>{proposalsData?.scientificJustification?.format}</Badge>
-                <Text>{proposalsData?.scientificJustification?.text}</Text>
+                {PreviewJustification(
+                    proposalsData?.scientificJustification?.format!,
+                    proposalsData?.scientificJustification?.text!)
+                }
             </>
         )
     }
@@ -349,8 +352,10 @@ function OverviewPanel(): ReactElement {
         return (
             <>
                 <h3>Technical Justification</h3>
-                <Badge>{proposalsData?.technicalJustification?.format}</Badge>
-                <Text>{proposalsData?.technicalJustification?.text}</Text>
+                {PreviewJustification(
+                    proposalsData?.technicalJustification?.format!,
+                    proposalsData?.technicalJustification?.text!)
+                }
             </>
         )
     }
@@ -415,6 +420,7 @@ function OverviewPanel(): ReactElement {
                     proposalsData.supportingDocuments.length > 0 ?
                         <List style={{whiteSpace: 'pre-wrap',
                                       overflowWrap: 'break-word'}}>
+
                             {documents}
                         </List> :
                         <Text c={"yellow"}>No supporting documents added</Text>
@@ -523,7 +529,7 @@ function OverviewPanel(): ReactElement {
     const DownloadButton = (): ReactElement => {
         return SaveButton(
             {
-                toolTipLabel: `download proposal`,
+                toolTipLabel: `Export to a file for download`,
                 disabled: false,
                 onClick: handleDownloadPdf,
                 label: "Export",

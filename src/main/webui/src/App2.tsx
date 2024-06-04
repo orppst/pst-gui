@@ -14,8 +14,8 @@ import TitlePanel from './ProposalEditorView/proposal/Title.tsx';
 import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
 import SummaryPanel from "./ProposalEditorView/proposal/Summary.tsx";
-import InvestigatorsPanel from "./ProposalEditorView/Investigators/List.tsx";
-import AddInvestigatorPanel from "./ProposalEditorView/Investigators/New.tsx";
+import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
+import AddInvestigatorPanel from "./ProposalEditorView/investigators/New.tsx";
 import {
     createBrowserRouter,
     Outlet,
@@ -60,6 +60,17 @@ import AdminPanel from "./admin/adminPanel";
 import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
 import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
+import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
+import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
+import CycleObservingModesPanel from "./ProposalManagerView/observingModes/observingModesPanel.tsx";
+import CycleAvailableResourcesPanel from "./ProposalManagerView/availableResources/availableResourcesPanel.tsx";
+import CycleReviewsPanel from "./ProposalManagerView/reviews/reviewsPanel.tsx";
+import CycleAllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
+import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observatory.tsx";
+import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
+import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
+import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
+import ObservationFieldsPanel from "./ProposalEditorView/observationFields/ObservationFieldsPanel.tsx";
 
 /**
  * defines the user context type.
@@ -124,7 +135,47 @@ function App2(): ReactElement {
                 path: "/manager",
                 element: <PSTManager />,
                 children: [
-                    {index: true, element: <PSTManagerStart />}
+                    {index: true, element: <PSTManagerStart />},
+                    {
+                        path: "cycle/:selectedCycleCode",
+                        element: <CycleOverviewPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/title",
+                        element: <CycleTitlePanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/tac",
+                        element: <CycleTACPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/tac/new",
+                        element: <CycleTACAddMemberPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/dates",
+                        element: <CycleDatesPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/observingModes",
+                        element: <CycleObservingModesPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/availableResources",
+                        element: <CycleAvailableResourcesPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/reviews",
+                        element: <CycleReviewsPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/allocations",
+                        element: <CycleAllocationsPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/observatory",
+                        element: <CycleObservatoryPanel />
+                    }
                 ]
             },
             {
@@ -172,6 +223,10 @@ function App2(): ReactElement {
                     {
                         path: "proposal/:selectedProposalCode/goals",
                         element:<TechnicalGoalsPanel />
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/observationFields",
+                        element: <ObservationFieldsPanel />
                     },
                     {
                         path: "proposal/:selectedProposalCode/observations",

@@ -1,13 +1,12 @@
 import {ReactElement} from "react";
-import {Badge, Box, Container, Title} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
     useProposalResourceGetJustification,
-    useProposalResourceGetObservingProposalTitle
 } from "src/generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "src/constants.tsx";
 import {Justification} from "src/generated/proposalToolSchemas.ts";
 import JustificationsTable from "./justifications.table.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 
 //no need to use an array, only two "kinds" of Justification 'scientific' and 'technical'
 export type JustificationKinds = {
@@ -18,14 +17,6 @@ export type JustificationKinds = {
 export default function JustificationsPanel() : ReactElement {
 
     const { selectedProposalCode } = useParams();
-
-    const {
-        data: title,
-        error: titleError,
-        isLoading: titleIsLoading
-    } = useProposalResourceGetObservingProposalTitle(
-        {pathParams: {proposalCode: Number(selectedProposalCode)}}
-    )
 
     const {
         data : scientific,
@@ -43,43 +34,30 @@ export default function JustificationsPanel() : ReactElement {
         { pathParams: { proposalCode: Number(selectedProposalCode), which: "technical" } }
     );
 
-    if (titleError) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(scientificError, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
-
 
     if (scientificError) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(scientificError, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
     if (technicalError) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(technicalError, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
     return (
-        <Container fluid>
-            <Title order={3}>
-                { titleIsLoading ?
-                    <Badge size={"xl"} radius={0}>...</Badge> :
-                    <Badge size={"xl"} radius={0}>{title}</Badge>
-                } : Justifications
-            </Title>
+        <PanelFrame>
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Justifications"} />
 
             {scientificIsLoading || technicalIsLoading ? (`Loading justifications...`) :
                 <JustificationsTable scientific={scientific!} technical={technical!} />
             }
-        </Container>
+        </PanelFrame>
     )
 }

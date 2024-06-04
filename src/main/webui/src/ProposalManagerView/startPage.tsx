@@ -4,7 +4,7 @@ import {
     AppShell,
     Burger, Checkbox, Container,
     Grid,
-    Group, ScrollArea,
+    Group, Modal, ScrollArea,
     Tooltip, useMantineColorScheme, useMantineTheme
 } from "@mantine/core";
 import {
@@ -19,12 +19,16 @@ import {Outlet, useNavigate} from "react-router-dom";
 import {ColourSchemeToggle} from "../ColourSchemeToggle.tsx";
 import {useDisclosure} from "@mantine/hooks";
 import CycleList from "./cycleList.tsx";
+import AddButton from "../commonButtons/add.tsx";
+import NewCycleForm from "./proposalCycle.new.form.tsx";
 
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
     const [opened, {toggle}] = useDisclosure();
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();
+
+    const [modalOpened, {close, open}] = useDisclosure();
 
     return (
         <AppShell
@@ -65,6 +69,19 @@ export default function ProposalManagerStartPage() : ReactElement {
                                     <IconLicense />
                                 </ActionIcon>
                             </Tooltip>
+                            <AddButton toolTipLabel={"new proposal cycle"}
+                                       label={"Create a new Proposal Cycle"}
+                                       onClick={open}
+                            />
+                            <Modal
+                                opened={modalOpened}
+                                onClose={close}
+                                title={"New Proposal Cycle Form"}
+                                size={"40%"}
+                                closeOnClickOutside={false}
+                            >
+                                <NewCycleForm closeModal={close}/>
+                            </Modal>
                         </Group>
                     </Grid.Col>
                     <Grid.Col span={1}>
@@ -82,8 +99,6 @@ export default function ProposalManagerStartPage() : ReactElement {
                                     <IconLogout size={ICON_SIZE}/>
                                 </ActionIcon>
                             </Tooltip>
-
-
                         </Group>
                     </Grid.Col>
                 </Grid>
@@ -114,6 +129,5 @@ export default function ProposalManagerStartPage() : ReactElement {
                 <Outlet/>
             </AppShell.Main>
         </AppShell>
-
     )
 }

@@ -11,8 +11,10 @@ import {useForm} from "@mantine/form";
 import {JSON_SPACES} from "src/constants.tsx";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import {notifications} from "@mantine/notifications";
 import ValidationOverview from "./ValidationOverview.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 function SubmitPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
@@ -71,30 +73,17 @@ function SubmitPanel(): ReactElement {
 
         fetchSubmittedProposalResourceSubmitProposal(submissionVariables)
             .then(()=> {
-                notifications.show({
-                    autoClose: 5000,
-                    title: "Submission",
-                    message: 'Your proposal has been submitted',
-                    color: 'green',
-                    className: 'my-notification-class',
-                });
+                notifySuccess("Submission", "Your proposal has been submitted");
                 queryClient.invalidateQueries().then();
                 navigate("/proposal/" + selectedProposalCode);
             })
-            .catch((error) => {
-                notifications.show({
-                    autoClose: 5000,
-                    title: "Submission failed",
-                    message: error.stack.message,
-                    color: 'red',
-                    className: 'my-notification-class',
-                });
-            })
+            .catch((error) => notifyError("Submission failed", getErrorMessage(error))
+            )
     });
 
     return (
-        <Box>
-            <Text fz="lg" fw={700}>Submit Proposal</Text>
+        <PanelFrame>
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Submit"} />
 
             <ValidationOverview cycle={selectedCycle}/>
 
@@ -111,7 +100,7 @@ function SubmitPanel(): ReactElement {
                     toolTipLabel={"Submit your proposal to the selected cycle"}
                 />
             </form>
-        </Box>
+        </PanelFrame>
     )
 }
 

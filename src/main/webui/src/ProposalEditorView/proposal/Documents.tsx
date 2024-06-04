@@ -9,7 +9,6 @@ import {Box, FileButton, Table, Text} from "@mantine/core";
 import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
-import {notifications} from "@mantine/notifications";
 import {randomId} from "@mantine/hooks";
 import UploadButton from 'src/commonButtons/upload.tsx';
 import DeleteButton from 'src/commonButtons/delete.tsx';
@@ -18,6 +17,9 @@ import {
     DownloadRequestButton
 } from 'src/commonButtons/download.tsx';
 import {HEADER_FONT_WEIGHT, JSON_SPACES, MAX_SUPPORTING_DOCUMENT_SIZE} from 'src/constants.tsx';
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 type DocumentProps = {
     dbid: number,
@@ -46,15 +48,10 @@ const DocumentsPanel = () => {
     const handleUpload = async (chosenFile: File | null) => {
         if (chosenFile) {
             if(chosenFile.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
-                notifications.show({
-                    autoClose: 7000,
-                    title: "File upload failed",
-                    message: "The supporting document " + chosenFile.name
+                notifyError("File upload failed",
+                    "The supporting document " + chosenFile.name
                         + " is too large. Maximum size is "
-                        + MAX_SUPPORTING_DOCUMENT_SIZE/1024/1024 + "MB",
-                    color: 'red',
-                    className: 'my-notification-class',
-                })
+                        + MAX_SUPPORTING_DOCUMENT_SIZE/1024/1024 + "MB")
             } else {
                 setStatus("uploading");
 
@@ -74,34 +71,19 @@ const DocumentsPanel = () => {
                     .then(() => {
                         setStatus("success");
                         queryClient.invalidateQueries();
-                        notifications.show({
-                            autoClose: 5000,
-                            title: "Upload successful",
-                            message: 'The supporting document has been uploaded',
-                            color: 'green',
-                            className: 'my-notification-class',
-                        });
+                        notifySuccess("Upload successful", "The supporting document has been uploaded");
                     })
                     .catch((error) => {
                         setStatus("fail");
-                        notifications.show({
-                            autoClose: 7000,
-                            title: "Upload failed",
-                            message: error.stack.message,
-                            color: 'red',
-                            className: 'my-notification-class',
-                        });
+                        notifyError("Upload failed", getErrorMessage(error));
                     })
             }
         }
     };
 
     return (
-        <Box>
-            <Text fz="lg"
-                  fw={HEADER_FONT_WEIGHT}>
-                View and retrieve documents
-            </Text>
+        <PanelFrame>
+            <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Documents"} />
             <Box>
                 <Table>
                     <Table.Tbody>
@@ -133,7 +115,7 @@ const DocumentsPanel = () => {
                             onClick={props.onClick}/>}
             </FileButton>
             <Result status={status} />
-        </Box>
+        </PanelFrame>
     );
 };
 
@@ -154,13 +136,7 @@ function RenderDocumentListItem(props: DocumentProps) {
             .then(()=> {
                 setSubmitting(false);
                 queryClient.invalidateQueries().then();
-                notifications.show({
-                    autoClose: 5000,
-                    title: "Removed",
-                    message: 'The supporting document has been removed',
-                    color: 'green',
-                    className: 'my-notification-class',
-                });
+                notifySuccess("Removed", "The supporting document has been removed");
             })
             .catch(console.log);
     }

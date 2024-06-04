@@ -5,12 +5,13 @@ import {
     useProposalResourceGetObservingProposalTitle,
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {Box, Text, TextInput} from "@mantine/core";
+import {TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import { SubmitButton } from 'src/commonButtons/save';
-import { MAX_CHARS_FOR_INPUTS, HEADER_FONT_WEIGHT, JSON_SPACES } from 'src/constants';
+import { MAX_CHARS_FOR_INPUTS, JSON_SPACES } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 
 const titleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -68,9 +69,9 @@ function TitlePanel() {
 
     if (error) {
         return (
-            <Box>
+            <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
+            </PanelFrame>
         );
     }
 
@@ -81,8 +82,8 @@ function TitlePanel() {
     });
 
     return (
-        <Box>
-            <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Update title</Text>
+        <PanelFrame>
+            <PanelHeader isLoading={isLoading} itemName={data as unknown as string} panelHeading={"Title"} />
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>
@@ -91,11 +92,13 @@ function TitlePanel() {
                            {...form.getInputProps('title')}/>
                 <MaxCharsForInputRemaining length={form.values.title.length} />
                 <br/>
-                <SubmitButton toolTipLabel={"save title"}
-                              label={"Save"}/>
+                <SubmitButton toolTipLabel={"Update title"}
+                              label={"Save"}
+                              disabled={!form.isDirty() || !form.isValid()}
+                />
             </form>
             }
-        </Box>
+        </PanelFrame>
     );
 
 }
