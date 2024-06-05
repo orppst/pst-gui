@@ -158,6 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 ) : (
            <>
                <Modal
+                   zIndex={201}
                    opened={expiringSoon && idleTimer.isIdle()}
                    onClose={logout}
                    title="Authentication"
