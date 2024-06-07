@@ -4,7 +4,7 @@ import {
     IconBike,
     IconCalendar, IconEgg, IconLetterA,
     IconLetterO, IconLetterR,
-    IconLetterT,
+    IconLetterT, IconLicense,
     IconTeapot,
     IconUfo,
     IconUsersGroup
@@ -75,6 +75,14 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconCalendar/>}
                          active={"Dates" + cycle.code === active}
                          onClick={()=>setActive("Dates" + cycle.code)}
+                />
+                <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
+                         component={Link}
+                         key={"AssignReviewers"}
+                         label={"Assign Reviewers"}
+                         leftSection={<IconLicense/>}
+                         active={"AssignReviewers" + cycle.code === active}
+                         onClick={()=>setActive("AssignReviewers" + cycle.code)}
                 />
                 <NavLink to={"cycle/" + cycle.dbid + "/observatory"}
                          component={Link}

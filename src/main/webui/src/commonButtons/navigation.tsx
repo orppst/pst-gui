@@ -11,21 +11,25 @@ import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
  * @return {ReactElement} the dynamic html for the navigation button
  * @constructor
  */
-export default function NavigationButton(props: NavigationButtonInterfaceProps):
-    ReactElement {
+export default
+function NavigationButton(props: NavigationButtonInterfaceProps): ReactElement {
     return (
-        <Tooltip position={"left"}
-                 label={props.toolTipLabel}
-                 openDelay={OPEN_DELAY}
-                 closeDelay={CLOSE_DELAY}>
-            <Button rightSection={<props.icon size={ICON_SIZE}/>}
-                    p={props.p}
-                    ml={props.ml}
-                    to={props.to}
-                    component={Link}
-                    variant={"subtle"}
-                    disabled={props.disabled}>
-                {props.label === undefined? 'unnamed route' : props.label}
+        <Tooltip
+            position={props.toolTipLabelPosition}
+            label={props.toolTipLabel}
+            openDelay={OPEN_DELAY}
+            closeDelay={CLOSE_DELAY}
+        >
+            <Button
+                rightSection={<props.icon size={ICON_SIZE}/>}
+                p={props.p}
+                ml={props.ml}
+                to={props.to}
+                component={Link}
+                variant={props.variant ?? "subtle"}
+                disabled={props.disabled}
+            >
+                {props.label ?? 'unnamed route'}
             </Button>
         </Tooltip>
     )
