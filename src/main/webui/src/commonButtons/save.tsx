@@ -18,18 +18,23 @@ import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
  * @return {ReactElement} the dynamic html for the submit button
  * @constructor
  */
-export function SubmitButton(props: BasicButtonInterfaceProps): ReactElement {
+export
+function SubmitButton(props: BasicButtonInterfaceProps): ReactElement {
     return (
-        <Tooltip position={"left"}
-                 label={props.toolTipLabel}
-                 openDelay={OPEN_DELAY}
-                 closeDelay={CLOSE_DELAY}>
-            <Button rightSection={<IconDeviceFloppy size={ICON_SIZE}/>}
-                    color={"violet.5"}
-                    variant={"subtle"}
-                    type="submit"
-                    disabled={props.disabled}>
-                {props.label === undefined? 'Save' : props.label}
+        <Tooltip
+            position={props.toolTipLabelPosition}
+            label={props.toolTipLabel}
+            openDelay={OPEN_DELAY}
+            closeDelay={CLOSE_DELAY}
+        >
+            <Button
+                rightSection={<IconDeviceFloppy size={ICON_SIZE}/>}
+                color={"indigo.5"}
+                variant={props.variant ?? "subtle"}
+                type="submit"
+                disabled={props.disabled}
+            >
+                {props.label ?? 'Save'}
             </Button>
         </Tooltip>
     )
