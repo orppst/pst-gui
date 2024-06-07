@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Accordion, Badge, Group, Text} from "@mantine/core";
+import {Accordion, Badge, Group, Space, Text} from "@mantine/core";
 import {
     useSubmittedProposalResourceGetSubmittedProposal,
     useSubmittedProposalResourceGetSubmittedProposals
@@ -28,18 +28,27 @@ function SubmittedProposalItem(props: SubmittedProposalItemProp) : ReactElement 
     return (
         <Accordion.Item value={String(props.proposalId)}>
             <Accordion.Control>
+                <Text size={"lg"}>{proposal.data?.proposal?.title}</Text>
+                <Space h={"sm"}/>
                 <Group>
-                    <Text size={"lg"}>{proposal.data?.proposal?.title}</Text>
                     <Text size={"sm"} c={"gray.6"}> Assigned Reviewers: </Text>
                     {
                         proposal.data?.reviews?.length == 0 ?
-                            <Badge size={"sm"} bg={"red.5"} radius={"sm"}>
+                            <Badge
+                                size={"sm"}
+                                bg={"red.5"}
+                                radius={"sm"}
+                            >
                                 None assigned
                             </Badge>
                             :
                             proposal.data?.reviews?.map(
                                 review =>(
-                                    <Text size={"sm"} c={"gray.6"}>
+                                    <Text
+                                        key={review._id}
+                                        size={"sm"}
+                                        c={"gray.6"}
+                                    >
                                         {review.reviewer?.person?.fullName}
                                     </Text>
                                 )

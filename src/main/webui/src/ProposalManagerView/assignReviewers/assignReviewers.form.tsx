@@ -1,11 +1,11 @@
 import {ReactElement} from "react";
-import {Table, Text} from "@mantine/core";
+import {Group, Table, Text} from "@mantine/core";
 import {
     fetchProposalReviewResourceAddReview, fetchProposalReviewResourceRemoveReview,
     useReviewerResourceGetReviewers
 } from "../../generated/proposalToolComponents.ts";
 import {SubmittedProposal} from "../../generated/proposalToolSchemas.ts";
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -52,6 +52,8 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
             }
         })
             .then(() => queryClient.invalidateQueries())
+            .then(() => notifySuccess("Removal Successful",
+                "Removed " + props.reviewerName + " as a reviewer from '" + props.proposalTitle +"'"))
             .catch(error => notifyError(
                 "Failed to remove " + props.reviewerName + "from '" + props.proposalTitle + "'",
                 getErrorMessage(error)))
@@ -91,6 +93,8 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
             }
         })
             .then(() => queryClient.invalidateQueries())
+            .then(() => notifySuccess("Assigment Successful",
+                "Assigned " + props.reviewerName + " to '" + props.proposalTitle + "'"))
             .catch(error => notifyError("Failed to assign " + props.reviewerName +
                 " to " + "'" + props.proposalTitle  + "'",
                 getErrorMessage(error)))
@@ -111,28 +115,36 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
                             {reviewer.name}
                         </Table.Td>
                         <Table.Td>
-                            <AddButton
-                                toolTipLabel={"Assign reviewer"}
-                                label={"Assign"}
-                                disabled={!!proposal.reviews?.find(
-                                    r => r.reviewer?._id == reviewer.dbid
-                                )}
-                                onClick={()=>handleAssign(
-                                    {reviewerId: reviewer.dbid!, reviewerName: reviewer.name!,
-                                    proposalId: proposal._id!, proposalTitle: proposal.proposal?.title!}
-                                )}
-                            />
-                            <DeleteButton
-                                toolTipLabel={"remove reviewer"}
-                                label={"Remove"}
-                                disabled={!proposal.reviews?.find(
-                                    r => r.reviewer?._id == reviewer.dbid
-                                )}
-                                onClick={() => confirmRemoval(
-                                    {reviewerId: reviewer.dbid!, reviewerName: reviewer.name!,
-                                        proposalId: proposal._id!, proposalTitle: proposal.proposal?.title!}
-                                )}
-                            />
+                            <Group justify={"flex-end"}>
+                            {
+                                !proposal.reviews?.find(r =>
+                                    r.reviewer?._id == reviewer.dbid) ?
+
+                                    <AddButton
+                                        toolTipLabel={"Assign reviewer"}
+                                        label={"Assign"}
+                                        disabled={!!proposal.reviews?.find(
+                                            r => r.reviewer?._id == reviewer.dbid
+                                        )}
+                                        onClick={()=>handleAssign(
+                                            {reviewerId: reviewer.dbid!, reviewerName: reviewer.name!,
+                                                proposalId: proposal._id!, proposalTitle: proposal.proposal?.title!}
+                                        )}
+                                    />
+                                    :
+                                    <DeleteButton
+                                        toolTipLabel={"remove reviewer"}
+                                        label={"Remove"}
+                                        disabled={!proposal.reviews?.find(
+                                            r => r.reviewer?._id == reviewer.dbid
+                                        )}
+                                        onClick={() => confirmRemoval(
+                                            {reviewerId: reviewer.dbid!, reviewerName: reviewer.name!,
+                                                proposalId: proposal._id!, proposalTitle: proposal.proposal?.title!}
+                                        )}
+                                    />
+                            }
+                            </Group>
                         </Table.Td>
                     </Table.Tr>
                 ))}
