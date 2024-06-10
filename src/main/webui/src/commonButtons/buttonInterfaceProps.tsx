@@ -5,18 +5,25 @@ Input property for common buttons:
  */
 import { SyntheticEvent } from 'react';
 import { TablerIconsProps } from '@tabler/icons-react';
+import {ButtonVariant, FloatingPosition} from "@mantine/core";
 
 /**
  * basic button interface props. Used by Submit button.
  *
  * @param {string} toolTipLabel the label shown when hovered.
+ * @param {FloatingPosition} toolTipLabelPosition one of 'left', 'right', 'top', 'bottom', +
+ * '-start' and '-end' variants - defaults to 'top'
  * @param {boolean} disabled is the button disabled.
- * @param {string} label the text shown next to the buttons icon.
+ * @param {string} label the text shown next to the buttons icon
+ * @param {ButtonVariant} varient one of 'default', 'light', 'subtle', 'filled',
+ * 'outline', 'white', 'transparent' - defaults to 'subtle'
  */
 export interface BasicButtonInterfaceProps {
     toolTipLabel: string
+    toolTipLabelPosition?: FloatingPosition
     disabled?: boolean
     label?: string
+    variant?: ButtonVariant
 }
 
 /**

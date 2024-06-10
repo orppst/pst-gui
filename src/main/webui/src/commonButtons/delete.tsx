@@ -14,21 +14,23 @@ import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
  * @return {ReactElement} the dynamic html for the delete button
  * @constructor
  */
-export default function DeleteButton(props: ClickButtonInterfaceProps):
-        ReactElement {
+export default
+function DeleteButton(props: ClickButtonInterfaceProps): ReactElement {
     return (
-        <Tooltip position="left"
-                 openDelay={OPEN_DELAY}
-                 closeDelay={CLOSE_DELAY}
-                 label={props.toolTipLabel}>
-            <Button rightSection={<IconTrash size={ICON_SIZE}/>}
-                    color={"red.5"}
-                    variant={"subtle"}
-                    onClick={props.onClick === undefined?
-                        props.onClickEvent :
-                        props.onClick}
-                    disabled={props.disabled}>
-                {props.label === undefined? 'Delete' : props.label}
+        <Tooltip
+            position={props.toolTipLabelPosition}
+            openDelay={OPEN_DELAY}
+            closeDelay={CLOSE_DELAY}
+            label={props.toolTipLabel}
+        >
+            <Button
+                rightSection={<IconTrash size={ICON_SIZE}/>}
+                color={"red.5"}
+                variant={props.variant ?? "subtle"}
+                onClick={props.onClick ?? props.onClickEvent}
+                disabled={props.disabled}
+            >
+                {props.label ?? 'Delete'}
             </Button>
         </Tooltip>
     )

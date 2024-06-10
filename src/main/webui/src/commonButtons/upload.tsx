@@ -11,21 +11,23 @@ import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
  * @return {ReactElement} the dynamic html for the upload button
  * @constructor
  */
-export default function UploadButton(props: ClickButtonInterfaceProps):
-        ReactElement {
+export default
+function UploadButton(props: ClickButtonInterfaceProps): ReactElement {
     return (
-        <Tooltip position={"left"}
-                 label={props.toolTipLabel}
-                 openDelay={OPEN_DELAY}
-                 closeDelay={CLOSE_DELAY}>
-            <Button rightSection={<IconFileSearch size={ICON_SIZE}/>}
-                    color={"violet.5"}
-                    variant={"subtle"}
-                    onClick={props.onClick === undefined?
-                        props.onClickEvent :
-                        props.onClick}
-                    disabled={props.disabled}>
-            {props.label === undefined? 'Choose a file' : props.label}
+        <Tooltip
+            position={props.toolTipLabelPosition}
+            label={props.toolTipLabel}
+            openDelay={OPEN_DELAY}
+            closeDelay={CLOSE_DELAY}
+        >
+            <Button
+                rightSection={<IconFileSearch size={ICON_SIZE}/>}
+                color={"cyan.5"}
+                variant={props.variant ?? "subtle"}
+                onClick={props.onClick ?? props.onClickEvent}
+                disabled={props.disabled}
+            >
+                {props.label ?? 'Choose a file'}
             </Button>
         </Tooltip>
     )

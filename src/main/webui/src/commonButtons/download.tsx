@@ -14,21 +14,25 @@ import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
  * @return {ReactElement} the dynamic html for the download button
  * @constructor
  */
-export function DownloadButton(props: DownloadButtonInterfaceProps):
-        ReactElement {
+export
+function DownloadButton(props: DownloadButtonInterfaceProps): ReactElement {
     return (
-        <Tooltip position={"left"}
-                 label={props.toolTipLabel}
-                 openDelay={OPEN_DELAY}
-                 closeDelay={CLOSE_DELAY}>
-            <Button rightSection={<IconFileDownload size={ICON_SIZE}/>}
-                    color={"green"}
-                    variant={"subtle"}
-                    component={"a"}
-                    download={props.download}
-                    href={props.href}
-                    disabled={props.disabled}>
-                {props.label === undefined? 'Download' : props.label}
+        <Tooltip
+            position={props.toolTipLabelPosition}
+            label={props.toolTipLabel}
+            openDelay={OPEN_DELAY}
+            closeDelay={CLOSE_DELAY}
+        >
+            <Button
+                rightSection={<IconFileDownload size={ICON_SIZE}/>}
+                color={"green"}
+                variant={props.variant ?? "subtle"}
+                component={"a"}
+                download={props.download}
+                href={props.href}
+                disabled={props.disabled}
+            >
+                {props.label ?? 'Download'}
             </Button>
         </Tooltip>
     )
@@ -42,21 +46,25 @@ export function DownloadButton(props: DownloadButtonInterfaceProps):
  * @return {ReactElement} the dynamic html for the download button
  * @constructor
  */
-export function DownloadRequestButton(props: DownloadRequestInterfaceProps):
-    ReactElement {
+export
+function DownloadRequestButton(props: DownloadRequestInterfaceProps): ReactElement {
     return (
-        <Tooltip position={"left"}
-                 label={props.toolTipLabel}
-                 openDelay={OPEN_DELAY}
-                 closeDelay={CLOSE_DELAY}>
-            <Button rightSection={<IconDatabaseSearch size={ICON_SIZE}/>}
-                    color={"blue"}
-                    variant={"subtle"}
-                    component={"a"}
-                    download={props.download}
-                    onClick={props.onClick}
-                    disabled={props.disabled}>
-                {props.label === undefined? 'Request download' : props.label}
+        <Tooltip
+            position={"left"}
+            label={props.toolTipLabel}
+            openDelay={OPEN_DELAY}
+            closeDelay={CLOSE_DELAY}
+        >
+            <Button
+                rightSection={<IconDatabaseSearch size={ICON_SIZE}/>}
+                color={"blue"}
+                variant={props.variant ?? "subtle"}
+                component={"a"}
+                download={props.download}
+                onClick={props.onClick}
+                disabled={props.disabled}
+            >
+                {props.label ?? 'Request download'}
             </Button>
         </Tooltip>
     )

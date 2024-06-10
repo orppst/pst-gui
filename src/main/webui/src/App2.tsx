@@ -71,6 +71,7 @@ import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
 import ObservationFieldsPanel from "./ProposalEditorView/observationFields/ObservationFieldsPanel.tsx";
+import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 
 /**
  * defines the user context type.
@@ -175,6 +176,10 @@ function App2(): ReactElement {
                     {
                         path: "cycle/:selectedCycleCode/observatory",
                         element: <CycleObservatoryPanel />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/assignReviewers",
+                        element: <AssignReviewersPanel />
                     }
                 ]
             },

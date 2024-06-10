@@ -1136,6 +1136,7 @@ export type ProposalKind = "Standard" | "ToO" | "Survey";
  * A review of a proposal
  */
 export type ProposalReview = {
+  _id?: number;
   /**
    * Description
    */
@@ -1295,6 +1296,7 @@ export type ResourceType = {
  * assigned to review the proposal
  */
 export type Reviewer = {
+  _id?: number;
   /**
    * person connected with the proposal
    */
@@ -1488,6 +1490,7 @@ export type SubjectMap = {
  * an instance of a proposal that has been submitted
  */
 export type SubmittedProposal = {
+  _id?: number;
   /**
    * the date that the proposal was submitted
    *
