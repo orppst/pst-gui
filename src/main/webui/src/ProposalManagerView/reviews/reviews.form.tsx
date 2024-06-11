@@ -4,6 +4,8 @@ import AddButton from "../../commonButtons/add.tsx";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
     fetchProposalReviewResourceAddReview,
+    fetchProposalReviewResourceUpdateReviewComment, fetchProposalReviewResourceUpdateReviewFeasibility,
+    fetchProposalReviewResourceUpdateReviewScore,
     useReviewerResourceGetReviewer
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -36,6 +38,10 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
             comment: theReview ? theReview.comment! : "",
             score: theReview ? theReview.score! : 0,
             technicalFeasibility: theReview ? theReview.technicalFeasibility! : false
+        },
+        validate: {
+            comment: value => (value.length == 0 ?
+                "Please provide a brief comment on the proposal" : null),
         }
     })
 
@@ -68,7 +74,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const technicalFeasibilityInput = () => (
         <Switch
-            label={"Technical Feasibility"}
+            label={"technically feasible?"}
             size={"md"}
             onLabel={"YES"}
             offLabel={"NO"}
@@ -106,13 +112,78 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                 getErrorMessage(error)))
     }
 
-    const handleSubmit = form.onSubmit(values => console.log(values))
+    //use async and await so that any multiple "fetch" commands are done in sequence
+    async function handleSubmit (values: typeof form.values) {
+        // a "blank" review is created when a reviewer is assigned to the proposal meaning
+        // we are only ever updating fields rather than creating objects
+
+        //if here, at least one of the following conditions must be true
+
+        if (form.isDirty('comment')) {
+            //update comment
+           await fetchProposalReviewResourceUpdateReviewComment({
+                pathParams: {
+                    cycleCode: props.cycleCode,
+                    submittedProposalId: props.proposal?._id!,
+                    reviewId: theReview?._id!
+                },
+                body: values.comment,
+                // @ts-ignore
+                headers: {"Content-Type": "text/plain"}
+            })
+               .then(() => notifySuccess("Success",
+                    "Review comment has been updated"))
+               .catch(error => notifyError("Failed to update comment",
+                    getErrorMessage(error)))
+        }
+
+        if (form.isDirty('score')) {
+            //update score
+           await fetchProposalReviewResourceUpdateReviewScore({
+                pathParams: {
+                    cycleCode: props.cycleCode,
+                    submittedProposalId: props.proposal?._id!,
+                    reviewId: theReview?._id!
+                },
+                body: values.score,
+                // @ts-ignore
+                headers: {"Content-Type": "text/plain"}
+            })
+               .then(() => notifySuccess("Success",
+                    "Review score has been updated"))
+               .catch(error => notifyError("Failed to update score",
+                    getErrorMessage(error)))
+        }
+
+        if (form.isDirty('technicalFeasibility')) {
+            //update technicalFeasibility
+           await fetchProposalReviewResourceUpdateReviewFeasibility({
+                pathParams: {
+                    cycleCode: props.cycleCode,
+                    submittedProposalId: props.proposal?._id!,
+                    reviewId: theReview?._id!
+                },
+                //I may be going mad. The api will not accept false (boolean value) with a
+                //'No-content' exception, but will accept "false" (literal string); no such
+                //problem with true
+                body: values.technicalFeasibility ? true : "false",
+                // @ts-ignore
+                headers: {"Content-Type": "text/plain"}
+            })
+               .then(() => notifySuccess("Success",
+                    "Review feasibility has been updated"))
+               .catch(error => notifyError("Failed to update feasibility",
+                    getErrorMessage(error)))
+        }
+
+        form.resetDirty();
+    }
 
     return (
         <>
             {
                 theReview ?
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={form.onSubmit(handleSubmit)}>
                         You are reviewing as {theReviewer.data?.person?.fullName}
                         <Grid columns={10} gutter={"xl"}>
                             <Grid.Col span={7}>
@@ -126,7 +197,11 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                             </Grid.Col>
                         </Grid>
                         <Group justify={"flex-end"} >
-                            <SubmitButton toolTipLabel={"Save changes"}/>
+                            <SubmitButton
+                                toolTipLabel={"Save changes"}
+                                label={"Update"}
+                                disabled={!form.isDirty() || !form.isValid()}
+                            />
                         </Group>
                     </form>
                     :

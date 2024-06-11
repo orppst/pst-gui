@@ -78,11 +78,16 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
 
                 </Accordion.Control>
                 <Accordion.Panel>
-                    <ReviewsForm
-                        reviewerId={props.reviewerId}
-                        cycleCode={props.cycleCode}
-                        proposal={proposal.data}
-                    />
+                    {
+                        proposal.isLoading ?
+                            'loading...' :
+                            <ReviewsForm
+                                reviewerId={props.reviewerId}
+                                cycleCode={props.cycleCode}
+                                proposal={proposal.data}
+                            />
+                    }
+
                 </Accordion.Panel>
             </Accordion.Item>
         )
