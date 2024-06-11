@@ -1,9 +1,9 @@
 import {ReactElement} from "react";
-import {Grid, Group, NumberInput, Stack, Switch, Text, Textarea} from "@mantine/core";
+import {Badge, Button, Grid, Group, NumberInput, Stack, Switch, Text, Textarea, Tooltip} from "@mantine/core";
 import AddButton from "../../commonButtons/add.tsx";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
-    fetchProposalReviewResourceAddReview,
+    fetchProposalReviewResourceAddReview, fetchProposalReviewResourceConfirmReviewComplete,
     fetchProposalReviewResourceUpdateReviewComment, fetchProposalReviewResourceUpdateReviewFeasibility,
     fetchProposalReviewResourceUpdateReviewScore,
     useReviewerResourceGetReviewer
@@ -12,8 +12,10 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {useForm} from "@mantine/form";
-import {MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS} from "../../constants.tsx";
+import {CLOSE_DELAY, ICON_SIZE, MAX_CHARS_FOR_INPUTS, OPEN_DELAY, TEXTAREA_MAX_ROWS} from "../../constants.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
+import {IconSquareRoundedCheck} from "@tabler/icons-react";
+import {modals} from "@mantine/modals";
 
 export default
 function ReviewsForm(props: ReviewsProps) : ReactElement {
@@ -50,36 +52,54 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
     }
 
     const commentInput = () => (
-        <>
-            <Textarea
-                label={"Please provide your comments:"}
-                rows={TEXTAREA_MAX_ROWS}
-                maxLength={MAX_CHARS_FOR_INPUTS}
-                description={
-                    MAX_CHARS_FOR_INPUTS -
-                    form.values.comment.length +
-                    "/" + String(MAX_CHARS_FOR_INPUTS)}
-                inputWrapperOrder={['label', 'error', 'input', 'description']}
-                name="summary" {...form.getInputProps('comment')}
-            />
-        </>
+        <Textarea
+            disabled={isReviewComplete}
+            label={"Please provide your comments:"}
+            rows={TEXTAREA_MAX_ROWS}
+            maxLength={MAX_CHARS_FOR_INPUTS}
+            description={
+                MAX_CHARS_FOR_INPUTS -
+                form.values.comment.length +
+                "/" + String(MAX_CHARS_FOR_INPUTS)}
+            inputWrapperOrder={['label', 'error', 'input', 'description']}
+            {...form.getInputProps('comment')}
+        />
     )
 
     const scoreInput = () => (
         <NumberInput
+            disabled={isReviewComplete}
             label={"Review Score: "}
             {...form.getInputProps('score')}
         />
     )
 
     const technicalFeasibilityInput = () => (
-        <Switch
-            label={"technically feasible?"}
-            size={"md"}
-            onLabel={"YES"}
-            offLabel={"NO"}
-            {...form.getInputProps('technicalFeasibility')}
-        />
+        <>
+            {
+                //due to a bug in Mantine the switch does not display the 'true' or "YES" state
+                //on initial render when using form.getInputProps() so be explicit. Change if
+                //Mantine gets fixed.
+                isReviewComplete ?
+                    <Switch
+                        disabled
+                        size={"md"}
+                        label={"technically feasible?"}
+                        checked={theReview?.technicalFeasibility}
+                        onLabel={"YES"}
+                        offLabel={"NO"}
+                    />
+                    :
+                    <Switch
+                        disabled={isReviewComplete}
+                        label={"technically feasible?"}
+                        size={"md"}
+                        onLabel={"YES"}
+                        offLabel={"NO"}
+                        {...form.getInputProps('technicalFeasibility')}
+                    />
+            }
+        </>
     )
 
     type AssignButtonData = {
@@ -179,6 +199,41 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
         form.resetDirty();
     }
 
+    const handleCompletion = () => {
+        fetchProposalReviewResourceConfirmReviewComplete({
+            pathParams: {
+                cycleCode: props.cycleCode,
+                submittedProposalId: props.proposal?._id!,
+                reviewId: theReview?._id!
+            }
+        })
+            .then(() => queryClient.invalidateQueries())
+            .then(() => notifySuccess("Success",
+                "This review is now complete"))
+            .catch(error => notifyError("Failed to Complete",
+                getErrorMessage(error)))
+    }
+
+    const confirmCompletion = () => {
+        modals.openConfirmModal({
+            title: "Confirm completion of this review",
+            centered: true,
+            children: (
+                <Text size={"sm"} c={"orange"}>
+                    This will finalise the review. It's completion date will be set
+                    to today's date, and no further edits to the review are allowed.
+                    Are you sure you want to complete this review?
+                </Text>
+            ),
+            labels: {confirm: "Complete", cancel: "No, do not complete"},
+            confirmProps: {color: "orange"},
+            onConfirm: () => handleCompletion()
+        })
+    }
+
+    let reviewCompleteDate = new Date(theReview?.reviewDate!);
+    let isReviewComplete: boolean = reviewCompleteDate.getTime() > 0;
+
     return (
         <>
             {
@@ -196,13 +251,37 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                                 </Stack>
                             </Grid.Col>
                         </Grid>
-                        <Group justify={"flex-end"} >
-                            <SubmitButton
-                                toolTipLabel={"Save changes"}
-                                label={"Update"}
-                                disabled={!form.isDirty() || !form.isValid()}
-                            />
-                        </Group>
+
+                            {
+                                isReviewComplete ?
+                                    <Group justify={"center"}>
+                                        <Badge color={"green"} radius={"sm"}>
+                                            Review Completed on {reviewCompleteDate.toDateString()}
+                                        </Badge>
+                                    </Group>
+                                    :
+                                    <Group justify={"flex-end"} >
+                                        <SubmitButton
+                                            toolTipLabel={"Save changes"}
+                                            label={"Update"}
+                                            disabled={!form.isDirty() || !form.isValid()}
+                                        />
+                                        <Tooltip
+                                            label={"Finalises this review"}
+                                            openDelay={OPEN_DELAY}
+                                            closeDelay={CLOSE_DELAY}
+                                        >
+                                            <Button
+                                                rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
+                                                color={"orange"}
+                                                variant={"outline"}
+                                                onClick={confirmCompletion}
+                                            >
+                                                Complete Review
+                                            </Button>
+                                        </Tooltip>
+                                    </Group>
+                            }
                     </form>
                     :
                     <Stack align={"center"}>

@@ -45,10 +45,49 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                 getErrorMessage(proposal.error))
         }
 
+        if (proposal.isLoading) {
+            return (
+                <></>
+            )
+        }
+
+        const hasUserCompletedReview = () => {
+
+            let yourReview =
+                proposal.data?.reviews?.find(review => review?.reviewer?._id == props.reviewerId)
+
+            let reviewCompleteDate = yourReview ? new Date(yourReview.reviewDate!) : new Date(0)
+
+            let isReviewComplete = reviewCompleteDate.getTime() > 0
+            return (
+                <>
+                    {
+                        yourReview ?
+                            isReviewComplete ?
+                                <Text size={"xs"} c={"green"}>
+                                    You have completed this review on {reviewCompleteDate.toDateString()}
+                                </Text>
+                                :
+                                <Text size={"xs"} c={"red"}>
+                                    You have yet to complete the review for this proposal
+                                </Text>
+                            :
+                            <Text size={"xs"} c={"blue"}>
+                                You are not assigned to this proposal
+                            </Text>
+                    }
+                </>
+            )
+        }
+
         return (
             <Accordion.Item value={String(itemProps.proposalId)}>
                 <Accordion.Control>
-                    <Text size={"lg"}>{proposal.data?.proposal?.title}</Text>
+                    <Group>
+                        <Text size={"lg"}>{proposal.data?.proposal?.title}</Text>
+                        {hasUserCompletedReview()}
+                    </Group>
+
                     <Space h={"sm"}/>
                     <Group>
                         <Text size={"sm"} c={"gray.6"}> Assigned Reviewers: </Text>
@@ -63,31 +102,29 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                                 </Badge>
                                 :
                                 proposal.data?.reviews?.map(
-                                    review =>(
-                                        <Text
-                                            key={review._id}
-                                            size={"sm"}
-                                            c={ review.reviewer?._id == props.reviewerId ? "green" : "gray.6"}
-                                        >
-                                            {review.reviewer?.person?.fullName}
-                                        </Text>
-                                    )
+                                    review => {
+                                        let you : boolean = review.reviewer?._id == props.reviewerId;
+
+                                        return (
+                                            <Text
+                                                key={review._id}
+                                                size={"sm"}
+                                                c={you? "green" : "gray.6"}
+                                            >
+                                                {you ? "You" : review.reviewer?.person?.fullName}
+                                            </Text>
+                                        )}
                                 )
                         }
                     </Group>
 
                 </Accordion.Control>
                 <Accordion.Panel>
-                    {
-                        proposal.isLoading ?
-                            'loading...' :
-                            <ReviewsForm
-                                reviewerId={props.reviewerId}
-                                cycleCode={props.cycleCode}
-                                proposal={proposal.data}
-                            />
-                    }
-
+                    <ReviewsForm
+                        reviewerId={props.reviewerId}
+                        cycleCode={props.cycleCode}
+                        proposal={proposal.data}
+                    />
                 </Accordion.Panel>
             </Accordion.Item>
         )
