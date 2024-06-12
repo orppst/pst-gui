@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2024-05-30 13:48:47
-+++ proposalToolSchemas.ts	2024-06-05 16:49:59
+--- proposalToolSchemas.ts.orig	2024-04-24 10:15:03
++++ proposalToolSchemas.ts	2024-06-12 10:11:23
 @@ -129,6 +129,7 @@
   * An observation that is intended for calibration
   */
@@ -8,7 +8,28 @@
    /**
     * any constraints on the observation
     */
-@@ -162,6 +163,7 @@
+@@ -149,19 +150,20 @@
+ };
+ 
+ export type CalibrationTargetIntendedUse =
+-  | "AMPLITUDE"
+-  | "ATMOSPHERIC"
+-  | "BANDPASS"
+-  | "PHASE"
+-  | "POINTING"
+-  | "FOCUS"
+-  | "POLARIZATION"
+-  | "DELAY";
++  | "Amplitude"
++  | "Atmospheric"
++  | "Bandpass"
++  | "Phase"
++  | "Pointing"
++  | "Focus"
++  | "Polarization"
++  | "Delay";
+ 
+ /**
   * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
   */
  export type CartesianCoordSpace = {
@@ -64,6 +85,15 @@
  };
  
  export type FileUpload = Record<string, any>;
+@@ -563,7 +568,7 @@
+   xmlId?: string;
+ };
+ 
+-export type InstrumentKind = "CONTINUUM" | "SPECTROSCOPIC";
++export type InstrumentKind = "continuum" | "spectroscopic";
+ 
+ /**
+  * an integer identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
 @@ -684,6 +689,8 @@
  export type ObsType = "TargetObservation" | "CalibrationObservation";
  
@@ -109,7 +139,27 @@
    /**
     * a human readable description of the cycle
     */
-@@ -1203,6 +1218,7 @@
+@@ -1099,10 +1114,6 @@
+    */
+   submittedProposals?: SubmittedProposal[];
+   /**
+-   * the proposals that have been reviewed in this cycle
+-   */
+-  reviewedProposals?: ReviewedProposal[];
+-  /**
+    * the proposals that have been successful and allocated time
+    */
+   allocatedProposals?: AllocatedProposal[];
+@@ -1119,7 +1130,7 @@
+   observationSessionEnd?: Date;
+ };
+ 
+-export type ProposalKind = "STANDARD" | "TOO" | "SURVEY";
++export type ProposalKind = "Standard" | "ToO" | "Survey";
+ 
+ /**
+  * A review of a proposal
+@@ -1207,6 +1218,7 @@
   * A real value with a unit.
   */
  export type RealQuantity = {
@@ -117,7 +167,7 @@
    /**
     * Must conform to definition of unit in VOUnit spec.
     */
-@@ -1234,6 +1250,8 @@
+@@ -1238,6 +1250,8 @@
   * A resource that will be consumed by allocating an observation from a proposal
   */
  export type Resource = {
@@ -126,7 +176,7 @@
    /**
     * The amount of the resource
     *
-@@ -1264,6 +1282,7 @@
+@@ -1268,6 +1282,7 @@
   * a type of resource
   */
  export type ResourceType = {
@@ -134,7 +184,53 @@
    /**
     * the name of the resource type
     */
-@@ -1276,6 +1295,7 @@
+@@ -1277,52 +1292,10 @@
+ };
+ 
+ /**
+- * an instance of a proposal that is in review
+- */
+-export type ReviewedProposal = {
+-  /**
+-   * the proposal can go on to allocation
+-   */
+-  successful?: boolean;
+-  /**
+-   * the date when all the proposals are due
+-   *
+-   * @format date
+-   * @example "2022-03-10T00:00:00.000Z"
+-   */
+-  reviewsCompleteDate?: Date;
+-  /**
+-   * the reviews
+-   */
+-  reviews?: ProposalReview[];
+-  /**
+-   * an instance of a proposal that has been submitted
+-   */
+-  submitted?: SubmittedProposal;
+-};
+-
+-export type ReviewedProposalSynopsis = {
+-  /**
+-   * @format int64
+-   */
+-  dbId?: number;
+-  completedDate?: Date;
+-  successStatus?: boolean;
+-  /**
+-   * @format int64
+-   */
+-  numberOfReviewers?: number;
+-  /**
+-   * @format int64
+-   */
+-  reviewsCompleted?: number;
+-  proposalTitle?: string;
+-};
+-
+-/**
   * assigned to review the proposal
   */
  export type Reviewer = {
@@ -142,7 +238,7 @@
    /**
     * person connected with the proposal
     */
-@@ -1307,6 +1327,8 @@
+@@ -1354,6 +1327,8 @@
    /**
     * Science oriented definition of a spectral window.
     */
@@ -151,7 +247,7 @@
    spectralWindowSetup?: SpectralWindowSetup;
    expectedSpectralLine?: ExpectedSpectralLine[];
  };
-@@ -1351,6 +1373,7 @@
+@@ -1398,6 +1373,7 @@
   * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
   */
  export type SpaceFrame = {
@@ -159,7 +255,7 @@
    /**
     * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
     */
-@@ -1373,6 +1396,7 @@
+@@ -1420,6 +1396,7 @@
   * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
   */
  export type SpaceSys = {
@@ -167,7 +263,7 @@
    xmlId?: string;
    /**
     * Abstract head of coordinate spaces related to physical properties.
-@@ -1456,7 +1480,7 @@
+@@ -1503,7 +1480,7 @@
    /**
     * person connected with the proposal
     */
@@ -176,7 +272,36 @@
    uid?: string;
    inKeycloakRealm?: boolean;
  };
-@@ -1527,17 +1551,20 @@
+@@ -1519,6 +1496,21 @@
+    * @example "2022-03-10T00:00:00.000Z"
+    */
+   submissionDate?: Date;
++  /**
++   * the proposal can go on to allocation
++   */
++  successful?: boolean;
++  /**
++   * the date when all the proposals are due
++   *
++   * @format date
++   * @example "2022-03-10T00:00:00.000Z"
++   */
++  reviewsCompleteDate?: Date;
++  /**
++   * the reviews
++   */
++  reviews?: ProposalReview[];
+   /**
+    * a complete proposal
+    */
+@@ -1553,23 +1545,26 @@
+ /**
+  * A role within the timeAllocation committee
+  */
+-export type TacRole = "TECHNICALREVIEWER" | "SCIENCEREVIEWER" | "CHAIR";
++export type TacRole = "TechnicalReviewer" | "ScienceReviewer" | "Chair";
+ 
+ /**
   * A target source
   */
  export type Target = {
@@ -197,7 +322,7 @@
    xmlId?: string;
    name?: string;
  };
-@@ -1546,6 +1573,7 @@
+@@ -1578,6 +1573,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -205,7 +330,7 @@
    /**
     * any constraints on the observation
     */
-@@ -1573,6 +1601,7 @@
+@@ -1605,6 +1601,7 @@
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -213,7 +338,16 @@
    xmlId?: string;
  };
  
-@@ -1676,6 +1705,10 @@
+@@ -1645,7 +1642,7 @@
+ /**
+  * acceptable text formats for document submission
+  */
+-export type TextFormats = "LATEX" | "RST" | "ASCIIDOC";
++export type TextFormats = "latex" | "rst" | "asciidoc";
+ 
+ /**
+  * A TimeFrame SHALL include a time scale and reference position. It MAY also include a reference direction.
+@@ -1708,6 +1705,10 @@
   * particular time range
   */
  export type TimingWindow = {

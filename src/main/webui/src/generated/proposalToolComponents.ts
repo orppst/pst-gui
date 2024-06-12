@@ -5298,6 +5298,132 @@ export const useProposalCyclesResourceReplaceCycleAllocationGradeName = (
   });
 };
 
+export type ProposalCyclesResourceGetProposalCycleObservatoryPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetProposalCycleObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetProposalCycleObservatoryVariables = {
+  pathParams: ProposalCyclesResourceGetProposalCycleObservatoryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetProposalCycleObservatory = (
+  variables: ProposalCyclesResourceGetProposalCycleObservatoryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Observatory,
+    ProposalCyclesResourceGetProposalCycleObservatoryError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetProposalCycleObservatoryPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/observatory",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetProposalCycleObservatory = <
+  TData = Schemas.Observatory
+>(
+  variables: ProposalCyclesResourceGetProposalCycleObservatoryVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Observatory,
+      ProposalCyclesResourceGetProposalCycleObservatoryError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Observatory,
+    ProposalCyclesResourceGetProposalCycleObservatoryError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/observatory",
+      operationId: "proposalCyclesResourceGetProposalCycleObservatory",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalCyclesResourceGetProposalCycleObservatory(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ProposalCyclesResourceReplaceCycleObservatoryPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceReplaceCycleObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceReplaceCycleObservatoryVariables = {
+  pathParams: ProposalCyclesResourceReplaceCycleObservatoryPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceReplaceCycleObservatory = (
+  variables: ProposalCyclesResourceReplaceCycleObservatoryVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceReplaceCycleObservatoryError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceReplaceCycleObservatoryPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/observatory",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceReplaceCycleObservatory = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalCyclesResourceReplaceCycleObservatoryError,
+      ProposalCyclesResourceReplaceCycleObservatoryVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalCyclesResourceReplaceCycleObservatoryError,
+    ProposalCyclesResourceReplaceCycleObservatoryVariables
+  >({
+    mutationFn: (
+      variables: ProposalCyclesResourceReplaceCycleObservatoryVariables
+    ) =>
+      fetchProposalCyclesResourceReplaceCycleObservatory({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type SubmittedProposalResourceGetSubmittedProposalsPathParams = {
   /**
    * @format int64
@@ -11360,6 +11486,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/grades/{gradeId}";
       operationId: "proposalCyclesResourceGetCycleAllocatedGrade";
       variables: ProposalCyclesResourceGetCycleAllocatedGradeVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/observatory";
+      operationId: "proposalCyclesResourceGetProposalCycleObservatory";
+      variables: ProposalCyclesResourceGetProposalCycleObservatoryVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals";
