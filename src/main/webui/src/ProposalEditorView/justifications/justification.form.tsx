@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import {Grid, Paper, Select} from "@mantine/core";
-import {MAX_CHARS_FOR_INPUTS} from "src/constants.tsx";
+import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
@@ -28,7 +28,7 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
                         value={form.values.text!}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
                         highlight={code => highlight(code, languages.asciidoc, 'asciidoc')}
-                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
                     />
                 </Paper>
@@ -40,7 +40,7 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
                         value={form.values.text!}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
                         highlight={code => highlight(code, languages.latex, 'latex')}
-                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
                     />
                 </Paper>
@@ -52,7 +52,7 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
                         value={form.values.text!}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
                         highlight={code => highlight(code, languages.rest, 'rest')}
-                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
                     />
                 </Paper>
