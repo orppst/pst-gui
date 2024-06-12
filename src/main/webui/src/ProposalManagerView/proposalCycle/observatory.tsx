@@ -33,7 +33,6 @@ export default function CycleObservatoryPanel() : ReactElement {
 
     useEffect(() => {
         if(observatories.status === 'success') {
-            console.log("Got list of " + observatories.data.length + " observatories");
             setSearchData([]);
             observatories.data?.map((item) => (
                 // @ts-ignore
@@ -44,7 +43,10 @@ export default function CycleObservatoryPanel() : ReactElement {
             fetchProposalCyclesResourceGetProposalCycleObservatory(
                 {pathParams: {cycleCode: Number(selectedCycleCode)}})
                 .then((observatory) => {
+                    //FIXME: None of these three ways to set the default value seem to work
                     form.values.selectedObservatory = Number(observatory?._id);
+                    //form.setFieldValue('selectedObservatory', Number(observatory?._id));
+                    //form.setInitialValues({selectedObservatory: Number(observatory?._id)});
                     setFormReady(true);
                 })
                 .catch((error) => notifyError("Failed to load proposal cycle details",
@@ -63,8 +65,6 @@ export default function CycleObservatoryPanel() : ReactElement {
                     headers: {"Content-Type": "text/plain"}
                 };
 
-        console.log(JSON.stringify(newObservatory,null,2));
-
         fetchProposalCyclesResourceReplaceCycleObservatory(newObservatory)
             .then(()=>
                 notifySuccess("Update observatory", "Changes saved")
@@ -77,14 +77,13 @@ export default function CycleObservatoryPanel() : ReactElement {
     return (
         <PanelFrame>
             <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Observatory"} />
-            <Text>WIP: this is where you view/edit the observatory used for the cycle</Text>
+            <Text>Select the observatory used for this cycle</Text>
 
             {formReady && (
             <form onSubmit={updateObservatory}>
                 <Select
-                    searchable
                     data = {observatorySearchData}
-                    {...form.getInputProps("observatory")}
+                    {...form.getInputProps("selectedObservatory")}
                 />
                 <SubmitButton toolTipLabel={"Change observatory"}
                               disabled={!form.isDirty() || !form.isValid()}
