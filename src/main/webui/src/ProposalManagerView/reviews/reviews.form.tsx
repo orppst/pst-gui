@@ -75,31 +75,15 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
     )
 
     const technicalFeasibilityInput = () => (
-        <>
-            {
-                //due to a bug in Mantine the switch does not display the 'true' or "YES" state
-                //on initial render when using form.getInputProps() so be explicit. Change if
-                //Mantine gets fixed.
-                isReviewComplete ?
-                    <Switch
-                        disabled
-                        size={"md"}
-                        label={"technically feasible?"}
-                        checked={theReview?.technicalFeasibility}
-                        onLabel={"YES"}
-                        offLabel={"NO"}
-                    />
-                    :
-                    <Switch
-                        disabled={isReviewComplete}
-                        label={"technically feasible?"}
-                        size={"md"}
-                        onLabel={"YES"}
-                        offLabel={"NO"}
-                        {...form.getInputProps('technicalFeasibility')}
-                    />
-            }
-        </>
+        <Switch
+            disabled={isReviewComplete}
+            label={"technically feasible?"}
+            size={"md"}
+            onLabel={"YES"}
+            offLabel={"NO"}
+            {...form.getInputProps('technicalFeasibility',
+                {type: 'checkbox'})}
+        />
     )
 
     type AssignButtonData = {
