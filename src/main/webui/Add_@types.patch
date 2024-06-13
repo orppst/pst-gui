@@ -1,5 +1,5 @@
 --- proposalToolSchemas.ts.orig	2024-04-24 10:15:03
-+++ proposalToolSchemas.ts	2024-06-12 10:11:23
++++ proposalToolSchemas.ts	2024-06-13 16:44:15
 @@ -129,6 +129,7 @@
   * An observation that is intended for calibration
   */
