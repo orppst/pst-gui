@@ -4127,6 +4127,81 @@ export const useAllocatedBlockResourceAddAllocatedBlock = (
   });
 };
 
+export type AllocatedBlockResourceGetAllocatedBlockPathParams = {
+  /**
+   * @format int64
+   */
+  allocatedId: number;
+  /**
+   * @format int64
+   */
+  blockId: number;
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type AllocatedBlockResourceGetAllocatedBlockError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AllocatedBlockResourceGetAllocatedBlockVariables = {
+  pathParams: AllocatedBlockResourceGetAllocatedBlockPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAllocatedBlockResourceGetAllocatedBlock = (
+  variables: AllocatedBlockResourceGetAllocatedBlockVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.AllocatedBlock,
+    AllocatedBlockResourceGetAllocatedBlockError,
+    undefined,
+    {},
+    {},
+    AllocatedBlockResourceGetAllocatedBlockPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}/allocatedBlock/{blockId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAllocatedBlockResourceGetAllocatedBlock = <
+  TData = Schemas.AllocatedBlock
+>(
+  variables: AllocatedBlockResourceGetAllocatedBlockVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.AllocatedBlock,
+      AllocatedBlockResourceGetAllocatedBlockError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.AllocatedBlock,
+    AllocatedBlockResourceGetAllocatedBlockError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}/allocatedBlock/{blockId}",
+      operationId: "allocatedBlockResourceGetAllocatedBlock",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchAllocatedBlockResourceGetAllocatedBlock(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type AllocatedBlockResourceRemoveAllocatedBlockPathParams = {
   /**
    * @format int64
@@ -4187,6 +4262,203 @@ export const useAllocatedBlockResourceRemoveAllocatedBlock = (
       variables: AllocatedBlockResourceRemoveAllocatedBlockVariables
     ) =>
       fetchAllocatedBlockResourceRemoveAllocatedBlock({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AllocatedBlockResourceUpdateGradePathParams = {
+  /**
+   * @format int64
+   */
+  allocatedId: number;
+  /**
+   * @format int64
+   */
+  blockId: number;
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type AllocatedBlockResourceUpdateGradeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AllocatedBlockResourceUpdateGradeVariables = {
+  pathParams: AllocatedBlockResourceUpdateGradePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAllocatedBlockResourceUpdateGrade = (
+  variables: AllocatedBlockResourceUpdateGradeVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    AllocatedBlockResourceUpdateGradeError,
+    undefined,
+    {},
+    {},
+    AllocatedBlockResourceUpdateGradePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}/allocatedBlock/{blockId}/grade",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useAllocatedBlockResourceUpdateGrade = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AllocatedBlockResourceUpdateGradeError,
+      AllocatedBlockResourceUpdateGradeVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    AllocatedBlockResourceUpdateGradeError,
+    AllocatedBlockResourceUpdateGradeVariables
+  >({
+    mutationFn: (variables: AllocatedBlockResourceUpdateGradeVariables) =>
+      fetchAllocatedBlockResourceUpdateGrade({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AllocatedBlockResourceChangeObservingModePathParams = {
+  /**
+   * @format int64
+   */
+  allocatedId: number;
+  /**
+   * @format int64
+   */
+  blockId: number;
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type AllocatedBlockResourceChangeObservingModeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AllocatedBlockResourceChangeObservingModeVariables = {
+  pathParams: AllocatedBlockResourceChangeObservingModePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAllocatedBlockResourceChangeObservingMode = (
+  variables: AllocatedBlockResourceChangeObservingModeVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    AllocatedBlockResourceChangeObservingModeError,
+    undefined,
+    {},
+    {},
+    AllocatedBlockResourceChangeObservingModePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}/allocatedBlock/{blockId}/observingMode",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useAllocatedBlockResourceChangeObservingMode = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AllocatedBlockResourceChangeObservingModeError,
+      AllocatedBlockResourceChangeObservingModeVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    AllocatedBlockResourceChangeObservingModeError,
+    AllocatedBlockResourceChangeObservingModeVariables
+  >({
+    mutationFn: (
+      variables: AllocatedBlockResourceChangeObservingModeVariables
+    ) =>
+      fetchAllocatedBlockResourceChangeObservingMode({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AllocatedBlockResourceUpdateResourcePathParams = {
+  /**
+   * @format int64
+   */
+  allocatedId: number;
+  /**
+   * @format int64
+   */
+  blockId: number;
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type AllocatedBlockResourceUpdateResourceError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AllocatedBlockResourceUpdateResourceVariables = {
+  pathParams: AllocatedBlockResourceUpdateResourcePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAllocatedBlockResourceUpdateResource = (
+  variables: AllocatedBlockResourceUpdateResourceVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    AllocatedBlockResourceUpdateResourceError,
+    undefined,
+    {},
+    {},
+    AllocatedBlockResourceUpdateResourcePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}/allocatedBlock/{blockId}/resourceAmount",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useAllocatedBlockResourceUpdateResource = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AllocatedBlockResourceUpdateResourceError,
+      AllocatedBlockResourceUpdateResourceVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    AllocatedBlockResourceUpdateResourceError,
+    AllocatedBlockResourceUpdateResourceVariables
+  >({
+    mutationFn: (variables: AllocatedBlockResourceUpdateResourceVariables) =>
+      fetchAllocatedBlockResourceUpdateResource({
         ...fetcherOptions,
         ...variables,
       }),
@@ -4261,76 +4533,6 @@ export const useAvailableResourcesResourceGetCycleAvailableResources = <
   });
 };
 
-export type AvailableResourcesResourceGetCycleResourcesPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type AvailableResourcesResourceGetCycleResourcesError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type AvailableResourcesResourceGetCycleResourcesResponse =
-  Schemas.Resource[];
-
-export type AvailableResourcesResourceGetCycleResourcesVariables = {
-  pathParams: AvailableResourcesResourceGetCycleResourcesPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAvailableResourcesResourceGetCycleResources = (
-  variables: AvailableResourcesResourceGetCycleResourcesVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    AvailableResourcesResourceGetCycleResourcesResponse,
-    AvailableResourcesResourceGetCycleResourcesError,
-    undefined,
-    {},
-    {},
-    AvailableResourcesResourceGetCycleResourcesPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/resources",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useAvailableResourcesResourceGetCycleResources = <
-  TData = AvailableResourcesResourceGetCycleResourcesResponse
->(
-  variables: AvailableResourcesResourceGetCycleResourcesVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      AvailableResourcesResourceGetCycleResourcesResponse,
-      AvailableResourcesResourceGetCycleResourcesError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    AvailableResourcesResourceGetCycleResourcesResponse,
-    AvailableResourcesResourceGetCycleResourcesError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/resources",
-      operationId: "availableResourcesResourceGetCycleResources",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchAvailableResourcesResourceGetCycleResources(
-        { ...fetcherOptions, ...variables },
-        signal
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
 export type AvailableResourcesResourceAddCycleResourcePathParams = {
   /**
    * @format int64
@@ -4358,7 +4560,7 @@ export const fetchAvailableResourcesResourceAddCycleResource = (
     {},
     AvailableResourcesResourceAddCycleResourcePathParams
   >({
-    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/resources",
+    url: "/pst/api/proposalCycles/{cycleCode}/availableResources",
     method: "post",
     ...variables,
     signal,
@@ -4384,132 +4586,6 @@ export const useAvailableResourcesResourceAddCycleResource = (
       variables: AvailableResourcesResourceAddCycleResourceVariables
     ) =>
       fetchAvailableResourcesResourceAddCycleResource({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
-export type AvailableResourcesResourceRemoveCycleResourcePathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-  /**
-   * @format int64
-   */
-  resourceId: number;
-};
-
-export type AvailableResourcesResourceRemoveCycleResourceError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type AvailableResourcesResourceRemoveCycleResourceVariables = {
-  pathParams: AvailableResourcesResourceRemoveCycleResourcePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAvailableResourcesResourceRemoveCycleResource = (
-  variables: AvailableResourcesResourceRemoveCycleResourceVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    undefined,
-    AvailableResourcesResourceRemoveCycleResourceError,
-    undefined,
-    {},
-    {},
-    AvailableResourcesResourceRemoveCycleResourcePathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/resources/{resourceId}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useAvailableResourcesResourceRemoveCycleResource = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      AvailableResourcesResourceRemoveCycleResourceError,
-      AvailableResourcesResourceRemoveCycleResourceVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    AvailableResourcesResourceRemoveCycleResourceError,
-    AvailableResourcesResourceRemoveCycleResourceVariables
-  >({
-    mutationFn: (
-      variables: AvailableResourcesResourceRemoveCycleResourceVariables
-    ) =>
-      fetchAvailableResourcesResourceRemoveCycleResource({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
-export type AvailableResourcesResourceUpdateCycleResourceAmountPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-  /**
-   * @format int64
-   */
-  resourceId: number;
-};
-
-export type AvailableResourcesResourceUpdateCycleResourceAmountError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type AvailableResourcesResourceUpdateCycleResourceAmountVariables = {
-  pathParams: AvailableResourcesResourceUpdateCycleResourceAmountPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchAvailableResourcesResourceUpdateCycleResourceAmount = (
-  variables: AvailableResourcesResourceUpdateCycleResourceAmountVariables,
-  signal?: AbortSignal
-) =>
-  proposalToolFetch<
-    Schemas.Resource,
-    AvailableResourcesResourceUpdateCycleResourceAmountError,
-    undefined,
-    {},
-    {},
-    AvailableResourcesResourceUpdateCycleResourceAmountPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/resources/{resourceId}/amount",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useAvailableResourcesResourceUpdateCycleResourceAmount = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.Resource,
-      AvailableResourcesResourceUpdateCycleResourceAmountError,
-      AvailableResourcesResourceUpdateCycleResourceAmountVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.Resource,
-    AvailableResourcesResourceUpdateCycleResourceAmountError,
-    AvailableResourcesResourceUpdateCycleResourceAmountVariables
-  >({
-    mutationFn: (
-      variables: AvailableResourcesResourceUpdateCycleResourceAmountVariables
-    ) =>
-      fetchAvailableResourcesResourceUpdateCycleResourceAmount({
         ...fetcherOptions,
         ...variables,
       }),
@@ -4650,6 +4726,404 @@ export const useAvailableResourcesResourceGetCycleResourceType = <
     }),
     queryFn: ({ signal }) =>
       fetchAvailableResourcesResourceGetCycleResourceType(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type AvailableResourcesResourceRemoveCycleResourcePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  resourceId: number;
+};
+
+export type AvailableResourcesResourceRemoveCycleResourceError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceRemoveCycleResourceVariables = {
+  pathParams: AvailableResourcesResourceRemoveCycleResourcePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceRemoveCycleResource = (
+  variables: AvailableResourcesResourceRemoveCycleResourceVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    undefined,
+    AvailableResourcesResourceRemoveCycleResourceError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceRemoveCycleResourcePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceRemoveCycleResource = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AvailableResourcesResourceRemoveCycleResourceError,
+      AvailableResourcesResourceRemoveCycleResourceVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    AvailableResourcesResourceRemoveCycleResourceError,
+    AvailableResourcesResourceRemoveCycleResourceVariables
+  >({
+    mutationFn: (
+      variables: AvailableResourcesResourceRemoveCycleResourceVariables
+    ) =>
+      fetchAvailableResourcesResourceRemoveCycleResource({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AvailableResourcesResourceUpdateCycleResourceAmountPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  resourceId: number;
+};
+
+export type AvailableResourcesResourceUpdateCycleResourceAmountError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceUpdateCycleResourceAmountVariables = {
+  pathParams: AvailableResourcesResourceUpdateCycleResourceAmountPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceUpdateCycleResourceAmount = (
+  variables: AvailableResourcesResourceUpdateCycleResourceAmountVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Resource,
+    AvailableResourcesResourceUpdateCycleResourceAmountError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceUpdateCycleResourceAmountPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceId}/amount",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceUpdateCycleResourceAmount = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Resource,
+      AvailableResourcesResourceUpdateCycleResourceAmountError,
+      AvailableResourcesResourceUpdateCycleResourceAmountVariables
+    >,
+    "mutationFn"
+  >
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Resource,
+    AvailableResourcesResourceUpdateCycleResourceAmountError,
+    AvailableResourcesResourceUpdateCycleResourceAmountVariables
+  >({
+    mutationFn: (
+      variables: AvailableResourcesResourceUpdateCycleResourceAmountVariables
+    ) =>
+      fetchAvailableResourcesResourceUpdateCycleResourceAmount({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AvailableResourcesResourceGetCycleAvailableResourcePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  resourceName: string;
+};
+
+export type AvailableResourcesResourceGetCycleAvailableResourceError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceGetCycleAvailableResourceVariables = {
+  pathParams: AvailableResourcesResourceGetCycleAvailableResourcePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceGetCycleAvailableResource = (
+  variables: AvailableResourcesResourceGetCycleAvailableResourceVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.Resource,
+    AvailableResourcesResourceGetCycleAvailableResourceError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceGetCycleAvailableResourcePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceGetCycleAvailableResource = <
+  TData = Schemas.Resource
+>(
+  variables: AvailableResourcesResourceGetCycleAvailableResourceVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Resource,
+      AvailableResourcesResourceGetCycleAvailableResourceError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Resource,
+    AvailableResourcesResourceGetCycleAvailableResourceError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}",
+      operationId: "availableResourcesResourceGetCycleAvailableResource",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchAvailableResourcesResourceGetCycleAvailableResource(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type AvailableResourcesResourceGetCycleResourceUsedPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  resourceName: string;
+};
+
+export type AvailableResourcesResourceGetCycleResourceUsedError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceGetCycleResourceUsedVariables = {
+  pathParams: AvailableResourcesResourceGetCycleResourceUsedPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceGetCycleResourceUsed = (
+  variables: AvailableResourcesResourceGetCycleResourceUsedVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    number,
+    AvailableResourcesResourceGetCycleResourceUsedError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceGetCycleResourceUsedPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/allocated",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceGetCycleResourceUsed = <
+  TData = number
+>(
+  variables: AvailableResourcesResourceGetCycleResourceUsedVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      number,
+      AvailableResourcesResourceGetCycleResourceUsedError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    number,
+    AvailableResourcesResourceGetCycleResourceUsedError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/allocated",
+      operationId: "availableResourcesResourceGetCycleResourceUsed",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchAvailableResourcesResourceGetCycleResourceUsed(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type AvailableResourcesResourceGetCycleResourceRemainingPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  resourceName: string;
+};
+
+export type AvailableResourcesResourceGetCycleResourceRemainingError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceGetCycleResourceRemainingVariables = {
+  pathParams: AvailableResourcesResourceGetCycleResourceRemainingPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceGetCycleResourceRemaining = (
+  variables: AvailableResourcesResourceGetCycleResourceRemainingVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    number,
+    AvailableResourcesResourceGetCycleResourceRemainingError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceGetCycleResourceRemainingPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/remaining",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceGetCycleResourceRemaining = <
+  TData = number
+>(
+  variables: AvailableResourcesResourceGetCycleResourceRemainingVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      number,
+      AvailableResourcesResourceGetCycleResourceRemainingError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    number,
+    AvailableResourcesResourceGetCycleResourceRemainingError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/remaining",
+      operationId: "availableResourcesResourceGetCycleResourceRemaining",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchAvailableResourcesResourceGetCycleResourceRemaining(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type AvailableResourcesResourceGetCycleResourceTotalPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  resourceName: string;
+};
+
+export type AvailableResourcesResourceGetCycleResourceTotalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AvailableResourcesResourceGetCycleResourceTotalVariables = {
+  pathParams: AvailableResourcesResourceGetCycleResourceTotalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAvailableResourcesResourceGetCycleResourceTotal = (
+  variables: AvailableResourcesResourceGetCycleResourceTotalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    number,
+    AvailableResourcesResourceGetCycleResourceTotalError,
+    undefined,
+    {},
+    {},
+    AvailableResourcesResourceGetCycleResourceTotalPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/total",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAvailableResourcesResourceGetCycleResourceTotal = <
+  TData = number
+>(
+  variables: AvailableResourcesResourceGetCycleResourceTotalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      number,
+      AvailableResourcesResourceGetCycleResourceTotalError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    number,
+    AvailableResourcesResourceGetCycleResourceTotalError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/total",
+      operationId: "availableResourcesResourceGetCycleResourceTotal",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchAvailableResourcesResourceGetCycleResourceTotal(
         { ...fetcherOptions, ...variables },
         signal
       ),
@@ -11453,14 +11927,14 @@ export type QueryOperation =
       variables: AllocatedBlockResourceGetAllocatedBlocksVariables;
     }
   | {
+      path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}/allocatedBlock/{blockId}";
+      operationId: "allocatedBlockResourceGetAllocatedBlock";
+      variables: AllocatedBlockResourceGetAllocatedBlockVariables;
+    }
+  | {
       path: "/pst/api/proposalCycles/{cycleCode}/availableResources";
       operationId: "availableResourcesResourceGetCycleAvailableResources";
       variables: AvailableResourcesResourceGetCycleAvailableResourcesVariables;
-    }
-  | {
-      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/resources";
-      operationId: "availableResourcesResourceGetCycleResources";
-      variables: AvailableResourcesResourceGetCycleResourcesVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/availableResources/types";
@@ -11471,6 +11945,26 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/availableResources/types/{typeId}";
       operationId: "availableResourcesResourceGetCycleResourceType";
       variables: AvailableResourcesResourceGetCycleResourceTypeVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}";
+      operationId: "availableResourcesResourceGetCycleAvailableResource";
+      variables: AvailableResourcesResourceGetCycleAvailableResourceVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/allocated";
+      operationId: "availableResourcesResourceGetCycleResourceUsed";
+      variables: AvailableResourcesResourceGetCycleResourceUsedVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/remaining";
+      operationId: "availableResourcesResourceGetCycleResourceRemaining";
+      variables: AvailableResourcesResourceGetCycleResourceRemainingVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/total";
+      operationId: "availableResourcesResourceGetCycleResourceTotal";
+      variables: AvailableResourcesResourceGetCycleResourceTotalVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/dates";
