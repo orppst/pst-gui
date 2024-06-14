@@ -74,8 +74,8 @@ function AllocationsTable() : ReactElement {
     const header = () => (
         <Table.Tr>
             <Table.Th>Proposal Title</Table.Th>
-            <Table.Th>Reviews Complete Date</Table.Th>
-            <Table.Th>Total Review Score</Table.Th>
+            <Table.Th>Reviews Complete</Table.Th>
+            <Table.Th>Total Score</Table.Th>
             <Table.Th></Table.Th>
         </Table.Tr>
     )

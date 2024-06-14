@@ -1,7 +1,9 @@
 import {ReactElement} from "react";
-import {Text} from "@mantine/core";
+import {Fieldset} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import AllocationsTable from "./allocations.table.tsx";
+import AllocatedTable from "./allocated.table.tsx";
 
 /*
     List all submitted proposals that have been reviewed (all reviews complete) and update
@@ -21,7 +23,12 @@ export default function AllocationsPanel() : ReactElement {
     return (
         <PanelFrame>
             <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Allocations"} />
-            <Text>WIP: this is where you view/edit the allocation of reviewed proposals</Text>
+            <Fieldset legend={"Reviewed Proposals"}>
+                <AllocationsTable/>
+            </Fieldset>
+            <Fieldset legend={"Allocated Proposals"}>
+                <AllocatedTable/>
+            </Fieldset>
         </PanelFrame>
     )
 }
