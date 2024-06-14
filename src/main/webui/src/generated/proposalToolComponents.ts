@@ -3855,41 +3855,39 @@ export const useTACResourceReplaceRole = (
   });
 };
 
-export type AllocatedProposalResourceGetAllocatedProposalsFromCyclePathParams =
-  {
-    /**
-     * @format int64
-     */
-    cycleCode: number;
-  };
+export type AllocatedProposalResourceGetAllocatedProposalsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
 
-export type AllocatedProposalResourceGetAllocatedProposalsFromCycleQueryParams =
-  {
-    title?: string;
-  };
+export type AllocatedProposalResourceGetAllocatedProposalsQueryParams = {
+  title?: string;
+};
 
-export type AllocatedProposalResourceGetAllocatedProposalsFromCycleError =
+export type AllocatedProposalResourceGetAllocatedProposalsError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type AllocatedProposalResourceGetAllocatedProposalsFromCycleResponse =
+export type AllocatedProposalResourceGetAllocatedProposalsResponse =
   Schemas.ObjectIdentifier[];
 
-export type AllocatedProposalResourceGetAllocatedProposalsFromCycleVariables = {
-  pathParams: AllocatedProposalResourceGetAllocatedProposalsFromCyclePathParams;
-  queryParams?: AllocatedProposalResourceGetAllocatedProposalsFromCycleQueryParams;
+export type AllocatedProposalResourceGetAllocatedProposalsVariables = {
+  pathParams: AllocatedProposalResourceGetAllocatedProposalsPathParams;
+  queryParams?: AllocatedProposalResourceGetAllocatedProposalsQueryParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchAllocatedProposalResourceGetAllocatedProposalsFromCycle = (
-  variables: AllocatedProposalResourceGetAllocatedProposalsFromCycleVariables,
+export const fetchAllocatedProposalResourceGetAllocatedProposals = (
+  variables: AllocatedProposalResourceGetAllocatedProposalsVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
-    AllocatedProposalResourceGetAllocatedProposalsFromCycleResponse,
-    AllocatedProposalResourceGetAllocatedProposalsFromCycleError,
+    AllocatedProposalResourceGetAllocatedProposalsResponse,
+    AllocatedProposalResourceGetAllocatedProposalsError,
     undefined,
     {},
-    AllocatedProposalResourceGetAllocatedProposalsFromCycleQueryParams,
-    AllocatedProposalResourceGetAllocatedProposalsFromCyclePathParams
+    AllocatedProposalResourceGetAllocatedProposalsQueryParams,
+    AllocatedProposalResourceGetAllocatedProposalsPathParams
   >({
     url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals",
     method: "get",
@@ -3897,14 +3895,14 @@ export const fetchAllocatedProposalResourceGetAllocatedProposalsFromCycle = (
     signal,
   });
 
-export const useAllocatedProposalResourceGetAllocatedProposalsFromCycle = <
-  TData = AllocatedProposalResourceGetAllocatedProposalsFromCycleResponse
+export const useAllocatedProposalResourceGetAllocatedProposals = <
+  TData = AllocatedProposalResourceGetAllocatedProposalsResponse
 >(
-  variables: AllocatedProposalResourceGetAllocatedProposalsFromCycleVariables,
+  variables: AllocatedProposalResourceGetAllocatedProposalsVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      AllocatedProposalResourceGetAllocatedProposalsFromCycleResponse,
-      AllocatedProposalResourceGetAllocatedProposalsFromCycleError,
+      AllocatedProposalResourceGetAllocatedProposalsResponse,
+      AllocatedProposalResourceGetAllocatedProposalsError,
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
@@ -3913,17 +3911,17 @@ export const useAllocatedProposalResourceGetAllocatedProposalsFromCycle = <
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    AllocatedProposalResourceGetAllocatedProposalsFromCycleResponse,
-    AllocatedProposalResourceGetAllocatedProposalsFromCycleError,
+    AllocatedProposalResourceGetAllocatedProposalsResponse,
+    AllocatedProposalResourceGetAllocatedProposalsError,
     TData
   >({
     queryKey: queryKeyFn({
       path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals",
-      operationId: "allocatedProposalResourceGetAllocatedProposalsFromCycle",
+      operationId: "allocatedProposalResourceGetAllocatedProposals",
       variables,
     }),
     queryFn: ({ signal }) =>
-      fetchAllocatedProposalResourceGetAllocatedProposalsFromCycle(
+      fetchAllocatedProposalResourceGetAllocatedProposals(
         { ...fetcherOptions, ...variables },
         signal
       ),
@@ -3988,6 +3986,77 @@ export const useAllocatedProposalResourceAllocateProposalToCycle = (
         ...variables,
       }),
     ...options,
+  });
+};
+
+export type AllocatedProposalResourceGetAllocatedProposalPathParams = {
+  /**
+   * @format int64
+   */
+  allocatedId: number;
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type AllocatedProposalResourceGetAllocatedProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AllocatedProposalResourceGetAllocatedProposalVariables = {
+  pathParams: AllocatedProposalResourceGetAllocatedProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAllocatedProposalResourceGetAllocatedProposal = (
+  variables: AllocatedProposalResourceGetAllocatedProposalVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    Schemas.AllocatedProposal,
+    AllocatedProposalResourceGetAllocatedProposalError,
+    undefined,
+    {},
+    {},
+    AllocatedProposalResourceGetAllocatedProposalPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useAllocatedProposalResourceGetAllocatedProposal = <
+  TData = Schemas.AllocatedProposal
+>(
+  variables: AllocatedProposalResourceGetAllocatedProposalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.AllocatedProposal,
+      AllocatedProposalResourceGetAllocatedProposalError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.AllocatedProposal,
+    AllocatedProposalResourceGetAllocatedProposalError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}",
+      operationId: "allocatedProposalResourceGetAllocatedProposal",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchAllocatedProposalResourceGetAllocatedProposal(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
   });
 };
 
@@ -11918,8 +11987,13 @@ export type QueryOperation =
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals";
-      operationId: "allocatedProposalResourceGetAllocatedProposalsFromCycle";
-      variables: AllocatedProposalResourceGetAllocatedProposalsFromCycleVariables;
+      operationId: "allocatedProposalResourceGetAllocatedProposals";
+      variables: AllocatedProposalResourceGetAllocatedProposalsVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}";
+      operationId: "allocatedProposalResourceGetAllocatedProposal";
+      variables: AllocatedProposalResourceGetAllocatedProposalVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}/allocatedBlock";
