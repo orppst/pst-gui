@@ -1,6 +1,8 @@
 import {ReactElement} from "react";
 import {Table} from "@mantine/core";
-import {useAvailableResourcesResourceGetCycleResources} from "../../generated/proposalToolComponents.ts";
+import {
+    useAvailableResourcesResourceGetCycleAvailableResources
+} from "../../generated/proposalToolComponents.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
@@ -11,7 +13,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 export default function AvailableResourcesTable(selectedCycleCode: number) : ReactElement {
 
-   const availableResources = useAvailableResourcesResourceGetCycleResources(
+   const availableResources = useAvailableResourcesResourceGetCycleAvailableResources(
        {pathParams: {cycleCode: selectedCycleCode}}
    )
 
@@ -38,7 +40,7 @@ export default function AvailableResourcesTable(selectedCycleCode: number) : Rea
    const AvailableResourcesTableBody = () : ReactElement => {
        return (
            <Table.Tbody>
-               {availableResources.data?.map((ar) =>(
+               {availableResources.data?.resources?.map((ar) =>(
                    <Table.Tr key={String(ar._id)}>
                        <Table.Td>{ar.type?.name}</Table.Td>
                        <Table.Td>{ar.type?.unit}</Table.Td>
