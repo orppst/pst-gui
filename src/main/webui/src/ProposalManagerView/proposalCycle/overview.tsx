@@ -44,6 +44,17 @@ export default function CycleOverviewPanel() : ReactElement {
         )
     }
 
+    const DisplayObservatory = () : ReactElement => {
+        return (
+            <Fieldset legend={"Observatory"}>
+                <Group grow>
+                    <Text>{cycleSynopsis.data?.observatory?.name}</Text>
+                    <Text c={"orange"}>{cycleSynopsis.data?.observatory?.telescopes?.length} telescopes</Text>
+                </Group>
+            </Fieldset>
+        )
+    }
+
     const DisplayDates = () : ReactElement => {
         return (
             <Fieldset legend={"Important Dates"}>
@@ -113,6 +124,8 @@ export default function CycleOverviewPanel() : ReactElement {
     return (
         <PanelFrame>
             <DisplayTitle />
+            <DisplayObservatory />
+            <Space h={"xl"}/>
             <DisplayDates />
             <Space h={"xl"}/>
             <DisplayAllocationGrades />

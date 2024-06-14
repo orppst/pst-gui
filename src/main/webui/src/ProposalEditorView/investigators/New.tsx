@@ -36,7 +36,7 @@ function AddInvestigatorPanel(): ReactElement {
             selectedInvestigator: 0},
         validate: {
             selectedInvestigator: (value) => (
-                value === 0 ? 'Please select an investigator' : null)
+                value === 0 || value === null ? 'Please select an investigator' : null)
         }
     });
     const typeData = [{value: "COI", label: "CO-I"}, {value: "PI", label: "PI"}];
