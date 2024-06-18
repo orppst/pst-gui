@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Badge, Table} from "@mantine/core";
+import {Badge, Table, Text} from "@mantine/core";
 import {
     useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
@@ -59,7 +59,10 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
                            Reviewers yet to be assigned
                        </Badge>
                        :
-                       completedReviews / submittedProposal.data?.reviews?.length!
+                        <Text>
+                            {completedReviews} / {submittedProposal.data?.reviews?.length!}
+                        </Text>
+
                 }
             </Table.Td>
             <Table.Td>{accumulatedScore}</Table.Td>

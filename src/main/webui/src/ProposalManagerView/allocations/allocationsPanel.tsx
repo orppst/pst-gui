@@ -1,16 +1,17 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Fieldset} from "@mantine/core";
+import {Alert, Container, Loader, Space, Tabs} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocationsTable from "./allocations.table.tsx";
 import AllocatedTable from "./allocated.table.tsx";
 import {
     fetchAllocatedProposalResourceGetAllocatedProposals,
-    fetchSubmittedProposalResourceGetSubmittedProposals
+    fetchSubmittedProposalResourceGetSubmittedProposals, useProposalCyclesResourceGetProposalCycleDates
 } from "../../generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {IconFolderCheck, IconFolderOpen} from "@tabler/icons-react";
 
 /*
     List all submitted proposals that have been reviewed (all reviews complete) and update
@@ -72,18 +73,55 @@ export default function AllocationsPanel() : ReactElement {
                 getErrorMessage(error)) )
     }, []);
 
+    const cycleDates = useProposalCyclesResourceGetProposalCycleDates({
+        pathParams: {cycleCode: Number(selectedCycleCode)}
+    })
+
+    if (cycleDates.isLoading) {
+        return(
+            <Loader />
+        )
+    }
+
+    if (cycleDates.error) {
+        notifyError("Failed to load Proposal Cycle important dates",
+            getErrorMessage(cycleDates.error))
+    }
+
     return (
         <PanelFrame>
             <ManagerPanelHeader
                 proposalCycleCode={Number(selectedCycleCode)}
                 panelHeading={"Allocations"}
             />
-            <Fieldset legend={"Submitted Proposals"}>
-                <AllocationsTable submittedIds={submittedIds} />
-            </Fieldset>
-            <Fieldset legend={"Allocated Proposals"}>
-                <AllocatedTable allocatedIds={allocatedIds} />
-            </Fieldset>
+            {new Date(cycleDates.data?.submissionDeadline!).getTime() > new Date().getTime() ?
+                <Container size={"50%"} mt={100}>
+                    <Alert variant={"light"} title={"Submission Deadline not surpassed"}>
+                        Cannot allocate proposals before the submission deadline:
+                        <Space h={"xs"}/>
+                        {new Date(cycleDates.data?.submissionDeadline!).toUTCString()}
+                    </Alert>
+                </Container>
+                :
+                <Tabs defaultValue={"submitted"}>
+                    <Tabs.List>
+                        <Tabs.Tab value={"submitted"} leftSection={<IconFolderOpen/>}>
+                            Submitted Proposals
+                        </Tabs.Tab>
+                        <Tabs.Tab value={"allocated"} leftSection={<IconFolderCheck/>}>
+                            Allocated Proposals
+                        </Tabs.Tab>
+                    </Tabs.List>
+
+                    <Tabs.Panel value={"submitted"}>
+                        <AllocationsTable submittedIds={submittedIds} />
+                    </Tabs.Panel>
+
+                    <Tabs.Panel value={"allocated"}>
+                        <AllocatedTable allocatedIds={allocatedIds} />
+                    </Tabs.Panel>
+                </Tabs>
+            }
         </PanelFrame>
     )
 }
