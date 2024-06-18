@@ -1,8 +1,7 @@
 import {ReactElement} from "react";
-import {Table} from "@mantine/core";
+import {Badge, Table} from "@mantine/core";
 import {
-    useAllocatedProposalResourceGetAllocatedProposal,
-    useAllocatedProposalResourceGetAllocatedProposals
+    useAllocatedProposalResourceGetAllocatedProposal
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {AllocatedBlock} from "../../generated/proposalToolSchemas.ts";
@@ -35,6 +34,7 @@ function AllocatedTableRow(props: AllocatedTableRowProps) : ReactElement {
             getErrorMessage(allocatedProposal.error))
     }
 
+    //a nested table
     const allocatedBlocksTable = (allocatedBlocks: AllocatedBlock[]) => (
         <Table c={"orange"} fz={"xs"}>
             <Table.Thead>
@@ -47,8 +47,8 @@ function AllocatedTableRow(props: AllocatedTableRowProps) : ReactElement {
             </Table.Thead>
             <Table.Tbody c={"orange.2"}>
                 {allocatedBlocks.map(ab => (
-                    //resource.name.type is unique per row in this table
-                    <Table.Tr key={ab.resource?.type?.name}>
+                    //resource.type.name + grade is unique per row in this table
+                    <Table.Tr key={ab.resource?.type?.name! + ab.grade?.name!}>
                         <Table.Td>{ab.resource?.type?.name}</Table.Td>
                         <Table.Td>{ab.resource?.amount} {ab.resource?.type?.unit}</Table.Td>
                         <Table.Td>{ab.mode?.name}</Table.Td>
@@ -62,7 +62,13 @@ function AllocatedTableRow(props: AllocatedTableRowProps) : ReactElement {
     return (
         <Table.Tr>
             <Table.Td>{allocatedProposal.data?.submitted?.proposal?.title}</Table.Td>
-            <Table.Td>{allocatedBlocksTable(allocatedProposal.data?.allocation!)}</Table.Td>
+            <Table.Td>{
+                allocatedProposal.data?.allocation &&
+                allocatedProposal.data.allocation.length > 0 ?
+                    allocatedBlocksTable(allocatedProposal.data.allocation)
+                    :
+                    <Badge bg={"red"}>No blocks allocated</Badge>
+            }</Table.Td>
             <Table.Td>button to edit</Table.Td>
         </Table.Tr>
     )
@@ -70,14 +76,9 @@ function AllocatedTableRow(props: AllocatedTableRowProps) : ReactElement {
 
 
 export default
-function AllocatedTable() : ReactElement {
+function AllocatedTable(props: {allocatedIds: number[]}) : ReactElement {
 
     const {selectedCycleCode} = useParams();
-
-    const allocatedProposals =
-        useAllocatedProposalResourceGetAllocatedProposals({
-            pathParams: {cycleCode: Number(selectedCycleCode)}
-        })
 
     const header = () => (
         <Table.Tr>
@@ -93,11 +94,11 @@ function AllocatedTable() : ReactElement {
                 {header()}
             </Table.Thead>
             <Table.Tbody>
-                {allocatedProposals.data?.map(ap =>(
+                {props.allocatedIds.map(ap =>(
                     <AllocatedTableRow
-                        key={ap.dbid}
+                        key={ap}
                         cycleCode={Number(selectedCycleCode)}
-                        allocatedProposalId={ap.dbid!}
+                        allocatedProposalId={ap}
                     />
                 ))}
             </Table.Tbody>

@@ -1,8 +1,7 @@
-import {ReactElement} from "react";
-import {Table} from "@mantine/core";
+import {ReactElement, useEffect, useState} from "react";
+import {Badge, Table} from "@mantine/core";
 import {
-    useSubmittedProposalResourceGetSubmittedProposal,
-    useSubmittedProposalResourceGetSubmittedProposals
+    useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -23,6 +22,22 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
         }
     })
 
+    const [completedReviews, setCompletedReviews] = useState(0)
+    const [accumulatedScore, setAccumulatedScore] = useState(0)
+
+    useEffect(() => {
+        let reviewsComplete : number = 0
+        let totalScore : number = 0
+        submittedProposal.data?.reviews?.forEach(review => {
+            if(new Date(review.reviewDate!).getTime() > 0) {
+                reviewsComplete += 1
+                totalScore += review.score!
+            }
+        })
+        setCompletedReviews(reviewsComplete)
+        setAccumulatedScore(totalScore)
+    }, []);
+
     if (submittedProposal.isLoading) {
         return (
             <></>
@@ -34,52 +49,40 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
             getErrorMessage(submittedProposal.error))
     }
 
-    if (new Date(submittedProposal.data?.reviewsCompleteDate!).getTime() > 0) {
-        return(
-            <Table.Tr>
-                <Table.Td>{submittedProposal.data?.proposal?.title}</Table.Td>
-                <Table.Td>{new Date(submittedProposal.data?.reviewsCompleteDate!).toDateString()}</Table.Td>
-                <Table.Td>99</Table.Td>
-                <Table.Td>allocate button / fail button</Table.Td>
-            </Table.Tr>
-        )
-    } else {
-        return (
-            <></>
-        )
-    }
+    return(
+        <Table.Tr>
+            <Table.Td>{submittedProposal.data?.proposal?.title}</Table.Td>
+            <Table.Td>
+                {
+                    submittedProposal.data?.reviews?.length! == 0 ?
+                       <Badge size={"xs"} bg={"red"} radius={"sm"}>
+                           Reviewers yet to be assigned
+                       </Badge>
+                       :
+                       completedReviews / submittedProposal.data?.reviews?.length!
+                }
+            </Table.Td>
+            <Table.Td>{accumulatedScore}</Table.Td>
+            <Table.Td>
+                allocate button / fail button
+            </Table.Td>
+        </Table.Tr>
+    )
 }
 
 export default
-function AllocationsTable() : ReactElement {
+function AllocationsTable(props:{submittedIds: number[]}) : ReactElement {
 
     const {selectedCycleCode} = useParams();
-
-    const submittedProposals =
-        useSubmittedProposalResourceGetSubmittedProposals({
-        pathParams: {cycleCode: 1}
-    })
-
-    if (submittedProposals.isLoading) {
-        return (
-            <></>
-        )
-    }
-
-    if (submittedProposals.error) {
-        notifyError("Failed to load Submitted Proposals",
-            getErrorMessage(submittedProposals.error))
-    }
 
     const header = () => (
         <Table.Tr>
             <Table.Th>Proposal Title</Table.Th>
             <Table.Th>Reviews Complete</Table.Th>
-            <Table.Th>Total Score</Table.Th>
+            <Table.Th>Accumulated Score</Table.Th>
             <Table.Th></Table.Th>
         </Table.Tr>
     )
-
 
     return(
         <Table>
@@ -87,11 +90,11 @@ function AllocationsTable() : ReactElement {
                 {header()}
             </Table.Thead>
             <Table.Tbody>
-                {submittedProposals.data?.map(sp => (
+                {props.submittedIds.map(sp => (
                     <AllocationsTableRow
-                        key={sp.dbid!}
+                        key={sp}
                         cycleCode={Number(selectedCycleCode)}
-                        submittedProposalId={sp.dbid!}
+                        submittedProposalId={sp}
                     />
                 ))}
             </Table.Tbody>
