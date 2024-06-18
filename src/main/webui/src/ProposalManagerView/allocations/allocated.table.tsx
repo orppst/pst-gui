@@ -4,7 +4,7 @@ import {
     useAllocatedProposalResourceGetAllocatedProposal
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {AllocatedBlock} from "../../generated/proposalToolSchemas.ts";
+import {AllocatedBlock, ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
@@ -76,7 +76,7 @@ function AllocatedTableRow(props: AllocatedTableRowProps) : ReactElement {
 
 
 export default
-function AllocatedTable(props: {allocatedIds: number[]}) : ReactElement {
+function AllocatedTable(props: {allocatedIds: ObjectIdentifier[]}) : ReactElement {
 
     const {selectedCycleCode} = useParams();
 
@@ -96,9 +96,9 @@ function AllocatedTable(props: {allocatedIds: number[]}) : ReactElement {
             <Table.Tbody>
                 {props.allocatedIds.map(ap =>(
                     <AllocatedTableRow
-                        key={ap}
+                        key={ap.dbid}
                         cycleCode={Number(selectedCycleCode)}
-                        allocatedProposalId={ap}
+                        allocatedProposalId={ap.dbid!}
                     />
                 ))}
             </Table.Tbody>

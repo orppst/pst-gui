@@ -1,8 +1,8 @@
 import {ReactElement} from "react";
-import {Accordion, Badge, Group, Space, Text} from "@mantine/core";
+import {Accordion, Badge, Group, Loader, Space, Text} from "@mantine/core";
 import {
-    useSubmittedProposalResourceGetSubmittedProposal,
-    useSubmittedProposalResourceGetSubmittedProposals
+    useSubmittedProposalResourceGetSubmittedNotYetAllocated,
+    useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -17,12 +17,17 @@ type SubmittedProposalItemProp = {
 
 function SubmittedProposalItem(props: SubmittedProposalItemProp) : ReactElement {
 
-    const proposal = useSubmittedProposalResourceGetSubmittedProposal({
-        pathParams: {cycleCode: props.cycleCode, submittedProposalId: props.proposalId}
+    const proposal =
+        useSubmittedProposalResourceGetSubmittedProposal({
+        pathParams: {
+            cycleCode: props.cycleCode,
+            submittedProposalId: props.proposalId
+        }
     })
 
     if (proposal.error) {
-        notifyError("Failed to load Submitted Proposal", getErrorMessage(proposal.error))
+        notifyError("Failed to load Submitted Proposal",
+            getErrorMessage(proposal.error))
     }
 
     return (
@@ -71,21 +76,27 @@ export default function AssignReviewersAccordion() : ReactElement {
 
     const {selectedCycleCode} = useParams();
 
-    const submittedProposals =
-        useSubmittedProposalResourceGetSubmittedProposals({
+    const notYetAllocated =
+        useSubmittedProposalResourceGetSubmittedNotYetAllocated({
             pathParams: {cycleCode: Number(selectedCycleCode)}
-        })
+    })
 
-    if (submittedProposals.error)
-    {
-        notifyError("Failed to load Submitted Proposals",
-            getErrorMessage(submittedProposals.error))
+    if (notYetAllocated.isLoading) {
+        return(
+            <Loader />
+        )
+    }
+
+    if (notYetAllocated.error) {
+        notifyError("Failed to load not yet allocated submitted proposals",
+            getErrorMessage(notYetAllocated.error))
+
     }
 
     return (
         <Accordion defaultValue={"1"}>
             {
-                submittedProposals.data?.map(sp => {
+                notYetAllocated.data?.map(sp => {
                     return (
                         <SubmittedProposalItem
                             key={sp.dbid}

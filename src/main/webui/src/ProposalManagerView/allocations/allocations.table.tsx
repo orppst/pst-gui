@@ -6,6 +6,7 @@ import {
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useParams} from "react-router-dom";
+import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 
 type AllocationTableRowProps = {
     cycleCode: number,
@@ -16,10 +17,10 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 
     const submittedProposal =
         useSubmittedProposalResourceGetSubmittedProposal({
-        pathParams: {
-            cycleCode: rowProps.cycleCode,
-            submittedProposalId: rowProps.submittedProposalId
-        }
+            pathParams: {
+                cycleCode: rowProps.cycleCode,
+                submittedProposalId: rowProps.submittedProposalId
+            }
     })
 
     const [completedReviews, setCompletedReviews] = useState(0)
@@ -74,7 +75,7 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 }
 
 export default
-function AllocationsTable(props:{submittedIds: number[]}) : ReactElement {
+function AllocationsTable(props:{submittedIds: ObjectIdentifier[]}) : ReactElement {
 
     const {selectedCycleCode} = useParams();
 
@@ -95,9 +96,9 @@ function AllocationsTable(props:{submittedIds: number[]}) : ReactElement {
             <Table.Tbody>
                 {props.submittedIds.map(sp => (
                     <AllocationsTableRow
-                        key={sp}
+                        key={sp.dbid}
                         cycleCode={Number(selectedCycleCode)}
-                        submittedProposalId={sp}
+                        submittedProposalId={sp.dbid!}
                     />
                 ))}
             </Table.Tbody>

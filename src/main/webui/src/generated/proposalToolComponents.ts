@@ -6094,6 +6094,76 @@ export const useSubmittedProposalResourceSubmitProposal = (
   });
 };
 
+export type SubmittedProposalResourceGetSubmittedNotYetAllocatedPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type SubmittedProposalResourceGetSubmittedNotYetAllocatedError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubmittedProposalResourceGetSubmittedNotYetAllocatedResponse =
+  Schemas.ObjectIdentifier[];
+
+export type SubmittedProposalResourceGetSubmittedNotYetAllocatedVariables = {
+  pathParams: SubmittedProposalResourceGetSubmittedNotYetAllocatedPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubmittedProposalResourceGetSubmittedNotYetAllocated = (
+  variables: SubmittedProposalResourceGetSubmittedNotYetAllocatedVariables,
+  signal?: AbortSignal
+) =>
+  proposalToolFetch<
+    SubmittedProposalResourceGetSubmittedNotYetAllocatedResponse,
+    SubmittedProposalResourceGetSubmittedNotYetAllocatedError,
+    undefined,
+    {},
+    {},
+    SubmittedProposalResourceGetSubmittedNotYetAllocatedPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/notYetAllocated",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubmittedProposalResourceGetSubmittedNotYetAllocated = <
+  TData = SubmittedProposalResourceGetSubmittedNotYetAllocatedResponse
+>(
+  variables: SubmittedProposalResourceGetSubmittedNotYetAllocatedVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      SubmittedProposalResourceGetSubmittedNotYetAllocatedResponse,
+      SubmittedProposalResourceGetSubmittedNotYetAllocatedError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    SubmittedProposalResourceGetSubmittedNotYetAllocatedResponse,
+    SubmittedProposalResourceGetSubmittedNotYetAllocatedError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/notYetAllocated",
+      operationId: "submittedProposalResourceGetSubmittedNotYetAllocated",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchSubmittedProposalResourceGetSubmittedNotYetAllocated(
+        { ...fetcherOptions, ...variables },
+        signal
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type SubmittedProposalResourceGetSubmittedProposalPathParams = {
   /**
    * @format int64
@@ -12064,6 +12134,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals";
       operationId: "submittedProposalResourceGetSubmittedProposals";
       variables: SubmittedProposalResourceGetSubmittedProposalsVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/notYetAllocated";
+      operationId: "submittedProposalResourceGetSubmittedNotYetAllocated";
+      variables: SubmittedProposalResourceGetSubmittedNotYetAllocatedVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}";

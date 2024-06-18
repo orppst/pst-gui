@@ -1,8 +1,8 @@
 import {ReactElement} from "react";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
-    useSubmittedProposalResourceGetSubmittedProposal,
-    useSubmittedProposalResourceGetSubmittedProposals
+    useSubmittedProposalResourceGetSubmittedNotYetAllocated,
+    useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
 import {Accordion, Badge, Group, Space, Text} from "@mantine/core";
 import {notifyError} from "../../commonPanel/notifications.tsx";
@@ -12,32 +12,31 @@ import ReviewsForm from "./reviews.form.tsx";
 export default
 function ReviewsAccordion(props: ReviewsProps) : ReactElement {
 
-    const submittedProposals = useSubmittedProposalResourceGetSubmittedProposals({
-        pathParams: {cycleCode: props.cycleCode}
+    const notYetAllocated =
+        useSubmittedProposalResourceGetSubmittedNotYetAllocated({
+            pathParams: {cycleCode: props.cycleCode}
     })
 
-    if (submittedProposals.isLoading) {
+    if (notYetAllocated.isLoading) {
         return (
             <></>
         )
     }
 
-    if (submittedProposals.error) {
+    if (notYetAllocated.error) {
         notifyError("Failed to load Submitted Proposal",
-            getErrorMessage(submittedProposals.error))
+            getErrorMessage(notYetAllocated.error))
     }
 
-    type ItemProps = {
-        proposalId: number
-    }
 
-    function SubmittedProposalReviewItem(itemProps: ItemProps) : ReactElement {
+    function SubmittedProposalReviewItem(itemProps: {proposalId: number}) : ReactElement {
 
-        const proposal = useSubmittedProposalResourceGetSubmittedProposal({
-            pathParams: {
-                cycleCode: props.cycleCode,
-                submittedProposalId: itemProps.proposalId
-            }
+        const proposal =
+            useSubmittedProposalResourceGetSubmittedProposal({
+                pathParams: {
+                    cycleCode: props.cycleCode,
+                    submittedProposalId: itemProps.proposalId
+                }
         })
 
         if (proposal.error) {
@@ -87,7 +86,6 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                         <Text size={"lg"}>{proposal.data?.proposal?.title}</Text>
                         {hasUserCompletedReview()}
                     </Group>
-
                     <Space h={"sm"}/>
                     <Group>
                         <Text size={"sm"} c={"gray.6"}> Assigned Reviewers: </Text>
@@ -111,13 +109,13 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                                                 size={"sm"}
                                                 c={you? "green" : "gray.6"}
                                             >
-                                                {you ? "You" : review.reviewer?.person?.fullName}
+                                                {review.reviewer?.person?.fullName}
+                                                {you && " (you)"}
                                             </Text>
                                         )}
                                 )
                         }
                     </Group>
-
                 </Accordion.Control>
                 <Accordion.Panel>
                     <ReviewsForm
@@ -133,7 +131,7 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
     return (
         <Accordion>
             {
-                submittedProposals.data?.map(sp => (
+                notYetAllocated.data?.map(sp => (
                     <SubmittedProposalReviewItem
                         key={sp.dbid!}
                         proposalId={sp.dbid!}

@@ -1,14 +1,14 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement} from "react";
 import {Alert, Container, Loader, Space, Tabs} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocationsTable from "./allocations.table.tsx";
 import AllocatedTable from "./allocated.table.tsx";
 import {
-    fetchAllocatedProposalResourceGetAllocatedProposals,
-    fetchSubmittedProposalResourceGetSubmittedProposals, useProposalCyclesResourceGetProposalCycleDates
+    useAllocatedProposalResourceGetAllocatedProposals,
+    useProposalCyclesResourceGetProposalCycleDates,
+    useSubmittedProposalResourceGetSubmittedNotYetAllocated
 } from "../../generated/proposalToolComponents.ts";
-import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {IconFolderCheck, IconFolderOpen} from "@tabler/icons-react";
@@ -31,51 +31,42 @@ import {IconFolderCheck, IconFolderOpen} from "@tabler/icons-react";
 export default function AllocationsPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
-    const [submittedIds, setSubmittedIds] =
-        useState<number[]>([])
-    const [allocatedIds, setAllocatedIds] =
-        useState<number[]>([])
-
-    // Need a list of submitted proposals that have yet to be allocated/decision made about allocation
-    // dev note: a direct API call would be neater here
-    useEffect(() => {
-        fetchSubmittedProposalResourceGetSubmittedProposals({
+    const notYetAllocated =
+        useSubmittedProposalResourceGetSubmittedNotYetAllocated({
             pathParams: {cycleCode: Number(selectedCycleCode)}
         })
-            .then((submitted : ObjectIdentifier[]) => {
-                fetchAllocatedProposalResourceGetAllocatedProposals({
-                    pathParams: {cycleCode: Number(selectedCycleCode)}
-                })
-                    .then((allocated: ObjectIdentifier[]) => {
-                        //array of ids that are in 'submitted' but are NOT in 'allocated'
-                        let diff = submitted.filter(sub => {
-                            let result : boolean = true
-                            //dev note: assumes proposal titles ("names") are unique
-                            if (allocated.find(alloc => alloc.name == sub.name))
-                                result = false
-                            return result;
-                        })
-                        setSubmittedIds(
-                            diff.map(sub => (
-                                sub.dbid!
-                            ))
-                        )
-                        setAllocatedIds(
-                            allocated.map(alloc => (
-                                alloc.dbid!
-                            ))
-                        )
-                    })
-                    .catch(error => notifyError("Failed to load Allocated Proposals",
-                        getErrorMessage(error)))
-            })
-            .catch(error => notifyError("Failed to load Submitted Proposals",
-                getErrorMessage(error)) )
-    }, []);
 
-    const cycleDates = useProposalCyclesResourceGetProposalCycleDates({
+    const allocated =
+        useAllocatedProposalResourceGetAllocatedProposals({
+            pathParams: {cycleCode: Number(selectedCycleCode)}
+        })
+
+    const cycleDates =
+        useProposalCyclesResourceGetProposalCycleDates({
         pathParams: {cycleCode: Number(selectedCycleCode)}
     })
+
+    if (allocated.isLoading) {
+        return(
+            <Loader />
+        )
+    }
+
+    if (allocated.error) {
+        notifyError("Failed to load allocated proposals",
+            getErrorMessage(allocated.error))
+    }
+
+    if (notYetAllocated.isLoading) {
+        return(
+            <Loader />
+        )
+    }
+
+    if (notYetAllocated.error) {
+        notifyError("Failed to load not yet allocated submitted proposals",
+            getErrorMessage(notYetAllocated.error))
+    }
 
     if (cycleDates.isLoading) {
         return(
@@ -84,7 +75,7 @@ export default function AllocationsPanel() : ReactElement {
     }
 
     if (cycleDates.error) {
-        notifyError("Failed to load Proposal Cycle important dates",
+        notifyError("Failed to load Proposal Cycle dates",
             getErrorMessage(cycleDates.error))
     }
 
@@ -114,11 +105,11 @@ export default function AllocationsPanel() : ReactElement {
                     </Tabs.List>
 
                     <Tabs.Panel value={"submitted"}>
-                        <AllocationsTable submittedIds={submittedIds} />
+                        <AllocationsTable submittedIds={notYetAllocated.data!} />
                     </Tabs.Panel>
 
                     <Tabs.Panel value={"allocated"}>
-                        <AllocatedTable allocatedIds={allocatedIds} />
+                        <AllocatedTable allocatedIds={allocated.data!} />
                     </Tabs.Panel>
                 </Tabs>
             }
