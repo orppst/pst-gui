@@ -180,6 +180,8 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                     getErrorMessage(error)))
         }
 
+        await queryClient.invalidateQueries()
+
         form.resetDirty();
     }
 
@@ -251,15 +253,19 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                                             disabled={!form.isDirty() || !form.isValid()}
                                         />
                                         <Tooltip
-                                            label={"Finalises this review"}
+                                            label={theReview.comment?.length != 0 ? "Finalises this review" :
+                                                "You must update this review with a comment before you can complete"}
                                             openDelay={OPEN_DELAY}
                                             closeDelay={CLOSE_DELAY}
+                                            multiline
+                                            w={150}
                                         >
                                             <Button
                                                 rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
                                                 color={"orange"}
                                                 variant={"outline"}
                                                 onClick={confirmCompletion}
+                                                disabled={theReview.comment?.length == 0}
                                             >
                                                 Complete Review
                                             </Button>

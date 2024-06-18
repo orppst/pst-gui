@@ -4,7 +4,7 @@ import {
     useSubmittedProposalResourceGetSubmittedNotYetAllocated,
     useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
-import {Accordion, Badge, Group, Space, Text} from "@mantine/core";
+import {Accordion, Badge, Group, Loader, Space, Text} from "@mantine/core";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import ReviewsForm from "./reviews.form.tsx";
@@ -18,9 +18,7 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
     })
 
     if (notYetAllocated.isLoading) {
-        return (
-            <></>
-        )
+        return (<Loader />)
     }
 
     if (notYetAllocated.error) {
@@ -45,17 +43,17 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
         }
 
         if (proposal.isLoading) {
-            return (
-                <></>
-            )
+            return (<Loader/>)
         }
 
         const hasUserCompletedReview = () => {
 
             let yourReview =
-                proposal.data?.reviews?.find(review => review?.reviewer?._id == props.reviewerId)
+                proposal.data?.reviews?.find(review =>
+                    review?.reviewer?._id == props.reviewerId)
 
-            let reviewCompleteDate = yourReview ? new Date(yourReview.reviewDate!) : new Date(0)
+            let reviewCompleteDate = yourReview ? new Date(yourReview.reviewDate!) :
+                new Date(0)
 
             let isReviewComplete = reviewCompleteDate.getTime() > 0
             return (
@@ -101,7 +99,8 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                                 :
                                 proposal.data?.reviews?.map(
                                     review => {
-                                        let you : boolean = review.reviewer?._id == props.reviewerId;
+                                        let you : boolean =
+                                            review.reviewer?._id == props.reviewerId;
 
                                         return (
                                             <Text
