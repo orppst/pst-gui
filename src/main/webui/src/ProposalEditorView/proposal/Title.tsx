@@ -8,7 +8,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
-import { SubmitButton } from 'src/commonButtons/save';
+import {FormSubmitButton} from 'src/commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, JSON_SPACES } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
@@ -56,7 +56,8 @@ function TitlePanel() {
             //IMPL this is slightly limiting the invalidation -
             // some things should be ok still (users etc).
             queryClient.invalidateQueries(["pst","api","proposals"])
-                .then(()=> setSubmitting(false))
+                .then(() => form.resetDirty())
+                .then(() => setSubmitting(false))
         },
     })
 
@@ -92,10 +93,7 @@ function TitlePanel() {
                            {...form.getInputProps('title')}/>
                 <MaxCharsForInputRemaining length={form.values.title.length} />
                 <br/>
-                <SubmitButton toolTipLabel={"Update title"}
-                              label={"Save"}
-                              disabled={!form.isDirty() || !form.isValid()}
-                />
+                <FormSubmitButton form={form} />
             </form>
             }
         </PanelFrame>
