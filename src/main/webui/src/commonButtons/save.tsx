@@ -19,7 +19,7 @@ import { CLOSE_DELAY, ICON_SIZE, OPEN_DELAY } from '../constants.tsx';
  * @constructor
  */
 export
-function (props: FormSubmitButtonInterfaceProps): ReactElement {
+function FormSubmitButton(props: FormSubmitButtonInterfaceProps): ReactElement {
     const label = props.label ?? 'Save';
     return (
         <Tooltip
