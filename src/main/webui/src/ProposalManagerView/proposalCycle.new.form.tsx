@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {SubmitButton} from "../commonButtons/save.tsx";
+import {FormSubmitButton} from "../commonButtons/save.tsx";
 import {useForm} from "@mantine/form";
 import {ObjectIdentifier, ProposalCycle} from "../generated/proposalToolSchemas.ts";
 import {Group, Select, Stack, Text, TextInput} from "@mantine/core";
@@ -100,7 +100,10 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         fetchProposalCyclesResourceCreateProposalCycle({body: newCycle})
             .then(()=> queryClient.invalidateQueries())
             .then(() => notifySuccess("Success", "Proposal Cycle " + newCycle.title + " created"))
-            .catch(console.error);
+            .catch((error) => {
+                console.error(error);
+                notifyError("Create cycle error", getErrorMessage(error))
+            });
 
         closeModal && closeModal();
     }
@@ -153,10 +156,9 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                         minDate={new Date()}
                         {...form.getInputProps('sessionEnd')}
                     />
-                    <SubmitButton
+                    <FormSubmitButton
                         label={"Create Proposal Cycle"}
-                        toolTipLabel={"saves the proposal cycle"}
-                        disabled={!form.isValid()}
+                        form={form}
                     />
                 </Stack>
             </DatesProvider>

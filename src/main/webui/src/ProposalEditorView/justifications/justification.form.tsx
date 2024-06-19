@@ -7,8 +7,8 @@ import {useForm, UseFormReturnType} from "@mantine/form";
 import {fetchProposalResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {SubmitButton} from "src/commonButtons/save.tsx";
-import {notifySuccess} from "../../commonPanel/notifications.tsx";
+import {FormSubmitButton} from "src/commonButtons/save.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {PreviewJustification} from "./justification.preview.tsx";
 
 import Editor from "react-simple-code-editor";
@@ -17,6 +17,7 @@ import "prismjs/themes/prism.css";
 import "prismjs/components/prism-latex.js";
 import "prismjs/components/prism-rest.js";
 import "prismjs/components/prism-asciidoc.js";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 
 const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
@@ -112,16 +113,16 @@ export default function JustificationForm(props: JustificationProps)
                 notifySuccess("Update successful", props.which + " justification updated");
             })
             .then(props.closeModal)
-            .catch(console.error);
+            .catch((error) => {
+                console.error(error);
+                notifyError("Update justification error", getErrorMessage(error))
+            });
     });
 
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <SubmitButton
-                    toolTipLabel={"Save updates"}
-                    disabled={!form.isDirty() || !form.isValid()}
-                />
+                <FormSubmitButton form={form} />
                 <Grid span={10} grow>
                     <Grid.Col span={{base: 6, md: 8, lg: 9}}>
                         <JustificationTextArea {...form} />

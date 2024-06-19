@@ -8,13 +8,15 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import {Box, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import { SubmitButton } from 'src/commonButtons/save';
+import {FormSubmitButton} from 'src/commonButtons/save';
 import {
     JSON_SPACES,
     MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS
 } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 function SummaryPanel() {
     const { selectedProposalCode } = useParams();
@@ -49,11 +51,14 @@ function SummaryPanel() {
                 setSubmitting(true);
             },
             onError: () => {
-                console.log("An error occurred trying to update the title")
+                console.error("An error occurred trying to update the title");
+                notifyError("Update failed", getErrorMessage(error))
             },
             onSuccess: () => {
                 queryClient.invalidateQueries()
-                    .then(() => setSubmitting(false))
+                    .then(() => setSubmitting(false));
+                notifySuccess("Update summary", "Update successful");
+                form.resetDirty();
             }
         }
     );
@@ -93,10 +98,7 @@ function SummaryPanel() {
                           name="summary" {...form.getInputProps('summary')} />
                 <MaxCharsForInputRemaining length={form.values.summary.length} />
                 <br/>
-                <SubmitButton toolTipLabel={"Update summary"}
-                              label={"Save"}
-                              disabled={!form.isDirty() || !form.isValid()}
-                />
+                <FormSubmitButton form={form} />
             </form>
             }
         </PanelFrame>

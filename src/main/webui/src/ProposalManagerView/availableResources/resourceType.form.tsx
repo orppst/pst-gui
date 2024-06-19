@@ -6,7 +6,7 @@ import {ResourceTypeFormValues} from "./resourceType.modal.tsx";
 import {fetchResourceTypeResourceAddNewResourceType} from "../../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {SubmitButton} from "../../commonButtons/save.tsx";
+import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 export default function ResourceTypeForm(props: ResourceTypeFormValues) : ReactElement {
@@ -71,10 +71,7 @@ export default function ResourceTypeForm(props: ResourceTypeFormValues) : ReactE
                     placeholder={"e.g. No. of cores"}
                     {...form.getInputProps('unit')}
                 />
-                <SubmitButton
-                    toolTipLabel={"Save new resource type"}
-                    disabled={!form.isDirty() || !form.isValid()}
-                />
+                <FormSubmitButton form={form} />
             </Stack>
         </form>
     )

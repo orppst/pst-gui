@@ -5,7 +5,7 @@ import {
 
 import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
-import { Box } from '@mantine/core';
+import {Box, Stack} from '@mantine/core';
 import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from './TargetTable.tsx';
@@ -50,7 +50,7 @@ export function TargetPanel(): ReactElement {
     return (
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Targets"} />
-            <Box>
+            <Stack>
                 <AddTargetModal/>
                 {data?.length === 0?
                     <div>Please add your targets</div> :
@@ -61,7 +61,7 @@ export function TargetPanel(): ReactElement {
                                  showButtons={true}
                                  selectedTarget={undefined}/>
                 }
-            </Box>
+            </Stack>
         </PanelFrame>
     );
 }

@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Select, Text} from "@mantine/core";
+import {Select, Stack, Text} from "@mantine/core";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import {
@@ -10,7 +10,7 @@ import {
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useForm} from "@mantine/form";
-import {SubmitButton} from "../../commonButtons/save.tsx";
+import {FormSubmitButton} from "../../commonButtons/save.tsx";
 
 export default function CycleObservatoryPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
@@ -49,8 +49,11 @@ export default function CycleObservatoryPanel() : ReactElement {
                     //form.setInitialValues({selectedObservatory: Number(observatory?._id)});
                     setFormReady(true);
                 })
-                .catch((error) => notifyError("Failed to load proposal cycle details",
-                    getErrorMessage(error)))
+                .catch((error) => {
+                    console.error(error);
+                    notifyError("Failed to load proposal cycle details",
+                        getErrorMessage(error))
+                })
 
         }
     }, [observatories.status, observatories.data]);
@@ -70,7 +73,8 @@ export default function CycleObservatoryPanel() : ReactElement {
                 notifySuccess("Update observatory", "Changes saved")
             )
             .catch((error) => {
-                notifyError("Error updating observatory", "Cause: "+getErrorMessage(error))
+                notifyError("Error updating observatory", "Cause: "
+                    + getErrorMessage(error))
             })
     })
 
@@ -81,15 +85,14 @@ export default function CycleObservatoryPanel() : ReactElement {
 
             {formReady && (
             <form onSubmit={updateObservatory}>
+                <Stack>
                 <Select
                     data = {observatorySearchData}
                     {...form.getInputProps("selectedObservatory")}
                 />
-                <SubmitButton toolTipLabel={"Change observatory"}
-                              disabled={!form.isDirty() || !form.isValid()}
-                              />
+                <FormSubmitButton form={form} label={"Change observatory"}/>
+                </Stack>
             </form>)}
-
         </PanelFrame>
     )
 }

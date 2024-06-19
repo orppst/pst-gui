@@ -1,4 +1,4 @@
-import {Modal, NumberInput, Select, TextInput, Grid} from "@mantine/core";
+import {Modal, NumberInput, Select, TextInput, Grid, Stack} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -301,62 +301,64 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             {/* handle input */}
             <Grid.Col span={ 2 }>
                 <form onSubmit={handleSubmission}>
-                    <TextInput
-                        ref={targetNameRef}
-                        withAsterisk
-                        label="Name"
-                        placeholder="Name of target"
-                        {...form.getInputProps("TargetName")}
-                        onChange={(e: string) => {
-                            setNameUnique(true);
-                            if(form.getInputProps("TargetName").onChange)
-                                form.getInputProps("TargetName").onChange(e);
-                        }}
-                    />
-                    <DatabaseSearchButton
-                        label={"Lookup"}
-                        onClick={simbadLookup}
-                        toolTipLabel={"Search Simbad database"}/>
-                    <NumberInput
-                        required={true}
-                        label={"RA"}
-                        decimalScale={5}
-                        step={0.00001}
-                        min={0}
-                        max={360}
-                        allowNegative={false}
-                        suffix="°"
-                        {...form.getInputProps("RA")}
-                        onChange={(e) => {
-                            UpdateAladinRA(e);
-                            if (form.getInputProps("RA").onChange) {
-                                form.getInputProps("RA").onChange(e);
-                        }}}/>
-                    <NumberInput
-                        required={true}
-                        label={"Dec"}
-                        decimalScale={5}
-                        step={0.00001}
-                        min={-90}
-                        max={90}
-                        suffix="°"
-                        {...form.getInputProps("Dec")}
-                        onChange={(e) => {
-                            UpdateAladinDec(e);
-                            if (form.getInputProps("Dec").onChange) {
-                                form.getInputProps("Dec").onChange(e);
+                    <Stack>
+                        <TextInput
+                            ref={targetNameRef}
+                            withAsterisk
+                            label="Name"
+                            placeholder="Name of target"
+                            {...form.getInputProps("TargetName")}
+                            onChange={(e: string) => {
+                                setNameUnique(true);
+                                if(form.getInputProps("TargetName").onChange)
+                                    form.getInputProps("TargetName").onChange(e);
+                            }}
+                        />
+                        <DatabaseSearchButton
+                            label={"Lookup"}
+                            onClick={simbadLookup}
+                            toolTipLabel={"Search Simbad database"}/>
+                        <NumberInput
+                            required={true}
+                            label={"RA"}
+                            decimalScale={5}
+                            step={0.00001}
+                            min={0}
+                            max={360}
+                            allowNegative={false}
+                            suffix="°"
+                            {...form.getInputProps("RA")}
+                            onChange={(e) => {
+                                UpdateAladinRA(e);
+                                if (form.getInputProps("RA").onChange) {
+                                    form.getInputProps("RA").onChange(e);
                             }}}/>
-                    <Select
-                        label={"Coordinate System"}
-                        data={[{label:"J2000",value:"J2000"}]}
-                        {...form.getInputProps("SelectedEpoch")} />
-                    <div>
-                        <SubmitButton
-                            toolTipLabel={"Save this target"}
-                            label={"Add"}
-                            disabled={!form.isValid() ||
-                                      form.values.searching? true : undefined}/>
-                    </div>
+                        <NumberInput
+                            required={true}
+                            label={"Dec"}
+                            decimalScale={5}
+                            step={0.00001}
+                            min={-90}
+                            max={90}
+                            suffix="°"
+                            {...form.getInputProps("Dec")}
+                            onChange={(e) => {
+                                UpdateAladinDec(e);
+                                if (form.getInputProps("Dec").onChange) {
+                                    form.getInputProps("Dec").onChange(e);
+                                }}}/>
+                        <Select
+                            label={"Coordinate System"}
+                            data={[{label:"J2000",value:"J2000"}]}
+                            {...form.getInputProps("SelectedEpoch")} />
+                        <div>
+                            <SubmitButton
+                                toolTipLabel={"Save this target"}
+                                label={"Add"}
+                                disabled={!form.isValid() ||
+                                          form.values.searching? true : undefined}/>
+                        </div>
+                    </Stack>
                 </form>
             </Grid.Col>
         </Grid></>

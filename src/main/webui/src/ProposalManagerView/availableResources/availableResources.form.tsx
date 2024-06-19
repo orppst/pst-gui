@@ -1,7 +1,7 @@
 import {ReactElement, useEffect, useState} from "react";
 import {useForm} from "@mantine/form";
 import {AvailableResourcesProps} from "./availableResourcesPanel.tsx";
-import {SubmitButton} from "../../commonButtons/save.tsx";
+import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {NumberInput, Select, Stack} from "@mantine/core";
 import {
     fetchAvailableResourcesResourceAddCycleResource,
@@ -128,10 +128,7 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                     data={resourceTypeData}
                     {...form.getInputProps('resourceTypeId')}
                 />
-                <SubmitButton
-                    toolTipLabel={"save resource"}
-                    disabled={!form.isDirty() || !form.isValid()}
-                />
+                <FormSubmitButton form={form} />
             </Stack>
         </form>
     )

@@ -95,7 +95,10 @@ const textFormatData = [
                 }
             })
             .then(() => setSubmitting(false))
-            .catch(console.log);
+            .catch((error) => {
+                console.log(error);
+                notifyError("Create proposal error", getErrorMessage(error))
+            });
     });
 
      return (

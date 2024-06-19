@@ -10,8 +10,10 @@ import {useForm} from "@mantine/form";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
-import {SubmitButton} from "../../commonButtons/save.tsx";
+import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 const cycleTitleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -56,11 +58,14 @@ export default function CycleTitlePanel() : ReactElement {
             setSubmitting(true);
         },
         onError: () => {
-            console.log("An error occurred trying to update the title")
+            console.error("An error occurred trying to update the title");
+            notifyError("Update failed", getErrorMessage(error))
         },
         onSuccess: () => {
             queryClient.invalidateQueries(["pst", "api", "proposalCycles"])
-                .then(()=> setSubmitting(false))
+                .then(()=> setSubmitting(false));
+            notifySuccess("Update title", "Update successful");
+            form.resetDirty();
         },
     })
 
@@ -96,10 +101,7 @@ export default function CycleTitlePanel() : ReactElement {
                                    {...form.getInputProps('title')}/>
                         <MaxCharsForInputRemaining length={form.values.title.length} />
                         <br/>
-                        <SubmitButton toolTipLabel={"Update proposal cycle title"}
-                                      label={"Save"}
-                                      disabled={!form.isDirty() || !form.isValid()}
-                        />
+                        <FormSubmitButton form={form} />
                     </form>
             }
         </PanelFrame>
