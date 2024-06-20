@@ -6,7 +6,7 @@ import {
     useInvestigatorResourceGetInvestigators,
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {Box, Grid, Table, Text} from "@mantine/core";
+import {Box, Stack, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
 import DeleteButton from "src/commonButtons/delete";
@@ -57,10 +57,7 @@ function InvestigatorsPanel(): ReactElement {
     return (
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Investigators"}/>
-            <Grid>
-                <Grid.Col span={5}>
-                <AddButton toolTipLabel={"Add new"}
-                           onClick={handleAddNew} />
+                <Stack>
                     {data?.length === 0 ?
                         <div>Please add an investigator</div>:
                         isLoading ? (<div>Loading...</div>) :
@@ -81,8 +78,9 @@ function InvestigatorsPanel(): ReactElement {
                             }
                         </Table.Tbody>
                     </Table>}
-                </Grid.Col>
-            </Grid>
+                    <AddButton toolTipLabel={"Add new"}
+                               onClick={handleAddNew} />
+                </Stack>
         </PanelFrame>
     );
 }

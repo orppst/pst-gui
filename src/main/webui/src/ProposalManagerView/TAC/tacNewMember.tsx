@@ -6,7 +6,7 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {TacRole} from "src/generated/proposalToolSchemas.ts";
-import {Grid, Select, Stack} from "@mantine/core";
+import {Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
@@ -122,17 +122,15 @@ function CycleTACAddMemberPanel(): ReactElement {
                         data={searchData}
                         {...form.getInputProps("selectedMember")}
                     />
-                    <Grid>
-                        <Grid.Col span={2}>
-                            <FormSubmitButton label={"Add"} form={form}/>
-                        </Grid.Col>
-                        <Grid.Col span={1}>
-                            <DeleteButton
-                                label={"Cancel"}
-                                onClickEvent={handleCancel}
-                                toolTipLabel={"Do not save the new committee member"}/>
-                        </Grid.Col>
-                    </Grid>
+                    <FormSubmitButton
+                        label={"Add"}
+                        form={form}
+                    />
+                    <DeleteButton
+                        label={"Cancel"}
+                        onClickEvent={handleCancel}
+                        toolTipLabel={"Do not save the new committee member"}
+                    />
                 </Stack>
             </form>
         </PanelFrame>

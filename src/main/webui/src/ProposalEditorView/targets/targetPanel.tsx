@@ -51,7 +51,6 @@ export function TargetPanel(): ReactElement {
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Targets"} />
             <Stack>
-                <AddTargetModal/>
                 {data?.length === 0?
                     <div>Please add your targets</div> :
                     <TargetTable isLoading={isLoading}
@@ -61,6 +60,7 @@ export function TargetPanel(): ReactElement {
                                  showButtons={true}
                                  selectedTarget={undefined}/>
                 }
+                <AddTargetModal/>
             </Stack>
         </PanelFrame>
     );

@@ -7,7 +7,7 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
-import {Checkbox, Grid, Select, Stack} from "@mantine/core";
+import {Checkbox, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
@@ -124,20 +124,14 @@ function AddInvestigatorPanel(): ReactElement {
                             data={searchData}
                             {...form.getInputProps("selectedInvestigator")}
                         />
-                        <Grid>
-                            <Grid.Col span={2}>
-                                <FormSubmitButton
-                                    label={"Add"}
-                                    form={form}
-                                />
-                            </Grid.Col>
-                            <Grid.Col span={1}>
-                                <DeleteButton
-                                    label={"Cancel"}
-                                    onClickEvent={handleCancel}
-                                    toolTipLabel={"Do not save the new investigator"}/>
-                            </Grid.Col>
-                        </Grid>
+                        <FormSubmitButton
+                            label={"Add"}
+                            form={form}
+                        />
+                        <DeleteButton
+                            label={"Cancel"}
+                            onClickEvent={handleCancel}
+                            toolTipLabel={"Do not save the new investigator"}/>
                     </Stack>
                 </form>
             </PanelFrame>

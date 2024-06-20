@@ -5,7 +5,7 @@ import {
     useProposalResourceGetObservingProposalTitle,
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {TextInput} from "@mantine/core";
+import {Stack, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from 'src/commonButtons/save';
@@ -92,12 +92,13 @@ function TitlePanel() {
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>
-                <TextInput name="title"
-                           maxLength={MAX_CHARS_FOR_INPUTS}
-                           {...form.getInputProps('title')}/>
-                <MaxCharsForInputRemaining length={form.values.title.length} />
-                <br/>
-                <FormSubmitButton form={form} />
+                <Stack>
+                    <TextInput name="title"
+                               maxLength={MAX_CHARS_FOR_INPUTS}
+                               {...form.getInputProps('title')}/>
+                    <MaxCharsForInputRemaining length={form.values.title.length} />
+                    <FormSubmitButton form={form} />
+                </Stack>
             </form>
             }
         </PanelFrame>

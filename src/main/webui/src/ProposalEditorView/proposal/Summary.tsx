@@ -6,7 +6,7 @@ import {
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
-import {Box, Textarea} from "@mantine/core";
+import {Box, Stack, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from 'src/commonButtons/save';
 import {
@@ -93,12 +93,13 @@ function SummaryPanel() {
                 <Box>Submitting request</Box> :
 
             <form onSubmit={updateSummary}>
-                <Textarea rows={TEXTAREA_MAX_ROWS}
-                          maxLength={MAX_CHARS_FOR_INPUTS}
-                          name="summary" {...form.getInputProps('summary')} />
-                <MaxCharsForInputRemaining length={form.values.summary.length} />
-                <br/>
-                <FormSubmitButton form={form} />
+                <Stack>
+                    <Textarea rows={TEXTAREA_MAX_ROWS}
+                              maxLength={MAX_CHARS_FOR_INPUTS}
+                              name="summary" {...form.getInputProps('summary')} />
+                    <MaxCharsForInputRemaining length={form.values.summary.length} />
+                    <FormSubmitButton form={form} />
+                </Stack>
             </form>
             }
         </PanelFrame>

@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {TextInput} from "@mantine/core";
+import {Stack, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
     fetchProposalCyclesResourceReplaceCycleTitle,
@@ -96,12 +96,13 @@ export default function CycleTitlePanel() : ReactElement {
             { isLoading ? ("Loading..") :
                 submitting ? ("Submitting..."):
                     <form onSubmit={updateTitle}>
-                        <TextInput name="title"
-                                   maxLength={MAX_CHARS_FOR_INPUTS}
-                                   {...form.getInputProps('title')}/>
-                        <MaxCharsForInputRemaining length={form.values.title.length} />
-                        <br/>
-                        <FormSubmitButton form={form} />
+                        <Stack>
+                            <TextInput name="title"
+                                       maxLength={MAX_CHARS_FOR_INPUTS}
+                                       {...form.getInputProps('title')}/>
+                            <MaxCharsForInputRemaining length={form.values.title.length} />
+                            <FormSubmitButton form={form} />
+                        </Stack>
                     </form>
             }
         </PanelFrame>

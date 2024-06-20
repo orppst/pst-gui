@@ -69,8 +69,10 @@ export default function CycleObservatoryPanel() : ReactElement {
                 };
 
         fetchProposalCyclesResourceReplaceCycleObservatory(newObservatory)
-            .then(()=>
-                notifySuccess("Update observatory", "Changes saved")
+            .then(()=> {
+                    notifySuccess("Update observatory", "Changes saved");
+                    form.resetDirty();
+                }
             )
             .catch((error) => {
                 notifyError("Error updating observatory", "Cause: "
@@ -86,11 +88,12 @@ export default function CycleObservatoryPanel() : ReactElement {
             {formReady && (
             <form onSubmit={updateObservatory}>
                 <Stack>
-                <Select
-                    data = {observatorySearchData}
-                    {...form.getInputProps("selectedObservatory")}
-                />
-                <FormSubmitButton form={form} label={"Change observatory"}/>
+                    <Select
+                        data = {observatorySearchData}
+                        allowDeselect={false}
+                        {...form.getInputProps("selectedObservatory")}
+                    />
+                    <FormSubmitButton form={form} label={"Change observatory"}/>
                 </Stack>
             </form>)}
         </PanelFrame>
