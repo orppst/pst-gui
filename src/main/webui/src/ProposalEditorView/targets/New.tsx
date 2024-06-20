@@ -351,13 +351,11 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             label={"Coordinate System"}
                             data={[{label:"J2000",value:"J2000"}]}
                             {...form.getInputProps("SelectedEpoch")} />
-                        <div>
                             <SubmitButton
                                 toolTipLabel={"Save this target"}
                                 label={"Add"}
                                 disabled={!form.isValid() ||
                                           form.values.searching? true : undefined}/>
-                        </div>
                     </Stack>
                 </form>
             </Grid.Col>
