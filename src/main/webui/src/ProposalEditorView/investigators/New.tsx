@@ -7,9 +7,9 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
-import {Checkbox, Grid, Select} from "@mantine/core";
+import {Checkbox, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {SubmitButton} from "src/commonButtons/save";
+import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
@@ -35,6 +35,8 @@ function AddInvestigatorPanel(): ReactElement {
             forPhD: false,
             selectedInvestigator: 0},
         validate: {
+            type: (value) => (value != null ? null
+                : 'Please select an investigator type'),
             selectedInvestigator: (value) => (
                 value === 0 || value === null ? 'Please select an investigator' : null)
         }
@@ -107,35 +109,30 @@ function AddInvestigatorPanel(): ReactElement {
             <PanelFrame>
                 <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Add an investigator"} />
                 <form onSubmit={handleAdd}>
-                    <Select label={"Type"}
-                        data={typeData}
-                        {...form.getInputProps("type")}
-                    />
-                    <Checkbox
-                        label={"Is this for a PHD?"}
-                        {...form.getInputProps("forPhD")}
-                    />
-                    <Select
-                        label="Select an investigator"
-                        searchable
-                        data={searchData}
-                        {...form.getInputProps("selectedInvestigator")}
-                    />
-                    <Grid>
-                        <Grid.Col span={2}>
-                            <SubmitButton
-                                label={"Add"}
-                                toolTipLabel={"Add new investigator"}
-                                disabled={!form.isDirty() || !form.isValid()}
-                            />
-                        </Grid.Col>
-                        <Grid.Col span={1}>
-                            <DeleteButton
-                                label={"Cancel"}
-                                onClickEvent={handleCancel}
-                                toolTipLabel={"Do not save the new investigator"}/>
-                        </Grid.Col>
-                    </Grid>
+                    <Stack>
+                        <Select label={"Type"}
+                            data={typeData}
+                            {...form.getInputProps("type")}
+                        />
+                        <Checkbox
+                            label={"Is this for a PHD?"}
+                            {...form.getInputProps("forPhD")}
+                        />
+                        <Select
+                            label="Select an investigator"
+                            searchable
+                            data={searchData}
+                            {...form.getInputProps("selectedInvestigator")}
+                        />
+                        <FormSubmitButton
+                            label={"Add"}
+                            form={form}
+                        />
+                        <DeleteButton
+                            label={"Cancel"}
+                            onClickEvent={handleCancel}
+                            toolTipLabel={"Do not save the new investigator"}/>
+                    </Stack>
                 </form>
             </PanelFrame>
     )

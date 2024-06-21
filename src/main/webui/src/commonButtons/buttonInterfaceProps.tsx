@@ -6,6 +6,7 @@ Input property for common buttons:
 import { SyntheticEvent } from 'react';
 import { TablerIconsProps } from '@tabler/icons-react';
 import {ButtonVariant, FloatingPosition} from "@mantine/core";
+import {UseFormReturnType} from "@mantine/form";
 
 /**
  * basic button interface props. Used by Submit button.
@@ -22,6 +23,23 @@ export interface BasicButtonInterfaceProps {
     toolTipLabel: string
     toolTipLabelPosition?: FloatingPosition
     disabled?: boolean
+    label?: string
+    variant?: ButtonVariant
+}
+
+/**
+ * form submit button interface props. Used by FormSubmit button.
+ *
+ * @param {string} toolTipLabel the label shown when hovered.
+ * @param {FloatingPosition} toolTipLabelPosition one of 'left', 'right', 'top', 'bottom', +
+ * '-start' and '-end' variants - defaults to 'top'
+ * @param {string} label the text shown next to the buttons icon - defaults to 'save'
+ * @param {ButtonVariant} varient one of 'default', 'light', 'subtle', 'filled',
+ * 'outline', 'white', 'transparent' - defaults to 'subtle'
+ */
+export interface FormSubmitButtonInterfaceProps {
+    form: UseFormReturnType<any>
+    toolTipLabelPosition?: FloatingPosition
     label?: string
     variant?: ButtonVariant
 }

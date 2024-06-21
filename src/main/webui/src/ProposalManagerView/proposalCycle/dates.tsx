@@ -2,7 +2,7 @@ import {ReactElement, useEffect, useState} from "react";
 import {Group, Stack, Text} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
-import {SubmitButton} from "../../commonButtons/save.tsx";
+import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useParams} from "react-router-dom";
 import {
     fetchProposalCyclesResourceReplaceCycleDeadline,
@@ -13,6 +13,7 @@ import {
 import {JSON_SPACES} from "../../constants.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
@@ -95,7 +96,8 @@ export default function CycleDatesPanel() : ReactElement {
                 notifySuccess("Update dates", "Changes saved");
                 form.resetDirty();
             })
-            .catch((fault)=>notifyError("Update dates", "Error saving " + fault))
+            .catch((fault)=>notifyError("Update dates", "Error saving "
+                + getErrorMessage(fault)))
     });
 
     return (
@@ -129,11 +131,7 @@ export default function CycleDatesPanel() : ReactElement {
                             minDate={new Date()}
                             {...form.getInputProps('sessionEnd')}
                         />
-                        <SubmitButton
-                            label={"Save"}
-                            toolTipLabel={"Update proposal cycle dates"}
-                            disabled={!form.isDirty() || !form.isValid()}
-                        />
+                        <FormSubmitButton form={form} />
                     </Stack>
                 </DatesProvider>
 

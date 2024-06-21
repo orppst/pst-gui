@@ -5,7 +5,7 @@ import {
     useSupportingDocumentResourceGetSupportingDocuments
 } from "src/generated/proposalToolComponents";
 import {useParams} from "react-router-dom";
-import {Box, FileButton, Table, Text} from "@mantine/core";
+import {Box, FileButton, Stack, Table, Text} from "@mantine/core";
 import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
@@ -84,7 +84,7 @@ const DocumentsPanel = () => {
     return (
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Documents"} />
-            <Box>
+            <Stack>
                 <Table>
                     <Table.Tbody>
                     {isLoading ? (
@@ -106,15 +106,16 @@ const DocumentsPanel = () => {
                     }
                     </Table.Tbody>
                 </Table>
-            </Box>
-            <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Upload a document</Text>
-            <FileButton onChange={handleUpload}>
-                        {(props) => <UploadButton
-                            toolTipLabel="select a file from disk to upload"
-                            label={"Choose a file"}
-                            onClick={props.onClick}/>}
-            </FileButton>
-            <Result status={status} />
+
+                <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Upload a document</Text>
+                <FileButton onChange={handleUpload}>
+                            {(props) => <UploadButton
+                                toolTipLabel="select a file from disk to upload"
+                                label={"Choose a file"}
+                                onClick={props.onClick}/>}
+                </FileButton>
+                <Result status={status} />
+            </Stack>
         </PanelFrame>
     );
 };

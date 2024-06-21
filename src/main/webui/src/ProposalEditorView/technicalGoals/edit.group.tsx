@@ -17,7 +17,7 @@ import {
     fetchTechnicalGoalResourceAddTechnicalGoal,
     fetchTechnicalGoalResourceReplacePerformanceParameters, fetchTechnicalGoalResourceReplaceSpectrum
 } from "src/generated/proposalToolComponents.ts";
-import {SubmitButton} from "src/commonButtons/save.tsx";
+import {FormSubmitButton} from "src/commonButtons/save.tsx";
 import {
     convertToPerformanceParameters,
     convertToPerformanceParametersGui,
@@ -265,10 +265,7 @@ export default function TechnicalGoalEditGroup(
 
     return (
         <form onSubmit={handleSubmit}>
-            <SubmitButton
-                toolTipLabel={"save technical goal"}
-                disabled={!form.isDirty() || !form.isValid()}
-            />
+            <FormSubmitButton form={form} />
             <Grid columns={TOTAL_COLUMNS}>
                 <Grid.Col span={{base: TOTAL_COLUMNS, md: PERFORMANCE_COLUMNS}}>
                     <PerformanceParametersSection {...form}/>

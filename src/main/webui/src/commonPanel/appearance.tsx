@@ -18,7 +18,7 @@ import {headerInterfaceProps, editorPanelHeaderInterfaceProps, managerPanelHeade
  */
 export function PanelHeader(props: headerInterfaceProps): ReactElement {
     return (
-        <Title order={3}>
+        <Title order={3} styles={{root: { marginBottom: 10, marginTop: 10}}}>
             { props.isLoading ?
                 <Badge size={"xl"} radius={0}>...</Badge> :
                 <Badge size={"xl"} radius={0}>{props.itemName}</Badge>

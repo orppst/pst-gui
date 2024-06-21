@@ -1,5 +1,5 @@
 import {ReactElement, useState} from "react";
-import {Box, Grid, Table, Text} from "@mantine/core";
+import {Box, Stack, Table, Text} from "@mantine/core";
 import AddButton from "../../commonButtons/add.tsx";
 import {randomId} from "@mantine/hooks";
 import {useNavigate, useParams} from "react-router-dom";
@@ -48,32 +48,30 @@ export default function CycleTACPanel() : ReactElement {
     return (
         <PanelFrame>
             <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Time Allocation Committee"}/>
-            <Grid>
-                <Grid.Col span={5}>
-                    <AddButton toolTipLabel={"Add new"}
-                               onClick={handleAddNew} />
-                    {data?.length === 0 ?
-                        <div>Please add a committee member</div>:
-                        isLoading ? (<div>Loading...</div>) :
-                            <Table>
-                                <MembersHeader/>
-                                <Table.Tbody>
-                                    {data?.map((item) => {
-                                        if(item.dbid !== undefined) {
-                                            return (<TACMemberRow dbid={item.dbid}
-                                                                      key={item.dbid}/>)
-                                        } else {
-                                            return (
-                                                <Box key={randomId()}>
-                                                    Undefined Investigator!
-                                                </Box>)
-                                        }
-                                    })
+            <Stack>
+                <AddButton toolTipLabel={"Add new"}
+                           onClick={handleAddNew} />
+                {data?.length === 0 ?
+                    <Box>Please add a committee member</Box>:
+                    isLoading ? (<Box>Loading...</Box>) :
+                        <Table>
+                            <MembersHeader/>
+                            <Table.Tbody>
+                                {data?.map((item) => {
+                                    if(item.dbid !== undefined) {
+                                        return (<TACMemberRow dbid={item.dbid}
+                                                                  key={item.dbid}/>)
+                                    } else {
+                                        return (
+                                            <Box key={randomId()}>
+                                                Undefined Investigator!
+                                            </Box>)
                                     }
-                                </Table.Tbody>
-                            </Table>}
-                </Grid.Col>
-            </Grid>
+                                })
+                                }
+                            </Table.Tbody>
+                        </Table>}
+            </Stack>
 
         </PanelFrame>
     )

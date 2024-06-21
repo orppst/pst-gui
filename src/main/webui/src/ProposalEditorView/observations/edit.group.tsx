@@ -14,7 +14,7 @@ import {
     fetchObservationResourceReplaceTarget, fetchObservationResourceReplaceTechnicalGoal,
     fetchObservationResourceReplaceTimingWindow
 } from 'src/generated/proposalToolComponents.ts';
-import { SubmitButton } from 'src/commonButtons/save.tsx';
+import {FormSubmitButton} from 'src/commonButtons/save.tsx';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, ReactElement } from 'react';
@@ -267,11 +267,7 @@ export default function ObservationEditGroup(
         <>
             <form onSubmit={handleSubmit}>
                 <Group justify={'flex-start'} mt="md">
-                    <SubmitButton
-                        toolTipLabel={newObservation ? "save changes" : "save"}
-                        label={"Save"}
-                        disabled={!form.isDirty() || !form.isValid()}
-                    />
+                    <FormSubmitButton form={form} />
                 </Group>
                 <Grid  columns={5}>
                     <Grid.Col span={{base: 5, lg: 2}}>

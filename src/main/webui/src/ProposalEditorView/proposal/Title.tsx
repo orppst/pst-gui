@@ -5,13 +5,15 @@ import {
     useProposalResourceGetObservingProposalTitle,
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {TextInput} from "@mantine/core";
+import {Stack, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
-import { SubmitButton } from 'src/commonButtons/save';
+import {FormSubmitButton} from 'src/commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, JSON_SPACES } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 const titleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -49,14 +51,17 @@ function TitlePanel() {
         onMutate: () => {
             setSubmitting(true);
         },
-        onError: () => {
-            console.log("An error occurred trying to update the title")
+        onError: (error) => {
+            console.error("An error occurred trying to update the title");
+            notifyError("Update failed", getErrorMessage(error))
         },
         onSuccess: () => {
             //IMPL this is slightly limiting the invalidation -
             // some things should be ok still (users etc).
             queryClient.invalidateQueries(["pst","api","proposals"])
-                .then(()=> setSubmitting(false))
+                .then(() => setSubmitting(false));
+                notifySuccess("Update title", "Update successful");
+                form.resetDirty();
         },
     })
 
@@ -87,15 +92,13 @@ function TitlePanel() {
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>
-                <TextInput name="title"
-                           maxLength={MAX_CHARS_FOR_INPUTS}
-                           {...form.getInputProps('title')}/>
-                <MaxCharsForInputRemaining length={form.values.title.length} />
-                <br/>
-                <SubmitButton toolTipLabel={"Update title"}
-                              label={"Save"}
-                              disabled={!form.isDirty() || !form.isValid()}
-                />
+                <Stack>
+                    <TextInput name="title"
+                               maxLength={MAX_CHARS_FOR_INPUTS}
+                               {...form.getInputProps('title')}/>
+                    <MaxCharsForInputRemaining length={form.values.title.length} />
+                    <FormSubmitButton form={form} />
+                </Stack>
             </form>
             }
         </PanelFrame>
