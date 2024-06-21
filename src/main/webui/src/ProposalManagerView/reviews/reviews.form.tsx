@@ -251,7 +251,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                                 />
                                 <Tooltip
                                     label={theReview.comment?.length != 0 ? "Finalises this review" :
-                                        "You must update this review with a comment before you can complete"}
+                                        "You must update this review with at least a comment before you can complete"}
                                     openDelay={OPEN_DELAY}
                                     closeDelay={CLOSE_DELAY}
                                     multiline

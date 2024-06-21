@@ -7,6 +7,7 @@
  * A block of resources that have been allocated
  */
 export type AllocatedBlock = {
+  _id?: number;
   /**
    * A resource that will be consumed by allocating an observation from a proposal
    */
@@ -772,6 +773,7 @@ export type ObservingConstraint = Record<string, any>;
  * a collection of configs that can be chosen to observe with.
  */
 export type ObservingMode = {
+  _id?: number;
   name?: string;
   description?: string;
   configurations?: ObservingConfiguration[];

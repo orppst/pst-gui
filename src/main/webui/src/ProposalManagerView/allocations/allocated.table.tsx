@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Badge, Table} from "@mantine/core";
+import {Badge, Group, Table} from "@mantine/core";
 import {
     useAllocatedProposalResourceGetAllocatedProposal
 } from "../../generated/proposalToolComponents.ts";
@@ -7,6 +7,7 @@ import {useParams} from "react-router-dom";
 import {AllocatedBlock, ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import ViewEditButton from "../../commonButtons/viewEdit.tsx";
 
 type AllocatedTableRowProps = {
     cycleCode: number,
@@ -33,6 +34,8 @@ function AllocatedTableRow(props: AllocatedTableRowProps) : ReactElement {
         notifyError("Failed to load Allocated Proposal",
             getErrorMessage(allocatedProposal.error))
     }
+
+
 
     //a nested table
     const allocatedBlocksTable = (allocatedBlocks: AllocatedBlock[]) => (
@@ -67,9 +70,20 @@ function AllocatedTableRow(props: AllocatedTableRowProps) : ReactElement {
                 allocatedProposal.data.allocation.length > 0 ?
                     allocatedBlocksTable(allocatedProposal.data.allocation)
                     :
-                    <Badge bg={"red"}>No blocks allocated</Badge>
+                    <Group justify={"center"}>
+                        <Badge bg={"red"} radius={"sm"}>
+                            No blocks allocated
+                        </Badge>
+                    </Group>
             }</Table.Td>
-            <Table.Td>button to edit</Table.Td>
+            <Table.Td>
+                <Group justify={"center"}>
+                    <ViewEditButton
+                        toolTipLabel={"edit allocated blocks"}
+                        label={"Edit"}
+                    />
+                </Group>
+            </Table.Td>
         </Table.Tr>
     )
 }
