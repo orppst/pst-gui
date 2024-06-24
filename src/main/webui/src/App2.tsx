@@ -65,7 +65,7 @@ import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
 import CycleObservingModesPanel from "./ProposalManagerView/observingModes/observingModesPanel.tsx";
 import CycleAvailableResourcesPanel from "./ProposalManagerView/availableResources/availableResourcesPanel.tsx";
 import ReviewsPanel from "./ProposalManagerView/reviews/ReviewsPanel.tsx";
-import CycleAllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
+import AllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
 import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observatory.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
@@ -171,7 +171,7 @@ function App2(): ReactElement {
                     },
                     {
                         path: "cycle/:selectedCycleCode/allocations",
-                        element: <CycleAllocationsPanel />
+                        element: <AllocationsPanel />
                     },
                     {
                         path: "cycle/:selectedCycleCode/observatory",

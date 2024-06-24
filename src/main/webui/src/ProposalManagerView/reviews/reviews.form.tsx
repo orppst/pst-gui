@@ -180,6 +180,8 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                     getErrorMessage(error)))
         }
 
+        await queryClient.invalidateQueries()
+
         form.resetDirty();
     }
 
@@ -220,71 +222,72 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     return (
         <>
-            {
-                theReview ?
-                    <form onSubmit={form.onSubmit(handleSubmit)}>
-                        You are reviewing as {theReviewer.data?.person?.fullName}
-                        <Grid columns={10} gutter={"xl"}>
-                            <Grid.Col span={7}>
-                                {commentInput()}
-                            </Grid.Col>
-                            <Grid.Col span={3}>
-                                <Stack>
-                                    {scoreInput()}
-                                    {technicalFeasibilityInput()}
-                                </Stack>
-                            </Grid.Col>
-                        </Grid>
-
+            {theReview ?
+                <form onSubmit={form.onSubmit(handleSubmit)}>
+                    You are reviewing as {theReviewer.data?.person?.fullName}
+                    <Grid columns={10} gutter={"xl"}>
+                        <Grid.Col span={7}>
+                            {commentInput()}
+                        </Grid.Col>
+                        <Grid.Col span={3}>
+                            <Stack>
+                                {scoreInput()}
+                                {technicalFeasibilityInput()}
+                            </Stack>
+                        </Grid.Col>
+                    </Grid>
+                        {isReviewComplete ?
+                            <Group justify={"center"}>
+                                <Badge color={"green"} radius={"sm"}>
+                                    Review Completed on {reviewCompleteDate.toDateString()}
+                                </Badge>
+                            </Group>
+                            :
+                            <Group justify={"flex-end"} >
+                                <SubmitButton
+                                    toolTipLabel={"Save changes"}
+                                    label={"Update"}
+                                    disabled={!form.isDirty() || !form.isValid()}
+                                />
+                                <Tooltip
+                                    label={theReview.comment?.length != 0 ? "Finalises this review" :
+                                        "You must update this review with at least a comment before you can complete"}
+                                    openDelay={OPEN_DELAY}
+                                    closeDelay={CLOSE_DELAY}
+                                    multiline
+                                    w={150}
+                                >
+                                    <Button
+                                        rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
+                                        color={"orange"}
+                                        variant={"outline"}
+                                        onClick={confirmCompletion}
+                                        disabled={theReview.comment?.length == 0}
+                                    >
+                                        Complete Review
+                                    </Button>
+                                </Tooltip>
+                            </Group>
+                        }
+                </form>
+                :
+                <Stack align={"center"}>
+                    <Text size={"sm"} c={"gray.5"}>
+                        You are currently not assigned to review '{props.proposal?.proposal?.title}'.
+                        If you wish to review this proposal please click on the "Self-Assign" button.
+                    </Text>
+                    <AddButton
+                        toolTipLabel={"Assign yourself as a Reviewer"}
+                        label={"Self-Assign"}
+                        onClick={()=>handleAssign(
                             {
-                                isReviewComplete ?
-                                    <Group justify={"center"}>
-                                        <Badge color={"green"} radius={"sm"}>
-                                            Review Completed on {reviewCompleteDate.toDateString()}
-                                        </Badge>
-                                    </Group>
-                                    :
-                                    <Group justify={"flex-end"} >
-                                        <SubmitButton
-                                            toolTipLabel={"Save changes"}
-                                            label={"Update"}
-                                            disabled={!form.isDirty() || !form.isValid()}
-                                        />
-                                        <Tooltip
-                                            label={"Finalises this review"}
-                                            openDelay={OPEN_DELAY}
-                                            closeDelay={CLOSE_DELAY}
-                                        >
-                                            <Button
-                                                rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
-                                                color={"orange"}
-                                                variant={"outline"}
-                                                onClick={confirmCompletion}
-                                            >
-                                                Complete Review
-                                            </Button>
-                                        </Tooltip>
-                                    </Group>
+                                reviewerId: props.reviewerId,
+                                proposalId: props.proposal?._id!,
+                                proposalTitle: props?.proposal?.proposal?.title!
                             }
-                    </form>
-                    :
-                    <Stack align={"center"}>
-                        <Text size={"sm"} c={"gray.5"}>
-                            You are currently not assigned to review '{props.proposal?.proposal?.title}'.
-                            If you wish to review this proposal please click on the "Self-Assign" button.
-                        </Text>
-                        <AddButton
-                            toolTipLabel={"Assign yourself as a Reviewer"}
-                            label={"Self-Assign"}
-                            onClick={()=>handleAssign(
-                                {
-                                    reviewerId: props.reviewerId,
-                                    proposalId: props.proposal?._id!,
-                                    proposalTitle: props?.proposal?.proposal?.title!
-                                }
-                            )}
-                        />
-                    </Stack>
+                        )}
+                    />
+                </Stack>
             }
         </>
 

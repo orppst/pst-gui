@@ -1,6 +1,37 @@
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+--- proposalToolSchemas.ts.orig	2024-05-30 13:48:47
++++ proposalToolSchemas.ts	2024-06-24 16:25:18
+@@ -7,6 +7,8 @@
+  * A block of resources that have been allocated
+  */
+ export type AllocatedBlock = {
++  _id?: number;
++  "@type"?: string; //proposalManagement:AllocatedBlock
+   /**
+    * A resource that will be consumed by allocating an observation from a proposal
+    */
+@@ -25,6 +27,7 @@
+  * an instance of a proposal that is allocated observing time
+  */
+ export type AllocatedProposal = {
++  _id?: number
+   /**
+    * what is allocated to the proposal
+    */
+@@ -39,6 +42,7 @@
+  * The final grade given by the TAC
+  */
+ export type AllocationGrade = {
++  _id?: number;
+   /**
+    * the name of the grade
+    */
+@@ -129,6 +133,7 @@
+=======
 --- proposalToolSchemas.ts.orig	2024-04-24 10:15:03
 +++ proposalToolSchemas.ts	2024-06-14 08:55:06
 @@ -129,6 +129,7 @@
+>>>>>>> master
   * An observation that is intended for calibration
   */
  export type CalibrationObservation = {
@@ -8,6 +39,9 @@
    /**
     * any constraints on the observation
     */
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -162,6 +167,7 @@
+=======
 @@ -149,19 +150,20 @@
  };
  
@@ -30,6 +64,7 @@
 +  | "Delay";
  
  /**
+>>>>>>> master
   * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
   */
  export type CartesianCoordSpace = {
@@ -37,7 +72,7 @@
    axis?: Axis[];
  };
  
-@@ -188,6 +190,7 @@
+@@ -188,6 +194,7 @@
   */
  export type CelestialTarget = {
    xmlId?: string;
@@ -45,7 +80,7 @@
    /**
     * A common name for the source
     */
-@@ -197,7 +200,7 @@
+@@ -197,7 +204,7 @@
     */
    sourceCoordinates?: EquatorialPoint;
    /**
@@ -54,7 +89,7 @@
     */
    positionEpoch?: Epoch;
    /**
-@@ -288,9 +291,7 @@
+@@ -288,9 +295,7 @@
  /**
   * Abstract head of the coordinate system object tree.
   */
@@ -65,7 +100,7 @@
  
  /**
   * Abstract base class for the Coordinate data types which represent an absolute location within a coordinate space. Coordinates MUST refer to a coordinate system, providing additional metadata relevant to interpreting the coordinate value, and its representation.
-@@ -425,6 +426,8 @@
+@@ -425,6 +430,8 @@
   * A Point on the Unit Sphere
   */
  export type EquatorialPoint = {
@@ -74,7 +109,7 @@
    /**
     * A real value with a unit.
     */
-@@ -471,8 +474,10 @@
+@@ -471,8 +478,10 @@
   * Definition of an observing field pointing
   */
  export type Field = {
@@ -85,6 +120,9 @@
  };
  
  export type FileUpload = Record<string, any>;
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -684,6 +693,8 @@
+=======
 @@ -563,7 +568,7 @@
    xmlId?: string;
  };
@@ -95,6 +133,7 @@
  /**
   * an integer identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
 @@ -684,6 +689,8 @@
+>>>>>>> master
  export type ObsType = "TargetObservation" | "CalibrationObservation";
  
  export type Observation = {
@@ -103,7 +142,7 @@
    /**
     * any constraints on the observation
     */
-@@ -706,6 +713,9 @@
+@@ -706,6 +717,9 @@
   * An organisation that can perform astronomical observations
   */
  export type Observatory = {
@@ -113,7 +152,15 @@
    xmlId?: string;
    /**
     * The name of the organization
-@@ -772,6 +782,7 @@
+@@ -762,6 +776,7 @@
+  * a collection of configs that can be chosen to observe with.
+  */
+ export type ObservingMode = {
++  _id?: number;
+   name?: string;
+   description?: string;
+   configurations?: ObservingConfiguration[];
+@@ -772,6 +787,7 @@
   * a complete proposal
   */
  export type ObservingProposal = {
@@ -121,7 +168,7 @@
    /**
     * the proposal title
     */
-@@ -829,6 +840,8 @@
+@@ -829,6 +845,8 @@
   * An institution that is a collection of people
   */
  export type Organization = {
@@ -130,7 +177,7 @@
    /**
     * The name of the organization
     */
-@@ -1053,6 +1066,8 @@
+@@ -1053,6 +1071,8 @@
   * Defines collection of resources and proposals for a particular observing season
   */
  export type ProposalCycle = {
@@ -139,6 +186,9 @@
    /**
     * a human readable description of the cycle
     */
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1121,6 +1141,7 @@
+=======
 @@ -1099,10 +1114,6 @@
     */
    submittedProposals?: SubmittedProposal[];
@@ -158,6 +208,7 @@
 +export type ProposalKind = "Standard" | "ToO" | "Survey";
  
  /**
+>>>>>>> master
   * A review of a proposal
   */
  export type ProposalReview = {
@@ -165,7 +216,11 @@
    /**
     * Description
     */
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1203,6 +1224,7 @@
+=======
 @@ -1207,6 +1219,7 @@
+>>>>>>> master
   * A real value with a unit.
   */
  export type RealQuantity = {
@@ -173,7 +228,11 @@
    /**
     * Must conform to definition of unit in VOUnit spec.
     */
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1234,6 +1256,8 @@
+=======
 @@ -1238,6 +1251,8 @@
+>>>>>>> master
   * A resource that will be consumed by allocating an observation from a proposal
   */
  export type Resource = {
@@ -182,7 +241,11 @@
    /**
     * The amount of the resource
     *
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1264,6 +1288,7 @@
+=======
 @@ -1268,6 +1283,7 @@
+>>>>>>> master
   * a type of resource
   */
  export type ResourceType = {
@@ -190,6 +253,9 @@
    /**
     * the name of the resource type
     */
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1276,6 +1301,7 @@
+=======
 @@ -1277,52 +1293,10 @@
  };
  
@@ -237,6 +303,7 @@
 -};
 -
 -/**
+>>>>>>> master
   * assigned to review the proposal
   */
  export type Reviewer = {
@@ -244,7 +311,11 @@
    /**
     * person connected with the proposal
     */
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1307,6 +1333,8 @@
+=======
 @@ -1354,6 +1328,8 @@
+>>>>>>> master
    /**
     * Science oriented definition of a spectral window.
     */
@@ -253,7 +324,11 @@
    spectralWindowSetup?: SpectralWindowSetup;
    expectedSpectralLine?: ExpectedSpectralLine[];
  };
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1351,6 +1379,7 @@
+=======
 @@ -1398,6 +1374,7 @@
+>>>>>>> master
   * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
   */
  export type SpaceFrame = {
@@ -261,7 +336,11 @@
    /**
     * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
     */
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1373,6 +1402,7 @@
+=======
 @@ -1420,6 +1397,7 @@
+>>>>>>> master
   * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
   */
  export type SpaceSys = {
@@ -269,7 +348,11 @@
    xmlId?: string;
    /**
     * Abstract head of coordinate spaces related to physical properties.
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1456,7 +1486,7 @@
+=======
 @@ -1503,7 +1481,7 @@
+>>>>>>> master
    /**
     * person connected with the proposal
     */
@@ -278,7 +361,11 @@
    uid?: string;
    inKeycloakRealm?: boolean;
  };
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1465,6 +1495,7 @@
+=======
 @@ -1512,6 +1490,7 @@
+>>>>>>> master
   * an instance of a proposal that has been submitted
   */
  export type SubmittedProposal = {
@@ -286,6 +373,9 @@
    /**
     * the date that the proposal was submitted
     *
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1527,17 +1558,20 @@
+=======
 @@ -1519,6 +1498,21 @@
     * @example "2022-03-10T00:00:00.000Z"
     */
@@ -316,6 +406,7 @@
 +export type TacRole = "TechnicalReviewer" | "ScienceReviewer" | "Chair";
  
  /**
+>>>>>>> master
   * A target source
   */
  export type Target = {
@@ -336,7 +427,11 @@
    xmlId?: string;
    name?: string;
  };
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1546,6 +1580,7 @@
+=======
 @@ -1578,6 +1575,7 @@
+>>>>>>> master
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -344,7 +439,11 @@
    /**
     * any constraints on the observation
     */
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1573,6 +1608,7 @@
+=======
 @@ -1605,6 +1603,7 @@
+>>>>>>> master
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -352,6 +451,9 @@
    xmlId?: string;
  };
  
+<<<<<<< 125-manager-view-implement-tac-member-functionality
+@@ -1676,6 +1712,10 @@
+=======
 @@ -1645,7 +1644,7 @@
  /**
   * acceptable text formats for document submission
@@ -362,6 +464,7 @@
  /**
   * A TimeFrame SHALL include a time scale and reference position. It MAY also include a reference direction.
 @@ -1708,6 +1707,10 @@
+>>>>>>> master
   * particular time range
   */
  export type TimingWindow = {
