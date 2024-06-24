@@ -1,9 +1,9 @@
 import {ReactElement} from "react";
-import {Alert, Container, Loader, Space, Tabs} from "@mantine/core";
+import {Alert, Container, Fieldset, Grid, Loader, ScrollArea, Space, Tabs} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocationsTable from "./allocations.table.tsx";
-import AllocatedTable from "./allocated.table.tsx";
+import AllocatedAccordion from "./allocated.accordion.tsx";
 import {
     useAllocatedProposalResourceGetAllocatedProposals,
     useProposalCyclesResourceGetProposalCycleDates,
@@ -12,6 +12,7 @@ import {
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {IconFolderCheck, IconFolderOpen} from "@tabler/icons-react";
+import ResourceStatsTable from "./resourceStats.table.tsx";
 
 /*
     List all submitted proposals that have been reviewed (all reviews complete) and update
@@ -109,7 +110,26 @@ export default function AllocationsPanel() : ReactElement {
                     </Tabs.Panel>
 
                     <Tabs.Panel value={"allocated"}>
-                        <AllocatedTable allocatedIds={allocated.data!} />
+                        <Grid columns={10}>
+                            <Grid.Col
+                                span={{base: 10, xl: 6}}
+                                order={{base: 2, xl: 1}}
+                            >
+                                <ScrollArea>
+                                    <AllocatedAccordion allocatedIds={allocated.data!} />
+                                </ScrollArea>
+                            </Grid.Col>
+                            <Grid.Col
+                                span={{base: 10, xl: 4}}
+                                order={{base: 1, xl: 2}}
+                            >
+                                <Fieldset legend={"Resource Amounts"}>
+                                    <ResourceStatsTable
+                                        cycleCode={Number(selectedCycleCode)}
+                                    />
+                                </Fieldset>
+                            </Grid.Col>
+                        </Grid>
                     </Tabs.Panel>
                 </Tabs>
             }
