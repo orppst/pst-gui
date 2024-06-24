@@ -1,11 +1,18 @@
 import {AllocatedBlock} from "../../generated/proposalToolSchemas.ts";
 import {Group, Stack, Table} from "@mantine/core";
-import AddButton from "../../commonButtons/add.tsx";
-import ViewEditButton from "../../commonButtons/viewEdit.tsx";
 import DeleteButton from "../../commonButtons/delete.tsx";
+import AllocatedBlockModal from "./allocatedBlock.modal.tsx";
+import {ReactElement} from "react";
+
+export type AllocatedBlocksTableProps = {
+    proposalTitle: string,
+    allocatedBlocks: AllocatedBlock[],
+    allocatedProposalId: number
+}
 
 export default
-function AllocatedBlocksTable(props: {allocatedBlocks: AllocatedBlock[]}) {
+function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
+{
     return (
         <Stack>
             {props.allocatedBlocks.length > 0 &&
@@ -29,8 +36,14 @@ function AllocatedBlocksTable(props: {allocatedBlocks: AllocatedBlock[]}) {
                                 <Table.Td>{ab.grade?.name}</Table.Td>
                                 <Table.Td>
                                     <Group justify={"flex-end"}>
-                                        <ViewEditButton toolTipLabel={"edit the resource amount"}/>
-                                        <DeleteButton toolTipLabel={"delete this resource block"}/>
+                                        <AllocatedBlockModal
+                                            proposalTitle={props.proposalTitle}
+                                            allocatedBlock={ab}
+                                            allocatedProposalId={props.allocatedProposalId}
+                                        />
+                                        <DeleteButton
+                                            toolTipLabel={"delete this resource block"}
+                                        />
                                     </Group>
                                 </Table.Td>
                             </Table.Tr>
@@ -38,7 +51,10 @@ function AllocatedBlocksTable(props: {allocatedBlocks: AllocatedBlock[]}) {
                     </Table.Tbody>
                 </Table>
             }
-            <AddButton toolTipLabel={"add a new allocation block"} />
+            <AllocatedBlockModal
+                proposalTitle={props.proposalTitle}
+                allocatedProposalId={props.allocatedProposalId}
+            />
         </Stack>
     )
 }

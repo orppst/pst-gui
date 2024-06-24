@@ -35,7 +35,7 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
 
 
     return (
-        <Accordion.Item value={String(allocatedProposal.data?.submitted?._id)}>
+        <Accordion.Item value={String(allocatedProposal.data?._id)}>
             <Accordion.Control>
                 {allocatedProposal.data?.submitted?.proposal?.title}
             </Accordion.Control>
@@ -43,6 +43,8 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
                 {allocatedProposal.data?.allocation &&
                     <AllocatedBlocksTable
                         allocatedBlocks={allocatedProposal.data.allocation}
+                        proposalTitle={allocatedProposal.data?.submitted?.proposal?.title!}
+                        allocatedProposalId={allocatedProposal.data._id!}
                     />
                 }
             </Accordion.Panel>
@@ -65,7 +67,7 @@ function AllocatedAccordion(props: {allocatedIds: ObjectIdentifier[]}) : ReactEl
     ))
 
     return(
-        <Accordion>
+        <Accordion defaultValue={"1"}>
             {allocatedBlocks}
         </Accordion>
     )

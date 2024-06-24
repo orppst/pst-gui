@@ -8,6 +8,7 @@
  */
 export type AllocatedBlock = {
   _id?: number;
+  "@type"?: string; //proposalManagement:AllocatedBlock
   /**
    * A resource that will be consumed by allocating an observation from a proposal
    */
@@ -26,6 +27,7 @@ export type AllocatedBlock = {
  * an instance of a proposal that is allocated observing time
  */
 export type AllocatedProposal = {
+  _id?: number
   /**
    * what is allocated to the proposal
    */
@@ -40,6 +42,7 @@ export type AllocatedProposal = {
  * The final grade given by the TAC
  */
 export type AllocationGrade = {
+  _id?: number;
   /**
    * the name of the grade
    */

@@ -81,6 +81,15 @@ function ResourceStatsTable(props: {cycleCode: number}) : ReactElement {
             getErrorMessage(cycleResourceTypes.error))
     }
 
+    const resourceStatsRows =
+        cycleResourceTypes.data?.map(type =>(
+        <ResourceStatsRow
+            key={type.dbid}
+            cycleCode={props.cycleCode}
+            resourceName={type.name!}
+        />
+    ))
+
     return(
         <Table>
             <Table.Thead>
@@ -92,13 +101,7 @@ function ResourceStatsTable(props: {cycleCode: number}) : ReactElement {
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-                {cycleResourceTypes.data?.map(type =>(
-                    <ResourceStatsRow
-                        key={type.dbid}
-                        cycleCode={props.cycleCode}
-                        resourceName={type.name!}
-                    />
-                ))}
+                {resourceStatsRows}
             </Table.Tbody>
         </Table>
     )
