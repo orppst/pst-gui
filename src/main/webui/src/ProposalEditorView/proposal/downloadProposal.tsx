@@ -20,16 +20,14 @@ import {notifyError, notifyInfo} from "../../commonPanel/notifications.tsx";
  * @return {Promise<Blob>} the blob of the pdf.
  */
 const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
-    // convert overview to png.
+    // convert overview to png in a pdf.
     const canvas = await html2canvas(element);
-    const data = canvas.toDataURL('image/png');
     const pdfMargin = 2;
 
-    // convert png to pdf.
     const pdfGenerator = new JSPDF();
     // noinspection JSUnresolvedReference
     const imgProperties =
-        pdfGenerator.getImageProperties(data);
+        pdfGenerator.getImageProperties(canvas);
     // noinspection JSUnresolvedReference
     const pdfWidth =
         pdfGenerator.internal.pageSize.getWidth() - 2 * pdfMargin;
@@ -38,7 +36,7 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
         imgProperties.width - 2 * pdfMargin;
     // noinspection JSUnresolvedReference
     pdfGenerator.addImage(
-        data, 'PNG',
+        canvas, 'PNG',
         pdfMargin, pdfMargin,
         pdfWidth, pdfHeight,
         undefined, "SLOW");

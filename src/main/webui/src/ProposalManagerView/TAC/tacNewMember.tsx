@@ -6,9 +6,9 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {TacRole} from "src/generated/proposalToolSchemas.ts";
-import {Grid, Select} from "@mantine/core";
+import {Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {SubmitButton} from "src/commonButtons/save";
+import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
@@ -111,31 +111,27 @@ function CycleTACAddMemberPanel(): ReactElement {
         <PanelFrame>
             <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Add a reviewer"} />
             <form onSubmit={handleAdd}>
-                <Select label={"Role"}
-                        data={typeData}
-                        {...form.getInputProps("role")}
-                />
-                <Select
-                    label="Select a person"
-                    searchable
-                    data={searchData}
-                    {...form.getInputProps("selectedMember")}
-                />
-                <Grid>
-                    <Grid.Col span={2}>
-                        <SubmitButton
-                            label={"Add"}
-                            toolTipLabel={"Add new committee member"}
-                            disabled={!form.isDirty() || !form.isValid()}
-                        />
-                    </Grid.Col>
-                    <Grid.Col span={1}>
-                        <DeleteButton
-                            label={"Cancel"}
-                            onClickEvent={handleCancel}
-                            toolTipLabel={"Do not save the new committee member"}/>
-                    </Grid.Col>
-                </Grid>
+                <Stack>
+                    <Select label={"Role"}
+                            data={typeData}
+                            {...form.getInputProps("role")}
+                    />
+                    <Select
+                        label="Select a person"
+                        searchable
+                        data={searchData}
+                        {...form.getInputProps("selectedMember")}
+                    />
+                    <FormSubmitButton
+                        label={"Add"}
+                        form={form}
+                    />
+                    <DeleteButton
+                        label={"Cancel"}
+                        onClickEvent={handleCancel}
+                        toolTipLabel={"Do not save the new committee member"}
+                    />
+                </Stack>
             </form>
         </PanelFrame>
     )

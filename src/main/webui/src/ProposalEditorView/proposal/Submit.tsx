@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Box, Select, Text} from "@mantine/core";
+import {Box, Select, Stack, Text} from "@mantine/core";
 import {
     fetchProposalCyclesResourceGetProposalCycleDates,
     fetchSubmittedProposalResourceSubmitProposal,
@@ -88,17 +88,19 @@ function SubmitPanel(): ReactElement {
             <ValidationOverview cycle={selectedCycle}/>
 
             <form onSubmit={trySubmitProposal}>
-                <Select label={"Cycle"}
-                    data={searchData}
-                    {...form.getInputProps("selectedCycle")}
-                    onChange={changeCycleDates}
-                />
-                <Text>Submission deadline {submissionDeadline}</Text>
-                <SubmitButton
-                    disabled={form.values.selectedCycle===0}
-                    label={"Submit proposal"}
-                    toolTipLabel={"Submit your proposal to the selected cycle"}
-                />
+                <Stack>
+                    <Select label={"Cycle"}
+                        data={searchData}
+                        {...form.getInputProps("selectedCycle")}
+                        onChange={changeCycleDates}
+                    />
+                    <Text>Submission deadline {submissionDeadline}</Text>
+                    <SubmitButton
+                        disabled={form.values.selectedCycle===0}
+                        label={"Submit proposal"}
+                        toolTipLabel={"Submit your proposal to the selected cycle"}
+                    />
+                </Stack>
             </form>
         </PanelFrame>
     )

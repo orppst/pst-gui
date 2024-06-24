@@ -15,7 +15,7 @@ import {useNavigate} from "react-router-dom";
 import {Box, Container, Select, Text, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
-import { SubmitButton } from 'src/commonButtons/save';
+import {FormSubmitButton} from 'src/commonButtons/save';
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "src/constants";
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
@@ -95,7 +95,10 @@ const textFormatData = [
                 }
             })
             .then(() => setSubmitting(false))
-            .catch(console.log);
+            .catch((error) => {
+                console.log(error);
+                notifyError("Create proposal error", getErrorMessage(error))
+            });
     });
 
      return (
@@ -169,10 +172,9 @@ const textFormatData = [
                         {...form.getInputProps('technicalJustification.format')}
                     />
                 </Container>
-                <SubmitButton
+                <FormSubmitButton
+                    form={form}
                     label={"Create"}
-                    toolTipLabel={"Create new proposal"}
-                    disabled={!form.isDirty() || !form.isValid()}
                 />
             </form>
         </PanelFrame>
