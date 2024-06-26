@@ -17,10 +17,10 @@ export default function CycleObservatoryPanel() : ReactElement {
     const [observatorySearchData, setSearchData] = useState([]);
     const [formReady, setFormReady] = useState(false);
     const form = useForm({
-        initialValues: {selectedObservatory: 0},
+        initialValues: {selectedObservatory: "0"},
         validate: {
             selectedObservatory: (value) => (
-                value === 0 || value === null ? 'Please select an observatory' : null)
+                value === "0" || value === null ? 'Please select an observatory' : null)
         }
     });
 
@@ -44,7 +44,7 @@ export default function CycleObservatoryPanel() : ReactElement {
                 {pathParams: {cycleCode: Number(selectedCycleCode)}})
                 .then((observatory) => {
                     //FIXME: None of these three ways to set the default value seem to work
-                    form.values.selectedObservatory = Number(observatory?._id);
+                    form.values.selectedObservatory = String(observatory?._id);
                     //form.setFieldValue('selectedObservatory', Number(observatory?._id));
                     //form.setInitialValues({selectedObservatory: Number(observatory?._id)});
                     setFormReady(true);
