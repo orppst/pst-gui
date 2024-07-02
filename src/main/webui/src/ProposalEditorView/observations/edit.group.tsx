@@ -1,7 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import { Fieldset, Grid, Group, Text } from '@mantine/core';
+import { Fieldset, Grid, Group, Text, Stack } from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, TargetObservation,
@@ -266,9 +266,7 @@ export default function ObservationEditGroup(
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <Group justify={'flex-start'} mt="md">
-                    <FormSubmitButton form={form} />
-                </Group>
+            <Stack>
                 <Grid  columns={5}>
                     <Grid.Col span={{base: 5, lg: 2}}>
                         <Fieldset legend={"Target and type"}>
@@ -282,8 +280,14 @@ export default function ObservationEditGroup(
                             </Text>
                             <TimingWindowsForm {...form}/>
                         </Fieldset>
+                        <Group justify={'flex-start'} mt="md">
+                            <FormSubmitButton form={form} />
+                        </Group>
                     </Grid.Col>
                 </Grid>
+                <FormSubmitButton form={form} />
+                <p> </p>
+                </Stack>
             </form>
         </>
     )

@@ -353,7 +353,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             {...form.getInputProps("SelectedEpoch")} />
                             <SubmitButton
                                 toolTipLabel={"Save this target"}
-                                label={"Add"}
+                                label={"Save"}
                                 disabled={!form.isValid() ||
                                           form.values.searching? true : undefined}/>
                     </Stack>

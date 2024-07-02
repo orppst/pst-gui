@@ -12,7 +12,7 @@ import {
     TargetField
 } from "src/generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
-import {Box, Container, Select, Text, Textarea, TextInput} from "@mantine/core";
+import {Box, Container, Select, Text, Textarea, TextInput, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from 'src/commonButtons/save';
@@ -109,6 +109,7 @@ const textFormatData = [
             }
             <form onSubmit={createNewObservingProposal}>
                 <Container fluid>
+                <Stack>
                     <TextInput name="title"
                         maxLength={MAX_CHARS_FOR_INPUTS}
                         placeholder="Give your proposal a title"
@@ -130,6 +131,12 @@ const textFormatData = [
                     <MaxCharsForInputRemaining
                         length={form.values.summary.length}
                     />
+                    <FormSubmitButton
+                         form={form}
+                         label={"Save"}
+                     />
+                    <p> </p>
+
                     <Select label={"Kind"}
                         data={kindData}
                         {...form.getInputProps("kind")}
@@ -171,11 +178,13 @@ const textFormatData = [
                         pt={"sm"} pb={"lg"}
                         {...form.getInputProps('technicalJustification.format')}
                     />
-                </Container>
                 <FormSubmitButton
                     form={form}
-                    label={"Create"}
+                    label={"Save"}
                 />
+                <p> </p>
+                </Stack>
+                </Container>
             </form>
         </PanelFrame>
     );
