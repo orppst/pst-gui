@@ -352,8 +352,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             data={[{label:"J2000",value:"J2000"}]}
                             {...form.getInputProps("SelectedEpoch")} />
                             <SubmitButton
-                                toolTipLabel={"Save this target"}
-                                label={"Save"}
+                                toolTipLabel={"Save"}
                                 disabled={!form.isValid() ||
                                           form.values.searching? true : undefined}/>
                     </Stack>

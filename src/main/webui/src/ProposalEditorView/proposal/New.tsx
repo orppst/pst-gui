@@ -12,7 +12,7 @@ import {
     TargetField
 } from "src/generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
-import {Box, Container, Select, Text, Textarea, TextInput, Stack} from "@mantine/core";
+import {Box, Container, Select, Text, Textarea, TextInput, Stack, Space} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from 'src/commonButtons/save';
@@ -133,9 +133,8 @@ const textFormatData = [
                     />
                     <FormSubmitButton
                          form={form}
-                         label={"Save"}
                      />
-                    <p> </p>
+                    <Space />
 
                     <Select label={"Kind"}
                         data={kindData}
@@ -182,7 +181,7 @@ const textFormatData = [
                     form={form}
                     label={"Save"}
                 />
-                <p> </p>
+                <Space />
                 </Stack>
                 </Container>
             </form>
