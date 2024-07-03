@@ -125,7 +125,6 @@ function AddInvestigatorPanel(): ReactElement {
                             {...form.getInputProps("selectedInvestigator")}
                         />
                         <FormSubmitButton
-                            label={"Add"}
                             form={form}
                         />
                         <DeleteButton

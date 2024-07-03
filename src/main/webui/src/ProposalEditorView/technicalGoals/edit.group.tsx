@@ -1,6 +1,6 @@
 import PerformanceParametersSection from "./performance.form.tsx";
 import SpectralWindowsSection from "./spectrum.form.tsx";
-import {Grid} from "@mantine/core";
+import {Grid, Stack, Space} from "@mantine/core";
 import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
 import { ReactElement } from 'react';
 import {useParams} from "react-router-dom";
@@ -265,7 +265,8 @@ export default function TechnicalGoalEditGroup(
 
     return (
         <form onSubmit={handleSubmit}>
-            <FormSubmitButton form={form} />
+        <Stack>
+
             <Grid columns={TOTAL_COLUMNS}>
                 <Grid.Col span={{base: TOTAL_COLUMNS, md: PERFORMANCE_COLUMNS}}>
                     <PerformanceParametersSection {...form}/>
@@ -274,6 +275,12 @@ export default function TechnicalGoalEditGroup(
                     <SpectralWindowsSection {...form}/>
                 </Grid.Col>
             </Grid>
+            <Space />
+               <FormSubmitButton form={form} />
+            <Space />
+
+        </Stack>
+
         </form>
     )
 }

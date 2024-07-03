@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Grid, Paper, Select} from "@mantine/core";
+import {Grid, Paper, Select, Stack} from "@mantine/core";
 import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -122,8 +122,8 @@ export default function JustificationForm(props: JustificationProps)
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <FormSubmitButton form={form} />
-                <Grid span={10} grow>
+            <Stack>
+               <Grid span={10} grow>
                     <Grid.Col span={{base: 6, md: 8, lg: 9}}>
                         <JustificationTextArea {...form} />
                     </Grid.Col>
@@ -131,6 +131,8 @@ export default function JustificationForm(props: JustificationProps)
                         <SelectTextFormat {...form} />
                     </Grid.Col>
                 </Grid>
+                <FormSubmitButton form={form} />
+            </Stack>
             </form>
             {form.values.format==='latex' && PreviewJustification(form.values.format!, form.values.text!)}
         </>
