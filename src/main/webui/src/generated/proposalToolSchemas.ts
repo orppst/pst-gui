@@ -139,9 +139,9 @@ export type CalibrationObservation = {
    */
   constraints?: ObservingConstraint[];
   /**
-   * A target source
+   * A reference to - The actual target of the observation
    */
-  target?: Target;
+  target?: Target[];
   /**
    * Definition of an observing field pointing
    */
@@ -542,7 +542,7 @@ export type GenericSys = {
 /**
  * The handedness of a coordinate space. For most cases, this will be a fixed value in the specification of the coordinate space. We provide this element to allow this flexibility when needed. In this document, it is used in the Pixel domain.
  */
-export type Handedness = "LEFT" | "RIGHT";
+export type Handedness = "left" | "right";
 
 /**
  * An instrument that can be attached to a telescope - e.g. CCD, Radio Receiver
@@ -692,6 +692,9 @@ export type ObjectIdentifier = {
 
 export type ObsType = "TargetObservation" | "CalibrationObservation";
 
+/**
+ * An observation - occurs in a single non-overlapping time period
+ */
 export type Observation = {
   "@type"?: string; //ObsType (see above)
   _id?: number;
@@ -700,9 +703,9 @@ export type Observation = {
    */
   constraints?: ObservingConstraint[];
   /**
-   * A target source
+   * A reference to - The actual target of the observation
    */
-  target?: Target;
+  target?: Target[];
   /**
    * Definition of an observing field pointing
    */
@@ -1586,9 +1589,9 @@ export type TargetObservation = {
    */
   constraints?: ObservingConstraint[];
   /**
-   * A target source
+   * A reference to - The actual target of the observation
    */
-  target?: Target;
+  target?: Target[];
   /**
    * Definition of an observing field pointing
    */
@@ -1782,6 +1785,7 @@ export type UserProfileAttributeMetadata = {
     };
   };
   group?: string;
+  multivalued?: boolean;
 };
 
 export type UserProfileMetadata = {
@@ -1790,25 +1794,26 @@ export type UserProfileMetadata = {
 };
 
 export type UserRepresentation = {
-  self?: string;
   id?: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  emailVerified?: boolean;
+  attributes?: {
+    [key: string]: string[];
+  };
+  userProfileMetadata?: UserProfileMetadata;
+  self?: string;
   origin?: string;
   /**
    * @format int64
    */
   createdTimestamp?: number;
-  username?: string;
   enabled?: boolean;
   totp?: boolean;
-  emailVerified?: boolean;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
   federationLink?: string;
   serviceAccountClientId?: string;
-  attributes?: {
-    [key: string]: string[];
-  };
   credentials?: CredentialRepresentation[];
   /**
    * @uniqueItems true
@@ -1839,7 +1844,6 @@ export type UserRepresentation = {
   access?: {
     [key: string]: boolean;
   };
-  userProfileMetadata?: UserProfileMetadata;
 };
 
 /**
