@@ -466,6 +466,7 @@ function OverviewPanel(): ReactElement {
      */
     const DisplayObservations = (): ReactElement => {
 
+
         const observations =
             proposalsData?.observations?.map((observation, index) => {
 
@@ -473,7 +474,7 @@ function OverviewPanel(): ReactElement {
                 // but numbers here, specifically their DB id
 
                 let targetObj = proposalsData?.targets?.find((target) =>
-                    target._id === observation.target)!
+                    target._id === observation.target![0])!
 
                 let technicalGoalObj  = proposalsData?.technicalGoals?.find((techGoal) =>
                     techGoal._id === observation.technicalGoal)!
