@@ -16,8 +16,8 @@ import {
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse,
-    Investigator,
-    RealQuantity,
+    Investigator, ObjectIdentifier,
+    RealQuantity, Target,
 } from 'src/generated/proposalToolSchemas.ts';
 import { IconNorthStar } from '@tabler/icons-react';
 import { ReactElement, useRef } from 'react';
@@ -177,7 +177,7 @@ function ObservationAccordionLabel(
  */
 interface ObservationContentProps {
     proposalCode: number;
-    targetId: number;
+    targetIds: number[];
     technicalGoalId: number;
 }
 
@@ -188,15 +188,19 @@ interface ObservationContentProps {
  * @constructor
  */
 function ObservationAccordionContent(
-    {proposalCode, targetId, technicalGoalId} : ObservationContentProps) :
+    {proposalCode, targetIds, technicalGoalId} : ObservationContentProps) :
     ReactElement {
+
+    const listOfTargets = [] as ObjectIdentifier [];
+
+    targetIds.map((targetId: any) => listOfTargets.push({dbid: targetId, code: proposalCode.toString()}))
+
     return (
         //TODO: consider a Grid instead of Group
         <Group>
             <TargetTable selectedProposalCode={proposalCode.toString()}
                          isLoading={false}
-                         data = {[{dbid: targetId,
-                                   code: proposalCode.toString()}]}
+                         data = {listOfTargets}
                          showButtons={false}
                          selectedTarget={undefined}
                          boundTargets={[]}/>
@@ -473,8 +477,16 @@ function OverviewPanel(): ReactElement {
                 //observation.target and observation.technicalGoal are NOT objects
                 // but numbers here, specifically their DB id
 
-                let targetObj = proposalsData?.targets?.find((target) =>
-                    target._id === observation.target![0])!
+                //not sure if this will be needed, it's still work in progress
+                let targetObjs = [] as Target[];
+
+                observation.target?.map((obsTarget) => {
+                    let targetObj = proposalsData?.targets?.find((target) =>
+                        target._id === obsTarget)!
+
+                    targetObjs.push(targetObj);
+
+                });
 
                 let technicalGoalObj  = proposalsData?.technicalGoals?.find((techGoal) =>
                     techGoal._id === observation.technicalGoal)!
@@ -488,7 +500,7 @@ function OverviewPanel(): ReactElement {
                     <Accordion.Item key={index} value={String(index)}>
                         <Accordion.Control>
                             <ObservationAccordionLabel
-                                targetName={targetObj.sourceName!}
+                                targetName={targetObjs[0].sourceName!}
                                 observationType={observationType}
                                 intendedUse={observationType === 'Calibration Obs.' ?
                                     (observation as CalibrationObservation).intent : undefined}
@@ -498,7 +510,7 @@ function OverviewPanel(): ReactElement {
                         <Accordion.Panel>
                             <ObservationAccordionContent
                                 proposalCode={Number(selectedProposalCode)}
-                                targetId={targetObj._id!}
+                                targetIds={observation.target as number []}
                                 technicalGoalId={technicalGoalObj._id!}
                             />
                         </Accordion.Panel>
