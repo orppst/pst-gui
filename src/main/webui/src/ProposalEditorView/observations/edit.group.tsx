@@ -137,10 +137,10 @@ export default function ObservationEditGroup(
             if (newObservation) {
                 //Creating new observation
                 let baseObservation : Observation = {
-                    target: {
+                    target: [{
                         "@type": "proposal:CelestialTarget",
                         "_id": values.targetDBId
-                    },
+                    }],
                     technicalGoal: {
                         "_id": values.techGoalId
                     },
@@ -224,10 +224,10 @@ export default function ObservationEditGroup(
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!
                         },
-                        body: {
+                        body: [{
                             "@type": "proposal:CelestialTarget",
                             "_id": form.values.targetDBId
-                        }
+                        }]
                     })
                         .then(()=>queryClient.invalidateQueries())
                         .catch(console.error)

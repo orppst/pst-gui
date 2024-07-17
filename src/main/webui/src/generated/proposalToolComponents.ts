@@ -9188,8 +9188,10 @@ export type ObservationResourceReplaceTargetPathParams = {
 export type ObservationResourceReplaceTargetError =
   Fetcher.ErrorWrapper<undefined>;
 
+export type ObservationResourceReplaceTargetRequestBody = Schemas.Target[];
+
 export type ObservationResourceReplaceTargetVariables = {
-  body?: Schemas.Target;
+  body?: ObservationResourceReplaceTargetRequestBody;
   pathParams: ObservationResourceReplaceTargetPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -9200,7 +9202,7 @@ export const fetchObservationResourceReplaceTarget = (
   proposalToolFetch<
     undefined,
     ObservationResourceReplaceTargetError,
-    Schemas.Target,
+    ObservationResourceReplaceTargetRequestBody,
     {},
     {},
     ObservationResourceReplaceTargetPathParams
