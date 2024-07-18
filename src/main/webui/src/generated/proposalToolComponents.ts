@@ -9174,7 +9174,7 @@ export const useObservationResourceReplaceField = (
   });
 };
 
-export type ObservationResourceReplaceTargetPathParams = {
+export type ObservationResourceReplaceTargetsPathParams = {
   /**
    * @format int64
    */
@@ -9185,27 +9185,27 @@ export type ObservationResourceReplaceTargetPathParams = {
   proposalCode: number;
 };
 
-export type ObservationResourceReplaceTargetError =
+export type ObservationResourceReplaceTargetsError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ObservationResourceReplaceTargetRequestBody = Schemas.Target[];
+export type ObservationResourceReplaceTargetsRequestBody = Schemas.Target[];
 
-export type ObservationResourceReplaceTargetVariables = {
-  body?: ObservationResourceReplaceTargetRequestBody;
-  pathParams: ObservationResourceReplaceTargetPathParams;
+export type ObservationResourceReplaceTargetsVariables = {
+  body?: ObservationResourceReplaceTargetsRequestBody;
+  pathParams: ObservationResourceReplaceTargetsPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchObservationResourceReplaceTarget = (
-  variables: ObservationResourceReplaceTargetVariables,
+export const fetchObservationResourceReplaceTargets = (
+  variables: ObservationResourceReplaceTargetsVariables,
   signal?: AbortSignal
 ) =>
   proposalToolFetch<
     undefined,
-    ObservationResourceReplaceTargetError,
-    ObservationResourceReplaceTargetRequestBody,
+    ObservationResourceReplaceTargetsError,
+    ObservationResourceReplaceTargetsRequestBody,
     {},
     {},
-    ObservationResourceReplaceTargetPathParams
+    ObservationResourceReplaceTargetsPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/observations/{observationId}/target",
     method: "put",
@@ -9213,12 +9213,12 @@ export const fetchObservationResourceReplaceTarget = (
     signal,
   });
 
-export const useObservationResourceReplaceTarget = (
+export const useObservationResourceReplaceTargets = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      ObservationResourceReplaceTargetError,
-      ObservationResourceReplaceTargetVariables
+      ObservationResourceReplaceTargetsError,
+      ObservationResourceReplaceTargetsVariables
     >,
     "mutationFn"
   >
@@ -9226,11 +9226,11 @@ export const useObservationResourceReplaceTarget = (
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     undefined,
-    ObservationResourceReplaceTargetError,
-    ObservationResourceReplaceTargetVariables
+    ObservationResourceReplaceTargetsError,
+    ObservationResourceReplaceTargetsVariables
   >({
-    mutationFn: (variables: ObservationResourceReplaceTargetVariables) =>
-      fetchObservationResourceReplaceTarget({
+    mutationFn: (variables: ObservationResourceReplaceTargetsVariables) =>
+      fetchObservationResourceReplaceTargets({
         ...fetcherOptions,
         ...variables,
       }),

@@ -202,7 +202,7 @@ function ObservationAccordionContent(
                          isLoading={false}
                          data = {listOfTargets}
                          showButtons={false}
-                         selectedTarget={undefined}
+                         selectedTargets={undefined}
                          boundTargets={[]}/>
             <TechnicalGoalsTable goals={[{dbid: technicalGoalId,
                                           code: proposalCode.toString()}]}

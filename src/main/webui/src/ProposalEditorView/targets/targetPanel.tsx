@@ -59,7 +59,7 @@ export function TargetPanel(): ReactElement {
                                  selectedProposalCode={selectedProposalCode}
                                  boundTargets={boundTargets}
                                  showButtons={true}
-                                 selectedTarget={undefined}/>
+                                 selectedTargets={undefined}/>
                 }
                 <AddTargetModal/>
             </Stack>
