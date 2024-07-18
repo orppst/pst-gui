@@ -99,7 +99,7 @@ export default function ObservationEditGroup(
                 observationId: props.observation?._id, //required for deletion of timing windows
                 observationType: observationType,
                 calibrationUse: calibrationUse,
-                targetDBId: props.observation?.target?._id,
+                targetDBId: props.observation?.target![0]._id!,
                 techGoalId: props.observation?.technicalGoal?._id,
                 fieldId: props.observation?.field?._id ? String(props.observation?.field?._id) : undefined,
                 timingWindows: initialTimingWindows
