@@ -136,14 +136,13 @@ function TargetTableRow(props: TargetProps): ReactElement {
         }
 
         // handle selection.
+        //FIXME this is wrong
         if(props.selectedTargets !== undefined && targetId !== undefined) {
             if ( props.selectedTargets.includes(targetId) ) {
                 props.setSelectTarget(targetId);
             } else {
                 props.setSelectTarget(targetId);
             }
-        } else {
-            console.log("I am confused :-(");
         }
     }
 

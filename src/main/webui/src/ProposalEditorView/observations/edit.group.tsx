@@ -234,8 +234,6 @@ export default function ObservationEditGroup(
                         })
                     })
 
-                    console.log("BODY: " + JSON.stringify(body, null, 2));
-
                     fetchObservationResourceReplaceTargets({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
