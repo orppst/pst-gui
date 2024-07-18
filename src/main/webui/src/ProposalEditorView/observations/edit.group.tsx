@@ -4,7 +4,7 @@ import {ObservationProps} from "./observationPanel.tsx";
 import { Fieldset, Grid, Text, Stack, Space } from '@mantine/core';
 import {
     CalibrationObservation,
-    CalibrationTargetIntendedUse, Observation, TargetObservation,
+    CalibrationTargetIntendedUse, Observation, Target, TargetObservation,
     TimingWindow
 } from 'src/generated/proposalToolSchemas.ts';
 import { useForm, UseFormReturnType } from '@mantine/form';
@@ -136,11 +136,17 @@ export default function ObservationEditGroup(
         form.onSubmit((values) => {
             if (newObservation) {
                 //Creating new observation
-                let baseObservation : Observation = {
-                    target: [{
+                let targetList: Target[] = [];
+
+                form.values.targetDBId?.map((thisTarget) =>{
+                    targetList.push({
                         "@type": "proposal:CelestialTarget",
-                        "_id": values.targetDBId![0]
-                    }],
+                        "_id": thisTarget
+                    })
+                })
+
+                let baseObservation : Observation = {
+                    target: targetList,
                     technicalGoal: {
                         "_id": values.techGoalId
                     },
@@ -219,15 +225,23 @@ export default function ObservationEditGroup(
                 })
 
                 if (form.isDirty('targetDBId')) {
+                    let body: Target[] = [];
+
+                    form.values.targetDBId?.map((thisTarget) =>{
+                        body.push({
+                            "@type": "proposal:CelestialTarget",
+                            "_id": thisTarget
+                        })
+                    })
+
+                    console.log("BODY: " + JSON.stringify(body, null, 2));
+
                     fetchObservationResourceReplaceTargets({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!
                         },
-                        body: [{
-                            "@type": "proposal:CelestialTarget",
-                            "_id": form.values.targetDBId![0]
-                        }]
+                        body: body
                     })
                         .then(()=>queryClient.invalidateQueries())
                         .catch(console.error)
