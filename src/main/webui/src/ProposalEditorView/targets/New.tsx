@@ -1,4 +1,4 @@
-import {Modal, NumberInput, Select, TextInput, Grid, Stack} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -35,6 +35,7 @@ import {
     PopulateAladin
 } from './aladinHelperMethods.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
+import {IconInfoCircle} from "@tabler/icons-react";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -114,8 +115,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 "Unable to match source " + form.values.TargetName +
                 " try again?");
             form.values.searching = false;
-            if(!choice)
-                props.onSubmit();
+            if(!choice) props.onSubmit();
         }
 
         form.values.searching = true;
@@ -147,7 +147,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const saveToDatabase = (val: newTargetData) => {
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
-            coordSys: {},
+            coordSys: {val: "ICRS"},
             lat: {
                 "@type": "ivoa:RealQuantity",
                 value: val.RA, unit: { value: "degrees" }
@@ -161,7 +161,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             "@type": "proposal:CelestialTarget",
             sourceName: val.TargetName,
             sourceCoordinates: sourceCoords,
-            positionEpoch: { value: val.SelectedEpoch }
+            positionEpoch: { value: "J2000"}
         };
 
         /**
@@ -289,17 +289,24 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
     // return the dynamic HTML.
     return (
-        <><Grid columns={4}>
-            {/* handle aladin */}
+        <Grid columns={4}>
             <Grid.Col span={2}>
                 <div id="aladin-lite-div"
                      style={{height: 400}}
                      onMouseUpCapture={HandleEvent}>
                 </div>
             </Grid.Col>
-
-            {/* handle input */}
             <Grid.Col span={ 2 }>
+                <Group justify={"center"}>
+                    <Alert
+                        variant={"light"}
+                        color={"blue"}
+                        title={"Prototype Version"}
+                        icon={<IconInfoCircle/>}
+                    >
+                        All targets are assumed to have an ICRS coordinate system and J2000 epoch.
+                    </Alert>
+                </Group>
                 <form onSubmit={handleSubmission}>
                     <Stack>
                         <TextInput
@@ -317,7 +324,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         <DatabaseSearchButton
                             label={"Lookup"}
                             onClick={simbadLookup}
-                            toolTipLabel={"Search Simbad database"}/>
+                            toolTipLabel={"Search Simbad database"}
+                        />
                         <NumberInput
                             required={true}
                             label={"RA"}
@@ -332,7 +340,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                 UpdateAladinRA(e);
                                 if (form.getInputProps("RA").onChange) {
                                     form.getInputProps("RA").onChange(e);
-                            }}}/>
+                            }}}
+                        />
                         <NumberInput
                             required={true}
                             label={"Dec"}
@@ -346,19 +355,17 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                 UpdateAladinDec(e);
                                 if (form.getInputProps("Dec").onChange) {
                                     form.getInputProps("Dec").onChange(e);
-                                }}}/>
-                        <Select
-                            label={"Coordinate System"}
-                            data={[{label:"J2000",value:"J2000"}]}
-                            {...form.getInputProps("SelectedEpoch")} />
-                            <SubmitButton
-                                toolTipLabel={"Save this target"}
-                                disabled={!form.isValid() ||
-                                          form.values.searching? true : undefined}/>
+                                }}}
+                        />
+                        <SubmitButton
+                            toolTipLabel={"Save this target"}
+                            disabled={!form.isValid() ||
+                                      form.values.searching? true : undefined}
+                        />
                     </Stack>
                 </form>
             </Grid.Col>
-        </Grid></>
+        </Grid>
     );
 };
 
