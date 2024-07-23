@@ -24,6 +24,7 @@ import {
     PerformanceParametersGui
 } from "./performanceParametersGui.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
+import {ContextualHelpButton} from "/src/commonButtons/contextualHelp.tsx"
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
@@ -263,10 +264,15 @@ export default function TechnicalGoalEditGroup(
         }
     })
 
+const helpButtonCall = (
+    <ContextualHelpButton
+    messageId="CreaTechGoal"
+    />
+    );
     return (
         <form onSubmit={handleSubmit}>
+        {helpButtonCall}
         <Stack>
-
             <Grid columns={TOTAL_COLUMNS}>
                 <Grid.Col span={{base: TOTAL_COLUMNS, md: PERFORMANCE_COLUMNS}}>
                     <PerformanceParametersSection {...form}/>

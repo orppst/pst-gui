@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, ReactElement } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
+import {ContextualHelpButton} from "/src/commonButtons/contextualHelp.tsx"
 
 /**
  * the different types of observation.
@@ -263,9 +264,15 @@ export default function ObservationEditGroup(
             }
     });
 
+const helpButtonCall = (
+    <ContextualHelpButton
+    messageId="CreaObs"
+    />
+    );
     return (
         <>
             <form onSubmit={handleSubmit}>
+            {helpButtonCall}
             <Stack>
                 <Grid  columns={5}>
                     <Grid.Col span={{base: 5, lg: 2}}>

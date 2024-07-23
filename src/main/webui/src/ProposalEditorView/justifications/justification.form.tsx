@@ -10,6 +10,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {PreviewJustification} from "./justification.preview.tsx";
+import {ContextualHelpButton} from "/src/commonButtons/contextualHelp.tsx"
 
 import Editor from "react-simple-code-editor";
 import { languages, highlight } from "prismjs";
@@ -79,6 +80,7 @@ const SelectTextFormat = (form: UseFormReturnType<Justification>) => {
 export default function JustificationForm(props: JustificationProps)
     :ReactElement {
 
+
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
 
@@ -118,10 +120,18 @@ export default function JustificationForm(props: JustificationProps)
                 notifyError("Update justification error", getErrorMessage(error))
             });
     });
+const helpButtonCall = (
+    // need to determine whether sci or tech
+    <ContextualHelpButton
+    messageId="MaintSciJust"
+
+    />
+    );
 
     return (
         <>
             <form onSubmit={handleSubmit}>
+            {helpButtonCall}
             <Stack>
                <Grid span={10} grow>
                     <Grid.Col span={{base: 6, md: 8, lg: 9}}>

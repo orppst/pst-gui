@@ -21,6 +21,7 @@ import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ContextualHelpButton} from "/src/commonButtons/contextualHelp.tsx"
 
 
 const kindData = [
@@ -101,6 +102,12 @@ const textFormatData = [
             });
     });
 
+const helpButtonCall = (
+    <ContextualHelpButton
+    messageId="CreaProp"
+    />
+    );
+
      return (
         <PanelFrame>
             <PanelHeader itemName={"NEW"} panelHeading={"Create Proposal"} />
@@ -109,6 +116,7 @@ const textFormatData = [
             }
             <form onSubmit={createNewObservingProposal}>
                 <Container fluid>
+                {helpButtonCall}
                 <Stack>
                     <TextInput name="title"
                         maxLength={MAX_CHARS_FOR_INPUTS}
