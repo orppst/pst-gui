@@ -21,7 +21,7 @@ import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ContextualHelpButton} from "/src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 
 
 const kindData = [

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { contextualHelpMessages } from "/public/contextualHelpMessages.jsx";
+import { contextualHelpMessages } from "../../public/contextualHelpMessages.jsx";
 
 export function ContextualHelpButton(propsMessage) {
 

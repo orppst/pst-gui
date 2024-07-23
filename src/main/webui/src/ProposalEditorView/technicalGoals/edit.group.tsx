@@ -24,7 +24,7 @@ import {
     PerformanceParametersGui
 } from "./performanceParametersGui.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
-import {ContextualHelpButton} from "/src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 
 export const notSpecified = "not specified";
 export const notSet = "not set";

@@ -37,7 +37,7 @@ export const contextualHelpMessages = [
 , {
   id: "CreaTechGoal-eng",
   message: " "
-      + "\n\n" + "You must provide values and units for the following performance parameters - Angular resolution, Largest scale, and Spectral point."
+      + "\n\n" + "You must provide values and units for the following performance parameters - Angular resolution, Largest scale, Sensitivity, and Spectral point."
       + "\n\n" + "Spectral windows are optional, but if you select one you must enter values and units for Start, End, and Resolution, as well as polarization."
       + "\n\n"
 }

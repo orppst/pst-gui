@@ -10,7 +10,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {PreviewJustification} from "./justification.preview.tsx";
-import {ContextualHelpButton} from "/src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 
 import Editor from "react-simple-code-editor";
 import { languages, highlight } from "prismjs";

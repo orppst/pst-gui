@@ -19,7 +19,7 @@ import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, ReactElement } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
-import {ContextualHelpButton} from "/src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 
 /**
  * the different types of observation.
