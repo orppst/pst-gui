@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group, Table} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -36,6 +36,7 @@ import {
 } from './aladinHelperMethods.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import {IconInfoCircle} from "@tabler/icons-react";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -73,6 +74,16 @@ const ALADIN_STATE_NAME = "hasDoneAladin";
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const [nameUnique, setNameUnique] = useState(true);
+
+    type SimbadData = {
+        mainId: string,
+        ra: number,
+        dec: number,
+    }
+
+    const [simbadResult, setSimbadResult] =
+        useState<SimbadData[]>([]);
+
     const form = useForm({
             initialValues: props.initialValues ?? {
                 TargetName: "",
@@ -102,6 +113,30 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
     const targetNameRef = useRef(null);
+
+    function simbadQuery(targetName: string){
+
+        const baseUrl = "https://simbad.cds.unistra.fr/simbad/";
+        const queryType = "sim-tap/sync?request=doQuery&lang=adql&format=json&query=";
+
+        const adqlQuery=`select main_id,ra,dec from basic where main_id = ${targetName}`
+
+        const theUrl = baseUrl + queryType + adqlQuery;
+
+        console.log(theUrl)
+
+        fetch(theUrl)
+            .then(res => res.json())
+            .then(result => {
+                if (result.data.length > 0) {
+                    setSimbadResult(result.data.map((arr: any) => ({mainId: arr[0], ra: arr[1], dec: arr[2] })));
+                }else {
+                    notifyError("Target not found", "target name did not match any records");
+                }
+            })
+            .catch(err => notifyError("Failed to do simbad query",
+                getErrorMessage(err)));
+    }
 
     /**
      * executes a simbad query.
@@ -326,6 +361,11 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             onClick={simbadLookup}
                             toolTipLabel={"Search Simbad database"}
                         />
+                        <DatabaseSearchButton
+                            label={"Frontend"}
+                            onClick={() => simbadQuery(form.values.TargetName)}
+                            toolTipLabel={"frontend search"}
+                        />
                         <NumberInput
                             required={true}
                             label={"RA"}
@@ -362,6 +402,26 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             disabled={!form.isValid() ||
                                       form.values.searching? true : undefined}
                         />
+                        <Table>
+                            <Table.Thead>
+                                <Table.Tr>
+                                    <Table.Th>Main ID</Table.Th>
+                                    <Table.Th>RA (deg.)</Table.Th>
+                                    <Table.Th>DEC (deg.)</Table.Th>
+                                </Table.Tr>
+                            </Table.Thead>
+                            <Table.Tbody>
+                                {simbadResult.map(s =>(
+                                    <Table.Tr key={s.mainId}>
+                                        <Table.Td>{s.mainId}</Table.Td>
+                                        <Table.Td>{s.ra}</Table.Td>
+                                        <Table.Td>{s.dec}</Table.Td>
+                                    </Table.Tr>
+                                ))
+                                }
+                            </Table.Tbody>
+
+                        </Table>
                     </Stack>
                 </form>
             </Grid.Col>
