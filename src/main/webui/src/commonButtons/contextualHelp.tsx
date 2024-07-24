@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { contextualHelpMessages } from "../../public/contextualHelpMessages.jsx";
+import {contextualHelpMessages} from "../../public/contextualHelpMessages.jsx";
 
-export function ContextualHelpButton(props) {
+export function ContextualHelpButton(props : {messageId : string}) {
 
   const [showingHelp, setShowingHelp] = useState(false);
 
@@ -48,4 +48,4 @@ export function ContextualHelpButton(props) {
 
     )
 }
-
+export default ContextualHelpButton;
