@@ -119,7 +119,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         const baseUrl = "https://simbad.cds.unistra.fr/simbad/";
         const queryType = "sim-tap/sync?request=doQuery&lang=adql&format=json&query=";
 
-        const adqlQuery=`select main_id,ra,dec from basic where main_id = ${targetName}`
+        const adqlQuery=`select main_id,ra,dec from basic where main_id = '${targetName}'`
 
         const theUrl = baseUrl + queryType + adqlQuery;
 
