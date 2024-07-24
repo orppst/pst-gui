@@ -1,22 +1,20 @@
 import { useState } from "react";
 import { contextualHelpMessages } from "../../public/contextualHelpMessages.jsx";
 
-export function ContextualHelpButton(propsMessage) {
+export function ContextualHelpButton(props) {
 
   const [showingHelp, setShowingHelp] = useState(false);
-  const [messageFound, setMessageFound] = useState(false);
 
-// need to trap when no message is found !
+  const userLang = "-eng" // hard-coded for now, ideally captured from user
 
-const [myExtract, setMyExtract] = useState("");
-
-    const userLang = "-eng" // har-coded for now, ideally captured from user, needs model change or cookie
-
-    const singleMessage = contextualHelpMessages.filter(aMessage =>
-        aMessage.id === propsMessage.messageId + userLang
+  const singleMessage = contextualHelpMessages.filter(aMessage =>
+        aMessage.id === props.messageId + userLang
       );
 
+// need to trap when no message is found...
+
 // need to sort out a key for this...
+
       const listMessageItems = singleMessage.map(aMessage =>
        <p>{aMessage.message}</p>
       );
@@ -25,7 +23,7 @@ const [myExtract, setMyExtract] = useState("");
 
   function AssembleContextualHelp () {
 
-            setMessageFound(extractedRecord.length !== 0);
+
       setShowingHelp(!showingHelp);
 
        }
