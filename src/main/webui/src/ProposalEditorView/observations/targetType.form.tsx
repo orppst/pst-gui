@@ -142,7 +142,7 @@ export default function TargetTypeForm (
             {/* only present the message about selecting a target
             when not selected */}
             {form.values.targetDBId === undefined ||
-                    form.values.targetDBId === NO_ROW_SELECTED
+                    form.values.targetDBId.length == 0
                 ? <p style={{color:theme.colors.yellow[ERROR_YELLOW]}}>
                     Please select a target.
                   </p>
@@ -158,12 +158,24 @@ export default function TargetTypeForm (
                             showButtons={false}
                             isLoading={false}
                             boundTargets={[]}
-                            selectedTarget={
+                            selectedTargets={[
                             form.values.targetDBId != undefined ?
-                                form.values.targetDBId :
-                                NO_ROW_SELECTED}
-                            setSelectedTarget={(value: number) => {
-                                form.setFieldValue('targetDBId', value);
+                                form.values.targetDBId[0] :
+                                0]}
+                            setSelectTarget={(value: number) => {
+                                const index = form.values.targetDBId?.indexOf(value);
+                                console.log("index: " + index + " length= " + form.values.targetDBId?.length);
+                                if(index === undefined || index == -1) {
+                                    if(form.values.targetDBId == undefined) {
+                                        form.setFieldValue('targetDBId', [value]);
+                                    } else {
+                                        const newTargets = form.values.targetDBId;
+                                        newTargets.push(value);
+                                        form.setFieldValue('targetDBId', newTargets);
+                                    }
+                                } else {
+                                    form.values.targetDBId?.splice(index, 1);
+                                }
                             }}
                         />
                     </Table.ScrollContainer>

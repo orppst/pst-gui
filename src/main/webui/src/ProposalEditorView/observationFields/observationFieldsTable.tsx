@@ -33,16 +33,15 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
 
     if (field.isError) {
         return (
-            <Table.Tr key={props.fieldId}>
-                Error: {getErrorMessage(field.error)}
+            <Table.Tr key={props.fieldId}><Table.Td>Error: {getErrorMessage(field.error)}</Table.Td>
+
             </Table.Tr>
         )
     }
 
     if (field.isLoading) {
         return (
-            <Table.Tr key={props.fieldId}>
-                Loading...
+            <Table.Tr key={props.fieldId}><Table.Td>Loading...</Table.Td>
             </Table.Tr>
         )
     }
