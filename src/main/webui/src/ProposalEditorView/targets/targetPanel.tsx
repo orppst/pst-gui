@@ -40,12 +40,13 @@ export function TargetPanel(): ReactElement {
     }
 
     // acquire all the bound targets ids in observations.
-    let boundTargets: (number | undefined)[] | undefined;
-    boundTargets = proposalsData?.observations?.map((observation) => {
-        // extract the id. it seems the technical Goal returned here IS a number
-        // not the TechnicalGoal object it advertises.
-        return observation.target as number;
-    });
+    let boundTargets: (number)[] = [0];
+
+    proposalsData?.observations?.map((observation) => {
+        observation.target?.map((id) => {
+            boundTargets?.push(id as number);
+        })
+    })
 
     return (
         <PanelFrame>
@@ -58,7 +59,7 @@ export function TargetPanel(): ReactElement {
                                  selectedProposalCode={selectedProposalCode}
                                  boundTargets={boundTargets}
                                  showButtons={true}
-                                 selectedTarget={undefined}/>
+                                 selectedTargets={undefined}/>
                 }
                 <AddTargetModal/>
             </Stack>
