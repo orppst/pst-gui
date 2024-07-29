@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group, Table, Radio} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group, Table, Radio, Loader} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {useDebounceCallback, useDisclosure} from "@mantine/hooks";
 import {
@@ -78,6 +78,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
     const [queryChoice, setQueryChoice] = useState('nameQuery');
 
+    const [loading, setLoading] = useState(false);
+
     type SimbadData = {
         id: string,
         oidref: number
@@ -87,9 +89,10 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         useState<SimbadData[]>([]);
 
 
-    const handleSimbadSearch = useDebounceCallback(() =>
-        simbadQuery(form.values.TargetName),
-        1000);
+    const handleSimbadSearch = useDebounceCallback(() => {
+        setLoading(false);
+        simbadQuery(form.values.TargetName);
+    }, 1000);
 
     const form = useForm({
             initialValues: props.initialValues ?? {
@@ -391,11 +394,13 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             ref={targetNameRef}
                             withAsterisk
                             label="Name"
-                            placeholder="Name of target"
+                            placeholder="Search for a target ..."
+                            rightSection={loading && <Loader size={20}/> }
                             {...form.getInputProps("TargetName")}
                             onChange={(e: string) => {
                                 setNameUnique(true);
                                 handleSimbadSearch();
+                                setLoading(true);
                                 if(form.getInputProps("TargetName").onChange)
                                     form.getInputProps("TargetName").onChange(e);
 
