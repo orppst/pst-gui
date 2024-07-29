@@ -1,6 +1,6 @@
 import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group, Table, Radio} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
+import {useDebounceCallback, useDisclosure} from "@mantine/hooks";
 import {
     FormEvent,
     MouseEvent,
@@ -86,6 +86,11 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const [simbadResult, setSimbadResult] =
         useState<SimbadData[]>([]);
 
+
+    const handleSimbadSearch = useDebounceCallback(() =>
+        simbadQuery(form.values.TargetName),
+        1000);
+
     const form = useForm({
             initialValues: props.initialValues ?? {
                 TargetName: "",
@@ -141,23 +146,25 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
         fetch(theUrl)
             .then(res => {
-                //Simbad returns errors as VOTable xml
+                //Simbad returns errors as VOTable xml IN THE RESPONSE
                 res.text()
                     .then(
                         result => {
-                            //we're expecting JSON so XML indicates an error
+                            //we're expecting JSON so XML starting character indicates an error
                             if (result.charAt(0) == '<')
                                 throw new Error(simbadErrorMessage(result))
+
+                            const jsonResult = JSON.parse(result)
+
+                            if (jsonResult.data.length > 0) {
+                                setSimbadResult(jsonResult.data.map((arr: any) =>
+                                    ({id: arr[0], oidref: arr[1] })));
+                            }else {
+                                notifyError("Target not found",
+                                    "target name did not match any records");
+                            }
                         }
                     )
-                return res.json()
-            })
-            .then(result => {
-                if (result.data.length > 0) {
-                    setSimbadResult(result.data.map((arr: any) => ({id: arr[0], oidref: arr[1] })));
-                }else {
-                    notifyError("Target not found", "target name did not match any records");
-                }
             })
             .catch(err => notifyError("Failed to execute SIMBAD query",
                 getErrorMessage(err)));
@@ -386,19 +393,16 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             {...form.getInputProps("TargetName")}
                             onChange={(e: string) => {
                                 setNameUnique(true);
+                                handleSimbadSearch();
                                 if(form.getInputProps("TargetName").onChange)
                                     form.getInputProps("TargetName").onChange(e);
+
                             }}
                         />
                         <DatabaseSearchButton
                             label={"Lookup"}
                             onClick={simbadLookup}
                             toolTipLabel={"Search Simbad database"}
-                        />
-                        <DatabaseSearchButton
-                            label={"Frontend"}
-                            onClick={() => simbadQuery(form.values.TargetName)}
-                            toolTipLabel={"frontend search"}
                         />
                         <NumberInput
                             required={true}
