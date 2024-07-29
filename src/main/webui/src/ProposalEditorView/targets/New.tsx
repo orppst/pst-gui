@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group, Table} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group, Table, Radio} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -37,6 +37,7 @@ import {
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import {IconInfoCircle} from "@tabler/icons-react";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -75,10 +76,11 @@ const ALADIN_STATE_NAME = "hasDoneAladin";
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const [nameUnique, setNameUnique] = useState(true);
 
+    const [queryChoice, setQueryChoice] = useState('nameQuery');
+
     type SimbadData = {
-        mainId: string,
-        ra: number,
-        dec: number,
+        id: string,
+        oidref: number
     }
 
     const [simbadResult, setSimbadResult] =
@@ -114,27 +116,50 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const { selectedProposalCode} = useParams();
     const targetNameRef = useRef(null);
 
+    const simbadAltName = (ident: string) : string => {
+        //Prefix string with 'NAME ' and capitalise first character of input
+        return 'NAME ' + ident.charAt(0).toUpperCase() + ident.slice(1);
+    }
+
     function simbadQuery(targetName: string){
+
+        //2 options: 1. Alternate target name e.g., Crab; 2. Catalogue Name e.g., M 87
 
         const baseUrl = "https://simbad.cds.unistra.fr/simbad/";
         const queryType = "sim-tap/sync?request=doQuery&lang=adql&format=json&query=";
 
-        const adqlQuery=`select main_id,ra,dec from basic where main_id = '${targetName}'`
+        let simbadName = queryChoice == 'nameQuery' ? simbadAltName(targetName) : targetName;
+
+        const adqlQuery =
+            encodeURIComponent(
+                queryChoice == 'nameQuery' ?
+                `select id,oidref from ident where id like '${simbadName}%'` :
+                    `select id,oidref from ident where id = '${simbadName}'`
+            )
 
         const theUrl = baseUrl + queryType + adqlQuery;
 
-        console.log(theUrl)
-
         fetch(theUrl)
-            .then(res => res.json())
+            .then(res => {
+                //Simbad returns errors as VOTable xml
+                res.text()
+                    .then(
+                        result => {
+                            //we're expecting JSON so XML indicates an error
+                            if (result.charAt(0) == '<')
+                                throw new Error(simbadErrorMessage(result))
+                        }
+                    )
+                return res.json()
+            })
             .then(result => {
                 if (result.data.length > 0) {
-                    setSimbadResult(result.data.map((arr: any) => ({mainId: arr[0], ra: arr[1], dec: arr[2] })));
+                    setSimbadResult(result.data.map((arr: any) => ({id: arr[0], oidref: arr[1] })));
                 }else {
                     notifyError("Target not found", "target name did not match any records");
                 }
             })
-            .catch(err => notifyError("Failed to do simbad query",
+            .catch(err => notifyError("Failed to execute SIMBAD query",
                 getErrorMessage(err)));
     }
 
@@ -344,6 +369,15 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 </Group>
                 <form onSubmit={handleSubmission}>
                     <Stack>
+                        <Radio.Group
+                            value={queryChoice}
+                            onChange={setQueryChoice}
+                            name={"queryChoice"}
+                            label={'Choose the query type'}
+                        >
+                            <Radio value={'nameQuery'} label={'Alternate Name'} />
+                            <Radio value={'catQuery'} lable={'Catalogue Ref.'} />
+                        </Radio.Group>
                         <TextInput
                             ref={targetNameRef}
                             withAsterisk
@@ -406,16 +440,14 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             <Table.Thead>
                                 <Table.Tr>
                                     <Table.Th>Main ID</Table.Th>
-                                    <Table.Th>RA (deg.)</Table.Th>
-                                    <Table.Th>DEC (deg.)</Table.Th>
+                                    <Table.Th>OID Ref.</Table.Th>
                                 </Table.Tr>
                             </Table.Thead>
                             <Table.Tbody>
                                 {simbadResult.map(s =>(
-                                    <Table.Tr key={s.mainId}>
-                                        <Table.Td>{s.mainId}</Table.Td>
-                                        <Table.Td>{s.ra}</Table.Td>
-                                        <Table.Td>{s.dec}</Table.Td>
+                                    <Table.Tr key={s.id}>
+                                        <Table.Td>{s.id}</Table.Td>
+                                        <Table.Td>{s.oidref}</Table.Td>
                                     </Table.Tr>
                                 ))
                                 }
