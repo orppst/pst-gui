@@ -159,7 +159,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             if (jsonResult.data.length > 0) {
                                 setSimbadResult(jsonResult.data.map((arr: any) =>
                                     ({id: arr[0], oidref: arr[1] })));
-                            }else {
+                            } else {
                                 notifyError("Target not found",
                                     "target name did not match any records");
                             }
@@ -382,8 +382,10 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             name={"queryChoice"}
                             label={'Choose the query type'}
                         >
-                            <Radio value={'nameQuery'} label={'Alternate Name'} />
-                            <Radio value={'catQuery'} lable={'Catalogue Ref.'} />
+                            <Group p={"sm"}>
+                                <Radio value={'nameQuery'} label={'Alternate Name'} />
+                                <Radio value={'catQuery'} label={'Catalogue Ref.'} />
+                            </Group>
                         </Radio.Group>
                         <TextInput
                             ref={targetNameRef}
