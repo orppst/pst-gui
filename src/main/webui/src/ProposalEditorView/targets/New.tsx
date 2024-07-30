@@ -1,6 +1,6 @@
-import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group, Table, Radio, Loader} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import {useDebounceCallback, useDisclosure} from "@mantine/hooks";
+import {useDisclosure} from "@mantine/hooks";
 import {
     FormEvent,
     MouseEvent,
@@ -36,7 +36,6 @@ import {
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import {IconInfoCircle} from "@tabler/icons-react";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -72,23 +71,6 @@ const initialConfig: IAladinConfig = {
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const [nameUnique, setNameUnique] = useState(true);
 
-    const [queryChoice, setQueryChoice] = useState('nameQuery');
-
-    const [loading, setLoading] = useState(false);
-
-    type SimbadData = {
-        id: string,
-        oidref: number
-    }
-
-    const [simbadResult, setSimbadResult] =
-        useState<SimbadData[]>([]);
-
-
-    const handleSimbadSearch = useDebounceCallback(() => {
-        setLoading(false);
-        simbadQuery(form.values.TargetName);
-    }, 1000);
 
     const form = useForm({
             initialValues: props.initialValues ?? {
@@ -113,55 +95,6 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
     const targetNameRef = useRef(null);
-
-    const simbadAltName = (ident: string) : string => {
-        //Prefix string with 'NAME ' and capitalise first character of input
-        return 'NAME ' + ident.charAt(0).toUpperCase() + ident.slice(1);
-    }
-
-    function simbadQuery(targetName: string){
-
-        //2 options: 1. Alternate target name e.g., Crab; 2. Catalogue Name e.g., M 87
-
-        const baseUrl = "https://simbad.cds.unistra.fr/simbad/";
-        const queryType = "sim-tap/sync?request=doQuery&lang=adql&format=json&query=";
-
-        let simbadName = queryChoice == 'nameQuery' ? simbadAltName(targetName) : targetName;
-
-        const adqlQuery =
-            encodeURIComponent(
-                queryChoice == 'nameQuery' ?
-                `select id,oidref from ident where id like '${simbadName}%'` :
-                    `select id,oidref from ident where id = '${simbadName}'`
-            )
-
-        const theUrl = baseUrl + queryType + adqlQuery;
-
-        fetch(theUrl)
-            .then(res => {
-                //Simbad returns errors as VOTable xml IN THE RESPONSE
-                res.text()
-                    .then(
-                        result => {
-                            //we're expecting JSON so XML starting character indicates an error
-                            if (result.charAt(0) == '<')
-                                throw new Error(simbadErrorMessage(result))
-
-                            const jsonResult = JSON.parse(result)
-
-                            if (jsonResult.data.length > 0) {
-                                setSimbadResult(jsonResult.data.map((arr: any) =>
-                                    ({id: arr[0], oidref: arr[1] })));
-                            } else {
-                                notifyError("Target not found",
-                                    "target name did not match any records");
-                            }
-                        }
-                    )
-            })
-            .catch(err => notifyError("Failed to execute SIMBAD query",
-                getErrorMessage(err)));
-    }
 
     /**
      * executes a simbad query.
@@ -333,8 +266,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     }
 
     /**
-     * updates the aladin viewer to handle changes to RA.
-     * @param {number | string} value the new RA.
+     * updates the aladin viewer to handle changes to Dec.
+     * @param {number | string} value the new Dec.
      */
     const UpdateAladinDec = (value: number | string) => {
         // acquire the aladin object and set it.
@@ -363,28 +296,14 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 </Group>
                 <form onSubmit={handleSubmission}>
                     <Stack>
-                        <Radio.Group
-                            value={queryChoice}
-                            onChange={setQueryChoice}
-                            name={"queryChoice"}
-                            label={'Choose the query type'}
-                        >
-                            <Group p={"sm"}>
-                                <Radio value={'nameQuery'} label={'Alternate Name'} />
-                                <Radio value={'catQuery'} label={'Catalogue Ref.'} />
-                            </Group>
-                        </Radio.Group>
                         <TextInput
                             ref={targetNameRef}
                             withAsterisk
                             label="Name"
                             placeholder="Search for a target ..."
-                            rightSection={loading && <Loader size={20}/> }
                             {...form.getInputProps("TargetName")}
                             onChange={(e: string) => {
                                 setNameUnique(true);
-                                handleSimbadSearch();
-                                setLoading(true);
                                 if(form.getInputProps("TargetName").onChange)
                                     form.getInputProps("TargetName").onChange(e);
 
@@ -431,24 +350,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             disabled={!form.isValid() ||
                                       form.values.searching? true : undefined}
                         />
-                        <Table>
-                            <Table.Thead>
-                                <Table.Tr>
-                                    <Table.Th>Main ID</Table.Th>
-                                    <Table.Th>OID Ref.</Table.Th>
-                                </Table.Tr>
-                            </Table.Thead>
-                            <Table.Tbody>
-                                {simbadResult.map(s =>(
-                                    <Table.Tr key={s.id}>
-                                        <Table.Td>{s.id}</Table.Td>
-                                        <Table.Td>{s.oidref}</Table.Td>
-                                    </Table.Tr>
-                                ))
-                                }
-                            </Table.Tbody>
 
-                        </Table>
                     </Stack>
                 </form>
             </Grid.Col>

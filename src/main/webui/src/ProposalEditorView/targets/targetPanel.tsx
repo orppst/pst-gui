@@ -10,6 +10,7 @@ import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from './TargetTable.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import SimbadSearchModal from "./simbadSearch.tsx";
 
 /**
  * Renders the target panel containing an add target button
@@ -62,6 +63,7 @@ export function TargetPanel(): ReactElement {
                                  selectedTargets={undefined}/>
                 }
                 <AddTargetModal/>
+                <SimbadSearchModal/>
             </Stack>
         </PanelFrame>
     );
