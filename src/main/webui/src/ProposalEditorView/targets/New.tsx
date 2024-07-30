@@ -22,7 +22,6 @@ import {useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
 import DatabaseSearchButton from 'src/commonButtons/databaseSearch';
 import { SubmitButton } from 'src/commonButtons/save';
-import { useHistoryState } from 'src/useHistoryState.ts';
 import "./aladin.css";
 import {
     AladinType,
@@ -60,9 +59,6 @@ const initialConfig: IAladinConfig = {
     reticuleSize: 22,
     showCooGridControl: false,
 };
-
-// state name for if aladin has been loaded boolean.
-const ALADIN_STATE_NAME = "hasDoneAladin";
 
 
 /**
@@ -112,12 +108,6 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         null)
             },
         });
-
-    // this is needed to ensure that aladin is only loaded once, and not each
-    // time the renderer engages. The reason for this is that it makes
-    // duplicates which steal screen restate, making it unusable.
-    let [hasDoneAladin, setHasDoneAladin] =
-        useHistoryState(ALADIN_STATE_NAME, false);
 
     // create the database query client and get basic elements.
     const queryClient = useQueryClient();
@@ -238,7 +228,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
          * assign the coord system to the target if feasible.
          * @param {SpaceSys} ss the coord system to set.
          */
-        function assignSpaceSys(ss: SpaceSys) {
+        const assignSpaceSys = (ss: SpaceSys) => {
             if (Target.sourceCoordinates != undefined)
                 if (Target.sourceCoordinates.coordSys != undefined)
                     Target.sourceCoordinates.coordSys = ss;
@@ -254,15 +244,18 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     fetchSpaceSystemResourceGetSpaceSystem(
                         {pathParams: { frameCode: 'ICRS'}})
                         .then((spaceSys) => assignSpaceSys(spaceSys))
-                        .then(() => fetchProposalResourceAddNewTarget(
-                            {pathParams:{
-                                    proposalCode: Number(selectedProposalCode) },
-                                body: Target})
-                            .then(() => {return queryClient.invalidateQueries()})
-                            .then(() => {props.onSubmit()})
-                            .catch(console.log)
+                        .then(() =>
+                            fetchProposalResourceAddNewTarget({
+                                pathParams:{proposalCode: Number(selectedProposalCode) },
+                                body: Target
+                            })
+                                .then(() => queryClient.invalidateQueries())
+                                .then(() => {props.onSubmit()})
+                                .catch(error => notifyError("Failed to add Target",
+                                    getErrorMessage(error)))
                         )
-                        .catch(console.log);
+                        .catch(error => notifyError("Failed to get Space Coordinate System",
+                            getErrorMessage(error)))
                 } else {
                     //Target already exists on this proposal
                     setNameUnique(false);
@@ -270,9 +263,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         "A target called '"+val.TargetName+"' already exists");
                 }
             })
-            .catch(console.log);
-
-
+            .catch(error => notifyError("Failed to get existing Targets",
+                getErrorMessage(error)));
     }
 
     /**
@@ -301,32 +293,24 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     });
 
     /**
-     * handler that eventually creates the aladin interface from Javascript.
-     * This code was swiped from stack overflow for loading in the Javascript
-     * to a React system.
+     * handler that creates the Aladin interface from Javascript.
+     * Empty 'deps' array in useEffect to load on initial render only.
+     * Note that in 'dev mode' (React 18) this actually runs twice for reasons.
      */
     useEffect(() => {
-        if (!hasDoneAladin) {
-            setHasDoneAladin(true);
-            hasDoneAladin = true;
+        const bodyElement =
+            document.getElementsByTagName('BODY')[0] as HTMLElement;
 
-            // Now the component is mounted we can load aladin lite.
-            const bodyElement =
-                document.getElementsByTagName('BODY')[0] as HTMLElement;
+        // jQuery is a dependency for aladin-lite and must be inserted in the DOM.
+        LoadScriptIntoDOM(bodyElement, JQUERY_SRC_URL);
 
-            // jQuery is a dependency for aladin-lite and therefore must be
-            // inserted in the DOM.
-            LoadScriptIntoDOM(bodyElement, JQUERY_SRC_URL);
-
-            // Then we load the aladin lite script.
-            LoadScriptIntoDOM(
-                bodyElement, ALADIN_SRC_URL,
-                () => {
-                    // to stop reloading aladin into the browser on every render.
-                    setHasDoneAladin(true);
-                    Aladin = PopulateAladin(initialConfig);
-                })
-        }});
+        // Then we load the aladin lite script.
+        LoadScriptIntoDOM(
+            bodyElement, ALADIN_SRC_URL,
+            () => {
+                Aladin = PopulateAladin(initialConfig);
+            })
+        }, []);
 
     /**
      * handles the different mouse event types.
@@ -481,26 +465,19 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
  */
 export default function AddTargetModal(): ReactElement {
     const [opened, { close, open }] = useDisclosure();
-    const [_, setHasDoneAladin] =
-        useHistoryState(ALADIN_STATE_NAME, false);
 
     return (
         <>
-            <AddButton onClick={open}
-                       toolTipLabel={"Add new target."}/>
+            <AddButton
+                onClick={open}
+                toolTipLabel={"Add new target."}
+            />
             <Modal title="New target"
                    opened={opened}
-                   onClose={() => {
-                       setHasDoneAladin(false);
-                       close();
-                   }}
-                   fullScreen>
-                <TargetForm
-                    onSubmit={() => {
-                        setHasDoneAladin(false);
-                        close();
-                    }}
-                />
+                   onClose={() => {close();}}
+                   fullScreen
+            >
+                <TargetForm onSubmit={() => {close();}}/>
             </Modal>
         </>
     );
