@@ -1,7 +1,7 @@
 import {ReactElement, SetStateAction, useState} from "react";
 import {useDebounceCallback, useDisclosure} from "@mantine/hooks";
 import AddButton from "../../commonButtons/add.tsx";
-import {Combobox, Container, Group, InputBase, Modal, Radio, Stack, useCombobox} from "@mantine/core";
+import {Combobox, Container, Group, InputBase, Modal, Radio, ScrollArea, Stack, useCombobox} from "@mantine/core";
 import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -15,7 +15,8 @@ function SimbadSearch() {
 
 
     const getSimbadIdentsDebounce = useDebounceCallback(() => {
-        getSimbadIdents(search, 10);
+        setSimbadResult([]); //clear array to clear the combobox 'options'
+        getSimbadIdents(search, 100);
     }, 1000);
 
     const [queryChoice, setQueryChoice] = useState('nameQuery');
@@ -28,7 +29,15 @@ function SimbadSearch() {
     const [simbadResult, setSimbadResult] =
         useState<SimbadData[]>([]);
 
+    /**
+     * Internal function that does the actual fetch to the SIMBAD URL
+     * @param targetName (string) the search term from the input box
+     * @param limit (number) only get the first 'limit' elements of the search
+     */
     function getSimbadIdents(targetName: string, limit: number) {
+
+        //don't do a search if the 'targetName' string is empty
+        if (targetName.length === 0) return
 
         const baseUrl = "https://simbad.cds.unistra.fr/simbad/";
         const queryType = "sim-tap/sync?request=doQuery&lang=adql&format=json&query=";
@@ -44,7 +53,7 @@ function SimbadSearch() {
             encodeURIComponent(
                 queryChoice == 'nameQuery' ?
                     `select top ${limit} min(id),oidref from ident where id like '${simbadName}%' group by oidref` :
-                    `select top ${limit} distinct id,oidref from ident where id = '${simbadName}'`
+                    `select top ${limit} id,oidref from ident where id = '${simbadName}'`
             )
 
         const theUrl = baseUrl + queryType + adqlQuery;
@@ -97,7 +106,7 @@ function SimbadSearch() {
             </Radio.Group>
             <Combobox
                 store={combobox}
-                withinPortal={false}
+                withinPortal={true}
                 onOptionSubmit={(val) => {
                     setValue(val);
                     setSearch(
@@ -130,10 +139,14 @@ function SimbadSearch() {
                 </Combobox.Target>
                 <Combobox.Dropdown>
                     <Combobox.Options>
-                        {
-                            options.length > 0 ? options :
-                            <Combobox.Empty>Nothing found</Combobox.Empty>
-                        }
+                        <ScrollArea.Autosize mah={200} type={"scroll"}>
+                            {
+                                options.length > 0 ? options :
+                                    search.length > 0 ?
+                                        <Combobox.Empty>Nothing found</Combobox.Empty> :
+                                        <Combobox.Empty>Please type at least one character to search</Combobox.Empty>
+                            }
+                        </ScrollArea.Autosize>
                     </Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>
@@ -160,7 +173,7 @@ export default function SimbadSearchModal() : ReactElement {
                 onClose={() => close()}
                 size={"50%"}
             >
-                <Container mb={300}>
+                <Container mb={100}>
                     <SimbadSearch/>
                 </Container>
             </Modal>
