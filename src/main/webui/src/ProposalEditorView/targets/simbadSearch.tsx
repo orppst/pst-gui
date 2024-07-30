@@ -1,7 +1,18 @@
 import {ReactElement, SetStateAction, useState} from "react";
 import {useDebounceCallback, useDisclosure} from "@mantine/hooks";
 import AddButton from "../../commonButtons/add.tsx";
-import {Combobox, Container, Group, InputBase, Modal, Radio, ScrollArea, Stack, useCombobox} from "@mantine/core";
+import {
+    Combobox,
+    Container,
+    Group,
+    InputBase,
+    Loader,
+    Modal,
+    Radio,
+    ScrollArea,
+    Stack,
+    useCombobox
+} from "@mantine/core";
 import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -12,10 +23,12 @@ function SimbadSearch() {
     });
     const [value, setValue] = useState<string | null>(null);
     const [search, setSearch] = useState('');
+    const [loading, setLoading] = useState(false);
 
 
     const getSimbadIdentsDebounce = useDebounceCallback(() => {
         setSimbadResult([]); //clear array to clear the combobox 'options'
+        setLoading(true); //shows the loader while waiting for results
         getSimbadIdents(search, 100);
     }, 1000);
 
@@ -74,8 +87,8 @@ function SimbadSearch() {
                                 setSimbadResult(jsonResult.data.map((arr: any) =>
                                     ({id: arr[0], oidref: arr[1] })));
                             } else {
-                                notifyError("Target not found",
-                                    "target name did not match any records");
+                                //"nothing found" message displayed in empty combobox under input
+                                setLoading(false);
                             }
                         }
                     )
@@ -130,8 +143,9 @@ function SimbadSearch() {
                         onBlur={() => {
                             combobox.closeDropdown();
                             setSearch(
-                                simbadResult.find(({oidref}) => String(oidref) === value)!.id
-                                || '');
+                                simbadResult
+                                    .find(({oidref}) =>
+                                        String(oidref) === value)?.id ?? '');
                         }}
                         placeholder="Search value"
                         rightSectionPointerEvents="none"
@@ -142,9 +156,14 @@ function SimbadSearch() {
                         <ScrollArea.Autosize mah={200} type={"scroll"}>
                             {
                                 options.length > 0 ? options :
-                                    search.length > 0 ?
-                                        <Combobox.Empty>Nothing found</Combobox.Empty> :
-                                        <Combobox.Empty>Please type at least one character to search</Combobox.Empty>
+                                    search.length === 0 ?
+                                        <Combobox.Empty>
+                                            Please type at least one character to search
+                                        </Combobox.Empty> :
+                                        loading ?
+                                            <Combobox.Empty><Loader size={20}/></Combobox.Empty> :
+                                            <Combobox.Empty>Nothing found</Combobox.Empty>
+
                             }
                         </ScrollArea.Autosize>
                     </Combobox.Options>
