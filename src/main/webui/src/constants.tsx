@@ -78,3 +78,16 @@ export const OVERVIEW_PDF_FILENAME = 'ProposalOverview.pdf';
 
 /* max size of a upload zip (20 MB)*/
 export const MAX_SUPPORTING_DOCUMENT_SIZE = 100*1024*1024;
+
+/* Simbad URL string for its TAP service */
+export const SIMBAD_URL_TAP_SERVICE =
+    "https://simbad.cds.unistra.fr/simbad/sim-tap/sync?request=doQuery&lang=adql";
+
+/* Parameters for Json output plus the required 'query=' */
+export const SIMBAD_JSON_OUTPUT = "&format=json&query="
+
+/* limit the number of search results returned by SIMBAD */
+export const SIMBAD_TOP_LIMIT = 100;
+
+/* Number of milliseconds delay for debounce used to search the SIMBAD database */
+export const SIMBAD_DEBOUNCE_DELAY = 1000; //milliseconds

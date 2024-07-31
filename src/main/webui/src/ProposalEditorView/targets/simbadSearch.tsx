@@ -10,27 +10,40 @@ import {
     Modal,
     Radio,
     ScrollArea,
-    Stack,
+    Stack, Text,
     useCombobox
 } from "@mantine/core";
 import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {SIMBAD_DEBOUNCE_DELAY, SIMBAD_JSON_OUTPUT, SIMBAD_TOP_LIMIT, SIMBAD_URL_TAP_SERVICE} from "../../constants.tsx";
+
 
 function SimbadSearch() {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
-    const [value, setValue] = useState<string | null>(null);
+
+
+    //search value is the target name
     const [search, setSearch] = useState('');
+
+    //boolean to determine search status to display a loader when search in progress
     const [loading, setLoading] = useState(false);
 
+    //number of targets found in the search, max is the "top" limit
+    const [numberFound, setNumberFound] =
+        useState<number>(0);
+
+    const [invalidInput, setInvalidInput] = useState(false);
 
     const getSimbadIdentsDebounce = useDebounceCallback(() => {
         setSimbadResult([]); //clear array to clear the combobox 'options'
         setLoading(true); //shows the loader while waiting for results
-        getSimbadIdents(search, 100);
-    }, 1000);
+        setNumberFound(0);
+        setInvalidInput(false);
+        getSimbadIdents(search, SIMBAD_TOP_LIMIT);
+    }, SIMBAD_DEBOUNCE_DELAY);
 
     const [queryChoice, setQueryChoice] = useState('nameQuery');
 
@@ -49,29 +62,48 @@ function SimbadSearch() {
      */
     function getSimbadIdents(targetName: string, limit: number) {
 
+        let charToAvoid = /[`!@#$%^&()_+\-={};':"\\|,.<>\/?~]/
+
         //don't do a search if the 'targetName' string is empty
         if (targetName.length === 0) return
 
-        const baseUrl = "https://simbad.cds.unistra.fr/simbad/";
-        const queryType = "sim-tap/sync?request=doQuery&lang=adql&format=json&query=";
+        //don't do a search if the 'targetName' string contains suspect characters
+        if (charToAvoid.test(targetName)) {
+            setLoading(false);
+            setInvalidInput(true);
+            return;
+        }
 
         const simbadAltName = (ident: string) : string => {
-            //Prefix string with 'NAME ' and capitalise first character of input
-            return 'NAME ' + ident.charAt(0).toUpperCase() + ident.slice(1);
+            //Prefix string with 'NAME '
+            return 'NAME ' + ident;
         }
 
         let simbadName = queryChoice == 'nameQuery' ? simbadAltName(targetName) : targetName;
 
-        const adqlQuery =
-            encodeURIComponent(
-                queryChoice == 'nameQuery' ?
-                    `select top ${limit} min(id),oidref from ident where id like '${simbadName}%' group by oidref` :
+        let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
+
+        switch(queryChoice) {
+            case 'nameQuery':
+                theUrl += encodeURIComponent(
+                    `select top ${limit} min(id),oidref from ident where id 
+                                              like '${simbadName}%' group by oidref`
+                )
+                break;
+            case 'idQuery':
+                theUrl += encodeURIComponent(
                     `select top ${limit} id,oidref from ident where id = '${simbadName}'`
-            )
+                )
+                break;
+            case 'catQuery':
+                theUrl += encodeURIComponent(
+                    `select top ${limit} min(id),oidref from ident where id 
+                                              like '${simbadName}%' group by oidref`
+                )
+                break;
+        }
 
-        const theUrl = baseUrl + queryType + adqlQuery;
-
-        fetch(theUrl)
+        fetch(theUrl, {signal: AbortSignal.timeout(5000)})
             .then(res => {
                 //Simbad returns errors as VOTable xml IN THE RESPONSE
                 res.text()
@@ -86,15 +118,22 @@ function SimbadSearch() {
                             if (jsonResult.data.length > 0) {
                                 setSimbadResult(jsonResult.data.map((arr: any) =>
                                     ({id: arr[0], oidref: arr[1] })));
+
+                                setNumberFound(jsonResult.data.length);
                             } else {
                                 //"nothing found" message displayed in empty combobox under input
                                 setLoading(false);
+                                setNumberFound(0);
                             }
                         }
                     )
             })
-            .catch(err => notifyError("Failed to execute SIMBAD query",
-                getErrorMessage(err)));
+            .catch(
+                err => {
+                    setLoading(false);
+                    notifyError("Failed to execute SIMBAD query", getErrorMessage(err))
+                }
+            );
     }
 
 
@@ -114,14 +153,20 @@ function SimbadSearch() {
             >
                 <Group p={"sm"}>
                     <Radio value={'nameQuery'} label={'Alternate Name'} />
+                    <Radio value={'idQuery'} label={'Identity'} />
                     <Radio value={'catQuery'} label={'Catalogue Ref.'} />
                 </Group>
             </Radio.Group>
+            {
+                invalidInput &&
+                <Text c={"red"} size={"sm"}>
+                    Invalid character entered in search input. Stop that or you'll make the query language gods angry
+                </Text>
+            }
             <Combobox
                 store={combobox}
                 withinPortal={true}
                 onOptionSubmit={(val) => {
-                    setValue(val);
                     setSearch(
                          simbadResult.find(({oidref}) => String(oidref) === val)!.id
                     );
@@ -131,21 +176,24 @@ function SimbadSearch() {
                 <Combobox.Target>
                     <InputBase
                         rightSection={<Combobox.Chevron/>}
+                        description={
+                            queryChoice === 'nameQuery' ? "Case sensitive e.g., 'Crab' not 'crab'" :
+                                queryChoice === 'idQuery' ? "Exact name required e.g., 'm1', 'crab', 'andromeda' - case insensitive" :
+                                    "First few characters of the catalogue reference e.g., 'M', 'ACO', 'Gaia' - case sensitive and try multiple spaces"
+                        }
                         value={search}
                         onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
                             combobox.openDropdown();
                             combobox.updateSelectedOptionIndex();
                             setSearch(event.currentTarget.value);
+                            setInvalidInput(false);
                             getSimbadIdentsDebounce();
                         }}
                         onClick={() => combobox.openDropdown()}
                         onFocus={() => combobox.openDropdown()}
                         onBlur={() => {
                             combobox.closeDropdown();
-                            setSearch(
-                                simbadResult
-                                    .find(({oidref}) =>
-                                        String(oidref) === value)?.id ?? '');
+                            if(search.length === 0) setSimbadResult([])
                         }}
                         placeholder="Search value"
                         rightSectionPointerEvents="none"
@@ -153,12 +201,27 @@ function SimbadSearch() {
                 </Combobox.Target>
                 <Combobox.Dropdown>
                     <Combobox.Options>
+                        {
+                            search.length > 0 && numberFound > 0 &&
+                            <Group justify={"center"}>
+
+                            <Combobox.Header>
+                                Found {numberFound} result{numberFound > 1 && 's'}.
+                                { numberFound === SIMBAD_TOP_LIMIT &&
+                                    " - limit reached, you may want to refine your search."
+                                }
+                                { numberFound > 6 && " Please scroll."}
+                            </Combobox.Header>
+
+                            </Group>
+                        }
+
                         <ScrollArea.Autosize mah={200} type={"scroll"}>
                             {
                                 options.length > 0 ? options :
                                     search.length === 0 ?
                                         <Combobox.Empty>
-                                            Please type at least one character to search
+                                            Please type at least one character to start a search
                                         </Combobox.Empty> :
                                         loading ?
                                             <Combobox.Empty><Loader size={20}/></Combobox.Empty> :
