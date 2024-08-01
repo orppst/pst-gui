@@ -78,6 +78,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 RA: 0.00,
                 Dec: 0.00,
                 SelectedEpoch: "J2000",
+                sexagesimal: "00:00:00 +00:00:00",
                 searching: false,
                 lastSearchName: '',
             },
@@ -287,7 +288,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             </Alert>
             <Group grow={!isMobile} justify={"center"}>
                 <Fieldset legend={"SIMBAD search"} pb={150}>
-                    <SimbadSearch/>
+                    <SimbadSearch form={form}/>
                 </Fieldset>
                 <div
                     id="aladin-lite-div"
@@ -405,6 +406,7 @@ export type newTargetData = {
     RA: number;
     Dec: number;
     TargetName: string
+    sexagesimal: string
     searching: boolean
     lastSearchName: string
 }

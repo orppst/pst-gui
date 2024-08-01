@@ -1,22 +1,20 @@
 import {SetStateAction, useState} from "react";
 import {useDebounceCallback} from "@mantine/hooks";
-import {
-    Combobox,
-    Group,
-    InputBase,
-    Loader,
-    Radio,
-    ScrollArea,
-    Stack, Text,
-    useCombobox
-} from "@mantine/core";
+import {Combobox, Group, InputBase, Loader, Radio, ScrollArea, Stack, Text, useCombobox} from "@mantine/core";
 import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SIMBAD_DEBOUNCE_DELAY, SIMBAD_JSON_OUTPUT, SIMBAD_TOP_LIMIT, SIMBAD_URL_TAP_SERVICE} from "../../constants.tsx";
+import {UseFormReturnType} from "@mantine/form";
+import {newTargetData} from "./New.tsx";
+
+type SimbadIdent = {
+    id: string,
+    oidref: number
+}
 
 export
-function SimbadSearch() {
+function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
@@ -34,7 +32,7 @@ function SimbadSearch() {
     const [invalidInput, setInvalidInput] = useState(false);
 
     const getSimbadIdentsDebounce = useDebounceCallback(() => {
-        setSimbadResult([]); //clear this array to then clear the combobox 'options'
+        setSimbadIdentResult([]); //clear this array to then clear the combobox 'options'
         setLoading(true); //shows the loader while waiting for results
         setNumberFound(0); //avoids transient messages from the previous search
         setInvalidInput(false); // ensure this is false on a new search
@@ -43,13 +41,8 @@ function SimbadSearch() {
 
     const [queryChoice, setQueryChoice] = useState('nameQuery');
 
-    type SimbadData = {
-        id: string,
-        oidref: number
-    }
-
-    const [simbadResult, setSimbadResult] =
-        useState<SimbadData[]>([]);
+    const [simbadIdentResult, setSimbadIdentResult] =
+        useState<SimbadIdent[]>([]);
 
     /**
      * Internal function that does the actual fetch to the SIMBAD URL
@@ -112,29 +105,76 @@ function SimbadSearch() {
 
                             const jsonResult = JSON.parse(result)
 
-                            if (jsonResult.data.length > 0) {
-                                setSimbadResult(jsonResult.data.map((arr: any) =>
-                                    ({id: arr[0], oidref: arr[1] })));
-
-                                setNumberFound(jsonResult.data.length);
-                            } else {
-                                //"nothing found" message displayed in empty combobox under input
+                            if (jsonResult.data.length === 0)
                                 setLoading(false);
-                                setNumberFound(0);
+                            else {
+                                setSimbadIdentResult(jsonResult.data.map((arr: any) =>
+                                    ({id: arr[0], oidref: arr[1] })));
                             }
+                            setNumberFound(jsonResult.data.length);
                         }
                     )
             })
             .catch(
                 err => {
                     setLoading(false);
-                    notifyError("Failed to execute SIMBAD query", getErrorMessage(err))
+                    notifyError("Failed to execute SIMBAD ident query", getErrorMessage(err))
+                }
+            );
+    }
+
+    /**
+     *  Function to perform a search of the SIMBAD database with the given oidref returning the
+     *  relevant details of the target 795871
+     *
+     */
+
+    function getTargetDetails(oidref: number) {
+
+        console.log(oidref)
+
+        let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
+
+        let adqlQuery = encodeURIComponent(
+            `select main_id,ra,dec,radec2sexa(ra, dec, 16) from basic where oid=${oidref}`
+        )
+
+        //searches are expected to take order one second so set a timeout with a reasonable margin
+        fetch(theUrl + adqlQuery, {signal: AbortSignal.timeout(5000)})
+            .then(res => {
+                //Simbad returns errors as VOTable xml IN THE RESPONSE
+                res.text()
+                    .then(
+                        result => {
+                            //we're expecting JSON so XML starting character indicates an error
+                            if (result.charAt(0) == '<')
+                                throw new Error(simbadErrorMessage(result))
+
+                            const jsonResult = JSON.parse(result)
+
+                            console.log(jsonResult)
+
+                            if (jsonResult.data.length === 1) {
+                                jsonResult.data.map((arr: any) => {
+                                    props.form.setFieldValue('TargetName', arr[0])
+                                    props.form.setFieldValue('RA', arr[1]);
+                                    props.form.setFieldValue('Dec', arr[2])
+                                    props.form.setFieldValue('sexagesimal', arr[3])
+                                });
+                            }
+
+                        }
+                    )
+            })
+            .catch(
+                err => {
+                    notifyError("Failed to execute SIMBAD details query", getErrorMessage(err))
                 }
             );
     }
 
 
-    const options = simbadResult.map((item) => (
+    const options = simbadIdentResult.map((item) => (
         <Combobox.Option value={String(item.oidref)} key={item.id}>
             {item.id}
         </Combobox.Option>
@@ -165,8 +205,9 @@ function SimbadSearch() {
                 withinPortal={true}
                 onOptionSubmit={(val) => {
                     setSearch(
-                         simbadResult.find(({oidref}) => String(oidref) === val)!.id
+                         simbadIdentResult.find(({oidref}) => String(oidref) === val)!.id
                     );
+                    getTargetDetails(Number(val))
                     combobox.closeDropdown();
                 }}
             >
@@ -190,7 +231,7 @@ function SimbadSearch() {
                         onFocus={() => combobox.openDropdown()}
                         onBlur={() => {
                             combobox.closeDropdown();
-                            if(search.length === 0) setSimbadResult([])
+                            if(search.length === 0) setSimbadIdentResult([])
                         }}
                         placeholder="Search value"
                         rightSectionPointerEvents="none"
