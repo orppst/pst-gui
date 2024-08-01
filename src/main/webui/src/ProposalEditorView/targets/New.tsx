@@ -39,7 +39,7 @@ import {SimbadSearch} from "./simbadSearch.tsx";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
-declare var Aladin: AladinType;
+let Aladin: AladinType;
 
 // the initial config for the aladin viewer.
 const initialConfig: IAladinConfig = {
@@ -69,6 +69,29 @@ const initialConfig: IAladinConfig = {
  * @constructor
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
+
+    /**
+     * handler that creates the Aladin interface from Javascript.
+     * Empty 'deps' array in useEffect to load on initial render only.
+     * Note that in 'dev mode' (React 18) this actually runs twice for reasons.
+     */
+    useEffect(() => {
+
+        const bodyElement =
+            document.getElementsByTagName('BODY')[0] as HTMLElement;
+
+        // jQuery is a dependency for aladin-lite and must be inserted in the DOM.
+        LoadScriptIntoDOM(bodyElement, JQUERY_SRC_URL);
+
+        // Then we load the aladin lite script.
+        LoadScriptIntoDOM(
+            bodyElement, ALADIN_SRC_URL,
+            () => {
+                Aladin = PopulateAladin(initialConfig);
+            })
+    }, []);
+
+
     const [nameUnique, setNameUnique] = useState(true);
     const isMobile = useMediaQuery('(max-width: 50em)');
 
@@ -227,27 +250,6 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     });
 
     /**
-     * handler that creates the Aladin interface from Javascript.
-     * Empty 'deps' array in useEffect to load on initial render only.
-     * Note that in 'dev mode' (React 18) this actually runs twice for reasons.
-     */
-    useEffect(() => {
-
-        const bodyElement =
-            document.getElementsByTagName('BODY')[0] as HTMLElement;
-
-        // jQuery is a dependency for aladin-lite and must be inserted in the DOM.
-        LoadScriptIntoDOM(bodyElement, JQUERY_SRC_URL);
-
-        // Then we load the aladin lite script.
-        LoadScriptIntoDOM(
-            bodyElement, ALADIN_SRC_URL,
-            () => {
-                Aladin = PopulateAladin(initialConfig);
-            })
-        }, []);
-
-    /**
      * handles the different mouse event types.
      * @param {React.MouseEvent<HTMLInputElement>} event the event that occurred.
      */
@@ -288,7 +290,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             </Alert>
             <Group grow={!isMobile} justify={"center"}>
                 <Fieldset legend={"SIMBAD search"} pb={150}>
-                    <SimbadSearch form={form}/>
+                    <SimbadSearch form={form} aladin={Aladin}/>
                 </Fieldset>
                 <div
                     id="aladin-lite-div"

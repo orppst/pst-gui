@@ -7,14 +7,34 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SIMBAD_DEBOUNCE_DELAY, SIMBAD_JSON_OUTPUT, SIMBAD_TOP_LIMIT, SIMBAD_URL_TAP_SERVICE} from "../../constants.tsx";
 import {UseFormReturnType} from "@mantine/form";
 import {newTargetData} from "./New.tsx";
+import {AladinType} from "./aladinTypes.tsx";
 
-type SimbadIdent = {
-    id: string,
-    oidref: number
-}
+
+/*
+ * Notice that I tried to generalise the fetch calls for SIMBAD using templated data but
+ * could not get it to work; the return value was always undefined. Something like:
+ *
+ * function simbadFetch<T>(theUrl: string, timeout: number) : Promise<T> {
+ *     return fetch(theUrl, {signal: AbortSignal.timeout(timeout)})
+ *         .then(res => {
+ *             res.text()
+ *                 .then(
+ *                     result => {
+ *                         //we're expecting JSON so XML starting character indicates an error
+ *                         if (result.charAt(0) == '<')
+ *                             throw new Error(simbadErrorMessage(result))
+ *
+ *                         return JSON.parse(result) as Promise<T>
+ *                     }
+ *                 )
+ *         })
+ * }
+ *
+ */
+
 
 export
-function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
+function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, aladin: AladinType}) {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
@@ -40,6 +60,11 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
     }, SIMBAD_DEBOUNCE_DELAY);
 
     const [queryChoice, setQueryChoice] = useState('nameQuery');
+
+    type SimbadIdent = {
+        id: string,
+        oidref: number
+    }
 
     const [simbadIdentResult, setSimbadIdentResult] =
         useState<SimbadIdent[]>([]);
@@ -125,13 +150,11 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
 
     /**
      *  Function to perform a search of the SIMBAD database with the given oidref returning the
-     *  relevant details of the target 795871
+     *  relevant details of the target. Notice that this is an internal function such that the
+     *  input will be a valid 'oidref' number in SIMBAD.
      *
      */
-
     function getTargetDetails(oidref: number) {
-
-        console.log(oidref)
 
         let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
 
@@ -152,17 +175,21 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
 
                             const jsonResult = JSON.parse(result)
 
-                            console.log(jsonResult)
-
+                            //this has to be true but leave for semantics
                             if (jsonResult.data.length === 1) {
                                 jsonResult.data.map((arr: any) => {
                                     props.form.setFieldValue('TargetName', arr[0])
                                     props.form.setFieldValue('RA', arr[1]);
                                     props.form.setFieldValue('Dec', arr[2])
                                     props.form.setFieldValue('sexagesimal', arr[3])
-                                });
-                            }
 
+                                    props.aladin.gotoRaDec(arr[1], arr[2])
+
+                                });
+                            } else {
+                                notifyError("Congratulations",
+                                    "It seems you managed to trigger an \"impossible\" error")
+                            }
                         }
                     )
             })
