@@ -1,6 +1,6 @@
-import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Stack, Alert, Group, Fieldset} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import {useDisclosure} from "@mantine/hooks";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
     FormEvent,
     MouseEvent,
@@ -20,7 +20,6 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
-import DatabaseSearchButton from 'src/commonButtons/databaseSearch';
 import { SubmitButton } from 'src/commonButtons/save';
 import "./aladin.css";
 import {
@@ -36,6 +35,7 @@ import {
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import {IconInfoCircle} from "@tabler/icons-react";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {SimbadSearch} from "./simbadSearch.tsx";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -70,7 +70,7 @@ const initialConfig: IAladinConfig = {
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const [nameUnique, setNameUnique] = useState(true);
-
+    const isMobile = useMediaQuery('(max-width: 50em)');
 
     const form = useForm({
             initialValues: props.initialValues ?? {
@@ -231,6 +231,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
      * Note that in 'dev mode' (React 18) this actually runs twice for reasons.
      */
     useEffect(() => {
+
         const bodyElement =
             document.getElementsByTagName('BODY')[0] as HTMLElement;
 
@@ -274,87 +275,80 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
-    // return the dynamic HTML.
     return (
-        <Grid columns={4}>
-            <Grid.Col span={2}>
-                <div id="aladin-lite-div"
-                     style={{height: 400}}
-                     onMouseUpCapture={HandleEvent}>
+        <Stack>
+            <Alert
+                variant={"light"}
+                color={"blue"}
+                title={"Prototype Version"}
+                icon={<IconInfoCircle/>}
+            >
+                All targets are assumed to have an ICRS coordinate system and J2000 epoch.
+            </Alert>
+            <Group grow={!isMobile} justify={"center"}>
+                <Fieldset legend={"SIMBAD search"} pb={150}>
+                    <SimbadSearch/>
+                </Fieldset>
+                <div
+                    id="aladin-lite-div"
+                    style={{height: 300, width: 400}}
+                    onMouseUpCapture={HandleEvent}>
                 </div>
-            </Grid.Col>
-            <Grid.Col span={ 2 }>
-                <Group justify={"center"}>
-                    <Alert
-                        variant={"light"}
-                        color={"blue"}
-                        title={"Prototype Version"}
-                        icon={<IconInfoCircle/>}
-                    >
-                        All targets are assumed to have an ICRS coordinate system and J2000 epoch.
-                    </Alert>
-                </Group>
-                <form onSubmit={handleSubmission}>
-                    <Stack>
-                        <TextInput
-                            ref={targetNameRef}
-                            withAsterisk
-                            label="Name"
-                            placeholder="Search for a target ..."
-                            {...form.getInputProps("TargetName")}
-                            onChange={(e: string) => {
-                                setNameUnique(true);
-                                if(form.getInputProps("TargetName").onChange)
-                                    form.getInputProps("TargetName").onChange(e);
+            </Group>
+            <Fieldset legend={"Target Form"}>
+            <form onSubmit={handleSubmission}>
+                <TextInput
+                    ref={targetNameRef}
+                    withAsterisk
+                    label="Name"
+                    placeholder="User provided or use the SIMBAD search"
+                    {...form.getInputProps("TargetName")}
+                    onChange={(e: string) => {
+                        setNameUnique(true);
+                        if(form.getInputProps("TargetName").onChange)
+                            form.getInputProps("TargetName").onChange(e);
 
-                            }}
-                        />
-                        <DatabaseSearchButton
-                            label={"Lookup"}
-                            onClick={simbadLookup}
-                            toolTipLabel={"Search Simbad database"}
-                        />
-                        <NumberInput
-                            required={true}
-                            label={"RA"}
-                            decimalScale={5}
-                            step={0.00001}
-                            min={0}
-                            max={360}
-                            allowNegative={false}
-                            suffix="°"
-                            {...form.getInputProps("RA")}
-                            onChange={(e) => {
-                                UpdateAladinRA(e);
-                                if (form.getInputProps("RA").onChange) {
-                                    form.getInputProps("RA").onChange(e);
-                            }}}
-                        />
-                        <NumberInput
-                            required={true}
-                            label={"Dec"}
-                            decimalScale={5}
-                            step={0.00001}
-                            min={-90}
-                            max={90}
-                            suffix="°"
-                            {...form.getInputProps("Dec")}
-                            onChange={(e) => {
-                                UpdateAladinDec(e);
-                                if (form.getInputProps("Dec").onChange) {
-                                    form.getInputProps("Dec").onChange(e);
-                                }}}
-                        />
-                        <SubmitButton
-                            toolTipLabel={"Save this target"}
-                            disabled={!form.isValid() ||
-                                      form.values.searching? true : undefined}
-                        />
-
-                    </Stack>
-                </form>
-            </Grid.Col>
-        </Grid>
+                    }}
+                />
+                <NumberInput
+                    required={true}
+                    label={"RA"}
+                    decimalScale={5}
+                    step={0.00001}
+                    min={0}
+                    max={360}
+                    allowNegative={false}
+                    suffix="°"
+                    {...form.getInputProps("RA")}
+                    onChange={(e) => {
+                        UpdateAladinRA(e);
+                        if (form.getInputProps("RA").onChange) {
+                            form.getInputProps("RA").onChange(e);
+                        }}}
+                />
+                <NumberInput
+                    required={true}
+                    label={"Dec"}
+                    decimalScale={5}
+                    step={0.00001}
+                    min={-90}
+                    max={90}
+                    suffix="°"
+                    {...form.getInputProps("Dec")}
+                    onChange={(e) => {
+                        UpdateAladinDec(e);
+                        if (form.getInputProps("Dec").onChange) {
+                            form.getInputProps("Dec").onChange(e);
+                        }}}
+                />
+                <SubmitButton
+                    toolTipLabel={"Save this target"}
+                    disabled={!form.isValid() ||
+                    form.values.searching? true : undefined}
+                />
+            </form>
+            </Fieldset>
+        </Stack>
     );
 };
 
@@ -365,8 +359,9 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
  * @return a React Element of a visible add button and hidden modal.
  *
  */
-export default function AddTargetModal(): ReactElement {
+export default function AddTargetModal(props: {proposalTitle: string}): ReactElement {
     const [opened, { close, open }] = useDisclosure();
+    const isMobile = useMediaQuery('(max-width: 50em)');
 
     return (
         <>
@@ -374,10 +369,11 @@ export default function AddTargetModal(): ReactElement {
                 onClick={open}
                 toolTipLabel={"Add new target."}
             />
-            <Modal title="New target"
+            <Modal title={`Add a Target to '${props.proposalTitle}'`}
                    opened={opened}
                    onClose={() => {close();}}
-                   fullScreen
+                   fullScreen={isMobile}
+                   size={"75%"}
             >
                 <TargetForm onSubmit={() => {close();}}/>
             </Modal>

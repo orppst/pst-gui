@@ -1,13 +1,10 @@
-import {ReactElement, SetStateAction, useState} from "react";
-import {useDebounceCallback, useDisclosure} from "@mantine/hooks";
-import AddButton from "../../commonButtons/add.tsx";
+import {SetStateAction, useState} from "react";
+import {useDebounceCallback} from "@mantine/hooks";
 import {
     Combobox,
-    Container,
     Group,
     InputBase,
     Loader,
-    Modal,
     Radio,
     ScrollArea,
     Stack, Text,
@@ -18,12 +15,11 @@ import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SIMBAD_DEBOUNCE_DELAY, SIMBAD_JSON_OUTPUT, SIMBAD_TOP_LIMIT, SIMBAD_URL_TAP_SERVICE} from "../../constants.tsx";
 
-
+export
 function SimbadSearch() {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
-
 
     //search value is the target name
     const [search, setSearch] = useState('');
@@ -38,10 +34,10 @@ function SimbadSearch() {
     const [invalidInput, setInvalidInput] = useState(false);
 
     const getSimbadIdentsDebounce = useDebounceCallback(() => {
-        setSimbadResult([]); //clear array to clear the combobox 'options'
+        setSimbadResult([]); //clear this array to then clear the combobox 'options'
         setLoading(true); //shows the loader while waiting for results
-        setNumberFound(0);
-        setInvalidInput(false);
+        setNumberFound(0); //avoids transient messages from the previous search
+        setInvalidInput(false); // ensure this is false on a new search
         getSimbadIdents(search, SIMBAD_TOP_LIMIT);
     }, SIMBAD_DEBOUNCE_DELAY);
 
@@ -62,7 +58,7 @@ function SimbadSearch() {
      */
     function getSimbadIdents(targetName: string, limit: number) {
 
-        let charToAvoid = /[`!@#$%^&()_+\-={};':"\\|,.<>\/?~]/
+        let charToAvoid = /[`!@#$%^&()_={};':"\\|,.<>\/?~]/
 
         //don't do a search if the 'targetName' string is empty
         if (targetName.length === 0) return
@@ -103,6 +99,7 @@ function SimbadSearch() {
                 break;
         }
 
+        //searches are expected to take order one second so set a timeout with a reasonable margin
         fetch(theUrl, {signal: AbortSignal.timeout(5000)})
             .then(res => {
                 //Simbad returns errors as VOTable xml IN THE RESPONSE
@@ -153,14 +150,14 @@ function SimbadSearch() {
             >
                 <Group p={"sm"}>
                     <Radio value={'nameQuery'} label={'Alternate Name'} />
-                    <Radio value={'idQuery'} label={'Identity'} />
                     <Radio value={'catQuery'} label={'Catalogue Ref.'} />
+                    <Radio value={'idQuery'} label={'Identity'} />
                 </Group>
             </Radio.Group>
             {
                 invalidInput &&
                 <Text c={"red"} size={"sm"}>
-                    Invalid character entered in search input. Stop that or you'll make the query language gods angry
+                    Invalid character entered in search input.
                 </Text>
             }
             <Combobox
@@ -206,11 +203,11 @@ function SimbadSearch() {
                             <Group justify={"center"}>
 
                             <Combobox.Header>
-                                Found {numberFound} result{numberFound > 1 && 's'}.
+                                Found {numberFound}{numberFound === SIMBAD_TOP_LIMIT && '+'} result{numberFound > 1 && 's'}.
                                 { numberFound === SIMBAD_TOP_LIMIT &&
                                     " - limit reached, you may want to refine your search."
                                 }
-                                { numberFound > 6 && " Please scroll."}
+                                { numberFound > 6 && " Scroll to view all."}
                             </Combobox.Header>
 
                             </Group>
@@ -234,31 +231,4 @@ function SimbadSearch() {
             </Combobox>
         </Stack>
     );
-}
-
-/**
- * Entry function for the simbad search modal (temporary)
- */
-export default function SimbadSearchModal() : ReactElement {
-    const [opened, {close, open}] = useDisclosure();
-
-    return(
-        <>
-            <AddButton
-                label={"SIMBAD search"}
-                onClick={open}
-                toolTipLabel={"Search the SIMBAD database"}
-            />
-            <Modal
-                title={"SIMBAD Search"}
-                opened={opened}
-                onClose={() => close()}
-                size={"50%"}
-            >
-                <Container mb={100}>
-                    <SimbadSearch/>
-                </Container>
-            </Modal>
-        </>
-    )
 }
