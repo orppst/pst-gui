@@ -1,6 +1,6 @@
 import {SetStateAction, useState} from "react";
 import {useDebounceCallback} from "@mantine/hooks";
-import {Combobox, Group, InputBase, Loader, Radio, ScrollArea, Stack, Text, useCombobox} from "@mantine/core";
+import {Combobox, Group, InputBase, Loader, ScrollArea, Text, useCombobox} from "@mantine/core";
 import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -33,7 +33,7 @@ import {Aladin, newTargetData} from "./New.tsx";
 
 
 export
-function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
+function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoice: string}) {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
@@ -58,7 +58,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
         getSimbadIdents(search, SIMBAD_TOP_LIMIT);
     }, SIMBAD_DEBOUNCE_DELAY);
 
-    const [queryChoice, setQueryChoice] = useState('nameQuery');
+
 
     type SimbadIdent = {
         id: string,
@@ -75,7 +75,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
      */
     function getSimbadIdents(targetName: string, limit: number) {
 
-        let charToAvoid = /[`!@#$%^&()_={};':"\\|,.<>\/?~]/
+        let charToAvoid = /^[-+%_]|[`!@#$^&()={};':"\\|,.<>\/?~]/
 
         //don't do a search if the 'targetName' string is empty
         if (targetName.length === 0) return
@@ -93,11 +93,11 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
             return 'NAME ' + ident;
         }
 
-        let simbadName = queryChoice == 'nameQuery' ? simbadAltName(targetName) : targetName;
+        let simbadName = props.queryChoice == 'nameQuery' ? simbadAltName(targetName) : targetName;
 
         let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
 
-        switch(queryChoice) {
+        switch(props.queryChoice) {
             case 'nameQuery': //fall through wanted
             case 'catQuery':
                 theUrl += encodeURIComponent(
@@ -215,19 +215,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
     ));
 
     return (
-        <Stack>
-            <Radio.Group
-                value={queryChoice}
-                onChange={setQueryChoice}
-                name={"queryChoice"}
-                label={'Choose the query type'}
-            >
-                <Group p={"sm"}>
-                    <Radio value={'nameQuery'} label={'Alternate Name'} />
-                    <Radio value={'catQuery'} label={'Catalogue Ref.'} />
-                    <Radio value={'idQuery'} label={'Identity'} />
-                </Group>
-            </Radio.Group>
+        <>
             {
                 invalidInput &&
                 <Text c={"red"} size={"sm"}>
@@ -251,9 +239,11 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                     <InputBase
                         rightSection={<Combobox.Chevron/>}
                         description={
-                            queryChoice === 'nameQuery' ? "Case sensitive e.g., 'Crab' not 'crab'" :
-                                queryChoice === 'idQuery' ? "Exact name required e.g., 'm1', 'crab', 'andromeda' - case insensitive" :
-                                    "First few characters of the catalogue reference e.g., 'M', 'ACO', 'Gaia' - case sensitive and try multiple spaces"
+                            props.queryChoice === 'nameQuery' ?
+                                "Case sensitive e.g., 'Crab' not 'crab'" :
+                                props.queryChoice === 'idQuery' ?
+                                    "Case insensitive - exact name required e.g., 'm1', 'crab', 'andromeda'" :
+                                    "Case sensitive, try multiple spaces and/or ADQL wildcards '%' and '_'"
                         }
                         value={search}
                         onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
@@ -306,6 +296,6 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                     </Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>
-        </Stack>
+        </>
     );
 }

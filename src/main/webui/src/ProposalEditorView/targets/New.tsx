@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Stack, Alert, Group, Fieldset, Box} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Stack, Group, Fieldset, Box, Radio} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
@@ -33,12 +33,10 @@ import {
     PopulateAladin
 } from './aladinHelperMethods.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
-import {IconInfoCircle} from "@tabler/icons-react";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SimbadSearch} from "./simbadSearch.tsx";
+import SimbadSearchHelp from "./simbadSearchHelp.tsx";
 
-// NOTE ABS: Aladin seems to be the global holder for the object that we can
-// manipulate. This is different to NGOT, but at this point, ill buy anything.
 export let Aladin: AladinType;
 
 // the initial config for the aladin viewer.
@@ -70,7 +68,7 @@ const initialConfig: IAladinConfig = {
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
-
+    const [queryChoice, setQueryChoice] = useState('nameQuery');
 
     /**
      * handler that creates the Aladin interface from Javascript.
@@ -283,77 +281,90 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
     return (
         <Stack>
-            <Alert
-                variant={"light"}
-                color={"blue"}
-                title={"Prototype Version"}
-                icon={<IconInfoCircle/>}
-            >
-                All targets are assumed to have an ICRS coordinate system and J2000 epoch.
-            </Alert>
             <Group grow={!isMobile} justify={"center"}>
                 <Fieldset legend={"SIMBAD search"} pb={150}>
-                    <SimbadSearch form={form}/>
+                    <Stack>
+                        <Radio.Group
+                            value={queryChoice}
+                            onChange={setQueryChoice}
+                            name={"queryChoice"}
+                            label={'Choose the query type'}
+                        >
+                            <Group p={"sm"}>
+                                <Radio value={'nameQuery'} label={'Alternate Name'} />
+                                <Radio value={'catQuery'} label={'Catalogue Ref.'} />
+                                <Radio value={'idQuery'} label={'Identity'} />
+                            </Group>
+                        </Radio.Group>
+                    <SimbadSearch form={form} queryChoice={queryChoice}/>
+                    </Stack>
+                </Fieldset>
+                <Fieldset legend={"SIMBAD information"}>
+                    <SimbadSearchHelp queryChoice={queryChoice}/>
+                </Fieldset>
+            </Group>
+            <Group grow={!isMobile} justify={"center"}>
+                <Fieldset legend={"Target Form"}>
+                <form onSubmit={handleSubmission} style={{paddingBottom: 30, paddingTop: 10}}>
+                    <Stack gap={"lg"}>
+                        <TextInput
+                            ref={targetNameRef}
+                            withAsterisk
+                            label="Name"
+                            placeholder="User provided or use the SIMBAD search"
+                            {...form.getInputProps("TargetName")}
+                            onChange={(e: string) => {
+                                setNameUnique(true);
+                                if(form.getInputProps("TargetName").onChange)
+                                    form.getInputProps("TargetName").onChange(e);
+
+                            }}
+                        />
+                        <NumberInput
+                            hideControls
+                            required={true}
+                            label={"RA"}
+                            decimalScale={6}
+                            min={0}
+                            max={360}
+                            allowNegative={false}
+                            suffix="°"
+                            {...form.getInputProps("RA")}
+                            onChange={(e) => {
+                                UpdateAladinRA(e);
+                                if (form.getInputProps("RA").onChange) {
+                                    form.getInputProps("RA").onChange(e);
+                                }}}
+                        />
+                        <NumberInput
+                            hideControls
+                            required={true}
+                            label={"Dec"}
+                            decimalScale={6}
+                            min={-90}
+                            max={90}
+                            suffix="°"
+                            {...form.getInputProps("Dec")}
+                            onChange={(e) => {
+                                UpdateAladinDec(e);
+                                if (form.getInputProps("Dec").onChange) {
+                                    form.getInputProps("Dec").onChange(e);
+                                }}}
+                        />
+                        <SubmitButton
+                            toolTipLabel={"Save this target"}
+                            disabled={!form.isValid() ||
+                            form.values.searching? true : undefined}
+                        />
+                    </Stack>
+                </form>
                 </Fieldset>
                 <Box
                     id="aladin-lite-div"
-                    style={{height: 300, width: 400}}
+                    style={{height: 360, width: 400}}
                     onMouseUpCapture={HandleEvent}>
                 </Box>
             </Group>
-            <Fieldset legend={"Target Form"}>
-            <form onSubmit={handleSubmission}>
-                <TextInput
-                    ref={targetNameRef}
-                    withAsterisk
-                    label="Name"
-                    placeholder="User provided or use the SIMBAD search"
-                    {...form.getInputProps("TargetName")}
-                    onChange={(e: string) => {
-                        setNameUnique(true);
-                        if(form.getInputProps("TargetName").onChange)
-                            form.getInputProps("TargetName").onChange(e);
-
-                    }}
-                />
-                <NumberInput
-                    required={true}
-                    label={"RA"}
-                    decimalScale={5}
-                    step={0.00001}
-                    min={0}
-                    max={360}
-                    allowNegative={false}
-                    suffix="°"
-                    {...form.getInputProps("RA")}
-                    onChange={(e) => {
-                        UpdateAladinRA(e);
-                        if (form.getInputProps("RA").onChange) {
-                            form.getInputProps("RA").onChange(e);
-                        }}}
-                />
-                <NumberInput
-                    required={true}
-                    label={"Dec"}
-                    decimalScale={5}
-                    step={0.00001}
-                    min={-90}
-                    max={90}
-                    suffix="°"
-                    {...form.getInputProps("Dec")}
-                    onChange={(e) => {
-                        UpdateAladinDec(e);
-                        if (form.getInputProps("Dec").onChange) {
-                            form.getInputProps("Dec").onChange(e);
-                        }}}
-                />
-                <SubmitButton
-                    toolTipLabel={"Save this target"}
-                    disabled={!form.isValid() ||
-                    form.values.searching? true : undefined}
-                />
-            </form>
-            </Fieldset>
         </Stack>
     );
 };
