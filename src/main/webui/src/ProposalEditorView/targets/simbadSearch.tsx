@@ -87,6 +87,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
             return;
         }
 
+        //alternate names in SIMBAD are prefixed with 'NAME '
         const simbadAltName = (ident: string) : string => {
             //Prefix string with 'NAME '
             return 'NAME ' + ident;
@@ -174,7 +175,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                             if (jsonResult.data.length === 1) {
                                 jsonResult.data.map((arr: any) => {
                                     //set the form fields
-                                    props.form.setFieldValue('TargetName', arr[0])
+                                    props.form.setFieldValue('TargetName', displayName(arr[0]))
                                     props.form.setFieldValue('RA', arr[1]);
                                     props.form.setFieldValue('Dec', arr[2])
                                     props.form.setFieldValue('sexagesimal', arr[3])
@@ -197,9 +198,19 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
     }
 
 
+    //returns names without the 'NAME ' prefix
+    const displayName = (ident: string): string => {
+        const prefix = 'NAME ';
+        if (ident.indexOf(prefix) === 0) {
+            return ident.substring(prefix.length);
+        } else {
+            return ident;
+        }
+    }
+
     const options = simbadIdentResult.map((item) => (
         <Combobox.Option value={String(item.oidref)} key={item.id}>
-            {item.id}
+            {displayName(item.id)}
         </Combobox.Option>
     ));
 
@@ -228,7 +239,9 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                 withinPortal={true}
                 onOptionSubmit={(val) => {
                     setSearch(
-                         simbadIdentResult.find(({oidref}) => String(oidref) === val)!.id
+                        displayName(simbadIdentResult.find(({oidref}) =>
+                                 String(oidref) === val)!.id
+                        )
                     );
                     getTargetDetails(Number(val))
                     combobox.closeDropdown();
