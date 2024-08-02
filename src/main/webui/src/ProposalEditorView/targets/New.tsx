@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Stack, Alert, Group, Fieldset} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Stack, Alert, Group, Fieldset, Box} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
@@ -39,7 +39,7 @@ import {SimbadSearch} from "./simbadSearch.tsx";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
-let Aladin: AladinType;
+export let Aladin: AladinType;
 
 // the initial config for the aladin viewer.
 const initialConfig: IAladinConfig = {
@@ -69,6 +69,8 @@ const initialConfig: IAladinConfig = {
  * @constructor
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
+
+
 
     /**
      * handler that creates the Aladin interface from Javascript.
@@ -278,6 +280,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
+
     return (
         <Stack>
             <Alert
@@ -290,13 +293,13 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             </Alert>
             <Group grow={!isMobile} justify={"center"}>
                 <Fieldset legend={"SIMBAD search"} pb={150}>
-                    <SimbadSearch form={form} aladin={Aladin}/>
+                    <SimbadSearch form={form}/>
                 </Fieldset>
-                <div
+                <Box
                     id="aladin-lite-div"
                     style={{height: 300, width: 400}}
                     onMouseUpCapture={HandleEvent}>
-                </div>
+                </Box>
             </Group>
             <Fieldset legend={"Target Form"}>
             <form onSubmit={handleSubmission}>

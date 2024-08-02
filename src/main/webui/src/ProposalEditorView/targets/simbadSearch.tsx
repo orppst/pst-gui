@@ -6,8 +6,7 @@ import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SIMBAD_DEBOUNCE_DELAY, SIMBAD_JSON_OUTPUT, SIMBAD_TOP_LIMIT, SIMBAD_URL_TAP_SERVICE} from "../../constants.tsx";
 import {UseFormReturnType} from "@mantine/form";
-import {newTargetData} from "./New.tsx";
-import {AladinType} from "./aladinTypes.tsx";
+import {Aladin, newTargetData} from "./New.tsx";
 
 
 /*
@@ -34,7 +33,7 @@ import {AladinType} from "./aladinTypes.tsx";
 
 
 export
-function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, aladin: AladinType}) {
+function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
@@ -98,7 +97,8 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, aladin: Al
         let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
 
         switch(queryChoice) {
-            case 'nameQuery':
+            case 'nameQuery': //fall through wanted
+            case 'catQuery':
                 theUrl += encodeURIComponent(
                     `select top ${limit} min(id),oidref from ident where id 
                                               like '${simbadName}%' group by oidref`
@@ -107,12 +107,6 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, aladin: Al
             case 'idQuery':
                 theUrl += encodeURIComponent(
                     `select top ${limit} id,oidref from ident where id = '${simbadName}'`
-                )
-                break;
-            case 'catQuery':
-                theUrl += encodeURIComponent(
-                    `select top ${limit} min(id),oidref from ident where id 
-                                              like '${simbadName}%' group by oidref`
                 )
                 break;
         }
@@ -175,16 +169,18 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, aladin: Al
 
                             const jsonResult = JSON.parse(result)
 
-                            //this has to be true but leave for semantics
+                            // this has to be true - oidref input comes from the SIMBAD database -
+                            // but leave for semantics
                             if (jsonResult.data.length === 1) {
                                 jsonResult.data.map((arr: any) => {
+                                    //set the form fields
                                     props.form.setFieldValue('TargetName', arr[0])
                                     props.form.setFieldValue('RA', arr[1]);
                                     props.form.setFieldValue('Dec', arr[2])
                                     props.form.setFieldValue('sexagesimal', arr[3])
 
-                                    props.aladin.gotoRaDec(arr[1], arr[2])
-
+                                    //point Aladin viewer to the target
+                                    Aladin.gotoRaDec(arr[1], arr[2])
                                 });
                             } else {
                                 notifyError("Congratulations",
