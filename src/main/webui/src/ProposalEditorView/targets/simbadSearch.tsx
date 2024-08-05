@@ -1,4 +1,4 @@
-import {SetStateAction, useState} from "react";
+import {ReactElement, SetStateAction, useState} from "react";
 import {useDebounceCallback} from "@mantine/hooks";
 import {Combobox, Group, InputBase, Loader, ScrollArea, Text, useCombobox} from "@mantine/core";
 import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
@@ -39,25 +39,32 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
     });
 
     //search value is the target name
-    const [search, setSearch] = useState('');
+    const [search, setSearch]
+        = useState('');
 
     //boolean to determine search status to display a loader when search in progress
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading]
+        = useState(false);
 
     //number of targets found in the search, max is the "top" limit
     const [numberFound, setNumberFound] =
         useState<number>(0);
 
-    const [invalidInput, setInvalidInput] = useState(false);
+    // invalid input characters in the search box
+    const [invalidInput, setInvalidInput]
+        = useState(false);
+
+    const [timedOut, setTimedOut]
+        = useState(false)
 
     const getSimbadIdentsDebounce = useDebounceCallback(() => {
         setSimbadIdentResult([]); //clear this array to then clear the combobox 'options'
         setLoading(true); //shows the loader while waiting for results
         setNumberFound(0); //avoids transient messages from the previous search
-        setInvalidInput(false); // ensure this is false on a new search
+        setInvalidInput(false); //ensure invalidInput is false on a new search
+        setTimedOut(false); //ensure timedOut is false on a new search
         getSimbadIdents(search, SIMBAD_TOP_LIMIT);
     }, SIMBAD_DEBOUNCE_DELAY);
-
 
 
     type SimbadIdent = {
@@ -75,7 +82,8 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
      */
     function getSimbadIdents(targetName: string, limit: number) {
 
-        let charToAvoid = /^[-+%_]|[`!@#$^&()={};':"\\|,.<>\/?~]/
+        let charToAvoid = /^[-+%_ ]|[`!@#$^&()={};':"\\|,.<>\/?~]/
+        let wildcards = /[%_]/;
 
         //don't do a search if the 'targetName' string is empty
         if (targetName.length === 0) return
@@ -93,23 +101,47 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
             return 'NAME ' + ident;
         }
 
-        let simbadName = props.queryChoice == 'nameQuery' ? simbadAltName(targetName) : targetName;
-
         let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
 
         switch(props.queryChoice) {
-            case 'nameQuery': //fall through wanted
-            case 'catQuery':
+            case 'nameQuery':
+            {
+                //don't allow wildcards in the body of an Alternate Name search
+                if (wildcards.test(targetName)) {
+                    setLoading(false);
+                    setInvalidInput(true);
+                    return;
+                }
+                let simbadName = simbadAltName(targetName);
                 theUrl += encodeURIComponent(
                     `select top ${limit} min(id),oidref from ident where id 
                                               like '${simbadName}%' group by oidref`
                 )
                 break;
-            case 'idQuery':
+            }
+            case 'catQuery':
+            {
+                //allow wildcards in the body of a search but don't end with a % wildcard if present
+                let simbadName = wildcards.test(targetName) ? targetName : targetName + '%';
                 theUrl += encodeURIComponent(
-                    `select top ${limit} id,oidref from ident where id = '${simbadName}'`
+                    `select top ${limit} min(id),oidref from ident where id 
+                                              like '${simbadName}' group by oidref`
                 )
                 break;
+            }
+            case 'idQuery':
+            {
+                //forbid use of wildcards in an Identity search
+                if (wildcards.test(targetName)) {
+                    setLoading(false);
+                    setInvalidInput(true);
+                    return;
+                }
+                theUrl += encodeURIComponent(
+                    `select top ${limit} id,oidref from ident where id = '${targetName}'`
+                )
+                break;
+            }
         }
 
         //searches are expected to take order one second so set a timeout with a reasonable margin
@@ -135,12 +167,10 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
                         }
                     )
             })
-            .catch(
-                err => {
-                    setLoading(false);
-                    notifyError("Failed to execute SIMBAD ident query", getErrorMessage(err))
-                }
-            );
+            .catch( () => {
+                setLoading(false);
+                setTimedOut(true);
+            });
     }
 
     /**
@@ -208,6 +238,54 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
         }
     }
 
+    //return a description dependent on 'queryChoice'
+    const descriptionFunction = (queryChoice: string) : string => {
+        switch (queryChoice) {
+            case 'nameQuery' :
+            {
+                return "Case sensitive e.g., 'Crab' not 'crab'";
+            }
+            case 'idQuery' :
+            {
+                return "Case insensitive - exact name required e.g., 'm1', 'crab', 'andromeda'";
+            }
+            case 'catQuery':
+            {
+                return "Case sensitive, try multiple spaces and/or ADQL wildcards '%' and '_'";
+            }
+            default:
+                return ""
+        }
+    }
+
+    const searchMessage = () : ReactElement => {
+        if (search.length === 0) {
+            return (
+                <Combobox.Empty>
+                    Please type at least one character to start a search
+                </Combobox.Empty>
+            )
+        } else if (loading) {
+            return (
+                <Combobox.Empty>
+                    <Loader size={20}/>
+                </Combobox.Empty>
+            )
+        } else if (timedOut) {
+            return (
+                <Combobox.Empty>
+                    Search timed-out. Please refine your search
+                </Combobox.Empty>
+            )
+        } else {
+            return (
+                <Combobox.Empty>
+                    Nothing found
+                </Combobox.Empty>
+            )
+        }
+    }
+
     const options = simbadIdentResult.map((item) => (
         <Combobox.Option value={String(item.oidref)} key={item.id}>
             {displayName(item.id)}
@@ -238,13 +316,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
                 <Combobox.Target>
                     <InputBase
                         rightSection={<Combobox.Chevron/>}
-                        description={
-                            props.queryChoice === 'nameQuery' ?
-                                "Case sensitive e.g., 'Crab' not 'crab'" :
-                                props.queryChoice === 'idQuery' ?
-                                    "Case insensitive - exact name required e.g., 'm1', 'crab', 'andromeda'" :
-                                    "Case sensitive, try multiple spaces and/or ADQL wildcards '%' and '_'"
-                        }
+                        description={ descriptionFunction(props.queryChoice) }
                         value={search}
                         onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
                             combobox.openDropdown();
@@ -282,15 +354,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
 
                         <ScrollArea.Autosize mah={200} type={"scroll"}>
                             {
-                                options.length > 0 ? options :
-                                    search.length === 0 ?
-                                        <Combobox.Empty>
-                                            Please type at least one character to start a search
-                                        </Combobox.Empty> :
-                                        loading ?
-                                            <Combobox.Empty><Loader size={20}/></Combobox.Empty> :
-                                            <Combobox.Empty>Nothing found</Combobox.Empty>
-
+                                options.length > 0 ? options : searchMessage()
                             }
                         </ScrollArea.Autosize>
                     </Combobox.Options>
