@@ -12,10 +12,11 @@ import {
     TargetField
 } from "src/generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
-import {Box, Container, Select, Text, Textarea, TextInput, Stack, Space} from "@mantine/core";
+import {Box, Container, Grid, Select, Text, Textarea, TextInput, Stack, Space} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from 'src/commonButtons/save';
+import DeleteButton from 'src/commonButtons/delete';
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "src/constants";
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
@@ -101,13 +102,10 @@ const textFormatData = [
                 notifyError("Create proposal error", getErrorMessage(error))
             });
     });
-
-const helpButtonCall = (
-    <ContextualHelpButton
-    messageId="CreaProp"
-    />
-    );
-
+  function handleCancel(event: SyntheticEvent) {
+      event.preventDefault();
+      navigate("../",{relative:"path"})
+      }
      return (
         <PanelFrame>
             <PanelHeader itemName={"NEW"} panelHeading={"Create Proposal"} />
@@ -116,7 +114,7 @@ const helpButtonCall = (
             }
             <form onSubmit={createNewObservingProposal}>
                 <Container fluid>
-                {helpButtonCall}
+                 <ContextualHelpButton messageId="CreaProp" />
                 <Stack>
                     <TextInput name="title"
                         maxLength={MAX_CHARS_FOR_INPUTS}
@@ -139,9 +137,15 @@ const helpButtonCall = (
                     <MaxCharsForInputRemaining
                         length={form.values.summary.length}
                     />
-                    <FormSubmitButton
-                         form={form}
-                     />
+            <p> </p>
+            <Grid>
+              <Grid.Col span={8}></Grid.Col>
+                 <FormSubmitButton form={form} />
+                 <DeleteButton
+                    label={"Cancel"}
+                    onClickEvent={handleCancel}
+                    toolTipLabel={"Go back without saving"}/>
+            </Grid>
                     <Space />
 
                     <Select label={"Kind"}
@@ -185,10 +189,15 @@ const helpButtonCall = (
                         pt={"sm"} pb={"lg"}
                         {...form.getInputProps('technicalJustification.format')}
                     />
-                <FormSubmitButton
-                    form={form}
-                    label={"Save"}
-                />
+            <p> </p>
+            <Grid>
+              <Grid.Col span={8}></Grid.Col>
+                 <FormSubmitButton form={form} />
+                 <DeleteButton
+                    label={"Cancel"}
+                    onClickEvent={handleCancel}
+                    toolTipLabel={"Go back without saving"}/>
+            </Grid>
                 <Space />
                 </Stack>
                 </Container>

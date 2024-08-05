@@ -4,8 +4,8 @@ import {
     fetchSupportingDocumentResourceUploadSupportingDocument,
     useSupportingDocumentResourceGetSupportingDocuments
 } from "src/generated/proposalToolComponents";
-import {useParams} from "react-router-dom";
-import {Box, FileButton, Stack, Table, Text} from "@mantine/core";
+import {useNavigate, useParams} from "react-router-dom";
+import {Box, FileButton, Grid, Stack, Table, Text} from "@mantine/core";
 import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
@@ -20,6 +20,7 @@ import {HEADER_FONT_WEIGHT, JSON_SPACES, MAX_SUPPORTING_DOCUMENT_SIZE} from 'src
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 type DocumentProps = {
     dbid: number,
@@ -80,10 +81,16 @@ const DocumentsPanel = () => {
             }
         }
     };
+  const navigate = useNavigate();
 
+  function handleCancel(event: SyntheticEvent) {
+      event.preventDefault();
+      navigate("../",{relative:"path"})
+      }
     return (
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Documents"} />
+            <ContextualHelpButton messageId="ManageDocs" />
             <Stack>
                 <Table>
                     <Table.Tbody>
@@ -108,12 +115,20 @@ const DocumentsPanel = () => {
                 </Table>
 
                 <Text fz="lg" fw={HEADER_FONT_WEIGHT}>Upload a document</Text>
+                            <p> </p>
+                            <Grid>
+                              <Grid.Col span={8}></Grid.Col>
                 <FileButton onChange={handleUpload}>
                             {(props) => <UploadButton
                                 toolTipLabel="select a file from disk to upload"
                                 label={"Choose a file"}
                                 onClick={props.onClick}/>}
                 </FileButton>
+                                 <DeleteButton
+                                    label={"Cancel"}
+                                    onClickEvent={handleCancel}
+                                    toolTipLabel={"Go back without saving"}/>
+                                    </Grid>
                 <Result status={status} />
             </Stack>
         </PanelFrame>

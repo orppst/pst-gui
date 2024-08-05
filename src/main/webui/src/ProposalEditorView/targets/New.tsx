@@ -1,4 +1,4 @@
-import {Modal, NumberInput, Select, TextInput, Grid, Stack} from "@mantine/core";
+import {Grid, Modal, NumberInput, Select, TextInput, Stack, Space} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -18,8 +18,9 @@ import {
     fetchSimbadResourceSimbadFindTarget, fetchSpaceSystemResourceGetSpaceSystem
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
+import DeleteButton from "src/commonButtons/delete";
 import DatabaseSearchButton from 'src/commonButtons/databaseSearch';
 import { SubmitButton } from 'src/commonButtons/save';
 import { useHistoryState } from 'src/useHistoryState.ts';
@@ -35,6 +36,7 @@ import {
     PopulateAladin
 } from './aladinHelperMethods.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -287,9 +289,17 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
+    const navigate = useNavigate();
+
+    function handleCancel(event: SyntheticEvent) {
+        event.preventDefault();
+        navigate("../",{relative:"path"})
+        }
     // return the dynamic HTML.
     return (
-        <><Grid columns={4}>
+        <>
+        <ContextualHelpButton messageId="MaintTarg" />
+        <Grid columns={4}>
             {/* handle aladin */}
             <Grid.Col span={2}>
                 <div id="aladin-lite-div"
@@ -314,10 +324,13 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                     form.getInputProps("TargetName").onChange(e);
                             }}
                         />
+                                            <Grid>
+                                            <Grid.Col span={7}></Grid.Col>
                         <DatabaseSearchButton
                             label={"Lookup"}
                             onClick={simbadLookup}
                             toolTipLabel={"Search Simbad database"}/>
+                            </Grid>
                         <NumberInput
                             required={true}
                             label={"RA"}
@@ -351,11 +364,20 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                             label={"Coordinate System"}
                             data={[{label:"J2000",value:"J2000"}]}
                             {...form.getInputProps("SelectedEpoch")} />
-                            <SubmitButton
-                                toolTipLabel={"Save this target"}
-                                disabled={!form.isValid() ||
-                                          form.values.searching? true : undefined}/>
+                            <Space />
                     </Stack>
+                    <Grid>
+                    <Grid.Col span={4}></Grid.Col>
+                       <SubmitButton
+                          toolTipLabel={"Save this target"}
+                          disabled={!form.isValid() ||
+                          form.values.searching? true : undefined}/>
+                                           <DeleteButton
+                                              label={"Cancel"}
+                                              onClickEvent={handleCancel}
+                                              toolTipLabel={"Go back without saving"}/>
+                    </Grid>
+
                 </form>
             </Grid.Col>
         </Grid></>
@@ -384,7 +406,8 @@ export default function AddTargetModal(): ReactElement {
                        setHasDoneAladin(false);
                        close();
                    }}
-                   fullScreen>
+                   size={"xl"}
+                   centered>
                 <TargetForm
                     onSubmit={() => {
                         setHasDoneAladin(false);

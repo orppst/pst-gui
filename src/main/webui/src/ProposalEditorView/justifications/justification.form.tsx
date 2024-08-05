@@ -5,12 +5,13 @@ import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
 import {fetchProposalResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
-import {useParams} from "react-router-dom";
+import {useNavigate,useParams } from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
+import DeleteButton from "src/commonButtons/delete";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {PreviewJustification} from "./justification.preview.tsx";
-import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 import Editor from "react-simple-code-editor";
 import { languages, highlight } from "prismjs";
@@ -120,18 +121,19 @@ export default function JustificationForm(props: JustificationProps)
                 notifyError("Update justification error", getErrorMessage(error))
             });
     });
-const helpButtonCall = (
-    // need to determine whether sci or tech
-    <ContextualHelpButton
-    messageId="MaintSciJust"
-
-    />
-    );
+    const navigate = useNavigate();
+    function handleCancel(event: SyntheticEvent) {
+        event.preventDefault();
+        navigate("../",{relative:"path"})
+        }
 
     return (
         <>
             <form onSubmit={handleSubmit}>
+            {/*}
             {helpButtonCall}
+            */}
+            <ContextualHelpButton messageId="MaintSciJust" />
             <Stack>
                <Grid span={10} grow>
                     <Grid.Col span={{base: 6, md: 8, lg: 9}}>
@@ -141,8 +143,17 @@ const helpButtonCall = (
                         <SelectTextFormat {...form} />
                     </Grid.Col>
                 </Grid>
-                <FormSubmitButton form={form} />
             </Stack>
+            <p> </p>
+            <Grid>
+              <Grid.Col span={8}></Grid.Col>
+                 <FormSubmitButton form={form} />
+                 <DeleteButton
+                    label={"Cancel"}
+                    onClickEvent={handleCancel}
+                    toolTipLabel={"Go back without saving"}/>
+            </Grid>
+
             </form>
             {form.values.format==='latex' && PreviewJustification(form.values.format!, form.values.text!)}
         </>

@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import ViewEditButton from "src/commonButtons/viewEdit.tsx";
-import {Modal} from "@mantine/core";
+import {Modal, xl} from "@mantine/core";
 import {useDisclosure} from "@mantine/hooks";
 import JustificationForm from "./justification.form.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
@@ -29,7 +29,11 @@ export default function JustificationsEditModal(justificationProps : Justificati
                 opened={opened}
                 onClose={props.closeModal}
                 title={"View/Edit " + capitalizeFirstChar(props.which) + " Justification"}
-                fullScreen
+                //fullScreen
+                size="auto"
+                height={75}
+                centered
+
             >
                 <JustificationForm {...props} />
             </Modal>

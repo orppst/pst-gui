@@ -1,14 +1,15 @@
 import {
     useProposalResourceGetObservingProposal,
 } from 'src/generated/proposalToolComponents';
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import ObservationRow, { observationTableHeader } from './observationTable.tsx';
-import {Container, Group, List, Space, Table} from "@mantine/core";
+import {Container, Grid, Group, List, Space, Table} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import { ReactElement } from 'react';
 import ObservationEditModal from './edit.modal.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import {IconTarget, IconChartLine, IconGeometry} from '@tabler/icons-react';
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 
@@ -192,11 +193,17 @@ function Observations() {
         return (
             <PanelFrame>
                 <Header/>
+                <Grid>
+                   <Grid.Col span={10}></Grid.Col>
+                   <ContextualHelpButton messageId="MaintObsList" />
+                </Grid>
+
                 <TableGenerator/>
                 <Space h={"xl"}/>
-                <Group justify={'center'}>
+                <Grid>
+                   <Grid.Col span={10}></Grid.Col>
                     <ObservationEditModal observation={undefined}/>
-                </Group>
+                </Grid>
             </PanelFrame>
         )
     }

@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { Button, Grid, Space } from '@mantine/core';
+
 import {contextualHelpMessages} from "../../public/contextualHelpMessages.jsx";
 
 export function ContextualHelpButton(props : {messageId : string}) {
 
   const [showingHelp, setShowingHelp] = useState(false);
 
-  const userLang = "-eng" // hard-coded for now, ideally captured from user
+  const userLang = "-eng"; // hard-coded for now, ideally captured from user
 
   const singleMessage = contextualHelpMessages.filter(aMessage =>
         aMessage.id === props.messageId + userLang
@@ -13,39 +15,33 @@ export function ContextualHelpButton(props : {messageId : string}) {
 
 // need to trap when no message is found...
 
-// need to sort out a key for this...
-
-      const listMessageItems = singleMessage.map(aMessage =>
-       <p>{aMessage.message}</p>
+  const listMessageRow = singleMessage.map(aMessage =>
+      <ul key={aMessage.id}>
+      <>{aMessage.message}</>
+      </ul>
       );
 
-      const extractedRecord = listMessageItems;
-
-  function AssembleContextualHelp () {
-
-
-      setShowingHelp(!showingHelp);
-
-       }
-
+   const extractedRecord = listMessageRow;
    const displayHelp = extractedRecord;
-
-       const clearHelp = "";
-       const labelClearHelp = "Clear Help";
-       const labelShowHelp = "Show Help";
+   const clearHelp = "";
+   const labelClearHelp = "Clear Help";
+   const labelShowHelp = "Show Help";
 
     return (
 
-    <>
-        <button type="button" onClick={() => AssembleContextualHelp()}>
-                        {showingHelp ? labelClearHelp : labelShowHelp}
-        </button>
+        <>
+        <Space h={"xl"}/>
+        <Grid >
+           <Grid.Col span={10}></Grid.Col>
+           <Button color="cyan" onClick={() => {setShowingHelp(!showingHelp)}}>
+               {showingHelp ? labelClearHelp : labelShowHelp}
+           </Button>
+        </Grid>
+        <Space h={"xl"} />
         <div className="display-linebreak" >
-            <p>  {showingHelp ? displayHelp : clearHelp} </p>
-
-         </div>
-    </>
-
+           {showingHelp ? displayHelp : clearHelp}
+        </div>
+        <Space />
+        </>
     )
 }
-export default ContextualHelpButton;

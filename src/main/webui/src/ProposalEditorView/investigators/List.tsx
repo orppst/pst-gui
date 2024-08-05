@@ -6,7 +6,7 @@ import {
     useInvestigatorResourceGetInvestigators,
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {Box, Stack, Table, Text} from "@mantine/core";
+import {Box, Grid, Stack, Table, Text} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
 import DeleteButton from "src/commonButtons/delete";
@@ -14,6 +14,7 @@ import AddButton from "src/commonButtons/add";
 import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 /**
  * the data associated with a given person.
@@ -57,6 +58,7 @@ function InvestigatorsPanel(): ReactElement {
     return (
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Investigators"}/>
+                <ContextualHelpButton messageId="MaintInvestList" />
                 <Stack>
                     {data?.length === 0 ?
                         <div>Please add an investigator</div>:
@@ -78,9 +80,15 @@ function InvestigatorsPanel(): ReactElement {
                             }
                         </Table.Tbody>
                     </Table>}
-                    <AddButton toolTipLabel={"Add new"}
-                               onClick={handleAddNew} />
+
                 </Stack>
+                <p> </p>
+                <Grid >
+                   <Grid.Col span={10}></Grid.Col>
+                       <AddButton toolTipLabel={"Add new"}
+                            onClick={handleAddNew} />
+                </Grid>
+                <p> </p>
         </PanelFrame>
     );
 }
@@ -92,17 +100,24 @@ function InvestigatorsPanel(): ReactElement {
  * header.
  * @constructor
  */
+
 function InvestigatorsHeader(): ReactElement {
     return (
+        <>
+
         <Table.Thead>
+
             <Table.Tr>
                 <Table.Th>Type</Table.Th>
                 <Table.Th>Name</Table.Th>
                 <Table.Th>eMail</Table.Th>
                 <Table.Th>Institute</Table.Th>
                 <Table.Th></Table.Th>
+
             </Table.Tr>
         </Table.Thead>
+
+        </>
     );
 }
 

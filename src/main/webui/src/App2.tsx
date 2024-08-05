@@ -49,6 +49,7 @@ import {
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
 import DatabaseSearchButton from './commonButtons/databaseSearch';
+import {ContextualHelpButton} from "./commonButtons/contextualHelp.tsx"
 import {
     APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
@@ -72,6 +73,7 @@ import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
 import ObservationFieldsPanel from "./ProposalEditorView/observationFields/ObservationFieldsPanel.tsx";
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
+import ErrorPage from "./errorHandling/error-page.jsx"
 
 /**
  * defines the user context type.
@@ -135,115 +137,142 @@ function App2(): ReactElement {
             {
                 path: "/manager",
                 element: <PSTManager />,
+                    errorElement: <ErrorPage />,
                 children: [
                     {index: true, element: <PSTManagerStart />},
                     {
                         path: "cycle/:selectedCycleCode",
-                        element: <CycleOverviewPanel />
+                        element: <CycleOverviewPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/title",
-                        element: <CycleTitlePanel />
+                        element: <CycleTitlePanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/tac",
-                        element: <CycleTACPanel />
+                        element: <CycleTACPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/tac/new",
-                        element: <CycleTACAddMemberPanel />
+                        element: <CycleTACAddMemberPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/dates",
-                        element: <CycleDatesPanel />
+                        element: <CycleDatesPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/observingModes",
-                        element: <CycleObservingModesPanel />
+                        element: <CycleObservingModesPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/availableResources",
-                        element: <CycleAvailableResourcesPanel />
+                        element: <CycleAvailableResourcesPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/reviews",
-                        element: <ReviewsPanel />
+                        element: <ReviewsPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/allocations",
-                        element: <AllocationsPanel />
+                        element: <AllocationsPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/observatory",
-                        element: <CycleObservatoryPanel />
+                        element: <CycleObservatoryPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "cycle/:selectedCycleCode/assignReviewers",
-                        element: <AssignReviewersPanel />
+                        element: <AssignReviewersPanel />,
+                        errorElement: <ErrorPage />,
                     }
                 ]
             },
             {
                 path: "/",
                 element: <PSTEditor/>,
+                                    errorElement: <ErrorPage />,
                 children: [
                     {index: true, element: <PSTStart/>} ,
                     {
                         path: "admin",
-                        element: <AdminPanel />
+                        element: <AdminPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/new",
-                        element: <NewProposalPanel />
+                        element: <NewProposalPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode",
-                        element: <OverviewPanel />
+                        element: <OverviewPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/title",
-                        element: <TitlePanel />
+                        element: <TitlePanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/summary",
-                        element: <SummaryPanel />
+                        element: <SummaryPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/investigators",
-                        element:<InvestigatorsPanel />
+                        element:<InvestigatorsPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path:
                             "proposal/:selectedProposalCode/investigators/new",
-                        element:<AddInvestigatorPanel />
+                        element:<AddInvestigatorPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/justifications",
-                        element: <JustificationsPanel />
+                        element: <JustificationsPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/targets",
-                        element:<TargetPanel />
+                        element:<TargetPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/goals",
-                        element:<TechnicalGoalsPanel />
+                        element:<TechnicalGoalsPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/observationFields",
-                        element: <ObservationFieldsPanel />
+                        element: <ObservationFieldsPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/observations",
-                        element:<ObservationsPanel />
+                        element:<ObservationsPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/documents",
-                        element:<DocumentsPanel />
+                        element:<DocumentsPanel />,
+                        errorElement: <ErrorPage />,
                     } ,
                     {
                         path: "proposal/:selectedProposalCode/submit",
-                        element:<SubmitPanel />
+                        element:<SubmitPanel />,
+                        errorElement: <ErrorPage />,
                     },
 
                 ]}], {
@@ -354,16 +383,7 @@ function App2(): ReactElement {
                                         label={"Proposals for " + proposalContext.user.fullName}
                                         onClickEvent={handleSearch}
                                     />
-                                    <AddButton toolTipLabel={"new proposal"}
-                                               label={"Create a new proposal"}
-                                               onClickEvent={handleAddNew}/>
-                                    <FileButton onChange={handleUploadZip}
-                                                accept={".zip"}>
-                                        {(props) => <UploadButton
-                                            toolTipLabel="select a file from disk to upload"
-                                            label={"Import"}
-                                            onClick={props.onClick}/>}
-                                    </FileButton>
+
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>
@@ -406,6 +426,17 @@ function App2(): ReactElement {
                                            pb={"md"}
                                 />
                             </Container>
+
+                        <AddButton toolTipLabel={"new proposal"}
+                            label={"Create a new proposal"}
+                            onClickEvent={handleAddNew}/>
+                        <FileButton onChange={handleUploadZip}
+                            accept={".zip"}>
+                            {(props) => <UploadButton
+                            toolTipLabel="select a file from disk to upload"
+                            label={"Import"}
+                            onClick={props.onClick}/>}
+                            </FileButton>
                         </AppShell.Section>
                         <AppShell.Section component={ScrollArea}>
                             <ProposalListWrapper
@@ -441,15 +472,19 @@ function App2(): ReactElement {
     function PSTStart(): ReactElement {
         return (
             <Container pt={10}>
-
+            <Grid>
                 <Text fz={"lg"} fw={"bold"} c={"teal.7"}>
                     Polaris Landing Page
                 </Text>
-
+                <Grid.Col span={7.5}></Grid.Col>
+                <ContextualHelpButton messageId="General" />
+                <p> &emsp; </p>
+            </Grid>
                 <img src={"/pst/gui/temporary-ufo-landing.png"}
                      alt={"welcome image of a ufo crash landing"}
                      width={"100%"}
                 />
+
             </Container>
         );
     }

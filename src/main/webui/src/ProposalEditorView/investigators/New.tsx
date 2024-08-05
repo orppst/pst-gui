@@ -7,7 +7,7 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
-import {Checkbox, Select, Stack} from "@mantine/core";
+import {Checkbox, Grid, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
@@ -106,16 +106,10 @@ function AddInvestigatorPanel(): ReactElement {
         navigate("../",{relative:"path"})
     }
 
-const helpButtonCall = (
-    <ContextualHelpButton
-    messageId="MaintInvest"
-    />
-    );
-
     return (
             <PanelFrame>
                 <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Add an investigator"} />
-                {helpButtonCall}
+                    <ContextualHelpButton  messageId="MaintInvestAdd" />
                 <form onSubmit={handleAdd}>
                     <Stack>
                         <Select label={"Type"}
@@ -132,14 +126,17 @@ const helpButtonCall = (
                             data={searchData}
                             {...form.getInputProps("selectedInvestigator")}
                         />
-                        <FormSubmitButton
-                            form={form}
-                        />
-                        <DeleteButton
-                            label={"Cancel"}
-                            onClickEvent={handleCancel}
-                            toolTipLabel={"Do not save the new investigator"}/>
                     </Stack>
+                    <p> </p>
+                    <Grid >
+                       <Grid.Col span={8}></Grid.Col>
+                          <FormSubmitButton form={form} />
+                          <DeleteButton
+                             label={"Cancel"}
+                             onClickEvent={handleCancel}
+                             toolTipLabel={"Go back without saving"}/>
+                     </Grid>
+                     <p> </p>
                 </form>
             </PanelFrame>
     )
