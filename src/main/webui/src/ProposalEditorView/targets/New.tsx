@@ -1,4 +1,4 @@
-import {Grid, Modal, NumberInput, Select, TextInput, Stack, Space} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -18,11 +18,12 @@ import {
     fetchSimbadResourceSimbadFindTarget, fetchSpaceSystemResourceGetSpaceSystem
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {useParams, useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
-import DeleteButton from "src/commonButtons/delete";
+import DeleteButton from 'src/commonButtons/delete.tsx';
 import DatabaseSearchButton from 'src/commonButtons/databaseSearch';
 import { SubmitButton } from 'src/commonButtons/save';
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import { useHistoryState } from 'src/useHistoryState.ts';
 import "./aladin.css";
 import {
@@ -36,7 +37,7 @@ import {
     PopulateAladin
 } from './aladinHelperMethods.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
+import {IconInfoCircle} from "@tabler/icons-react";
 
 // NOTE ABS: Aladin seems to be the global holder for the object that we can
 // manipulate. This is different to NGOT, but at this point, ill buy anything.
@@ -116,8 +117,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 "Unable to match source " + form.values.TargetName +
                 " try again?");
             form.values.searching = false;
-            if(!choice)
-                props.onSubmit();
+            if(!choice) props.onSubmit();
         }
 
         form.values.searching = true;
@@ -149,7 +149,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const saveToDatabase = (val: newTargetData) => {
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
-            coordSys: {},
+            coordSys: {val: "ICRS"},
             lat: {
                 "@type": "ivoa:RealQuantity",
                 value: val.RA, unit: { value: "degrees" }
@@ -163,7 +163,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             "@type": "proposal:CelestialTarget",
             sourceName: val.TargetName,
             sourceCoordinates: sourceCoords,
-            positionEpoch: { value: val.SelectedEpoch }
+            positionEpoch: { value: "J2000"}
         };
 
         /**
@@ -289,27 +289,39 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
-    const navigate = useNavigate();
+    /**
+    * manage the cancel button
+     */
+  const navigate = useNavigate();
 
-    function handleCancel(event: SyntheticEvent) {
-        event.preventDefault();
-        navigate("../",{relative:"path"})
-        }
+  function handleCancel(event: SyntheticEvent) {
+      event.preventDefault();
+      navigate("../",{relative:"path"})
+      }
+
+
     // return the dynamic HTML.
     return (
         <>
         <ContextualHelpButton messageId="MaintTarg" />
         <Grid columns={4}>
-            {/* handle aladin */}
             <Grid.Col span={2}>
                 <div id="aladin-lite-div"
                      style={{height: 400}}
                      onMouseUpCapture={HandleEvent}>
                 </div>
             </Grid.Col>
-
-            {/* handle input */}
             <Grid.Col span={ 2 }>
+                <Group justify={"center"}>
+                    <Alert
+                        variant={"light"}
+                        color={"blue"}
+                        title={"Prototype Version"}
+                        icon={<IconInfoCircle/>}
+                    >
+                        All targets are assumed to have an ICRS coordinate system and J2000 epoch.
+                    </Alert>
+                </Group>
                 <form onSubmit={handleSubmission}>
                     <Stack>
                         <TextInput
@@ -324,13 +336,11 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                     form.getInputProps("TargetName").onChange(e);
                             }}
                         />
-                                            <Grid>
-                                            <Grid.Col span={7}></Grid.Col>
                         <DatabaseSearchButton
                             label={"Lookup"}
                             onClick={simbadLookup}
-                            toolTipLabel={"Search Simbad database"}/>
-                            </Grid>
+                            toolTipLabel={"Search Simbad database"}
+                        />
                         <NumberInput
                             required={true}
                             label={"RA"}
@@ -345,7 +355,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                 UpdateAladinRA(e);
                                 if (form.getInputProps("RA").onChange) {
                                     form.getInputProps("RA").onChange(e);
-                            }}}/>
+                            }}}
+                        />
                         <NumberInput
                             required={true}
                             label={"Dec"}
@@ -359,28 +370,24 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                 UpdateAladinDec(e);
                                 if (form.getInputProps("Dec").onChange) {
                                     form.getInputProps("Dec").onChange(e);
-                                }}}/>
-                        <Select
-                            label={"Coordinate System"}
-                            data={[{label:"J2000",value:"J2000"}]}
-                            {...form.getInputProps("SelectedEpoch")} />
-                            <Space />
+                                }}}
+                        />
                     </Stack>
                     <Grid>
-                    <Grid.Col span={4}></Grid.Col>
+                       <Grid.Col span={4}></Grid.Col>
                        <SubmitButton
-                          toolTipLabel={"Save this target"}
-                          disabled={!form.isValid() ||
-                          form.values.searching? true : undefined}/>
-                                           <DeleteButton
-                                              label={"Cancel"}
-                                              onClickEvent={handleCancel}
-                                              toolTipLabel={"Go back without saving"}/>
+                           toolTipLabel={"Save this target"}
+                           disabled={!form.isValid() ||
+                           form.values.searching? true : undefined}/>
+                       <DeleteButton
+                           label={"Cancel"}
+                           onClickEvent={handleCancel}
+                           toolTipLabel={"Go back without saving"}/>
                     </Grid>
-
                 </form>
             </Grid.Col>
-        </Grid></>
+        </Grid>
+        </>
     );
 };
 
@@ -406,8 +413,7 @@ export default function AddTargetModal(): ReactElement {
                        setHasDoneAladin(false);
                        close();
                    }}
-                   size={"xl"}
-                   centered>
+                   fullScreen>
                 <TargetForm
                     onSubmit={() => {
                         setHasDoneAladin(false);
