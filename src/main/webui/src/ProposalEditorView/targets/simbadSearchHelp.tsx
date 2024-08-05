@@ -24,8 +24,12 @@ function SimbadSearchHelp(props: {queryChoice: string}) : ReactElement {
                     catalogue reference or identity, and populate the
                     <Text span inherit c={highlightColour}> Target Form </Text>
                     with the corresponding data when an object is selected. Also, the Aladin Sky Atlas viewer
-                    will move to the selected target (notice this serves no other purpose than to have something
-                    pretty at which to look).
+                    will move to the selected target.
+                </Text>
+                <Text size={"sm"}>
+                    The Aladin viewer is connected to the form in that you may
+                    set the RA and Dec values in the form either by left click dragging the viewer to, or by double
+                    clicking on, the desired location. The field-of-view may be modified by the mouse wheel.
                 </Text>
                 <Text size={"sm"}>
                     To trigger a search simply enter the first character of the object you are trying to find.
@@ -43,7 +47,7 @@ function SimbadSearchHelp(props: {queryChoice: string}) : ReactElement {
                     this could be a space (or two, or three, or ...)
                 </Text>
                 <Text size={"sm"}>
-                    Some names in the SIMBAD data base are in fixed-width format, probably a hangover
+                    Some names in the SIMBAD database are in fixed-width format, probably a hangover
                     from FORTRAN, and these names will be used, literally, in the
                     <Text span fs={"italic"} inherit> Name </Text>
                     field of the
@@ -70,7 +74,7 @@ function SimbadSearchHelp(props: {queryChoice: string}) : ReactElement {
                         </Text>
                         <Text size={"sm"}>
                             The input is case sensitive i.e., 'Crab' is different to 'crab', and in this case
-                            (ha! pun) the former will yield results while the latter will not. Notice that there
+                            the former will yield results while the latter will not. Notice that there
                             are some targets that start their name with a lowercase letter, or
                             the special characters
                             <Text span c={highlightColour}> * </Text>(asterisk) or

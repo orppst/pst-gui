@@ -91,3 +91,6 @@ export const SIMBAD_TOP_LIMIT = 100;
 
 /* Number of milliseconds delay for debounce used to search the SIMBAD database */
 export const SIMBAD_DEBOUNCE_DELAY = 1000; //milliseconds
+
+/* Number of milliseconds to wait before aborting a fetch call to a SIMBAD service */
+export const SIMBAD_TIMEOUT = 5000; //milliseconds

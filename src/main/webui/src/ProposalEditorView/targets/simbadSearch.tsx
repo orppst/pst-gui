@@ -4,9 +4,16 @@ import {Combobox, Group, InputBase, Loader, ScrollArea, Text, useCombobox} from 
 import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {SIMBAD_DEBOUNCE_DELAY, SIMBAD_JSON_OUTPUT, SIMBAD_TOP_LIMIT, SIMBAD_URL_TAP_SERVICE} from "../../constants.tsx";
+import {
+    SIMBAD_DEBOUNCE_DELAY,
+    SIMBAD_JSON_OUTPUT,
+    SIMBAD_TIMEOUT,
+    SIMBAD_TOP_LIMIT,
+    SIMBAD_URL_TAP_SERVICE
+} from "../../constants.tsx";
 import {UseFormReturnType} from "@mantine/form";
 import {Aladin, newTargetData} from "./New.tsx";
+import {IconSearch} from "@tabler/icons-react";
 
 
 /*
@@ -145,7 +152,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
         }
 
         //searches are expected to take order one second so set a timeout with a reasonable margin
-        fetch(theUrl, {signal: AbortSignal.timeout(5000)})
+        fetch(theUrl, {signal: AbortSignal.timeout(SIMBAD_TIMEOUT)})
             .then(res => {
                 //Simbad returns errors as VOTable xml IN THE RESPONSE
                 res.text()
@@ -188,7 +195,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
         )
 
         //searches are expected to take order one second so set a timeout with a reasonable margin
-        fetch(theUrl + adqlQuery, {signal: AbortSignal.timeout(5000)})
+        fetch(theUrl + adqlQuery, {signal: AbortSignal.timeout(SIMBAD_TIMEOUT)})
             .then(res => {
                 //Simbad returns errors as VOTable xml IN THE RESPONSE
                 res.text()
@@ -315,7 +322,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
             >
                 <Combobox.Target>
                     <InputBase
-                        rightSection={<Combobox.Chevron/>}
+                        rightSection={<IconSearch />}
                         description={ descriptionFunction(props.queryChoice) }
                         value={search}
                         onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
