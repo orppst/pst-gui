@@ -247,7 +247,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
             }
             case 'idQuery' :
             {
-                return "Case insensitive - exact name required e.g., 'm1', 'crab', 'andromeda'";
+                return "Case insensitive - exact name required e.g., 'm1', 'andromeda', 'eagle nebula'";
             }
             case 'catQuery':
             {

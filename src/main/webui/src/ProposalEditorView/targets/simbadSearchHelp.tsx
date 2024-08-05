@@ -20,11 +20,12 @@ function SimbadSearchHelp(props: {queryChoice: string}) : ReactElement {
                 <Text size={"sm"}>
                     SIMBAD provides a dynamical database of basic data, cross-identifications, bibliography and
                     measurements of millions of astronomical objects outside our Solar System. Here we provide
-                    a simplified, convenient interface to SIMBAD to lookup targets by alternative name,
+                    a "simplified" interface to SIMBAD to lookup targets by alternative name,
                     catalogue reference or identity, and populate the
                     <Text span inherit c={highlightColour}> Target Form </Text>
                     with the corresponding data when an object is selected. Also, the Aladin Sky Atlas viewer
-                    will move to the selected target.
+                    will move to the selected target (notice this serves no other purpose than to have something
+                    pretty at which to look).
                 </Text>
                 <Text size={"sm"}>
                     To trigger a search simply enter the first character of the object you are trying to find.
@@ -119,7 +120,7 @@ function SimbadSearchHelp(props: {queryChoice: string}) : ReactElement {
                             wildcard on the search term. For example,
                             if you simply type 'M' the actual search term used is 'M%', but if you type 'M_' then
                             that is the literal search term and, in this case, results in 'Nothing Found' i.e.,
-                            there is no target in the Database with the pattern 'M' followed by a single character.
+                            there are no targets in the Database with the pattern 'M' followed by a single character.
                         </Text>
                         <Text size={"sm"}>
                             Notice that we have limited the use of the wildcards such that you cannot begin the
@@ -144,15 +145,13 @@ function SimbadSearchHelp(props: {queryChoice: string}) : ReactElement {
                             Wildcards are NOT allowed in an Identity search.
                         </Text>
                         <Text size={"sm"}>
-                            The search is case insensitive and generally identities do not contain spaces but you
-                            may include spaces in your search term. For example, 'M 87' can be found using the
-                            identity 'm87' or 'M87' or 'm 87' and so on.
+                            The search is case insensitive and you may include spaces in your search term e.g.,
+                            'eagle nebula'. For catalogue references that have a pattern of 'acronym number',
+                            you may omit the space. For example, 'M 87' can be found by using 'm87'.
                         </Text>
                     </Stack>
                 }
             </Stack>
-
-
         </ScrollArea>
     )
 }
