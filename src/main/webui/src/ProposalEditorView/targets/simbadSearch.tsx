@@ -65,7 +65,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
         = useState(false)
 
     const getSimbadIdentsDebounce = useDebounceCallback(() => {
-        setSimbadIdentResult([]); //clear this array to then clear the combobox 'options'
+        setSimbadDisplayResult({results: []}); //clear this array to then clear the combobox 'options'
         setLoading(true); //shows the loader while waiting for results
         setNumberFound(0); //avoids transient messages from the previous search
         setInvalidInput(false); //ensure invalidInput is false on a new search
@@ -73,14 +73,17 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
         getSimbadIdents(search, SIMBAD_TOP_LIMIT);
     }, SIMBAD_DEBOUNCE_DELAY);
 
-
     type SimbadIdent = {
         id: string,
         oidref: number
     }
 
-    const [simbadIdentResult, setSimbadIdentResult] =
-        useState<SimbadIdent[]>([]);
+    type SimbadDisplayResults = {
+        results: SimbadIdent[]
+    }
+
+    const [simbadDisplayResult, setSimbadDisplayResult] =
+        useState<SimbadDisplayResults>({results: []})
 
     /**
      * Internal function that does the actual fetch to the SIMBAD URL
@@ -167,8 +170,12 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
                             if (jsonResult.data.length === 0)
                                 setLoading(false);
                             else {
-                                setSimbadIdentResult(jsonResult.data.map((arr: any) =>
-                                    ({id: arr[0], oidref: arr[1] })));
+                                const newResults: SimbadIdent[] = jsonResult.data.map((arr: any) =>
+                                    ({id: arr[0], oidref: arr[1] }))
+
+                                setSimbadDisplayResult(prevState => ({
+                                    results: [...(prevState.results ?? []), ...newResults]
+                                }))
                             }
                             setNumberFound(jsonResult.data.length);
                         }
@@ -293,7 +300,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
         }
     }
 
-    const options = simbadIdentResult.map((item) => (
+    const options = simbadDisplayResult.results.map((item) => (
         <Combobox.Option value={String(item.oidref)} key={item.id}>
             {displayName(item.id)}
         </Combobox.Option>
@@ -312,8 +319,8 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
                 withinPortal={true}
                 onOptionSubmit={(val) => {
                     setSearch(
-                        displayName(simbadIdentResult.find(({oidref}) =>
-                                 String(oidref) === val)!.id
+                        displayName(simbadDisplayResult.results.find(({oidref}) =>
+                            String(oidref) === val)!.id
                         )
                     );
                     getTargetDetails(Number(val))
@@ -336,7 +343,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
                         onFocus={() => combobox.openDropdown()}
                         onBlur={() => {
                             combobox.closeDropdown();
-                            if(search.length === 0) setSimbadIdentResult([])
+                            if(search.length === 0) setSimbadDisplayResult({results: []})
                         }}
                         placeholder="Search value"
                         rightSectionPointerEvents="none"
