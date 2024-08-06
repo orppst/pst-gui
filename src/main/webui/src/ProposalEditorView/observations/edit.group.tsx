@@ -1,7 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import { Fieldset, Grid, Text, Stack, Space } from '@mantine/core';
+import { Fieldset, Grid, Text, Stack} from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, TargetObservation,
@@ -18,7 +18,7 @@ import {FormSubmitButton} from 'src/commonButtons/save.tsx';
 import DeleteButton from 'src/commonButtons/delete.tsx';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { FormEvent, ReactElement } from 'react';
+import { FormEvent, ReactElement, SyntheticEvent } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 

@@ -1,4 +1,4 @@
-import {ReactElement} from "react";
+import {ReactElement, SyntheticEvent} from "react";
 import {ObservationFieldsProps} from "./ObservationFieldsPanel.tsx";
 import {Badge, Grid, Select, Stack, TextInput, Tooltip} from "@mantine/core";
 import {

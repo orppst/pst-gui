@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import ViewEditButton from "src/commonButtons/viewEdit.tsx";
-import {Modal, xl} from "@mantine/core";
+import {Modal} from "@mantine/core";
 import {useDisclosure} from "@mantine/hooks";
 import JustificationForm from "./justification.form.tsx";
 import {JustificationProps} from "./justifications.table.tsx";

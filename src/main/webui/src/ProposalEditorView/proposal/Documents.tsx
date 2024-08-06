@@ -6,7 +6,7 @@ import {
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {Box, FileButton, Grid, Stack, Table, Text} from "@mantine/core";
-import {useState} from "react";
+import {SyntheticEvent, useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";

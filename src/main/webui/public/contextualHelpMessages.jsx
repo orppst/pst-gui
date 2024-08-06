@@ -6,19 +6,16 @@ export const contextualHelpMessages = [
           + " Create a new proposal by clicking the Create a new proposal button,"
           + " or upload a new one in a zip file by clicking the Import button."
           + " To maintain an existing proposal, select it from the list and then choose one of the menu items that appear such as Title, Summary, etc. "
+          + " The Polaris system will capture only sufficient information to allow the TAC to make an informed decision on time allocation for a proposal."
+          + " The detailed requirements will be negotiated once an allocation has been made."
           + " No viability checks will be made by Polaris, "
           + " it is the PI's responsibility to ensure that the intended Observatory is capable of performing the observations described in the proposal."
     }
 , {
   id: "Overview-eng",
   message: " "
-          + " An overview of the current proposal is shown below."
-          + " Your own proposals are displayed on the left. You can search for others by title or investigator."
-          + " Create a new proposal by clicking the Create a new proposal button,"
-          + " or upload a new one in a zip file by clicking the Import button."
-          + " To maintain an existing proposal, select it from the list and then choose one of the menu items that appear such as Title, Summary, etc. "
-          + " No viability checks will be made by Polaris, "
-          + " it is the PI's responsibility to ensure that the intended Observatory is capable of performing the observations described in the proposal."
+          + " An overview of the selected proposal is shown below. You can choose another by clicking its dropdown button in the list."
+          + " You can maintain a component by clicking one of the menuitems, eg Title, Summary, etc."
 }
 , {
   id: "CreaProp-eng",

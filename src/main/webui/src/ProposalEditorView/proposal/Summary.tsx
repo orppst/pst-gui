@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {SyntheticEvent, useState, useEffect} from "react";
 import {
     fetchProposalResourceReplaceSummary,
     ProposalResourceReplaceSummaryVariables,

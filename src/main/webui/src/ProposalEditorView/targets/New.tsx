@@ -6,6 +6,7 @@ import {
     MouseEvent,
     ReactElement,
     ReactNode,
+    SyntheticEvent,
     useEffect,
     useRef, useState
 } from 'react';
@@ -372,9 +373,10 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                     form.getInputProps("Dec").onChange(e);
                                 }}}
                         />
+                        <p> </p>
                     </Stack>
                     <Grid>
-                       <Grid.Col span={4}></Grid.Col>
+                       <Grid.Col span={8}></Grid.Col>
                        <SubmitButton
                            toolTipLabel={"Save this target"}
                            disabled={!form.isValid() ||

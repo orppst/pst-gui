@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import {
     useProposalResourceGetObservingProposal,
     useSupportingDocumentResourceGetSupportingDocuments,
@@ -8,7 +8,6 @@ import {
     Avatar,
     Box,
     Container,
-    Grid,
     Group,
     List,
     Table,

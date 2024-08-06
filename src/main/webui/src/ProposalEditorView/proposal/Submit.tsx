@@ -1,4 +1,4 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement, SyntheticEvent, useEffect, useState} from "react";
 import {Box, Grid, Select, Stack, Text} from "@mantine/core";
 import {
     fetchProposalCyclesResourceGetProposalCycleDates,

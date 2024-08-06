@@ -2,7 +2,7 @@ import {
     useProposalResourceGetObservingProposal,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from 'src/generated/proposalToolComponents.ts';
-import {Grid, Group, Space} from '@mantine/core';
+import {Grid, Space} from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import {TechnicalGoalsTable } from './technicalGoalTable.tsx';
 import { TechnicalGoal } from 'src/generated/proposalToolSchemas.ts';

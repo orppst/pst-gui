@@ -1,7 +1,7 @@
 import {
     useProposalResourceGetObservingProposal,
 } from 'src/generated/proposalToolComponents';
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import ObservationRow, { observationTableHeader } from './observationTable.tsx';
 import {Container, Grid, Group, List, Space, Table} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";

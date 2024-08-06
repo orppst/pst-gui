@@ -1,8 +1,8 @@
 import PerformanceParametersSection from "./performance.form.tsx";
 import SpectralWindowsSection from "./spectrum.form.tsx";
-import {Grid, Stack, Space} from "@mantine/core";
+import {Grid, Stack} from "@mantine/core";
 import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
-import { ReactElement } from 'react';
+import { ReactElement, SyntheticEvent } from 'react';
 import {useParams, useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {

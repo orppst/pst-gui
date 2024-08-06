@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
-import {useParams, useNavigate} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {useProposalResourceGetObservingProposal} from "../../generated/proposalToolComponents.ts";
 import ObservationFieldsTable from "./observationFieldsTable.tsx";
 import {Field} from "../../generated/proposalToolSchemas.ts";
@@ -33,13 +33,6 @@ export default function ObservationFieldsPanel() : ReactElement {
     boundFields = proposal.data?.observations?.map(obs => (
         obs.field! as number)
     )
-
-  const navigate = useNavigate();
-
-  function handleCancel(event: SyntheticEvent) {
-      event.preventDefault();
-      navigate("../",{relative:"path"})
-      }
 
     //Remove the "Card" once we have this fully implemented
 

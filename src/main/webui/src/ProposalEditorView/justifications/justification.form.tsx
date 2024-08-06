@@ -1,4 +1,4 @@
-import {ReactElement} from "react";
+import {ReactElement, SyntheticEvent} from "react";
 import {Grid, Paper, Select, Stack} from "@mantine/core";
 import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { SyntheticEvent, useContext, useState } from "react";
 import {ProposalContext} from 'src/App2'
 import {
     fetchProposalResourceAddNewField,
@@ -102,6 +102,8 @@ const textFormatData = [
                 notifyError("Create proposal error", getErrorMessage(error))
             });
     });
+
+
   function handleCancel(event: SyntheticEvent) {
       event.preventDefault();
       navigate("../",{relative:"path"})
