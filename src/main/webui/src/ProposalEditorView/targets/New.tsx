@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Stack, Group, Fieldset, Radio, Grid, rem} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Stack, Fieldset, Grid, rem} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
@@ -67,8 +67,6 @@ const initialConfig: IAladinConfig = {
  * @constructor
  */
 const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
-
-    const [queryChoice, setQueryChoice] = useState('nameQuery');
 
     /**
      * handler that creates the Aladin interface from Javascript.
@@ -281,102 +279,86 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const responsiveSpan = {base: 2, md: 1}
 
     return (
-        <>
-            <Grid columns={2}>
-                <Grid.Col span={responsiveSpan} order={{base: 2, md: 1}}>
-                    <Fieldset legend={"SIMBAD search"} pb={150}>
-                        <Stack>
-                            <Radio.Group
-                                value={queryChoice}
-                                onChange={setQueryChoice}
-                                name={"queryChoice"}
-                                label={'Choose the query type'}
-                            >
-                                <Group p={"sm"}>
-                                    <Radio value={'nameQuery'} label={'Alternate Name'} />
-                                    <Radio value={'catQuery'} label={'Catalogue Ref.'} />
-                                    <Radio value={'idQuery'} label={'Identity'} />
-                                </Group>
-                            </Radio.Group>
-                            <SimbadSearch form={form} queryChoice={queryChoice}/>
-                        </Stack>
-                    </Fieldset>
-                </Grid.Col>
-                <Grid.Col span={responsiveSpan} order={{base: 1, md: 2}}>
-                    <Fieldset legend={"SIMBAD information"}>
-                        <SimbadSearchHelp queryChoice={queryChoice}/>
-                    </Fieldset>
-                </Grid.Col>
-                <Grid.Col span={responsiveSpan} order={{base: 3, md: 3}}>
-                    <Fieldset legend={"Target Form"}>
-                    <form onSubmit={handleSubmission}>
-                        <Stack gap={"lg"}>
-                            <TextInput
-                                ref={targetNameRef}
-                                withAsterisk
-                                label="Name"
-                                placeholder="User provided or use the SIMBAD search"
-                                {...form.getInputProps("TargetName")}
-                                onChange={(e: string) => {
-                                    setNameUnique(true);
-                                    if(form.getInputProps("TargetName").onChange)
-                                        form.getInputProps("TargetName").onChange(e);
+        <Grid columns={2}>
+            <Grid.Col span={responsiveSpan} order={{base: 2, md: 1}}>
+                <Fieldset legend={"SIMBAD search"} pb={200} pt={40}>
+                    <SimbadSearch form={form}/>
+                </Fieldset>
+            </Grid.Col>
+            <Grid.Col span={responsiveSpan} order={{base: 1, md: 2}}>
+                <Fieldset legend={"SIMBAD information"}>
+                    <SimbadSearchHelp/>
+                </Fieldset>
+            </Grid.Col>
+            <Grid.Col span={responsiveSpan} order={{base: 3, md: 3}}>
+                <Fieldset legend={"Target Form"}>
+                <form onSubmit={handleSubmission}>
+                    <Stack gap={"lg"}>
+                        <TextInput
+                            ref={targetNameRef}
+                            withAsterisk
+                            label="Name"
+                            placeholder="User provided or use the SIMBAD search"
+                            {...form.getInputProps("TargetName")}
+                            onChange={(e: string) => {
+                                setNameUnique(true);
+                                if(form.getInputProps("TargetName").onChange)
+                                    form.getInputProps("TargetName").onChange(e);
 
-                                }}
-                            />
-                            <NumberInput
-                                hideControls
-                                required={true}
-                                label={"RA"}
-                                decimalScale={6}
-                                min={0}
-                                max={360}
-                                allowNegative={false}
-                                suffix="°"
-                                {...form.getInputProps("RA")}
-                                onChange={(e) => {
-                                    UpdateAladinRA(e);
-                                    if (form.getInputProps("RA").onChange) {
-                                        form.getInputProps("RA").onChange(e);
-                                    }}}
-                            />
-                            <NumberInput
-                                hideControls
-                                required={true}
-                                label={"Dec"}
-                                decimalScale={6}
-                                min={-90}
-                                max={90}
-                                suffix="°"
-                                {...form.getInputProps("Dec")}
-                                onChange={(e) => {
-                                    UpdateAladinDec(e);
-                                    if (form.getInputProps("Dec").onChange) {
-                                        form.getInputProps("Dec").onChange(e);
-                                    }}}
-                            />
-                            <SubmitButton
-                                toolTipLabel={"Save this target"}
-                                disabled={!form.isValid() ||
-                                form.values.searching? true : undefined}
-                            />
-                        </Stack>
-                    </form>
-                    </Fieldset>
-                </Grid.Col>
-                <Grid.Col span={responsiveSpan} order={{base: 4, md: 4}}>
-                    <Fieldset
-                        legend={"Aladin Sky Atlas"}
-                        style={{height: isTablet? rem(350) : "100%"}}
-                    >
-                        <div
-                            id="aladin-lite-div"
-                            onMouseUpCapture={HandleEvent}>
-                        </div>
-                    </Fieldset>
-                </Grid.Col>
-            </Grid>
-        </>
+                            }}
+                        />
+                        <NumberInput
+                            hideControls
+                            required={true}
+                            label={"RA"}
+                            decimalScale={6}
+                            min={0}
+                            max={360}
+                            allowNegative={false}
+                            suffix="°"
+                            {...form.getInputProps("RA")}
+                            onChange={(e) => {
+                                UpdateAladinRA(e);
+                                if (form.getInputProps("RA").onChange) {
+                                    form.getInputProps("RA").onChange(e);
+                                }}}
+                        />
+                        <NumberInput
+                            hideControls
+                            required={true}
+                            label={"Dec"}
+                            decimalScale={6}
+                            min={-90}
+                            max={90}
+                            suffix="°"
+                            {...form.getInputProps("Dec")}
+                            onChange={(e) => {
+                                UpdateAladinDec(e);
+                                if (form.getInputProps("Dec").onChange) {
+                                    form.getInputProps("Dec").onChange(e);
+                                }}}
+                        />
+                        <SubmitButton
+                            toolTipLabel={"Save this target"}
+                            disabled={!form.isValid() ||
+                            form.values.searching? true : undefined}
+                        />
+                    </Stack>
+                </form>
+                </Fieldset>
+            </Grid.Col>
+            <Grid.Col span={responsiveSpan} order={{base: 4, md: 4}}>
+                <Fieldset
+                    legend={"Aladin Sky Atlas"}
+                    style={{height: isTablet? rem(350) : "100%"}}
+                >
+                    <div
+                        id="aladin-lite-div"
+                        onMouseUpCapture={HandleEvent}>
+                    </div>
+                </Fieldset>
+            </Grid.Col>
+        </Grid>
     );
 };
 

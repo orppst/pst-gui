@@ -40,7 +40,7 @@ import {IconSearch} from "@tabler/icons-react";
 
 
 export
-function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoice: string}) {
+function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
@@ -85,76 +85,8 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
     const [simbadDisplayResult, setSimbadDisplayResult] =
         useState<SimbadDisplayResults>({results: []})
 
-    /**
-     * Internal function that does the actual fetch to the SIMBAD URL
-     * @param targetName (string) the search term from the input box
-     * @param limit (number) only get the first 'limit' elements of the search
-     */
-    function getSimbadIdents(targetName: string, limit: number) {
 
-        let charToAvoid = /^[-+%_ ]|[`!@#$^&()={};':"\\|,.<>\/?~]/
-        let wildcards = /[%_]/;
-
-        //don't do a search if the 'targetName' string is empty
-        if (targetName.length === 0) return
-
-        //don't do a search if the 'targetName' string contains suspect characters
-        if (charToAvoid.test(targetName)) {
-            setLoading(false);
-            setInvalidInput(true);
-            return;
-        }
-
-        //alternate names in SIMBAD are prefixed with 'NAME '
-        const simbadAltName = (ident: string) : string => {
-            //Prefix string with 'NAME '
-            return 'NAME ' + ident;
-        }
-
-        let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
-
-        switch(props.queryChoice) {
-            case 'nameQuery':
-            {
-                //don't allow wildcards in the body of an Alternate Name search
-                if (wildcards.test(targetName)) {
-                    setLoading(false);
-                    setInvalidInput(true);
-                    return;
-                }
-                let simbadName = simbadAltName(targetName);
-                theUrl += encodeURIComponent(
-                    `select top ${limit} min(id),oidref from ident where id 
-                                              like '${simbadName}%' group by oidref`
-                )
-                break;
-            }
-            case 'catQuery':
-            {
-                //allow wildcards in the body of a search but don't end with a % wildcard if present
-                let simbadName = wildcards.test(targetName) ? targetName : targetName + '%';
-                theUrl += encodeURIComponent(
-                    `select top ${limit} min(id),oidref from ident where id 
-                                              like '${simbadName}' group by oidref`
-                )
-                break;
-            }
-            case 'idQuery':
-            {
-                //forbid use of wildcards in an Identity search
-                if (wildcards.test(targetName)) {
-                    setLoading(false);
-                    setInvalidInput(true);
-                    return;
-                }
-                theUrl += encodeURIComponent(
-                    `select top ${limit} id,oidref from ident where id = '${targetName}'`
-                )
-                break;
-            }
-        }
-
-        //searches are expected to take order one second so set a timeout with a reasonable margin
+    const fetchSimbadIdents = (theUrl: string) => {
         fetch(theUrl, {signal: AbortSignal.timeout(SIMBAD_TIMEOUT)})
             .then(res => {
                 //Simbad returns errors as VOTable xml IN THE RESPONSE
@@ -185,6 +117,63 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
                 setLoading(false);
                 setTimedOut(true);
             });
+    }
+
+
+    /**
+     * Internal function that does the actual fetch to the SIMBAD URL
+     * @param inputName (string) the search term from the input box
+     * @param limit (number) only get the first 'limit' elements of the search
+     */
+    function getSimbadIdents(inputName: string, limit: number) {
+
+        let charToAvoid = /^[-+%_ ]|[`!@#$^&()={};':"\\|,.<>\/?~]/
+        let wildcards = /[%_]/;
+
+        //don't do a search if the 'inputName' string is empty
+        if (inputName.length === 0) return
+
+        //don't do a search if the 'targetName' string contains suspect characters
+        if (charToAvoid.test(inputName)) {
+            setLoading(false);
+            setInvalidInput(true);
+            return;
+        }
+
+        const theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
+
+        const queryHead = `select top ${limit} id,oidref from ident where `;
+        const queryTail = ' order by id';
+
+        //if the user uses wildcards in their search term assume they know what they are doing
+        if (wildcards.test(inputName)) {
+            let theQuery = queryHead + `id like '${inputName}'`;
+            fetchSimbadIdents(theUrl + encodeURIComponent(theQuery));
+        } else {
+            //sanitise input to be all lowercase
+            let targetName = inputName.toLowerCase();
+
+            const capitaliseFirstChar = (input: string) : string => {
+                return input.charAt(0).toUpperCase() + input.slice(1);
+            }
+
+            const queryIdEquals = `id='${targetName}'`;
+            const queryLikeNameLower = `id like 'NAME ${targetName}%'`;
+            const queryLikeNameUpper = `id like 'NAME ${capitaliseFirstChar(targetName)}%'`;
+            const queryLikeLower = `id like '${targetName}%'`;
+            const queryLikeUpper = `id like '${capitaliseFirstChar(targetName)}%'`;
+            const queryLikeUpperAll = `id like uppercase('${targetName}%')`;
+
+            let theQuery = queryHead + queryIdEquals + ' or ' + queryLikeNameLower + ' or ' + queryLikeNameUpper;
+
+            if (targetName.length > 2) {
+                theQuery += ' or ' + queryLikeLower + ' or ' + queryLikeUpper + ' or ' + queryLikeUpperAll;
+            }
+
+            theQuery += queryTail;
+
+            fetchSimbadIdents(theUrl + encodeURIComponent(theQuery));
+        }
     }
 
     /**
@@ -241,7 +230,6 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
             );
     }
 
-
     //returns names without the 'NAME ' prefix
     const displayName = (ident: string): string => {
         const prefix = 'NAME ';
@@ -249,26 +237,6 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
             return ident.substring(prefix.length);
         } else {
             return ident;
-        }
-    }
-
-    //return a description dependent on 'queryChoice'
-    const descriptionFunction = (queryChoice: string) : string => {
-        switch (queryChoice) {
-            case 'nameQuery' :
-            {
-                return "Case sensitive e.g., 'Crab' not 'crab'";
-            }
-            case 'idQuery' :
-            {
-                return "Case insensitive - exact name required e.g., 'm1', 'andromeda', 'eagle nebula'";
-            }
-            case 'catQuery':
-            {
-                return "Case sensitive, try multiple spaces and/or ADQL wildcards '%' and '_'";
-            }
-            default:
-                return ""
         }
     }
 
@@ -330,7 +298,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>, queryChoic
                 <Combobox.Target>
                     <InputBase
                         rightSection={<IconSearch />}
-                        description={ descriptionFunction(props.queryChoice) }
+                        description={ "Case insensitive unless using the wildcards '%' or '_'" }
                         value={search}
                         onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
                             combobox.openDropdown();
