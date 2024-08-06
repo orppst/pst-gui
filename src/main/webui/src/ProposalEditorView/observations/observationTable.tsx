@@ -84,7 +84,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation')
                         ? 'Target' : 'Calibration'}
-                    Observation of '{observation?.target?.sourceName}'
+                    Observation of {observation?.target?.length} target(s)
                 </Text>
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
@@ -125,7 +125,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation')
                         ? 'Target' : 'Calibration'}
-                    Observation of '{observation?.target?.sourceName}'
+                    Observation of {observation?.target?.length} target(s)
                 </Text>
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
@@ -170,7 +170,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     return (
         <Table.Tr>
             <Table.Td>
-                {observation?.target?.sourceName}
+                Observation of {observation?.target?.length} target(s)
             </Table.Td>
             <Table.Td>
                 {observation?.["@type"]=== 'proposal:TargetObservation' ?

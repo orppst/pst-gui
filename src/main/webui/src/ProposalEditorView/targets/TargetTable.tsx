@@ -12,7 +12,6 @@ import DeleteButton from "src/commonButtons/delete";
 import { TargetProps, TargetTableProps } from './targetProps.tsx';
 import {
     ERROR_YELLOW,
-    NO_ROW_SELECTED,
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
@@ -132,15 +131,18 @@ function TargetTableRow(props: TargetProps): ReactElement {
     const RowSelector = (targetId: number | undefined): void => {
         console.debug(`row ${targetId} was selected`);
         // handle not having a selection method
-        if (!props.setSelectedTarget) {
+        if (!props.setSelectTarget) {
             return;
         }
 
         // handle selection.
-        if (props.selectedTarget === targetId) {
-            props.setSelectedTarget(NO_ROW_SELECTED);
-        } else {
-            props.setSelectedTarget!(targetId!);
+        //FIXME this is wrong
+        if(props.selectedTargets !== undefined && targetId !== undefined) {
+            if ( props.selectedTargets.includes(targetId) ) {
+                props.setSelectTarget(targetId);
+            } else {
+                props.setSelectTarget(targetId);
+            }
         }
     }
 
@@ -200,7 +202,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
     // generate the full row.
     return (
         <Table.Tr onClick={() => {RowSelector(data?._id);}}
-                  bg={props.selectedTarget === data?._id ?
+                  bg={data?._id !== undefined && props.selectedTargets?.includes(data?._id) ?
                       TABLE_HIGH_LIGHT_COLOR :
                       undefined}>
             <Table.Td>
@@ -235,7 +237,7 @@ export function TargetTable(props: TargetTableProps): ReactElement {
     const theme = useMantineTheme();
     return (
         <Table highlightOnHover borderColor={
-                props.selectedTarget === NO_ROW_SELECTED ?
+                props.selectedTargets?.length === 0 ?
                     theme.colors.yellow[ERROR_YELLOW]:
                     undefined}>
             {TargetTableHeader(props)}
@@ -252,8 +254,8 @@ export function TargetTable(props: TargetTableProps): ReactElement {
                                 key={String(item.dbid!)}
                                 showButtons={props.showButtons}
                                 boundTargets={props.boundTargets}
-                                selectedTarget={props.selectedTarget}
-                                setSelectedTarget={props.setSelectedTarget}
+                                selectedTargets={props.selectedTargets}
+                                setSelectTarget={props.setSelectTarget}
                             />)
                     })
                 }
