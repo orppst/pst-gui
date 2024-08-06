@@ -1,8 +1,14 @@
 import {AllocatedBlock} from "../../generated/proposalToolSchemas.ts";
-import {Group, Stack, Table} from "@mantine/core";
+import {Group, Stack, Table, Text} from "@mantine/core";
 import DeleteButton from "../../commonButtons/delete.tsx";
 import AllocatedBlockModal from "./allocatedBlock.modal.tsx";
 import {ReactElement} from "react";
+import {modals} from "@mantine/modals";
+import {fetchAllocatedBlockResourceRemoveAllocatedBlock} from "../../generated/proposalToolComponents.ts";
+import {useParams} from "react-router-dom";
+import {useQueryClient} from "@tanstack/react-query";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 export type AllocatedBlocksTableProps = {
     proposalTitle: string,
@@ -13,6 +19,48 @@ export type AllocatedBlocksTableProps = {
 export default
 function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
 {
+    const {selectedCycleCode} = useParams();
+    const queryClient = useQueryClient();
+
+    type DeleteProps = {
+        proposalTitle: string,
+        resourceName: string,
+        allocatedId: number,
+        blockId: number
+    }
+
+
+    const confirmDelete = (props: DeleteProps) => {
+        modals.openConfirmModal({
+            title: "Delete '" + props.resourceName + "' from '" + props.proposalTitle + "'?",
+            centered: true,
+            children:(
+                <Text size={"sm"}>
+                    This will remove the '{props.resourceName}' resource block from '{props.proposalTitle}'.
+                    Are you sure?
+                </Text>
+            ),
+            labels: {confirm: "Delete", cancel: "No, don't remove " + props.resourceName},
+            confirmProps: {color: "red"},
+            onConfirm: () => handleDelete({...props})
+        })
+    }
+
+    const handleDelete = (props: DeleteProps) => {
+        fetchAllocatedBlockResourceRemoveAllocatedBlock({
+            pathParams: {
+                cycleCode: Number(selectedCycleCode),
+                allocatedId: props.allocatedId,
+                blockId: props.blockId
+            }
+        })
+            .then(() => queryClient.invalidateQueries())
+            .then(() => notifySuccess("Deletion Successful",
+                "Deleted " + props.resourceName + " from " + props.proposalTitle))
+            .catch(error => notifyError("Failed to delete " + props.resourceName +
+                " from " + props.proposalTitle, getErrorMessage(error)))
+    }
+
     return (
         <Stack>
             {props.allocatedBlocks.length > 0 &&
@@ -43,6 +91,14 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
                                         />
                                         <DeleteButton
                                             toolTipLabel={"delete this resource block"}
+                                            onClick={() => confirmDelete(
+                                                {
+                                                    proposalTitle: props.proposalTitle,
+                                                    resourceName: ab.resource?.type?.name!,
+                                                    allocatedId: props.allocatedProposalId,
+                                                    blockId: ab._id!
+                                                }
+                                            )}
                                         />
                                     </Group>
                                 </Table.Td>
