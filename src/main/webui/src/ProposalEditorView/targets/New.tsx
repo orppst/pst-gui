@@ -283,7 +283,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     return (
         <>
             <Grid columns={2}>
-                <Grid.Col span={responsiveSpan}>
+                <Grid.Col span={responsiveSpan} order={{base: 2, md: 1}}>
                     <Fieldset legend={"SIMBAD search"} pb={150}>
                         <Stack>
                             <Radio.Group
@@ -302,12 +302,12 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         </Stack>
                     </Fieldset>
                 </Grid.Col>
-                <Grid.Col span={responsiveSpan}>
+                <Grid.Col span={responsiveSpan} order={{base: 1, md: 2}}>
                     <Fieldset legend={"SIMBAD information"}>
                         <SimbadSearchHelp queryChoice={queryChoice}/>
                     </Fieldset>
                 </Grid.Col>
-                <Grid.Col span={responsiveSpan}>
+                <Grid.Col span={responsiveSpan} order={{base: 3, md: 3}}>
                     <Fieldset legend={"Target Form"}>
                     <form onSubmit={handleSubmission}>
                         <Stack gap={"lg"}>
@@ -364,10 +364,10 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     </form>
                     </Fieldset>
                 </Grid.Col>
-                <Grid.Col span={responsiveSpan}>
+                <Grid.Col span={responsiveSpan} order={{base: 4, md: 4}}>
                     <Fieldset
                         legend={"Aladin Sky Atlas"}
-                        style={{height: isTablet? rem(300) : "100%"}}
+                        style={{height: isTablet? rem(350) : "100%"}}
                     >
                         <div
                             id="aladin-lite-div"
@@ -389,7 +389,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
  */
 export default function AddTargetModal(props: {proposalTitle: string}): ReactElement {
     const [opened, { close, open }] = useDisclosure();
-    const isMobile = useMediaQuery('(max-width: 50em)');
+    const isMobile = useMediaQuery('(max-width: 100em)');
 
     return (
         <>
@@ -401,7 +401,7 @@ export default function AddTargetModal(props: {proposalTitle: string}): ReactEle
                    opened={opened}
                    onClose={() => {close();}}
                    fullScreen={isMobile}
-                   size={"75%"}
+                   size={"60%"}
             >
                 <TargetForm onSubmit={() => {close();}}/>
             </Modal>
