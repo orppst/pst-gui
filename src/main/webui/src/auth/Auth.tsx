@@ -28,8 +28,8 @@ export type AuthMapping = {
 export function AuthProvider({ children }: { children: ReactNode }) {
 
     // CONFIG VALUES ///////////////////////////////////
-    const authenticationTimeLimitInMinutes = 30;
-    const minutesUntilIdleTriggered = .25;
+    const authenticationTimeLimitInMinutes = 12.5;
+    const minutesUntilIdleTriggered = 30;
     // CONFIG VALUES END ///////////////////////////////
 
     const MinAsMS = 60000;
