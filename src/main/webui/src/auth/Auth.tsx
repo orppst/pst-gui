@@ -22,23 +22,30 @@ export type AuthMapping = {
 // quarkus.oidc.token.refresh-token-time-skew=60
 // quarkus.oidc.token.refresh-expired=true
 // which means that quarkus will attempt to refresh 60s before actual expiry - we need that as we cannot have a redirect happen
-// for the javascript fetch because of CORS so we nake the call 10s before expiry.
+// for the javascript fetch because of CORS so we make the call 10s before expiry.
 //
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+
+    // CONFIG VALUES ///////////////////////////////////
+    const authenticationTimeLimitInMinutes = 30;
+    const minutesUntilIdleTriggered = .25;
+    // CONFIG VALUES END ///////////////////////////////
+
+    const MinAsMS = 60000;
+    const ATL_MS = authenticationTimeLimitInMinutes * MinAsMS;
 
     const [loggedOn, setLoggedOn] = useState(false)
     const [expiringSoon, setExpiring] = useState(false)
     const [isNewUser, setIsNewUser] = useState(false);
 
-    const expiry = useRef(new Date(Date.now()+600000))
+    const expiry = useRef(new Date(Date.now()+ATL_MS))
     const user  = useRef({fullName:"Unknown"} as Person)
     const apiURL = useRef("")
     const logoutTimer = useRef<NodeJS.Timeout>()
     const expiryTimer = useRef<NodeJS.Timeout>()
     const token= useRef<string>("")//TODO what to do if token bad....
     const uuid =  useRef<string>("")
-
 
 
     const onPresenceChange = (presence:PresenceType) =>{
@@ -50,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const idleTimer = useIdleTimer({
         onPresenceChange,
-        timeout: 60000,
+        timeout: MinAsMS * minutesUntilIdleTriggered,
         throttle: 500
     })
     async function getUser() {
