@@ -56,6 +56,10 @@ export default function TechnicalGoalEditModal(
                     "New Technical Goal" :
                     "View/Edit Technical Goal No." + technicalGoalProps.technicalGoal?._id}
                 fullScreen
+                //size="auto"
+                //width={100}
+                //height="auto"
+                //centered
             >
                 <TechnicalGoalEditGroup {...props} />
             </Modal>

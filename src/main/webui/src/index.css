@@ -16,3 +16,8 @@ h1 {
   text-align: center;
   margin: 50px;
 }
+
+
+.display-linebreak {
+  white-space: pre-line;
+  }

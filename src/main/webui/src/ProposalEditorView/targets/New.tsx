@@ -6,6 +6,7 @@ import {
     MouseEvent,
     ReactElement,
     ReactNode,
+    SyntheticEvent,
     useEffect,
     useRef, useState
 } from 'react';
@@ -18,10 +19,12 @@ import {
     fetchSimbadResourceSimbadFindTarget, fetchSpaceSystemResourceGetSpaceSystem
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
+import DeleteButton from 'src/commonButtons/delete.tsx';
 import DatabaseSearchButton from 'src/commonButtons/databaseSearch';
 import { SubmitButton } from 'src/commonButtons/save';
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import { useHistoryState } from 'src/useHistoryState.ts';
 import "./aladin.css";
 import {
@@ -287,8 +290,21 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
+    /**
+    * manage the cancel button
+     */
+  const navigate = useNavigate();
+
+  function handleCancel(event: SyntheticEvent) {
+      event.preventDefault();
+      navigate("../",{relative:"path"})
+      }
+
+
     // return the dynamic HTML.
     return (
+        <>
+        <ContextualHelpButton messageId="MaintTarg" />
         <Grid columns={4}>
             <Grid.Col span={2}>
                 <div id="aladin-lite-div"
@@ -357,15 +373,23 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                     form.getInputProps("Dec").onChange(e);
                                 }}}
                         />
-                        <SubmitButton
-                            toolTipLabel={"Save this target"}
-                            disabled={!form.isValid() ||
-                                      form.values.searching? true : undefined}
-                        />
+                        <p> </p>
                     </Stack>
+                    <Grid>
+                       <Grid.Col span={8}></Grid.Col>
+                       <SubmitButton
+                           toolTipLabel={"Save this target"}
+                           disabled={!form.isValid() ||
+                           form.values.searching? true : undefined}/>
+                       <DeleteButton
+                           label={"Cancel"}
+                           onClickEvent={handleCancel}
+                           toolTipLabel={"Go back without saving"}/>
+                    </Grid>
                 </form>
             </Grid.Col>
         </Grid>
+        </>
     );
 };
 
