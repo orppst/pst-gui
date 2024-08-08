@@ -46,7 +46,7 @@ const initialConfig: IAladinConfig = {
     fov: 0.25,
     showReticule: true,
     showZoomControl: false,
-    showLayersControl: true,
+    showLayersControl: false,
     showGotoControl: false,
     showShareControl: false,
     showFullscreenControl: false,
@@ -280,17 +280,17 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
     return (
         <Grid columns={2}>
-            <Grid.Col span={responsiveSpan} order={{base: 2, md: 1}}>
-                <Fieldset legend={"SIMBAD search"} pb={200} pt={40}>
-                    <SimbadSearch form={form}/>
-                </Fieldset>
-            </Grid.Col>
-            <Grid.Col span={responsiveSpan} order={{base: 1, md: 2}}>
-                <Fieldset legend={"SIMBAD information"}>
+            <Grid.Col span={2}>
+                <Fieldset legend={"User Information"}>
                     <SimbadSearchHelp/>
                 </Fieldset>
             </Grid.Col>
-            <Grid.Col span={responsiveSpan} order={{base: 3, md: 3}}>
+            <Grid.Col span={2}>
+                <Fieldset legend={"SIMBAD search"} pb={100} pt={10}>
+                    <SimbadSearch form={form}/>
+                </Fieldset>
+            </Grid.Col>
+            <Grid.Col span={responsiveSpan}>
                 <Fieldset legend={"Target Form"}>
                 <form onSubmit={handleSubmission}>
                     <Stack gap={"lg"}>
@@ -347,14 +347,15 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 </form>
                 </Fieldset>
             </Grid.Col>
-            <Grid.Col span={responsiveSpan} order={{base: 4, md: 4}}>
+            <Grid.Col span={responsiveSpan}>
                 <Fieldset
                     legend={"Aladin Sky Atlas"}
                     style={{height: isTablet? rem(350) : "100%"}}
                 >
                     <div
                         id="aladin-lite-div"
-                        onMouseUpCapture={HandleEvent}>
+                        onMouseUpCapture={HandleEvent}
+                    >
                     </div>
                 </Fieldset>
             </Grid.Col>
@@ -371,7 +372,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
  */
 export default function AddTargetModal(props: {proposalTitle: string}): ReactElement {
     const [opened, { close, open }] = useDisclosure();
-    const isMobile = useMediaQuery('(max-width: 100em)');
+    const isMobile = useMediaQuery('(max-width: 75em)');
 
     return (
         <>

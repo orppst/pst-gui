@@ -127,6 +127,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
      */
     function getSimbadIdents(inputName: string, limit: number) {
 
+        // '-+%_ ' at start of pattern, the rest anywhere within pattern
         let charToAvoid = /^[-+%_ ]|[`!@#$^&()={};':"\\|,.<>\/?~]/
         let wildcards = /[%_]/;
 
@@ -150,27 +151,12 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
             let theQuery = queryHead + `id like '${inputName}'`;
             fetchSimbadIdents(theUrl + encodeURIComponent(theQuery));
         } else {
-            //sanitise input to be all lowercase
-            let targetName = inputName.toLowerCase();
+            const queryIdEquals = `id='${inputName}'`;
+            const queryLikeName = `id like 'NAME ${inputName}%'`;
+            const queryLike = `id like '${inputName}%'`;
 
-            const capitaliseFirstChar = (input: string) : string => {
-                return input.charAt(0).toUpperCase() + input.slice(1);
-            }
-
-            const queryIdEquals = `id='${targetName}'`;
-            const queryLikeNameLower = `id like 'NAME ${targetName}%'`;
-            const queryLikeNameUpper = `id like 'NAME ${capitaliseFirstChar(targetName)}%'`;
-            const queryLikeLower = `id like '${targetName}%'`;
-            const queryLikeUpper = `id like '${capitaliseFirstChar(targetName)}%'`;
-            const queryLikeUpperAll = `id like uppercase('${targetName}%')`;
-
-            let theQuery = queryHead + queryIdEquals + ' or ' + queryLikeNameLower + ' or ' + queryLikeNameUpper;
-
-            if (targetName.length > 2) {
-                theQuery += ' or ' + queryLikeLower + ' or ' + queryLikeUpper + ' or ' + queryLikeUpperAll;
-            }
-
-            theQuery += queryTail;
+            let theQuery = queryHead + queryIdEquals + ' or '
+                + queryLikeName + ' or ' + queryLike + queryTail;
 
             fetchSimbadIdents(theUrl + encodeURIComponent(theQuery));
         }
@@ -230,13 +216,33 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
             );
     }
 
-    //returns names without the 'NAME ' prefix
+
+    //removes all additional white space in a string, leaving a single whitespace
+    // between characters where appropriate
+    const removeExtraSpaces = (inputName: string ) : string => {
+        let result = '';
+
+        //All names start with at least one character that is not white space
+        result += inputName[0];
+        result += inputName[1]; //may or may not be white space
+
+        //starting index is 2
+        for (let i = 2; i < inputName.length; i++) {
+            if (inputName[i - 1] !== ' ' || inputName[i] !== ' ') {
+                result += inputName[i]
+            }
+        }
+        return result
+    }
+
+
+    //returns names without the 'NAME ' prefix and a single space between characters where appropriate
     const displayName = (ident: string): string => {
         const prefix = 'NAME ';
         if (ident.indexOf(prefix) === 0) {
-            return ident.substring(prefix.length);
+            return removeExtraSpaces(ident.substring(prefix.length));
         } else {
-            return ident;
+            return removeExtraSpaces(ident);
         }
     }
 
@@ -298,7 +304,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                 <Combobox.Target>
                     <InputBase
                         rightSection={<IconSearch />}
-                        description={ "Case insensitive unless using the wildcards '%' or '_'" }
+                        description={ "Case sensitive (mostly - unless using SIMBAD identities e.g., 'crab', 'andromeda', ...)" }
                         value={search}
                         onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
                             combobox.openDropdown();
