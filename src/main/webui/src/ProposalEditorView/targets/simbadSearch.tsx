@@ -131,8 +131,8 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
         let charToAvoid = /^[-+%_ ]|[`!@#$^&()={};':"\\|,.<>\/?~]/
         let wildcards = /[%_]/;
 
-        //don't do a search if the 'inputName' string is empty
-        if (inputName.length === 0) return
+        //only perform a search with input terms at least two characters long
+        if (inputName.length < 2) return
 
         //don't do a search if the 'targetName' string contains suspect characters
         if (charToAvoid.test(inputName)) {
@@ -247,10 +247,10 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
     }
 
     const searchMessage = () : ReactElement => {
-        if (search.length === 0) {
+        if (search.length < 2) {
             return (
                 <Combobox.Empty>
-                    Please type at least one character to start a search
+                    Please type at least two characters to trigger a search
                 </Combobox.Empty>
             )
         } else if (loading) {

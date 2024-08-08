@@ -11,19 +11,19 @@ function SimbadSearchHelp() : ReactElement {
     const SCROLLAREA_HEIGHT = 120;
 
     return(
-        <Tabs defautvalue={"general"} allowTabDeactivation variant={"outline"}>
+        <Tabs allowTabDeactivation variant={"outline"}>
             <Tabs.List grow>
-                <Tabs.Tab value={"general"} leftSection={<IconAlien />}>
-                    Simbad
-                </Tabs.Tab>
-                <Tabs.Tab value={"aladin"} leftSection={<IconGlobe />}>
-                    Aladin
-                </Tabs.Tab>
                 <Tabs.Tab value={"searchInstructions"} leftSection={<IconInfoCircle/>}>
                     Instructions
                 </Tabs.Tab>
                 <Tabs.Tab value={"searchTips"} leftSection={<IconQuestionMark />}>
                     Hints and tips
+                </Tabs.Tab>
+                <Tabs.Tab value={"general"} leftSection={<IconAlien />}>
+                    Simbad
+                </Tabs.Tab>
+                <Tabs.Tab value={"aladin"} leftSection={<IconGlobe />}>
+                    Aladin
                 </Tabs.Tab>
             </Tabs.List>
 
@@ -40,11 +40,9 @@ function SimbadSearchHelp() : ReactElement {
                         </Text>
                         <Text size={"sm"}>
                             SIMBAD provides a dynamical database of basic data, cross-identifications, bibliography and
-                            measurements of millions of astronomical objects outside our Solar System. Here we provide
-                            a "simplified" interface to SIMBAD to lookup targets by name and populate the
-                            <Text span inherit c={highlightColour}> Target Form </Text>
-                            with the corresponding data when an object is selected. Also, the Aladin Sky Atlas viewer
-                            will move to the selected target.
+                            measurements of millions of astronomical objects outside our Solar System. Please visit
+                            the SIMBAD <Anchor href={"https://simbad.cds.unistra.fr/simbad/"} target={"_blank"}>site</Anchor> for
+                            more information (opens in a new browser tab)
                         </Text>
                     </Stack>
                 </ScrollArea>
@@ -59,7 +57,8 @@ function SimbadSearchHelp() : ReactElement {
                     <Text size={"sm"}>
                         Aladin is an interactive sky atlas that visualises digitised astronomical images.
                         More information about the sky atlas can be
-                        found <Anchor href={"https://aladin.cds.unistra.fr/"} target={"_blank"}>here</Anchor>.
+                        found <Anchor href={"https://aladin.cds.unistra.fr/"} target={"_blank"}>here</Anchor> (opens
+                        in a new browser tab)
                     </Text>
 
                     <Text size={"sm"}>
@@ -70,8 +69,13 @@ function SimbadSearchHelp() : ReactElement {
                         to your touchpad
                     </Text>
                     <Text size={"sm"}>
-                        If you click on the viewer accidentally you may reset the reticule, and/or the Ra and Dec
-                        values, by re-selecting your desired target from the search results list.
+                        If you click on the viewer accidentally you may reset the the Ra and Dec
+                        values and the reticule by re-selecting your desired target from the search results list.
+                    </Text>
+                    <Text size={"sm"}>
+                        Notice that you may input Ra and Dec values manually and the viewer will move to that
+                        location. However, it is recommended that you use the SIMBAD search facility to find Ra
+                        and Dec values.
                     </Text>
                 </Stack>
                 </ScrollArea>
@@ -83,18 +87,25 @@ function SimbadSearchHelp() : ReactElement {
                         How to use SIMBAD search
                     </Text>
                     <Text size={"sm"}>
-                        To trigger a search simply enter the first character of the object you are trying to find.
-                        The input is case sensitive with the caveat that SIMBAD special identities are not. Special
-                        identities include strings like 'crab', 'm1', 'andromeda', 'eagle nebula', and so on. There
-                        appears to be no definitive list of these identities so have a play and maybe you can
-                        find them all, but you won't.
+                        Here we provide
+                        a "simplified" interface to SIMBAD to lookup targets by name and populate the
+                        <Text span inherit c={highlightColour}> Target Form </Text>
+                        with the corresponding data when an object is selected. Also, the Aladin Sky Atlas viewer
+                        will move to the selected target.
                     </Text>
                     <Text size={"sm"}>
-                        You may use the ADQL wildcards
+                        To trigger a search enter at least two characters into the search input.
+                        The input is case sensitive with the caveat that SIMBAD special identities are not. Special
+                        identities include strings like 'crab', 'm1', 'andromeda', 'eagle nebula', and so on, and
+                        they must be written in full to return a result. There appears to be no definitive list of
+                        these identities so have a play and maybe you can find them all, but you won't.
+                    </Text>
+                    <Text size={"sm"}>
+                        If a simple search string does not find what you want you may use the ADQL wildcards
                         <Text span inherit c={highlightColour}> % </Text>,
                         representing zero or more characters, and
                         <Text span inherit c={highlightColour}> _ </Text>,
-                        representing exactly one character, if a simple search string does not find what you want.
+                        representing exactly one character, in your search term, and character case is taken as-is.
                         Notice you may NOT use a
                         wildcard at the START of your search term for performance reasons (the underlying call to
                         the SIMBAD URL is set to abort after 5 seconds, and generally searches that start with a
@@ -128,6 +139,9 @@ function SimbadSearchHelp() : ReactElement {
                         <List.Item>Results are ordered alphabetically</List.Item>
                         <List.Item>The maximum number of results returned is 100</List.Item>
                         <List.Item>
+                            Proper nouns will probably start with a capitalised first letter e.g. Peacock, Horseshoe
+                        </List.Item>
+                        <List.Item>
                             Multiple spaces within the search term may produce different results
                             (some SIMBAD names use fixed-width format)
                         </List.Item>
@@ -141,9 +155,13 @@ function SimbadSearchHelp() : ReactElement {
                         <List.Item>Some objects start with a * or a [</List.Item>
                         <List.Item>
                             Those that start with [ typically have the format [AY] X, where A represents
-                            a one to many letter acronym, Y represents a year either two or four digits long,
-                            and X is some alphanumeric id - you will likely need at least 3 characters for the
-                            search to yield results.
+                            a one to many capitalised character acronym, Y represents a year either two or
+                            four digits long,
+                            and X is some alphanumeric id. In this case, you will likely need at least 3 characters
+                            for the search to yield results.
+                        </List.Item>
+                        <List.Item>If trying to find Gaia targets use 'Gaia%' as a starting point, simply using
+                            'Gaia' will result in a time-out.
                         </List.Item>
                     </List>
                 </Stack>

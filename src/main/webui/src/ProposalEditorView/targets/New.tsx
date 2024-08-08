@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Stack, Fieldset, Grid, rem} from "@mantine/core";
+import {Modal, NumberInput, TextInput, Stack, Fieldset, Grid, rem, Text} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
@@ -282,6 +282,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         <Grid columns={2}>
             <Grid.Col span={2}>
                 <Fieldset legend={"User Information"}>
+                    <Text size={"xs"} c={"gray.6"}>Click on a tab to toggle its content</Text>
                     <SimbadSearchHelp/>
                 </Fieldset>
             </Grid.Col>
