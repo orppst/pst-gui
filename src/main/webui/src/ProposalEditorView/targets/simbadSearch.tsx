@@ -14,6 +14,7 @@ import {
 import {UseFormReturnType} from "@mantine/form";
 import {Aladin, newTargetData} from "./New.tsx";
 import {IconSearch} from "@tabler/icons-react";
+import {notifications} from "@mantine/notifications";
 
 
 /*
@@ -173,7 +174,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
         let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
 
         let adqlQuery = encodeURIComponent(
-            `select main_id,ra,dec,radec2sexa(ra, dec, 16) from basic where oid=${oidref}`
+            `select main_id,ra,dec,radec2sexa(ra, dec, 16),oid from basic where oid=${oidref}`
         )
 
         //searches are expected to take order one second so set a timeout with a reasonable margin
@@ -193,14 +194,32 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                             // but leave for semantics
                             if (jsonResult.data.length === 1) {
                                 jsonResult.data.map((arr: any) => {
-                                    //set the form fields
-                                    props.form.setFieldValue('TargetName', displayName(arr[0]))
-                                    props.form.setFieldValue('RA', arr[1]);
-                                    props.form.setFieldValue('Dec', arr[2])
-                                    props.form.setFieldValue('sexagesimal', arr[3])
 
-                                    //point Aladin viewer to the target
-                                    Aladin.gotoRaDec(arr[1], arr[2])
+                                    // during testing, it was found that some SIMBAD entries contain no basic data
+                                    // we will have to catch that here and display an apology message
+                                    if (arr[1] === null || arr[2] === null){
+                                        notifications.show({
+                                            title: displayName(arr[0]) + ", oidref: " + arr[4] + " no positional data",
+                                            message: "Sorry, it appears " + displayName(arr[0]) +
+                                                "oidref: " + arr[4]  + " entry in the SIMBAD DB is blank. Feel free " +
+                                                "to email cds-question@unistra.fr indicating that the target referenced " +
+                                                "by the oidref number above has no basic table data.",
+                                            autoClose: false,
+                                            color: "red",
+                                            className: 'my-notification-class'
+                                        });
+                                    } else {
+                                        //set the form fields
+                                        props.form.setFieldValue('TargetName', displayName(arr[0]))
+                                        props.form.setFieldValue('RA', arr[1]);
+                                        props.form.setFieldValue('Dec', arr[2])
+                                        props.form.setFieldValue('sexagesimal', arr[3])
+
+                                        //point Aladin viewer to the target
+                                        Aladin.gotoRaDec(arr[1], arr[2])
+                                    }
+
+
                                 });
                             } else {
                                 notifyError("Congratulations",
