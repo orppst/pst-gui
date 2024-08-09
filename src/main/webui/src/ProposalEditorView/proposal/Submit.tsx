@@ -24,7 +24,7 @@ function SubmitPanel(): ReactElement {
     const [searchData, setSearchData] = useState([]);
     const [selectedCycle , setSelectedCycle] = useState(0);
     const [submissionDeadline, setSubmissionDeadline] = useState("undefined");
-    const [isValid, setIsValid] = useState(true);
+    const [isValid, setIsValid] = useState(false);
     const {data, error,  status} =
         useProposalCyclesResourceGetProposalCycles({queryParams: {includeClosed: false}});
     const queryClient = useQueryClient();
@@ -110,7 +110,7 @@ function SubmitPanel(): ReactElement {
                 <Grid>
                     <Grid.Col span={7}></Grid.Col>
                     <SubmitButton
-                        disabled={form.values.selectedCycle===0 && isValid}
+                        disabled={form.values.selectedCycle===0 || isValid == false}
                         label={"Submit proposal"}
                         toolTipLabel={"Submit your proposal to the selected cycle"}
                     />
