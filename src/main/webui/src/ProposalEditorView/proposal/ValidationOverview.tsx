@@ -43,7 +43,7 @@ export default function ValidationOverview(props: {cycle: number, setValid: any}
                                 {data?.info}
                             </Table.Td>
                         </Table.Tr>
-                        {data?.warnings !== "" &&
+                        {data?.warnings !== undefined &&
                             (<Table.Tr>
                                 <Table.Td>
                                     <IconAlertCircle size={ICON_SIZE} />
@@ -52,7 +52,7 @@ export default function ValidationOverview(props: {cycle: number, setValid: any}
                                     {data?.warnings}
                                 </Table.Td>
                             </Table.Tr>)}
-                        {data?.errors !== "" &&
+                        {data?.errors !== undefined &&
                             (<Table.Tr>
                                 <Table.Td>
                                     <IconCircleX size={ICON_SIZE} />
