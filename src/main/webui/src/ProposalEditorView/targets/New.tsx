@@ -1,10 +1,9 @@
 import {Modal, NumberInput, TextInput, Stack, Fieldset, Grid, rem, Text} from "@mantine/core";
-import { useForm } from "@mantine/form";
+import {useForm} from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
     MouseEvent,
     ReactElement,
-    ReactNode,
     useEffect,
     useState
 } from 'react';
@@ -20,7 +19,6 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
 import { SubmitButton } from 'src/commonButtons/save';
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import "./aladin.css";
 import {
     AladinType,
@@ -32,7 +30,7 @@ import {
     LoadScriptIntoDOM,
     PopulateAladin
 } from './aladinHelperMethods.tsx';
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SimbadSearch} from "./simbadSearch.tsx";
 import SimbadSearchHelp from "./simbadSearchHelp.tsx";
@@ -58,15 +56,7 @@ const initialConfig: IAladinConfig = {
 };
 
 
-/**
- * creates the target new page.
- *
- * @param {FormPropsType<newTargetData>} props the data required for the
- * target page.
- * @return {ReactElement} the dynamic html for the new target page.
- * @constructor
- */
-const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
+const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
     /**
      * handler that creates the Aladin interface from Javascript.
@@ -97,7 +87,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const isTablet = useMediaQuery('(max-width: 62em)');
 
     const form = useForm({
-            initialValues: props.initialValues ?? {
+            initialValues: {
                 TargetName: "",
                 RA: 0.00,
                 Dec: 0.00,
@@ -168,7 +158,10 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                 body: Target
                             })
                                 .then(() => queryClient.invalidateQueries())
-                                .then(() => {props.onSubmit()})
+                                .then(() =>
+                                    notifySuccess("Success",
+                                        val.TargetName + " added to the proposal"))
+                                .then(() => props.closeModal!())
                                 .catch(error => notifyError("Failed to add Target",
                                     getErrorMessage(error)))
                         )
@@ -220,12 +213,9 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
-    // return the dynamic HTML.
     const responsiveSpan = {base: 2, md: 1}
 
     return (
-        <>
-        <ContextualHelpButton messageId="MaintTarg" />
         <Grid columns={2}>
             <Grid.Col span={2}>
                 <Fieldset legend={"User Information"}>
@@ -306,7 +296,6 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 </Fieldset>
             </Grid.Col>
         </Grid>
-        </>
     );
 };
 
@@ -333,20 +322,11 @@ export default function AddTargetModal(props: {proposalTitle: string}): ReactEle
                    fullScreen={isMobile}
                    size={"60%"}
             >
-                <TargetForm onSubmit={() => {close();}}/>
+                <TargetForm closeModal={close}/>
             </Modal>
         </>
     );
 }
-
-/**
- * the form props.
- */
-export type FormPropsType<T> = {
-    initialValues?: T;
-    onSubmit: () => void;
-    actions?: ReactNode;
-};
 
 /**
  * the new data required for target form.
