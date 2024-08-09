@@ -1,7 +1,8 @@
 import {useState} from "react";
 import {Button, Grid, Space} from '@mantine/core';
-
 import {contextualHelpMessages} from "../../public/contextualHelpMessages.jsx";
+import {IconInfoCircle} from "@tabler/icons-react";
+import {ICON_SIZE} from "../constants.tsx";
 
 export function ContextualHelpButton(props : {messageId : string}) {
 
