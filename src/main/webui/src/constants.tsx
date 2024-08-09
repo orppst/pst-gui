@@ -83,6 +83,9 @@ export const MAX_SUPPORTING_DOCUMENT_SIZE = 100*1024*1024;
 export const SIMBAD_URL_TAP_SERVICE =
     "https://simbad.cds.unistra.fr/simbad/sim-tap/sync?request=doQuery&lang=adql";
 
+export const SIMBAD_URL_IDENT =
+    "https://simbad.cds.unistra.fr/simbad/sim-id?Ident="
+
 /* Parameters for Json output plus the required 'query=' */
 export const SIMBAD_JSON_OUTPUT = "&format=json&query="
 

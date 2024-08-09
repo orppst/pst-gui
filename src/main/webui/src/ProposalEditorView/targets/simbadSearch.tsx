@@ -1,6 +1,16 @@
 import {ReactElement, SetStateAction, useState} from "react";
 import {useDebounceCallback} from "@mantine/hooks";
-import {Combobox, Group, InputBase, Loader, ScrollArea, Text, useCombobox} from "@mantine/core";
+import {
+    Badge,
+    Combobox,
+    Group,
+    InputBase,
+    Loader,
+    ScrollArea,
+    Stack,
+    Text,
+    useCombobox
+} from "@mantine/core";
 import simbadErrorMessage from "../../errorHandling/simbadErrorMessage.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -8,13 +18,19 @@ import {
     SIMBAD_DEBOUNCE_DELAY,
     SIMBAD_JSON_OUTPUT,
     SIMBAD_TIMEOUT,
-    SIMBAD_TOP_LIMIT,
+    SIMBAD_TOP_LIMIT, SIMBAD_URL_IDENT,
     SIMBAD_URL_TAP_SERVICE
 } from "../../constants.tsx";
 import {UseFormReturnType} from "@mantine/form";
 import {Aladin, newTargetData} from "./New.tsx";
 import {IconSearch} from "@tabler/icons-react";
-import {notifications} from "@mantine/notifications";
+import {modals} from "@mantine/modals";
+
+/*
+Need to obtain the "object type" from SIMBAD when a user selects a target. Some object types,
+e.g. Stellar Stream (St*), may not have a coordinate for legitimate reasons. They may however
+have children that do have coordinates.
+ */
 
 
 /*
@@ -163,6 +179,10 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
         }
     }
 
+    const handleGoToSIMBAD = (name: string) => {
+        window.open (SIMBAD_URL_IDENT + encodeURIComponent(name), '_blank');
+    }
+
     /**
      *  Function to perform a search of the SIMBAD database with the given oidref returning the
      *  relevant details of the target. Notice that this is an internal function such that the
@@ -174,10 +194,12 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
         let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
 
         let adqlQuery = encodeURIComponent(
-            `select main_id,ra,dec,radec2sexa(ra, dec, 16),oid from basic where oid=${oidref}`
+            `select main_id,ra,dec,radec2sexa(ra, dec, 16),oid,description 
+                            from basic join otypedef on basic.otype=otypedef.otype 
+                                where oid=${oidref}`
         )
 
-        //searches are expected to take order one second so set a timeout with a reasonable margin
+        //searches are here expected to take fractions of a second but use the simbad timeout anyway
         fetch(theUrl + adqlQuery, {signal: AbortSignal.timeout(SIMBAD_TIMEOUT)})
             .then(res => {
                 //Simbad returns errors as VOTable xml IN THE RESPONSE
@@ -194,20 +216,24 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                             // but leave for semantics
                             if (jsonResult.data.length === 1) {
                                 jsonResult.data.map((arr: any) => {
-
-                                    // during testing, it was found that some SIMBAD entries contain no basic data
-                                    // we will have to catch that here and display an apology message
+                                    // some SIMBAD entries legitimately contain no basic data but their
+                                    // children might, we need to feed this back to the user
                                     if (arr[1] === null || arr[2] === null){
-                                        notifications.show({
-                                            title: displayName(arr[0]) + ", oidref: " + arr[4] + " no positional data",
-                                            message: "Sorry, it appears " + displayName(arr[0]) +
-                                                "oidref: " + arr[4]  + " entry in the SIMBAD DB is blank. Feel free " +
-                                                "to email cds-question@unistra.fr indicating that the target referenced " +
-                                                "by the oidref number above has no basic table data.",
-                                            autoClose: false,
-                                            color: "red",
-                                            className: 'my-notification-class'
-                                        });
+                                        modals.openConfirmModal( {
+                                            title: displayName(arr[0]) + " is a " + arr[5],
+                                            children: (
+                                                <Text size={"sm"}>
+                                                    You have selected an object with no legitimate or definitive
+                                                    coordinates in Space. However, it may have child objects.
+                                                    Would you like to see {displayName(arr[0])} in SIMBAD?
+                                                    'Go to SIMBAD' opens the relevant page in a new browser tab.
+                                                </Text>
+                                            ),
+                                            labels: {confirm: 'Go to SIMBAD', cancel: 'Cancel'},
+                                            confirmProps: {color: 'blue'},
+                                            onConfirm: () =>
+                                                handleGoToSIMBAD(arr[0] as string)
+                                        })
                                     } else {
                                         //set the form fields
                                         props.form.setFieldValue('TargetName', displayName(arr[0]))
@@ -215,11 +241,13 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                                         props.form.setFieldValue('Dec', arr[2])
                                         props.form.setFieldValue('sexagesimal', arr[3])
 
-                                        //point Aladin viewer to the target
+                                        //arr[4] is the oid number - not needed by user
+
+                                        props.form.setFieldValue('objectDescription', arr[5]);
+
+                                        //point Aladin viewer to the target ra,dec
                                         Aladin.gotoRaDec(arr[1], arr[2])
                                     }
-
-
                                 });
                             } else {
                                 notifyError("Congratulations",
@@ -307,66 +335,79 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                     Invalid character entered in search input.
                 </Text>
             }
-            <Combobox
-                store={combobox}
-                withinPortal={true}
-                onOptionSubmit={(val) => {
-                    setSearch(
-                        displayName(simbadDisplayResult.results.find(({oidref}) =>
-                            String(oidref) === val)!.id
-                        )
-                    );
-                    getTargetDetails(Number(val))
-                    combobox.closeDropdown();
-                }}
-            >
-                <Combobox.Target>
-                    <InputBase
-                        rightSection={<IconSearch />}
-                        description={ "Case sensitive (mostly - unless using SIMBAD identities e.g., 'crab', 'andromeda', ...)" }
-                        value={search}
-                        onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
-                            combobox.openDropdown();
-                            combobox.updateSelectedOptionIndex();
-                            setSearch(event.currentTarget.value);
-                            setInvalidInput(false);
-                            getSimbadIdentsDebounce();
-                        }}
-                        onClick={() => combobox.openDropdown()}
-                        onFocus={() => combobox.openDropdown()}
-                        onBlur={() => {
-                            combobox.closeDropdown();
-                            if(search.length === 0) setSimbadDisplayResult({results: []})
-                        }}
-                        placeholder="Search value"
-                        rightSectionPointerEvents="none"
-                    />
-                </Combobox.Target>
-                <Combobox.Dropdown>
-                    <Combobox.Options>
-                        {
-                            search.length > 0 && numberFound > 0 &&
-                            <Group justify={"center"}>
-
-                            <Combobox.Header>
-                                Found {numberFound}{numberFound === SIMBAD_TOP_LIMIT && '+'} result{numberFound > 1 && 's'}.
-                                { numberFound === SIMBAD_TOP_LIMIT &&
-                                    " - limit reached, you may want to refine your search."
-                                }
-                                { numberFound > 6 && " Scroll to view all."}
-                            </Combobox.Header>
-
-                            </Group>
-                        }
-
-                        <ScrollArea.Autosize mah={200} type={"scroll"}>
+            <Stack>
+                <Combobox
+                    store={combobox}
+                    withinPortal={true}
+                    onOptionSubmit={(val) => {
+                        setSearch(
+                            displayName(simbadDisplayResult.results.find(({oidref}) =>
+                                String(oidref) === val)!.id
+                            )
+                        );
+                        getTargetDetails(Number(val))
+                        combobox.closeDropdown();
+                    }}
+                >
+                    <Combobox.Target>
+                        <InputBase
+                            rightSection={<IconSearch />}
+                            description={ "Case sensitive - unless using SIMBAD identities e.g., 'crab', 'andromeda', ..." }
+                            value={search}
+                            onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
+                                combobox.openDropdown();
+                                combobox.updateSelectedOptionIndex();
+                                setSearch(event.currentTarget.value);
+                                setInvalidInput(false);
+                                getSimbadIdentsDebounce();
+                            }}
+                            onClick={() => combobox.openDropdown()}
+                            onFocus={() => combobox.openDropdown()}
+                            onBlur={() => {
+                                combobox.closeDropdown();
+                                if(search.length === 0) setSimbadDisplayResult({results: []})
+                            }}
+                            placeholder="Search value"
+                            rightSectionPointerEvents="none"
+                        />
+                    </Combobox.Target>
+                    <Combobox.Dropdown>
+                        <Combobox.Options>
                             {
-                                options.length > 0 ? options : searchMessage()
+                                search.length > 0 && numberFound > 0 &&
+                                <Group justify={"center"}>
+
+                                <Combobox.Header>
+                                    Found {numberFound}{numberFound === SIMBAD_TOP_LIMIT && '+'} result{numberFound > 1 && 's'}.
+                                    { numberFound === SIMBAD_TOP_LIMIT &&
+                                        " - limit reached, you may want to refine your search."
+                                    }
+                                    { numberFound > 6 && " Scroll to view all."}
+                                </Combobox.Header>
+
+                                </Group>
                             }
-                        </ScrollArea.Autosize>
-                    </Combobox.Options>
-                </Combobox.Dropdown>
-            </Combobox>
+
+                            <ScrollArea.Autosize mah={200} type={"scroll"}>
+                                {
+                                    options.length > 0 ? options : searchMessage()
+                                }
+                            </ScrollArea.Autosize>
+                        </Combobox.Options>
+                    </Combobox.Dropdown>
+                </Combobox>
+                <Group>
+                    <Text size={"sm"} c={"gray.6"}>
+                        Object Description:
+                    </Text>
+                    {
+                        props.form.values.objectDescription &&
+                        <Badge radius={"sm"} bg={"blue"}>
+                            {props.form.values.objectDescription}
+                        </Badge>
+                    }
+                </Group>
+            </Stack>
         </>
     );
 }

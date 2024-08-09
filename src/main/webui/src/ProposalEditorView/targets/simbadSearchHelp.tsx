@@ -93,6 +93,9 @@ function SimbadSearchHelp() : ReactElement {
                         with the corresponding data when an object is selected. Also, the Aladin Sky Atlas viewer
                         will move to the selected target.
                     </Text>
+                    <Text size={"sm"} c={highlightColour}>
+                        Notice that all targets are assumed to have an ICRS coordinate system and a J2000 epoch.
+                    </Text>
                     <Text size={"sm"}>
                         To trigger a search enter at least two characters into the search input.
                         The input is case sensitive with the caveat that SIMBAD special identities are not. Special
@@ -125,6 +128,13 @@ function SimbadSearchHelp() : ReactElement {
                         change the name of the target to whatever you want, within the limits of the form validation,
                         before you save it to the proposal.
                     </Text>
+                    <Text size={"sm"}>
+                        For your information we provide the SIMBAD object description of the selected target under
+                        the search box. Some SIMBAD targets, for example Stellar Streams and Gravitation Wave Events,
+                        may not have definitive celestial coordinates for legitimate reasons. In this case a pop-up
+                        will open asking if you would like to got to the corresponding SIMBAD site for that object.
+                        These objects may have children that do have definitive celestial coordinates.
+                    </Text>
                 </Stack>
                 </ScrollArea>
             </Tabs.Panel>
@@ -151,6 +161,10 @@ function SimbadSearchHelp() : ReactElement {
                         </List.Item>
                         <List.Item c={"orange"}>
                             Sorry, no wildcards at the start of the search term
+                        </List.Item>
+                        <List.Item>
+                            Prepending 'NAME ' to your search term may help
+                            (it qualifies historic or common names)
                         </List.Item>
                         <List.Item>Some objects start with a * or a [</List.Item>
                         <List.Item>

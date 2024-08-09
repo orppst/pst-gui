@@ -2,20 +2,19 @@ import {Modal, NumberInput, TextInput, Stack, Fieldset, Grid, rem, Text} from "@
 import { useForm } from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
-    FormEvent,
     MouseEvent,
     ReactElement,
     ReactNode,
     useEffect,
-    useRef, useState
+    useState
 } from 'react';
 import {
     CelestialTarget,
-    EquatorialPoint, SimbadTargetResult, SpaceSys,
+    EquatorialPoint, SpaceSys,
 } from "src/generated/proposalToolSchemas.ts";
 import {
     fetchProposalResourceAddNewTarget, fetchProposalResourceGetTargets,
-    fetchSimbadResourceSimbadFindTarget, fetchSpaceSystemResourceGetSpaceSystem
+    fetchSpaceSystemResourceGetSpaceSystem
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
@@ -91,6 +90,9 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
 
 
     const [nameUnique, setNameUnique] = useState(true);
+
+    //media query used to conditionally set the height of Aladin when the modal toggles
+    // between fullscreen and not
     const isTablet = useMediaQuery('(max-width: 62em)');
 
     const form = useForm({
@@ -99,9 +101,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 RA: 0.00,
                 Dec: 0.00,
                 SelectedEpoch: "J2000",
-                sexagesimal: "00:00:00 +00:00:00",
-                searching: false,
-                lastSearchName: '',
+                sexagesimal: "00:00:00 +00:00:00"
             },
             validate: {
                 TargetName: (value) => (
@@ -113,46 +113,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             },
         });
 
-    // create the database query client and get basic elements.
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
-    const targetNameRef = useRef(null);
-
-    /**
-     * executes a simbad query.
-     */
-    function simbadLookup() {
-        /**
-         * function for handling when simbad fails to find the target.
-         */
-        function notFound() {
-            const choice = window.confirm(
-                "Unable to match source " + form.values.TargetName +
-                " try again?");
-            form.values.searching = false;
-            if(!choice) props.onSubmit();
-        }
-
-        form.values.searching = true;
-        form.values.lastSearchName = form.values.TargetName;
-        fetchSimbadResourceSimbadFindTarget(
-            {queryParams: {targetName: form.values.TargetName}})
-            .then((data : SimbadTargetResult) => {
-                console.log(data);
-                form.setFieldValue('RA', data.raDegrees?data.raDegrees:0);
-                form.setFieldValue('Dec', data.decDegrees?data.decDegrees:0);
-                form.setFieldValue('SelectedEpoch', data.epoch!);
-                form.values.searching = false;
-
-                // acquire the aladin object and set it.
-                Aladin?.gotoRaDec(
-                    data.raDegrees?data.raDegrees:0,
-                    data.decDegrees?data.decDegrees:0);
-            })
-            .catch((reason: any) => {
-                console.error(reason);
-                notFound()});
-    }
 
     /**
      * saves the new target to the database, if it doesn't already exist on this proposal.
@@ -222,29 +184,10 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 getErrorMessage(error)));
     }
 
-    /**
-     * handles the submission event.
-     * @type {(event?: React.FormEvent<HTMLFormElement>) => void} the event.
-     */
-    const handleSubmission: (event?: FormEvent<HTMLFormElement>) => void =
-        form.onSubmit((val: newTargetData) => {
-            if(document.activeElement === targetNameRef.current) {
-                if (form.values.searching &&
-                    val.TargetName === val.lastSearchName) {
-                    // do nothing if were already searching.
-                }
-                else if (!form.values.searching &&
-                        val.TargetName === val.lastSearchName) {
-                    // if already searched and same name, assume submission
-                    saveToDatabase(val);
-                } else {
-                    // name different, so do a simbad search.
-                    simbadLookup();
-                }
-            } else {
-                // not on target name, so assume submission
-                saveToDatabase(val);
-            }
+
+    // alias for form.onSubmit that simply calls saveToDatabase
+    const handleSubmission = form.onSubmit((val: newTargetData) => {
+        saveToDatabase(val);
     });
 
     /**
@@ -287,16 +230,15 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 </Fieldset>
             </Grid.Col>
             <Grid.Col span={2}>
-                <Fieldset legend={"SIMBAD search"} pb={100} pt={10}>
+                <Fieldset legend={"SIMBAD search"} pt={10}>
                     <SimbadSearch form={form}/>
                 </Fieldset>
             </Grid.Col>
             <Grid.Col span={responsiveSpan}>
                 <Fieldset legend={"Target Form"}>
                 <form onSubmit={handleSubmission}>
-                    <Stack gap={"lg"}>
+                    <Stack gap={"xs"}>
                         <TextInput
-                            ref={targetNameRef}
                             withAsterisk
                             label="Name"
                             placeholder="User provided or use the SIMBAD search"
@@ -341,8 +283,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         />
                         <SubmitButton
                             toolTipLabel={"Save this target"}
-                            disabled={!form.isValid() ||
-                            form.values.searching? true : undefined}
+                            disabled={!form.isValid()}
                         />
                     </Stack>
                 </form>
@@ -409,8 +350,8 @@ export type FormPropsType<T> = {
  * @param RA the longitude
  * @param Dec the latitude
  * @param TargetName the name of the target
- * @param searching if the system is searching for a target at the moment.
- * @param lastSearchName: the last name searched for.
+ * @param sexagesimal sexagesimal string representation of Ra & Dec
+ * @param objectDescription description of the target object type from SIMBAD, optional
  */
 export type newTargetData = {
     SelectedEpoch: string;
@@ -418,8 +359,7 @@ export type newTargetData = {
     Dec: number;
     TargetName: string
     sexagesimal: string
-    searching: boolean
-    lastSearchName: string
+    objectDescription?: string
 }
 
 
