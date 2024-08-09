@@ -5,7 +5,7 @@ import {
 
 import AddTargetModal from "./New";
 import {useParams} from "react-router-dom";
-import {Box, Stack} from '@mantine/core';
+import {Box, Group, Stack} from '@mantine/core';
 import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from './TargetTable.tsx';
@@ -63,7 +63,9 @@ export function TargetPanel(): ReactElement {
                                  showButtons={true}
                                  selectedTargets={undefined}/>
                 }
-                <AddTargetModal proposalTitle={proposalsData?.title!}/>
+                <Group justify={"flex-end"}>
+                    <AddTargetModal proposalTitle={proposalsData?.title!}/>
+                </Group>
             </Stack>
         </PanelFrame>
     );
