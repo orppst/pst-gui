@@ -481,6 +481,7 @@ function OverviewPanel(): ReactElement {
                 //not sure if this will be needed, it's still work in progress
                 let targetObjs = [] as Target[];
 
+                // @ts-ignore
                 observation.target?.map((obsTarget) => {
                     let targetObj = proposalsData?.targets?.find((target) =>
                         target._id === obsTarget)!
