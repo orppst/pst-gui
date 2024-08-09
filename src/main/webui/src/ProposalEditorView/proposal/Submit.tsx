@@ -1,5 +1,5 @@
-import {ReactElement, useEffect, useState} from "react";
-import {Box, Select, Stack, Text} from "@mantine/core";
+import {ReactElement, SyntheticEvent, useEffect, useState} from "react";
+import {Box, Grid, Select, Stack, Text} from "@mantine/core";
 import {
     fetchProposalCyclesResourceGetProposalCycleDates,
     fetchSubmittedProposalResourceSubmitProposal,
@@ -10,11 +10,13 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import {JSON_SPACES} from "src/constants.tsx";
 import {SubmitButton} from "src/commonButtons/save.tsx";
+import DeleteButton from "src/commonButtons/delete.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import ValidationOverview from "./ValidationOverview.tsx";
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 function SubmitPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
@@ -80,6 +82,10 @@ function SubmitPanel(): ReactElement {
             .catch((error) => notifyError("Submission failed", getErrorMessage(error))
             )
     });
+  function handleCancel(event: SyntheticEvent) {
+      event.preventDefault();
+      navigate("../",{relative:"path"})
+      }
 
     return (
         <PanelFrame>
@@ -88,19 +94,31 @@ function SubmitPanel(): ReactElement {
             <ValidationOverview cycle={selectedCycle}/>
 
             <form onSubmit={trySubmitProposal}>
+                <ContextualHelpButton messageId="ManageSubmit" />
                 <Stack>
                     <Select label={"Cycle"}
                         data={searchData}
                         {...form.getInputProps("selectedCycle")}
                         onChange={changeCycleDates}
                     />
+
                     <Text>Submission deadline {submissionDeadline}</Text>
+                </Stack>
+
+                <p> </p>
+                <Grid>
+                    <Grid.Col span={7}></Grid.Col>
                     <SubmitButton
                         disabled={form.values.selectedCycle===0}
                         label={"Submit proposal"}
                         toolTipLabel={"Submit your proposal to the selected cycle"}
                     />
-                </Stack>
+                    <DeleteButton
+                        label={"Cancel"}
+                        onClickEvent={handleCancel}
+                        toolTipLabel={"Go back without submitting"}/>
+                </Grid>
+
             </form>
         </PanelFrame>
     )

@@ -1,9 +1,9 @@
 import PerformanceParametersSection from "./performance.form.tsx";
 import SpectralWindowsSection from "./spectrum.form.tsx";
-import {Grid, Stack, Space} from "@mantine/core";
+import {Grid, Stack} from "@mantine/core";
 import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
-import { ReactElement } from 'react';
-import {useParams} from "react-router-dom";
+import { ReactElement, SyntheticEvent } from 'react';
+import {useParams, useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {
     convertToScienceSpectralWindow,
@@ -18,12 +18,14 @@ import {
     fetchTechnicalGoalResourceReplacePerformanceParameters, fetchTechnicalGoalResourceReplaceSpectrum
 } from "src/generated/proposalToolComponents.ts";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
+import DeleteButton from "src/commonButtons/delete.tsx";
 import {
     convertToPerformanceParameters,
     convertToPerformanceParametersGui,
     PerformanceParametersGui
 } from "./performanceParametersGui.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
@@ -262,25 +264,35 @@ export default function TechnicalGoalEditGroup(
             }
         }
     })
+    const navigate = useNavigate();
+    function handleCancel(event: SyntheticEvent) {
+        event.preventDefault();
+        navigate("../",{relative:"path"})
+        }
 
     return (
         <form onSubmit={handleSubmit}>
+            <ContextualHelpButton messageId="MaintTechGoal" />
         <Stack>
-
             <Grid columns={TOTAL_COLUMNS}>
                 <Grid.Col span={{base: TOTAL_COLUMNS, md: PERFORMANCE_COLUMNS}}>
                     <PerformanceParametersSection {...form}/>
                 </Grid.Col>
                 <Grid.Col span={{base: TOTAL_COLUMNS, md: SPECTRUM_COLUMNS}}>
                     <SpectralWindowsSection {...form}/>
+                    <p> </p>
+                    <Grid>
+                    <Grid.Col span={8}></Grid.Col>
+                       <FormSubmitButton form={form} />
+                       <DeleteButton
+                          label={"Cancel"}
+                          onClickEvent={handleCancel}
+                           toolTipLabel={"Go back without saving"}/>
+                     </Grid>
+                     <p> </p>
                 </Grid.Col>
-            </Grid>
-            <Space />
-               <FormSubmitButton form={form} />
-            <Space />
-
+                </Grid>
         </Stack>
-
         </form>
     )
 }

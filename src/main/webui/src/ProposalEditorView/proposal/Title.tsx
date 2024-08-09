@@ -1,19 +1,21 @@
-import {useState, useEffect} from "react";
+import {SyntheticEvent, useState, useEffect} from "react";
 import {
     fetchProposalResourceReplaceTitle,
     ProposalResourceReplaceTitleVariables,
     useProposalResourceGetObservingProposalTitle,
 } from "src/generated/proposalToolComponents";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {Stack, TextInput} from "@mantine/core";
-import {useParams} from "react-router-dom";
+import {Grid, Stack, TextInput} from "@mantine/core";
+import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from 'src/commonButtons/save';
+import DeleteButton from "src/commonButtons/delete";
 import { MAX_CHARS_FOR_INPUTS, JSON_SPACES } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 const titleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -86,24 +88,40 @@ function TitlePanel() {
         mutation.mutate();
     });
 
+    const navigate = useNavigate();
+
+    function handleCancel(event: SyntheticEvent) {
+        event.preventDefault();
+        navigate("../",{relative:"path"})
+        }
+
     return (
         <PanelFrame>
             <PanelHeader isLoading={isLoading} itemName={data as unknown as string} panelHeading={"Title"} />
             { isLoading ? ("Loading..") :
                  submitting ? ("Submitting..."):
             <form onSubmit={updateTitle}>
+                    <ContextualHelpButton messageId="MaintTitle" />
                 <Stack>
                     <TextInput name="title"
                                maxLength={MAX_CHARS_FOR_INPUTS}
                                {...form.getInputProps('title')}/>
                     <MaxCharsForInputRemaining length={form.values.title.length} />
-                    <FormSubmitButton form={form} />
                 </Stack>
+                <p> </p>
+                <Grid >
+                   <Grid.Col span={8}></Grid.Col>
+                      <FormSubmitButton form={form} />
+                      <DeleteButton
+                          label={"Cancel"}
+                          onClickEvent={handleCancel}
+                          toolTipLabel={"Go back without saving"}/>
+                </Grid>
+                <p> </p>
             </form>
             }
         </PanelFrame>
     );
-
 }
 
 export default TitlePanel

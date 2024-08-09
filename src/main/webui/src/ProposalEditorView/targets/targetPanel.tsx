@@ -10,6 +10,7 @@ import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from './TargetTable.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 
 /**
  * Renders the target panel containing an add target button
@@ -51,6 +52,7 @@ export function TargetPanel(): ReactElement {
     return (
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Targets"} />
+            <ContextualHelpButton  messageId="MaintTargList" />
             <Stack>
                 {data?.length === 0?
                     <div>Please add your targets</div> :

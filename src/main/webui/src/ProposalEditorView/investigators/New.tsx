@@ -7,7 +7,7 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
-import {Checkbox, Select, Stack} from "@mantine/core";
+import {Checkbox, Grid, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
@@ -15,6 +15,7 @@ import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 
 /**
  * Render s form panel to add an investigator to the current proposal.
@@ -108,6 +109,7 @@ function AddInvestigatorPanel(): ReactElement {
     return (
             <PanelFrame>
                 <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Add an investigator"} />
+                    <ContextualHelpButton  messageId="MaintInvestAdd" />
                 <form onSubmit={handleAdd}>
                     <Stack>
                         <Select label={"Type"}
@@ -124,14 +126,17 @@ function AddInvestigatorPanel(): ReactElement {
                             data={searchData}
                             {...form.getInputProps("selectedInvestigator")}
                         />
-                        <FormSubmitButton
-                            form={form}
-                        />
-                        <DeleteButton
-                            label={"Cancel"}
-                            onClickEvent={handleCancel}
-                            toolTipLabel={"Do not save the new investigator"}/>
                     </Stack>
+                    <p> </p>
+                    <Grid >
+                       <Grid.Col span={8}></Grid.Col>
+                          <FormSubmitButton form={form} />
+                          <DeleteButton
+                             label={"Cancel"}
+                             onClickEvent={handleCancel}
+                             toolTipLabel={"Go back without saving"}/>
+                     </Grid>
+                     <p> </p>
                 </form>
             </PanelFrame>
     )

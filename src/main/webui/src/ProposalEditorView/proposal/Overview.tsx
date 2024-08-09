@@ -27,6 +27,7 @@ import { DIMMED_FONT_WEIGHT, JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import {PreviewJustification} from "../justifications/justification.preview.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 /*
       title    -- string
@@ -562,6 +563,7 @@ function OverviewPanel(): ReactElement {
                         <DownloadButton/>
                         <div ref={printRef}>
                             <DisplayTitle/>
+                            <ContextualHelpButton messageId="Overview" />
                             <DisplayInvestigators/>
                             <DisplaySummary/>
                             <DisplayKind/>

@@ -20,6 +20,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
 import { SubmitButton } from 'src/commonButtons/save';
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import "./aladin.css";
 import {
     AladinType,
@@ -219,9 +220,12 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
         Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
+    // return the dynamic HTML.
     const responsiveSpan = {base: 2, md: 1}
 
     return (
+        <>
+        <ContextualHelpButton messageId="MaintTarg" />
         <Grid columns={2}>
             <Grid.Col span={2}>
                 <Fieldset legend={"User Information"}>
@@ -302,6 +306,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                 </Fieldset>
             </Grid.Col>
         </Grid>
+        </>
     );
 };
 

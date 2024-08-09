@@ -1,7 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import { Fieldset, Grid, Text, Stack, Space } from '@mantine/core';
+import { Fieldset, Grid, Text, Stack} from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, Target, TargetObservation,
@@ -15,10 +15,12 @@ import {
     fetchObservationResourceReplaceTimingWindow
 } from 'src/generated/proposalToolComponents.ts';
 import {FormSubmitButton} from 'src/commonButtons/save.tsx';
-import { useParams } from 'react-router-dom';
+import DeleteButton from 'src/commonButtons/delete.tsx';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { FormEvent, ReactElement } from 'react';
+import { FormEvent, ReactElement, SyntheticEvent } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
 
 /**
  * the different types of observation.
@@ -275,9 +277,16 @@ export default function ObservationEditGroup(
             }
     });
 
+  const navigate = useNavigate();
+
+  function handleCancel(event: SyntheticEvent) {
+      event.preventDefault();
+      navigate("../",{relative:"path"})
+      }
     return (
         <>
             <form onSubmit={handleSubmit}>
+            <ContextualHelpButton messageId="MaintObs" />
             <Stack>
                 <Grid  columns={5}>
                     <Grid.Col span={{base: 5, lg: 2}}>
@@ -292,11 +301,23 @@ export default function ObservationEditGroup(
                             </Text>
                             <TimingWindowsForm {...form}/>
                         </Fieldset>
+
+
+                                    <p> </p>
+                                    <Grid>
+                                      <Grid.Col span={7}></Grid.Col>
+                                         <FormSubmitButton form={form} />
+                                         <DeleteButton
+                                            label={"Cancel"}
+                                            onClickEvent={handleCancel}
+                                            toolTipLabel={"Go back without saving"}/>
+                                    </Grid>
+                                    <p> </p>
+
                     </Grid.Col>
                 </Grid>
-                <FormSubmitButton form={form} />
-                <Space />
                 </Stack>
+
             </form>
         </>
     )

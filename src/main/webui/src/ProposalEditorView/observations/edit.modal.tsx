@@ -46,7 +46,7 @@ export default function ObservationEditModal(
                     title={newObservation ?
                         "New Observation" :
                         "View/Edit Observation"}
-                    fullScreen
+                    size = "auto" //fullScreen
                 >
                     <ObservationEditGroup {...props}/>
                 </Modal>

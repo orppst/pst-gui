@@ -1,6 +1,6 @@
-import {ReactElement} from "react";
+import {ReactElement, SyntheticEvent} from "react";
 import {ObservationFieldsProps} from "./ObservationFieldsPanel.tsx";
-import {Badge, Select, Stack, TextInput, Tooltip} from "@mantine/core";
+import {Badge, Grid, Select, Stack, TextInput, Tooltip} from "@mantine/core";
 import {
     Ellipse,
     EquatorialPoint,
@@ -12,14 +12,16 @@ import {
 } from "../../generated/proposalToolSchemas.ts";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "../../commonButtons/save.tsx";
+import DeleteButton from "src/commonButtons/delete.tsx";
 import {
     fetchProposalResourceAddNewField,
     fetchProposalResourceChangeFieldName
 } from "../../generated/proposalToolComponents.ts";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 /**
  * Function to return the "Observation Fields" form to either create a new "Field" or edit an existing one.
@@ -173,11 +175,21 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                 .catch(error => notifyError("Failed to create new Field", getErrorMessage(error)))
         }
     })
+  const navigate = useNavigate();
 
+  function handleCancel(event: SyntheticEvent) {
+      event.preventDefault();
+      navigate("../",{relative:"path"})
+      }
 
     //Reminder: Once fully implemented remove the type-checking conditions in the Submit disable property
     return (
         <form onSubmit={handleSubmit}>
+                                <p> </p>
+                                <Grid>
+                                  <Grid.Col span={9}></Grid.Col>
+            <ContextualHelpButton messageId="MaintObsField" />
+            </Grid>
             <Stack>
                 {fieldNameTextInput()}
                 {fieldTypeSelect()}
@@ -201,14 +213,24 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                         </Badge>
                     </Stack>
                 }
+            </Stack>
+                        <p> </p>
+                        <Grid>
+                          <Grid.Col span={7}></Grid.Col>
+
                 <SubmitButton
                     toolTipLabel={props.observationField ? "Save Changes" : "Save new Field"}
                     label={"Save"}
                     disabled={!form.isDirty() || !form.isValid() ||
                         form.values.fieldType === 'proposal:Ellipse' ||
                         form.values.fieldType === 'proposal:Polygon'}
-                />
-            </Stack>
+                        />
+                 <DeleteButton
+                     label={"Cancel"}
+                     onClickEvent={handleCancel}
+                     toolTipLabel={"Go back without saving"}/>
+                 </Grid>
+
         </form>
     )
 }
