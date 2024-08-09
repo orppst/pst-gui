@@ -30,7 +30,11 @@ export function ContextualHelpButton(props : {messageId : string}) {
         <Space h={"xl"}/>
         <Grid >
            <Grid.Col span={10}></Grid.Col>
-           <Button color="cyan" onClick={() => {setShowingHelp(!showingHelp)}}>
+           <Button
+               rightSection={<IconInfoCircle size={ICON_SIZE}/>}
+               color="cyan"
+               variant={"subtle"}
+               onClick={() => {setShowingHelp(!showingHelp)}}>
                {showingHelp ? labelClearHelp : labelShowHelp}
            </Button>
         </Grid>
