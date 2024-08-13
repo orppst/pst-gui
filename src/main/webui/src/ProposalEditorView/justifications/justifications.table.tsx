@@ -39,7 +39,7 @@ export default function JustificationsTable(justifications: JustificationKinds)
             <Table.Tbody>
                 <Table.Tr>
                     <Table.Td>Scientific</Table.Td>
-                    <Table.Td>{WordCount(justifications.scientific.text!)}</Table.Td>
+                    <Table.Td>{WordCount(justifications.scientific.text ?? "")}</Table.Td>
                     <Table.Td>{justifications.scientific.format}</Table.Td>
                     <Table.Td>
                         <JustificationsEditModal
@@ -49,7 +49,7 @@ export default function JustificationsTable(justifications: JustificationKinds)
                 </Table.Tr>
                 <Table.Tr>
                     <Table.Td>Technical</Table.Td>
-                    <Table.Td>{WordCount(justifications.technical.text!)}</Table.Td>
+                    <Table.Td>{WordCount(justifications.technical.text ?? "")}</Table.Td>
                     <Table.Td>{justifications.technical.format}</Table.Td>
                     <Table.Td>
                         <JustificationsEditModal

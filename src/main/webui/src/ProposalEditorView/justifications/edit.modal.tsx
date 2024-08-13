@@ -29,11 +29,7 @@ export default function JustificationsEditModal(justificationProps : Justificati
                 opened={opened}
                 onClose={props.closeModal}
                 title={"View/Edit " + capitalizeFirstChar(props.which) + " Justification"}
-                //fullScreen
-                size="auto"
-                height={75}
-                centered
-
+                size="60%"
             >
                 <JustificationForm {...props} />
             </Modal>
