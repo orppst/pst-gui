@@ -106,7 +106,7 @@ const textFormatData = [
 
   function handleCancel(event: SyntheticEvent) {
       event.preventDefault();
-      navigate("../",{relative:"path"})
+      navigate("/",{relative:"path"})
       }
      return (
         <PanelFrame>
