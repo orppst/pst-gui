@@ -74,8 +74,8 @@ function SimbadSearchHelp() : ReactElement {
                     </Text>
                     <Text size={"sm"}>
                         Notice that you may input Ra and Dec values manually and the viewer will move to that
-                        location. However, it is recommended that you use the SIMBAD search facility to find Ra
-                        and Dec values.
+                        location. However, it is recommended that you use the SIMBAD search facility to find
+                        accurate and precise Ra and Dec values of catalogued objects.
                     </Text>
                 </Stack>
                 </ScrollArea>
@@ -88,20 +88,19 @@ function SimbadSearchHelp() : ReactElement {
                     </Text>
                     <Text size={"sm"}>
                         Here we provide
-                        a "simplified" interface to SIMBAD to lookup targets by name and populate the
+                        a "simplified" interface to SIMBAD to lookup targets by name to assist you in populating the
                         <Text span inherit c={highlightColour}> Target Form </Text>
                         with the corresponding data when an object is selected. Also, the Aladin Sky Atlas viewer
-                        will move to the selected target.
+                        will move to the selected target. Feel free to ignore our search facility and input values
+                        into the <Text span inherit c={highlightColour}>Target Form </Text> manually.
                     </Text>
                     <Text size={"sm"} c={highlightColour}>
-                        Notice that all targets are assumed to have an ICRS coordinate system and a J2000 epoch.
+                        Notice that all targets, regardless of input method, are assumed to have an ICRS coordinate
+                        system and a J2000 epoch.
                     </Text>
                     <Text size={"sm"}>
                         To trigger a search enter at least two characters into the search input.
-                        The input is case sensitive with the caveat that SIMBAD special identities are not. Special
-                        identities include strings like 'crab', 'm1', 'andromeda', 'eagle nebula', and so on, and
-                        they must be written in full to return a result. There appears to be no definitive list of
-                        these identities so have a play and maybe you can find them all, but you won't.
+                        The input is case sensitive and proper nouns will likely be capitalised, e.g. 'Crab'.
                     </Text>
                     <Text size={"sm"}>
                         If a simple search string does not find what you want you may use the ADQL wildcards
@@ -133,7 +132,7 @@ function SimbadSearchHelp() : ReactElement {
                         the search box. Some SIMBAD targets, for example Stellar Streams and Gravitation Wave Events,
                         may not have definitive celestial coordinates for legitimate reasons. In this case a pop-up
                         will open asking if you would like to got to the corresponding SIMBAD site for that object.
-                        These objects may have children that do have definitive celestial coordinates.
+                        These objects may have children that will have definitive celestial coordinates.
                     </Text>
                 </Stack>
                 </ScrollArea>
@@ -145,7 +144,8 @@ function SimbadSearchHelp() : ReactElement {
                     <Text size={"sm"} c={headerColour}>
                         Hints and Tips
                     </Text>
-                    <List size={"sm"}>
+                    <List size={"sm"} spacing={"xs"}>
+                        <List.Item>Sometimes, three (or more) characters are better than two</List.Item>
                         <List.Item>Results are ordered alphabetically</List.Item>
                         <List.Item>The maximum number of results returned is 100</List.Item>
                         <List.Item>
@@ -166,7 +166,10 @@ function SimbadSearchHelp() : ReactElement {
                             Prepending 'NAME ' to your search term may help
                             (it qualifies historic or common names)
                         </List.Item>
-                        <List.Item>Some objects start with a * or a [</List.Item>
+                        <List.Item>
+                            Some objects start with a * or a [. Those that start with a * represent single
+                            star objects, those that start with ** represent double or multiple star objects.
+                        </List.Item>
                         <List.Item>
                             Those that start with [ typically have the format [AY] X, where A represents
                             a one to many capitalised character acronym, Y represents a year either two or
@@ -174,8 +177,9 @@ function SimbadSearchHelp() : ReactElement {
                             and X is some alphanumeric id. In this case, you will likely need at least 3 characters
                             for the search to yield results.
                         </List.Item>
-                        <List.Item>If trying to find Gaia targets use 'Gaia%' as a starting point, simply using
-                            'Gaia' will result in a time-out.
+                        <List.Item>
+                            If trying to find Gaia targets use 'Gaia%' as a starting point, simply using
+                            'Gaia' will result in a time-out. This may also be true of other large data sets.
                         </List.Item>
                     </List>
                 </Stack>

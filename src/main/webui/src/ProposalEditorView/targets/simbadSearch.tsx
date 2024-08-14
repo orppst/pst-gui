@@ -189,14 +189,14 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
      *  input will be a valid 'oidref' number in SIMBAD.
      *
      */
-    function getTargetDetails(oidref: number) {
+    function getTargetDetails(simbadIdent: SimbadIdent) {
 
         let theUrl = SIMBAD_URL_TAP_SERVICE + SIMBAD_JSON_OUTPUT;
 
         let adqlQuery = encodeURIComponent(
             `select main_id,ra,dec,radec2sexa(ra, dec, 16),oid,description 
                             from basic join otypedef on basic.otype=otypedef.otype 
-                                where oid=${oidref}`
+                                where oid=${simbadIdent.oidref}`
         )
 
         //searches are here expected to take fractions of a second but use the simbad timeout anyway
@@ -214,7 +214,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
 
                             // this has to be true - oidref input comes from the SIMBAD database -
                             // but leave for semantics
-                            if (jsonResult.data.length === 1) {
+                            if (jsonResult.data.length > 0) {
                                 jsonResult.data.map((arr: any) => {
                                     // some SIMBAD entries legitimately contain no basic data but their
                                     // children might, we need to feed this back to the user
@@ -250,8 +250,21 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                                     }
                                 });
                             } else {
-                                notifyError("Congratulations",
-                                    "It seems you managed to trigger an \"impossible\" error")
+                                modals.openConfirmModal({
+                                    title: "Congratulations! You've found a rare issue",
+                                    children: (
+                                        <Text size={"sm"} c={"blue"}>
+                                            The target, [name: {simbadIdent.id}, oid: {simbadIdent.oidref}]
+                                            returned with no entry in the 'basic' data table of SIMBAD. This
+                                            may be an error with our interface, please 'Go to SIMBAD'
+                                            to see this target on their site.
+                                        </Text>
+                                    ),
+                                    labels: {confirm: 'Go to SIMBAD', cancel: 'Cancel'},
+                                    confirmProps: {color: 'blue'},
+                                    onConfirm: () =>
+                                        handleGoToSIMBAD(simbadIdent.id)
+                                })
                             }
                         }
                     )
@@ -340,19 +353,18 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                     store={combobox}
                     withinPortal={true}
                     onOptionSubmit={(val) => {
-                        setSearch(
-                            displayName(simbadDisplayResult.results.find(({oidref}) =>
-                                String(oidref) === val)!.id
-                            )
-                        );
-                        getTargetDetails(Number(val))
+                        let simbadIdent = simbadDisplayResult
+                            .results
+                            .find(({oidref}) => String(oidref) === val)!
+                        setSearch(displayName(simbadIdent.id));
+                        getTargetDetails(simbadIdent)
                         combobox.closeDropdown();
                     }}
                 >
                     <Combobox.Target>
                         <InputBase
                             rightSection={<IconSearch />}
-                            description={ "Case sensitive - unless using SIMBAD identities e.g., 'crab', 'andromeda', ..." }
+                            description={ "Search is case sensitive, for proper nouns use capitalised strings e.g. 'Crab'" }
                             value={search}
                             onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
                                 combobox.openDropdown();
