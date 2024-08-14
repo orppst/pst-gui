@@ -23,6 +23,7 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
  */
 export type ObservationProps = {
     observation: Observation | undefined,
+    selectedTargets: number[] | undefined,
     closeModal?: () => void
 }
 
@@ -202,7 +203,7 @@ function Observations() {
                 <Space h={"xl"}/>
                 <Grid>
                    <Grid.Col span={10}></Grid.Col>
-                    <ObservationEditModal observation={undefined}/>
+                    <ObservationEditModal observation={undefined} selectedTargets={undefined}/>
                 </Grid>
             </PanelFrame>
         )

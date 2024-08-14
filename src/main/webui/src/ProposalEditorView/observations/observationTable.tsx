@@ -23,7 +23,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import CloneButton from "src/commonButtons/clone.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
-import { ReactElement } from 'react';
+import {ReactElement, useEffect} from 'react';
 import {notifyError} from "../../commonPanel/notifications.tsx";
 
 export type ObservationId = {id: number}
@@ -43,6 +43,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     const GRAY = theme.colors.gray[6];
 
     const { selectedProposalCode} = useParams();
+    let observationTargets: number[] = [];
 
     const {
         data: observation,
@@ -60,6 +61,16 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     if (observationError) {
         return <pre>{getErrorMessage(observationError)}</pre>
     }
+
+    useEffect(() => {
+        if(observation?.target?.length != undefined
+            && observation.target.length > 0 ) {
+            observationTargets.splice(0, observationTargets.length);
+            observation.target.map((thisTarget) => {
+                observationTargets.push(thisTarget._id!)
+            })
+        }
+    }, [observation]);
 
     /**
      * handles the deletion of an observation.
@@ -243,7 +254,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Group position={"right"}>
                     {
                         observationLoading ? 'Loading...' :
-                        <ObservationEditModal observation={observation}/>
+                        <ObservationEditModal observation={observation} selectedTargets={observationTargets}/>
                     }
                     <CloneButton toolTipLabel={"clone"}
                                  onClick={confirmClone} />
