@@ -32,9 +32,7 @@ function TargetTableHeader(props: TargetTableProps): ReactElement {
                 <Table.Th>RA</Table.Th>
                 <Table.Th>Dec</Table.Th>
                 <Table.Th>Epoch</Table.Th>
-                { props.showButtons ?
-                    <Table.Th></Table.Th>
-                    : null}
+                { props.showButtons && <Table.Th></Table.Th> }
             </Table.Tr>
         </Table.Thead>
     );
@@ -131,18 +129,13 @@ function TargetTableRow(props: TargetProps): ReactElement {
     const RowSelector = (targetId: number | undefined): void => {
         console.debug(`row ${targetId} was selected`);
         // handle not having a selection method
-        if (!props.setSelectTarget) {
+        if (!props.setSelectedTargetFunction) {
             return;
         }
 
         // handle selection.
-        //FIXME this is wrong
         if(props.selectedTargets !== undefined && targetId !== undefined) {
-            if ( props.selectedTargets.includes(targetId) ) {
-                props.setSelectTarget(targetId);
-            } else {
-                props.setSelectTarget(targetId);
-            }
+                props.setSelectedTargetFunction(targetId);
         }
     }
 
@@ -255,7 +248,7 @@ export function TargetTable(props: TargetTableProps): ReactElement {
                                 showButtons={props.showButtons}
                                 boundTargets={props.boundTargets}
                                 selectedTargets={props.selectedTargets}
-                                setSelectTarget={props.setSelectTarget}
+                                setSelectedTargetFunction={props.setSelectedTargetFunction}
                             />)
                     })
                 }

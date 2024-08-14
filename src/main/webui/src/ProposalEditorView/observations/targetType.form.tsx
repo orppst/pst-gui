@@ -162,7 +162,7 @@ export default function TargetTypeForm (
                             form.values.targetDBId != undefined ?
                                 form.values.targetDBId[0] :
                                 0]}
-                            setSelectTarget={(value: number) => {
+                            setSelectedTargetFunction={(value: number) => {
                                 const index = form.values.targetDBId?.indexOf(value);
                                 console.log("index: " + index + " length= " + form.values.targetDBId?.length);
                                 if(index === undefined || index == -1) {

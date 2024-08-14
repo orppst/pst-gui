@@ -21,7 +21,7 @@ export type TargetProps = {
     key: string,
     boundTargets: (number | undefined)[] | undefined,
     selectedTargets: (number)[] | undefined,
-    setSelectTarget?: (value: number) => void,
+    setSelectedTargetFunction?:  (value: number) => void,
 }
 
 /**
@@ -46,5 +46,5 @@ export type TargetTableProps = {
     showButtons: boolean,
     boundTargets: (number | undefined)[] | undefined,
     selectedTargets: (number)[] | undefined,
-    setSelectTarget?: (value: number) => void,
+    setSelectedTargetFunction?: (value: number) => void,
 }

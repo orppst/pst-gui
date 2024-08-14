@@ -108,8 +108,8 @@ export default function ObservationEditGroup(
             },
 
             validate: {
- //               targetDBId: (value: number | undefined | string ) =>
- //                   (value === undefined ? 'Please select a target' : null),
+                targetDBId: (value: number[] | undefined ) =>
+                    (value === undefined ? 'Please select at least one target' : null),
                 techGoalId: (value: number | undefined | string) =>
                     (value === undefined ? 'Please select a technical goal' : null),
                 fieldId: (value: string | undefined) =>
