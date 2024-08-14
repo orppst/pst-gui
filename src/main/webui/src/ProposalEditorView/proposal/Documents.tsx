@@ -12,6 +12,7 @@ import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
 import UploadButton from 'src/commonButtons/upload.tsx';
 import DeleteButton from 'src/commonButtons/delete.tsx';
+import CancelButton from "src/commonButtons/cancel.tsx";
 import {
     DownloadButton,
     DownloadRequestButton
@@ -20,7 +21,7 @@ import {HEADER_FONT_WEIGHT, JSON_SPACES, MAX_SUPPORTING_DOCUMENT_SIZE} from 'src
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 type DocumentProps = {
     dbid: number,
@@ -124,11 +125,10 @@ const DocumentsPanel = () => {
                                 label={"Choose a file"}
                                 onClick={props.onClick}/>}
                 </FileButton>
-                                 <DeleteButton
-                                    label={"Cancel"}
-                                    onClickEvent={handleCancel}
-                                    toolTipLabel={"Go back without saving"}/>
-                                    </Grid>
+                <CancelButton
+                    onClickEvent={handleCancel}
+                    toolTipLabel={"Go back without saving"}/>
+                </Grid>
                 <Result status={status} />
             </Stack>
         </PanelFrame>

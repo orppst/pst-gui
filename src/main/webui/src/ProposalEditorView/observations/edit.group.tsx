@@ -15,12 +15,12 @@ import {
     fetchObservationResourceReplaceTimingWindow
 } from 'src/generated/proposalToolComponents.ts';
 import {FormSubmitButton} from 'src/commonButtons/save.tsx';
-import DeleteButton from 'src/commonButtons/delete.tsx';
+import CancelButton from "src/commonButtons/cancel.tsx";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, ReactElement, SyntheticEvent } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
-import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 
 /**
  * the different types of observation.
@@ -307,8 +307,7 @@ export default function ObservationEditGroup(
                                     <Grid>
                                       <Grid.Col span={7}></Grid.Col>
                                          <FormSubmitButton form={form} />
-                                         <DeleteButton
-                                            label={"Cancel"}
+                                         <CancelButton
                                             onClickEvent={handleCancel}
                                             toolTipLabel={"Go back without saving"}/>
                                     </Grid>

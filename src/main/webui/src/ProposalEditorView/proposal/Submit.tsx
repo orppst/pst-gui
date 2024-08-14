@@ -10,13 +10,13 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import {JSON_SPACES} from "src/constants.tsx";
 import {SubmitButton} from "src/commonButtons/save.tsx";
-import DeleteButton from "src/commonButtons/delete.tsx";
+import CancelButton from "src/commonButtons/cancel.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import ValidationOverview from "./ValidationOverview.tsx";
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 function SubmitPanel(): ReactElement {
     const {selectedProposalCode} = useParams();
@@ -108,14 +108,13 @@ function SubmitPanel(): ReactElement {
 
                 <p> </p>
                 <Grid>
-                    <Grid.Col span={7}></Grid.Col>
+                    <Grid.Col span={8}></Grid.Col>
                     <SubmitButton
                         disabled={form.values.selectedCycle===0 || isValid == false}
                         label={"Submit proposal"}
                         toolTipLabel={"Submit your proposal to the selected cycle"}
                     />
-                    <DeleteButton
-                        label={"Cancel"}
+                    <CancelButton
                         onClickEvent={handleCancel}
                         toolTipLabel={"Go back without submitting"}/>
                 </Grid>
