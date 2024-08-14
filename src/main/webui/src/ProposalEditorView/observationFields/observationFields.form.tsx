@@ -13,6 +13,7 @@ import {
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
+import CancelButton from "src/commonButtons/cancel.tsx";
 import {
     fetchProposalResourceAddNewField,
     fetchProposalResourceChangeFieldName
@@ -21,7 +22,7 @@ import {useParams, useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 /**
  * Function to return the "Observation Fields" form to either create a new "Field" or edit an existing one.
@@ -214,10 +215,9 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                     </Stack>
                 }
             </Stack>
-                        <p> </p>
-                        <Grid>
-                          <Grid.Col span={7}></Grid.Col>
-
+            <p> </p>
+            <Grid>
+                <Grid.Col span={7}></Grid.Col>
                 <SubmitButton
                     toolTipLabel={props.observationField ? "Save Changes" : "Save new Field"}
                     label={"Save"}
@@ -225,12 +225,10 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                         form.values.fieldType === 'proposal:Ellipse' ||
                         form.values.fieldType === 'proposal:Polygon'}
                         />
-                 <DeleteButton
-                     label={"Cancel"}
+                 <CancelButton
                      onClickEvent={handleCancel}
                      toolTipLabel={"Go back without saving"}/>
-                 </Grid>
-
+            </Grid>
         </form>
     )
 }

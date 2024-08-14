@@ -17,12 +17,13 @@ import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from 'src/commonButtons/save';
 import DeleteButton from 'src/commonButtons/delete';
+import CancelButton from "src/commonButtons/cancel.tsx";
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "src/constants";
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 
 
 const kindData = [
@@ -103,11 +104,11 @@ const textFormatData = [
             });
     });
 
-
   function handleCancel(event: SyntheticEvent) {
       event.preventDefault();
       navigate("/",{relative:"path"})
       }
+
      return (
         <PanelFrame>
             <PanelHeader itemName={"NEW"} panelHeading={"Create Proposal"} />
@@ -141,10 +142,9 @@ const textFormatData = [
                     />
             <p> </p>
             <Grid>
-              <Grid.Col span={8}></Grid.Col>
+              <Grid.Col span={9}></Grid.Col>
                  <FormSubmitButton form={form} />
-                 <DeleteButton
-                    label={"Cancel"}
+                 <CancelButton
                     onClickEvent={handleCancel}
                     toolTipLabel={"Go back without saving"}/>
             </Grid>
@@ -193,10 +193,9 @@ const textFormatData = [
                     />
             <p> </p>
             <Grid>
-              <Grid.Col span={8}></Grid.Col>
+              <Grid.Col span={9}></Grid.Col>
                  <FormSubmitButton form={form} />
-                 <DeleteButton
-                    label={"Cancel"}
+                 <CancelButton
                     onClickEvent={handleCancel}
                     toolTipLabel={"Go back without saving"}/>
             </Grid>

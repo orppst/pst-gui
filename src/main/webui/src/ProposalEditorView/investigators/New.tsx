@@ -11,11 +11,12 @@ import {Checkbox, Grid, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
+import CancelButton from "src/commonButtons/cancel.tsx";
 import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 
 /**
  * Render s form panel to add an investigator to the current proposal.
@@ -129,10 +130,9 @@ function AddInvestigatorPanel(): ReactElement {
                     </Stack>
                     <p> </p>
                     <Grid >
-                       <Grid.Col span={8}></Grid.Col>
+                       <Grid.Col span={9}></Grid.Col>
                           <FormSubmitButton form={form} />
-                          <DeleteButton
-                             label={"Cancel"}
+                          <CancelButton
                              onClickEvent={handleCancel}
                              toolTipLabel={"Go back without saving"}/>
                      </Grid>

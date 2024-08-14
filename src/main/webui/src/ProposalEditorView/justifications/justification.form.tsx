@@ -9,9 +9,10 @@ import {useNavigate,useParams } from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
 import DeleteButton from "src/commonButtons/delete";
+import CancelButton from "src/commonButtons/cancel.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {PreviewJustification} from "./justification.preview.tsx";
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 import Editor from "react-simple-code-editor";
 import { languages, highlight } from "prismjs";
@@ -130,9 +131,6 @@ export default function JustificationForm(props: JustificationProps)
     return (
         <>
             <form onSubmit={handleSubmit}>
-            {/*}
-            {helpButtonCall}
-            */}
             <ContextualHelpButton messageId="MaintSciJust" />
             <Stack>
                <Grid span={10} grow>
@@ -148,8 +146,7 @@ export default function JustificationForm(props: JustificationProps)
             <Grid>
               <Grid.Col span={8}></Grid.Col>
                  <FormSubmitButton form={form} />
-                 <DeleteButton
-                    label={"Cancel"}
+                 <CancelButton
                     onClickEvent={handleCancel}
                     toolTipLabel={"Go back without saving"}/>
             </Grid>
