@@ -127,14 +127,13 @@ function TargetTableRow(props: TargetProps): ReactElement {
      * @constructor
      */
     const RowSelector = (targetId: number | undefined): void => {
-        console.debug(`row ${targetId} was selected`);
         // handle not having a selection method
         if (!props.setSelectedTargetFunction) {
             return;
         }
 
         // handle selection.
-        if(props.selectedTargets !== undefined && targetId !== undefined) {
+        if(targetId !== undefined) {
                 props.setSelectedTargetFunction(targetId);
         }
     }

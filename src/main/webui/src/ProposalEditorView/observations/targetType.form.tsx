@@ -162,19 +162,15 @@ export default function TargetTypeForm (
                             setSelectedTargetFunction={(value: number) => {
                                 const index = form.values.targetDBIds?.indexOf(value);
                                 if(index === undefined || index == -1) {
-                                    if(form.values.targetDBIds == undefined) {
-                                        form.setFieldValue('targetDBId', [value]);
+                                    if(form.values.targetDBIds === undefined) {
+                                        form.setFieldValue('targetDBIds', [value]);
                                     } else {
-                                        let newTargets = form.values.targetDBIds;
-                                        newTargets.push(value);
-                                        form.setFieldValue('targetDBId', newTargets);
-                                        form.values.targetDBIds = newTargets;
-                                        //Or can I simply do this?
-                                        //form.values.targetDBIds.push(value);
+                                        form.values.targetDBIds.push(value);
                                     }
                                 } else {
                                     form.values.targetDBIds?.splice(index, 1);
                                 }
+                                form.setDirty({'targetDBId': true});
                             }}
                         />
                     </Table.ScrollContainer>
