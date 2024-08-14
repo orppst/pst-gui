@@ -18,14 +18,14 @@ import {
     fetchTechnicalGoalResourceReplacePerformanceParameters, fetchTechnicalGoalResourceReplaceSpectrum
 } from "src/generated/proposalToolComponents.ts";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
-import DeleteButton from "src/commonButtons/delete.tsx";
+import CancelButton from "src/commonButtons/cancel.tsx";
 import {
     convertToPerformanceParameters,
     convertToPerformanceParametersGui,
     PerformanceParametersGui
 } from "./performanceParametersGui.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
-import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
@@ -284,8 +284,7 @@ export default function TechnicalGoalEditGroup(
                     <Grid>
                     <Grid.Col span={8}></Grid.Col>
                        <FormSubmitButton form={form} />
-                       <DeleteButton
-                          label={"Cancel"}
+                       <CancelButton
                           onClickEvent={handleCancel}
                            toolTipLabel={"Go back without saving"}/>
                      </Grid>

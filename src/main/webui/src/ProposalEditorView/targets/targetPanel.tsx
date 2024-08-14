@@ -10,7 +10,7 @@ import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from './TargetTable.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
-import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx"
+import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 
 /**
  * Renders the target panel containing an add target button
@@ -65,12 +65,12 @@ export function TargetPanel(): ReactElement {
                 }
 
             </Stack>
-                        <p> </p>
-                        <Grid>
-                          <Grid.Col span={10}></Grid.Col>
-                                          <AddTargetModal/>
-                                          </Grid>
-                                          <p> </p>
+            <p> </p>
+             <Grid>
+                <Grid.Col span={10}></Grid.Col>
+                <AddTargetModal/>
+             </Grid>
+             <p> </p>
         </PanelFrame>
     );
 }

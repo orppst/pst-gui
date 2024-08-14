@@ -21,7 +21,7 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {useNavigate, useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
-import DeleteButton from 'src/commonButtons/delete.tsx';
+import CancelButton from "src/commonButtons/cancel.tsx";
 import DatabaseSearchButton from 'src/commonButtons/databaseSearch';
 import { SubmitButton } from 'src/commonButtons/save';
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
@@ -381,8 +381,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                            toolTipLabel={"Save this target"}
                            disabled={!form.isValid() ||
                            form.values.searching? true : undefined}/>
-                       <DeleteButton
-                           label={"Cancel"}
+                       <CancelButton
                            onClickEvent={handleCancel}
                            toolTipLabel={"Go back without saving"}/>
                     </Grid>
