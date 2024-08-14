@@ -21,7 +21,6 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {useNavigate, useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
-import DeleteButton from 'src/commonButtons/delete.tsx';
 import CancelButton from "src/commonButtons/cancel.tsx";
 import DatabaseSearchButton from 'src/commonButtons/databaseSearch';
 import { SubmitButton } from 'src/commonButtons/save';

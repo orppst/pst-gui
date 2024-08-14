@@ -10,7 +10,6 @@ import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
 import {Checkbox, Grid, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
-import DeleteButton from "src/commonButtons/delete";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";

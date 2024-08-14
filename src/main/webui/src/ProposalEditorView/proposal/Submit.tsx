@@ -10,7 +10,6 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import {JSON_SPACES} from "src/constants.tsx";
 import {SubmitButton} from "src/commonButtons/save.tsx";
-import DeleteButton from "src/commonButtons/delete.tsx";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import ValidationOverview from "./ValidationOverview.tsx";

@@ -9,7 +9,6 @@ import {useNavigate, useParams} from "react-router-dom";
 import {Box, Grid, Stack, Textarea} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from 'src/commonButtons/save';
-import DeleteButton from "src/commonButtons/delete";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {
     JSON_SPACES,

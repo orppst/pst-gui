@@ -9,7 +9,6 @@ import {Grid, Stack, TextInput} from "@mantine/core";
 import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from 'src/commonButtons/save';
-import DeleteButton from "src/commonButtons/delete";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import { MAX_CHARS_FOR_INPUTS, JSON_SPACES } from 'src/constants';
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";

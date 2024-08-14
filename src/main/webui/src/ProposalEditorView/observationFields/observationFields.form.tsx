@@ -12,7 +12,6 @@ import {
 } from "../../generated/proposalToolSchemas.ts";
 import {useForm} from "@mantine/form";
 import {SubmitButton} from "../../commonButtons/save.tsx";
-import DeleteButton from "src/commonButtons/delete.tsx";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {
     fetchProposalResourceAddNewField,

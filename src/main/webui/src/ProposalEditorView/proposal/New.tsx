@@ -16,7 +16,6 @@ import {Box, Container, Grid, Select, Text, Textarea, TextInput, Stack, Space} f
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from 'src/commonButtons/save';
-import DeleteButton from 'src/commonButtons/delete';
 import CancelButton from "src/commonButtons/cancel.tsx";
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "src/constants";
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";

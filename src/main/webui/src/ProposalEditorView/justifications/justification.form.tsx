@@ -8,7 +8,6 @@ import {fetchProposalResourceUpdateJustification} from "src/generated/proposalTo
 import {useNavigate,useParams } from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
-import DeleteButton from "src/commonButtons/delete";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {PreviewJustification} from "./justification.preview.tsx";

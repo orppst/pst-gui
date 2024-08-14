@@ -15,7 +15,6 @@ import {
     fetchObservationResourceReplaceTimingWindow
 } from 'src/generated/proposalToolComponents.ts';
 import {FormSubmitButton} from 'src/commonButtons/save.tsx';
-import DeleteButton from 'src/commonButtons/delete.tsx';
 import CancelButton from "src/commonButtons/cancel.tsx";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
