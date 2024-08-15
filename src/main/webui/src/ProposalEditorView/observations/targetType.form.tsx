@@ -170,7 +170,7 @@ export default function TargetTypeForm (
                                 } else {
                                     form.values.targetDBIds?.splice(index, 1);
                                 }
-                                form.setDirty({'targetDBId': true});
+                                form.setDirty({'targetDBIds': true});
                             }}
                         />
                     </Table.ScrollContainer>

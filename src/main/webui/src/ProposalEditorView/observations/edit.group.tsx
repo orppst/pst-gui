@@ -109,7 +109,7 @@ export default function ObservationEditGroup(
 
             validate: {
                 targetDBIds: (value: number[] | undefined ) =>
-                    (value === undefined ? 'Please select at least one target' : null),
+                    (value === undefined || value.length == 0 ? 'Please select at least one target' : null),
                 techGoalId: (value: number | undefined | string) =>
                     (value === undefined ? 'Please select a technical goal' : null),
                 fieldId: (value: string | undefined) =>
@@ -225,8 +225,7 @@ export default function ObservationEditGroup(
                     }
                     //else do nothing
                 })
-
-                if (form.isDirty('targetDBId')) {
+                if (form.isDirty('targetDBIds')) {
                     let body: Target[] = [];
 
                     form.values.targetDBIds?.map((thisTarget) =>{
