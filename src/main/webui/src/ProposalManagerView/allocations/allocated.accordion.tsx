@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Accordion, Loader} from "@mantine/core";
+import {Accordion, Group, Loader} from "@mantine/core";
 import {
     useAllocatedProposalResourceGetAllocatedProposal
 } from "../../generated/proposalToolComponents.ts";
@@ -8,6 +8,7 @@ import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import AllocatedBlocksTable from "./allocatedBlocks.table.tsx";
+import AllocatedBlockModal from "./allocatedBlock.modal.tsx";
 
 type AllocatedItemProps = {
     cycleCode: number,
@@ -40,12 +41,18 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
                 {allocatedProposal.data?.submitted?.proposal?.title}
             </Accordion.Control>
             <Accordion.Panel>
-                {allocatedProposal.data?.allocation &&
+                {allocatedProposal.data?.allocation ?
                     <AllocatedBlocksTable
                         allocatedBlocks={allocatedProposal.data.allocation}
                         proposalTitle={allocatedProposal.data?.submitted?.proposal?.title!}
                         allocatedProposalId={allocatedProposal.data._id!}
-                    />
+                    /> :
+                    <Group justify={"centre"} grow>
+                        <AllocatedBlockModal
+                            proposalTitle={allocatedProposal.data?.submitted?.proposal?.title!}
+                            allocatedProposalId={allocatedProposal.data?._id!}
+                        />
+                    </Group>
                 }
             </Accordion.Panel>
         </Accordion.Item>
