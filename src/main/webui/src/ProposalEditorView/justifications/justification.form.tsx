@@ -28,9 +28,9 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
-                        value={form.values.text!}
+                        value={form.values.text ?? ""}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
-                        highlight={code => highlight(code, languages.asciidoc, 'asciidoc')}
+                        highlight={code => highlight(code ?? "", languages.asciidoc, 'asciidoc')}
                         maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
                     />
@@ -40,9 +40,9 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
-                        value={form.values.text!}
+                        value={form.values.text ?? ""}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
-                        highlight={code => highlight(code, languages.latex, 'latex')}
+                        highlight={code => highlight(code ?? "", languages.latex, 'latex')}
                         maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
                     />
@@ -52,9 +52,9 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
-                        value={form.values.text!}
+                        value={form.values.text ?? ""}
                         onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
-                        highlight={code => highlight(code, languages.rest, 'rest')}
+                        highlight={code => highlight(code ?? "", languages.rest, 'rest')}
                         maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
                     />
@@ -151,7 +151,7 @@ export default function JustificationForm(props: JustificationProps)
             </Grid>
 
             </form>
-            {form.values.format==='latex' && PreviewJustification(form.values.format!, form.values.text!)}
+            {form.values.format==='latex' && PreviewJustification(form.values.format!, form.values.text ?? "")}
         </>
     );
 }
