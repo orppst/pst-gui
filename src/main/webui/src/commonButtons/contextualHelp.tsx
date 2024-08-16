@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { Button, Grid, Space } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons-react';
-import { ICON_SIZE } from '../constants.tsx';
-
+import {useState} from "react";
+import {Button, Grid, Space} from '@mantine/core';
 import {contextualHelpMessages} from "../../public/contextualHelpMessages.jsx";
+import {IconInfoCircle} from "@tabler/icons-react";
+import {ICON_SIZE} from "../constants.tsx";
 
 export function ContextualHelpButton(props : {messageId : string}) {
 
@@ -17,14 +16,11 @@ export function ContextualHelpButton(props : {messageId : string}) {
 
 // need to trap when no message is found...
 
-  const listMessageRow = singleMessage.map(aMessage =>
-      <ul key={aMessage.id}>
-      <>{aMessage.message}</>
-      </ul>
-      );
-
-   const extractedRecord = listMessageRow;
-   const displayHelp = extractedRecord;
+   const displayHelp = singleMessage.map(aMessage =>
+       <ul key={aMessage.id}>
+           <>{aMessage.message}</>
+       </ul>
+   );
    const clearHelp = "";
    const labelClearHelp = "Clear Help";
    const labelShowHelp = "Show Help";
