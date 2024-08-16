@@ -1,31 +1,24 @@
-import {Modal, NumberInput, TextInput, Grid, Stack, Alert, Group} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
+import {Modal, NumberInput, TextInput, Stack, Fieldset, Grid, rem, Text} from "@mantine/core";
+import {useForm} from "@mantine/form";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
-    FormEvent,
     MouseEvent,
     ReactElement,
-    ReactNode,
-    SyntheticEvent,
     useEffect,
-    useRef, useState
+    useState
 } from 'react';
 import {
     CelestialTarget,
-    EquatorialPoint, SimbadTargetResult, SpaceSys,
+    EquatorialPoint, SpaceSys,
 } from "src/generated/proposalToolSchemas.ts";
 import {
     fetchProposalResourceAddNewTarget, fetchProposalResourceGetTargets,
-    fetchSimbadResourceSimbadFindTarget, fetchSpaceSystemResourceGetSpaceSystem
+    fetchSpaceSystemResourceGetSpaceSystem
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import AddButton from 'src/commonButtons/add';
-import CancelButton from "src/commonButtons/cancel.tsx";
-import DatabaseSearchButton from 'src/commonButtons/databaseSearch';
 import { SubmitButton } from 'src/commonButtons/save';
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
-import { useHistoryState } from 'src/useHistoryState.ts';
 import "./aladin.css";
 import {
     AladinType,
@@ -37,12 +30,12 @@ import {
     LoadScriptIntoDOM,
     PopulateAladin
 } from './aladinHelperMethods.tsx';
-import {notifyError} from "../../commonPanel/notifications.tsx";
-import {IconInfoCircle} from "@tabler/icons-react";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {SimbadSearch} from "./simbadSearch.tsx";
+import SimbadSearchHelp from "./simbadSearchHelp.tsx";
 
-// NOTE ABS: Aladin seems to be the global holder for the object that we can
-// manipulate. This is different to NGOT, but at this point, ill buy anything.
-declare var Aladin: AladinType;
+export let Aladin: AladinType;
 
 // the initial config for the aladin viewer.
 const initialConfig: IAladinConfig = {
@@ -51,7 +44,7 @@ const initialConfig: IAladinConfig = {
     fov: 0.25,
     showReticule: true,
     showZoomControl: false,
-    showLayersControl: true,
+    showLayersControl: false,
     showGotoControl: false,
     showShareControl: false,
     showFullscreenControl: false,
@@ -62,28 +55,43 @@ const initialConfig: IAladinConfig = {
     showCooGridControl: false,
 };
 
-// state name for if aladin has been loaded boolean.
-const ALADIN_STATE_NAME = "hasDoneAladin";
+const TargetForm = (props: {closeModal: () => void}): ReactElement => {
+
+    /**
+     * handler that creates the Aladin interface from Javascript.
+     * Empty 'deps' array in useEffect to load on initial render only.
+     * Note that in 'dev mode' (React 18) this actually runs twice for reasons.
+     */
+    useEffect(() => {
+
+        const bodyElement =
+            document.getElementsByTagName('BODY')[0] as HTMLElement;
+
+        // jQuery is a dependency for aladin-lite and must be inserted in the DOM.
+        LoadScriptIntoDOM(bodyElement, JQUERY_SRC_URL);
+
+        // Then we load the aladin lite script.
+        LoadScriptIntoDOM(
+            bodyElement, ALADIN_SRC_URL,
+            () => {
+                Aladin = PopulateAladin(initialConfig);
+            })
+    }, []);
 
 
-/**
- * creates the target new page.
- *
- * @param {FormPropsType<newTargetData>} props the data required for the
- * target page.
- * @return {ReactElement} the dynamic html for the new target page.
- * @constructor
- */
-const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     const [nameUnique, setNameUnique] = useState(true);
+
+    //media query used to conditionally set the height of Aladin when the modal toggles
+    // between fullscreen and not
+    const isTablet = useMediaQuery('(max-width: 62em)');
+
     const form = useForm({
-            initialValues: props.initialValues ?? {
+            initialValues: {
                 TargetName: "",
                 RA: 0.00,
                 Dec: 0.00,
                 SelectedEpoch: "J2000",
-                searching: false,
-                lastSearchName: '',
+                sexagesimal: "00:00:00 +00:00:00"
             },
             validate: {
                 TargetName: (value) => (
@@ -95,52 +103,8 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
             },
         });
 
-    // this is needed to ensure that aladin is only loaded once, and not each
-    // time the renderer engages. The reason for this is that it makes
-    // duplicates which steal screen restate, making it unusable.
-    let [hasDoneAladin, setHasDoneAladin] =
-        useHistoryState(ALADIN_STATE_NAME, false);
-
-    // create the database query client and get basic elements.
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
-    const targetNameRef = useRef(null);
-
-    /**
-     * executes a simbad query.
-     */
-    function simbadLookup() {
-        /**
-         * function for handling when simbad fails to find the target.
-         */
-        function notFound() {
-            const choice = window.confirm(
-                "Unable to match source " + form.values.TargetName +
-                " try again?");
-            form.values.searching = false;
-            if(!choice) props.onSubmit();
-        }
-
-        form.values.searching = true;
-        form.values.lastSearchName = form.values.TargetName;
-        fetchSimbadResourceSimbadFindTarget(
-            {queryParams: {targetName: form.values.TargetName}})
-            .then((data : SimbadTargetResult) => {
-                console.log(data);
-                form.setFieldValue('RA', data.raDegrees?data.raDegrees:0);
-                form.setFieldValue('Dec', data.decDegrees?data.decDegrees:0);
-                form.setFieldValue('SelectedEpoch', data.epoch!);
-                form.values.searching = false;
-
-                // acquire the aladin object and set it.
-                Aladin?.gotoRaDec(
-                    data.raDegrees?data.raDegrees:0,
-                    data.decDegrees?data.decDegrees:0);
-            })
-            .catch((reason: any) => {
-                console.error(reason);
-                notFound()});
-    }
 
     /**
      * saves the new target to the database, if it doesn't already exist on this proposal.
@@ -171,7 +135,7 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
          * assign the coord system to the target if feasible.
          * @param {SpaceSys} ss the coord system to set.
          */
-        function assignSpaceSys(ss: SpaceSys) {
+        const assignSpaceSys = (ss: SpaceSys) => {
             if (Target.sourceCoordinates != undefined)
                 if (Target.sourceCoordinates.coordSys != undefined)
                     Target.sourceCoordinates.coordSys = ss;
@@ -187,15 +151,21 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                     fetchSpaceSystemResourceGetSpaceSystem(
                         {pathParams: { frameCode: 'ICRS'}})
                         .then((spaceSys) => assignSpaceSys(spaceSys))
-                        .then(() => fetchProposalResourceAddNewTarget(
-                            {pathParams:{
-                                    proposalCode: Number(selectedProposalCode) },
-                                body: Target})
-                            .then(() => {return queryClient.invalidateQueries()})
-                            .then(() => {props.onSubmit()})
-                            .catch(console.log)
+                        .then(() =>
+                            fetchProposalResourceAddNewTarget({
+                                pathParams:{proposalCode: Number(selectedProposalCode) },
+                                body: Target
+                            })
+                                .then(() => queryClient.invalidateQueries())
+                                .then(() =>
+                                    notifySuccess("Success",
+                                        val.TargetName + " added to the proposal"))
+                                .then(() => props.closeModal!())
+                                .catch(error => notifyError("Failed to add Target",
+                                    getErrorMessage(error)))
                         )
-                        .catch(console.log);
+                        .catch(error => notifyError("Failed to get Space Coordinate System",
+                            getErrorMessage(error)))
                 } else {
                     //Target already exists on this proposal
                     setNameUnique(false);
@@ -203,63 +173,15 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                         "A target called '"+val.TargetName+"' already exists");
                 }
             })
-            .catch(console.log);
-
-
+            .catch(error => notifyError("Failed to get existing Targets",
+                getErrorMessage(error)));
     }
 
-    /**
-     * handles the submission event.
-     * @type {(event?: React.FormEvent<HTMLFormElement>) => void} the event.
-     */
-    const handleSubmission: (event?: FormEvent<HTMLFormElement>) => void =
-        form.onSubmit((val: newTargetData) => {
-            if(document.activeElement === targetNameRef.current) {
-                if (form.values.searching &&
-                    val.TargetName === val.lastSearchName) {
-                    // do nothing if were already searching.
-                }
-                else if (!form.values.searching &&
-                        val.TargetName === val.lastSearchName) {
-                    // if already searched and same name, assume submission
-                    saveToDatabase(val);
-                } else {
-                    // name different, so do a simbad search.
-                    simbadLookup();
-                }
-            } else {
-                // not on target name, so assume submission
-                saveToDatabase(val);
-            }
+
+    // alias for form.onSubmit that simply calls saveToDatabase
+    const handleSubmission = form.onSubmit((val: newTargetData) => {
+        saveToDatabase(val);
     });
-
-    /**
-     * handler that eventually creates the aladin interface from Javascript.
-     * This code was swiped from stack overflow for loading in the Javascript
-     * to a React system.
-     */
-    useEffect(() => {
-        if (!hasDoneAladin) {
-            setHasDoneAladin(true);
-            hasDoneAladin = true;
-
-            // Now the component is mounted we can load aladin lite.
-            const bodyElement =
-                document.getElementsByTagName('BODY')[0] as HTMLElement;
-
-            // jQuery is a dependency for aladin-lite and therefore must be
-            // inserted in the DOM.
-            LoadScriptIntoDOM(bodyElement, JQUERY_SRC_URL);
-
-            // Then we load the aladin lite script.
-            LoadScriptIntoDOM(
-                bodyElement, ALADIN_SRC_URL,
-                () => {
-                    // to stop reloading aladin into the browser on every render.
-                    setHasDoneAladin(true);
-                    Aladin = PopulateAladin(initialConfig);
-                })
-        }});
 
     /**
      * handles the different mouse event types.
@@ -282,71 +204,50 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
     }
 
     /**
-     * updates the aladin viewer to handle changes to RA.
-     * @param {number | string} value the new RA.
+     * updates the aladin viewer to handle changes to Dec.
+     * @param {number | string} value the new Dec.
      */
     const UpdateAladinDec = (value: number | string) => {
         // acquire the aladin object and set it.
         Aladin.gotoRaDec(form.values.RA, value as number);
     }
 
-    /**
-    * manage the cancel button
-     */
-  const navigate = useNavigate();
+    const responsiveSpan = {base: 2, md: 1}
 
-  function handleCancel(event: SyntheticEvent) {
-      event.preventDefault();
-      navigate("../",{relative:"path"})
-      }
-
-
-    // return the dynamic HTML.
     return (
-        <>
-        <ContextualHelpButton messageId="MaintTarg" />
-        <Grid columns={4}>
+        <Grid columns={2}>
             <Grid.Col span={2}>
-                <div id="aladin-lite-div"
-                     style={{height: 400}}
-                     onMouseUpCapture={HandleEvent}>
-                </div>
+                <Fieldset legend={"User Information"}>
+                    <Text size={"xs"} c={"gray.6"}>Click on a tab to toggle its content</Text>
+                    <SimbadSearchHelp/>
+                </Fieldset>
             </Grid.Col>
-            <Grid.Col span={ 2 }>
-                <Group justify={"center"}>
-                    <Alert
-                        variant={"light"}
-                        color={"blue"}
-                        title={"Prototype Version"}
-                        icon={<IconInfoCircle/>}
-                    >
-                        All targets are assumed to have an ICRS coordinate system and J2000 epoch.
-                    </Alert>
-                </Group>
+            <Grid.Col span={2}>
+                <Fieldset legend={"SIMBAD search"} pt={10}>
+                    <SimbadSearch form={form}/>
+                </Fieldset>
+            </Grid.Col>
+            <Grid.Col span={responsiveSpan}>
+                <Fieldset legend={"Target Form"}>
                 <form onSubmit={handleSubmission}>
-                    <Stack>
+                    <Stack gap={"xs"}>
                         <TextInput
-                            ref={targetNameRef}
                             withAsterisk
                             label="Name"
-                            placeholder="Name of target"
+                            placeholder="User provided or use the SIMBAD search"
                             {...form.getInputProps("TargetName")}
                             onChange={(e: string) => {
                                 setNameUnique(true);
                                 if(form.getInputProps("TargetName").onChange)
                                     form.getInputProps("TargetName").onChange(e);
+
                             }}
                         />
-                        <DatabaseSearchButton
-                            label={"Lookup"}
-                            onClick={simbadLookup}
-                            toolTipLabel={"Search Simbad database"}
-                        />
                         <NumberInput
+                            hideControls
                             required={true}
                             label={"RA"}
-                            decimalScale={5}
-                            step={0.00001}
+                            decimalScale={6}
                             min={0}
                             max={360}
                             allowNegative={false}
@@ -356,13 +257,13 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                 UpdateAladinRA(e);
                                 if (form.getInputProps("RA").onChange) {
                                     form.getInputProps("RA").onChange(e);
-                            }}}
+                                }}}
                         />
                         <NumberInput
+                            hideControls
                             required={true}
                             label={"Dec"}
-                            decimalScale={5}
-                            step={0.00001}
+                            decimalScale={6}
                             min={-90}
                             max={90}
                             suffix="°"
@@ -373,22 +274,27 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
                                     form.getInputProps("Dec").onChange(e);
                                 }}}
                         />
-                        <p> </p>
+                        <SubmitButton
+                            toolTipLabel={"Save this target"}
+                            disabled={!form.isValid()}
+                        />
                     </Stack>
-                    <Grid>
-                       <Grid.Col span={8}></Grid.Col>
-                       <SubmitButton
-                           toolTipLabel={"Save this target"}
-                           disabled={!form.isValid() ||
-                           form.values.searching? true : undefined}/>
-                       <CancelButton
-                           onClickEvent={handleCancel}
-                           toolTipLabel={"Go back without saving"}/>
-                    </Grid>
                 </form>
+                </Fieldset>
+            </Grid.Col>
+            <Grid.Col span={responsiveSpan}>
+                <Fieldset
+                    legend={"Aladin Sky Atlas"}
+                    style={{height: isTablet? rem(350) : "100%"}}
+                >
+                    <div
+                        id="aladin-lite-div"
+                        onMouseUpCapture={HandleEvent}
+                    >
+                    </div>
+                </Fieldset>
             </Grid.Col>
         </Grid>
-        </>
     );
 };
 
@@ -399,41 +305,28 @@ const TargetForm = (props: FormPropsType<newTargetData>): ReactElement => {
  * @return a React Element of a visible add button and hidden modal.
  *
  */
-export default function AddTargetModal(): ReactElement {
+export default function AddTargetModal(props: {proposalTitle: string}): ReactElement {
     const [opened, { close, open }] = useDisclosure();
-    const [_, setHasDoneAladin] =
-        useHistoryState(ALADIN_STATE_NAME, false);
+    const isMobile = useMediaQuery('(max-width: 75em)');
 
     return (
         <>
-            <AddButton onClick={open}
-                       toolTipLabel={"Add new target."}/>
-            <Modal title="New target"
+            <AddButton
+                onClick={open}
+                toolTipLabel={"Add new target."}
+            />
+            <Modal title={`Add a Target to '${props.proposalTitle}'`}
                    opened={opened}
-                   onClose={() => {
-                       setHasDoneAladin(false);
-                       close();
-                   }}
-                   fullScreen>
-                <TargetForm
-                    onSubmit={() => {
-                        setHasDoneAladin(false);
-                        close();
-                    }}
-                />
+                   onClose={() => {close();}}
+                   fullScreen={isMobile}
+                   size={"60%"}
+                   closeOnClickOutside={false}
+            >
+                <TargetForm closeModal={close}/>
             </Modal>
         </>
     );
 }
-
-/**
- * the form props.
- */
-export type FormPropsType<T> = {
-    initialValues?: T;
-    onSubmit: () => void;
-    actions?: ReactNode;
-};
 
 /**
  * the new data required for target form.
@@ -442,16 +335,16 @@ export type FormPropsType<T> = {
  * @param RA the longitude
  * @param Dec the latitude
  * @param TargetName the name of the target
- * @param searching if the system is searching for a target at the moment.
- * @param lastSearchName: the last name searched for.
+ * @param sexagesimal sexagesimal string representation of Ra & Dec
+ * @param objectDescription description of the target object type from SIMBAD, optional
  */
 export type newTargetData = {
     SelectedEpoch: string;
     RA: number;
     Dec: number;
     TargetName: string
-    searching: boolean
-    lastSearchName: string
+    sexagesimal: string
+    objectDescription?: string
 }
 
 
