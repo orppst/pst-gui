@@ -55,7 +55,6 @@ const initialConfig: IAladinConfig = {
     showCooGridControl: false,
 };
 
-
 const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
     /**
@@ -321,6 +320,7 @@ export default function AddTargetModal(props: {proposalTitle: string}): ReactEle
                    onClose={() => {close();}}
                    fullScreen={isMobile}
                    size={"60%"}
+                   closeOnClickOutside={false}
             >
                 <TargetForm closeModal={close}/>
             </Modal>
