@@ -35,7 +35,7 @@ export interface ObservationFormValues {
     observationId: number | undefined,
     observationType: ObservationType,
     calibrationUse: CalibrationTargetIntendedUse | undefined,
-    targetDBId: number[] | undefined,
+    targetDBIds: number[] | undefined,
     techGoalId: number | undefined,
     fieldId: string | undefined, //string for Select to show existing value in edit-form
     timingWindows: TimingWindowGui[],
@@ -101,15 +101,15 @@ export default function ObservationEditGroup(
                 observationId: props.observation?._id, //required for deletion of timing windows
                 observationType: observationType,
                 calibrationUse: calibrationUse,
-                targetDBId: props.observation?.target! as number[],
+                targetDBIds: props.selectedTargets, //check this is working as expected
                 techGoalId: props.observation?.technicalGoal?._id,
                 fieldId: props.observation?.field?._id ? String(props.observation?.field?._id) : undefined,
                 timingWindows: initialTimingWindows
             },
 
             validate: {
- //               targetDBId: (value: number | undefined | string ) =>
- //                   (value === undefined ? 'Please select a target' : null),
+                targetDBIds: (value: number[] | undefined ) =>
+                    (value === undefined || value.length == 0 ? 'Please select at least one target' : null),
                 techGoalId: (value: number | undefined | string) =>
                     (value === undefined ? 'Please select a technical goal' : null),
                 fieldId: (value: string | undefined) =>
@@ -140,7 +140,7 @@ export default function ObservationEditGroup(
                 //Creating new observation
                 let targetList: Target[] = [];
 
-                form.values.targetDBId?.map((thisTarget) =>{
+                form.values.targetDBIds?.map((thisTarget) =>{
                     targetList.push({
                         "@type": "proposal:CelestialTarget",
                         "_id": thisTarget
@@ -225,11 +225,10 @@ export default function ObservationEditGroup(
                     }
                     //else do nothing
                 })
-
-                if (form.isDirty('targetDBId')) {
+                if (form.isDirty('targetDBIds')) {
                     let body: Target[] = [];
 
-                    form.values.targetDBId?.map((thisTarget) =>{
+                    form.values.targetDBIds?.map((thisTarget) =>{
                         body.push({
                             "@type": "proposal:CelestialTarget",
                             "_id": thisTarget

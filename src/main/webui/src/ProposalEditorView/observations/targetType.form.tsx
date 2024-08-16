@@ -41,7 +41,7 @@ export default function TargetTypeForm (
         = useState<{value: string, label: string}[]>([])
 
     const {
-        data: targets ,
+        data: targets,
         error: targetListError,
         isLoading: targetsLoading } =
             useProposalResourceGetTargets({
@@ -141,8 +141,8 @@ export default function TargetTypeForm (
         <Container fluid>
             {/* only present the message about selecting a target
             when not selected */}
-            {form.values.targetDBId === undefined ||
-                    form.values.targetDBId.length == 0
+            {form.values.targetDBIds === undefined ||
+                    form.values.targetDBIds.length == 0
                 ? <p style={{color:theme.colors.yellow[ERROR_YELLOW]}}>
                     Please select a target.
                   </p>
@@ -158,24 +158,19 @@ export default function TargetTypeForm (
                             showButtons={false}
                             isLoading={false}
                             boundTargets={[]}
-                            selectedTargets={[
-                            form.values.targetDBId != undefined ?
-                                form.values.targetDBId[0] :
-                                0]}
-                            setSelectTarget={(value: number) => {
-                                const index = form.values.targetDBId?.indexOf(value);
-                                console.log("index: " + index + " length= " + form.values.targetDBId?.length);
+                            selectedTargets={form.values.targetDBIds}
+                            setSelectedTargetFunction={(value: number) => {
+                                const index = form.values.targetDBIds?.indexOf(value);
                                 if(index === undefined || index == -1) {
-                                    if(form.values.targetDBId == undefined) {
-                                        form.setFieldValue('targetDBId', [value]);
+                                    if(form.values.targetDBIds === undefined) {
+                                        form.setFieldValue('targetDBIds', [value]);
                                     } else {
-                                        const newTargets = form.values.targetDBId;
-                                        newTargets.push(value);
-                                        form.setFieldValue('targetDBId', newTargets);
+                                        form.values.targetDBIds.push(value);
                                     }
                                 } else {
-                                    form.values.targetDBId?.splice(index, 1);
+                                    form.values.targetDBIds?.splice(index, 1);
                                 }
+                                form.setDirty({'targetDBIds': true});
                             }}
                         />
                     </Table.ScrollContainer>
