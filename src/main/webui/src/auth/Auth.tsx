@@ -28,18 +28,16 @@ export type AuthMapping = {
 export function AuthProvider({ children }: { children: ReactNode }) {
 
     // CONFIG VALUES ///////////////////////////////////
-    const authenticationTimeLimitInMinutes = 12.5;
-    const minutesUntilIdleTriggered = 30;
+    const minutesUntilIdleTriggered = 5;
     // CONFIG VALUES END ///////////////////////////////
 
-    const MinAsMS = 60000;
-    const ATL_MS = authenticationTimeLimitInMinutes * MinAsMS;
+    const minuteAsMS = 60000;
 
     const [loggedOn, setLoggedOn] = useState(false)
     const [expiringSoon, setExpiring] = useState(false)
     const [isNewUser, setIsNewUser] = useState(false);
 
-    const expiry = useRef(new Date(Date.now()+ATL_MS))
+    const expiry = useRef(new Date(Date.now())) //seems to be overwritten regardless
     const user  = useRef({fullName:"Unknown"} as Person)
     const apiURL = useRef("")
     const logoutTimer = useRef<NodeJS.Timeout>()
@@ -47,17 +45,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token= useRef<string>("")//TODO what to do if token bad....
     const uuid =  useRef<string>("")
 
-
     const onPresenceChange = (presence:PresenceType) =>{
-        console.log("activity change =", presence)
+        console.log("activity change = " + presence.type + " at " + new Date().toISOString())
     }
-
 
     const getToken = () => {return token.current}
 
     const idleTimer = useIdleTimer({
         onPresenceChange,
-        timeout: MinAsMS * minutesUntilIdleTriggered,
+        timeout: minuteAsMS * minutesUntilIdleTriggered,
         throttle: 500
     })
     async function getUser() {
@@ -102,23 +98,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     function redoAuthentication() {
 
         console.log("trying authentication");
+        //request the authentication mapping object
         const resp = getUser();
+        //handle the auth mapping object
         resp.then((s) => {
             token.current=s.token
-            setLoggedOn(true);
+            setLoggedOn(true)
             expiry.current = new Date(s.expiry)
-            console.log("access token will expire - "+ expiry.current.toISOString())
+            console.log("access token will expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
             setExpiring(false)
             console.log("clearing logout timer",logoutTimer.current)
             clearTimeout(logoutTimer.current) //FIXME - this is really only necessary because
             console.log("clear expiryTimer", expiryTimer.current)
             clearTimeout(expiryTimer.current)
             expiryTimer.current = setTimeout(() =>{
-                console.log("access token about to expire - "+ expiry.current.toISOString());
+                console.log("access token about to expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
                 if(idleTimer.isIdle()) {
                     setExpiring(true);
                     console.log("idle")
-                    logoutTimer.current = setTimeout(logout, 60000)
+                    //change multiplier value to change minutes for logout timer
+                    logoutTimer.current = setTimeout(logout, minuteAsMS * 3)
                     console.log("setting logout timer", logoutTimer.current)
                 }
                 else
@@ -126,8 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     console.log("not idle ", idleTimer.getLastActiveTime()?.toISOString())
                     redoAuthentication()
                 }
-
-            }, expiry.current.getTime()-Date.now() - 55000)
+            }, expiry.current.getTime()-Date.now() - minuteAsMS) //changed from 55sec to avoid magic number
             console.log("setting new expiry reminder", expiryTimer.current)
 
             if(s.subjectMap.inKeycloakRealm && s.subjectMap.person) {
