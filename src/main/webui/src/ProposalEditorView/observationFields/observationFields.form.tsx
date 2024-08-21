@@ -60,7 +60,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
         ellipsePAMajor?: RealQuantity
     }
 
-    let newFieldCount = props.fieldCount ?? 0;
+    let newFieldCount = props.fieldNames?.length ?? 0;
     newFieldCount += 1;
     const newFieldName = "Field " + newFieldCount;
 
@@ -81,7 +81,9 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                 (value === undefined ? 'Please select a Field Type' : null),
             fieldName: (value: string | undefined) =>
                 (value === undefined ? 'Please give the Field a name' :
-                    value.length < 2 ? 'Name must have at least 2 characters' : null),
+                    value.length < 2 ? 'Name must have at least 2 characters' :
+                        props.fieldNames?.includes(value) ? 'Name must be unique' :
+                        null),
         }
     });
 
