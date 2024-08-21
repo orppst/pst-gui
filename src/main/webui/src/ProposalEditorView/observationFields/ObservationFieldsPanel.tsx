@@ -10,7 +10,7 @@ import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 export type ObservationFieldsProps = {
     observationField: Field | undefined
-    fieldCount: number | undefined
+    fieldCount?: number
     closeModal?: () => void
 }
 
@@ -34,7 +34,6 @@ export default function ObservationFieldsPanel() : ReactElement {
     boundFields = proposal.data?.observations?.map(obs => (
         obs.field! as number)
     )
-
 
     const fieldCount = proposal.data?.fields?.length ?? 0;
 
