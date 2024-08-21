@@ -16,6 +16,7 @@ export type ObservationFieldsProps = {
 
 export type ObservationFieldsTableProps = {
     boundFields: number[] | undefined
+    fieldNames?: string[]
 }
 
 /**
@@ -64,12 +65,13 @@ export default function ObservationFieldsPanel() : ReactElement {
                 </Card>
             </Group>
 
-            <ObservationFieldsTable boundFields={boundFields} />
+            <ObservationFieldsTable boundFields={boundFields} fieldNames={fieldNames}/>
 
             <Space h={"xl"}/>
             <Grid>
               <Grid.Col span={10}></Grid.Col>
-                              <ObservationFieldModal observationField={undefined} fieldNames={fieldNames} />
+                              <ObservationFieldModal observationField={undefined}
+                                                     fieldNames={fieldNames} />
                               </Grid>
               {/*}
            <Group justify={'center'}>
