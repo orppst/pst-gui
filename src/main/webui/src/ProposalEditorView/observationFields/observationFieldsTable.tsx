@@ -82,7 +82,7 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
             <Table.Td c={"blue"}>not yet implemented</Table.Td>
             <Table.Td c={"gray"}>
                 <Group justify={"flex-end"}>
-                    <ObservationFieldModal observationField={field.data} />
+                    <ObservationFieldModal observationField={field.data} fieldCount={undefined}/>
                     <DeleteButton
                         disabled={props.disableDelete}
                         toolTipLabel={props.disableDelete ?
