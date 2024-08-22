@@ -10,11 +10,13 @@ import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 
 export type ObservationFieldsProps = {
     observationField: Field | undefined
+    fieldNames?: string[]
     closeModal?: () => void
 }
 
 export type ObservationFieldsTableProps = {
     boundFields: number[] | undefined
+    fieldNames?: string[]
 }
 
 /**
@@ -33,6 +35,9 @@ export default function ObservationFieldsPanel() : ReactElement {
     boundFields = proposal.data?.observations?.map(obs => (
         obs.field! as number)
     )
+
+    let fieldNames : string[] = [];
+    proposal.data?.fields?.map(field => (fieldNames.push(field.name!)));
 
     //Remove the "Card" once we have this fully implemented
 
@@ -60,12 +65,13 @@ export default function ObservationFieldsPanel() : ReactElement {
                 </Card>
             </Group>
 
-            <ObservationFieldsTable boundFields={boundFields} />
+            <ObservationFieldsTable boundFields={boundFields} fieldNames={fieldNames}/>
 
             <Space h={"xl"}/>
             <Grid>
               <Grid.Col span={10}></Grid.Col>
-                              <ObservationFieldModal observationField={undefined} />
+                              <ObservationFieldModal observationField={undefined}
+                                                     fieldNames={fieldNames} />
                               </Grid>
               {/*}
            <Group justify={'center'}>

@@ -115,7 +115,7 @@ export const contextualHelpMessages = [
 }
 , {
   id: "MaintObsField-eng",
-  message: " Enter a field name and select its type."
+  message: " Enter a unique field name and select its type."
          + " Save your changes with the Save button at bottom right, or cancel and return without saving by clicking the Cancel button."
 }
 , {

@@ -18,7 +18,8 @@ import {ObservationFieldsTableProps} from "./ObservationFieldsPanel.tsx";
 type ObservationFieldRowProps = {
     proposalCode: number,
     fieldId: number,
-    disableDelete: boolean
+    disableDelete: boolean,
+    otherFieldNames?: string[]
 }
 
 function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
@@ -82,7 +83,8 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
             <Table.Td c={"blue"}>not yet implemented</Table.Td>
             <Table.Td c={"gray"}>
                 <Group justify={"flex-end"}>
-                    <ObservationFieldModal observationField={field.data} />
+                    <ObservationFieldModal observationField={field.data}
+                                           fieldNames={props.otherFieldNames}/>
                     <DeleteButton
                         disabled={props.disableDelete}
                         toolTipLabel={props.disableDelete ?
@@ -133,6 +135,7 @@ export default function ObservationFieldsTable(props: ObservationFieldsTableProp
                         fieldId={fieldId.dbid!}
                         proposalCode={Number(selectedProposalCode)}
                         disableDelete={isFieldBound(fieldId.dbid!)}
+                        otherFieldNames={props.fieldNames}
                     />
                 ))
             }

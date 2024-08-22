@@ -39,7 +39,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
         Developer note: If more Field types are added to the underlying data model then this array
         must be edited to match. There is another Field type named "Point" not listed in this array
         that consist of a member called "centre" with a Java Type of "Coordinate", but I am unsure
-        how this differs from the "TargetField" type.
+        how this differs from the "TargetField" type.3
      */
     let fieldTypeData: {value: string, label: string, description?: string} [] = [
         {value: 'proposal:TargetField', label: "Target",
@@ -60,12 +60,15 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
         ellipsePAMajor?: RealQuantity
     }
 
+    let newFieldCount = props.fieldNames?.length ?? 0;
+    newFieldCount += 1;
+    const newFieldName = "Field " + newFieldCount;
 
     const form = useForm<ObservationFieldValues>({
         validateInputOnBlur: true,
         initialValues: {
             fieldType: props.observationField?.["@type"],
-            fieldName: props.observationField?.name,
+            fieldName: props.observationField?.name ?? newFieldName,
             centre: undefined,
             polygonPoints: undefined,
             ellipseSemiMajor: undefined,
@@ -78,7 +81,9 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                 (value === undefined ? 'Please select a Field Type' : null),
             fieldName: (value: string | undefined) =>
                 (value === undefined ? 'Please give the Field a name' :
-                    value.length < 2 ? 'Name must have at least 2 characters' : null),
+                    value.length < 2 ? 'Name must have at least 2 characters' :
+                        props.fieldNames?.includes(value) ? 'Name must be unique' :
+                        null),
         }
     });
 
