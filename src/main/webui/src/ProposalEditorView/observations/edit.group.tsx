@@ -337,7 +337,7 @@ function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     return ({
         startTime: new Date(input.startTime!),
         endTime: new Date(input.endTime!),
-        note: input.note!,
+        note: input.note ?? "",
         isAvoidConstraint: input.isAvoidConstraint!,
         key: String(input._id!),
         id: input._id!
