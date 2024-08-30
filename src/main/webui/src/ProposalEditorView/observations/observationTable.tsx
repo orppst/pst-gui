@@ -44,6 +44,8 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
 
     const { selectedProposalCode} = useParams();
     let observationTargets: number[] = [];
+    let targetName: string = "Unknown";
+    let additionTargets = 0;
 
     const {
         data: observation,
@@ -126,6 +128,17 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     }
 
     /**
+     * set main target name and number of additional targets
+     * provided everything is defined
+     */
+    if(observation?.target !== undefined
+        && observation.target[0] !== undefined
+        && observation.target[0].sourceName !== undefined) {
+        targetName = observation.target[0].sourceName;
+        additionTargets = observation.target.length - 1;
+    }
+
+    /**
      * handles the confirmation from the user that they intend to clone
      * an observation.
      */
@@ -136,7 +149,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation')
                         ? 'Target' : 'Calibration'}
-                    Observation of {observation?.target?.length} target(s)
+                    {` : ` + targetName + (additionTargets > 0? ` (plus ` + additionTargets + ` more)`:``)}
                 </Text>
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
@@ -181,7 +194,10 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     return (
         <Table.Tr>
             <Table.Td>
-                Observation of {observation?.target?.length} target(s)
+                {targetName}
+            </Table.Td>
+            <Table.Td>
+                {additionTargets? additionTargets : '-'}
             </Table.Td>
             <Table.Td>
                 {observation?.["@type"]=== 'proposal:TargetObservation' ?
@@ -276,6 +292,7 @@ export function observationTableHeader(): ReactElement {
         <Table.Thead>
             <Table.Tr>
                 <Table.Th>Target name</Table.Th>
+                <Table.Th>Additional Targets</Table.Th>
                 <Table.Th>Type</Table.Th>
                 <Table.Th>Field</Table.Th>
                 <Table.Th>Performance params</Table.Th>
