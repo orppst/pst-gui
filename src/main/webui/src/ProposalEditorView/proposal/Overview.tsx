@@ -28,7 +28,6 @@ import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import {PreviewJustification} from "../justifications/justification.preview.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
-import contains from "@popperjs/core/lib/dom-utils/contains";
 
 /*
       title    -- string
