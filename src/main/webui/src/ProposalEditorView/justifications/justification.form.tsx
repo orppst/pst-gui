@@ -22,9 +22,10 @@ import "prismjs/components/prism-asciidoc.js";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 
-const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
+const JustificationTextArea = (form : UseFormReturnType<Justification>): ReactElement => {
     switch(form.values.format) {
         case "asciidoc":
+
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
@@ -37,6 +38,7 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>) => {
                 </Paper>
             );
         case "latex":
+        case undefined:
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
@@ -132,7 +134,7 @@ export default function JustificationForm(props: JustificationProps)
             <form onSubmit={handleSubmit}>
             <ContextualHelpButton messageId="MaintSciJust" />
             <Stack>
-               <Grid span={10} grow>
+               <Grid  grow>
                     <Grid.Col span={{base: 6, md: 8, lg: 9}}>
                         <JustificationTextArea {...form} />
                     </Grid.Col>

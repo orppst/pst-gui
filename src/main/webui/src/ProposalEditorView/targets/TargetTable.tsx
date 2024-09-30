@@ -10,8 +10,8 @@ import { ReactElement, useState } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "src/commonButtons/delete";
 import { TargetProps, TargetTableProps } from './targetProps.tsx';
-import {
-    ERROR_YELLOW,
+import { AstroLib } from "@tsastro/astrolib";
+import {    ERROR_YELLOW,
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
@@ -166,13 +166,14 @@ function TargetTableRow(props: TargetProps): ReactElement {
         const celestialTarget: CelestialTarget = data as CelestialTarget;
 
         if(celestialTarget.sourceCoordinates?.lat?.unit?.value === "degrees")
-            ra = celestialTarget.sourceCoordinates?.lat?.value+"°";
+           // ra = celestialTarget.sourceCoordinates?.lat?.value+"°";
+            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lat.value?? 0)
         else
             ra = celestialTarget.sourceCoordinates?.lat?.value + " " +
                 celestialTarget.sourceCoordinates?.lat?.unit?.value;
 
         if(celestialTarget.sourceCoordinates?.lon?.unit?.value === "degrees")
-            dec = celestialTarget.sourceCoordinates?.lon?.value+"°";
+            dec =AstroLib.DegToDms( celestialTarget.sourceCoordinates?.lon.value ??0);
         else
             dec = celestialTarget.sourceCoordinates?.lon?.value + " " +
                 celestialTarget.sourceCoordinates?.lon?.unit?.value;
@@ -235,7 +236,7 @@ export function TargetTable(props: TargetTableProps): ReactElement {
             {TargetTableHeader(props)}
             <Table.Tbody>
                 {props.isLoading ? (
-                        <Table.Tr colSpan={5}>
+                        <Table.Tr >
                             <Table.Td>Loading...</Table.Td>
                         </Table.Tr>) :
                     props.data?.map((item) => {
