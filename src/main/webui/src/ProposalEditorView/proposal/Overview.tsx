@@ -478,17 +478,30 @@ function OverviewPanel(): ReactElement {
                 //observation.target and observation.technicalGoal are NOT objects
                 // but numbers here, specifically their DB id
 
-                //not sure if this will be needed, it's still work in progress
+                //get all the target objects
                 let targetObjs = [] as Target[];
 
-                // @ts-ignore
                 observation.target?.map((obsTarget) => {
                     let targetObj = proposalsData?.targets?.find((target) =>
                         target._id === obsTarget)!
 
                     targetObjs.push(targetObj);
-
                 });
+
+                // create a string of the first target names
+                let targetNames = targetObjs[0].sourceName!;
+                let targetIndex = 0;
+
+                while(++targetIndex < 3
+                && targetIndex < targetObjs.length) {
+                    targetNames += ", " + targetObjs[targetIndex].sourceName;
+                }
+
+                let remaining =  targetObjs.length - targetIndex;
+
+                if(remaining > 0) {
+                    targetNames += ", and " + remaining + " more";
+                }
 
                 let technicalGoalObj  = proposalsData?.technicalGoals?.find((techGoal) =>
                     techGoal._id === observation.technicalGoal)!
@@ -502,7 +515,7 @@ function OverviewPanel(): ReactElement {
                     <Accordion.Item key={index} value={String(index)}>
                         <Accordion.Control>
                             <ObservationAccordionLabel
-                                targetName={targetObjs[0].sourceName!}
+                                targetName={targetNames}
                                 observationType={observationType}
                                 intendedUse={observationType === 'Calibration Obs.' ?
                                     (observation as CalibrationObservation).intent : undefined}
