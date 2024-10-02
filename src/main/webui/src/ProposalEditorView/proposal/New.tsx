@@ -82,8 +82,6 @@ const textFormatData = [
 
         fetchProposalResourceCreateObservingProposal({ body: newProposal})
             .then((data) => {
-                queryClient.invalidateQueries(["pst","api","proposals"])
-                        .then();
                 if(Number(data?._id) > 0) {
                     let newProposalId = Number(data?._id);
                     fetchProposalResourceAddNewField({
@@ -96,6 +94,7 @@ const textFormatData = [
                         );
                 }
             })
+            .then(() => queryClient.invalidateQueries())
             .then(() => setSubmitting(false))
             .catch((error) => {
                 console.log(error);

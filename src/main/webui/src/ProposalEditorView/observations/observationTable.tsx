@@ -267,7 +267,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 </Group>
             </Table.Td>
             <Table.Td>
-                <Group position={"right"}>
+                <Group align={"right"}>
                     {
                         observationLoading ? 'Loading...' :
                         <ObservationEditModal observation={observation} selectedTargets={observationTargets}/>

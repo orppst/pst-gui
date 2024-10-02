@@ -276,10 +276,10 @@ export default function TechnicalGoalEditGroup(
         <Stack>
             <Grid columns={TOTAL_COLUMNS}>
                 <Grid.Col span={{base: TOTAL_COLUMNS, md: PERFORMANCE_COLUMNS}}>
-                    <PerformanceParametersSection {...form}/>
+                    <PerformanceParametersSection form={form}/>
                 </Grid.Col>
                 <Grid.Col span={{base: TOTAL_COLUMNS, md: SPECTRUM_COLUMNS}}>
-                    <SpectralWindowsSection {...form}/>
+                    <SpectralWindowsSection form={form}/>
                     <p> </p>
                     <Grid>
                     <Grid.Col span={8}></Grid.Col>

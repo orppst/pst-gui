@@ -214,6 +214,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
     const responsiveSpan = {base: 2, md: 1}
 
+
     return (
         <Grid columns={2}>
             <Grid.Col span={2}>
@@ -236,7 +237,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                             label="Name"
                             placeholder="User provided or use the SIMBAD search"
                             {...form.getInputProps("TargetName")}
-                            onChange={(e: string) => {
+                            onChange={(e: React.FormEvent<HTMLInputElement>) => {
                                 setNameUnique(true);
                                 if(form.getInputProps("TargetName").onChange)
                                     form.getInputProps("TargetName").onChange(e);

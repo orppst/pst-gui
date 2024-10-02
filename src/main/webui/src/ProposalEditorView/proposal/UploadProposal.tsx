@@ -20,7 +20,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => {
     const formData = new FormData();
     console.log("Upload supporting document " + filename);
-    zip.file(filename).async('blob')
+    zip.file(filename)!.async('blob')
         .then((document) => {
             if(document.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
                 notifyError("A file upload failed",

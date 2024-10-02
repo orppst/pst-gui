@@ -16,7 +16,7 @@ import { CLOSE_DELAY, OPEN_DELAY } from 'src/constants.tsx';
  * @constructor
  */
 export default function PerformanceParametersSection(
-    form : UseFormReturnType<TechnicalGoalValues>):
+    {form} : {form: UseFormReturnType<TechnicalGoalValues>}):
         ReactElement {
     const PerformanceDetails = () => {
         return (

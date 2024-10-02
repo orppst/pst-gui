@@ -62,7 +62,7 @@ export default function CycleTitlePanel() : ReactElement {
             notifyError("Update failed", getErrorMessage(error))
         },
         onSuccess: () => {
-            queryClient.invalidateQueries(["pst", "api", "proposalCycles"])
+            queryClient.invalidateQueries()
                 .then(()=> setSubmitting(false));
             notifySuccess("Update title", "Update successful");
             form.resetDirty();
