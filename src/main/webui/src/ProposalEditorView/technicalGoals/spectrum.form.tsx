@@ -30,7 +30,7 @@ import {notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
  * @constructor
  */
 export default function SpectralWindowsSection(
-    form: UseFormReturnType<TechnicalGoalValues>
+    {form}: {form: UseFormReturnType<TechnicalGoalValues>}
 ): ReactElement {
 
     //stuff to deal with spectral window deletions
@@ -153,7 +153,7 @@ export default function SpectralWindowsSection(
         fetchTechnicalGoalResourceRemoveSpectrum({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
-                technicalGoalId: form.values.technicalGoalId!,
+                technicalGoalId: form.getValues().technicalGoalId!,
                 spectralWindowId: spectralWindowId
             }
         })
@@ -178,7 +178,7 @@ export default function SpectralWindowsSection(
                     "User cancelled deletion of the spectral window")
         })
 
-    const windowsList = form.values.spectralWindows.map(
+    const windowsList = form.getValues().spectralWindows.map(
         (sw, mapIndex) => {
         let labelIndex = (mapIndex + 1).toString();
         return (

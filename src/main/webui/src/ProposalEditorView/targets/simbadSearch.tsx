@@ -1,5 +1,5 @@
 import {ReactElement, SetStateAction, useState} from "react";
-import {useDebounceCallback} from "@mantine/hooks";
+import {useDebouncedCallback} from "@mantine/hooks";
 import {
     Badge,
     Combobox,
@@ -81,7 +81,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
     const [timedOut, setTimedOut]
         = useState(false)
 
-    const getSimbadIdentsDebounce = useDebounceCallback(() => {
+    const getSimbadIdentsDebounce = useDebouncedCallback(() => {
         setSimbadDisplayResult({results: []}); //clear this array to then clear the combobox 'options'
         setLoading(true); //shows the loader while waiting for results
         setNumberFound(0); //avoids transient messages from the previous search

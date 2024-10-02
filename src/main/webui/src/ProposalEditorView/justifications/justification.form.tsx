@@ -22,15 +22,17 @@ import "prismjs/components/prism-asciidoc.js";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 
-const JustificationTextArea = (form : UseFormReturnType<Justification>): ReactElement => {
-    switch(form.values.format) {
+const JustificationTextArea =
+    ({form} : {form: UseFormReturnType<Justification>}): ReactElement => {
+    switch(form.getValues().format) {
         case "asciidoc":
 
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
-                        value={form.values.text ?? ""}
-                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        value={form.getValues().text ?? ""}
+                        onValueChange={newValue =>
+                            form.setValues({text: newValue, format: form.getValues().format})}
                         highlight={code => highlight(code ?? "", languages.asciidoc, 'asciidoc')}
                         maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
@@ -42,8 +44,9 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>): ReactEl
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
-                        value={form.values.text ?? ""}
-                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        value={form.getValues().text ?? ""}
+                        onValueChange={newValue =>
+                            form.setValues({text: newValue, format: form.getValues().format})}
                         highlight={code => highlight(code ?? "", languages.latex, 'latex')}
                         maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
@@ -54,8 +57,9 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>): ReactEl
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
-                        value={form.values.text ?? ""}
-                        onValueChange={newValue => form.setValues({text: newValue, format: form.values.format})}
+                        value={form.getValues().text ?? ""}
+                        onValueChange={newValue =>
+                            form.setValues({text: newValue, format: form.getValues().format})}
                         highlight={code => highlight(code ?? "", languages.rest, 'rest')}
                         maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                         {...form.getInputProps('text')}
@@ -65,7 +69,8 @@ const JustificationTextArea = (form : UseFormReturnType<Justification>): ReactEl
     }
 }
 
-const SelectTextFormat = (form: UseFormReturnType<Justification>) => {
+const SelectTextFormat =
+    ({form}: {form: UseFormReturnType<Justification>}) => {
     return (
         <Select
             placeholder={"text format"}
@@ -136,10 +141,10 @@ export default function JustificationForm(props: JustificationProps)
             <Stack>
                <Grid  grow>
                     <Grid.Col span={{base: 6, md: 8, lg: 9}}>
-                        <JustificationTextArea {...form} />
+                        <JustificationTextArea form={form} />
                     </Grid.Col>
                     <Grid.Col span={{base: 4, md: 2, lg: 1}}>
-                        <SelectTextFormat {...form} />
+                        <SelectTextFormat form={form} />
                     </Grid.Col>
                 </Grid>
             </Stack>
@@ -153,7 +158,8 @@ export default function JustificationForm(props: JustificationProps)
             </Grid>
 
             </form>
-            {form.values.format==='latex' && PreviewJustification(form.values.format!, form.values.text ?? "")}
+            {form.getValues().format==='latex' &&
+                PreviewJustification(form.getValues().format!, form.getValues().text ?? "")}
         </>
     );
 }
