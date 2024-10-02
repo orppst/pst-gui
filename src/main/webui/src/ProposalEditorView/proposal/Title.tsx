@@ -58,9 +58,7 @@ function TitlePanel() {
             notifyError("Update failed", getErrorMessage(error))
         },
         onSuccess: () => {
-            //IMPL this is slightly limiting the invalidation -
-            // some things should be ok still (users etc).
-            queryClient.invalidateQueries(["pst","api","proposals"])
+            queryClient.invalidateQueries()
                 .then(() => setSubmitting(false));
                 notifySuccess("Update title", "Update successful");
                 form.resetDirty();

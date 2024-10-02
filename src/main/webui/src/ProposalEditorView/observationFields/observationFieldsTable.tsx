@@ -65,7 +65,7 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
         title: "Delete Field?",
         children: (
             <Text c={"yellow"} size={"sm"}>
-                This will remove the "{field.data.name}" Observation Field from this Proposal
+                This will remove the "{field.data?.name}" Observation Field from this Proposal
             </Text>
         ),
         labels: {confirm: 'Delete', cancel: "No don't delete it"},
@@ -74,11 +74,11 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
     })
 
 
-    let typeName = field.data["@type"]
+    let typeName = field.data!["@type"]
 
     return (
         <Table.Tr key={props.fieldId}>
-            <Table.Td>{field.data.name}</Table.Td>
+            <Table.Td>{field.data?.name}</Table.Td>
             <Table.Td>{typeName?.slice(typeName?.indexOf(":") + 1)}</Table.Td>
             <Table.Td c={"blue"}>not yet implemented</Table.Td>
             <Table.Td c={"gray"}>
