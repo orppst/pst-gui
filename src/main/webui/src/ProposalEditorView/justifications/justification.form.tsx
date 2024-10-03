@@ -10,7 +10,6 @@ import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
-import {PreviewJustification} from "./justification.preview.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 import Editor from "react-simple-code-editor";
@@ -139,7 +138,7 @@ export default function JustificationForm(props: JustificationProps)
         <>
             <form onSubmit={handleSubmit}>
                 <ContextualHelpButton messageId="MaintSciJust" />
-               <Grid columns={10}>
+                <Grid columns={10}>
                     <Grid.Col span={{base: 10, md: 6, lg: 8}} order={{base:2, md: 1, lg: 1}}>
                         <JustificationTextArea form={form} />
                     </Grid.Col>
@@ -147,8 +146,6 @@ export default function JustificationForm(props: JustificationProps)
                         <SelectTextFormat form={form} />
                     </Grid.Col>
                    <Grid.Col span={{base: 10, md: 10, lg: 10}} order={{base:3, md: 3, lg: 3}}>
-                       {form.getValues().format==='latex' &&
-                           PreviewJustification(form.getValues().format!, form.getValues().text ?? "")}
                        <Group justify={"right"}>
                            <FormSubmitButton form={form} />
                            <CancelButton

@@ -29,6 +29,9 @@ export const PreviewJustification = (format: TextFormats, content: string) => {
                 <>
                     <Badge>{format}</Badge>
                     <Box bg={"gray.3"} c={"black"} p={"md"} m={"xs"}>
+                        {
+                            //This is useful for displaying maths stuff but not an entire document
+                        }
                         <Latex>
                             {content}
                         </Latex>
