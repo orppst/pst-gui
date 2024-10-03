@@ -1,5 +1,5 @@
 import {ReactElement, SyntheticEvent} from "react";
-import {Grid, Group, Paper, Select} from "@mantine/core";
+import {Fieldset, Grid, Group, Paper, Select} from "@mantine/core";
 import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -19,6 +19,7 @@ import "prismjs/components/prism-latex.js";
 import "prismjs/components/prism-rest.js";
 import "prismjs/components/prism-asciidoc.js";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import JustificationLatex from "./justifications.latex.tsx";
 
 
 const JustificationTextArea =
@@ -142,13 +143,19 @@ function JustificationForm(props: JustificationProps) : ReactElement {
                     <SelectTextFormat form={form} />
                 </Grid.Col>
                <Grid.Col span={{base: 10, md: 10, lg: 10}} order={{base:3, md: 3, lg: 3}}>
-                   <Group justify={"right"}>
+                   <Group justify={"right"} mt={10}>
                        <FormSubmitButton form={form} />
                        <CancelButton
                            onClickEvent={handleCancel}
                            toolTipLabel={"Go back without saving"}
                        />
                    </Group>
+                   {
+                       form.getValues().format === 'latex' &&
+                       <Fieldset legend={"Latex Service"}>
+                           <JustificationLatex which={props.which} />
+                       </Fieldset>
+                   }
                </Grid.Col>
             </Grid>
         </form>
