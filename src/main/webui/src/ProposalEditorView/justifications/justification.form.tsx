@@ -4,7 +4,7 @@ import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
-import {fetchProposalResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
+import {fetchJustificationsResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
 import {useNavigate,useParams } from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
@@ -23,9 +23,8 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 const JustificationTextArea =
     ({form} : {form: UseFormReturnType<Justification>}): ReactElement => {
-    switch(form.getValues().format) {
+    switch(form.getValues().format!) {
         case "asciidoc":
-
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
@@ -39,7 +38,6 @@ const JustificationTextArea =
                 </Paper>
             );
         case "latex":
-        case undefined:
             return (
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                     <Editor
@@ -85,10 +83,8 @@ const SelectTextFormat =
 }
 
 
-export default function JustificationForm(props: JustificationProps)
-    :ReactElement {
-
-
+export default
+function JustificationForm(props: JustificationProps) : ReactElement {
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
 
@@ -107,11 +103,10 @@ export default function JustificationForm(props: JustificationProps)
             }
         });
 
-
     const handleSubmit = form.onSubmit((values) => {
         //create new proposal does not permit having null justifications i.e.,
         //here we only ever 'update' an existing proposal
-        fetchProposalResourceUpdateJustification({
+        fetchJustificationsResourceUpdateJustification({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which
@@ -128,35 +123,34 @@ export default function JustificationForm(props: JustificationProps)
                 notifyError("Update justification error", getErrorMessage(error))
             });
     });
+
     const navigate = useNavigate();
+
     function handleCancel(event: SyntheticEvent) {
         event.preventDefault();
         navigate("../",{relative:"path"})
-        }
+    }
 
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <ContextualHelpButton messageId="MaintSciJust" />
-                <Grid columns={10}>
-                    <Grid.Col span={{base: 10, md: 6, lg: 8}} order={{base:2, md: 1, lg: 1}}>
-                        <JustificationTextArea form={form} />
-                    </Grid.Col>
-                    <Grid.Col span={{base: 10, md: 4, lg: 2}} order={{base:1, md: 2, lg: 2}}>
-                        <SelectTextFormat form={form} />
-                    </Grid.Col>
-                   <Grid.Col span={{base: 10, md: 10, lg: 10}} order={{base:3, md: 3, lg: 3}}>
-                       <Group justify={"right"}>
-                           <FormSubmitButton form={form} />
-                           <CancelButton
-                               onClickEvent={handleCancel}
-                               toolTipLabel={"Go back without saving"}
-                           />
-                       </Group>
-                   </Grid.Col>
-                </Grid>
-            </form>
-
-        </>
+        <form onSubmit={handleSubmit}>
+            <ContextualHelpButton messageId="MaintSciJust" />
+            <Grid columns={10}>
+                <Grid.Col span={{base: 10, md: 6, lg: 8}} order={{base:2, md: 1, lg: 1}}>
+                    <JustificationTextArea form={form} />
+                </Grid.Col>
+                <Grid.Col span={{base: 10, md: 4, lg: 2}} order={{base:1, md: 2, lg: 2}}>
+                    <SelectTextFormat form={form} />
+                </Grid.Col>
+               <Grid.Col span={{base: 10, md: 10, lg: 10}} order={{base:3, md: 3, lg: 3}}>
+                   <Group justify={"right"}>
+                       <FormSubmitButton form={form} />
+                       <CancelButton
+                           onClickEvent={handleCancel}
+                           toolTipLabel={"Go back without saving"}
+                       />
+                   </Group>
+               </Grid.Col>
+            </Grid>
+        </form>
     );
 }

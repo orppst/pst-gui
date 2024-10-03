@@ -21,7 +21,7 @@ export type KeycloakResourceGetRolesVariables =
 
 export const fetchKeycloakResourceGetRoles = (
   variables: KeycloakResourceGetRolesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     KeycloakResourceGetRolesResponse,
@@ -33,7 +33,7 @@ export const fetchKeycloakResourceGetRoles = (
   >({ url: "/pst/api/admin/roles", method: "get", ...variables, signal });
 
 export const useKeycloakResourceGetRoles = <
-  TData = KeycloakResourceGetRolesResponse
+  TData = KeycloakResourceGetRolesResponse,
 >(
   variables: KeycloakResourceGetRolesVariables,
   options?: Omit<
@@ -43,7 +43,7 @@ export const useKeycloakResourceGetRoles = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -60,7 +60,7 @@ export const useKeycloakResourceGetRoles = <
     queryFn: ({ signal }) =>
       fetchKeycloakResourceGetRoles(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -78,7 +78,7 @@ export type KeycloakResourceGetUserRepresentationVariables =
 
 export const fetchKeycloakResourceGetUserRepresentation = (
   variables: KeycloakResourceGetUserRepresentationVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     KeycloakResourceGetUserRepresentationResponse,
@@ -95,7 +95,7 @@ export const fetchKeycloakResourceGetUserRepresentation = (
   });
 
 export const useKeycloakResourceGetUserRepresentation = <
-  TData = KeycloakResourceGetUserRepresentationResponse
+  TData = KeycloakResourceGetUserRepresentationResponse,
 >(
   variables: KeycloakResourceGetUserRepresentationVariables,
   options?: Omit<
@@ -105,7 +105,7 @@ export const useKeycloakResourceGetUserRepresentation = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -122,7 +122,7 @@ export const useKeycloakResourceGetUserRepresentation = <
     queryFn: ({ signal }) =>
       fetchKeycloakResourceGetUserRepresentation(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -145,7 +145,7 @@ export type ObservatoryResourceGetObservatoriesVariables = {
 
 export const fetchObservatoryResourceGetObservatories = (
   variables: ObservatoryResourceGetObservatoriesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ObservatoryResourceGetObservatoriesResponse,
@@ -157,7 +157,7 @@ export const fetchObservatoryResourceGetObservatories = (
   >({ url: "/pst/api/observatories", method: "get", ...variables, signal });
 
 export const useObservatoryResourceGetObservatories = <
-  TData = ObservatoryResourceGetObservatoriesResponse
+  TData = ObservatoryResourceGetObservatoriesResponse,
 >(
   variables: ObservatoryResourceGetObservatoriesVariables,
   options?: Omit<
@@ -167,7 +167,7 @@ export const useObservatoryResourceGetObservatories = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -184,7 +184,7 @@ export const useObservatoryResourceGetObservatories = <
     queryFn: ({ signal }) =>
       fetchObservatoryResourceGetObservatories(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -200,7 +200,7 @@ export type ObservatoryResourceCreateObservatoryVariables = {
 
 export const fetchObservatoryResourceCreateObservatory = (
   variables: ObservatoryResourceCreateObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Observatory,
@@ -219,7 +219,7 @@ export const useObservatoryResourceCreateObservatory = (
       ObservatoryResourceCreateObservatoryVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -252,7 +252,7 @@ export type ObservatoryResourceGetObservatoryVariables = {
 
 export const fetchObservatoryResourceGetObservatory = (
   variables: ObservatoryResourceGetObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Observatory,
@@ -269,7 +269,7 @@ export const fetchObservatoryResourceGetObservatory = (
   });
 
 export const useObservatoryResourceGetObservatory = <
-  TData = Schemas.Observatory
+  TData = Schemas.Observatory,
 >(
   variables: ObservatoryResourceGetObservatoryVariables,
   options?: Omit<
@@ -279,7 +279,7 @@ export const useObservatoryResourceGetObservatory = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -296,7 +296,7 @@ export const useObservatoryResourceGetObservatory = <
     queryFn: ({ signal }) =>
       fetchObservatoryResourceGetObservatory(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -319,7 +319,7 @@ export type ObservatoryResourceDeleteObservatoryVariables = {
 
 export const fetchObservatoryResourceDeleteObservatory = (
   variables: ObservatoryResourceDeleteObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -343,7 +343,7 @@ export const useObservatoryResourceDeleteObservatory = (
       ObservatoryResourceDeleteObservatoryVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -376,7 +376,7 @@ export type ObservatoryResourceUpdateAddressVariables = {
 
 export const fetchObservatoryResourceUpdateAddress = (
   variables: ObservatoryResourceUpdateAddressVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -400,7 +400,7 @@ export const useObservatoryResourceUpdateAddress = (
       ObservatoryResourceUpdateAddressVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -432,7 +432,7 @@ export type ObservatoryResourceAddArrayVariables = {
 
 export const fetchObservatoryResourceAddArray = (
   variables: ObservatoryResourceAddArrayVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -456,7 +456,7 @@ export const useObservatoryResourceAddArray = (
       ObservatoryResourceAddArrayVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -487,7 +487,7 @@ export type ObservatoryResourceCreateAndAddArrayVariables = {
 
 export const fetchObservatoryResourceCreateAndAddArray = (
   variables: ObservatoryResourceCreateAndAddArrayVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.TelescopeArray,
@@ -511,7 +511,7 @@ export const useObservatoryResourceCreateAndAddArray = (
       ObservatoryResourceCreateAndAddArrayVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -547,7 +547,7 @@ export type ObservatoryResourceGetObservatoryBackendsVariables = {
 
 export const fetchObservatoryResourceGetObservatoryBackends = (
   variables: ObservatoryResourceGetObservatoryBackendsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ObservatoryResourceGetObservatoryBackendsResponse,
@@ -564,7 +564,7 @@ export const fetchObservatoryResourceGetObservatoryBackends = (
   });
 
 export const useObservatoryResourceGetObservatoryBackends = <
-  TData = ObservatoryResourceGetObservatoryBackendsResponse
+  TData = ObservatoryResourceGetObservatoryBackendsResponse,
 >(
   variables: ObservatoryResourceGetObservatoryBackendsVariables,
   options?: Omit<
@@ -574,7 +574,7 @@ export const useObservatoryResourceGetObservatoryBackends = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -591,7 +591,7 @@ export const useObservatoryResourceGetObservatoryBackends = <
     queryFn: ({ signal }) =>
       fetchObservatoryResourceGetObservatoryBackends(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -614,7 +614,7 @@ export type ObservatoryResourceAddBackendVariables = {
 
 export const fetchObservatoryResourceAddBackend = (
   variables: ObservatoryResourceAddBackendVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -638,7 +638,7 @@ export const useObservatoryResourceAddBackend = (
       ObservatoryResourceAddBackendVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -669,7 +669,7 @@ export type ObservatoryResourceCreateAndAddBackendVariables = {
 
 export const fetchObservatoryResourceCreateAndAddBackend = (
   variables: ObservatoryResourceCreateAndAddBackendVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Backend,
@@ -693,7 +693,7 @@ export const useObservatoryResourceCreateAndAddBackend = (
       ObservatoryResourceCreateAndAddBackendVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -730,7 +730,7 @@ export type ObservatoryResourceGetObservatoryBackendVariables = {
 
 export const fetchObservatoryResourceGetObservatoryBackend = (
   variables: ObservatoryResourceGetObservatoryBackendVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Backend,
@@ -747,7 +747,7 @@ export const fetchObservatoryResourceGetObservatoryBackend = (
   });
 
 export const useObservatoryResourceGetObservatoryBackend = <
-  TData = Schemas.Backend
+  TData = Schemas.Backend,
 >(
   variables: ObservatoryResourceGetObservatoryBackendVariables,
   options?: Omit<
@@ -757,7 +757,7 @@ export const useObservatoryResourceGetObservatoryBackend = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -774,7 +774,7 @@ export const useObservatoryResourceGetObservatoryBackend = <
     queryFn: ({ signal }) =>
       fetchObservatoryResourceGetObservatoryBackend(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -802,7 +802,7 @@ export type ObservatoryResourceUpdateBackendParallelVariables = {
 
 export const fetchObservatoryResourceUpdateBackendParallel = (
   variables: ObservatoryResourceUpdateBackendParallelVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -826,7 +826,7 @@ export const useObservatoryResourceUpdateBackendParallel = (
       ObservatoryResourceUpdateBackendParallelVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -835,7 +835,7 @@ export const useObservatoryResourceUpdateBackendParallel = (
     ObservatoryResourceUpdateBackendParallelVariables
   >({
     mutationFn: (
-      variables: ObservatoryResourceUpdateBackendParallelVariables
+      variables: ObservatoryResourceUpdateBackendParallelVariables,
     ) =>
       fetchObservatoryResourceUpdateBackendParallel({
         ...fetcherOptions,
@@ -861,7 +861,7 @@ export type ObservatoryResourceUpdateObservatoryIvoIdVariables = {
 
 export const fetchObservatoryResourceUpdateObservatoryIvoId = (
   variables: ObservatoryResourceUpdateObservatoryIvoIdVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -885,7 +885,7 @@ export const useObservatoryResourceUpdateObservatoryIvoId = (
       ObservatoryResourceUpdateObservatoryIvoIdVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -894,7 +894,7 @@ export const useObservatoryResourceUpdateObservatoryIvoId = (
     ObservatoryResourceUpdateObservatoryIvoIdVariables
   >({
     mutationFn: (
-      variables: ObservatoryResourceUpdateObservatoryIvoIdVariables
+      variables: ObservatoryResourceUpdateObservatoryIvoIdVariables,
     ) =>
       fetchObservatoryResourceUpdateObservatoryIvoId({
         ...fetcherOptions,
@@ -920,7 +920,7 @@ export type ObservatoryResourceUpdateObservatoryNameVariables = {
 
 export const fetchObservatoryResourceUpdateObservatoryName = (
   variables: ObservatoryResourceUpdateObservatoryNameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -944,7 +944,7 @@ export const useObservatoryResourceUpdateObservatoryName = (
       ObservatoryResourceUpdateObservatoryNameVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -953,7 +953,7 @@ export const useObservatoryResourceUpdateObservatoryName = (
     ObservatoryResourceUpdateObservatoryNameVariables
   >({
     mutationFn: (
-      variables: ObservatoryResourceUpdateObservatoryNameVariables
+      variables: ObservatoryResourceUpdateObservatoryNameVariables,
     ) =>
       fetchObservatoryResourceUpdateObservatoryName({
         ...fetcherOptions,
@@ -979,7 +979,7 @@ export type ObservatoryResourceUpdateObservatoryWikiIdVariables = {
 
 export const fetchObservatoryResourceUpdateObservatoryWikiId = (
   variables: ObservatoryResourceUpdateObservatoryWikiIdVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1003,7 +1003,7 @@ export const useObservatoryResourceUpdateObservatoryWikiId = (
       ObservatoryResourceUpdateObservatoryWikiIdVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1012,7 +1012,7 @@ export const useObservatoryResourceUpdateObservatoryWikiId = (
     ObservatoryResourceUpdateObservatoryWikiIdVariables
   >({
     mutationFn: (
-      variables: ObservatoryResourceUpdateObservatoryWikiIdVariables
+      variables: ObservatoryResourceUpdateObservatoryWikiIdVariables,
     ) =>
       fetchObservatoryResourceUpdateObservatoryWikiId({
         ...fetcherOptions,
@@ -1042,7 +1042,7 @@ export type ObservatoryResourceReplaceBackendNameVariables = {
 
 export const fetchObservatoryResourceReplaceBackendName = (
   variables: ObservatoryResourceReplaceBackendNameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1066,7 +1066,7 @@ export const useObservatoryResourceReplaceBackendName = (
       ObservatoryResourceReplaceBackendNameVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1107,7 +1107,7 @@ export type InstrumentResourceGetObservatoryInstrumentsVariables = {
 
 export const fetchInstrumentResourceGetObservatoryInstruments = (
   variables: InstrumentResourceGetObservatoryInstrumentsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     InstrumentResourceGetObservatoryInstrumentsResponse,
@@ -1124,7 +1124,7 @@ export const fetchInstrumentResourceGetObservatoryInstruments = (
   });
 
 export const useInstrumentResourceGetObservatoryInstruments = <
-  TData = InstrumentResourceGetObservatoryInstrumentsResponse
+  TData = InstrumentResourceGetObservatoryInstrumentsResponse,
 >(
   variables: InstrumentResourceGetObservatoryInstrumentsVariables,
   options?: Omit<
@@ -1134,7 +1134,7 @@ export const useInstrumentResourceGetObservatoryInstruments = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -1151,7 +1151,7 @@ export const useInstrumentResourceGetObservatoryInstruments = <
     queryFn: ({ signal }) =>
       fetchInstrumentResourceGetObservatoryInstruments(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -1175,7 +1175,7 @@ export type InstrumentResourceCreateAndAddInstrumentToObservatoryVariables = {
 
 export const fetchInstrumentResourceCreateAndAddInstrumentToObservatory = (
   variables: InstrumentResourceCreateAndAddInstrumentToObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Instrument,
@@ -1199,7 +1199,7 @@ export const useInstrumentResourceCreateAndAddInstrumentToObservatory = (
       InstrumentResourceCreateAndAddInstrumentToObservatoryVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1208,7 +1208,7 @@ export const useInstrumentResourceCreateAndAddInstrumentToObservatory = (
     InstrumentResourceCreateAndAddInstrumentToObservatoryVariables
   >({
     mutationFn: (
-      variables: InstrumentResourceCreateAndAddInstrumentToObservatoryVariables
+      variables: InstrumentResourceCreateAndAddInstrumentToObservatoryVariables,
     ) =>
       fetchInstrumentResourceCreateAndAddInstrumentToObservatory({
         ...fetcherOptions,
@@ -1238,7 +1238,7 @@ export type InstrumentResourceRemoveInstrumentFromObservatoryVariables = {
 
 export const fetchInstrumentResourceRemoveInstrumentFromObservatory = (
   variables: InstrumentResourceRemoveInstrumentFromObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1262,7 +1262,7 @@ export const useInstrumentResourceRemoveInstrumentFromObservatory = (
       InstrumentResourceRemoveInstrumentFromObservatoryVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1271,7 +1271,7 @@ export const useInstrumentResourceRemoveInstrumentFromObservatory = (
     InstrumentResourceRemoveInstrumentFromObservatoryVariables
   >({
     mutationFn: (
-      variables: InstrumentResourceRemoveInstrumentFromObservatoryVariables
+      variables: InstrumentResourceRemoveInstrumentFromObservatoryVariables,
     ) =>
       fetchInstrumentResourceRemoveInstrumentFromObservatory({
         ...fetcherOptions,
@@ -1301,7 +1301,7 @@ export type InstrumentResourceReplaceInstrumentDescriptionVariables = {
 
 export const fetchInstrumentResourceReplaceInstrumentDescription = (
   variables: InstrumentResourceReplaceInstrumentDescriptionVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1325,7 +1325,7 @@ export const useInstrumentResourceReplaceInstrumentDescription = (
       InstrumentResourceReplaceInstrumentDescriptionVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1334,7 +1334,7 @@ export const useInstrumentResourceReplaceInstrumentDescription = (
     InstrumentResourceReplaceInstrumentDescriptionVariables
   >({
     mutationFn: (
-      variables: InstrumentResourceReplaceInstrumentDescriptionVariables
+      variables: InstrumentResourceReplaceInstrumentDescriptionVariables,
     ) =>
       fetchInstrumentResourceReplaceInstrumentDescription({
         ...fetcherOptions,
@@ -1365,7 +1365,7 @@ export type InstrumentResourceReplaceInstrumentFrequencyCoverageVariables = {
 
 export const fetchInstrumentResourceReplaceInstrumentFrequencyCoverage = (
   variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1389,7 +1389,7 @@ export const useInstrumentResourceReplaceInstrumentFrequencyCoverage = (
       InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1398,7 +1398,7 @@ export const useInstrumentResourceReplaceInstrumentFrequencyCoverage = (
     InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
   >({
     mutationFn: (
-      variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
+      variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables,
     ) =>
       fetchInstrumentResourceReplaceInstrumentFrequencyCoverage({
         ...fetcherOptions,
@@ -1428,7 +1428,7 @@ export type InstrumentResourceReplaceInstrumentKindVariables = {
 
 export const fetchInstrumentResourceReplaceInstrumentKind = (
   variables: InstrumentResourceReplaceInstrumentKindVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1452,7 +1452,7 @@ export const useInstrumentResourceReplaceInstrumentKind = (
       InstrumentResourceReplaceInstrumentKindVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1489,7 +1489,7 @@ export type InstrumentResourceReplaceInstrumentNameVariables = {
 
 export const fetchInstrumentResourceReplaceInstrumentName = (
   variables: InstrumentResourceReplaceInstrumentNameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1513,7 +1513,7 @@ export const useInstrumentResourceReplaceInstrumentName = (
       InstrumentResourceReplaceInstrumentNameVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1550,7 +1550,7 @@ export type InstrumentResourceReplaceInstrumentReferenceVariables = {
 
 export const fetchInstrumentResourceReplaceInstrumentReference = (
   variables: InstrumentResourceReplaceInstrumentReferenceVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1574,7 +1574,7 @@ export const useInstrumentResourceReplaceInstrumentReference = (
       InstrumentResourceReplaceInstrumentReferenceVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1583,7 +1583,7 @@ export const useInstrumentResourceReplaceInstrumentReference = (
     InstrumentResourceReplaceInstrumentReferenceVariables
   >({
     mutationFn: (
-      variables: InstrumentResourceReplaceInstrumentReferenceVariables
+      variables: InstrumentResourceReplaceInstrumentReferenceVariables,
     ) =>
       fetchInstrumentResourceReplaceInstrumentReference({
         ...fetcherOptions,
@@ -1613,7 +1613,7 @@ export type InstrumentResourceReplaceInstrumentWikiIdVariables = {
 
 export const fetchInstrumentResourceReplaceInstrumentWikiId = (
   variables: InstrumentResourceReplaceInstrumentWikiIdVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1637,7 +1637,7 @@ export const useInstrumentResourceReplaceInstrumentWikiId = (
       InstrumentResourceReplaceInstrumentWikiIdVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1646,7 +1646,7 @@ export const useInstrumentResourceReplaceInstrumentWikiId = (
     InstrumentResourceReplaceInstrumentWikiIdVariables
   >({
     mutationFn: (
-      variables: InstrumentResourceReplaceInstrumentWikiIdVariables
+      variables: InstrumentResourceReplaceInstrumentWikiIdVariables,
     ) =>
       fetchInstrumentResourceReplaceInstrumentWikiId({
         ...fetcherOptions,
@@ -1680,7 +1680,7 @@ export type TelescopeResourceGetObservatoryTelescopesVariables = {
 
 export const fetchTelescopeResourceGetObservatoryTelescopes = (
   variables: TelescopeResourceGetObservatoryTelescopesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     TelescopeResourceGetObservatoryTelescopesResponse,
@@ -1697,7 +1697,7 @@ export const fetchTelescopeResourceGetObservatoryTelescopes = (
   });
 
 export const useTelescopeResourceGetObservatoryTelescopes = <
-  TData = TelescopeResourceGetObservatoryTelescopesResponse
+  TData = TelescopeResourceGetObservatoryTelescopesResponse,
 >(
   variables: TelescopeResourceGetObservatoryTelescopesVariables,
   options?: Omit<
@@ -1707,7 +1707,7 @@ export const useTelescopeResourceGetObservatoryTelescopes = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -1724,7 +1724,7 @@ export const useTelescopeResourceGetObservatoryTelescopes = <
     queryFn: ({ signal }) =>
       fetchTelescopeResourceGetObservatoryTelescopes(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -1748,7 +1748,7 @@ export type TelescopeResourceCreateAndAddTelescopeToObservatoryVariables = {
 
 export const fetchTelescopeResourceCreateAndAddTelescopeToObservatory = (
   variables: TelescopeResourceCreateAndAddTelescopeToObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Telescope,
@@ -1772,7 +1772,7 @@ export const useTelescopeResourceCreateAndAddTelescopeToObservatory = (
       TelescopeResourceCreateAndAddTelescopeToObservatoryVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1781,7 +1781,7 @@ export const useTelescopeResourceCreateAndAddTelescopeToObservatory = (
     TelescopeResourceCreateAndAddTelescopeToObservatoryVariables
   >({
     mutationFn: (
-      variables: TelescopeResourceCreateAndAddTelescopeToObservatoryVariables
+      variables: TelescopeResourceCreateAndAddTelescopeToObservatoryVariables,
     ) =>
       fetchTelescopeResourceCreateAndAddTelescopeToObservatory({
         ...fetcherOptions,
@@ -1811,7 +1811,7 @@ export type TelescopeResourceGetTelescopeVariables = {
 
 export const fetchTelescopeResourceGetTelescope = (
   variables: TelescopeResourceGetTelescopeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Telescope,
@@ -1827,7 +1827,7 @@ export const fetchTelescopeResourceGetTelescope = (
     signal,
   });
 
-export const useTelescopeResourceGetTelescope = <TData = Schemas.Telescope>(
+export const useTelescopeResourceGetTelescope = <TData = Schemas.Telescope,>(
   variables: TelescopeResourceGetTelescopeVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -1836,7 +1836,7 @@ export const useTelescopeResourceGetTelescope = <TData = Schemas.Telescope>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -1853,7 +1853,7 @@ export const useTelescopeResourceGetTelescope = <TData = Schemas.Telescope>(
     queryFn: ({ signal }) =>
       fetchTelescopeResourceGetTelescope(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -1880,7 +1880,7 @@ export type TelescopeResourceRemoveTelescopeFromObservatoryVariables = {
 
 export const fetchTelescopeResourceRemoveTelescopeFromObservatory = (
   variables: TelescopeResourceRemoveTelescopeFromObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1904,7 +1904,7 @@ export const useTelescopeResourceRemoveTelescopeFromObservatory = (
       TelescopeResourceRemoveTelescopeFromObservatoryVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1913,7 +1913,7 @@ export const useTelescopeResourceRemoveTelescopeFromObservatory = (
     TelescopeResourceRemoveTelescopeFromObservatoryVariables
   >({
     mutationFn: (
-      variables: TelescopeResourceRemoveTelescopeFromObservatoryVariables
+      variables: TelescopeResourceRemoveTelescopeFromObservatoryVariables,
     ) =>
       fetchTelescopeResourceRemoveTelescopeFromObservatory({
         ...fetcherOptions,
@@ -1944,7 +1944,7 @@ export type TelescopeResourceUpdateTelescopeLocationVariables = {
 
 export const fetchTelescopeResourceUpdateTelescopeLocation = (
   variables: TelescopeResourceUpdateTelescopeLocationVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -1968,7 +1968,7 @@ export const useTelescopeResourceUpdateTelescopeLocation = (
       TelescopeResourceUpdateTelescopeLocationVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -1977,7 +1977,7 @@ export const useTelescopeResourceUpdateTelescopeLocation = (
     TelescopeResourceUpdateTelescopeLocationVariables
   >({
     mutationFn: (
-      variables: TelescopeResourceUpdateTelescopeLocationVariables
+      variables: TelescopeResourceUpdateTelescopeLocationVariables,
     ) =>
       fetchTelescopeResourceUpdateTelescopeLocation({
         ...fetcherOptions,
@@ -2009,7 +2009,7 @@ export type TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables =
 
 export const fetchTelescopeResourceUpdateTelescopeLocationCoordinateSystem = (
   variables: TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2033,7 +2033,7 @@ export const useTelescopeResourceUpdateTelescopeLocationCoordinateSystem = (
       TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2042,7 +2042,7 @@ export const useTelescopeResourceUpdateTelescopeLocationCoordinateSystem = (
     TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables
   >({
     mutationFn: (
-      variables: TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables
+      variables: TelescopeResourceUpdateTelescopeLocationCoordinateSystemVariables,
     ) =>
       fetchTelescopeResourceUpdateTelescopeLocationCoordinateSystem({
         ...fetcherOptions,
@@ -2073,7 +2073,7 @@ export type TelescopeResourceUpdateTelescopeLocationXVariables = {
 
 export const fetchTelescopeResourceUpdateTelescopeLocationX = (
   variables: TelescopeResourceUpdateTelescopeLocationXVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2097,7 +2097,7 @@ export const useTelescopeResourceUpdateTelescopeLocationX = (
       TelescopeResourceUpdateTelescopeLocationXVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2106,7 +2106,7 @@ export const useTelescopeResourceUpdateTelescopeLocationX = (
     TelescopeResourceUpdateTelescopeLocationXVariables
   >({
     mutationFn: (
-      variables: TelescopeResourceUpdateTelescopeLocationXVariables
+      variables: TelescopeResourceUpdateTelescopeLocationXVariables,
     ) =>
       fetchTelescopeResourceUpdateTelescopeLocationX({
         ...fetcherOptions,
@@ -2140,7 +2140,7 @@ export type TelescopeResourceUpdateTelescopeLocationXYZVariables = {
 
 export const fetchTelescopeResourceUpdateTelescopeLocationXYZ = (
   variables: TelescopeResourceUpdateTelescopeLocationXYZVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2164,7 +2164,7 @@ export const useTelescopeResourceUpdateTelescopeLocationXYZ = (
       TelescopeResourceUpdateTelescopeLocationXYZVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2173,7 +2173,7 @@ export const useTelescopeResourceUpdateTelescopeLocationXYZ = (
     TelescopeResourceUpdateTelescopeLocationXYZVariables
   >({
     mutationFn: (
-      variables: TelescopeResourceUpdateTelescopeLocationXYZVariables
+      variables: TelescopeResourceUpdateTelescopeLocationXYZVariables,
     ) =>
       fetchTelescopeResourceUpdateTelescopeLocationXYZ({
         ...fetcherOptions,
@@ -2204,7 +2204,7 @@ export type TelescopeResourceUpdateTelescopeLocationYVariables = {
 
 export const fetchTelescopeResourceUpdateTelescopeLocationY = (
   variables: TelescopeResourceUpdateTelescopeLocationYVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2228,7 +2228,7 @@ export const useTelescopeResourceUpdateTelescopeLocationY = (
       TelescopeResourceUpdateTelescopeLocationYVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2237,7 +2237,7 @@ export const useTelescopeResourceUpdateTelescopeLocationY = (
     TelescopeResourceUpdateTelescopeLocationYVariables
   >({
     mutationFn: (
-      variables: TelescopeResourceUpdateTelescopeLocationYVariables
+      variables: TelescopeResourceUpdateTelescopeLocationYVariables,
     ) =>
       fetchTelescopeResourceUpdateTelescopeLocationY({
         ...fetcherOptions,
@@ -2268,7 +2268,7 @@ export type TelescopeResourceUpdateTelescopeLocationZVariables = {
 
 export const fetchTelescopeResourceUpdateTelescopeLocationZ = (
   variables: TelescopeResourceUpdateTelescopeLocationZVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2292,7 +2292,7 @@ export const useTelescopeResourceUpdateTelescopeLocationZ = (
       TelescopeResourceUpdateTelescopeLocationZVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2301,7 +2301,7 @@ export const useTelescopeResourceUpdateTelescopeLocationZ = (
     TelescopeResourceUpdateTelescopeLocationZVariables
   >({
     mutationFn: (
-      variables: TelescopeResourceUpdateTelescopeLocationZVariables
+      variables: TelescopeResourceUpdateTelescopeLocationZVariables,
     ) =>
       fetchTelescopeResourceUpdateTelescopeLocationZ({
         ...fetcherOptions,
@@ -2331,7 +2331,7 @@ export type TelescopeResourceUpdateTelescopeNameVariables = {
 
 export const fetchTelescopeResourceUpdateTelescopeName = (
   variables: TelescopeResourceUpdateTelescopeNameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2355,7 +2355,7 @@ export const useTelescopeResourceUpdateTelescopeName = (
       TelescopeResourceUpdateTelescopeNameVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2392,7 +2392,7 @@ export type TelescopeResourceUpdateTelescopeWikiIdVariables = {
 
 export const fetchTelescopeResourceUpdateTelescopeWikiId = (
   variables: TelescopeResourceUpdateTelescopeWikiIdVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2416,7 +2416,7 @@ export const useTelescopeResourceUpdateTelescopeWikiId = (
       TelescopeResourceUpdateTelescopeWikiIdVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2444,7 +2444,7 @@ export type OrganizationResourceGetOrganizationsVariables =
 
 export const fetchOrganizationResourceGetOrganizations = (
   variables: OrganizationResourceGetOrganizationsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     OrganizationResourceGetOrganizationsResponse,
@@ -2456,7 +2456,7 @@ export const fetchOrganizationResourceGetOrganizations = (
   >({ url: "/pst/api/organizations", method: "get", ...variables, signal });
 
 export const useOrganizationResourceGetOrganizations = <
-  TData = OrganizationResourceGetOrganizationsResponse
+  TData = OrganizationResourceGetOrganizationsResponse,
 >(
   variables: OrganizationResourceGetOrganizationsVariables,
   options?: Omit<
@@ -2466,7 +2466,7 @@ export const useOrganizationResourceGetOrganizations = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -2483,7 +2483,7 @@ export const useOrganizationResourceGetOrganizations = <
     queryFn: ({ signal }) =>
       fetchOrganizationResourceGetOrganizations(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -2499,7 +2499,7 @@ export type OrganizationResourceCreateOrganizationVariables = {
 
 export const fetchOrganizationResourceCreateOrganization = (
   variables: OrganizationResourceCreateOrganizationVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Organization,
@@ -2518,7 +2518,7 @@ export const useOrganizationResourceCreateOrganization = (
       OrganizationResourceCreateOrganizationVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2551,7 +2551,7 @@ export type OrganizationResourceGetOrganizationVariables = {
 
 export const fetchOrganizationResourceGetOrganization = (
   variables: OrganizationResourceGetOrganizationVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Organization,
@@ -2568,7 +2568,7 @@ export const fetchOrganizationResourceGetOrganization = (
   });
 
 export const useOrganizationResourceGetOrganization = <
-  TData = Schemas.Organization
+  TData = Schemas.Organization,
 >(
   variables: OrganizationResourceGetOrganizationVariables,
   options?: Omit<
@@ -2578,7 +2578,7 @@ export const useOrganizationResourceGetOrganization = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -2595,7 +2595,7 @@ export const useOrganizationResourceGetOrganization = <
     queryFn: ({ signal }) =>
       fetchOrganizationResourceGetOrganization(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -2618,7 +2618,7 @@ export type OrganizationResourceDeleteOrganizationVariables = {
 
 export const fetchOrganizationResourceDeleteOrganization = (
   variables: OrganizationResourceDeleteOrganizationVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2642,7 +2642,7 @@ export const useOrganizationResourceDeleteOrganization = (
       OrganizationResourceDeleteOrganizationVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2675,7 +2675,7 @@ export type OrganizationResourceUpdateOrganisationAddressVariables = {
 
 export const fetchOrganizationResourceUpdateOrganisationAddress = (
   variables: OrganizationResourceUpdateOrganisationAddressVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2699,7 +2699,7 @@ export const useOrganizationResourceUpdateOrganisationAddress = (
       OrganizationResourceUpdateOrganisationAddressVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2708,7 +2708,7 @@ export const useOrganizationResourceUpdateOrganisationAddress = (
     OrganizationResourceUpdateOrganisationAddressVariables
   >({
     mutationFn: (
-      variables: OrganizationResourceUpdateOrganisationAddressVariables
+      variables: OrganizationResourceUpdateOrganisationAddressVariables,
     ) =>
       fetchOrganizationResourceUpdateOrganisationAddress({
         ...fetcherOptions,
@@ -2734,7 +2734,7 @@ export type OrganizationResourceUpdateOrganisationIvoIdVariables = {
 
 export const fetchOrganizationResourceUpdateOrganisationIvoId = (
   variables: OrganizationResourceUpdateOrganisationIvoIdVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2758,7 +2758,7 @@ export const useOrganizationResourceUpdateOrganisationIvoId = (
       OrganizationResourceUpdateOrganisationIvoIdVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2767,7 +2767,7 @@ export const useOrganizationResourceUpdateOrganisationIvoId = (
     OrganizationResourceUpdateOrganisationIvoIdVariables
   >({
     mutationFn: (
-      variables: OrganizationResourceUpdateOrganisationIvoIdVariables
+      variables: OrganizationResourceUpdateOrganisationIvoIdVariables,
     ) =>
       fetchOrganizationResourceUpdateOrganisationIvoId({
         ...fetcherOptions,
@@ -2793,7 +2793,7 @@ export type OrganizationResourceUpdateOrganisationNameVariables = {
 
 export const fetchOrganizationResourceUpdateOrganisationName = (
   variables: OrganizationResourceUpdateOrganisationNameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2817,7 +2817,7 @@ export const useOrganizationResourceUpdateOrganisationName = (
       OrganizationResourceUpdateOrganisationNameVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2826,7 +2826,7 @@ export const useOrganizationResourceUpdateOrganisationName = (
     OrganizationResourceUpdateOrganisationNameVariables
   >({
     mutationFn: (
-      variables: OrganizationResourceUpdateOrganisationNameVariables
+      variables: OrganizationResourceUpdateOrganisationNameVariables,
     ) =>
       fetchOrganizationResourceUpdateOrganisationName({
         ...fetcherOptions,
@@ -2852,7 +2852,7 @@ export type OrganizationResourceUpdateOrganisationWikiIdVariables = {
 
 export const fetchOrganizationResourceUpdateOrganisationWikiId = (
   variables: OrganizationResourceUpdateOrganisationWikiIdVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -2876,7 +2876,7 @@ export const useOrganizationResourceUpdateOrganisationWikiId = (
       OrganizationResourceUpdateOrganisationWikiIdVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -2885,7 +2885,7 @@ export const useOrganizationResourceUpdateOrganisationWikiId = (
     OrganizationResourceUpdateOrganisationWikiIdVariables
   >({
     mutationFn: (
-      variables: OrganizationResourceUpdateOrganisationWikiIdVariables
+      variables: OrganizationResourceUpdateOrganisationWikiIdVariables,
     ) =>
       fetchOrganizationResourceUpdateOrganisationWikiId({
         ...fetcherOptions,
@@ -2909,7 +2909,7 @@ export type PersonResourceGetPeopleVariables = {
 
 export const fetchPersonResourceGetPeople = (
   variables: PersonResourceGetPeopleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     PersonResourceGetPeopleResponse,
@@ -2921,7 +2921,7 @@ export const fetchPersonResourceGetPeople = (
   >({ url: "/pst/api/people", method: "get", ...variables, signal });
 
 export const usePersonResourceGetPeople = <
-  TData = PersonResourceGetPeopleResponse
+  TData = PersonResourceGetPeopleResponse,
 >(
   variables: PersonResourceGetPeopleVariables,
   options?: Omit<
@@ -2931,7 +2931,7 @@ export const usePersonResourceGetPeople = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -2960,7 +2960,7 @@ export type PersonResourceCreatePersonVariables = {
 
 export const fetchPersonResourceCreatePerson = (
   variables: PersonResourceCreatePersonVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Person,
@@ -2979,7 +2979,7 @@ export const usePersonResourceCreatePerson = (
       PersonResourceCreatePersonVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3008,7 +3008,7 @@ export type PersonResourceGetPersonVariables = {
 
 export const fetchPersonResourceGetPerson = (
   variables: PersonResourceGetPersonVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Person,
@@ -3019,7 +3019,7 @@ export const fetchPersonResourceGetPerson = (
     PersonResourceGetPersonPathParams
   >({ url: "/pst/api/people/{id}", method: "get", ...variables, signal });
 
-export const usePersonResourceGetPerson = <TData = Schemas.Person>(
+export const usePersonResourceGetPerson = <TData = Schemas.Person,>(
   variables: PersonResourceGetPersonVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -3028,7 +3028,7 @@ export const usePersonResourceGetPerson = <TData = Schemas.Person>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -3064,7 +3064,7 @@ export type PersonResourceDeletePersonVariables = {
 
 export const fetchPersonResourceDeletePerson = (
   variables: PersonResourceDeletePersonVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -3083,7 +3083,7 @@ export const usePersonResourceDeletePerson = (
       PersonResourceDeletePersonVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3112,7 +3112,7 @@ export type PersonResourceUpdateEMailVariables = {
 
 export const fetchPersonResourceUpdateEMail = (
   variables: PersonResourceUpdateEMailVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -3131,7 +3131,7 @@ export const usePersonResourceUpdateEMail = (
       PersonResourceUpdateEMailVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3160,7 +3160,7 @@ export type PersonResourceUpdateFullNameVariables = {
 
 export const fetchPersonResourceUpdateFullName = (
   variables: PersonResourceUpdateFullNameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -3184,7 +3184,7 @@ export const usePersonResourceUpdateFullName = (
       PersonResourceUpdateFullNameVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3213,7 +3213,7 @@ export type PersonResourceUpdateOrcidIdVariables = {
 
 export const fetchPersonResourceUpdateOrcidId = (
   variables: PersonResourceUpdateOrcidIdVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -3237,7 +3237,7 @@ export const usePersonResourceUpdateOrcidId = (
       PersonResourceUpdateOrcidIdVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3265,7 +3265,7 @@ export type PersonResourceCreatePersonFromKeycloakVariables = {
 
 export const fetchPersonResourceCreatePersonFromKeycloak = (
   variables: PersonResourceCreatePersonFromKeycloakVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Person,
@@ -3289,7 +3289,7 @@ export const usePersonResourceCreatePersonFromKeycloak = (
       PersonResourceCreatePersonFromKeycloakVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3322,7 +3322,7 @@ export type ProposalCyclesResourceGetProposalCyclesVariables = {
 
 export const fetchProposalCyclesResourceGetProposalCycles = (
   variables: ProposalCyclesResourceGetProposalCyclesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ProposalCyclesResourceGetProposalCyclesResponse,
@@ -3334,7 +3334,7 @@ export const fetchProposalCyclesResourceGetProposalCycles = (
   >({ url: "/pst/api/proposalCycles", method: "get", ...variables, signal });
 
 export const useProposalCyclesResourceGetProposalCycles = <
-  TData = ProposalCyclesResourceGetProposalCyclesResponse
+  TData = ProposalCyclesResourceGetProposalCyclesResponse,
 >(
   variables: ProposalCyclesResourceGetProposalCyclesVariables,
   options?: Omit<
@@ -3344,7 +3344,7 @@ export const useProposalCyclesResourceGetProposalCycles = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -3361,7 +3361,7 @@ export const useProposalCyclesResourceGetProposalCycles = <
     queryFn: ({ signal }) =>
       fetchProposalCyclesResourceGetProposalCycles(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -3377,7 +3377,7 @@ export type ProposalCyclesResourceCreateProposalCycleVariables = {
 
 export const fetchProposalCyclesResourceCreateProposalCycle = (
   variables: ProposalCyclesResourceCreateProposalCycleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalCycle,
@@ -3396,7 +3396,7 @@ export const useProposalCyclesResourceCreateProposalCycle = (
       ProposalCyclesResourceCreateProposalCycleVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3405,7 +3405,7 @@ export const useProposalCyclesResourceCreateProposalCycle = (
     ProposalCyclesResourceCreateProposalCycleVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceCreateProposalCycleVariables
+      variables: ProposalCyclesResourceCreateProposalCycleVariables,
     ) =>
       fetchProposalCyclesResourceCreateProposalCycle({
         ...fetcherOptions,
@@ -3431,7 +3431,7 @@ export type ProposalCyclesResourceGetProposalCycleVariables = {
 
 export const fetchProposalCyclesResourceGetProposalCycle = (
   variables: ProposalCyclesResourceGetProposalCycleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalCycle,
@@ -3448,7 +3448,7 @@ export const fetchProposalCyclesResourceGetProposalCycle = (
   });
 
 export const useProposalCyclesResourceGetProposalCycle = <
-  TData = Schemas.ProposalCycle
+  TData = Schemas.ProposalCycle,
 >(
   variables: ProposalCyclesResourceGetProposalCycleVariables,
   options?: Omit<
@@ -3458,7 +3458,7 @@ export const useProposalCyclesResourceGetProposalCycle = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -3475,7 +3475,7 @@ export const useProposalCyclesResourceGetProposalCycle = <
     queryFn: ({ signal }) =>
       fetchProposalCyclesResourceGetProposalCycle(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -3497,7 +3497,7 @@ export type TACResourceGetTACVariables = {
 
 export const fetchTACResourceGetTAC = (
   variables: TACResourceGetTACVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Tac,
@@ -3513,12 +3513,12 @@ export const fetchTACResourceGetTAC = (
     signal,
   });
 
-export const useTACResourceGetTAC = <TData = Schemas.Tac>(
+export const useTACResourceGetTAC = <TData = Schemas.Tac,>(
   variables: TACResourceGetTACVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<Schemas.Tac, TACResourceGetTACError, TData>,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -3559,7 +3559,7 @@ export type TACResourceGetCommitteeMembersVariables = {
 
 export const fetchTACResourceGetCommitteeMembers = (
   variables: TACResourceGetCommitteeMembersVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     TACResourceGetCommitteeMembersResponse,
@@ -3576,7 +3576,7 @@ export const fetchTACResourceGetCommitteeMembers = (
   });
 
 export const useTACResourceGetCommitteeMembers = <
-  TData = TACResourceGetCommitteeMembersResponse
+  TData = TACResourceGetCommitteeMembersResponse,
 >(
   variables: TACResourceGetCommitteeMembersVariables,
   options?: Omit<
@@ -3586,7 +3586,7 @@ export const useTACResourceGetCommitteeMembers = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -3603,7 +3603,7 @@ export const useTACResourceGetCommitteeMembers = <
     queryFn: ({ signal }) =>
       fetchTACResourceGetCommitteeMembers(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -3627,7 +3627,7 @@ export type TACResourceAddCommitteeMemberVariables = {
 
 export const fetchTACResourceAddCommitteeMember = (
   variables: TACResourceAddCommitteeMemberVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.CommitteeMember,
@@ -3651,7 +3651,7 @@ export const useTACResourceAddCommitteeMember = (
       TACResourceAddCommitteeMemberVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3685,7 +3685,7 @@ export type TACResourceGetCommitteeMemberVariables = {
 
 export const fetchTACResourceGetCommitteeMember = (
   variables: TACResourceGetCommitteeMemberVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.CommitteeMember,
@@ -3702,7 +3702,7 @@ export const fetchTACResourceGetCommitteeMember = (
   });
 
 export const useTACResourceGetCommitteeMember = <
-  TData = Schemas.CommitteeMember
+  TData = Schemas.CommitteeMember,
 >(
   variables: TACResourceGetCommitteeMemberVariables,
   options?: Omit<
@@ -3712,7 +3712,7 @@ export const useTACResourceGetCommitteeMember = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -3729,7 +3729,7 @@ export const useTACResourceGetCommitteeMember = <
     queryFn: ({ signal }) =>
       fetchTACResourceGetCommitteeMember(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -3756,7 +3756,7 @@ export type TACResourceRemoveCommitteeMemberVariables = {
 
 export const fetchTACResourceRemoveCommitteeMember = (
   variables: TACResourceRemoveCommitteeMemberVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -3780,7 +3780,7 @@ export const useTACResourceRemoveCommitteeMember = (
       TACResourceRemoveCommitteeMemberVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3817,7 +3817,7 @@ export type TACResourceReplaceRoleVariables = {
 
 export const fetchTACResourceReplaceRole = (
   variables: TACResourceReplaceRoleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.CommitteeMember,
@@ -3841,7 +3841,7 @@ export const useTACResourceReplaceRole = (
       TACResourceReplaceRoleVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3879,7 +3879,7 @@ export type AllocatedProposalResourceGetAllocatedProposalsVariables = {
 
 export const fetchAllocatedProposalResourceGetAllocatedProposals = (
   variables: AllocatedProposalResourceGetAllocatedProposalsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     AllocatedProposalResourceGetAllocatedProposalsResponse,
@@ -3896,7 +3896,7 @@ export const fetchAllocatedProposalResourceGetAllocatedProposals = (
   });
 
 export const useAllocatedProposalResourceGetAllocatedProposals = <
-  TData = AllocatedProposalResourceGetAllocatedProposalsResponse
+  TData = AllocatedProposalResourceGetAllocatedProposalsResponse,
 >(
   variables: AllocatedProposalResourceGetAllocatedProposalsVariables,
   options?: Omit<
@@ -3906,7 +3906,7 @@ export const useAllocatedProposalResourceGetAllocatedProposals = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -3923,7 +3923,7 @@ export const useAllocatedProposalResourceGetAllocatedProposals = <
     queryFn: ({ signal }) =>
       fetchAllocatedProposalResourceGetAllocatedProposals(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -3946,7 +3946,7 @@ export type AllocatedProposalResourceAllocateProposalToCycleVariables = {
 
 export const fetchAllocatedProposalResourceAllocateProposalToCycle = (
   variables: AllocatedProposalResourceAllocateProposalToCycleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalSynopsis,
@@ -3970,7 +3970,7 @@ export const useAllocatedProposalResourceAllocateProposalToCycle = (
       AllocatedProposalResourceAllocateProposalToCycleVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -3979,7 +3979,7 @@ export const useAllocatedProposalResourceAllocateProposalToCycle = (
     AllocatedProposalResourceAllocateProposalToCycleVariables
   >({
     mutationFn: (
-      variables: AllocatedProposalResourceAllocateProposalToCycleVariables
+      variables: AllocatedProposalResourceAllocateProposalToCycleVariables,
     ) =>
       fetchAllocatedProposalResourceAllocateProposalToCycle({
         ...fetcherOptions,
@@ -4009,7 +4009,7 @@ export type AllocatedProposalResourceGetAllocatedProposalVariables = {
 
 export const fetchAllocatedProposalResourceGetAllocatedProposal = (
   variables: AllocatedProposalResourceGetAllocatedProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.AllocatedProposal,
@@ -4026,7 +4026,7 @@ export const fetchAllocatedProposalResourceGetAllocatedProposal = (
   });
 
 export const useAllocatedProposalResourceGetAllocatedProposal = <
-  TData = Schemas.AllocatedProposal
+  TData = Schemas.AllocatedProposal,
 >(
   variables: AllocatedProposalResourceGetAllocatedProposalVariables,
   options?: Omit<
@@ -4036,7 +4036,7 @@ export const useAllocatedProposalResourceGetAllocatedProposal = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -4053,7 +4053,7 @@ export const useAllocatedProposalResourceGetAllocatedProposal = <
     queryFn: ({ signal }) =>
       fetchAllocatedProposalResourceGetAllocatedProposal(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -4083,7 +4083,7 @@ export type AllocatedBlockResourceGetAllocatedBlocksVariables = {
 
 export const fetchAllocatedBlockResourceGetAllocatedBlocks = (
   variables: AllocatedBlockResourceGetAllocatedBlocksVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     AllocatedBlockResourceGetAllocatedBlocksResponse,
@@ -4100,7 +4100,7 @@ export const fetchAllocatedBlockResourceGetAllocatedBlocks = (
   });
 
 export const useAllocatedBlockResourceGetAllocatedBlocks = <
-  TData = AllocatedBlockResourceGetAllocatedBlocksResponse
+  TData = AllocatedBlockResourceGetAllocatedBlocksResponse,
 >(
   variables: AllocatedBlockResourceGetAllocatedBlocksVariables,
   options?: Omit<
@@ -4110,7 +4110,7 @@ export const useAllocatedBlockResourceGetAllocatedBlocks = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -4127,7 +4127,7 @@ export const useAllocatedBlockResourceGetAllocatedBlocks = <
     queryFn: ({ signal }) =>
       fetchAllocatedBlockResourceGetAllocatedBlocks(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -4155,7 +4155,7 @@ export type AllocatedBlockResourceAddAllocatedBlockVariables = {
 
 export const fetchAllocatedBlockResourceAddAllocatedBlock = (
   variables: AllocatedBlockResourceAddAllocatedBlockVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.AllocatedBlock,
@@ -4179,7 +4179,7 @@ export const useAllocatedBlockResourceAddAllocatedBlock = (
       AllocatedBlockResourceAddAllocatedBlockVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -4220,7 +4220,7 @@ export type AllocatedBlockResourceGetAllocatedBlockVariables = {
 
 export const fetchAllocatedBlockResourceGetAllocatedBlock = (
   variables: AllocatedBlockResourceGetAllocatedBlockVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.AllocatedBlock,
@@ -4237,7 +4237,7 @@ export const fetchAllocatedBlockResourceGetAllocatedBlock = (
   });
 
 export const useAllocatedBlockResourceGetAllocatedBlock = <
-  TData = Schemas.AllocatedBlock
+  TData = Schemas.AllocatedBlock,
 >(
   variables: AllocatedBlockResourceGetAllocatedBlockVariables,
   options?: Omit<
@@ -4247,7 +4247,7 @@ export const useAllocatedBlockResourceGetAllocatedBlock = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -4264,7 +4264,7 @@ export const useAllocatedBlockResourceGetAllocatedBlock = <
     queryFn: ({ signal }) =>
       fetchAllocatedBlockResourceGetAllocatedBlock(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -4295,7 +4295,7 @@ export type AllocatedBlockResourceRemoveAllocatedBlockVariables = {
 
 export const fetchAllocatedBlockResourceRemoveAllocatedBlock = (
   variables: AllocatedBlockResourceRemoveAllocatedBlockVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -4319,7 +4319,7 @@ export const useAllocatedBlockResourceRemoveAllocatedBlock = (
       AllocatedBlockResourceRemoveAllocatedBlockVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -4328,7 +4328,7 @@ export const useAllocatedBlockResourceRemoveAllocatedBlock = (
     AllocatedBlockResourceRemoveAllocatedBlockVariables
   >({
     mutationFn: (
-      variables: AllocatedBlockResourceRemoveAllocatedBlockVariables
+      variables: AllocatedBlockResourceRemoveAllocatedBlockVariables,
     ) =>
       fetchAllocatedBlockResourceRemoveAllocatedBlock({
         ...fetcherOptions,
@@ -4362,7 +4362,7 @@ export type AllocatedBlockResourceUpdateGradeVariables = {
 
 export const fetchAllocatedBlockResourceUpdateGrade = (
   variables: AllocatedBlockResourceUpdateGradeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -4386,7 +4386,7 @@ export const useAllocatedBlockResourceUpdateGrade = (
       AllocatedBlockResourceUpdateGradeVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -4427,7 +4427,7 @@ export type AllocatedBlockResourceChangeObservingModeVariables = {
 
 export const fetchAllocatedBlockResourceChangeObservingMode = (
   variables: AllocatedBlockResourceChangeObservingModeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -4451,7 +4451,7 @@ export const useAllocatedBlockResourceChangeObservingMode = (
       AllocatedBlockResourceChangeObservingModeVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -4460,7 +4460,7 @@ export const useAllocatedBlockResourceChangeObservingMode = (
     AllocatedBlockResourceChangeObservingModeVariables
   >({
     mutationFn: (
-      variables: AllocatedBlockResourceChangeObservingModeVariables
+      variables: AllocatedBlockResourceChangeObservingModeVariables,
     ) =>
       fetchAllocatedBlockResourceChangeObservingMode({
         ...fetcherOptions,
@@ -4494,7 +4494,7 @@ export type AllocatedBlockResourceUpdateResourceVariables = {
 
 export const fetchAllocatedBlockResourceUpdateResource = (
   variables: AllocatedBlockResourceUpdateResourceVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -4518,7 +4518,7 @@ export const useAllocatedBlockResourceUpdateResource = (
       AllocatedBlockResourceUpdateResourceVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -4551,7 +4551,7 @@ export type AvailableResourcesResourceGetCycleAvailableResourcesVariables = {
 
 export const fetchAvailableResourcesResourceGetCycleAvailableResources = (
   variables: AvailableResourcesResourceGetCycleAvailableResourcesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.AvailableResources,
@@ -4568,7 +4568,7 @@ export const fetchAvailableResourcesResourceGetCycleAvailableResources = (
   });
 
 export const useAvailableResourcesResourceGetCycleAvailableResources = <
-  TData = Schemas.AvailableResources
+  TData = Schemas.AvailableResources,
 >(
   variables: AvailableResourcesResourceGetCycleAvailableResourcesVariables,
   options?: Omit<
@@ -4578,7 +4578,7 @@ export const useAvailableResourcesResourceGetCycleAvailableResources = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -4595,7 +4595,7 @@ export const useAvailableResourcesResourceGetCycleAvailableResources = <
     queryFn: ({ signal }) =>
       fetchAvailableResourcesResourceGetCycleAvailableResources(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -4619,7 +4619,7 @@ export type AvailableResourcesResourceAddCycleResourceVariables = {
 
 export const fetchAvailableResourcesResourceAddCycleResource = (
   variables: AvailableResourcesResourceAddCycleResourceVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Resource,
@@ -4643,7 +4643,7 @@ export const useAvailableResourcesResourceAddCycleResource = (
       AvailableResourcesResourceAddCycleResourceVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -4652,7 +4652,7 @@ export const useAvailableResourcesResourceAddCycleResource = (
     AvailableResourcesResourceAddCycleResourceVariables
   >({
     mutationFn: (
-      variables: AvailableResourcesResourceAddCycleResourceVariables
+      variables: AvailableResourcesResourceAddCycleResourceVariables,
     ) =>
       fetchAvailableResourcesResourceAddCycleResource({
         ...fetcherOptions,
@@ -4681,7 +4681,7 @@ export type AvailableResourcesResourceGetCycleResourceTypesVariables = {
 
 export const fetchAvailableResourcesResourceGetCycleResourceTypes = (
   variables: AvailableResourcesResourceGetCycleResourceTypesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     AvailableResourcesResourceGetCycleResourceTypesResponse,
@@ -4698,7 +4698,7 @@ export const fetchAvailableResourcesResourceGetCycleResourceTypes = (
   });
 
 export const useAvailableResourcesResourceGetCycleResourceTypes = <
-  TData = AvailableResourcesResourceGetCycleResourceTypesResponse
+  TData = AvailableResourcesResourceGetCycleResourceTypesResponse,
 >(
   variables: AvailableResourcesResourceGetCycleResourceTypesVariables,
   options?: Omit<
@@ -4708,7 +4708,7 @@ export const useAvailableResourcesResourceGetCycleResourceTypes = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -4725,7 +4725,7 @@ export const useAvailableResourcesResourceGetCycleResourceTypes = <
     queryFn: ({ signal }) =>
       fetchAvailableResourcesResourceGetCycleResourceTypes(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -4752,7 +4752,7 @@ export type AvailableResourcesResourceGetCycleResourceTypeVariables = {
 
 export const fetchAvailableResourcesResourceGetCycleResourceType = (
   variables: AvailableResourcesResourceGetCycleResourceTypeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ResourceType,
@@ -4769,7 +4769,7 @@ export const fetchAvailableResourcesResourceGetCycleResourceType = (
   });
 
 export const useAvailableResourcesResourceGetCycleResourceType = <
-  TData = Schemas.ResourceType
+  TData = Schemas.ResourceType,
 >(
   variables: AvailableResourcesResourceGetCycleResourceTypeVariables,
   options?: Omit<
@@ -4779,7 +4779,7 @@ export const useAvailableResourcesResourceGetCycleResourceType = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -4796,7 +4796,7 @@ export const useAvailableResourcesResourceGetCycleResourceType = <
     queryFn: ({ signal }) =>
       fetchAvailableResourcesResourceGetCycleResourceType(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -4823,7 +4823,7 @@ export type AvailableResourcesResourceRemoveCycleResourceVariables = {
 
 export const fetchAvailableResourcesResourceRemoveCycleResource = (
   variables: AvailableResourcesResourceRemoveCycleResourceVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -4847,7 +4847,7 @@ export const useAvailableResourcesResourceRemoveCycleResource = (
       AvailableResourcesResourceRemoveCycleResourceVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -4856,7 +4856,7 @@ export const useAvailableResourcesResourceRemoveCycleResource = (
     AvailableResourcesResourceRemoveCycleResourceVariables
   >({
     mutationFn: (
-      variables: AvailableResourcesResourceRemoveCycleResourceVariables
+      variables: AvailableResourcesResourceRemoveCycleResourceVariables,
     ) =>
       fetchAvailableResourcesResourceRemoveCycleResource({
         ...fetcherOptions,
@@ -4886,7 +4886,7 @@ export type AvailableResourcesResourceUpdateCycleResourceAmountVariables = {
 
 export const fetchAvailableResourcesResourceUpdateCycleResourceAmount = (
   variables: AvailableResourcesResourceUpdateCycleResourceAmountVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Resource,
@@ -4910,7 +4910,7 @@ export const useAvailableResourcesResourceUpdateCycleResourceAmount = (
       AvailableResourcesResourceUpdateCycleResourceAmountVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -4919,7 +4919,7 @@ export const useAvailableResourcesResourceUpdateCycleResourceAmount = (
     AvailableResourcesResourceUpdateCycleResourceAmountVariables
   >({
     mutationFn: (
-      variables: AvailableResourcesResourceUpdateCycleResourceAmountVariables
+      variables: AvailableResourcesResourceUpdateCycleResourceAmountVariables,
     ) =>
       fetchAvailableResourcesResourceUpdateCycleResourceAmount({
         ...fetcherOptions,
@@ -4946,7 +4946,7 @@ export type AvailableResourcesResourceGetCycleAvailableResourceVariables = {
 
 export const fetchAvailableResourcesResourceGetCycleAvailableResource = (
   variables: AvailableResourcesResourceGetCycleAvailableResourceVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Resource,
@@ -4963,7 +4963,7 @@ export const fetchAvailableResourcesResourceGetCycleAvailableResource = (
   });
 
 export const useAvailableResourcesResourceGetCycleAvailableResource = <
-  TData = Schemas.Resource
+  TData = Schemas.Resource,
 >(
   variables: AvailableResourcesResourceGetCycleAvailableResourceVariables,
   options?: Omit<
@@ -4973,7 +4973,7 @@ export const useAvailableResourcesResourceGetCycleAvailableResource = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -4990,7 +4990,7 @@ export const useAvailableResourcesResourceGetCycleAvailableResource = <
     queryFn: ({ signal }) =>
       fetchAvailableResourcesResourceGetCycleAvailableResource(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -5014,7 +5014,7 @@ export type AvailableResourcesResourceGetCycleResourceUsedVariables = {
 
 export const fetchAvailableResourcesResourceGetCycleResourceUsed = (
   variables: AvailableResourcesResourceGetCycleResourceUsedVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     number,
@@ -5031,7 +5031,7 @@ export const fetchAvailableResourcesResourceGetCycleResourceUsed = (
   });
 
 export const useAvailableResourcesResourceGetCycleResourceUsed = <
-  TData = number
+  TData = number,
 >(
   variables: AvailableResourcesResourceGetCycleResourceUsedVariables,
   options?: Omit<
@@ -5041,7 +5041,7 @@ export const useAvailableResourcesResourceGetCycleResourceUsed = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -5058,7 +5058,7 @@ export const useAvailableResourcesResourceGetCycleResourceUsed = <
     queryFn: ({ signal }) =>
       fetchAvailableResourcesResourceGetCycleResourceUsed(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -5082,7 +5082,7 @@ export type AvailableResourcesResourceGetCycleResourceRemainingVariables = {
 
 export const fetchAvailableResourcesResourceGetCycleResourceRemaining = (
   variables: AvailableResourcesResourceGetCycleResourceRemainingVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     number,
@@ -5099,7 +5099,7 @@ export const fetchAvailableResourcesResourceGetCycleResourceRemaining = (
   });
 
 export const useAvailableResourcesResourceGetCycleResourceRemaining = <
-  TData = number
+  TData = number,
 >(
   variables: AvailableResourcesResourceGetCycleResourceRemainingVariables,
   options?: Omit<
@@ -5109,7 +5109,7 @@ export const useAvailableResourcesResourceGetCycleResourceRemaining = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -5126,7 +5126,7 @@ export const useAvailableResourcesResourceGetCycleResourceRemaining = <
     queryFn: ({ signal }) =>
       fetchAvailableResourcesResourceGetCycleResourceRemaining(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -5150,7 +5150,7 @@ export type AvailableResourcesResourceGetCycleResourceTotalVariables = {
 
 export const fetchAvailableResourcesResourceGetCycleResourceTotal = (
   variables: AvailableResourcesResourceGetCycleResourceTotalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     number,
@@ -5167,7 +5167,7 @@ export const fetchAvailableResourcesResourceGetCycleResourceTotal = (
   });
 
 export const useAvailableResourcesResourceGetCycleResourceTotal = <
-  TData = number
+  TData = number,
 >(
   variables: AvailableResourcesResourceGetCycleResourceTotalVariables,
   options?: Omit<
@@ -5177,7 +5177,7 @@ export const useAvailableResourcesResourceGetCycleResourceTotal = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -5194,7 +5194,7 @@ export const useAvailableResourcesResourceGetCycleResourceTotal = <
     queryFn: ({ signal }) =>
       fetchAvailableResourcesResourceGetCycleResourceTotal(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -5217,7 +5217,7 @@ export type ProposalCyclesResourceGetProposalCycleDatesVariables = {
 
 export const fetchProposalCyclesResourceGetProposalCycleDates = (
   variables: ProposalCyclesResourceGetProposalCycleDatesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalCycleDates,
@@ -5234,7 +5234,7 @@ export const fetchProposalCyclesResourceGetProposalCycleDates = (
   });
 
 export const useProposalCyclesResourceGetProposalCycleDates = <
-  TData = Schemas.ProposalCycleDates
+  TData = Schemas.ProposalCycleDates,
 >(
   variables: ProposalCyclesResourceGetProposalCycleDatesVariables,
   options?: Omit<
@@ -5244,7 +5244,7 @@ export const useProposalCyclesResourceGetProposalCycleDates = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -5261,7 +5261,7 @@ export const useProposalCyclesResourceGetProposalCycleDates = <
     queryFn: ({ signal }) =>
       fetchProposalCyclesResourceGetProposalCycleDates(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -5285,7 +5285,7 @@ export type ProposalCyclesResourceReplaceCycleDeadlineVariables = {
 
 export const fetchProposalCyclesResourceReplaceCycleDeadline = (
   variables: ProposalCyclesResourceReplaceCycleDeadlineVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalCycleDates,
@@ -5309,7 +5309,7 @@ export const useProposalCyclesResourceReplaceCycleDeadline = (
       ProposalCyclesResourceReplaceCycleDeadlineVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -5318,7 +5318,7 @@ export const useProposalCyclesResourceReplaceCycleDeadline = (
     ProposalCyclesResourceReplaceCycleDeadlineVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceReplaceCycleDeadlineVariables
+      variables: ProposalCyclesResourceReplaceCycleDeadlineVariables,
     ) =>
       fetchProposalCyclesResourceReplaceCycleDeadline({
         ...fetcherOptions,
@@ -5345,7 +5345,7 @@ export type ProposalCyclesResourceReplaceCycleSessionEndVariables = {
 
 export const fetchProposalCyclesResourceReplaceCycleSessionEnd = (
   variables: ProposalCyclesResourceReplaceCycleSessionEndVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalCycleDates,
@@ -5369,7 +5369,7 @@ export const useProposalCyclesResourceReplaceCycleSessionEnd = (
       ProposalCyclesResourceReplaceCycleSessionEndVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -5378,7 +5378,7 @@ export const useProposalCyclesResourceReplaceCycleSessionEnd = (
     ProposalCyclesResourceReplaceCycleSessionEndVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceReplaceCycleSessionEndVariables
+      variables: ProposalCyclesResourceReplaceCycleSessionEndVariables,
     ) =>
       fetchProposalCyclesResourceReplaceCycleSessionEnd({
         ...fetcherOptions,
@@ -5405,7 +5405,7 @@ export type ProposalCyclesResourceReplaceCycleSessionStartVariables = {
 
 export const fetchProposalCyclesResourceReplaceCycleSessionStart = (
   variables: ProposalCyclesResourceReplaceCycleSessionStartVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalCycleDates,
@@ -5429,7 +5429,7 @@ export const useProposalCyclesResourceReplaceCycleSessionStart = (
       ProposalCyclesResourceReplaceCycleSessionStartVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -5438,7 +5438,7 @@ export const useProposalCyclesResourceReplaceCycleSessionStart = (
     ProposalCyclesResourceReplaceCycleSessionStartVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceReplaceCycleSessionStartVariables
+      variables: ProposalCyclesResourceReplaceCycleSessionStartVariables,
     ) =>
       fetchProposalCyclesResourceReplaceCycleSessionStart({
         ...fetcherOptions,
@@ -5467,7 +5467,7 @@ export type ProposalCyclesResourceGetCycleAllocationGradesVariables = {
 
 export const fetchProposalCyclesResourceGetCycleAllocationGrades = (
   variables: ProposalCyclesResourceGetCycleAllocationGradesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ProposalCyclesResourceGetCycleAllocationGradesResponse,
@@ -5484,7 +5484,7 @@ export const fetchProposalCyclesResourceGetCycleAllocationGrades = (
   });
 
 export const useProposalCyclesResourceGetCycleAllocationGrades = <
-  TData = ProposalCyclesResourceGetCycleAllocationGradesResponse
+  TData = ProposalCyclesResourceGetCycleAllocationGradesResponse,
 >(
   variables: ProposalCyclesResourceGetCycleAllocationGradesVariables,
   options?: Omit<
@@ -5494,7 +5494,7 @@ export const useProposalCyclesResourceGetCycleAllocationGrades = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -5511,7 +5511,7 @@ export const useProposalCyclesResourceGetCycleAllocationGrades = <
     queryFn: ({ signal }) =>
       fetchProposalCyclesResourceGetCycleAllocationGrades(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -5535,7 +5535,7 @@ export type ProposalCyclesResourceAddCycleAllocationGradeVariables = {
 
 export const fetchProposalCyclesResourceAddCycleAllocationGrade = (
   variables: ProposalCyclesResourceAddCycleAllocationGradeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.AllocationGrade,
@@ -5559,7 +5559,7 @@ export const useProposalCyclesResourceAddCycleAllocationGrade = (
       ProposalCyclesResourceAddCycleAllocationGradeVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -5568,7 +5568,7 @@ export const useProposalCyclesResourceAddCycleAllocationGrade = (
     ProposalCyclesResourceAddCycleAllocationGradeVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceAddCycleAllocationGradeVariables
+      variables: ProposalCyclesResourceAddCycleAllocationGradeVariables,
     ) =>
       fetchProposalCyclesResourceAddCycleAllocationGrade({
         ...fetcherOptions,
@@ -5598,7 +5598,7 @@ export type ProposalCyclesResourceGetCycleAllocatedGradeVariables = {
 
 export const fetchProposalCyclesResourceGetCycleAllocatedGrade = (
   variables: ProposalCyclesResourceGetCycleAllocatedGradeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.AllocationGrade,
@@ -5615,7 +5615,7 @@ export const fetchProposalCyclesResourceGetCycleAllocatedGrade = (
   });
 
 export const useProposalCyclesResourceGetCycleAllocatedGrade = <
-  TData = Schemas.AllocationGrade
+  TData = Schemas.AllocationGrade,
 >(
   variables: ProposalCyclesResourceGetCycleAllocatedGradeVariables,
   options?: Omit<
@@ -5625,7 +5625,7 @@ export const useProposalCyclesResourceGetCycleAllocatedGrade = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -5642,7 +5642,7 @@ export const useProposalCyclesResourceGetCycleAllocatedGrade = <
     queryFn: ({ signal }) =>
       fetchProposalCyclesResourceGetCycleAllocatedGrade(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -5669,7 +5669,7 @@ export type ProposalCyclesResourceRemoveCycleAllocationGradeVariables = {
 
 export const fetchProposalCyclesResourceRemoveCycleAllocationGrade = (
   variables: ProposalCyclesResourceRemoveCycleAllocationGradeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -5693,7 +5693,7 @@ export const useProposalCyclesResourceRemoveCycleAllocationGrade = (
       ProposalCyclesResourceRemoveCycleAllocationGradeVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -5702,7 +5702,7 @@ export const useProposalCyclesResourceRemoveCycleAllocationGrade = (
     ProposalCyclesResourceRemoveCycleAllocationGradeVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceRemoveCycleAllocationGradeVariables
+      variables: ProposalCyclesResourceRemoveCycleAllocationGradeVariables,
     ) =>
       fetchProposalCyclesResourceRemoveCycleAllocationGrade({
         ...fetcherOptions,
@@ -5735,7 +5735,7 @@ export type ProposalCyclesResourceReplaceCycleAllocationGradeDescriptionVariable
 export const fetchProposalCyclesResourceReplaceCycleAllocationGradeDescription =
   (
     variables: ProposalCyclesResourceReplaceCycleAllocationGradeDescriptionVariables,
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ) =>
     proposalToolFetch<
       Schemas.AllocationGrade,
@@ -5759,7 +5759,7 @@ export const useProposalCyclesResourceReplaceCycleAllocationGradeDescription = (
       ProposalCyclesResourceReplaceCycleAllocationGradeDescriptionVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -5768,7 +5768,7 @@ export const useProposalCyclesResourceReplaceCycleAllocationGradeDescription = (
     ProposalCyclesResourceReplaceCycleAllocationGradeDescriptionVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceReplaceCycleAllocationGradeDescriptionVariables
+      variables: ProposalCyclesResourceReplaceCycleAllocationGradeDescriptionVariables,
     ) =>
       fetchProposalCyclesResourceReplaceCycleAllocationGradeDescription({
         ...fetcherOptions,
@@ -5798,7 +5798,7 @@ export type ProposalCyclesResourceReplaceCycleAllocationGradeNameVariables = {
 
 export const fetchProposalCyclesResourceReplaceCycleAllocationGradeName = (
   variables: ProposalCyclesResourceReplaceCycleAllocationGradeNameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.AllocationGrade,
@@ -5822,7 +5822,7 @@ export const useProposalCyclesResourceReplaceCycleAllocationGradeName = (
       ProposalCyclesResourceReplaceCycleAllocationGradeNameVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -5831,7 +5831,7 @@ export const useProposalCyclesResourceReplaceCycleAllocationGradeName = (
     ProposalCyclesResourceReplaceCycleAllocationGradeNameVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceReplaceCycleAllocationGradeNameVariables
+      variables: ProposalCyclesResourceReplaceCycleAllocationGradeNameVariables,
     ) =>
       fetchProposalCyclesResourceReplaceCycleAllocationGradeName({
         ...fetcherOptions,
@@ -5857,7 +5857,7 @@ export type ProposalCyclesResourceGetProposalCycleObservatoryVariables = {
 
 export const fetchProposalCyclesResourceGetProposalCycleObservatory = (
   variables: ProposalCyclesResourceGetProposalCycleObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Observatory,
@@ -5874,7 +5874,7 @@ export const fetchProposalCyclesResourceGetProposalCycleObservatory = (
   });
 
 export const useProposalCyclesResourceGetProposalCycleObservatory = <
-  TData = Schemas.Observatory
+  TData = Schemas.Observatory,
 >(
   variables: ProposalCyclesResourceGetProposalCycleObservatoryVariables,
   options?: Omit<
@@ -5884,7 +5884,7 @@ export const useProposalCyclesResourceGetProposalCycleObservatory = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -5901,7 +5901,7 @@ export const useProposalCyclesResourceGetProposalCycleObservatory = <
     queryFn: ({ signal }) =>
       fetchProposalCyclesResourceGetProposalCycleObservatory(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -5924,7 +5924,7 @@ export type ProposalCyclesResourceReplaceCycleObservatoryVariables = {
 
 export const fetchProposalCyclesResourceReplaceCycleObservatory = (
   variables: ProposalCyclesResourceReplaceCycleObservatoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -5948,7 +5948,7 @@ export const useProposalCyclesResourceReplaceCycleObservatory = (
       ProposalCyclesResourceReplaceCycleObservatoryVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -5957,7 +5957,7 @@ export const useProposalCyclesResourceReplaceCycleObservatory = (
     ProposalCyclesResourceReplaceCycleObservatoryVariables
   >({
     mutationFn: (
-      variables: ProposalCyclesResourceReplaceCycleObservatoryVariables
+      variables: ProposalCyclesResourceReplaceCycleObservatoryVariables,
     ) =>
       fetchProposalCyclesResourceReplaceCycleObservatory({
         ...fetcherOptions,
@@ -5986,7 +5986,7 @@ export type SubmittedProposalResourceGetSubmittedProposalsVariables = {
 
 export const fetchSubmittedProposalResourceGetSubmittedProposals = (
   variables: SubmittedProposalResourceGetSubmittedProposalsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     SubmittedProposalResourceGetSubmittedProposalsResponse,
@@ -6003,7 +6003,7 @@ export const fetchSubmittedProposalResourceGetSubmittedProposals = (
   });
 
 export const useSubmittedProposalResourceGetSubmittedProposals = <
-  TData = SubmittedProposalResourceGetSubmittedProposalsResponse
+  TData = SubmittedProposalResourceGetSubmittedProposalsResponse,
 >(
   variables: SubmittedProposalResourceGetSubmittedProposalsVariables,
   options?: Omit<
@@ -6013,7 +6013,7 @@ export const useSubmittedProposalResourceGetSubmittedProposals = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -6030,7 +6030,7 @@ export const useSubmittedProposalResourceGetSubmittedProposals = <
     queryFn: ({ signal }) =>
       fetchSubmittedProposalResourceGetSubmittedProposals(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -6053,7 +6053,7 @@ export type SubmittedProposalResourceSubmitProposalVariables = {
 
 export const fetchSubmittedProposalResourceSubmitProposal = (
   variables: SubmittedProposalResourceSubmitProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalSynopsis,
@@ -6077,7 +6077,7 @@ export const useSubmittedProposalResourceSubmitProposal = (
       SubmittedProposalResourceSubmitProposalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6113,7 +6113,7 @@ export type SubmittedProposalResourceGetSubmittedNotYetAllocatedVariables = {
 
 export const fetchSubmittedProposalResourceGetSubmittedNotYetAllocated = (
   variables: SubmittedProposalResourceGetSubmittedNotYetAllocatedVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     SubmittedProposalResourceGetSubmittedNotYetAllocatedResponse,
@@ -6130,7 +6130,7 @@ export const fetchSubmittedProposalResourceGetSubmittedNotYetAllocated = (
   });
 
 export const useSubmittedProposalResourceGetSubmittedNotYetAllocated = <
-  TData = SubmittedProposalResourceGetSubmittedNotYetAllocatedResponse
+  TData = SubmittedProposalResourceGetSubmittedNotYetAllocatedResponse,
 >(
   variables: SubmittedProposalResourceGetSubmittedNotYetAllocatedVariables,
   options?: Omit<
@@ -6140,7 +6140,7 @@ export const useSubmittedProposalResourceGetSubmittedNotYetAllocated = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -6157,7 +6157,7 @@ export const useSubmittedProposalResourceGetSubmittedNotYetAllocated = <
     queryFn: ({ signal }) =>
       fetchSubmittedProposalResourceGetSubmittedNotYetAllocated(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -6184,7 +6184,7 @@ export type SubmittedProposalResourceGetSubmittedProposalVariables = {
 
 export const fetchSubmittedProposalResourceGetSubmittedProposal = (
   variables: SubmittedProposalResourceGetSubmittedProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SubmittedProposal,
@@ -6201,7 +6201,7 @@ export const fetchSubmittedProposalResourceGetSubmittedProposal = (
   });
 
 export const useSubmittedProposalResourceGetSubmittedProposal = <
-  TData = Schemas.SubmittedProposal
+  TData = Schemas.SubmittedProposal,
 >(
   variables: SubmittedProposalResourceGetSubmittedProposalVariables,
   options?: Omit<
@@ -6211,7 +6211,7 @@ export const useSubmittedProposalResourceGetSubmittedProposal = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -6228,7 +6228,7 @@ export const useSubmittedProposalResourceGetSubmittedProposal = <
     queryFn: ({ signal }) =>
       fetchSubmittedProposalResourceGetSubmittedProposal(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -6255,7 +6255,7 @@ export type SubmittedProposalResourceUpdateReviewsCompleteDateVariables = {
 
 export const fetchSubmittedProposalResourceUpdateReviewsCompleteDate = (
   variables: SubmittedProposalResourceUpdateReviewsCompleteDateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -6279,7 +6279,7 @@ export const useSubmittedProposalResourceUpdateReviewsCompleteDate = (
       SubmittedProposalResourceUpdateReviewsCompleteDateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6288,7 +6288,7 @@ export const useSubmittedProposalResourceUpdateReviewsCompleteDate = (
     SubmittedProposalResourceUpdateReviewsCompleteDateVariables
   >({
     mutationFn: (
-      variables: SubmittedProposalResourceUpdateReviewsCompleteDateVariables
+      variables: SubmittedProposalResourceUpdateReviewsCompleteDateVariables,
     ) =>
       fetchSubmittedProposalResourceUpdateReviewsCompleteDate({
         ...fetcherOptions,
@@ -6321,7 +6321,7 @@ export type ProposalReviewResourceGetReviewsVariables = {
 
 export const fetchProposalReviewResourceGetReviews = (
   variables: ProposalReviewResourceGetReviewsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ProposalReviewResourceGetReviewsResponse,
@@ -6338,7 +6338,7 @@ export const fetchProposalReviewResourceGetReviews = (
   });
 
 export const useProposalReviewResourceGetReviews = <
-  TData = ProposalReviewResourceGetReviewsResponse
+  TData = ProposalReviewResourceGetReviewsResponse,
 >(
   variables: ProposalReviewResourceGetReviewsVariables,
   options?: Omit<
@@ -6348,7 +6348,7 @@ export const useProposalReviewResourceGetReviews = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -6365,7 +6365,7 @@ export const useProposalReviewResourceGetReviews = <
     queryFn: ({ signal }) =>
       fetchProposalReviewResourceGetReviews(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -6393,7 +6393,7 @@ export type ProposalReviewResourceAddReviewVariables = {
 
 export const fetchProposalReviewResourceAddReview = (
   variables: ProposalReviewResourceAddReviewVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalReview,
@@ -6417,7 +6417,7 @@ export const useProposalReviewResourceAddReview = (
       ProposalReviewResourceAddReviewVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6455,7 +6455,7 @@ export type ProposalReviewResourceGetReviewVariables = {
 
 export const fetchProposalReviewResourceGetReview = (
   variables: ProposalReviewResourceGetReviewVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalReview,
@@ -6472,7 +6472,7 @@ export const fetchProposalReviewResourceGetReview = (
   });
 
 export const useProposalReviewResourceGetReview = <
-  TData = Schemas.ProposalReview
+  TData = Schemas.ProposalReview,
 >(
   variables: ProposalReviewResourceGetReviewVariables,
   options?: Omit<
@@ -6482,7 +6482,7 @@ export const useProposalReviewResourceGetReview = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -6499,7 +6499,7 @@ export const useProposalReviewResourceGetReview = <
     queryFn: ({ signal }) =>
       fetchProposalReviewResourceGetReview(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -6530,7 +6530,7 @@ export type ProposalReviewResourceRemoveReviewVariables = {
 
 export const fetchProposalReviewResourceRemoveReview = (
   variables: ProposalReviewResourceRemoveReviewVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -6554,7 +6554,7 @@ export const useProposalReviewResourceRemoveReview = (
       ProposalReviewResourceRemoveReviewVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6595,7 +6595,7 @@ export type ProposalReviewResourceUpdateReviewCommentVariables = {
 
 export const fetchProposalReviewResourceUpdateReviewComment = (
   variables: ProposalReviewResourceUpdateReviewCommentVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalReview,
@@ -6619,7 +6619,7 @@ export const useProposalReviewResourceUpdateReviewComment = (
       ProposalReviewResourceUpdateReviewCommentVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6628,7 +6628,7 @@ export const useProposalReviewResourceUpdateReviewComment = (
     ProposalReviewResourceUpdateReviewCommentVariables
   >({
     mutationFn: (
-      variables: ProposalReviewResourceUpdateReviewCommentVariables
+      variables: ProposalReviewResourceUpdateReviewCommentVariables,
     ) =>
       fetchProposalReviewResourceUpdateReviewComment({
         ...fetcherOptions,
@@ -6662,7 +6662,7 @@ export type ProposalReviewResourceConfirmReviewCompleteVariables = {
 
 export const fetchProposalReviewResourceConfirmReviewComplete = (
   variables: ProposalReviewResourceConfirmReviewCompleteVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalReview,
@@ -6686,7 +6686,7 @@ export const useProposalReviewResourceConfirmReviewComplete = (
       ProposalReviewResourceConfirmReviewCompleteVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6695,7 +6695,7 @@ export const useProposalReviewResourceConfirmReviewComplete = (
     ProposalReviewResourceConfirmReviewCompleteVariables
   >({
     mutationFn: (
-      variables: ProposalReviewResourceConfirmReviewCompleteVariables
+      variables: ProposalReviewResourceConfirmReviewCompleteVariables,
     ) =>
       fetchProposalReviewResourceConfirmReviewComplete({
         ...fetcherOptions,
@@ -6729,7 +6729,7 @@ export type ProposalReviewResourceUpdateReviewScoreVariables = {
 
 export const fetchProposalReviewResourceUpdateReviewScore = (
   variables: ProposalReviewResourceUpdateReviewScoreVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalReview,
@@ -6753,7 +6753,7 @@ export const useProposalReviewResourceUpdateReviewScore = (
       ProposalReviewResourceUpdateReviewScoreVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6794,7 +6794,7 @@ export type ProposalReviewResourceUpdateReviewFeasibilityVariables = {
 
 export const fetchProposalReviewResourceUpdateReviewFeasibility = (
   variables: ProposalReviewResourceUpdateReviewFeasibilityVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalReview,
@@ -6818,7 +6818,7 @@ export const useProposalReviewResourceUpdateReviewFeasibility = (
       ProposalReviewResourceUpdateReviewFeasibilityVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6827,7 +6827,7 @@ export const useProposalReviewResourceUpdateReviewFeasibility = (
     ProposalReviewResourceUpdateReviewFeasibilityVariables
   >({
     mutationFn: (
-      variables: ProposalReviewResourceUpdateReviewFeasibilityVariables
+      variables: ProposalReviewResourceUpdateReviewFeasibilityVariables,
     ) =>
       fetchProposalReviewResourceUpdateReviewFeasibility({
         ...fetcherOptions,
@@ -6859,7 +6859,7 @@ export type SubmittedProposalResourceUpdateSubmittedProposalSuccessVariables = {
 
 export const fetchSubmittedProposalResourceUpdateSubmittedProposalSuccess = (
   variables: SubmittedProposalResourceUpdateSubmittedProposalSuccessVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -6883,7 +6883,7 @@ export const useSubmittedProposalResourceUpdateSubmittedProposalSuccess = (
       SubmittedProposalResourceUpdateSubmittedProposalSuccessVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -6892,7 +6892,7 @@ export const useSubmittedProposalResourceUpdateSubmittedProposalSuccess = (
     SubmittedProposalResourceUpdateSubmittedProposalSuccessVariables
   >({
     mutationFn: (
-      variables: SubmittedProposalResourceUpdateSubmittedProposalSuccessVariables
+      variables: SubmittedProposalResourceUpdateSubmittedProposalSuccessVariables,
     ) =>
       fetchSubmittedProposalResourceUpdateSubmittedProposalSuccess({
         ...fetcherOptions,
@@ -6918,7 +6918,7 @@ export type ProposalCyclesResourceGetProposalCycleTitleVariables = {
 
 export const fetchProposalCyclesResourceGetProposalCycleTitle = (
   variables: ProposalCyclesResourceGetProposalCycleTitleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -6935,7 +6935,7 @@ export const fetchProposalCyclesResourceGetProposalCycleTitle = (
   });
 
 export const useProposalCyclesResourceGetProposalCycleTitle = <
-  TData = undefined
+  TData = undefined,
 >(
   variables: ProposalCyclesResourceGetProposalCycleTitleVariables,
   options?: Omit<
@@ -6945,7 +6945,7 @@ export const useProposalCyclesResourceGetProposalCycleTitle = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -6962,7 +6962,7 @@ export const useProposalCyclesResourceGetProposalCycleTitle = <
     queryFn: ({ signal }) =>
       fetchProposalCyclesResourceGetProposalCycleTitle(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -6985,7 +6985,7 @@ export type ProposalCyclesResourceReplaceCycleTitleVariables = {
 
 export const fetchProposalCyclesResourceReplaceCycleTitle = (
   variables: ProposalCyclesResourceReplaceCycleTitleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -7009,7 +7009,7 @@ export const useProposalCyclesResourceReplaceCycleTitle = (
       ProposalCyclesResourceReplaceCycleTitleVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -7045,7 +7045,7 @@ export type ObservingModeResourceGetCycleObservingModesVariables = {
 
 export const fetchObservingModeResourceGetCycleObservingModes = (
   variables: ObservingModeResourceGetCycleObservingModesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ObservingModeResourceGetCycleObservingModesResponse,
@@ -7062,7 +7062,7 @@ export const fetchObservingModeResourceGetCycleObservingModes = (
   });
 
 export const useObservingModeResourceGetCycleObservingModes = <
-  TData = ObservingModeResourceGetCycleObservingModesResponse
+  TData = ObservingModeResourceGetCycleObservingModesResponse,
 >(
   variables: ObservingModeResourceGetCycleObservingModesVariables,
   options?: Omit<
@@ -7072,7 +7072,7 @@ export const useObservingModeResourceGetCycleObservingModes = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -7089,7 +7089,7 @@ export const useObservingModeResourceGetCycleObservingModes = <
     queryFn: ({ signal }) =>
       fetchObservingModeResourceGetCycleObservingModes(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -7116,7 +7116,7 @@ export type ObservingModeResourceGetCycleObservingModeVariables = {
 
 export const fetchObservingModeResourceGetCycleObservingMode = (
   variables: ObservingModeResourceGetCycleObservingModeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ObservingMode,
@@ -7133,7 +7133,7 @@ export const fetchObservingModeResourceGetCycleObservingMode = (
   });
 
 export const useObservingModeResourceGetCycleObservingMode = <
-  TData = Schemas.ObservingMode
+  TData = Schemas.ObservingMode,
 >(
   variables: ObservingModeResourceGetCycleObservingModeVariables,
   options?: Omit<
@@ -7143,7 +7143,7 @@ export const useObservingModeResourceGetCycleObservingMode = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -7160,7 +7160,7 @@ export const useObservingModeResourceGetCycleObservingMode = <
     queryFn: ({ signal }) =>
       fetchObservingModeResourceGetCycleObservingMode(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -7182,7 +7182,7 @@ export type ProposalResourceGetProposalsVariables = {
 
 export const fetchProposalResourceGetProposals = (
   variables: ProposalResourceGetProposalsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ProposalResourceGetProposalsResponse,
@@ -7194,7 +7194,7 @@ export const fetchProposalResourceGetProposals = (
   >({ url: "/pst/api/proposals", method: "get", ...variables, signal });
 
 export const useProposalResourceGetProposals = <
-  TData = ProposalResourceGetProposalsResponse
+  TData = ProposalResourceGetProposalsResponse,
 >(
   variables: ProposalResourceGetProposalsVariables,
   options?: Omit<
@@ -7204,7 +7204,7 @@ export const useProposalResourceGetProposals = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -7221,7 +7221,7 @@ export const useProposalResourceGetProposals = <
     queryFn: ({ signal }) =>
       fetchProposalResourceGetProposals(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -7237,7 +7237,7 @@ export type ProposalResourceCreateObservingProposalVariables = {
 
 export const fetchProposalResourceCreateObservingProposal = (
   variables: ProposalResourceCreateObservingProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ObservingProposal,
@@ -7256,7 +7256,7 @@ export const useProposalResourceCreateObservingProposal = (
       ProposalResourceCreateObservingProposalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -7282,7 +7282,7 @@ export type ProposalResourceImportProposalVariables = {
 
 export const fetchProposalResourceImportProposal = (
   variables: ProposalResourceImportProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ObservingProposal,
@@ -7301,7 +7301,7 @@ export const useProposalResourceImportProposal = (
       ProposalResourceImportProposalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -7331,7 +7331,7 @@ export type ProposalResourceGetObservingProposalVariables = {
 
 export const fetchProposalResourceGetObservingProposal = (
   variables: ProposalResourceGetObservingProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ObservingProposal,
@@ -7348,7 +7348,7 @@ export const fetchProposalResourceGetObservingProposal = (
   });
 
 export const useProposalResourceGetObservingProposal = <
-  TData = Schemas.ObservingProposal
+  TData = Schemas.ObservingProposal,
 >(
   variables: ProposalResourceGetObservingProposalVariables,
   options?: Omit<
@@ -7358,7 +7358,7 @@ export const useProposalResourceGetObservingProposal = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -7375,7 +7375,7 @@ export const useProposalResourceGetObservingProposal = <
     queryFn: ({ signal }) =>
       fetchProposalResourceGetObservingProposal(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -7398,7 +7398,7 @@ export type ProposalResourceDeleteObservingProposalVariables = {
 
 export const fetchProposalResourceDeleteObservingProposal = (
   variables: ProposalResourceDeleteObservingProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -7422,7 +7422,7 @@ export const useProposalResourceDeleteObservingProposal = (
       ProposalResourceDeleteObservingProposalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -7455,7 +7455,7 @@ export type ProposalResourceExportProposalVariables = {
 
 export const fetchProposalResourceExportProposal = (
   variables: ProposalResourceExportProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -7471,7 +7471,7 @@ export const fetchProposalResourceExportProposal = (
     signal,
   });
 
-export const useProposalResourceExportProposal = <TData = undefined>(
+export const useProposalResourceExportProposal = <TData = undefined,>(
   variables: ProposalResourceExportProposalVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -7480,7 +7480,7 @@ export const useProposalResourceExportProposal = <TData = undefined>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -7497,7 +7497,7 @@ export const useProposalResourceExportProposal = <TData = undefined>(
     queryFn: ({ signal }) =>
       fetchProposalResourceExportProposal(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -7526,7 +7526,7 @@ export type ProposalResourceGetFieldsVariables = {
 
 export const fetchProposalResourceGetFields = (
   variables: ProposalResourceGetFieldsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ProposalResourceGetFieldsResponse,
@@ -7543,7 +7543,7 @@ export const fetchProposalResourceGetFields = (
   });
 
 export const useProposalResourceGetFields = <
-  TData = ProposalResourceGetFieldsResponse
+  TData = ProposalResourceGetFieldsResponse,
 >(
   variables: ProposalResourceGetFieldsVariables,
   options?: Omit<
@@ -7553,7 +7553,7 @@ export const useProposalResourceGetFields = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -7570,7 +7570,7 @@ export const useProposalResourceGetFields = <
     queryFn: ({ signal }) =>
       fetchProposalResourceGetFields(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -7593,7 +7593,7 @@ export type ProposalResourceAddNewFieldVariables = {
 
 export const fetchProposalResourceAddNewField = (
   variables: ProposalResourceAddNewFieldVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Field,
@@ -7617,7 +7617,7 @@ export const useProposalResourceAddNewField = (
       ProposalResourceAddNewFieldVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -7650,7 +7650,7 @@ export type ProposalResourceGetFieldVariables = {
 
 export const fetchProposalResourceGetField = (
   variables: ProposalResourceGetFieldVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Field,
@@ -7666,7 +7666,7 @@ export const fetchProposalResourceGetField = (
     signal,
   });
 
-export const useProposalResourceGetField = <TData = Schemas.Field>(
+export const useProposalResourceGetField = <TData = Schemas.Field,>(
   variables: ProposalResourceGetFieldVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -7675,7 +7675,7 @@ export const useProposalResourceGetField = <TData = Schemas.Field>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -7692,7 +7692,7 @@ export const useProposalResourceGetField = <TData = Schemas.Field>(
     queryFn: ({ signal }) =>
       fetchProposalResourceGetField(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -7718,7 +7718,7 @@ export type ProposalResourceRemoveFieldVariables = {
 
 export const fetchProposalResourceRemoveField = (
   variables: ProposalResourceRemoveFieldVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -7742,7 +7742,7 @@ export const useProposalResourceRemoveField = (
       ProposalResourceRemoveFieldVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -7776,7 +7776,7 @@ export type ProposalResourceChangeFieldNameVariables = {
 
 export const fetchProposalResourceChangeFieldName = (
   variables: ProposalResourceChangeFieldNameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -7800,7 +7800,7 @@ export const useProposalResourceChangeFieldName = (
       ProposalResourceChangeFieldNameVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -7838,7 +7838,7 @@ export type InvestigatorResourceGetInvestigatorsVariables = {
 
 export const fetchInvestigatorResourceGetInvestigators = (
   variables: InvestigatorResourceGetInvestigatorsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     InvestigatorResourceGetInvestigatorsResponse,
@@ -7855,7 +7855,7 @@ export const fetchInvestigatorResourceGetInvestigators = (
   });
 
 export const useInvestigatorResourceGetInvestigators = <
-  TData = InvestigatorResourceGetInvestigatorsResponse
+  TData = InvestigatorResourceGetInvestigatorsResponse,
 >(
   variables: InvestigatorResourceGetInvestigatorsVariables,
   options?: Omit<
@@ -7865,7 +7865,7 @@ export const useInvestigatorResourceGetInvestigators = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -7882,7 +7882,7 @@ export const useInvestigatorResourceGetInvestigators = <
     queryFn: ({ signal }) =>
       fetchInvestigatorResourceGetInvestigators(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -7906,7 +7906,7 @@ export type InvestigatorResourceAddPersonAsInvestigatorVariables = {
 
 export const fetchInvestigatorResourceAddPersonAsInvestigator = (
   variables: InvestigatorResourceAddPersonAsInvestigatorVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Investigator,
@@ -7930,7 +7930,7 @@ export const useInvestigatorResourceAddPersonAsInvestigator = (
       InvestigatorResourceAddPersonAsInvestigatorVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -7939,7 +7939,7 @@ export const useInvestigatorResourceAddPersonAsInvestigator = (
     InvestigatorResourceAddPersonAsInvestigatorVariables
   >({
     mutationFn: (
-      variables: InvestigatorResourceAddPersonAsInvestigatorVariables
+      variables: InvestigatorResourceAddPersonAsInvestigatorVariables,
     ) =>
       fetchInvestigatorResourceAddPersonAsInvestigator({
         ...fetcherOptions,
@@ -7969,7 +7969,7 @@ export type InvestigatorResourceGetInvestigatorVariables = {
 
 export const fetchInvestigatorResourceGetInvestigator = (
   variables: InvestigatorResourceGetInvestigatorVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Investigator,
@@ -7986,7 +7986,7 @@ export const fetchInvestigatorResourceGetInvestigator = (
   });
 
 export const useInvestigatorResourceGetInvestigator = <
-  TData = Schemas.Investigator
+  TData = Schemas.Investigator,
 >(
   variables: InvestigatorResourceGetInvestigatorVariables,
   options?: Omit<
@@ -7996,7 +7996,7 @@ export const useInvestigatorResourceGetInvestigator = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -8013,7 +8013,7 @@ export const useInvestigatorResourceGetInvestigator = <
     queryFn: ({ signal }) =>
       fetchInvestigatorResourceGetInvestigator(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -8040,7 +8040,7 @@ export type InvestigatorResourceRemoveInvestigatorVariables = {
 
 export const fetchInvestigatorResourceRemoveInvestigator = (
   variables: InvestigatorResourceRemoveInvestigatorVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -8064,7 +8064,7 @@ export const useInvestigatorResourceRemoveInvestigator = (
       InvestigatorResourceRemoveInvestigatorVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -8102,7 +8102,7 @@ export type InvestigatorResourceChangeInvestigatorForPhDVariables = {
 
 export const fetchInvestigatorResourceChangeInvestigatorForPhD = (
   variables: InvestigatorResourceChangeInvestigatorForPhDVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -8126,7 +8126,7 @@ export const useInvestigatorResourceChangeInvestigatorForPhD = (
       InvestigatorResourceChangeInvestigatorForPhDVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -8135,7 +8135,7 @@ export const useInvestigatorResourceChangeInvestigatorForPhD = (
     InvestigatorResourceChangeInvestigatorForPhDVariables
   >({
     mutationFn: (
-      variables: InvestigatorResourceChangeInvestigatorForPhDVariables
+      variables: InvestigatorResourceChangeInvestigatorForPhDVariables,
     ) =>
       fetchInvestigatorResourceChangeInvestigatorForPhD({
         ...fetcherOptions,
@@ -8166,7 +8166,7 @@ export type InvestigatorResourceChangeInvestigatorKindVariables = {
 
 export const fetchInvestigatorResourceChangeInvestigatorKind = (
   variables: InvestigatorResourceChangeInvestigatorKindVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -8190,7 +8190,7 @@ export const useInvestigatorResourceChangeInvestigatorKind = (
       InvestigatorResourceChangeInvestigatorKindVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -8199,7 +8199,7 @@ export const useInvestigatorResourceChangeInvestigatorKind = (
     InvestigatorResourceChangeInvestigatorKindVariables
   >({
     mutationFn: (
-      variables: InvestigatorResourceChangeInvestigatorKindVariables
+      variables: InvestigatorResourceChangeInvestigatorKindVariables,
     ) =>
       fetchInvestigatorResourceChangeInvestigatorKind({
         ...fetcherOptions,
@@ -8209,7 +8209,7 @@ export const useInvestigatorResourceChangeInvestigatorKind = (
   });
 };
 
-export type ProposalResourceGetJustificationPathParams = {
+export type JustificationsResourceGetJustificationPathParams = {
   /**
    * @format int64
    */
@@ -8217,24 +8217,24 @@ export type ProposalResourceGetJustificationPathParams = {
   which: string;
 };
 
-export type ProposalResourceGetJustificationError =
+export type JustificationsResourceGetJustificationError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceGetJustificationVariables = {
-  pathParams: ProposalResourceGetJustificationPathParams;
+export type JustificationsResourceGetJustificationVariables = {
+  pathParams: JustificationsResourceGetJustificationPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceGetJustification = (
-  variables: ProposalResourceGetJustificationVariables,
-  signal?: AbortSignal
+export const fetchJustificationsResourceGetJustification = (
+  variables: JustificationsResourceGetJustificationVariables,
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Justification,
-    ProposalResourceGetJustificationError,
+    JustificationsResourceGetJustificationError,
     undefined,
     {},
     {},
-    ProposalResourceGetJustificationPathParams
+    JustificationsResourceGetJustificationPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/justifications/{which}",
     method: "get",
@@ -8242,42 +8242,42 @@ export const fetchProposalResourceGetJustification = (
     signal,
   });
 
-export const useProposalResourceGetJustification = <
-  TData = Schemas.Justification
+export const useJustificationsResourceGetJustification = <
+  TData = Schemas.Justification,
 >(
-  variables: ProposalResourceGetJustificationVariables,
+  variables: JustificationsResourceGetJustificationVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
       Schemas.Justification,
-      ProposalResourceGetJustificationError,
+      JustificationsResourceGetJustificationError,
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
     Schemas.Justification,
-    ProposalResourceGetJustificationError,
+    JustificationsResourceGetJustificationError,
     TData
   >({
     queryKey: queryKeyFn({
       path: "/pst/api/proposals/{proposalCode}/justifications/{which}",
-      operationId: "proposalResourceGetJustification",
+      operationId: "justificationsResourceGetJustification",
       variables,
     }),
     queryFn: ({ signal }) =>
-      fetchProposalResourceGetJustification(
+      fetchJustificationsResourceGetJustification(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
   });
 };
 
-export type ProposalResourceUpdateJustificationPathParams = {
+export type JustificationsResourceUpdateJustificationPathParams = {
   /**
    * @format int64
    */
@@ -8285,25 +8285,25 @@ export type ProposalResourceUpdateJustificationPathParams = {
   which: string;
 };
 
-export type ProposalResourceUpdateJustificationError =
+export type JustificationsResourceUpdateJustificationError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceUpdateJustificationVariables = {
+export type JustificationsResourceUpdateJustificationVariables = {
   body?: Schemas.Justification;
-  pathParams: ProposalResourceUpdateJustificationPathParams;
+  pathParams: JustificationsResourceUpdateJustificationPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceUpdateJustification = (
-  variables: ProposalResourceUpdateJustificationVariables,
-  signal?: AbortSignal
+export const fetchJustificationsResourceUpdateJustification = (
+  variables: JustificationsResourceUpdateJustificationVariables,
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Justification,
-    ProposalResourceUpdateJustificationError,
+    JustificationsResourceUpdateJustificationError,
     Schemas.Justification,
     {},
     {},
-    ProposalResourceUpdateJustificationPathParams
+    JustificationsResourceUpdateJustificationPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/justifications/{which}",
     method: "put",
@@ -8311,24 +8311,26 @@ export const fetchProposalResourceUpdateJustification = (
     signal,
   });
 
-export const useProposalResourceUpdateJustification = (
+export const useJustificationsResourceUpdateJustification = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       Schemas.Justification,
-      ProposalResourceUpdateJustificationError,
-      ProposalResourceUpdateJustificationVariables
+      JustificationsResourceUpdateJustificationError,
+      JustificationsResourceUpdateJustificationVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     Schemas.Justification,
-    ProposalResourceUpdateJustificationError,
-    ProposalResourceUpdateJustificationVariables
+    JustificationsResourceUpdateJustificationError,
+    JustificationsResourceUpdateJustificationVariables
   >({
-    mutationFn: (variables: ProposalResourceUpdateJustificationVariables) =>
-      fetchProposalResourceUpdateJustification({
+    mutationFn: (
+      variables: JustificationsResourceUpdateJustificationVariables,
+    ) =>
+      fetchJustificationsResourceUpdateJustification({
         ...fetcherOptions,
         ...variables,
       }),
@@ -8336,7 +8338,7 @@ export const useProposalResourceUpdateJustification = (
   });
 };
 
-export type ProposalResourceAddJustificationPathParams = {
+export type JustificationsResourceAddJustificationPathParams = {
   /**
    * @format int64
    */
@@ -8344,25 +8346,25 @@ export type ProposalResourceAddJustificationPathParams = {
   which: string;
 };
 
-export type ProposalResourceAddJustificationError =
+export type JustificationsResourceAddJustificationError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type ProposalResourceAddJustificationVariables = {
+export type JustificationsResourceAddJustificationVariables = {
   body?: Schemas.Justification;
-  pathParams: ProposalResourceAddJustificationPathParams;
+  pathParams: JustificationsResourceAddJustificationPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
-export const fetchProposalResourceAddJustification = (
-  variables: ProposalResourceAddJustificationVariables,
-  signal?: AbortSignal
+export const fetchJustificationsResourceAddJustification = (
+  variables: JustificationsResourceAddJustificationVariables,
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Justification,
-    ProposalResourceAddJustificationError,
+    JustificationsResourceAddJustificationError,
     Schemas.Justification,
     {},
     {},
-    ProposalResourceAddJustificationPathParams
+    JustificationsResourceAddJustificationPathParams
   >({
     url: "/pst/api/proposals/{proposalCode}/justifications/{which}",
     method: "post",
@@ -8370,24 +8372,416 @@ export const fetchProposalResourceAddJustification = (
     signal,
   });
 
-export const useProposalResourceAddJustification = (
+export const useJustificationsResourceAddJustification = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       Schemas.Justification,
-      ProposalResourceAddJustificationError,
-      ProposalResourceAddJustificationVariables
+      JustificationsResourceAddJustificationError,
+      JustificationsResourceAddJustificationVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
     Schemas.Justification,
-    ProposalResourceAddJustificationError,
-    ProposalResourceAddJustificationVariables
+    JustificationsResourceAddJustificationError,
+    JustificationsResourceAddJustificationVariables
   >({
-    mutationFn: (variables: ProposalResourceAddJustificationVariables) =>
-      fetchProposalResourceAddJustification({
+    mutationFn: (variables: JustificationsResourceAddJustificationVariables) =>
+      fetchJustificationsResourceAddJustification({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type JustificationsResourceCreatePDFLaTexPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type JustificationsResourceCreatePDFLaTexQueryParams = {
+  warningsAsErrors?: boolean;
+};
+
+export type JustificationsResourceCreatePDFLaTexError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceCreatePDFLaTexVariables = {
+  pathParams: JustificationsResourceCreatePDFLaTexPathParams;
+  queryParams?: JustificationsResourceCreatePDFLaTexQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceCreatePDFLaTex = (
+  variables: JustificationsResourceCreatePDFLaTexVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceCreatePDFLaTexError,
+    undefined,
+    {},
+    JustificationsResourceCreatePDFLaTexQueryParams,
+    JustificationsResourceCreatePDFLaTexPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceCreatePDFLaTex = <TData = undefined,>(
+  variables: JustificationsResourceCreatePDFLaTexVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      JustificationsResourceCreatePDFLaTexError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    JustificationsResourceCreatePDFLaTexError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf",
+      operationId: "justificationsResourceCreatePDFLaTex",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchJustificationsResourceCreatePDFLaTex(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type JustificationsResourceDownloadLatexPdfPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type JustificationsResourceDownloadLatexPdfError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceDownloadLatexPdfVariables = {
+  pathParams: JustificationsResourceDownloadLatexPdfPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceDownloadLatexPdf = (
+  variables: JustificationsResourceDownloadLatexPdfVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceDownloadLatexPdfError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceDownloadLatexPdfPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf/download",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceDownloadLatexPdf = <TData = undefined,>(
+  variables: JustificationsResourceDownloadLatexPdfVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      JustificationsResourceDownloadLatexPdfError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    JustificationsResourceDownloadLatexPdfError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf/download",
+      operationId: "justificationsResourceDownloadLatexPdf",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchJustificationsResourceDownloadLatexPdf(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type JustificationsResourceGetLatexResourceFilesPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type JustificationsResourceGetLatexResourceFilesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceGetLatexResourceFilesResponse = string[];
+
+export type JustificationsResourceGetLatexResourceFilesVariables = {
+  pathParams: JustificationsResourceGetLatexResourceFilesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceGetLatexResourceFiles = (
+  variables: JustificationsResourceGetLatexResourceFilesVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    JustificationsResourceGetLatexResourceFilesResponse,
+    JustificationsResourceGetLatexResourceFilesError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceGetLatexResourceFilesPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceGetLatexResourceFiles = <
+  TData = JustificationsResourceGetLatexResourceFilesResponse,
+>(
+  variables: JustificationsResourceGetLatexResourceFilesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      JustificationsResourceGetLatexResourceFilesResponse,
+      JustificationsResourceGetLatexResourceFilesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    JustificationsResourceGetLatexResourceFilesResponse,
+    JustificationsResourceGetLatexResourceFilesError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
+      operationId: "justificationsResourceGetLatexResourceFiles",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchJustificationsResourceGetLatexResourceFiles(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type JustificationsResourceReplaceLatexResourceFilePathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type JustificationsResourceReplaceLatexResourceFileError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceReplaceLatexResourceFileVariables = {
+  pathParams: JustificationsResourceReplaceLatexResourceFilePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceReplaceLatexResourceFile = (
+  variables: JustificationsResourceReplaceLatexResourceFileVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceReplaceLatexResourceFileError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceReplaceLatexResourceFilePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceReplaceLatexResourceFile = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceReplaceLatexResourceFileError,
+      JustificationsResourceReplaceLatexResourceFileVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceReplaceLatexResourceFileError,
+    JustificationsResourceReplaceLatexResourceFileVariables
+  >({
+    mutationFn: (
+      variables: JustificationsResourceReplaceLatexResourceFileVariables,
+    ) =>
+      fetchJustificationsResourceReplaceLatexResourceFile({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type JustificationsResourceAddLatexResourceFilePathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type JustificationsResourceAddLatexResourceFileError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceAddLatexResourceFileRequestBody = {
+  document?: Schemas.UploadItemSchema;
+};
+
+export type JustificationsResourceAddLatexResourceFileVariables = {
+  body?: JustificationsResourceAddLatexResourceFileRequestBody;
+  pathParams: JustificationsResourceAddLatexResourceFilePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceAddLatexResourceFile = (
+  variables: JustificationsResourceAddLatexResourceFileVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceAddLatexResourceFileError,
+    JustificationsResourceAddLatexResourceFileRequestBody,
+    {},
+    {},
+    JustificationsResourceAddLatexResourceFilePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceAddLatexResourceFile = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceAddLatexResourceFileError,
+      JustificationsResourceAddLatexResourceFileVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceAddLatexResourceFileError,
+    JustificationsResourceAddLatexResourceFileVariables
+  >({
+    mutationFn: (
+      variables: JustificationsResourceAddLatexResourceFileVariables,
+    ) =>
+      fetchJustificationsResourceAddLatexResourceFile({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type JustificationsResourceRemoveLatexResourceFilePathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type JustificationsResourceRemoveLatexResourceFileError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceRemoveLatexResourceFileVariables = {
+  pathParams: JustificationsResourceRemoveLatexResourceFilePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceRemoveLatexResourceFile = (
+  variables: JustificationsResourceRemoveLatexResourceFileVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceRemoveLatexResourceFileError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceRemoveLatexResourceFilePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceRemoveLatexResourceFile = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceRemoveLatexResourceFileError,
+      JustificationsResourceRemoveLatexResourceFileVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceRemoveLatexResourceFileError,
+    JustificationsResourceRemoveLatexResourceFileVariables
+  >({
+    mutationFn: (
+      variables: JustificationsResourceRemoveLatexResourceFileVariables,
+    ) =>
+      fetchJustificationsResourceRemoveLatexResourceFile({
         ...fetcherOptions,
         ...variables,
       }),
@@ -8411,7 +8805,7 @@ export type ProposalResourceGetObservingProposalKindVariables = {
 
 export const fetchProposalResourceGetObservingProposalKind = (
   variables: ProposalResourceGetObservingProposalKindVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalKind,
@@ -8428,7 +8822,7 @@ export const fetchProposalResourceGetObservingProposalKind = (
   });
 
 export const useProposalResourceGetObservingProposalKind = <
-  TData = Schemas.ProposalKind
+  TData = Schemas.ProposalKind,
 >(
   variables: ProposalResourceGetObservingProposalKindVariables,
   options?: Omit<
@@ -8438,7 +8832,7 @@ export const useProposalResourceGetObservingProposalKind = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -8455,7 +8849,7 @@ export const useProposalResourceGetObservingProposalKind = <
     queryFn: ({ signal }) =>
       fetchProposalResourceGetObservingProposalKind(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -8477,7 +8871,7 @@ export type ProposalResourceChangeKindVariables = {
 
 export const fetchProposalResourceChangeKind = (
   variables: ProposalResourceChangeKindVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -8501,7 +8895,7 @@ export const useProposalResourceChangeKind = (
       ProposalResourceChangeKindVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -8540,7 +8934,7 @@ export type ObservationResourceGetObservationsVariables = {
 
 export const fetchObservationResourceGetObservations = (
   variables: ObservationResourceGetObservationsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ObservationResourceGetObservationsResponse,
@@ -8557,7 +8951,7 @@ export const fetchObservationResourceGetObservations = (
   });
 
 export const useObservationResourceGetObservations = <
-  TData = ObservationResourceGetObservationsResponse
+  TData = ObservationResourceGetObservationsResponse,
 >(
   variables: ObservationResourceGetObservationsVariables,
   options?: Omit<
@@ -8567,7 +8961,7 @@ export const useObservationResourceGetObservations = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -8584,7 +8978,7 @@ export const useObservationResourceGetObservations = <
     queryFn: ({ signal }) =>
       fetchObservationResourceGetObservations(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -8608,7 +9002,7 @@ export type ObservationResourceAddNewObservationVariables = {
 
 export const fetchObservationResourceAddNewObservation = (
   variables: ObservationResourceAddNewObservationVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Observation,
@@ -8632,7 +9026,7 @@ export const useObservationResourceAddNewObservation = (
       ObservationResourceAddNewObservationVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -8669,7 +9063,7 @@ export type ObservationResourceGetObservationVariables = {
 
 export const fetchObservationResourceGetObservation = (
   variables: ObservationResourceGetObservationVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Observation,
@@ -8686,7 +9080,7 @@ export const fetchObservationResourceGetObservation = (
   });
 
 export const useObservationResourceGetObservation = <
-  TData = Schemas.Observation
+  TData = Schemas.Observation,
 >(
   variables: ObservationResourceGetObservationVariables,
   options?: Omit<
@@ -8696,7 +9090,7 @@ export const useObservationResourceGetObservation = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -8713,7 +9107,7 @@ export const useObservationResourceGetObservation = <
     queryFn: ({ signal }) =>
       fetchObservationResourceGetObservation(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -8740,7 +9134,7 @@ export type ObservationResourceRemoveObservationVariables = {
 
 export const fetchObservationResourceRemoveObservation = (
   variables: ObservationResourceRemoveObservationVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -8764,7 +9158,7 @@ export const useObservationResourceRemoveObservation = (
       ObservationResourceRemoveObservationVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -8802,7 +9196,7 @@ export type ObservationResourceReplaceIntendedUseVariables = {
 
 export const fetchObservationResourceReplaceIntendedUse = (
   variables: ObservationResourceReplaceIntendedUseVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -8826,7 +9220,7 @@ export const useObservationResourceReplaceIntendedUse = (
       ObservationResourceReplaceIntendedUseVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -8866,7 +9260,7 @@ export type ObservationResourceGetConstraintsVariables = {
 
 export const fetchObservationResourceGetConstraints = (
   variables: ObservationResourceGetConstraintsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ObservationResourceGetConstraintsResponse,
@@ -8883,7 +9277,7 @@ export const fetchObservationResourceGetConstraints = (
   });
 
 export const useObservationResourceGetConstraints = <
-  TData = ObservationResourceGetConstraintsResponse
+  TData = ObservationResourceGetConstraintsResponse,
 >(
   variables: ObservationResourceGetConstraintsVariables,
   options?: Omit<
@@ -8893,7 +9287,7 @@ export const useObservationResourceGetConstraints = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -8910,7 +9304,7 @@ export const useObservationResourceGetConstraints = <
     queryFn: ({ signal }) =>
       fetchObservationResourceGetConstraints(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -8938,7 +9332,7 @@ export type ObservationResourceAddNewConstraintVariables = {
 
 export const fetchObservationResourceAddNewConstraint = (
   variables: ObservationResourceAddNewConstraintVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ObservingConstraint,
@@ -8962,7 +9356,7 @@ export const useObservationResourceAddNewConstraint = (
       ObservationResourceAddNewConstraintVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -8999,7 +9393,7 @@ export type ObservationResourceGetConstraintVariables = {
 
 export const fetchObservationResourceGetConstraint = (
   variables: ObservationResourceGetConstraintVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ObservingConstraint,
@@ -9016,7 +9410,7 @@ export const fetchObservationResourceGetConstraint = (
   });
 
 export const useObservationResourceGetConstraint = <
-  TData = Schemas.ObservingConstraint
+  TData = Schemas.ObservingConstraint,
 >(
   variables: ObservationResourceGetConstraintVariables,
   options?: Omit<
@@ -9026,7 +9420,7 @@ export const useObservationResourceGetConstraint = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -9043,7 +9437,7 @@ export const useObservationResourceGetConstraint = <
     queryFn: ({ signal }) =>
       fetchObservationResourceGetConstraint(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -9074,7 +9468,7 @@ export type ObservationResourceRemoveConstraintVariables = {
 
 export const fetchObservationResourceRemoveConstraint = (
   variables: ObservationResourceRemoveConstraintVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9098,7 +9492,7 @@ export const useObservationResourceRemoveConstraint = (
       ObservationResourceRemoveConstraintVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9136,7 +9530,7 @@ export type ObservationResourceReplaceFieldVariables = {
 
 export const fetchObservationResourceReplaceField = (
   variables: ObservationResourceReplaceFieldVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9160,7 +9554,7 @@ export const useObservationResourceReplaceField = (
       ObservationResourceReplaceFieldVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9197,7 +9591,7 @@ export type ObservationResourceReplaceTargetsVariables = {
 
 export const fetchObservationResourceReplaceTargets = (
   variables: ObservationResourceReplaceTargetsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9221,7 +9615,7 @@ export const useObservationResourceReplaceTargets = (
       ObservationResourceReplaceTargetsVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9259,7 +9653,7 @@ export type ObservationResourceReplaceTechnicalGoalVariables = {
 
 export const fetchObservationResourceReplaceTechnicalGoal = (
   variables: ObservationResourceReplaceTechnicalGoalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9283,7 +9677,7 @@ export const useObservationResourceReplaceTechnicalGoal = (
       ObservationResourceReplaceTechnicalGoalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9325,7 +9719,7 @@ export type ObservationResourceReplaceTimingWindowVariables = {
 
 export const fetchObservationResourceReplaceTimingWindow = (
   variables: ObservationResourceReplaceTimingWindowVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.TimingWindow,
@@ -9349,7 +9743,7 @@ export const useObservationResourceReplaceTimingWindow = (
       ObservationResourceReplaceTimingWindowVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9382,7 +9776,7 @@ export type ProposalResourceAddRelatedProposalVariables = {
 
 export const fetchProposalResourceAddRelatedProposal = (
   variables: ProposalResourceAddRelatedProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9406,7 +9800,7 @@ export const useProposalResourceAddRelatedProposal = (
       ProposalResourceAddRelatedProposalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9439,7 +9833,7 @@ export type ProposalResourceReplaceSummaryVariables = {
 
 export const fetchProposalResourceReplaceSummary = (
   variables: ProposalResourceReplaceSummaryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9463,7 +9857,7 @@ export const useProposalResourceReplaceSummary = (
       ProposalResourceReplaceSummaryVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9501,7 +9895,7 @@ export type SupportingDocumentResourceGetSupportingDocumentsVariables = {
 
 export const fetchSupportingDocumentResourceGetSupportingDocuments = (
   variables: SupportingDocumentResourceGetSupportingDocumentsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     SupportingDocumentResourceGetSupportingDocumentsResponse,
@@ -9518,7 +9912,7 @@ export const fetchSupportingDocumentResourceGetSupportingDocuments = (
   });
 
 export const useSupportingDocumentResourceGetSupportingDocuments = <
-  TData = SupportingDocumentResourceGetSupportingDocumentsResponse
+  TData = SupportingDocumentResourceGetSupportingDocumentsResponse,
 >(
   variables: SupportingDocumentResourceGetSupportingDocumentsVariables,
   options?: Omit<
@@ -9528,7 +9922,7 @@ export const useSupportingDocumentResourceGetSupportingDocuments = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -9545,7 +9939,7 @@ export const useSupportingDocumentResourceGetSupportingDocuments = <
     queryFn: ({ signal }) =>
       fetchSupportingDocumentResourceGetSupportingDocuments(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -9563,7 +9957,7 @@ export type SupportingDocumentResourceUploadSupportingDocumentError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type SupportingDocumentResourceUploadSupportingDocumentRequestBody = {
-  document?: Schemas.UploadItemSchema;
+  document?: Schemas.UploadItemSchema1;
   title?: string;
 };
 
@@ -9574,7 +9968,7 @@ export type SupportingDocumentResourceUploadSupportingDocumentVariables = {
 
 export const fetchSupportingDocumentResourceUploadSupportingDocument = (
   variables: SupportingDocumentResourceUploadSupportingDocumentVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SupportingDocument,
@@ -9598,7 +9992,7 @@ export const useSupportingDocumentResourceUploadSupportingDocument = (
       SupportingDocumentResourceUploadSupportingDocumentVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9607,7 +10001,7 @@ export const useSupportingDocumentResourceUploadSupportingDocument = (
     SupportingDocumentResourceUploadSupportingDocumentVariables
   >({
     mutationFn: (
-      variables: SupportingDocumentResourceUploadSupportingDocumentVariables
+      variables: SupportingDocumentResourceUploadSupportingDocumentVariables,
     ) =>
       fetchSupportingDocumentResourceUploadSupportingDocument({
         ...fetcherOptions,
@@ -9637,7 +10031,7 @@ export type SupportingDocumentResourceGetSupportingDocumentVariables = {
 
 export const fetchSupportingDocumentResourceGetSupportingDocument = (
   variables: SupportingDocumentResourceGetSupportingDocumentVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SupportingDocument,
@@ -9654,7 +10048,7 @@ export const fetchSupportingDocumentResourceGetSupportingDocument = (
   });
 
 export const useSupportingDocumentResourceGetSupportingDocument = <
-  TData = Schemas.SupportingDocument
+  TData = Schemas.SupportingDocument,
 >(
   variables: SupportingDocumentResourceGetSupportingDocumentVariables,
   options?: Omit<
@@ -9664,7 +10058,7 @@ export const useSupportingDocumentResourceGetSupportingDocument = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -9681,7 +10075,7 @@ export const useSupportingDocumentResourceGetSupportingDocument = <
     queryFn: ({ signal }) =>
       fetchSupportingDocumentResourceGetSupportingDocument(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -9703,7 +10097,7 @@ export type SupportingDocumentResourceReplaceSupportingDocumentError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type SupportingDocumentResourceReplaceSupportingDocumentRequestBody = {
-  document?: Schemas.UploadItemSchema;
+  document?: Schemas.UploadItemSchema1;
 };
 
 export type SupportingDocumentResourceReplaceSupportingDocumentVariables = {
@@ -9713,7 +10107,7 @@ export type SupportingDocumentResourceReplaceSupportingDocumentVariables = {
 
 export const fetchSupportingDocumentResourceReplaceSupportingDocument = (
   variables: SupportingDocumentResourceReplaceSupportingDocumentVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9737,7 +10131,7 @@ export const useSupportingDocumentResourceReplaceSupportingDocument = (
       SupportingDocumentResourceReplaceSupportingDocumentVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9746,7 +10140,7 @@ export const useSupportingDocumentResourceReplaceSupportingDocument = (
     SupportingDocumentResourceReplaceSupportingDocumentVariables
   >({
     mutationFn: (
-      variables: SupportingDocumentResourceReplaceSupportingDocumentVariables
+      variables: SupportingDocumentResourceReplaceSupportingDocumentVariables,
     ) =>
       fetchSupportingDocumentResourceReplaceSupportingDocument({
         ...fetcherOptions,
@@ -9776,7 +10170,7 @@ export type SupportingDocumentResourceRemoveSupportingDocumentVariables = {
 
 export const fetchSupportingDocumentResourceRemoveSupportingDocument = (
   variables: SupportingDocumentResourceRemoveSupportingDocumentVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9800,7 +10194,7 @@ export const useSupportingDocumentResourceRemoveSupportingDocument = (
       SupportingDocumentResourceRemoveSupportingDocumentVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9809,7 +10203,7 @@ export const useSupportingDocumentResourceRemoveSupportingDocument = (
     SupportingDocumentResourceRemoveSupportingDocumentVariables
   >({
     mutationFn: (
-      variables: SupportingDocumentResourceRemoveSupportingDocumentVariables
+      variables: SupportingDocumentResourceRemoveSupportingDocumentVariables,
     ) =>
       fetchSupportingDocumentResourceRemoveSupportingDocument({
         ...fetcherOptions,
@@ -9839,7 +10233,7 @@ export type SupportingDocumentResourceDownloadSupportingDocumentVariables = {
 
 export const fetchSupportingDocumentResourceDownloadSupportingDocument = (
   variables: SupportingDocumentResourceDownloadSupportingDocumentVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -9856,7 +10250,7 @@ export const fetchSupportingDocumentResourceDownloadSupportingDocument = (
   });
 
 export const useSupportingDocumentResourceDownloadSupportingDocument = <
-  TData = undefined
+  TData = undefined,
 >(
   variables: SupportingDocumentResourceDownloadSupportingDocumentVariables,
   options?: Omit<
@@ -9866,7 +10260,7 @@ export const useSupportingDocumentResourceDownloadSupportingDocument = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -9883,7 +10277,7 @@ export const useSupportingDocumentResourceDownloadSupportingDocument = <
     queryFn: ({ signal }) =>
       fetchSupportingDocumentResourceDownloadSupportingDocument(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -9912,7 +10306,7 @@ export type SupportingDocumentResourceReplaceSupportingDocumentTitleVariables =
 
 export const fetchSupportingDocumentResourceReplaceSupportingDocumentTitle = (
   variables: SupportingDocumentResourceReplaceSupportingDocumentTitleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SupportingDocument,
@@ -9936,7 +10330,7 @@ export const useSupportingDocumentResourceReplaceSupportingDocumentTitle = (
       SupportingDocumentResourceReplaceSupportingDocumentTitleVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -9945,7 +10339,7 @@ export const useSupportingDocumentResourceReplaceSupportingDocumentTitle = (
     SupportingDocumentResourceReplaceSupportingDocumentTitleVariables
   >({
     mutationFn: (
-      variables: SupportingDocumentResourceReplaceSupportingDocumentTitleVariables
+      variables: SupportingDocumentResourceReplaceSupportingDocumentTitleVariables,
     ) =>
       fetchSupportingDocumentResourceReplaceSupportingDocumentTitle({
         ...fetcherOptions,
@@ -9977,7 +10371,7 @@ export type ProposalResourceGetTargetsVariables = {
 
 export const fetchProposalResourceGetTargets = (
   variables: ProposalResourceGetTargetsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ProposalResourceGetTargetsResponse,
@@ -9994,7 +10388,7 @@ export const fetchProposalResourceGetTargets = (
   });
 
 export const useProposalResourceGetTargets = <
-  TData = ProposalResourceGetTargetsResponse
+  TData = ProposalResourceGetTargetsResponse,
 >(
   variables: ProposalResourceGetTargetsVariables,
   options?: Omit<
@@ -10004,7 +10398,7 @@ export const useProposalResourceGetTargets = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -10021,7 +10415,7 @@ export const useProposalResourceGetTargets = <
     queryFn: ({ signal }) =>
       fetchProposalResourceGetTargets(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -10044,7 +10438,7 @@ export type ProposalResourceAddNewTargetVariables = {
 
 export const fetchProposalResourceAddNewTarget = (
   variables: ProposalResourceAddNewTargetVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Target,
@@ -10068,7 +10462,7 @@ export const useProposalResourceAddNewTarget = (
       ProposalResourceAddNewTargetVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10101,7 +10495,7 @@ export type ProposalResourceGetTargetVariables = {
 
 export const fetchProposalResourceGetTarget = (
   variables: ProposalResourceGetTargetVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Target,
@@ -10117,7 +10511,7 @@ export const fetchProposalResourceGetTarget = (
     signal,
   });
 
-export const useProposalResourceGetTarget = <TData = Schemas.Target>(
+export const useProposalResourceGetTarget = <TData = Schemas.Target,>(
   variables: ProposalResourceGetTargetVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -10126,7 +10520,7 @@ export const useProposalResourceGetTarget = <TData = Schemas.Target>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -10143,7 +10537,7 @@ export const useProposalResourceGetTarget = <TData = Schemas.Target>(
     queryFn: ({ signal }) =>
       fetchProposalResourceGetTarget(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -10169,7 +10563,7 @@ export type ProposalResourceRemoveTargetVariables = {
 
 export const fetchProposalResourceRemoveTarget = (
   variables: ProposalResourceRemoveTargetVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -10193,7 +10587,7 @@ export const useProposalResourceRemoveTarget = (
       ProposalResourceRemoveTargetVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10226,7 +10620,7 @@ export type TechnicalGoalResourceGetTechnicalGoalsVariables = {
 
 export const fetchTechnicalGoalResourceGetTechnicalGoals = (
   variables: TechnicalGoalResourceGetTechnicalGoalsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     TechnicalGoalResourceGetTechnicalGoalsResponse,
@@ -10243,7 +10637,7 @@ export const fetchTechnicalGoalResourceGetTechnicalGoals = (
   });
 
 export const useTechnicalGoalResourceGetTechnicalGoals = <
-  TData = TechnicalGoalResourceGetTechnicalGoalsResponse
+  TData = TechnicalGoalResourceGetTechnicalGoalsResponse,
 >(
   variables: TechnicalGoalResourceGetTechnicalGoalsVariables,
   options?: Omit<
@@ -10253,7 +10647,7 @@ export const useTechnicalGoalResourceGetTechnicalGoals = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -10270,7 +10664,7 @@ export const useTechnicalGoalResourceGetTechnicalGoals = <
     queryFn: ({ signal }) =>
       fetchTechnicalGoalResourceGetTechnicalGoals(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -10294,7 +10688,7 @@ export type TechnicalGoalResourceAddTechnicalGoalVariables = {
 
 export const fetchTechnicalGoalResourceAddTechnicalGoal = (
   variables: TechnicalGoalResourceAddTechnicalGoalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.TechnicalGoal,
@@ -10318,7 +10712,7 @@ export const useTechnicalGoalResourceAddTechnicalGoal = (
       TechnicalGoalResourceAddTechnicalGoalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10355,7 +10749,7 @@ export type TechnicalGoalResourceGetTechnicalGoalVariables = {
 
 export const fetchTechnicalGoalResourceGetTechnicalGoal = (
   variables: TechnicalGoalResourceGetTechnicalGoalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.TechnicalGoal,
@@ -10372,7 +10766,7 @@ export const fetchTechnicalGoalResourceGetTechnicalGoal = (
   });
 
 export const useTechnicalGoalResourceGetTechnicalGoal = <
-  TData = Schemas.TechnicalGoal
+  TData = Schemas.TechnicalGoal,
 >(
   variables: TechnicalGoalResourceGetTechnicalGoalVariables,
   options?: Omit<
@@ -10382,7 +10776,7 @@ export const useTechnicalGoalResourceGetTechnicalGoal = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -10399,7 +10793,7 @@ export const useTechnicalGoalResourceGetTechnicalGoal = <
     queryFn: ({ signal }) =>
       fetchTechnicalGoalResourceGetTechnicalGoal(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -10426,7 +10820,7 @@ export type TechnicalGoalResourceRemoveTechnicalGoalVariables = {
 
 export const fetchTechnicalGoalResourceRemoveTechnicalGoal = (
   variables: TechnicalGoalResourceRemoveTechnicalGoalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -10450,7 +10844,7 @@ export const useTechnicalGoalResourceRemoveTechnicalGoal = (
       TechnicalGoalResourceRemoveTechnicalGoalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10459,7 +10853,7 @@ export const useTechnicalGoalResourceRemoveTechnicalGoal = (
     TechnicalGoalResourceRemoveTechnicalGoalVariables
   >({
     mutationFn: (
-      variables: TechnicalGoalResourceRemoveTechnicalGoalVariables
+      variables: TechnicalGoalResourceRemoveTechnicalGoalVariables,
     ) =>
       fetchTechnicalGoalResourceRemoveTechnicalGoal({
         ...fetcherOptions,
@@ -10490,7 +10884,7 @@ export type TechnicalGoalResourceReplacePerformanceParametersVariables = {
 
 export const fetchTechnicalGoalResourceReplacePerformanceParameters = (
   variables: TechnicalGoalResourceReplacePerformanceParametersVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.PerformanceParameters,
@@ -10514,7 +10908,7 @@ export const useTechnicalGoalResourceReplacePerformanceParameters = (
       TechnicalGoalResourceReplacePerformanceParametersVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10523,7 +10917,7 @@ export const useTechnicalGoalResourceReplacePerformanceParameters = (
     TechnicalGoalResourceReplacePerformanceParametersVariables
   >({
     mutationFn: (
-      variables: TechnicalGoalResourceReplacePerformanceParametersVariables
+      variables: TechnicalGoalResourceReplacePerformanceParametersVariables,
     ) =>
       fetchTechnicalGoalResourceReplacePerformanceParameters({
         ...fetcherOptions,
@@ -10554,7 +10948,7 @@ export type TechnicalGoalResourceAddSpectrumVariables = {
 
 export const fetchTechnicalGoalResourceAddSpectrum = (
   variables: TechnicalGoalResourceAddSpectrumVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ScienceSpectralWindow,
@@ -10578,7 +10972,7 @@ export const useTechnicalGoalResourceAddSpectrum = (
       TechnicalGoalResourceAddSpectrumVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10620,7 +11014,7 @@ export type TechnicalGoalResourceReplaceSpectrumVariables = {
 
 export const fetchTechnicalGoalResourceReplaceSpectrum = (
   variables: TechnicalGoalResourceReplaceSpectrumVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ScienceSpectralWindow,
@@ -10644,7 +11038,7 @@ export const useTechnicalGoalResourceReplaceSpectrum = (
       TechnicalGoalResourceReplaceSpectrumVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10685,7 +11079,7 @@ export type TechnicalGoalResourceRemoveSpectrumVariables = {
 
 export const fetchTechnicalGoalResourceRemoveSpectrum = (
   variables: TechnicalGoalResourceRemoveSpectrumVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -10709,7 +11103,7 @@ export const useTechnicalGoalResourceRemoveSpectrum = (
       TechnicalGoalResourceRemoveSpectrumVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10751,7 +11145,7 @@ export type TechnicalGoalResourceAddExpectedSpectralLineVariables = {
 
 export const fetchTechnicalGoalResourceAddExpectedSpectralLine = (
   variables: TechnicalGoalResourceAddExpectedSpectralLineVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ExpectedSpectralLine,
@@ -10775,7 +11169,7 @@ export const useTechnicalGoalResourceAddExpectedSpectralLine = (
       TechnicalGoalResourceAddExpectedSpectralLineVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10784,7 +11178,7 @@ export const useTechnicalGoalResourceAddExpectedSpectralLine = (
     TechnicalGoalResourceAddExpectedSpectralLineVariables
   >({
     mutationFn: (
-      variables: TechnicalGoalResourceAddExpectedSpectralLineVariables
+      variables: TechnicalGoalResourceAddExpectedSpectralLineVariables,
     ) =>
       fetchTechnicalGoalResourceAddExpectedSpectralLine({
         ...fetcherOptions,
@@ -10822,7 +11216,7 @@ export type TechnicalGoalResourceRemoveExpectedSpectralLineVariables = {
 
 export const fetchTechnicalGoalResourceRemoveExpectedSpectralLine = (
   variables: TechnicalGoalResourceRemoveExpectedSpectralLineVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -10846,7 +11240,7 @@ export const useTechnicalGoalResourceRemoveExpectedSpectralLine = (
       TechnicalGoalResourceRemoveExpectedSpectralLineVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -10855,7 +11249,7 @@ export const useTechnicalGoalResourceRemoveExpectedSpectralLine = (
     TechnicalGoalResourceRemoveExpectedSpectralLineVariables
   >({
     mutationFn: (
-      variables: TechnicalGoalResourceRemoveExpectedSpectralLineVariables
+      variables: TechnicalGoalResourceRemoveExpectedSpectralLineVariables,
     ) =>
       fetchTechnicalGoalResourceRemoveExpectedSpectralLine({
         ...fetcherOptions,
@@ -10881,7 +11275,7 @@ export type ProposalResourceGetObservingProposalTitleVariables = {
 
 export const fetchProposalResourceGetObservingProposalTitle = (
   variables: ProposalResourceGetObservingProposalTitleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -10897,7 +11291,9 @@ export const fetchProposalResourceGetObservingProposalTitle = (
     signal,
   });
 
-export const useProposalResourceGetObservingProposalTitle = <TData = undefined>(
+export const useProposalResourceGetObservingProposalTitle = <
+  TData = undefined,
+>(
   variables: ProposalResourceGetObservingProposalTitleVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -10906,7 +11302,7 @@ export const useProposalResourceGetObservingProposalTitle = <TData = undefined>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -10923,7 +11319,7 @@ export const useProposalResourceGetObservingProposalTitle = <TData = undefined>(
     queryFn: ({ signal }) =>
       fetchProposalResourceGetObservingProposalTitle(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -10945,7 +11341,7 @@ export type ProposalResourceReplaceTitleVariables = {
 
 export const fetchProposalResourceReplaceTitle = (
   variables: ProposalResourceReplaceTitleVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -10969,7 +11365,7 @@ export const useProposalResourceReplaceTitle = (
       ProposalResourceReplaceTitleVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -11007,7 +11403,7 @@ export type ProposalResourceValidateObservingProposalVariables = {
 
 export const fetchProposalResourceValidateObservingProposal = (
   variables: ProposalResourceValidateObservingProposalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ProposalValidation,
@@ -11024,7 +11420,7 @@ export const fetchProposalResourceValidateObservingProposal = (
   });
 
 export const useProposalResourceValidateObservingProposal = <
-  TData = Schemas.ProposalValidation
+  TData = Schemas.ProposalValidation,
 >(
   variables: ProposalResourceValidateObservingProposalVariables,
   options?: Omit<
@@ -11034,7 +11430,7 @@ export const useProposalResourceValidateObservingProposal = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11051,7 +11447,7 @@ export const useProposalResourceValidateObservingProposal = <
     queryFn: ({ signal }) =>
       fetchProposalResourceValidateObservingProposal(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11069,7 +11465,7 @@ export type ResourceTypeResourceGetAllResourceTypesVariables =
 
 export const fetchResourceTypeResourceGetAllResourceTypes = (
   variables: ResourceTypeResourceGetAllResourceTypesVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ResourceTypeResourceGetAllResourceTypesResponse,
@@ -11081,7 +11477,7 @@ export const fetchResourceTypeResourceGetAllResourceTypes = (
   >({ url: "/pst/api/resourceTypes", method: "get", ...variables, signal });
 
 export const useResourceTypeResourceGetAllResourceTypes = <
-  TData = ResourceTypeResourceGetAllResourceTypesResponse
+  TData = ResourceTypeResourceGetAllResourceTypesResponse,
 >(
   variables: ResourceTypeResourceGetAllResourceTypesVariables,
   options?: Omit<
@@ -11091,7 +11487,7 @@ export const useResourceTypeResourceGetAllResourceTypes = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11108,7 +11504,7 @@ export const useResourceTypeResourceGetAllResourceTypes = <
     queryFn: ({ signal }) =>
       fetchResourceTypeResourceGetAllResourceTypes(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11124,7 +11520,7 @@ export type ResourceTypeResourceAddNewResourceTypeVariables = {
 
 export const fetchResourceTypeResourceAddNewResourceType = (
   variables: ResourceTypeResourceAddNewResourceTypeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ResourceType,
@@ -11143,7 +11539,7 @@ export const useResourceTypeResourceAddNewResourceType = (
       ResourceTypeResourceAddNewResourceTypeVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -11176,7 +11572,7 @@ export type ResourceTypeResourceGetResourceTypeVariables = {
 
 export const fetchResourceTypeResourceGetResourceType = (
   variables: ResourceTypeResourceGetResourceTypeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.ResourceType,
@@ -11193,7 +11589,7 @@ export const fetchResourceTypeResourceGetResourceType = (
   });
 
 export const useResourceTypeResourceGetResourceType = <
-  TData = Schemas.ResourceType
+  TData = Schemas.ResourceType,
 >(
   variables: ResourceTypeResourceGetResourceTypeVariables,
   options?: Omit<
@@ -11203,7 +11599,7 @@ export const useResourceTypeResourceGetResourceType = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11220,7 +11616,7 @@ export const useResourceTypeResourceGetResourceType = <
     queryFn: ({ signal }) =>
       fetchResourceTypeResourceGetResourceType(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11243,7 +11639,7 @@ export type ResourceTypeResourceRemoveResourceTypeVariables = {
 
 export const fetchResourceTypeResourceRemoveResourceType = (
   variables: ResourceTypeResourceRemoveResourceTypeVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -11267,7 +11663,7 @@ export const useResourceTypeResourceRemoveResourceType = (
       ResourceTypeResourceRemoveResourceTypeVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -11293,7 +11689,7 @@ export type ReviewerResourceGetReviewersVariables =
 
 export const fetchReviewerResourceGetReviewers = (
   variables: ReviewerResourceGetReviewersVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     ReviewerResourceGetReviewersResponse,
@@ -11305,7 +11701,7 @@ export const fetchReviewerResourceGetReviewers = (
   >({ url: "/pst/api/reviewers", method: "get", ...variables, signal });
 
 export const useReviewerResourceGetReviewers = <
-  TData = ReviewerResourceGetReviewersResponse
+  TData = ReviewerResourceGetReviewersResponse,
 >(
   variables: ReviewerResourceGetReviewersVariables,
   options?: Omit<
@@ -11315,7 +11711,7 @@ export const useReviewerResourceGetReviewers = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11332,7 +11728,7 @@ export const useReviewerResourceGetReviewers = <
     queryFn: ({ signal }) =>
       fetchReviewerResourceGetReviewers(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11347,7 +11743,7 @@ export type ReviewerResourceAddReviewerVariables = {
 
 export const fetchReviewerResourceAddReviewer = (
   variables: ReviewerResourceAddReviewerVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Reviewer,
@@ -11366,7 +11762,7 @@ export const useReviewerResourceAddReviewer = (
       ReviewerResourceAddReviewerVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -11395,7 +11791,7 @@ export type ReviewerResourceGetReviewerVariables = {
 
 export const fetchReviewerResourceGetReviewer = (
   variables: ReviewerResourceGetReviewerVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.Reviewer,
@@ -11411,7 +11807,7 @@ export const fetchReviewerResourceGetReviewer = (
     signal,
   });
 
-export const useReviewerResourceGetReviewer = <TData = Schemas.Reviewer>(
+export const useReviewerResourceGetReviewer = <TData = Schemas.Reviewer,>(
   variables: ReviewerResourceGetReviewerVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -11420,7 +11816,7 @@ export const useReviewerResourceGetReviewer = <TData = Schemas.Reviewer>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11437,7 +11833,7 @@ export const useReviewerResourceGetReviewer = <TData = Schemas.Reviewer>(
     queryFn: ({ signal }) =>
       fetchReviewerResourceGetReviewer(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11460,7 +11856,7 @@ export type ReviewerResourceRemoveReviewerVariables = {
 
 export const fetchReviewerResourceRemoveReviewer = (
   variables: ReviewerResourceRemoveReviewerVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     undefined,
@@ -11484,7 +11880,7 @@ export const useReviewerResourceRemoveReviewer = (
       ReviewerResourceRemoveReviewerVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -11511,7 +11907,7 @@ export type SimbadResourceSimbadFindTargetVariables = {
 
 export const fetchSimbadResourceSimbadFindTarget = (
   variables: SimbadResourceSimbadFindTargetVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SimbadTargetResult,
@@ -11523,7 +11919,7 @@ export const fetchSimbadResourceSimbadFindTarget = (
   >({ url: "/pst/api/simbad", method: "get", ...variables, signal });
 
 export const useSimbadResourceSimbadFindTarget = <
-  TData = Schemas.SimbadTargetResult
+  TData = Schemas.SimbadTargetResult,
 >(
   variables: SimbadResourceSimbadFindTargetVariables,
   options?: Omit<
@@ -11533,7 +11929,7 @@ export const useSimbadResourceSimbadFindTarget = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11550,7 +11946,7 @@ export const useSimbadResourceSimbadFindTarget = <
     queryFn: ({ signal }) =>
       fetchSimbadResourceSimbadFindTarget(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11570,7 +11966,7 @@ export type SpaceFrameResourceGetSpaceFrameVariables = {
 
 export const fetchSpaceFrameResourceGetSpaceFrame = (
   variables: SpaceFrameResourceGetSpaceFrameVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SpaceFrame,
@@ -11586,7 +11982,7 @@ export const fetchSpaceFrameResourceGetSpaceFrame = (
     signal,
   });
 
-export const useSpaceFrameResourceGetSpaceFrame = <TData = Schemas.SpaceFrame>(
+export const useSpaceFrameResourceGetSpaceFrame = <TData = Schemas.SpaceFrame,>(
   variables: SpaceFrameResourceGetSpaceFrameVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -11595,7 +11991,7 @@ export const useSpaceFrameResourceGetSpaceFrame = <TData = Schemas.SpaceFrame>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11612,7 +12008,7 @@ export const useSpaceFrameResourceGetSpaceFrame = <TData = Schemas.SpaceFrame>(
     queryFn: ({ signal }) =>
       fetchSpaceFrameResourceGetSpaceFrame(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11632,7 +12028,7 @@ export type SpaceSystemResourceGetSpaceSystemVariables = {
 
 export const fetchSpaceSystemResourceGetSpaceSystem = (
   variables: SpaceSystemResourceGetSpaceSystemVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SpaceSys,
@@ -11648,7 +12044,7 @@ export const fetchSpaceSystemResourceGetSpaceSystem = (
     signal,
   });
 
-export const useSpaceSystemResourceGetSpaceSystem = <TData = Schemas.SpaceSys>(
+export const useSpaceSystemResourceGetSpaceSystem = <TData = Schemas.SpaceSys,>(
   variables: SpaceSystemResourceGetSpaceSystemVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -11657,7 +12053,7 @@ export const useSpaceSystemResourceGetSpaceSystem = <TData = Schemas.SpaceSys>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11674,7 +12070,7 @@ export const useSpaceSystemResourceGetSpaceSystem = <TData = Schemas.SpaceSys>(
     queryFn: ({ signal }) =>
       fetchSpaceSystemResourceGetSpaceSystem(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11696,7 +12092,7 @@ export type SubjectMapResourceSubjectMapListVariables = {
 
 export const fetchSubjectMapResourceSubjectMapList = (
   variables: SubjectMapResourceSubjectMapListVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     SubjectMapResourceSubjectMapListResponse,
@@ -11708,7 +12104,7 @@ export const fetchSubjectMapResourceSubjectMapList = (
   >({ url: "/pst/api/subjectMap", method: "get", ...variables, signal });
 
 export const useSubjectMapResourceSubjectMapList = <
-  TData = SubjectMapResourceSubjectMapListResponse
+  TData = SubjectMapResourceSubjectMapListResponse,
 >(
   variables: SubjectMapResourceSubjectMapListVariables,
   options?: Omit<
@@ -11718,7 +12114,7 @@ export const useSubjectMapResourceSubjectMapList = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11735,7 +12131,7 @@ export const useSubjectMapResourceSubjectMapList = <
     queryFn: ({ signal }) =>
       fetchSubjectMapResourceSubjectMapList(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11756,7 +12152,7 @@ export type SubjectMapResourceCreateFromUserVariables = {
 
 export const fetchSubjectMapResourceCreateFromUser = (
   variables: SubjectMapResourceCreateFromUserVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SubjectMap,
@@ -11775,7 +12171,7 @@ export const useSubjectMapResourceCreateFromUser = (
       SubjectMapResourceCreateFromUserVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
@@ -11802,7 +12198,7 @@ export type SubjectMapResourceExistingUserUIDsVariables =
 
 export const fetchSubjectMapResourceExistingUserUIDs = (
   variables: SubjectMapResourceExistingUserUIDsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     SubjectMapResourceExistingUserUIDsResponse,
@@ -11819,7 +12215,7 @@ export const fetchSubjectMapResourceExistingUserUIDs = (
   });
 
 export const useSubjectMapResourceExistingUserUIDs = <
-  TData = SubjectMapResourceExistingUserUIDsResponse
+  TData = SubjectMapResourceExistingUserUIDsResponse,
 >(
   variables: SubjectMapResourceExistingUserUIDsVariables,
   options?: Omit<
@@ -11829,7 +12225,7 @@ export const useSubjectMapResourceExistingUserUIDs = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11846,7 +12242,7 @@ export const useSubjectMapResourceExistingUserUIDs = <
     queryFn: ({ signal }) =>
       fetchSubjectMapResourceExistingUserUIDs(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11861,7 +12257,7 @@ export type SubjectMapResourceCheckForNewUsersVariables =
 
 export const fetchSubjectMapResourceCheckForNewUsers = (
   variables: SubjectMapResourceCheckForNewUsersVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     number,
@@ -11877,7 +12273,7 @@ export const fetchSubjectMapResourceCheckForNewUsers = (
     signal,
   });
 
-export const useSubjectMapResourceCheckForNewUsers = <TData = number>(
+export const useSubjectMapResourceCheckForNewUsers = <TData = number,>(
   variables: SubjectMapResourceCheckForNewUsersVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -11886,7 +12282,7 @@ export const useSubjectMapResourceCheckForNewUsers = <TData = number>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11903,7 +12299,7 @@ export const useSubjectMapResourceCheckForNewUsers = <TData = number>(
     queryFn: ({ signal }) =>
       fetchSubjectMapResourceCheckForNewUsers(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -11922,7 +12318,7 @@ export type SubjectMapResourceSubjectMapVariables = {
 
 export const fetchSubjectMapResourceSubjectMap = (
   variables: SubjectMapResourceSubjectMapVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   proposalToolFetch<
     Schemas.SubjectMap,
@@ -11933,7 +12329,7 @@ export const fetchSubjectMapResourceSubjectMap = (
     SubjectMapResourceSubjectMapPathParams
   >({ url: "/pst/api/subjectMap/{id}", method: "get", ...variables, signal });
 
-export const useSubjectMapResourceSubjectMap = <TData = Schemas.SubjectMap>(
+export const useSubjectMapResourceSubjectMap = <TData = Schemas.SubjectMap,>(
   variables: SubjectMapResourceSubjectMapVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -11942,7 +12338,7 @@ export const useSubjectMapResourceSubjectMap = <TData = Schemas.SubjectMap>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
@@ -11959,7 +12355,7 @@ export const useSubjectMapResourceSubjectMap = <TData = Schemas.SubjectMap>(
     queryFn: ({ signal }) =>
       fetchSubjectMapResourceSubjectMap(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -12209,8 +12605,23 @@ export type QueryOperation =
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/justifications/{which}";
-      operationId: "proposalResourceGetJustification";
-      variables: ProposalResourceGetJustificationVariables;
+      operationId: "justificationsResourceGetJustification";
+      variables: JustificationsResourceGetJustificationVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf";
+      operationId: "justificationsResourceCreatePDFLaTex";
+      variables: JustificationsResourceCreatePDFLaTexVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf/download";
+      operationId: "justificationsResourceDownloadLatexPdf";
+      variables: JustificationsResourceDownloadLatexPdfVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource";
+      operationId: "justificationsResourceGetLatexResourceFiles";
+      variables: JustificationsResourceGetLatexResourceFilesVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/kind";

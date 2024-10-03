@@ -1,7 +1,7 @@
 import {ReactElement} from "react";
 import {useParams} from "react-router-dom";
 import {
-    useProposalResourceGetJustification,
+    useJustificationsResourceGetJustification,
 } from "src/generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "src/constants.tsx";
 import {Justification} from "src/generated/proposalToolSchemas.ts";
@@ -23,7 +23,7 @@ export default function JustificationsPanel() : ReactElement {
         data : scientific,
         error : scientificError,
         isLoading : scientificIsLoading,
-    } = useProposalResourceGetJustification(
+    } = useJustificationsResourceGetJustification(
         { pathParams: { proposalCode: Number(selectedProposalCode), which: "scientific" } }
     );
 
@@ -31,7 +31,7 @@ export default function JustificationsPanel() : ReactElement {
         data : technical,
         error : technicalError,
         isLoading : technicalIsLoading,
-    } = useProposalResourceGetJustification(
+    } = useJustificationsResourceGetJustification(
         { pathParams: { proposalCode: Number(selectedProposalCode), which: "technical" } }
     );
 

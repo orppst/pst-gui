@@ -1741,9 +1741,21 @@ export type Unit = {
 };
 
 /**
+ * Must conform to definition of unit in VOUnit spec.
+ */
+export type Unit1 = {
+  value?: string;
+};
+
+/**
  * @format binary
  */
 export type UploadItemSchema = Blob;
+
+/**
+ * @format binary
+ */
+export type UploadItemSchema1 = Blob;
 
 export type UserConsentRepresentation = {
   clientId?: string;
