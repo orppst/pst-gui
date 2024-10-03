@@ -8676,7 +8676,7 @@ export type JustificationsResourceAddLatexResourceFileError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type JustificationsResourceAddLatexResourceFileRequestBody = {
-  document?: Schemas.UploadItemSchema;
+  document?: Schemas.UploadLatexResourceSchema;
 };
 
 export type JustificationsResourceAddLatexResourceFileVariables = {
@@ -9957,7 +9957,7 @@ export type SupportingDocumentResourceUploadSupportingDocumentError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type SupportingDocumentResourceUploadSupportingDocumentRequestBody = {
-  document?: Schemas.UploadItemSchema1;
+  document?: Schemas.UploadItemSchema;
   title?: string;
 };
 
@@ -10097,7 +10097,7 @@ export type SupportingDocumentResourceReplaceSupportingDocumentError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type SupportingDocumentResourceReplaceSupportingDocumentRequestBody = {
-  document?: Schemas.UploadItemSchema1;
+  document?: Schemas.UploadItemSchema;
 };
 
 export type SupportingDocumentResourceReplaceSupportingDocumentVariables = {

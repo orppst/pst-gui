@@ -1755,7 +1755,7 @@ export type UploadItemSchema = Blob;
 /**
  * @format binary
  */
-export type UploadItemSchema1 = Blob;
+export type UploadLatexResourceSchema = Blob;
 
 export type UserConsentRepresentation = {
   clientId?: string;
