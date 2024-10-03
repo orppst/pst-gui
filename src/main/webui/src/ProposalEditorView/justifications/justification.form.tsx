@@ -1,5 +1,5 @@
 import {ReactElement, SyntheticEvent} from "react";
-import {Grid, Paper, Select, Stack} from "@mantine/core";
+import {Grid, Group, Paper, Select} from "@mantine/core";
 import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -73,6 +73,7 @@ const SelectTextFormat =
     ({form}: {form: UseFormReturnType<Justification>}) => {
     return (
         <Select
+            mt={10}
             placeholder={"text format"}
             data = {[
                 {value: 'latex', label: 'Latex'},
@@ -137,29 +138,28 @@ export default function JustificationForm(props: JustificationProps)
     return (
         <>
             <form onSubmit={handleSubmit}>
-            <ContextualHelpButton messageId="MaintSciJust" />
-            <Stack>
-               <Grid  grow>
-                    <Grid.Col span={{base: 6, md: 8, lg: 9}}>
+                <ContextualHelpButton messageId="MaintSciJust" />
+               <Grid columns={10}>
+                    <Grid.Col span={{base: 10, md: 6, lg: 8}} order={{base:2, md: 1, lg: 1}}>
                         <JustificationTextArea form={form} />
                     </Grid.Col>
-                    <Grid.Col span={{base: 4, md: 2, lg: 1}}>
+                    <Grid.Col span={{base: 10, md: 4, lg: 2}} order={{base:1, md: 2, lg: 2}}>
                         <SelectTextFormat form={form} />
                     </Grid.Col>
+                   <Grid.Col span={{base: 10, md: 10, lg: 10}} order={{base:3, md: 3, lg: 3}}>
+                       {form.getValues().format==='latex' &&
+                           PreviewJustification(form.getValues().format!, form.getValues().text ?? "")}
+                       <Group justify={"right"}>
+                           <FormSubmitButton form={form} />
+                           <CancelButton
+                               onClickEvent={handleCancel}
+                               toolTipLabel={"Go back without saving"}
+                           />
+                       </Group>
+                   </Grid.Col>
                 </Grid>
-            </Stack>
-            <p> </p>
-            <Grid>
-              <Grid.Col span={8}></Grid.Col>
-                 <FormSubmitButton form={form} />
-                 <CancelButton
-                    onClickEvent={handleCancel}
-                    toolTipLabel={"Go back without saving"}/>
-            </Grid>
-
             </form>
-            {form.getValues().format==='latex' &&
-                PreviewJustification(form.getValues().format!, form.getValues().text ?? "")}
+
         </>
     );
 }
