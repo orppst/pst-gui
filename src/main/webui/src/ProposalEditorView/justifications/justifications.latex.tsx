@@ -1,10 +1,16 @@
 import {ReactElement} from "react";
 import {Button, Container, FileButton, Group, Loader, ScrollArea, Table} from "@mantine/core";
 import UploadButton from "../../commonButtons/upload.tsx";
-import {useJustificationsResourceGetLatexResourceFiles} from "../../generated/proposalToolComponents.ts";
+import {
+    fetchJustificationsResourceAddLatexResourceFile, fetchJustificationsResourceRemoveLatexResourceFile,
+    useJustificationsResourceGetLatexResourceFiles
+} from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import DeleteButton from "../../commonButtons/delete.tsx";
 import {IconPdf, IconSkull} from "@tabler/icons-react";
+import {MAX_SUPPORTING_DOCUMENT_SIZE} from "../../constants.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 export default
 function JustificationLatex({which} : {which: string} ) : ReactElement {
@@ -15,6 +21,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
         - Compile button
         - Download button
         - Display list of uploaded files each with a delete button
+        - Text area to show results of compilation
      */
     const { selectedProposalCode } = useParams();
 
@@ -58,7 +65,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                         <Table.Td>
                             <DeleteButton
                                 toolTipLabel={"remove this file"}
-                                onClick={handleRemoveFile}
+                                onClick={() => handleRemoveFile(uploadedFile)}
                             />
                         </Table.Td>
                     </Table.Tr>
@@ -67,11 +74,57 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
         </Table.Tbody>
     )
 
+    //argument expected to have type 'File | null'
+    const handleUpload = (fileToUpload: File | null) => {
+        if (fileToUpload) {
+            if (fileToUpload.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
+                notifyError("File upload failed", "The file " + fileToUpload.name
+                    + " is too large at " + fileToUpload.size/1024/1024
+                    + "MB. Maximum size is "
+                    + MAX_SUPPORTING_DOCUMENT_SIZE/1024/1024 + "MB")
+            } else {
+                const formData = new FormData();
+                formData.append("document", fileToUpload);
 
+                fetchJustificationsResourceAddLatexResourceFile(
+                    {
+                        //@ts-ignore
+                        body: formData,
+                        pathParams: {proposalCode: Number(selectedProposalCode), which: which},
+                        //@ts-ignore
+                        headers: {"Content-Type": "multipart/form-data"}
+                    }
+                )
+                    .then(() => {
+                        notifySuccess("Upload successful", fileToUpload.name + " has been saved")
+                    })
+                    .catch((error) => {
+                        notifyError("Upload failed", getErrorMessage(error))
+                    })
+            }
+        } else {
+            notifyError("Unexpected error", "failed to open file for upload");
+        }
+    }
 
-    const handleUpload = () => {console.log("file upload clicked")}
+    const handleRemoveFile = (fileName: string) => {
 
-    const handleRemoveFile = () => {console.log("file remove clicked")}
+        fetchJustificationsResourceRemoveLatexResourceFile(
+            {
+                pathParams:{proposalCode:Number(selectedProposalCode), which: which},
+                //@ts-ignore
+                body: fileName,
+                // @ts-ignore
+                headers: {"Content-Type": "text/plain"}
+            }
+        )
+            .then( () => {
+                notifySuccess("Removed file", "File: " + fileName + " deleted")
+            })
+            .catch((error) => {
+                notifyError("Deletion Failed", getErrorMessage(error))
+            })
+    }
 
     const handleCompile = () => {console.log("compile clicked")}
 
@@ -87,7 +140,9 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
             </ScrollArea>
 
             <Group grow>
-                <FileButton onChange={handleUpload}>
+                <FileButton
+                    onChange={handleUpload}
+                >
                     {
                         (props) =>
                             <UploadButton
