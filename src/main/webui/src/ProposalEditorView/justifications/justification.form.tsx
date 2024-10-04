@@ -1,5 +1,5 @@
 import {ReactElement, useState} from "react";
-import {Fieldset, Grid, Group, Paper, Select} from "@mantine/core";
+import {Fieldset, Grid, Group, Paper, ScrollArea, Select} from "@mantine/core";
 import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -35,6 +35,7 @@ const JustificationTextArea =
     ({form, format, unsaved} : {form: UseFormReturnType<{text: string}>, format: TextFormats, unsaved: (val: boolean)=>void})
         : ReactElement => {
         return (
+            <ScrollArea h={250} type={"auto"}>
             <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
                 <Editor
                     value={form.getValues().text ?? ""}
@@ -56,6 +57,7 @@ const JustificationTextArea =
                     maxLength={MAX_CHARS_FOR_JUSTIFICATION}
                 />
             </Paper>
+            </ScrollArea>
         )
     }
 
