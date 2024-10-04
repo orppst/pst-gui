@@ -1,9 +1,10 @@
-import {ReactElement} from "react";
-import {Button, Container, FileButton, Group, Loader, ScrollArea, Table} from "@mantine/core";
+import {ReactElement, useEffect, useState} from "react";
+import {Button, FileButton, Group, ScrollArea, Table, Text} from "@mantine/core";
 import UploadButton from "../../commonButtons/upload.tsx";
 import {
-    fetchJustificationsResourceAddLatexResourceFile, fetchJustificationsResourceRemoveLatexResourceFile,
-    useJustificationsResourceGetLatexResourceFiles
+    fetchJustificationsResourceAddLatexResourceFile,
+    fetchJustificationsResourceGetLatexResourceFiles,
+    fetchJustificationsResourceRemoveLatexResourceFile,
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import DeleteButton from "../../commonButtons/delete.tsx";
@@ -11,6 +12,7 @@ import {IconPdf, IconSkull} from "@tabler/icons-react";
 import {MAX_SUPPORTING_DOCUMENT_SIZE} from "../../constants.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {modals} from "@mantine/modals";
 
 export default
 function JustificationLatex({which} : {which: string} ) : ReactElement {
@@ -25,24 +27,22 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
      */
     const { selectedProposalCode } = useParams();
 
-    const uploadedFiles =
-        useJustificationsResourceGetLatexResourceFiles(
-            {pathParams: {proposalCode: Number(selectedProposalCode), which: which}}
-    );
+    const [resourceFiles, setResourceFiles] = useState<string[]>([])
 
-    if (uploadedFiles.error) {
-        return(
-            <Container>
-                Error finding uploaded Latex resource files
-            </Container>
-        )
-    }
+    //count tracks files uploaded and removed
+    const [count, setCount] = useState(0);
 
-    if (uploadedFiles.isLoading) {
-        return (
-            <Loader color={"orange"}/>
-        )
-    }
+    useEffect(() => {
+        fetchJustificationsResourceGetLatexResourceFiles({
+            pathParams: {proposalCode: Number(selectedProposalCode), which: which}
+        })
+            .then((data) => {
+                setResourceFiles(data)
+            })
+            .catch((error) => {
+                notifyError("Failed to fetch uploaded files", getErrorMessage(error))
+            })
+    }, [count]);
 
     const resourceFilesHeader = () : ReactElement => (
         <Table.Thead>
@@ -53,10 +53,10 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
         </Table.Thead>
     )
 
-    //uploadedFile name will be unique to this Justification
+    //uploadedFile names are unique within Justifications
     const resourceFilesBody = () : ReactElement => (
         <Table.Tbody>
-            {uploadedFiles.data?.map((uploadedFile) => {
+            {resourceFiles.map((uploadedFile) => {
                 return (
                     <Table.Tr key={uploadedFile}>
                         <Table.Td>
@@ -65,7 +65,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                         <Table.Td>
                             <DeleteButton
                                 toolTipLabel={"remove this file"}
-                                onClick={() => handleRemoveFile(uploadedFile)}
+                                onClick={() => openRemoveFileConfirmModal(uploadedFile)}
                             />
                         </Table.Td>
                     </Table.Tr>
@@ -97,6 +97,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                 )
                     .then(() => {
                         notifySuccess("Upload successful", fileToUpload.name + " has been saved")
+                        setCount(count + 1); //trigger re-fetch of uploaded files
                     })
                     .catch((error) => {
                         notifyError("Upload failed", getErrorMessage(error))
@@ -108,7 +109,6 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
     }
 
     const handleRemoveFile = (fileName: string) => {
-
         fetchJustificationsResourceRemoveLatexResourceFile(
             {
                 pathParams:{proposalCode:Number(selectedProposalCode), which: which},
@@ -120,15 +120,34 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
         )
             .then( () => {
                 notifySuccess("Removed file", "File: " + fileName + " deleted")
+                setCount(count - 1) //maintain the count, re-trigger fetch of uploaded files
             })
             .catch((error) => {
                 notifyError("Deletion Failed", getErrorMessage(error))
             })
     }
 
+    const openRemoveFileConfirmModal = (fileName: string) =>
+        modals.openConfirmModal({
+            title: "Are you sure you want to remove " + fileName + "?",
+            centered: true,
+            children: (
+                <Text size={"sm"}>
+                    This will delete the file from the server. Please confirm action.
+                </Text>
+            ),
+            labels: {confirm: "Delete", cancel: "No, don't remove"},
+            confirmProps: {color: "red"},
+            onConfirm: () => handleRemoveFile(fileName)
+        })
+
     const handleCompile = () => {console.log("compile clicked")}
 
     const handleDownload = () => {console.log("download clicked")}
+
+
+    //Dev note: I would like to use the 'accept={"<content-type>"}' property of FileButton but cannot
+    //identify the correct string for *.bib files, tried 'application/x-bibtex' and 'application/octet-stream'
 
     return (
         <>
@@ -167,8 +186,6 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                 </Button>
 
             </Group>
-
-
         </>
     )
 }
