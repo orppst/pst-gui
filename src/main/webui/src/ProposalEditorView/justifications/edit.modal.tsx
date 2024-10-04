@@ -1,9 +1,10 @@
-import {ReactElement} from "react";
+import {ReactElement, useState} from "react";
 import ViewEditButton from "src/commonButtons/viewEdit.tsx";
-import {Modal} from "@mantine/core";
+import {Modal, Text} from "@mantine/core";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import JustificationForm from "./justification.form.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
+import {modals} from "@mantine/modals";
 
 
 function capitalizeFirstChar(string : string) : string {
@@ -13,6 +14,7 @@ function capitalizeFirstChar(string : string) : string {
 export default function JustificationsEditModal(justificationProps : JustificationProps)
     : ReactElement {
 
+    const [unsavedData, setUnsavedData] = useState(false);
     const isMobile = useMediaQuery('(max-width: 50em)');
 
     const EditButton = () : ReactElement => {
@@ -23,7 +25,6 @@ export default function JustificationsEditModal(justificationProps : Justificati
             />
         )
     }
-
 
     const ModalHtml = () : ReactElement => {
         return (
@@ -39,9 +40,29 @@ export default function JustificationsEditModal(justificationProps : Justificati
         )
     }
 
-
     const [opened, {close, open}] = useDisclosure();
-    const props = {...justificationProps, closeModal: () =>{close()}}
+    const props = {
+        ...justificationProps,
+        unsavedChanges: (value: boolean) => setUnsavedData(value),
+        closeModal: () =>{
+        if(unsavedData) {
+            modals.openConfirmModal({
+                title: "You have unsaved changes",
+                centered: true,
+                children: (
+                    <Text size={"sm"}>
+                        Do you want to exit with out saving?
+                    </Text>
+                ),
+                labels: {confirm: "Yes, discard changes", cancel: "No, go back"},
+                confirmProps: {color: "red"},
+                onConfirm: () => {close(); setUnsavedData(false);}
+            })
+        } else {
+            close();
+            justificationProps.onChange(); //trigger re-fetch of justifications, something may have changed
+        }
+    }}
 
     return (
         <>

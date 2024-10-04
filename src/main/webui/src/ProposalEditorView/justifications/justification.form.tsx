@@ -1,14 +1,13 @@
-import {ReactElement, SyntheticEvent} from "react";
+import {ReactElement, useState} from "react";
 import {Fieldset, Grid, Group, Paper, Select} from "@mantine/core";
 import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
 import {fetchJustificationsResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
-import {useNavigate,useParams } from "react-router-dom";
+import {useParams } from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
-import CancelButton from "src/commonButtons/cancel.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
@@ -21,115 +20,118 @@ import "prismjs/components/prism-asciidoc.js";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import JustificationLatex from "./justifications.latex.tsx";
 
+/*
+    Form contains the Justification text only. We save the Justification format
+    immediately on the user selecting a different format. This avoids the user having
+    to remember to "save" the justification when changing from another format to 'Latex'
+    and attempting to upload resource files, which will be rejected by the API as the
+    Justification is not 'Latex' format.
+ */
 
+
+//Dev Note: if you try to embed this const function inside the export default function
+// the text area of the Editor loses focus immediately after a single keystroke; I've no idea why.
 const JustificationTextArea =
-    ({form} : {form: UseFormReturnType<Justification>}): ReactElement => {
-    switch(form.getValues().format!) {
-        case "asciidoc":
-            return (
-                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
-                    <Editor
-                        value={form.getValues().text ?? ""}
-                        onValueChange={newValue =>
-                            form.setValues({text: newValue, format: form.getValues().format})}
-                        highlight={code => highlight(code ?? "", languages.asciidoc, 'asciidoc')}
-                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
-                        {...form.getInputProps('text')}
-                    />
-                </Paper>
-            );
-        case "latex":
-            return (
-                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
-                    <Editor
-                        value={form.getValues().text ?? ""}
-                        onValueChange={newValue =>
-                            form.setValues({text: newValue, format: form.getValues().format})}
-                        highlight={code => highlight(code ?? "", languages.latex, 'latex')}
-                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
-                        {...form.getInputProps('text')}
-                    />
-                </Paper>
-            );
-        case "rst":
-            return (
-                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
-                    <Editor
-                        value={form.getValues().text ?? ""}
-                        onValueChange={newValue =>
-                            form.setValues({text: newValue, format: form.getValues().format})}
-                        highlight={code => highlight(code ?? "", languages.rest, 'rest')}
-                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
-                        {...form.getInputProps('text')}
-                    />
-                </Paper>
-            );
+    ({form, format, unsaved} : {form: UseFormReturnType<{text: string}>, format: TextFormats, unsaved: (val: boolean)=>void})
+        : ReactElement => {
+        return (
+            <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
+                <Editor
+                    value={form.getValues().text ?? ""}
+                    onValueChange={newValue => {
+                        form.setValues({text: newValue});
+                        unsaved(form.isDirty());
+                    }}
+                    highlight={
+                        code => {
+                            switch (format) {
+                                case "asciidoc":
+                                    return highlight(code ?? "", languages.asciidoc, 'asciidoc');
+                                case "latex":
+                                    return highlight(code ?? "", languages.latex, 'latex');
+                                case "rst":
+                                    return highlight(code ?? "", languages.rest, 'rest')}
+                        }
+                    }
+                    maxLength={MAX_CHARS_FOR_JUSTIFICATION}
+                />
+            </Paper>
+        )
     }
-}
-
-const SelectTextFormat =
-    ({form}: {form: UseFormReturnType<Justification>}) => {
-    return (
-        <Select
-            mt={10}
-            placeholder={"text format"}
-            data = {[
-                {value: 'latex', label: 'Latex'},
-                {value: 'rst', label: 'RST'},
-                {value: 'asciidoc', label: 'ASCIIDOC'}
-            ]}
-            {...form.getInputProps('format')}
-        />
-    )
-}
-
 
 export default
 function JustificationForm(props: JustificationProps) : ReactElement {
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
 
-    const DEFAULT_JUSTIFICATION : Justification = {text: "", format: "asciidoc" };
+    const [justification, setJustification] = useState<Justification>(props.justification)
 
-    const form: UseFormReturnType<Justification> =
-        useForm<Justification>({
-            initialValues: props.justification ?? DEFAULT_JUSTIFICATION ,
+    const form: UseFormReturnType<{ text: string }> =
+        useForm<{text: string}>({
+            initialValues: {text: props.justification.text ?? "" },
             validate: {
                 text: (value: string | undefined) =>
                     (value === "" || value === undefined ?
-                        "Text cannot be empty for a " + props.which + " justification" : null),
-                format: (value: TextFormats | undefined ) =>
-                    (value !== "latex" && value !== "rst" && value !== "asciidoc" ?
-                        'Text format one of: latex, rst, or asciidoc' : null)
+                        "Text cannot be empty for a " + props.which + " justification" : null)
             }
         });
 
     const handleSubmit = form.onSubmit((values) => {
-        //create new proposal does not permit having null justifications i.e.,
-        //here we only ever 'update' an existing proposal
         fetchJustificationsResourceUpdateJustification({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which
             },
-            body: {text: values.text, format: values.format}
+            body: {text: values.text, format: justification.format}
         })
             .then(()=>queryClient.invalidateQueries())
             .then(() => {
-                notifySuccess("Update successful", props.which + " justification updated");
+                notifySuccess("Update successful", props.which + " justification text updated");
+                props.unsavedChanges!(false); // changes have been saved
+                props.onChange(); //trigger re-fetch of Justifications
             })
-            .then(props.closeModal)
             .catch((error) => {
                 console.error(error);
                 notifyError("Update justification error", getErrorMessage(error))
             });
     });
 
-    const navigate = useNavigate();
+    const handleFormatUpdate = (update: Justification) => {
+        setJustification(update);
 
-    function handleCancel(event: SyntheticEvent) {
-        event.preventDefault();
-        navigate("../",{relative:"path"})
+        fetchJustificationsResourceUpdateJustification({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                which: props.which
+            },
+            body: update
+        })
+            .then(() => {
+                notifySuccess("Update successful",
+                    props.which + " justification format changed to " + update.format);
+            })
+            .catch((error) => {
+                console.error(error);
+                notifyError("Update justification error", getErrorMessage(error))
+            });
+    }
+
+    const SelectTextFormat = () => {
+        return (
+            <Select
+                mt={10}
+                value={justification.format}
+                placeholder={"text format"}
+                data = {[
+                    {value: 'latex', label: 'Latex'},
+                    {value: 'rst', label: 'RST'},
+                    {value: 'asciidoc', label: 'ASCIIDOC'}
+                ]}
+                onChange={(event) => {
+                    handleFormatUpdate({text: justification.text, format: event as TextFormats})
+                }}
+            />
+        )
     }
 
     return (
@@ -137,21 +139,21 @@ function JustificationForm(props: JustificationProps) : ReactElement {
             <ContextualHelpButton messageId="MaintSciJust" />
             <Grid columns={10}>
                 <Grid.Col span={{base: 10, md: 6, lg: 8}} order={{base:2, md: 1, lg: 1}}>
-                    <JustificationTextArea form={form} />
+                    <JustificationTextArea
+                        form={form}
+                        format={justification.format!}
+                        unsaved={props.unsavedChanges!}
+                    />
                 </Grid.Col>
                 <Grid.Col span={{base: 10, md: 4, lg: 2}} order={{base:1, md: 2, lg: 2}}>
-                    <SelectTextFormat form={form} />
+                    <SelectTextFormat />
                 </Grid.Col>
                <Grid.Col span={{base: 10, md: 10, lg: 10}} order={{base:3, md: 3, lg: 3}}>
                    <Group justify={"right"} mt={10}>
                        <FormSubmitButton form={form} />
-                       <CancelButton
-                           onClickEvent={handleCancel}
-                           toolTipLabel={"Go back without saving"}
-                       />
                    </Group>
                    {
-                       form.getValues().format === 'latex' &&
+                       justification.format === 'latex' &&
                        <Fieldset legend={"Latex Service"}>
                            <JustificationLatex which={props.which} />
                        </Fieldset>
