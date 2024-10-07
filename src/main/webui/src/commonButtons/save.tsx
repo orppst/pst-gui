@@ -27,7 +27,7 @@ function FormSubmitButton(props: FormSubmitButtonInterfaceProps): ReactElement {
             label={
                 props.form.isValid()?
                     props.form.isDirty()?
-                        label
+                        props.toolTipLabel ?? label
                         :"No values have changed"
                     : "All fields must be complete and valid"
             }
