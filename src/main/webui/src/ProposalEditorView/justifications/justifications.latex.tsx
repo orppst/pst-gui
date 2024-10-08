@@ -3,7 +3,7 @@ import {
     Button, Checkbox,
     Fieldset,
     FileButton,
-    Grid, Group,
+    Grid, Group, Loader,
     ScrollArea,
     Stack,
     Table,
@@ -40,6 +40,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
     const [pdfOutputExists, setPdfOutputExists] = useState(false)
     const [downloadReady, setDownloadReady] = useState(false)
     const [warningsAsErrors, setWarningsAsErrors] = useState(true)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         fetchJustificationsResourceGetLatexResourceFiles({
@@ -163,6 +164,8 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
         })
 
     const handleCompile = () => {
+        setLoading(true);
+
         fetchJustificationsResourceCreatePDFLaTex({
             pathParams: {proposalCode: Number(selectedProposalCode), which: which},
             queryParams: {warningsAsErrors: warningsAsErrors}
@@ -171,6 +174,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                 setLatexStatus(data as unknown as string)
             })
             .catch((error) => notifyError("Failed to compile", getErrorMessage(error)))
+            .finally(() => setLoading(false))
     }
 
     const prepareDownload = () => {
@@ -202,7 +206,10 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                                 onClick={handleCompile}
                                 color={"green"}
                             >
-                                Compile to PDF
+                                {
+                                    loading ? <Loader size={"sm"}/> :
+                                        "Compile to PDF"
+                                }
                             </Button>
                             <Checkbox
                                 description={"Warnings as errors (recommended)"}
