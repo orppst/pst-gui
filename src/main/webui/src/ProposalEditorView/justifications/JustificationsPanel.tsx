@@ -16,6 +16,8 @@ export type JustificationKinds = {
     technical: Justification
 }
 
+export type WhichJustification = 'scientific' | 'technical';
+
 export default function JustificationsPanel() : ReactElement {
 
     const { selectedProposalCode } = useParams();

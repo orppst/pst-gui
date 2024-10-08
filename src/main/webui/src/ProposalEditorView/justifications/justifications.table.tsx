@@ -1,15 +1,14 @@
 import {ReactElement} from "react";
-import {JustificationKinds} from "./JustificationsPanel.tsx";
+import {JustificationKinds, WhichJustification} from "./JustificationsPanel.tsx";
 import {Justification} from "src/generated/proposalToolSchemas.ts";
 import {Table} from "@mantine/core";
 import JustificationsEditModal from "./edit.modal.tsx";
 
 export type JustificationProps = {
-    which : 'scientific' | 'technical',
+    which : WhichJustification,
     justification: Justification,
     onChange: () => void,
-    closeModal?: () => void,
-    unsavedChanges?: (value: boolean) => void
+    closeModal?: () => void
 }
 
 function WordCount(text: string): number {
