@@ -17,11 +17,11 @@ function JustificationsTabs(props : JustificationProps) : ReactElement {
                 </Tabs.Tab>
             </Tabs.List>
 
-            <Tabs.Panel value={'editor'}>
+            <Tabs.Panel value={'editor'} mt={"sm"}>
                 <JustificationForm {...props}/>
             </Tabs.Panel>
 
-            <Tabs.Panel value={'latexService'}>
+            <Tabs.Panel value={'latexService'} mt={"sm"}>
                 <JustificationLatex which={props.which} />
             </Tabs.Panel>
         </Tabs>

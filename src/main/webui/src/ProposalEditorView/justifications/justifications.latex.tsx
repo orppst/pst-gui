@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Button, FileButton, Grid, Group, ScrollArea, Stack, Table, Text} from "@mantine/core";
+import {Button, Fieldset, FileButton, Grid, Group, ScrollArea, Stack, Table, Text} from "@mantine/core";
 import UploadButton from "../../commonButtons/upload.tsx";
 import {
     fetchJustificationsResourceAddLatexResourceFile,
@@ -7,12 +7,12 @@ import {
     fetchJustificationsResourceRemoveLatexResourceFile,
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import DeleteButton from "../../commonButtons/delete.tsx";
 import {IconPdf, IconSkull} from "@tabler/icons-react";
 import {MAX_SUPPORTING_DOCUMENT_SIZE} from "../../constants.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {modals} from "@mantine/modals";
+import RemoveButton from "../../commonButtons/remove.tsx";
 
 export default
 function JustificationLatex({which} : {which: string} ) : ReactElement {
@@ -63,7 +63,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                             {uploadedFile}
                         </Table.Td>
                         <Table.Td>
-                            <DeleteButton
+                            <RemoveButton
                                 toolTipLabel={"remove this file"}
                                 onClick={() => openRemoveFileConfirmModal(uploadedFile)}
                             />
@@ -151,29 +151,6 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
 
     return (
         <Grid columns={10}>
-            <Grid.Col span={{base: 10, md: 4}}>
-                <Stack>
-                    <ScrollArea h={150}>
-                        <Table>
-                            {resourceFilesHeader()}
-                            {resourceFilesBody()}
-                        </Table>
-                    </ScrollArea>
-                    <FileButton
-                        onChange={handleUpload}
-                    >
-                        {
-                            (props) =>
-                                <UploadButton
-                                    toolTipLabel={"upload file: .bib, .png, .jpg"}
-                                    label={"Upload"}
-                                    onClick={props.onClick}
-                                    variant={"filled"}
-                                />
-                        }
-                    </FileButton>
-                </Stack>
-            </Grid.Col>
             <Grid.Col span={{base: 10, md: 6}}>
                 <Group grow>
                     <Button
@@ -189,6 +166,31 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                         Download
                     </Button>
                 </Group>
+            </Grid.Col>
+            <Grid.Col span={{base: 10, md: 4}}>
+                <Fieldset legend={"Upload Files"}>
+                <Stack>
+                    <ScrollArea h={450}>
+                        <Table>
+                            {resourceFilesHeader()}
+                            {resourceFilesBody()}
+                        </Table>
+                    </ScrollArea>
+                    <FileButton
+                        onChange={handleUpload}
+                    >
+                        {
+                            (props) =>
+                                <UploadButton
+                                    toolTipLabel={"upload file: .bib, .png, .jpg"}
+                                    label={"Choose Files"}
+                                    onClick={props.onClick}
+                                    variant={"filled"}
+                                />
+                        }
+                    </FileButton>
+                </Stack>
+                </Fieldset>
             </Grid.Col>
         </Grid>
     )
