@@ -1,5 +1,5 @@
 import {ReactElement, useState} from "react";
-import {Fieldset, Group, Paper, Radio, ScrollArea, Stack} from "@mantine/core";
+import {Fieldset, Group, Paper, Radio, ScrollArea, Stack, Text} from "@mantine/core";
 import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
@@ -18,6 +18,7 @@ import "prismjs/components/prism-asciidoc.js";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import JustificationLatex from "./justifications.latex.tsx";
 import CancelButton from "../../commonButtons/cancel.tsx";
+import {modals} from "@mantine/modals";
 
 /*
     Form contains the Justification text only. We save the Justification format
@@ -133,6 +134,21 @@ function JustificationForm(props: JustificationProps) : ReactElement {
         )
     }
 
+    //called from "Cancel" button
+    const confirmDiscardChanges = () => modals.openConfirmModal({
+        title: "Discard text changes?",
+        centered: true,
+        children: (
+            <Text size={"sm"}>
+                You have unsaved changes to the text of this justification.
+                Please confirm that you would like to discard these changes.
+            </Text>
+        ),
+        labels: {confirm: "Discard and close window", cancel: "No, go back"},
+        confirmProps: {color: "red"},
+        onConfirm: () => props.closeModal!()
+    })
+
     return (
         <Stack>
             <Fieldset legend={"Text Format"}>
@@ -154,7 +170,9 @@ function JustificationForm(props: JustificationProps) : ReactElement {
                         <CancelButton
                             toolTipLabel={form.isDirty() ? "you have unsaved changes" : "close window"}
                             toolTipLabelPosition={"bottom"}
-                            onClick={props.closeModal}
+                            onClick={() => {
+                                form.isDirty() ? confirmDiscardChanges() : props.closeModal!()
+                            }}
                             variant={"light"}
                         />
                     </Group>
