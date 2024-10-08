@@ -1,13 +1,25 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Button, Fieldset, FileButton, Grid, Group, ScrollArea, Stack, Table, Text} from "@mantine/core";
+import {
+    Button,
+    Fieldset,
+    FileButton,
+    Grid,
+    ScrollArea,
+    Stack,
+    Table,
+    Text,
+    Textarea
+} from "@mantine/core";
 import UploadButton from "../../commonButtons/upload.tsx";
 import {
-    fetchJustificationsResourceAddLatexResourceFile,
+    fetchJustificationsResourceAddLatexResourceFile, fetchJustificationsResourceCheckForPdf,
+    fetchJustificationsResourceCreatePDFLaTex,
+    fetchJustificationsResourceDownloadLatexPdf,
     fetchJustificationsResourceGetLatexResourceFiles,
     fetchJustificationsResourceRemoveLatexResourceFile,
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {IconPdf, IconSkull} from "@tabler/icons-react";
+import {IconArrowBigRightLines, IconPdf, IconSquareRoundedArrowDown} from "@tabler/icons-react";
 import {MAX_SUPPORTING_DOCUMENT_SIZE} from "../../constants.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -17,20 +29,16 @@ import RemoveButton from "../../commonButtons/remove.tsx";
 export default
 function JustificationLatex({which} : {which: string} ) : ReactElement {
 
-    /*
-        Requirements:
-        - Upload button
-        - Compile button
-        - Download button
-        - Display list of uploaded files each with a delete button
-        - Text area to show results of compilation
-     */
     const { selectedProposalCode } = useParams();
 
     const [resourceFiles, setResourceFiles] = useState<string[]>([])
+    const [pdfDownLoad, setPdfDownload] = useState("");
+    const [latexStatus, setLatexStatus] = useState("");
 
     //count tracks files uploaded and removed
     const [count, setCount] = useState(0);
+    const [pdfOutputExists, setPdfOutputExists] = useState(false)
+    const [downloadReady, setDownloadReady] = useState(false)
 
     useEffect(() => {
         fetchJustificationsResourceGetLatexResourceFiles({
@@ -43,6 +51,18 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                 notifyError("Failed to fetch uploaded files", getErrorMessage(error))
             })
     }, [count]);
+
+    useEffect(() => {
+        fetchJustificationsResourceCheckForPdf({
+            pathParams: {proposalCode: Number(selectedProposalCode), which: which}
+        })
+            .then((data) => {
+                setPdfOutputExists(data as unknown as boolean);
+            })
+            .catch((error) =>
+                notifyError("Fail on PDF output check", getErrorMessage(error))
+            )
+    }, [latexStatus]);
 
     const resourceFilesHeader = () : ReactElement => (
         <Table.Thead>
@@ -62,7 +82,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                         <Table.Td>
                             {uploadedFile}
                         </Table.Td>
-                        <Table.Td>
+                        <Table.Td align={"right"}>
                             <RemoveButton
                                 toolTipLabel={"remove this file"}
                                 onClick={() => openRemoveFileConfirmModal(uploadedFile)}
@@ -141,9 +161,29 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
             onConfirm: () => handleRemoveFile(fileName)
         })
 
-    const handleCompile = () => {console.log("compile clicked")}
+    const handleCompile = () => {
+        fetchJustificationsResourceCreatePDFLaTex({
+            pathParams: {proposalCode: Number(selectedProposalCode), which: which},
+            queryParams: {warningsAsErrors: true}
+        })
+            .then((data) => {
+                setLatexStatus(data as unknown as string)
+            })
+            .catch((error) => notifyError("Failed to compile", getErrorMessage(error)))
+    }
 
-    const handleDownload = () => {console.log("download clicked")}
+    const prepareDownload = () => {
+        fetchJustificationsResourceDownloadLatexPdf({
+            pathParams: {proposalCode: Number(selectedProposalCode), which: which},
+        })
+            .then((blob) => setPdfDownload(
+                window.URL.createObjectURL(blob as unknown as Blob)
+            ))
+            .then(() => setDownloadReady(true))
+            .catch((error) => {
+                notifyError("Failed to download PDF", getErrorMessage(error))
+            })
+    }
 
 
     //Dev note: I would like to use the 'accept={"<content-type>"}' property of FileButton but cannot
@@ -152,25 +192,47 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
     return (
         <Grid columns={10}>
             <Grid.Col span={{base: 10, md: 6}}>
-                <Group grow>
-                    <Button
-                        rightSection={<IconSkull />}
-                        onClick={handleCompile}
-                    >
-                        Compile
-                    </Button>
-                    <Button
-                        rightSection={<IconPdf />}
-                        onClick={handleDownload}
-                    >
-                        Download
-                    </Button>
-                </Group>
+                <Fieldset legend={"Compile Sources"}>
+                    <Stack>
+                        <Button
+                            rightSection={<IconArrowBigRightLines />}
+                            onClick={handleCompile}
+                            color={"green"}
+                        >
+                            Compile to PDF
+                        </Button>
+                        <Textarea
+                            value={latexStatus}
+                            autosize
+                            minRows={18}
+                            maxRows={18}
+                        />
+                        {
+                            downloadReady ?
+                                <Button
+                                    rightSection={<IconPdf />}
+                                    component={"a"}
+                                    download={which + "-justification.pdf"}
+                                    href={pdfDownLoad}
+                                    color={"blue"}
+                                >
+                                    Download
+                                </Button> :
+                                <Button
+                                    rightSection={<IconSquareRoundedArrowDown />}
+                                    onClick={prepareDownload}
+                                    disabled={!pdfOutputExists}
+                                >
+                                    Request PDF download
+                                </Button>
+                        }
+                    </Stack>
+                </Fieldset>
             </Grid.Col>
             <Grid.Col span={{base: 10, md: 4}}>
                 <Fieldset legend={"Upload Files"}>
                 <Stack>
-                    <ScrollArea h={450}>
+                    <ScrollArea h={460}>
                         <Table>
                             {resourceFilesHeader()}
                             {resourceFilesBody()}
@@ -182,8 +244,8 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                         {
                             (props) =>
                                 <UploadButton
-                                    toolTipLabel={"upload file: .bib, .png, .jpg"}
-                                    label={"Choose Files"}
+                                    toolTipLabel={"upload file: .bib, .png, .jpg only"}
+                                    label={"Choose a file"}
                                     onClick={props.onClick}
                                     variant={"filled"}
                                 />

@@ -8397,6 +8397,72 @@ export const useJustificationsResourceAddJustification = (
   });
 };
 
+export type JustificationsResourceCheckForPdfPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+  which: string;
+};
+
+export type JustificationsResourceCheckForPdfError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceCheckForPdfVariables = {
+  pathParams: JustificationsResourceCheckForPdfPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceCheckForPdf = (
+  variables: JustificationsResourceCheckForPdfVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceCheckForPdfError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceCheckForPdfPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/checkForPdf",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceCheckForPdf = <TData = undefined,>(
+  variables: JustificationsResourceCheckForPdfVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      JustificationsResourceCheckForPdfError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    JustificationsResourceCheckForPdfError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/checkForPdf",
+      operationId: "justificationsResourceCheckForPdf",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchJustificationsResourceCheckForPdf(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type JustificationsResourceCreatePDFLaTexPathParams = {
   /**
    * @format int64
@@ -12607,6 +12673,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/justifications/{which}";
       operationId: "justificationsResourceGetJustification";
       variables: JustificationsResourceGetJustificationVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/checkForPdf";
+      operationId: "justificationsResourceCheckForPdf";
+      variables: JustificationsResourceCheckForPdfVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf";
