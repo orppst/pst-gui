@@ -1,9 +1,9 @@
 import {ReactElement, useEffect, useState} from "react";
 import {
-    Button,
+    Button, Checkbox,
     Fieldset,
     FileButton,
-    Grid,
+    Grid, Group,
     ScrollArea,
     Stack,
     Table,
@@ -39,6 +39,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
     const [count, setCount] = useState(0);
     const [pdfOutputExists, setPdfOutputExists] = useState(false)
     const [downloadReady, setDownloadReady] = useState(false)
+    const [warningsAsErrors, setWarningsAsErrors] = useState(true)
 
     useEffect(() => {
         fetchJustificationsResourceGetLatexResourceFiles({
@@ -164,7 +165,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
     const handleCompile = () => {
         fetchJustificationsResourceCreatePDFLaTex({
             pathParams: {proposalCode: Number(selectedProposalCode), which: which},
-            queryParams: {warningsAsErrors: true}
+            queryParams: {warningsAsErrors: warningsAsErrors}
         })
             .then((data) => {
                 setLatexStatus(data as unknown as string)
@@ -189,23 +190,34 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
     //Dev note: I would like to use the 'accept={"<content-type>"}' property of FileButton but cannot
     //identify the correct string for *.bib files, tried 'application/x-bibtex' and 'application/octet-stream'
 
+    //onClick={() => setWarningsAsErrors(!warningsAsErrors)}
     return (
         <Grid columns={10}>
             <Grid.Col span={{base: 10, md: 6}}>
                 <Fieldset legend={"Compile Sources"}>
                     <Stack>
-                        <Button
-                            rightSection={<IconArrowBigRightLines />}
-                            onClick={handleCompile}
-                            color={"green"}
-                        >
-                            Compile to PDF
-                        </Button>
+                        <Group grow>
+                            <Button
+                                rightSection={<IconArrowBigRightLines />}
+                                onClick={handleCompile}
+                                color={"green"}
+                            >
+                                Compile to PDF
+                            </Button>
+                            <Checkbox
+                                description={"Warnings as errors (recommended)"}
+                                checked={warningsAsErrors}
+                                onChange={(event)=> {
+                                    setWarningsAsErrors(event.currentTarget.checked)
+                                }}
+                            />
+                        </Group>
+
                         <Textarea
                             value={latexStatus}
                             autosize
-                            minRows={18}
-                            maxRows={18}
+                            minRows={21}
+                            maxRows={21}
                         />
                         {
                             downloadReady ?
@@ -232,7 +244,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
             <Grid.Col span={{base: 10, md: 4}}>
                 <Fieldset legend={"Upload Files"}>
                 <Stack>
-                    <ScrollArea h={460}>
+                    <ScrollArea h={526}>
                         <Table>
                             {resourceFilesHeader()}
                             {resourceFilesBody()}
