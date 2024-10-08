@@ -2,8 +2,8 @@ import {ReactElement} from "react";
 import ViewEditButton from "src/commonButtons/viewEdit.tsx";
 import {Modal} from "@mantine/core";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
-import JustificationForm from "./justification.form.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
+import JustificationsTabs from "./justifications.tab.tsx";
 
 
 function capitalizeFirstChar(string : string) : string {
@@ -34,7 +34,7 @@ export default function JustificationsEditModal(justificationProps : Justificati
                 size="60%"
                 closeOnClickOutside={false}
             >
-                <JustificationForm {...props} />
+                <JustificationsTabs {...props} />
             </Modal>
         )
     }

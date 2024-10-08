@@ -16,7 +16,6 @@ import "prismjs/components/prism-latex.js";
 import "prismjs/components/prism-rest.js";
 import "prismjs/components/prism-asciidoc.js";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import JustificationLatex from "./justifications.latex.tsx";
 import CancelButton from "../../commonButtons/cancel.tsx";
 import {modals} from "@mantine/modals";
 
@@ -35,7 +34,7 @@ import {modals} from "@mantine/modals";
 const JustificationTextArea =
     ({form, format} : {form: UseFormReturnType<{text: string}>, format: TextFormats}): ReactElement => {
     return (
-        <ScrollArea.Autosize mah={250} scrollbars={"y"} type={"auto"}>
+        <ScrollArea.Autosize mah={450} scrollbars={"y"} type={"auto"}>
             <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} my={"xs"} mr={"xs"}>
                 <Editor
                     value={form.getValues().text ?? ""}
@@ -110,6 +109,7 @@ function JustificationForm(props: JustificationProps) : ReactElement {
                 notifySuccess("Update successful",
                     props.which + " justification format changed to " + update.format);
             })
+            .then(() => props.onChange())
             .catch((error) => {
                 console.error(error);
                 notifyError("Update justification error", getErrorMessage(error))
@@ -178,12 +178,6 @@ function JustificationForm(props: JustificationProps) : ReactElement {
                     </Group>
                 </form>
             </Fieldset>
-           {
-               justification.format === 'latex' &&
-               <Fieldset legend={"Latex Service"}>
-                   <JustificationLatex which={props.which} />
-               </Fieldset>
-           }
         </Stack>
 
     );

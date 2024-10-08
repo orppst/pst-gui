@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Button, FileButton, Group, ScrollArea, Table, Text} from "@mantine/core";
+import {Button, FileButton, Grid, Group, ScrollArea, Stack, Table, Text} from "@mantine/core";
 import UploadButton from "../../commonButtons/upload.tsx";
 import {
     fetchJustificationsResourceAddLatexResourceFile,
@@ -150,42 +150,46 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
     //identify the correct string for *.bib files, tried 'application/x-bibtex' and 'application/octet-stream'
 
     return (
-        <>
-            <ScrollArea h={150}>
-                <Table>
-                    {resourceFilesHeader()}
-                    {resourceFilesBody()}
-                </Table>
-            </ScrollArea>
-
-            <Group grow>
-                <FileButton
-                    onChange={handleUpload}
-                >
-                    {
-                        (props) =>
-                            <UploadButton
-                                toolTipLabel={"upload file: .bib, .png, .jpg"}
-                                label={"Upload"}
-                                onClick={props.onClick}
-                                variant={"filled"}
-                            />
-                    }
-                </FileButton>
-                <Button
-                    rightSection={<IconSkull />}
-                    onClick={handleCompile}
-                >
-                    Compile
-                </Button>
-                <Button
-                    rightSection={<IconPdf />}
-                    onClick={handleDownload}
-                >
-                    Download
-                </Button>
-
-            </Group>
-        </>
+        <Grid columns={10}>
+            <Grid.Col span={{base: 10, md: 4}}>
+                <Stack>
+                    <ScrollArea h={150}>
+                        <Table>
+                            {resourceFilesHeader()}
+                            {resourceFilesBody()}
+                        </Table>
+                    </ScrollArea>
+                    <FileButton
+                        onChange={handleUpload}
+                    >
+                        {
+                            (props) =>
+                                <UploadButton
+                                    toolTipLabel={"upload file: .bib, .png, .jpg"}
+                                    label={"Upload"}
+                                    onClick={props.onClick}
+                                    variant={"filled"}
+                                />
+                        }
+                    </FileButton>
+                </Stack>
+            </Grid.Col>
+            <Grid.Col span={{base: 10, md: 6}}>
+                <Group grow>
+                    <Button
+                        rightSection={<IconSkull />}
+                        onClick={handleCompile}
+                    >
+                        Compile
+                    </Button>
+                    <Button
+                        rightSection={<IconPdf />}
+                        onClick={handleDownload}
+                    >
+                        Download
+                    </Button>
+                </Group>
+            </Grid.Col>
+        </Grid>
     )
 }
