@@ -39,15 +39,15 @@ jobs:
         repository: orppst/pst-lib
         path: pst-lib
 
-    - name: setup Node/yarn
+    - name: setup Node/npm
       uses: actions/setup-node@v4
       with:
         node-version: 18
-        cache: 'yarn'
-        cache-dependency-path: '**/yarn.lock'
+        cache: 'npm'
+        cache-dependency-path: 'main/src/main/webui/package-lock.json'
 
-    - name: install yarn packages
-      run: yarn --cwd main/src/main/webui install --registry="https://registry.yarnpkg.com" #--frozen-lockfile # optional, --immutable
+    - name: install npm packages
+      run: cd main/src/main/webui && npm ci
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4

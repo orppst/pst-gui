@@ -184,7 +184,7 @@ function TechnicalGoalRow(
 
         // create a new technicalGoal, which does not have its id set, but
         // contains the spectral and performance of the selected goal.
-        let clonedGoal: TechnicalGoal = {
+        const clonedGoal: TechnicalGoal = {
             performance: goal?.performance,
             spectrum: goal?.spectrum
         }
@@ -313,12 +313,12 @@ function TechnicalGoalRow(
             }
             <Table.Td>
                 {
-                    goal?.spectrum?.length! > 0 ?
+                    (goal?.spectrum?.length ?? 0) > 0 ?
                         <Badge
                             color={"green"}
                             radius={0}
                         >
-                            {goal?.spectrum?.length!}
+                            {goal?.spectrum?.length}
                         </Badge>:
                         <Badge
                             color={"red"}
@@ -332,7 +332,7 @@ function TechnicalGoalRow(
             {
                 technicalGoalRowProps.showButtons ?
                 <Table.Td>
-                    <Group position={"right"}>
+                    <Group align={"right"}>
                         {
                             goalLoading ? 'Loading...' :
                                 <TechnicalGoalEditModal technicalGoal={goal} />

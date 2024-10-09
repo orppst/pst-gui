@@ -35,7 +35,7 @@ import {notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
  * @constructor
  */
 export default function TimingWindowsForm(
-        form: UseFormReturnType<ObservationFormValues>): ReactElement {
+    {form}: {form: UseFormReturnType<ObservationFormValues>}): ReactElement {
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
@@ -79,7 +79,7 @@ export default function TimingWindowsForm(
         fetchObservationResourceRemoveConstraint({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
-                observationId: form.values.observationId!,
+                observationId: form.getValues().observationId!,
                 constraintId: timingWindowId
             }
         })
@@ -113,7 +113,7 @@ export default function TimingWindowsForm(
             }
     })
 
-    const windowsList = form.values.timingWindows.map(
+    const windowsList = form.getValues().timingWindows.map(
         (tw: TimingWindowGui, index: number) => {
             let labelIndex = index + 1;
             return (
@@ -177,7 +177,7 @@ export default function TimingWindowsForm(
                                     maxLength={MAX_CHARS_NOTE}
                                     description={
                                         MAX_CHARS_NOTE -
-                                        form.values.timingWindows[index].note.length +
+                                        form.getValues().timingWindows[index].note.length +
                                         "/" + String(MAX_CHARS_NOTE)}
                                     inputWrapperOrder={[
                                         'label', 'error', 'input', 'description']}

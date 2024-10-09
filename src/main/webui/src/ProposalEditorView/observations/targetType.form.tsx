@@ -33,7 +33,7 @@ import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
  * @constructor
  */
 export default function TargetTypeForm (
-        form: UseFormReturnType<ObservationFormValues>): ReactElement {
+    {form}: {form: UseFormReturnType<ObservationFormValues>}): ReactElement {
     const { selectedProposalCode} = useParams();
     const theme = useMantineTheme();
 
@@ -82,7 +82,7 @@ export default function TargetTypeForm (
     function SelectObservationType(): ReactElement {
         return (
             <Tooltip
-                label={form.values.observationId !== undefined ?
+                label={form.getValues().observationId !== undefined ?
                     "Cannot change the type of an existing Observation" :
                     'Target object or Calibration object'}
                 openDelay={OPEN_DELAY}
@@ -90,7 +90,7 @@ export default function TargetTypeForm (
                 <Select
                     label={"Observation Type: "}
                     placeholder={"Select observation type"}
-                    disabled={form.values.observationId !== undefined}
+                    disabled={form.getValues().observationId !== undefined}
                     data = {[
                         'Target', 'Calibration'
                     ]}
@@ -139,15 +139,13 @@ export default function TargetTypeForm (
     // return the html for the tables.
     return (
         <Container fluid>
-            {/* only present the message about selecting a target
-            when not selected */}
-            {form.values.targetDBIds === undefined ||
-                    form.values.targetDBIds.length == 0
+            {/* only present the message about selecting a target when not selected */}
+            {form.getValues().targetDBIds === undefined ||
+                    form.getValues().targetDBIds?.length == 0
                 ? <p style={{color:theme.colors.yellow[ERROR_YELLOW]}}>
                     Please select a target.
                   </p>
                 : <></>}
-
             {
                 targetsLoading ? 'loading...' :
                     <Table.ScrollContainer h={TABLE_SCROLL_HEIGHT}
@@ -158,17 +156,17 @@ export default function TargetTypeForm (
                             showButtons={false}
                             isLoading={false}
                             boundTargets={[]}
-                            selectedTargets={form.values.targetDBIds}
+                            selectedTargets={form.getValues().targetDBIds}
                             setSelectedTargetFunction={(value: number) => {
-                                const index = form.values.targetDBIds?.indexOf(value);
+                                const index = form.getValues().targetDBIds?.indexOf(value);
                                 if(index === undefined || index == -1) {
-                                    if(form.values.targetDBIds === undefined) {
+                                    if(form.getValues().targetDBIds === undefined) {
                                         form.setFieldValue('targetDBIds', [value]);
                                     } else {
-                                        form.values.targetDBIds.push(value);
+                                        form.getValues().targetDBIds?.push(value);
                                     }
                                 } else {
-                                    form.values.targetDBIds?.splice(index, 1);
+                                    form.getValues().targetDBIds?.splice(index, 1);
                                 }
                                 form.setDirty({'targetDBIds': true});
                             }}
@@ -180,8 +178,8 @@ export default function TargetTypeForm (
 
             {/* only present the message about selecting a technical
             when not selected */}
-            {form.values.techGoalId === undefined ||
-            form.values.techGoalId === NO_ROW_SELECTED
+            {form.getValues().techGoalId === undefined ||
+            form.getValues().techGoalId === NO_ROW_SELECTED
                 ? <p style={{color:theme.colors.yellow[ERROR_YELLOW]}}>
                     Please select a Technical Goal.
                   </p>
@@ -196,8 +194,8 @@ export default function TargetTypeForm (
                             boundTechnicalGoalIds={[]}
                             showButtons={false}
                             selectedTechnicalGoal={
-                                form.values.techGoalId != undefined ?
-                                    form.values.techGoalId :
+                                form.getValues().techGoalId != undefined ?
+                                    form.getValues().techGoalId :
                                     NO_ROW_SELECTED}
                             setSelectedTechnicalGoal={(value: number) => {
                                 form.setFieldValue('techGoalId', value);
@@ -215,7 +213,7 @@ export default function TargetTypeForm (
 
             <Space h={"xl"}/>
             {SelectObservationType()}
-            {form.values.observationType === 'Calibration' &&
+            {form.getValues().observationType === 'Calibration' &&
                 <>
                     <Space h={"xs"}/>
                     {SelectCalibrationUse()}

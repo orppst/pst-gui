@@ -290,7 +290,7 @@ export default function ObservationEditGroup(
                 <Grid  columns={5}>
                     <Grid.Col span={{base: 5, lg: 2}}>
                         <Fieldset legend={"Target and type"}>
-                            <TargetTypeForm {...form} />
+                            <TargetTypeForm form={form} />
                         </Fieldset>
                     </Grid.Col>
                     <Grid.Col span={{base: 5, lg: 3}}>
@@ -298,7 +298,7 @@ export default function ObservationEditGroup(
                             <Text ta={"center"}  size={"xs"} c={"gray.6"}>
                                 Timezone set to UTC
                             </Text>
-                            <TimingWindowsForm {...form}/>
+                            <TimingWindowsForm form={form}/>
                         </Fieldset>
 
 
