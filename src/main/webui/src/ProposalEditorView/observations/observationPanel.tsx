@@ -159,28 +159,28 @@ function Observations() {
         )
     }
 
-    if (proposal.data?.targets?.length === 0 ||
-        proposal.data?.technicalGoals?.length === 0 ||
-        proposal.data?.fields?.length === 0) {
+    if (proposal.data?.targets === undefined ||
+        proposal.data?.technicalGoals === undefined ||
+        proposal.data?.fields === undefined) {
         return (
             <PanelFrame>
                 <Header/>
                     To create an observation please add the following:
                     <List>
                         {
-                            proposal.data?.targets?.length === 0 &&
+                            !proposal.data?.targets &&
                             <List.Item>
                                 <TargetButton/>
                             </List.Item>
                         }
                         {
-                            proposal.data?.technicalGoals?.length == 0 &&
+                            !proposal.data?.technicalGoals &&
                             <List.Item>
                                 <TechnicalGoalButton/>
                             </List.Item>
                         }
                         {
-                            proposal.data.fields?.length == 0 &&
+                            !proposal.data?.fields &&
                             <List.Item>
                                 <ObservationFieldButton/>
                             </List.Item>
