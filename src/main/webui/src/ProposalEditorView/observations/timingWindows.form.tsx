@@ -6,7 +6,7 @@ import {randomId} from "@mantine/hooks";
 import '@mantine/dates/styles.css'
 import AddButton from "src/commonButtons/add.tsx";
 import { ObservationFormValues } from './edit.group.tsx';
-import { AccordionDelete } from 'src/commonButtons/accordianControls.tsx';
+import {AccordionRemove} from 'src/commonButtons/accordianControls.tsx';
 import { ReactElement } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
 import {fetchObservationResourceRemoveConstraint} from "src/generated/proposalToolComponents.ts";
@@ -118,10 +118,10 @@ export default function TimingWindowsForm(
             let labelIndex = index + 1;
             return (
                 <Accordion.Item value={labelIndex.toString()} key={tw.key}>
-                    <AccordionDelete
+                    <AccordionRemove
                         title={"Window " + labelIndex}
-                        deleteProps={{
-                            toolTipLabel: 'delete timing window ' + labelIndex,
+                        removeProps={{
+                            toolTipLabel: 'remove timing window ' + labelIndex,
                             onClick: () => {
                                 tw.id === 0 ? form.removeListItem('timingWindows', index) :
                                     confirmDeletion(index, tw.id);

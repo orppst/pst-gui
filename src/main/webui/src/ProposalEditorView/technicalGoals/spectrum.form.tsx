@@ -9,7 +9,7 @@ import {
 import {TechnicalGoalValues} from "./edit.group.tsx";
 import AddButton from "src/commonButtons/add.tsx";
 import {UseFormReturnType} from "@mantine/form";
-import {AccordionDelete} from "src/commonButtons/accordianControls.tsx";
+import {AccordionRemove} from "src/commonButtons/accordianControls.tsx";
 import {frequencyUnits} from "src/physicalUnits/PhysicalUnits.tsx";
 import {NumberInputPlusUnit} from "src/commonInputs/NumberInputPlusUnit.tsx";
 import {randomId} from "@mantine/hooks";
@@ -183,9 +183,9 @@ export default function SpectralWindowsSection(
         let labelIndex = (mapIndex + 1).toString();
         return (
             <Accordion.Item value={labelIndex} key={sw.key}>
-                <AccordionDelete
+                <AccordionRemove
                     title={"Window " + labelIndex}
-                    deleteProps={{
+                    removeProps={{
                         toolTipLabel: "remove spectral window " + labelIndex,
                         onClick: () => {
                             sw.id === 0 ? form.removeListItem('spectralWindows', mapIndex) :
