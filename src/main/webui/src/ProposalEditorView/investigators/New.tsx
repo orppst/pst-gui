@@ -1,13 +1,13 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchInvestigatorResourceAddPersonAsInvestigator,
+    fetchInvestigatorResourceAddPersonAsInvestigator, fetchInvestigatorResourceGetInvestigators,
     fetchPersonResourceGetPerson,
     usePersonResourceGetPeople,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
-import {Checkbox, Grid, Select, Stack} from "@mantine/core";
+import {InvestigatorKind, ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
+import {Checkbox, ComboboxData, Grid, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import CancelButton from "src/commonButtons/cancel.tsx";
@@ -43,7 +43,7 @@ function AddInvestigatorPanel(): ReactElement {
         }
     });
     const typeData = [{value: "COI", label: "CO-I"}, {value: "PI", label: "PI"}];
-    const [searchData, setSearchData] = useState([]);
+    const [searchData, setSearchData] = useState<ComboboxData>([]);
     const navigate = useNavigate();
     const { selectedProposalCode } = useParams();
     const queryClient = useQueryClient();
@@ -58,12 +58,22 @@ function AddInvestigatorPanel(): ReactElement {
 
     useEffect(() => {
         if(status === 'success') {
-            setSearchData([]);
-            data?.map((item) => (
-                // @ts-ignore
-                setSearchData((current) => [...current, {
-                    value: String(item.dbid), label: item.name}])
-            ));
+            let currentInvestigators: ObjectIdentifier[] = [];
+
+            //Get current investigators from search data
+            fetchInvestigatorResourceGetInvestigators(
+                {pathParams: {proposalCode: Number(selectedProposalCode)}})
+                .then(r => {
+                    r.map((i) => currentInvestigators.push(i))
+
+                    setSearchData([]);
+                    data?.map((item) => {
+                        if(!currentInvestigators.some(e => e.name === item.name))
+                            setSearchData((current) => [...current, {
+                                value: String(item.dbid), label: item.name}] as ComboboxData)
+                        })
+                }
+            )
         }
     },[status,data]);
 
