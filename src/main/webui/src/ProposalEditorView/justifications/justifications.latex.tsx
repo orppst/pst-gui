@@ -194,7 +194,6 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
     //Dev note: I would like to use the 'accept={"<content-type>"}' property of FileButton but cannot
     //identify the correct string for *.bib files, tried 'application/x-bibtex' and 'application/octet-stream'
 
-    //onClick={() => setWarningsAsErrors(!warningsAsErrors)}
     return (
         <Grid columns={10}>
             <Grid.Col span={{base: 10, md: 6}}>
