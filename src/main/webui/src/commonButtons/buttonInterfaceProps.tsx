@@ -39,6 +39,7 @@ export interface BasicButtonInterfaceProps {
  */
 export interface FormSubmitButtonInterfaceProps {
     form: UseFormReturnType<any>
+    toolTipLabel? : string
     toolTipLabelPosition?: FloatingPosition
     label?: string
     variant?: ButtonVariant

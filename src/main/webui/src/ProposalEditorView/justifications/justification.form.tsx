@@ -1,18 +1,14 @@
-import {ReactElement, SyntheticEvent} from "react";
-import {Grid, Paper, Select, Stack} from "@mantine/core";
+import {ReactElement, useState} from "react";
+import {Fieldset, Group, Paper, Radio, ScrollArea, Stack, Text} from "@mantine/core";
 import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
-import {fetchProposalResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
-import {useNavigate,useParams } from "react-router-dom";
+import {fetchJustificationsResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
+import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
-import CancelButton from "src/commonButtons/cancel.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
-import {PreviewJustification} from "./justification.preview.tsx";
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
-
 import Editor from "react-simple-code-editor";
 import { languages, highlight } from "prismjs";
 import "prismjs/themes/prism.css";
@@ -20,146 +16,169 @@ import "prismjs/components/prism-latex.js";
 import "prismjs/components/prism-rest.js";
 import "prismjs/components/prism-asciidoc.js";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import CancelButton from "../../commonButtons/cancel.tsx";
+import {modals} from "@mantine/modals";
+
+/*
+    Form contains the Justification text only. We save the Justification format
+    immediately on the user selecting a different format. This avoids the user having
+    to remember to "save" the justification when changing from another format to 'Latex'
+    and attempting to upload resource files, which will then be rejected by the API as the
+    Justification is not 'Latex' format.
+ */
 
 
+//Dev Note: if you try to embed this const function inside the export default function
+// the text area of the Editor loses focus immediately after a single keystroke, maybe
+// because the form is set "onValueChange" so triggers a rerender of the modal??
 const JustificationTextArea =
-    ({form} : {form: UseFormReturnType<Justification>}): ReactElement => {
-    switch(form.getValues().format) {
-        case "asciidoc":
-
-            return (
-                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
-                    <Editor
-                        value={form.getValues().text ?? ""}
-                        onValueChange={newValue =>
-                            form.setValues({text: newValue, format: form.getValues().format})}
-                        highlight={code => highlight(code ?? "", languages.asciidoc, 'asciidoc')}
-                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
-                        {...form.getInputProps('text')}
-                    />
-                </Paper>
-            );
-        case "latex":
-        case undefined:
-            return (
-                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
-                    <Editor
-                        value={form.getValues().text ?? ""}
-                        onValueChange={newValue =>
-                            form.setValues({text: newValue, format: form.getValues().format})}
-                        highlight={code => highlight(code ?? "", languages.latex, 'latex')}
-                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
-                        {...form.getInputProps('text')}
-                    />
-                </Paper>
-            );
-        case "rst":
-            return (
-                <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} m={"xs"}>
-                    <Editor
-                        value={form.getValues().text ?? ""}
-                        onValueChange={newValue =>
-                            form.setValues({text: newValue, format: form.getValues().format})}
-                        highlight={code => highlight(code ?? "", languages.rest, 'rest')}
-                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
-                        {...form.getInputProps('text')}
-                    />
-                </Paper>
-            );
-    }
-}
-
-const SelectTextFormat =
-    ({form}: {form: UseFormReturnType<Justification>}) => {
+    ({form, format} : {form: UseFormReturnType<{text: string}>, format: TextFormats}): ReactElement => {
     return (
-        <Select
-            placeholder={"text format"}
-            data = {[
-                {value: 'latex', label: 'Latex'},
-                {value: 'rst', label: 'RST'},
-                {value: 'asciidoc', label: 'ASCIIDOC'}
-            ]}
-            {...form.getInputProps('format')}
-        />
+        <ScrollArea.Autosize mah={450} scrollbars={"y"} type={"auto"}>
+            <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} my={"xs"} mr={"xs"}>
+                <Editor
+                    value={form.getValues().text ?? ""}
+                    onValueChange={newValue => {
+                        form.setValues({text: newValue});
+                    }}
+                    highlight={
+                        code => {
+                            switch (format) {
+                                case "asciidoc":
+                                    return highlight(code ?? "", languages.asciidoc, 'asciidoc');
+                                case "latex":
+                                    return highlight(code ?? "", languages.latex, 'latex');
+                                case "rst":
+                                    return highlight(code ?? "", languages.rest, 'rest')}
+                        }
+                    }
+                    maxLength={MAX_CHARS_FOR_JUSTIFICATION}
+                />
+            </Paper>
+        </ScrollArea.Autosize>
     )
 }
 
-
-export default function JustificationForm(props: JustificationProps)
-    :ReactElement {
-
-
+export default
+function JustificationForm(props: JustificationProps) : ReactElement {
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
 
-    const DEFAULT_JUSTIFICATION : Justification = {text: "", format: "asciidoc" };
+    const [justification, setJustification] = useState<Justification>(props.justification)
 
-    const form: UseFormReturnType<Justification> =
-        useForm<Justification>({
-            initialValues: props.justification ?? DEFAULT_JUSTIFICATION ,
+    const form: UseFormReturnType<{ text: string }> =
+        useForm<{text: string}>({
+            initialValues: {text: props.justification.text ?? "" },
             validate: {
                 text: (value: string | undefined) =>
                     (value === "" || value === undefined ?
-                        "Text cannot be empty for a " + props.which + " justification" : null),
-                format: (value: TextFormats | undefined ) =>
-                    (value !== "latex" && value !== "rst" && value !== "asciidoc" ?
-                        'Text format one of: latex, rst, or asciidoc' : null)
+                        "Text cannot be empty for a " + props.which + " justification" : null)
             }
         });
 
-
     const handleSubmit = form.onSubmit((values) => {
-        //create new proposal does not permit having null justifications i.e.,
-        //here we only ever 'update' an existing proposal
-        fetchProposalResourceUpdateJustification({
+        fetchJustificationsResourceUpdateJustification({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which
             },
-            body: {text: values.text, format: values.format}
+            body: {text: values.text, format: justification.format}
         })
             .then(()=>queryClient.invalidateQueries())
             .then(() => {
-                notifySuccess("Update successful", props.which + " justification updated");
+                notifySuccess("Update successful", props.which + " justification text updated");
+                props.onChange(); //trigger re-fetch of Justifications
             })
-            .then(props.closeModal)
             .catch((error) => {
                 console.error(error);
                 notifyError("Update justification error", getErrorMessage(error))
             });
     });
-    const navigate = useNavigate();
-    function handleCancel(event: SyntheticEvent) {
-        event.preventDefault();
-        navigate("../",{relative:"path"})
-        }
+
+    const handleFormatUpdate = (update: Justification) => {
+        setJustification(update);
+
+        fetchJustificationsResourceUpdateJustification({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                which: props.which
+            },
+            body: update
+        })
+            .then(() => {
+                notifySuccess("Update successful",
+                    props.which + " justification format changed to " + update.format);
+            })
+            .then(() => props.onChange())
+            .catch((error) => {
+                console.error(error);
+                notifyError("Update justification error", getErrorMessage(error))
+            });
+    }
+
+    const SelectTextFormatRadio = () => {
+        return (
+            <Radio.Group
+                value={justification.format}
+                onChange={(event) => {
+                    handleFormatUpdate({text: justification.text, format: event as TextFormats})
+                }}
+                name={"textFormat"}
+            >
+                <Group justify={"center"}>
+                    <Radio value={"latex"} label={"LaTeX"} />
+                    <Radio value={"rst"} label={"RST"} />
+                    <Radio value={"asciidoc"} label={"ASCIIDOC"} />
+                </Group>
+            </Radio.Group>
+        )
+    }
+
+    //called from "Cancel" button
+    const confirmDiscardChanges = () => modals.openConfirmModal({
+        title: "Discard text changes?",
+        centered: true,
+        children: (
+            <Text size={"sm"}>
+                You have unsaved changes to the text of this justification.
+                Please confirm that you would like to discard these changes.
+            </Text>
+        ),
+        labels: {confirm: "Discard and close window", cancel: "No, go back"},
+        confirmProps: {color: "red"},
+        onConfirm: () => props.closeModal!()
+    })
 
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-            <ContextualHelpButton messageId="MaintSciJust" />
-            <Stack>
-               <Grid  grow>
-                    <Grid.Col span={{base: 6, md: 8, lg: 9}}>
-                        <JustificationTextArea form={form} />
-                    </Grid.Col>
-                    <Grid.Col span={{base: 4, md: 2, lg: 1}}>
-                        <SelectTextFormat form={form} />
-                    </Grid.Col>
-                </Grid>
-            </Stack>
-            <p> </p>
-            <Grid>
-              <Grid.Col span={8}></Grid.Col>
-                 <FormSubmitButton form={form} />
-                 <CancelButton
-                    onClickEvent={handleCancel}
-                    toolTipLabel={"Go back without saving"}/>
-            </Grid>
+        <Stack>
+            <Fieldset legend={"Text Format"}>
+                <SelectTextFormatRadio />
+            </Fieldset>
+            <Fieldset legend={"Text Editor"}>
+                <form onSubmit={handleSubmit}>
+                    <JustificationTextArea
+                        form={form}
+                        format={justification.format!}
+                    />
+                    <Group grow mt={"xs"}>
+                        <FormSubmitButton
+                            toolTipLabel={"save justification text"}
+                            form={form}
+                            variant={"light"}
+                            toolTipLabelPosition={"bottom"}
+                        />
+                        <CancelButton
+                            toolTipLabel={form.isDirty() ? "you have unsaved changes" : "close window"}
+                            toolTipLabelPosition={"bottom"}
+                            onClick={() => {
+                                form.isDirty() ? confirmDiscardChanges() : props.closeModal!()
+                            }}
+                            variant={"light"}
+                        />
+                    </Group>
+                </form>
+            </Fieldset>
+        </Stack>
 
-            </form>
-            {form.getValues().format==='latex' &&
-                PreviewJustification(form.getValues().format!, form.getValues().text ?? "")}
-        </>
     );
 }

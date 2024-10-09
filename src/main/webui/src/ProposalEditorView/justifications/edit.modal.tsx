@@ -1,9 +1,9 @@
 import {ReactElement} from "react";
 import ViewEditButton from "src/commonButtons/viewEdit.tsx";
 import {Modal} from "@mantine/core";
-import {useDisclosure} from "@mantine/hooks";
-import JustificationForm from "./justification.form.tsx";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {JustificationProps} from "./justifications.table.tsx";
+import JustificationsTabs from "./justifications.tabs.tsx";
 
 
 function capitalizeFirstChar(string : string) : string {
@@ -12,6 +12,8 @@ function capitalizeFirstChar(string : string) : string {
 
 export default function JustificationsEditModal(justificationProps : JustificationProps)
     : ReactElement {
+
+    const isMobile = useMediaQuery('(max-width: 75em)');
 
     const EditButton = () : ReactElement => {
         return (
@@ -22,23 +24,28 @@ export default function JustificationsEditModal(justificationProps : Justificati
         )
     }
 
-
     const ModalHtml = () : ReactElement => {
         return (
             <Modal
                 opened={opened}
                 onClose={props.closeModal}
                 title={"View/Edit " + capitalizeFirstChar(props.which) + " Justification"}
+                fullScreen={isMobile}
                 size="60%"
+                closeOnClickOutside={false}
             >
-                <JustificationForm {...props} />
+                <JustificationsTabs {...props} />
             </Modal>
         )
     }
 
-
     const [opened, {close, open}] = useDisclosure();
-    const props = {...justificationProps, closeModal: () =>{close()}}
+    const props = {
+        ...justificationProps,
+        closeModal: () =>{
+            close();
+            justificationProps.onChange(); //trigger re-fetch of justifications, something may have changed
+        }}
 
     return (
         <>
