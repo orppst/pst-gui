@@ -17,7 +17,7 @@ import {
     angularUnits,
     frequencyUnits,
     locateLabel,
-    sensitivityUnits
+    dynamicRangeUnits, fluxUnits
 } from 'src/physicalUnits/PhysicalUnits.tsx';
 import {
     ObjectIdentifier,
@@ -288,7 +288,7 @@ function TechnicalGoalRow(
                     <Table.Td>
                         {goal?.performance?.desiredSensitivity?.value}
                         {` ${ locateLabel(
-                            sensitivityUnits,
+                            fluxUnits,
                             goal?.performance?.desiredSensitivity?.unit?.value)?.label}`}
                     </Table.Td> :
                     <Table.Td c={"yellow"}>{notSet}</Table.Td>
@@ -297,7 +297,7 @@ function TechnicalGoalRow(
                 goal?.performance?.desiredDynamicRange?.value ?
                     <Table.Td>
                         {goal?.performance?.desiredDynamicRange?.value}
-                        {` ${ locateLabel(sensitivityUnits,
+                        {` ${ locateLabel(dynamicRangeUnits,
                             goal?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
                     </Table.Td> :
                     <Table.Td c={"yellow"}>{notSet}</Table.Td>
