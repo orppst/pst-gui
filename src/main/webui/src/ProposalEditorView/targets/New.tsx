@@ -34,6 +34,7 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SimbadSearch} from "./simbadSearch.tsx";
 import SimbadSearchHelp from "./simbadSearchHelp.tsx";
+import { AstroLib } from "@tsastro/astrolib";
 
 export let Aladin: AladinType;
 
@@ -88,8 +89,8 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     const form = useForm({
             initialValues: {
                 TargetName: "",
-                RA: 0.00,
-                Dec: 0.00,
+                RA: "0.00",
+                Dec: "0.00",
                 SelectedEpoch: "J2000",
                 sexagesimal: "00:00:00 +00:00:00"
             },
@@ -190,8 +191,20 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     const HandleEvent = (event: MouseEvent<HTMLInputElement>) => {
         const [ra, dec] = GetOffset(event);
         const [raCoords, decCoords] = Aladin.pix2world(ra, dec);
-        form.setFieldValue('RA', raCoords);
-        form.setFieldValue('Dec', decCoords);
+        form.setFieldValue('RA', raCoords.toString());
+        form.setFieldValue('Dec', decCoords.toString());
+        
+        //BJLG
+        //reset the name to something generic + random suffix
+        let targetProxyName = "Target_";
+        let randNum = Math.random();
+        //convert the number into something using chars 0-9 A-Z
+        let hexString = randNum.toString(36);
+        targetProxyName += hexString.slice(6).toUpperCase();
+        form.setFieldValue('TargetName', targetProxyName);
+        
+        //allow submission in case this was previously locked
+        setNameUnique(true);
     }
 
     /**
@@ -200,7 +213,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      */
     const UpdateAladinRA = (value: number | string) => {
         // acquire the aladin object and set it.
-        Aladin.gotoRaDec(value as number, form.values.Dec);
+        Aladin.gotoRaDec(value as number, Number(form.values.Dec));
     }
 
     /**
@@ -209,7 +222,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      */
     const UpdateAladinDec = (value: number | string) => {
         // acquire the aladin object and set it.
-        Aladin.gotoRaDec(form.values.RA, value as number);
+        Aladin.gotoRaDec(Number(form.values.RA), value as number);
     }
 
     const responsiveSpan = {base: 2, md: 1}
@@ -244,37 +257,75 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
                             }}
                         />
-                        <NumberInput
-                            hideControls
+                        <TextInput
+                            //hideControls
                             required={true}
                             label={"RA"}
-                            decimalScale={6}
-                            min={0}
-                            max={360}
-                            allowNegative={false}
-                            suffix="°"
+                            //decimalScale={6}
+                            //min={0}
+                            //max={360}
+                            //allowNegative={false}
+                            //suffix="°"
                             {...form.getInputProps("RA")}
                             onChange={(e) => {
-                                UpdateAladinRA(e);
                                 if (form.getInputProps("RA").onChange) {
                                     form.getInputProps("RA").onChange(e);
-                                }}}
+                                }
+                                //get the live value from the input
+                                let raValue: string = form.getValues()["RA"];
+                                
+                                //we assume + or - for sexagesimal unit - REPLACE this with appropriate regex                              
+                                if(raValue.indexOf("+") >= 0 || raValue.indexOf("-") >= 0 )
+                                {
+                                    //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
+                                    raValue = AstroLib.HmsToDeg(raValue);
+                                    //update the value to degrees
+                                    form.setFieldValue("RA", raValue);
+                                }                             
+                                //update the Aladdin viewport
+                                UpdateAladinRA(Number(raValue));
+                            }}
+
+                                
                         />
-                        <NumberInput
-                            hideControls
+                        <Text size={"xs"} 
+                                c={"gray.6"} 
+                                style={{margin: "-4px 0px 0px 12px"}}>
+                                    {AstroLib.DegToHms(form.getValues()["RA"])}
+                            </Text>
+                        <TextInput
+                            //hideControls
                             required={true}
                             label={"Dec"}
-                            decimalScale={6}
+                            //decimalScale={6}
                             min={-90}
                             max={90}
-                            suffix="°"
+                            //suffix="°"
                             {...form.getInputProps("Dec")}
                             onChange={(e) => {
-                                UpdateAladinDec(e);
                                 if (form.getInputProps("Dec").onChange) {
                                     form.getInputProps("Dec").onChange(e);
-                                }}}
+                                }
+                                //get the live value from the input
+                                let decValue: string = form.getValues()["Dec"];
+                                
+                                //we assume + or - for sexagesimal unit - REPLACE this with appropriate regex                              
+                                if(decValue.indexOf("+") >= 0 || decValue.indexOf("-") >= 0 )
+                                {
+                                    //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
+                                    decValue = AstroLib.DmsToDeg(decValue);
+                                    //update the value to degrees
+                                    form.setFieldValue("Dec", decValue);
+                                }                             
+                                //update the Aladdin viewport
+                                UpdateAladinDec(Number(decValue));
+                            }}
                         />
+                        <Text size={"xs"}
+                                c={"gray.6"}
+                                style={{margin: "-4px 0px 0px 12px"}}>
+                                    {AstroLib.DegToDms(form.getValues()["Dec"])}
+                            </Text>
                         <SubmitButton
                             toolTipLabel={"Save this target"}
                             disabled={!form.isValid()}
@@ -341,8 +392,8 @@ export default function AddTargetModal(props: {proposalTitle: string}): ReactEle
  */
 export type newTargetData = {
     SelectedEpoch: string;
-    RA: number;
-    Dec: number;
+    RA: string;
+    Dec: string;
     TargetName: string
     sexagesimal: string
     objectDescription?: string
