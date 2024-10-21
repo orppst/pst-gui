@@ -794,6 +794,7 @@ export type ObservingConstraint = Record<string, any>;
  * a configuration that has been chosen to observe with.
  */
 export type ObservingMode = {
+  _id?: number;
   /**
    * human readable name for the mode
    */
