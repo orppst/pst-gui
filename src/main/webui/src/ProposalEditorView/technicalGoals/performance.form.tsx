@@ -1,6 +1,6 @@
 import {Fieldset, Group, Stack, Tooltip} from "@mantine/core";
 import {UseFormReturnType} from "@mantine/form";
-import {angularUnits, frequencyUnits, sensitivityUnits} from "src/physicalUnits/PhysicalUnits.tsx";
+import {angularUnits, frequencyUnits, dynamicRangeUnits, fluxUnits} from "src/physicalUnits/PhysicalUnits.tsx";
 import { NumberInputPlusUnit} from "src/commonInputs/NumberInputPlusUnit.tsx";
 import {ReactElement} from "react";
 import {TechnicalGoalValues} from "./edit.group.tsx";
@@ -46,7 +46,7 @@ export default function PerformanceParametersSection(
                             label={"Sensitivity"}
                             toolTip={"desired sensitivity"}
                             valueRoot={'performanceParameters.sensitivity'}
-                            units={sensitivityUnits} />
+                            units={fluxUnits} />
                     </Group>
                     <Group grow>
                         <NumberInputPlusUnit
@@ -54,7 +54,7 @@ export default function PerformanceParametersSection(
                             label={"Dynamic range"}
                             toolTip={"desired dynamic range"}
                             valueRoot={'performanceParameters.dynamicRange'}
-                            units={sensitivityUnits}
+                            units={dynamicRangeUnits}
                         />
                     </Group>
                     <Group grow>

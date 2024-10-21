@@ -20,9 +20,15 @@ export const frequencyUnits = [
     {value: 'EHz', label: 'EHz'}
 ]
 
-export const sensitivityUnits = [
-    {value: 'dB', label: 'db'},
+export const dynamicRangeUnits = [
+    {value: 'dB', label: 'dB'},
     {value: 'bel', label: 'bel'}
+]
+
+export const fluxUnits = [
+    {value: 'microJansky', label: '\u{03bc}Jy'},
+    {value: 'milliJansky', label: 'mJy'},
+    {value: 'Jansky', label: 'Jy'}
 ]
 
 /**
