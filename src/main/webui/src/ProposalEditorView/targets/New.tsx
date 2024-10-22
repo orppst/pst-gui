@@ -118,11 +118,11 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
             coordSys: {val: "ICRS"},
             lat: {
                 "@type": "ivoa:RealQuantity",
-                value: val.RA, unit: { value: "degrees" }
+                value: parseFloat(val.RA), unit: { value: "degrees" }
             },
             lon: {
                 "@type": "ivoa:RealQuantity",
-                value: val.Dec, unit: { value: "degrees" }
+                value: parseFloat(val.Dec), unit: { value: "degrees" }
             }
         }
         const Target: CelestialTarget = {
@@ -194,9 +194,44 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
         form.setFieldValue('RA', raCoords.toString());
         form.setFieldValue('Dec', decCoords.toString());
         
+        //we want to update the name if there is no entry OR if the entry is from the catalogue
+        if (form.values["TargetName"].slice(0,6) != "Target" && form.values["TargetName"].slice(0,8) != "Modified")
+        {
+            //if we have a catalogue name, modify it to show that the target has moved
+            if(form.values["TargetName"] != ""){
+                ModifyTargetName(form.values["TargetName"]);               
+            }
+            //if we have no name, add one
+            else{
+                GenerateTargetDefaultName();  
+            }
+            
+        }
+    }
+
+    /**
+     * generate new default name for a target
+     */
+    const GenerateTargetDefaultName = () => {
         //BJLG
         //reset the name to something generic + random suffix
         let targetProxyName = "Target_";
+        let randNum = Math.random();
+        //convert the number into something using chars 0-9 A-Z
+        let hexString = randNum.toString(36);
+        targetProxyName += hexString.slice(6).toUpperCase();
+        form.setFieldValue('TargetName', targetProxyName);
+        
+        //allow submission in case this was previously locked
+        setNameUnique(true);
+    }
+    /**
+     * modify the name for a target
+     */
+    const ModifyTargetName = (currentName :string) => {
+        //BJLG
+        //reset the name to something generic + random suffix
+        let targetProxyName = "Modified " + currentName + "_";
         let randNum = Math.random();
         //convert the number into something using chars 0-9 A-Z
         let hexString = randNum.toString(36);
@@ -281,6 +316,12 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                     raValue = AstroLib.HmsToDeg(raValue);
                                     //update the value to degrees
                                     form.setFieldValue("RA", raValue);
+                                    
+                                }
+                                //if we don't have a name for this object, generate one
+                                if(form.values["TargetName"] == "")
+                                {
+                                    GenerateTargetDefaultName();
                                 }                             
                                 //update the Aladdin viewport
                                 UpdateAladinRA(Number(raValue));
@@ -316,7 +357,12 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                     decValue = AstroLib.DmsToDeg(decValue);
                                     //update the value to degrees
                                     form.setFieldValue("Dec", decValue);
-                                }                             
+                                }          
+                                //if we don't have a name for this object, generate one
+                                if(form.values["TargetName"] == "")
+                                {
+                                    GenerateTargetDefaultName();
+                                }                   
                                 //update the Aladdin viewport
                                 UpdateAladinDec(Number(decValue));
                             }}
