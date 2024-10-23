@@ -842,18 +842,6 @@ export type OfferedCycles = {
   cycles?: ProposalCycle[];
 };
 
-export type OpenProposalCyclesSummary = {
-  /**
-   * @format int64
-   */
-  dbid?: number;
-  name?: string;
-  submissionDeadline?: Date;
-  observationSessionStart?: Date;
-  observationSessionEnd?: Date;
-  observatory?: Observatory;
-};
-
 /**
  * An institution that is a collection of people
  */
@@ -1146,6 +1134,7 @@ export type ProposalCycleDates = {
   submissionDeadline?: Date;
   observationSessionStart?: Date;
   observationSessionEnd?: Date;
+  observatory?: Observatory;
 };
 
 export type ProposalKind = "Standard" | "ToO" | "Survey";

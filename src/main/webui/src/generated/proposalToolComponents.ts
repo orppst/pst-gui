@@ -3415,68 +3415,6 @@ export const useProposalCyclesResourceCreateProposalCycle = (
   });
 };
 
-export type ProposalCyclesResourceGetOpenProposalCyclesError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type ProposalCyclesResourceGetOpenProposalCyclesResponse =
-  Schemas.OpenProposalCyclesSummary[];
-
-export type ProposalCyclesResourceGetOpenProposalCyclesVariables =
-  ProposalToolContext["fetcherOptions"];
-
-export const fetchProposalCyclesResourceGetOpenProposalCycles = (
-  variables: ProposalCyclesResourceGetOpenProposalCyclesVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    ProposalCyclesResourceGetOpenProposalCyclesResponse,
-    ProposalCyclesResourceGetOpenProposalCyclesError,
-    undefined,
-    {},
-    {},
-    {}
-  >({
-    url: "/pst/api/proposalCycles/openCycles",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useProposalCyclesResourceGetOpenProposalCycles = <
-  TData = ProposalCyclesResourceGetOpenProposalCyclesResponse,
->(
-  variables: ProposalCyclesResourceGetOpenProposalCyclesVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      ProposalCyclesResourceGetOpenProposalCyclesResponse,
-      ProposalCyclesResourceGetOpenProposalCyclesError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    ProposalCyclesResourceGetOpenProposalCyclesResponse,
-    ProposalCyclesResourceGetOpenProposalCyclesError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposalCycles/openCycles",
-      operationId: "proposalCyclesResourceGetOpenProposalCycles",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchProposalCyclesResourceGetOpenProposalCycles(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
 export type ProposalCyclesResourceGetProposalCyclePathParams = {
   /**
    * @format int64
@@ -12560,11 +12498,6 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles";
       operationId: "proposalCyclesResourceGetProposalCycles";
       variables: ProposalCyclesResourceGetProposalCyclesVariables;
-    }
-  | {
-      path: "/pst/api/proposalCycles/openCycles";
-      operationId: "proposalCyclesResourceGetOpenProposalCycles";
-      variables: ProposalCyclesResourceGetOpenProposalCyclesVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}";

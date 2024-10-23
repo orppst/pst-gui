@@ -472,10 +472,7 @@ function App2(): ReactElement {
      */
     function PSTStart(): ReactElement {
         return (
-            <Container pt={10}>
             <ObservatoriesCyclesPanel />
-
-            </Container>
         );
     }
 
