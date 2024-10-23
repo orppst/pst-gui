@@ -1344,6 +1344,70 @@ export const useInstrumentResourceReplaceInstrumentDescription = (
   });
 };
 
+export type InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams = {
+  /**
+   * @format int64
+   */
+  instrumentId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type InstrumentResourceReplaceInstrumentFrequencyCoverageError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InstrumentResourceReplaceInstrumentFrequencyCoverageVariables = {
+  body?: Schemas.SpectralWindowSetup;
+  pathParams: InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInstrumentResourceReplaceInstrumentFrequencyCoverage = (
+  variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    InstrumentResourceReplaceInstrumentFrequencyCoverageError,
+    Schemas.SpectralWindowSetup,
+    {},
+    {},
+    InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}/frequencyCoverage",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useInstrumentResourceReplaceInstrumentFrequencyCoverage = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      InstrumentResourceReplaceInstrumentFrequencyCoverageError,
+      InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    InstrumentResourceReplaceInstrumentFrequencyCoverageError,
+    InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
+  >({
+    mutationFn: (
+      variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables,
+    ) =>
+      fetchInstrumentResourceReplaceInstrumentFrequencyCoverage({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type InstrumentResourceReplaceInstrumentKindPathParams = {
   /**
    * @format int64
@@ -3348,6 +3412,68 @@ export const useProposalCyclesResourceCreateProposalCycle = (
         ...variables,
       }),
     ...options,
+  });
+};
+
+export type ProposalCyclesResourceGetOpenProposalCyclesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetOpenProposalCyclesResponse =
+  Schemas.OpenProposalCyclesSummary[];
+
+export type ProposalCyclesResourceGetOpenProposalCyclesVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetOpenProposalCycles = (
+  variables: ProposalCyclesResourceGetOpenProposalCyclesVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetOpenProposalCyclesResponse,
+    ProposalCyclesResourceGetOpenProposalCyclesError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/proposalCycles/openCycles",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetOpenProposalCycles = <
+  TData = ProposalCyclesResourceGetOpenProposalCyclesResponse,
+>(
+  variables: ProposalCyclesResourceGetOpenProposalCyclesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetOpenProposalCyclesResponse,
+      ProposalCyclesResourceGetOpenProposalCyclesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetOpenProposalCyclesResponse,
+    ProposalCyclesResourceGetOpenProposalCyclesError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/openCycles",
+      operationId: "proposalCyclesResourceGetOpenProposalCycles",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalCyclesResourceGetOpenProposalCycles(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
   });
 };
 
@@ -12434,6 +12560,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles";
       operationId: "proposalCyclesResourceGetProposalCycles";
       variables: ProposalCyclesResourceGetProposalCyclesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/openCycles";
+      operationId: "proposalCyclesResourceGetOpenProposalCycles";
+      variables: ProposalCyclesResourceGetOpenProposalCyclesVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}";

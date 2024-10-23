@@ -49,7 +49,7 @@ import {
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
 import DatabaseSearchButton from './commonButtons/databaseSearch';
-import {ContextualHelpButton} from "./commonButtons/contextualHelp.tsx"
+//import {ContextualHelpButton} from "./commonButtons/contextualHelp.tsx"
 import {
     APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
@@ -74,6 +74,7 @@ import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
 import ObservationFieldsPanel from "./ProposalEditorView/observationFields/ObservationFieldsPanel.tsx";
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 import ErrorPage from "./errorHandling/error-page.jsx"
+import ObservatoriesCyclesPanel from "./ProposalEditorView/landingPage/observatoriesCycles.tsx";
 
 /**
  * defines the user context type.
@@ -472,18 +473,7 @@ function App2(): ReactElement {
     function PSTStart(): ReactElement {
         return (
             <Container pt={10}>
-            <Grid>
-                <Text fz={"lg"} fw={"bold"} c={"teal.7"}>
-                    Polaris Landing Page
-                </Text>
-                <Grid.Col span={7.5}></Grid.Col>
-                <ContextualHelpButton messageId="General" />
-                <p> &emsp; </p>
-            </Grid>
-                <img src={"/pst/gui/temporary-ufo-landing.png"}
-                     alt={"welcome image of a ufo crash landing"}
-                     width={"100%"}
-                />
+            <ObservatoriesCyclesPanel />
 
             </Container>
         );
