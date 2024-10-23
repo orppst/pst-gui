@@ -75,6 +75,8 @@ import ObservationFieldsPanel from "./ProposalEditorView/observationFields/Obser
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 import ErrorPage from "./errorHandling/error-page.jsx"
 import ObservatoriesCyclesPanel from "./ProposalEditorView/landingPage/observatoriesCycles.tsx";
+import {PanelFrame} from "./commonPanel/appearance.tsx";
+import ProposalsStatus from "./ProposalEditorView/landingPage/proposalsStatus.tsx";
 
 /**
  * defines the user context type.
@@ -472,7 +474,10 @@ function App2(): ReactElement {
      */
     function PSTStart(): ReactElement {
         return (
-            <ObservatoriesCyclesPanel />
+            <PanelFrame>
+                <ObservatoriesCyclesPanel />
+                <ProposalsStatus />
+            </PanelFrame>
         );
     }
 

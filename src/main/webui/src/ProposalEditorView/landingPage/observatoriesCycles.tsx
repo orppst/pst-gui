@@ -4,7 +4,7 @@ import {
     useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycles,
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
-import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {PanelHeader} from "../../commonPanel/appearance.tsx";
 
 type CycleRowProps = {
     cycleId: number
@@ -69,14 +69,10 @@ function ObservatoriesCyclesPanel (): ReactElement {
     };
 
 
-    return <PanelFrame>
-        <PanelHeader itemName={"Proposals"} panelHeading={"Status"}/>
-        A list of proposals you are an investigator on and their current status
-
-        <PanelHeader itemName={"Observing Cycles"} panelHeading={"Available"}/>
-        {isLoading? 'Loading' : listCycles()}
-
-    </PanelFrame>;
+    return <>
+            <PanelHeader itemName={"Observing Cycles"} panelHeading={"Available"}/>
+            {isLoading? 'Loading' : listCycles()}
+        </>;
 
 }
 
