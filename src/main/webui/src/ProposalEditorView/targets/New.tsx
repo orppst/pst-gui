@@ -309,14 +309,14 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 //get the live value from the input
                                 let raValue: string = form.getValues()["RA"];
                                 
-                                //we assume + or - for sexagesimal unit - REPLACE this with appropriate regex                              
-                                if(raValue.indexOf("+") >= 0 || raValue.indexOf("-") >= 0 )
+                                const regexp = new RegExp(/(\d{1,3})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                                //first filter to ensure input is at least in the ball park of sensible
+                                if(regexp.test(raValue))
                                 {
                                     //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
                                     raValue = AstroLib.HmsToDeg(raValue);
                                     //update the value to degrees
                                     form.setFieldValue("RA", raValue);
-                                    
                                 }
                                 //if we don't have a name for this object, generate one
                                 if(form.values["TargetName"] == "")
@@ -350,8 +350,9 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 //get the live value from the input
                                 let decValue: string = form.getValues()["Dec"];
                                 
-                                //we assume + or - for sexagesimal unit - REPLACE this with appropriate regex                              
-                                if(decValue.indexOf("+") >= 0 || decValue.indexOf("-") >= 0 )
+                                const regexp = new RegExp(/(\d{1,2})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                                //first filter to ensure input is at least in the ball park of sensible
+                                if(regexp.test(decValue))
                                 {
                                     //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
                                     decValue = AstroLib.DmsToDeg(decValue);
