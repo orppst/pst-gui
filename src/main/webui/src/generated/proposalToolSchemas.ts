@@ -733,6 +733,17 @@ export type Observation = {
 };
 
 /**
+ * the mapping between a list of observationIDs and ObservationMode id
+ */
+export type ObservationConfigMapping = {
+  observationIds?: number[];
+  /**
+   * @format int64
+   */
+  modeId?: number;
+};
+
+/**
  * the configuration of an observation specific to a submission to a particular cycle
  */
 export type ObservationConfiguration = {
@@ -1543,6 +1554,17 @@ export type SubjectMap = {
   person?: Person;
   uid?: string;
   inKeycloakRealm?: boolean;
+};
+
+/**
+ * The submission configuration in terms of IDs
+ */
+export type SubmissionConfiguration = {
+  /**
+   * @format int64
+   */
+  proposalId?: number;
+  config?: ObservationConfigMapping[];
 };
 
 /**
