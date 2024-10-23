@@ -5,6 +5,7 @@ import {
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
 import {PanelHeader} from "../../commonPanel/appearance.tsx";
+import {randomId} from "@mantine/hooks";
 
 type CycleRowProps = {
     cycleId: number
@@ -24,14 +25,15 @@ function ProposalCycleTableRow(props:CycleRowProps) {
         );
     }
 
-    return <>
-    {isLoading?(<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>):
-        (<Table.Tr><Tooltip label={tooltip}><Table.Td>{data?.observatory?.name}</Table.Td></Tooltip>
+    if(isLoading)
+        return <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>;
+    else
+        return <Table.Tr><Tooltip label={tooltip}><Table.Td>{data?.observatory?.name}</Table.Td></Tooltip>
             <Table.Td>{data?.title}</Table.Td>
             <Table.Td>{data?.submissionDeadline?.substring(0,10)}</Table.Td>
             <Table.Td>{data?.observationSessionStart?.substring(0,10)}</Table.Td>
             <Table.Td>{data?.observationSessionEnd?.substring(0,10)}</Table.Td>
-        </Table.Tr>)} </>
+        </Table.Tr>;
 }
 
 
@@ -48,7 +50,7 @@ function ObservatoriesCyclesPanel (): ReactElement {
 
     const listCycles = () => {
         if(data?.length == 0) {
-            return <List>There are no proposal cycles currently available</List>
+            return <List key={randomId()}>There are no proposal cycles currently available</List>
         }
         return <Table>
             <Table.Thead>
@@ -62,7 +64,7 @@ function ObservatoriesCyclesPanel (): ReactElement {
             </Table.Thead>
             <Table.Tbody>
             {data?.map((cycle) => {
-                return <ProposalCycleTableRow cycleId={cycle.dbid!} />;
+                return <ProposalCycleTableRow key={cycle.dbid} cycleId={cycle.dbid!} />;
             })}
         </Table.Tbody>
         </Table>
