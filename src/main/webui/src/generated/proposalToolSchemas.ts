@@ -1198,6 +1198,7 @@ export type ProposalCycleDates = {
   submissionDeadline?: Date;
   observationSessionStart?: Date;
   observationSessionEnd?: Date;
+  observatory?: Observatory;
 };
 
 export type ProposalKind = "Standard" | "ToO" | "Survey";
