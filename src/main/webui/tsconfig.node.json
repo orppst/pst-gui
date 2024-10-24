@@ -4,8 +4,8 @@
     "jsx": "react",
     "composite": true,
     "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "allowSyntheticDefaultImports": true
   },
   "include": ["vite.config.ts"]
