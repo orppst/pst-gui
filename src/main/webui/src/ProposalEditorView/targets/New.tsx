@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Stack, Fieldset, Grid, rem, Text} from "@mantine/core";
+import {Modal, TextInput, Stack, Fieldset, Grid, rem, Text} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
@@ -314,7 +314,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 if(regexp.test(raValue))
                                 {
                                     //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
-                                    raValue = AstroLib.HmsToDeg(raValue);
+                                    raValue = String(AstroLib.HmsToDeg(raValue));
                                     //update the value to degrees
                                     form.setFieldValue("RA", raValue);
                                 }
@@ -332,7 +332,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                         <Text size={"xs"} 
                                 c={"gray.6"} 
                                 style={{margin: "-4px 0px 0px 12px"}}>
-                                    {AstroLib.DegToHms(form.getValues()["RA"])}
+                                    {AstroLib.DegToHms(Number(form.getValues()["RA"]))}
                             </Text>
                         <TextInput
                             //hideControls
@@ -355,7 +355,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 if(regexp.test(decValue))
                                 {
                                     //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
-                                    decValue = AstroLib.DmsToDeg(decValue);
+                                    decValue = String(AstroLib.DmsToDeg(decValue));
                                     //update the value to degrees
                                     form.setFieldValue("Dec", decValue);
                                 }          
@@ -371,7 +371,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                         <Text size={"xs"}
                                 c={"gray.6"}
                                 style={{margin: "-4px 0px 0px 12px"}}>
-                                    {AstroLib.DegToDms(form.getValues()["Dec"])}
+                                    {AstroLib.DegToDms(Number(form.getValues()["Dec"]))}
                             </Text>
                         <SubmitButton
                             toolTipLabel={"Save this target"}

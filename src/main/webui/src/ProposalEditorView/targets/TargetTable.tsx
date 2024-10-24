@@ -167,7 +167,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
         //console.log(data);
         if(celestialTarget.sourceCoordinates?.lat?.unit?.value === "degrees")
             //ra = celestialTarget.sourceCoordinates?.lat?.value+"°";
-            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lat.value);
+            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lat.value ?? 0);
         else
             ra = celestialTarget.sourceCoordinates?.lat?.value + " " +
                 celestialTarget.sourceCoordinates?.lat?.unit?.value;
