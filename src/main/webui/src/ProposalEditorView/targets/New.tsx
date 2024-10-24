@@ -332,7 +332,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                         <Text size={"xs"} 
                                 c={"gray.6"} 
                                 style={{margin: "-4px 0px 0px 12px"}}>
-                                    {AstroLib.DegToHms(Number(form.getValues()["RA"]))}
+                                    {AstroLib.DegToHms(Number(form.getValues()["RA"]),3)}
                             </Text>
                         <TextInput
                             //hideControls
@@ -371,7 +371,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                         <Text size={"xs"}
                                 c={"gray.6"}
                                 style={{margin: "-4px 0px 0px 12px"}}>
-                                    {AstroLib.DegToDms(Number(form.getValues()["Dec"]))}
+                                    {AstroLib.DegToDms(Number(form.getValues()["Dec"]),3)}
                             </Text>
                         <SubmitButton
                             toolTipLabel={"Save this target"}
