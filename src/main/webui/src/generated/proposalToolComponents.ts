@@ -1344,70 +1344,6 @@ export const useInstrumentResourceReplaceInstrumentDescription = (
   });
 };
 
-export type InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams = {
-  /**
-   * @format int64
-   */
-  instrumentId: number;
-  /**
-   * @format int64
-   */
-  observatoryId: number;
-};
-
-export type InstrumentResourceReplaceInstrumentFrequencyCoverageError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type InstrumentResourceReplaceInstrumentFrequencyCoverageVariables = {
-  body?: Schemas.SpectralWindowSetup;
-  pathParams: InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchInstrumentResourceReplaceInstrumentFrequencyCoverage = (
-  variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    InstrumentResourceReplaceInstrumentFrequencyCoverageError,
-    Schemas.SpectralWindowSetup,
-    {},
-    {},
-    InstrumentResourceReplaceInstrumentFrequencyCoveragePathParams
-  >({
-    url: "/pst/api/observatories/{observatoryId}/instruments/{instrumentId}/frequencyCoverage",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useInstrumentResourceReplaceInstrumentFrequencyCoverage = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      InstrumentResourceReplaceInstrumentFrequencyCoverageError,
-      InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    InstrumentResourceReplaceInstrumentFrequencyCoverageError,
-    InstrumentResourceReplaceInstrumentFrequencyCoverageVariables
-  >({
-    mutationFn: (
-      variables: InstrumentResourceReplaceInstrumentFrequencyCoverageVariables,
-    ) =>
-      fetchInstrumentResourceReplaceInstrumentFrequencyCoverage({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
 export type InstrumentResourceReplaceInstrumentKindPathParams = {
   /**
    * @format int64
@@ -6048,6 +5984,7 @@ export type SubmittedProposalResourceSubmitProposalError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type SubmittedProposalResourceSubmitProposalVariables = {
+  body?: Schemas.SubmissionConfiguration;
   pathParams: SubmittedProposalResourceSubmitProposalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -6058,13 +5995,13 @@ export const fetchSubmittedProposalResourceSubmitProposal = (
   proposalToolFetch<
     Schemas.ProposalSynopsis,
     SubmittedProposalResourceSubmitProposalError,
-    undefined,
+    Schemas.SubmissionConfiguration,
     {},
     {},
     SubmittedProposalResourceSubmitProposalPathParams
   >({
     url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals",
-    method: "put",
+    method: "post",
     ...variables,
     signal,
   });
@@ -7037,7 +6974,7 @@ export type ObservingModeResourceGetCycleObservingModesError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ObservingModeResourceGetCycleObservingModesResponse =
-  Schemas.ObjectIdentifier[];
+  Schemas.ObservingMode[];
 
 export type ObservingModeResourceGetCycleObservingModesVariables = {
   pathParams: ObservingModeResourceGetCycleObservingModesPathParams;

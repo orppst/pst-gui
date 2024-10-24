@@ -14,7 +14,7 @@ export type AllocatedBlock = {
    */
   resource?: Resource;
   /**
-   * a collection of configs that can be chosen to observe with.
+   * a configuration that has been chosen to observe with.
    */
   mode?: ObservingMode;
   /**
@@ -133,6 +133,7 @@ export type BinnedCoordinate = {
  * An observation that is intended for calibration
  */
 export type CalibrationObservation = {
+  xmlId?: string;
   "@type"?: string;
   /**
    * any constraints on the observation
@@ -487,6 +488,24 @@ export type Field = {
 export type FileUpload = Record<string, any>;
 
 /**
+ * Available filters /bandpasses for intruments
+ */
+export type Filter = {
+  /**
+   * human readable name
+   */
+  name?: string;
+  /**
+   * human readable description
+   */
+  description?: string;
+  /**
+   * Science oriented definition of a spectral window.
+   */
+  frequencyCoverage?: SpectralWindowSetup;
+};
+
+/**
  * Generic, one-dimensional coordinate space suitable for use with most non-spatial properties. In Appendix B, we provide the description of a Standard 1D Coordinate Space instance which may be referenced in serializations.
  */
 export type GenericCoordSpace = {
@@ -565,10 +584,6 @@ export type Instrument = {
    */
   reference?: string;
   kind?: InstrumentKind;
-  /**
-   * Science oriented definition of a spectral window.
-   */
-  frequencyCoverage?: SpectralWindowSetup;
   xmlId?: string;
 };
 
@@ -714,6 +729,32 @@ export type Observation = {
    * collects together the technical goals of the proposal
    */
   technicalGoal?: TechnicalGoal;
+  xmlId?: string;
+};
+
+/**
+ * the mapping between a list of observationIDs and ObservationMode id
+ */
+export type ObservationConfigMapping = {
+  observationIds?: number[];
+  /**
+   * @format int64
+   */
+  modeId?: number;
+};
+
+/**
+ * the configuration of an observation specific to a submission to a particular cycle
+ */
+export type ObservationConfiguration = {
+  /**
+   * A reference to -
+   */
+  observation?: Observation[];
+  /**
+   * a configuration that has been chosen to observe with.
+   */
+  mode?: ObservingMode;
 };
 
 /**
@@ -756,10 +797,43 @@ export type Observatory = {
 };
 
 /**
+ * a form of constraint on the observation
+ */
+export type ObservingConstraint = Record<string, any>;
+
+/**
+ * a configuration that has been chosen to observe with.
+ */
+export type ObservingMode = {
+  _id?: number;
+  /**
+   * human readable name for the mode
+   */
+  name?: string;
+  /**
+   * human readable description
+   */
+  description?: string;
+  /**
+   * A particular observation combination that is possible
+   */
+  configuration?: ObservingModeConfiguration;
+  xmlId?: string;
+};
+
+/**
  * A particular observation combination that is possible
  */
-export type ObservingConfiguration = {
-  telescope?: Telescope;
+export type ObservingModeConfiguration = {
+  _id?: number;
+  /**
+   * Available filters /bandpasses for intruments
+   */
+  filter?: Filter;
+  /**
+   * base type of a telescope or array of telescopes
+   */
+  telescope?: ObservingPlatform;
   /**
    * An instrument that can be attached to a telescope - e.g. CCD, Radio Receiver
    */
@@ -768,21 +842,13 @@ export type ObservingConfiguration = {
    * a processing backend /pipeline- e.g. correlator
    */
   backend?: Backend;
+  xmlId?: string;
 };
 
 /**
- * a form of constraint on the observation
+ * base type of a telescope or array of telescopes
  */
-export type ObservingConstraint = Record<string, any>;
-
-/**
- * a collection of configs that can be chosen to observe with.
- */
-export type ObservingMode = {
-  _id?: number;
-  name?: string;
-  description?: string;
-  configurations?: ObservingConfiguration[];
+export type ObservingPlatform = {
   xmlId?: string;
 };
 
@@ -838,10 +904,6 @@ export type ObservingProposal = {
    */
   observations?: Observation[];
   xmlId?: string;
-};
-
-export type OfferedCycles = {
-  cycles?: ProposalCycle[];
 };
 
 /**
@@ -1136,6 +1198,7 @@ export type ProposalCycleDates = {
   submissionDeadline?: Date;
   observationSessionStart?: Date;
   observationSessionEnd?: Date;
+  observatory?: Observatory;
 };
 
 export type ProposalKind = "Standard" | "ToO" | "Survey";
@@ -1282,7 +1345,7 @@ export type ResourceBlock = {
    */
   resource?: Resource;
   /**
-   * a collection of configs that can be chosen to observe with.
+   * a configuration that has been chosen to observe with.
    */
   mode?: ObservingMode;
 };
@@ -1495,6 +1558,17 @@ export type SubjectMap = {
 };
 
 /**
+ * The submission configuration in terms of IDs
+ */
+export type SubmissionConfiguration = {
+  /**
+   * @format int64
+   */
+  proposalId?: number;
+  config?: ObservationConfigMapping[];
+};
+
+/**
  * an instance of a proposal that has been submitted
  */
 export type SubmittedProposal = {
@@ -1518,13 +1592,14 @@ export type SubmittedProposal = {
    */
   reviewsCompleteDate?: Date;
   /**
-   * the reviews
-   */
-  reviews?: ProposalReview[];
-  /**
    * a complete proposal
    */
   proposal?: ObservingProposal;
+  config?: ObservationConfiguration[];
+  /**
+   * the reviews
+   */
+  reviews?: ProposalReview[];
   xmlId?: string;
 };
 
@@ -1584,6 +1659,7 @@ export type TargetField = {
  */
 export type TargetObservation = {
   "@type"?: string;
+  xmlId?: string;
   /**
    * any constraints on the observation
    */
@@ -1616,6 +1692,8 @@ export type TechnicalGoal = {
 };
 
 export type Telescope = {
+  "@type"?: string;
+  xmlId?: string;
   /**
    * telescope name
    */
@@ -1628,13 +1706,14 @@ export type Telescope = {
    * A spatial coordinate in a Cartesian coordinate space. Any associated CoordSpace MUST be a CartesianCoordSpace. If no CoordSpace is provided, a Standard Cartesian CoordSpace is assumed. Real values are used in the cartesian points.
    */
   location?: RealCartesianPoint;
-  xmlId?: string;
 };
 
 /**
  * a set of telescopes that are operated together for an observation
  */
 export type TelescopeArray = {
+  "@type"?: string;
+  xmlId?: string;
   /**
    * the array name
    */
@@ -1737,13 +1816,6 @@ export type TimingWindow = {
  * Must conform to definition of unit in VOUnit spec.
  */
 export type Unit = {
-  value?: string;
-};
-
-/**
- * Must conform to definition of unit in VOUnit spec.
- */
-export type Unit1 = {
   value?: string;
 };
 
