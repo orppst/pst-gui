@@ -1,4 +1,4 @@
-import {Modal, NumberInput, TextInput, Stack, Fieldset, Grid, rem, Text} from "@mantine/core";
+import {Modal, TextInput, Stack, Fieldset, Grid, rem, Text} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
@@ -34,6 +34,7 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SimbadSearch} from "./simbadSearch.tsx";
 import SimbadSearchHelp from "./simbadSearchHelp.tsx";
+import { AstroLib } from "@tsastro/astrolib";
 
 export let Aladin: AladinType;
 
@@ -88,8 +89,8 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     const form = useForm({
             initialValues: {
                 TargetName: "",
-                RA: 0.00,
-                Dec: 0.00,
+                RA: "0.00",
+                Dec: "0.00",
                 SelectedEpoch: "J2000",
                 sexagesimal: "00:00:00 +00:00:00"
             },
@@ -117,11 +118,11 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
             coordSys: {val: "ICRS"},
             lat: {
                 "@type": "ivoa:RealQuantity",
-                value: val.RA, unit: { value: "degrees" }
+                value: parseFloat(val.RA), unit: { value: "degrees" }
             },
             lon: {
                 "@type": "ivoa:RealQuantity",
-                value: val.Dec, unit: { value: "degrees" }
+                value: parseFloat(val.Dec), unit: { value: "degrees" }
             }
         }
         const Target: CelestialTarget = {
@@ -190,8 +191,55 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     const HandleEvent = (event: MouseEvent<HTMLInputElement>) => {
         const [ra, dec] = GetOffset(event);
         const [raCoords, decCoords] = Aladin.pix2world(ra, dec);
-        form.setFieldValue('RA', raCoords);
-        form.setFieldValue('Dec', decCoords);
+        form.setFieldValue('RA', raCoords.toString());
+        form.setFieldValue('Dec', decCoords.toString());
+        
+        //we want to update the name if there is no entry OR if the entry is from the catalogue
+        if (form.values["TargetName"].slice(0,6) != "Target" && form.values["TargetName"].slice(0,8) != "Modified")
+        {
+            //if we have a catalogue name, modify it to show that the target has moved
+            if(form.values["TargetName"] != ""){
+                ModifyTargetName(form.values["TargetName"]);               
+            }
+            //if we have no name, add one
+            else{
+                GenerateTargetDefaultName();  
+            }
+            
+        }
+    }
+
+    /**
+     * generate new default name for a target
+     */
+    const GenerateTargetDefaultName = () => {
+        //BJLG
+        //reset the name to something generic + random suffix
+        let targetProxyName = "Target_";
+        let randNum = Math.random();
+        //convert the number into something using chars 0-9 A-Z
+        let hexString = randNum.toString(36);
+        targetProxyName += hexString.slice(6).toUpperCase();
+        form.setFieldValue('TargetName', targetProxyName);
+        
+        //allow submission in case this was previously locked
+        setNameUnique(true);
+    }
+    /**
+     * modify the name for a target
+     */
+    const ModifyTargetName = (currentName :string) => {
+        //BJLG
+        //reset the name to something generic + random suffix
+        let targetProxyName = "Modified " + currentName + "_";
+        let randNum = Math.random();
+        //convert the number into something using chars 0-9 A-Z
+        let hexString = randNum.toString(36);
+        targetProxyName += hexString.slice(6).toUpperCase();
+        form.setFieldValue('TargetName', targetProxyName);
+        
+        //allow submission in case this was previously locked
+        setNameUnique(true);
     }
 
     /**
@@ -200,7 +248,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      */
     const UpdateAladinRA = (value: number | string) => {
         // acquire the aladin object and set it.
-        Aladin.gotoRaDec(value as number, form.values.Dec);
+        Aladin.gotoRaDec(value as number, Number(form.values.Dec));
     }
 
     /**
@@ -209,7 +257,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      */
     const UpdateAladinDec = (value: number | string) => {
         // acquire the aladin object and set it.
-        Aladin.gotoRaDec(form.values.RA, value as number);
+        Aladin.gotoRaDec(Number(form.values.RA), value as number);
     }
 
     const responsiveSpan = {base: 2, md: 1}
@@ -244,37 +292,87 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
                             }}
                         />
-                        <NumberInput
-                            hideControls
+                        <TextInput
+                            //hideControls
                             required={true}
                             label={"RA"}
-                            decimalScale={6}
-                            min={0}
-                            max={360}
-                            allowNegative={false}
-                            suffix="°"
+                            //decimalScale={6}
+                            //min={0}
+                            //max={360}
+                            //allowNegative={false}
+                            //suffix="°"
                             {...form.getInputProps("RA")}
                             onChange={(e) => {
-                                UpdateAladinRA(e);
                                 if (form.getInputProps("RA").onChange) {
                                     form.getInputProps("RA").onChange(e);
-                                }}}
+                                }
+                                //get the live value from the input
+                                let raValue: string = form.getValues()["RA"];
+                                
+                                const regexp = new RegExp(/(\d{1,3})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                                //first filter to ensure input is at least in the ball park of sensible
+                                if(regexp.test(raValue))
+                                {
+                                    //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
+                                    raValue = String(AstroLib.HmsToDeg(raValue));
+                                    //update the value to degrees
+                                    form.setFieldValue("RA", raValue);
+                                }
+                                //if we don't have a name for this object, generate one
+                                if(form.values["TargetName"] == "")
+                                {
+                                    GenerateTargetDefaultName();
+                                }                             
+                                //update the Aladdin viewport
+                                UpdateAladinRA(Number(raValue));
+                            }}
+
+                                
                         />
-                        <NumberInput
-                            hideControls
+                        <Text size={"xs"} 
+                                c={"gray.6"} 
+                                style={{margin: "-4px 0px 0px 12px"}}>
+                                    {AstroLib.DegToHms(Number(form.getValues()["RA"]),3)}
+                            </Text>
+                        <TextInput
+                            //hideControls
                             required={true}
                             label={"Dec"}
-                            decimalScale={6}
+                            //decimalScale={6}
                             min={-90}
                             max={90}
-                            suffix="°"
+                            //suffix="°"
                             {...form.getInputProps("Dec")}
                             onChange={(e) => {
-                                UpdateAladinDec(e);
                                 if (form.getInputProps("Dec").onChange) {
                                     form.getInputProps("Dec").onChange(e);
-                                }}}
+                                }
+                                //get the live value from the input
+                                let decValue: string = form.getValues()["Dec"];
+                                
+                                const regexp = new RegExp(/(\d{1,2})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                                //first filter to ensure input is at least in the ball park of sensible
+                                if(regexp.test(decValue))
+                                {
+                                    //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
+                                    decValue = String(AstroLib.DmsToDeg(decValue));
+                                    //update the value to degrees
+                                    form.setFieldValue("Dec", decValue);
+                                }          
+                                //if we don't have a name for this object, generate one
+                                if(form.values["TargetName"] == "")
+                                {
+                                    GenerateTargetDefaultName();
+                                }                   
+                                //update the Aladdin viewport
+                                UpdateAladinDec(Number(decValue));
+                            }}
                         />
+                        <Text size={"xs"}
+                                c={"gray.6"}
+                                style={{margin: "-4px 0px 0px 12px"}}>
+                                    {AstroLib.DegToDms(Number(form.getValues()["Dec"]),3)}
+                            </Text>
                         <SubmitButton
                             toolTipLabel={"Save this target"}
                             disabled={!form.isValid()}
@@ -341,8 +439,8 @@ export default function AddTargetModal(props: {proposalTitle: string}): ReactEle
  */
 export type newTargetData = {
     SelectedEpoch: string;
-    RA: number;
-    Dec: number;
+    RA: string;
+    Dec: string;
     TargetName: string
     sexagesimal: string
     objectDescription?: string

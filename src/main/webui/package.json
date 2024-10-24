@@ -5,6 +5,7 @@
   "type": "module",
   "homepage": "https://kilburn.jb.man.ac.uk/pst/gui/",
   "dependencies": {
+    "@tsastro/astrolib": "^0.2.0",
     "@mantine/core": "^7.13.1",
     "@mantine/dates": "^7.13.1",
     "@mantine/form": "^7.13.1",
