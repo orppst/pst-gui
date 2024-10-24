@@ -5984,6 +5984,7 @@ export type SubmittedProposalResourceSubmitProposalError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type SubmittedProposalResourceSubmitProposalVariables = {
+  body?: Schemas.SubmissionConfiguration;
   pathParams: SubmittedProposalResourceSubmitProposalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -5994,13 +5995,13 @@ export const fetchSubmittedProposalResourceSubmitProposal = (
   proposalToolFetch<
     Schemas.ProposalSynopsis,
     SubmittedProposalResourceSubmitProposalError,
-    undefined,
+    Schemas.SubmissionConfiguration,
     {},
     {},
     SubmittedProposalResourceSubmitProposalPathParams
   >({
     url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals",
-    method: "put",
+    method: "post",
     ...variables,
     signal,
   });
@@ -6973,7 +6974,7 @@ export type ObservingModeResourceGetCycleObservingModesError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ObservingModeResourceGetCycleObservingModesResponse =
-  Schemas.ObjectIdentifier[];
+  Schemas.ObservingMode[];
 
 export type ObservingModeResourceGetCycleObservingModesVariables = {
   pathParams: ObservingModeResourceGetCycleObservingModesPathParams;

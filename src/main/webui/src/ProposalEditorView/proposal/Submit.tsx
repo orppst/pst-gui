@@ -66,10 +66,14 @@ function SubmitPanel(): ReactElement {
         setSelectedCycle(Number(value));
     }
 
+
     const trySubmitProposal = form.onSubmit(() => {
         const submissionVariables: SubmittedProposalResourceSubmitProposalVariables = {
             pathParams: {cycleCode: Number(form.values.selectedCycle)},
-            body: Number(selectedProposalCode),
+            body: {
+                proposalId: Number(selectedProposalCode),
+                config: [] //FIXME need to create gui to fill the obseervation->observationMode mapping.
+            },
             // @ts-ignore
             headers: {"Content-Type": "text/plain"}
         };
