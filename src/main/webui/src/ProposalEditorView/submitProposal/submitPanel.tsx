@@ -1,14 +1,12 @@
 import {ReactElement, SyntheticEvent, useEffect, useState} from "react";
-import {Box, Grid, Select, Stack, Text} from "@mantine/core";
+import {Grid, Select, Stack, Text} from "@mantine/core";
 import {
-    fetchProposalCyclesResourceGetProposalCycleDates,
+    fetchProposalCyclesResourceGetProposalCycleDates, fetchProposalCyclesResourceGetProposalCycles,
     fetchSubmittedProposalResourceSubmitProposal,
-    SubmittedProposalResourceSubmitProposalVariables,
-    useProposalCyclesResourceGetProposalCycles
+    SubmittedProposalResourceSubmitProposalVariables
 } from "src/generated/proposalToolComponents.ts";
 import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "@mantine/form";
-import {JSON_SPACES} from "src/constants.tsx";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {useQueryClient} from "@tanstack/react-query";
@@ -17,17 +15,24 @@ import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
+import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 
 function SubmitPanel(): ReactElement {
+
     const {selectedProposalCode} = useParams();
+
     const navigate = useNavigate();
-    const [searchData, setSearchData] = useState([]);
+
+    const [cyclesData, setCyclesData] = useState<{value: string, label: string}[]>([]);
+
     const [selectedCycle , setSelectedCycle] = useState(0);
+
     const [submissionDeadline, setSubmissionDeadline] = useState("undefined");
+
     const [isValid, setIsValid] = useState(false);
-    const {data, error,  status} =
-        useProposalCyclesResourceGetProposalCycles({queryParams: {includeClosed: false}});
+
     const queryClient = useQueryClient();
+
     const form = useForm({
         initialValues: {
             selectedCycle: 0,
@@ -35,23 +40,22 @@ function SubmitPanel(): ReactElement {
     });
 
     useEffect(() => {
-        if (status === 'success') {
-            setSearchData([]);
-            data?.map((item) => (
-                // @ts-ignore
-                setSearchData((current) => [...current, {
-                    value: String(item.dbid), label: item.name}])
-            ));
-        }
-    }, [status,data]);
+        fetchProposalCyclesResourceGetProposalCycles({
+            queryParams: {includeClosed: false}
+        })
+            .then((data: ObjectIdentifier[])=> {
+                setCyclesData(
+                    data?.map((cycle) =>(
+                        {value: String(cycle.dbid), label: cycle.name!}
+                    ))
+                )
+            })
+            .catch((error) => {
+                notifyError("Loading Proposal Cycles failed", getErrorMessage(error))
+            })
+    }, []);
 
-    if (error) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
+
 
     const changeCycleDates = (value: string | null) => {
         fetchProposalCyclesResourceGetProposalCycleDates(
@@ -102,7 +106,7 @@ function SubmitPanel(): ReactElement {
                 <ContextualHelpButton messageId="ManageSubmit" />
                 <Stack>
                     <Select label={"Cycle"}
-                        data={searchData}
+                        data={cyclesData}
                         {...form.getInputProps("selectedCycle")}
                         onChange={changeCycleDates}
                     />
