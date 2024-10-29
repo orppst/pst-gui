@@ -14,7 +14,7 @@ export type AllocatedBlock = {
    */
   resource?: Resource;
   /**
-   * a configuration that has been chosen to observe with.
+   * a configuration can be used to observe with.
    */
   mode?: ObservingMode;
   /**
@@ -752,7 +752,7 @@ export type ObservationConfiguration = {
    */
   observation?: Observation[];
   /**
-   * a configuration that has been chosen to observe with.
+   * a configuration can be used to observe with.
    */
   mode?: ObservingMode;
 };
@@ -779,6 +779,10 @@ export type Observatory = {
    */
   wikiId?: WikiDataId;
   /**
+   * the home page for the Observatory
+   */
+  homePage?: string;
+  /**
    * the telescopes that the observatory controls
    */
   telescopes?: Telescope[];
@@ -802,7 +806,7 @@ export type Observatory = {
 export type ObservingConstraint = Record<string, any>;
 
 /**
- * a configuration that has been chosen to observe with.
+ * a configuration can be used to observe with.
  */
 export type ObservingMode = {
   _id?: number;
@@ -814,18 +818,6 @@ export type ObservingMode = {
    * human readable description
    */
   description?: string;
-  /**
-   * A particular observation combination that is possible
-   */
-  configuration?: ObservingModeConfiguration;
-  xmlId?: string;
-};
-
-/**
- * A particular observation combination that is possible
- */
-export type ObservingModeConfiguration = {
-  _id?: number;
   /**
    * Available filters /bandpasses for intruments
    */
@@ -1143,6 +1135,10 @@ export type ProposalCycle = {
    */
   title?: string;
   /**
+   * pointer to more detailed instructions about the cycle
+   */
+  instructions?: string;
+  /**
    * the date by which observing proposals must be submitted to be considered for this cycle
    *
    * @format date
@@ -1345,7 +1341,7 @@ export type ResourceBlock = {
    */
   resource?: Resource;
   /**
-   * a configuration that has been chosen to observe with.
+   * a configuration can be used to observe with.
    */
   mode?: ObservingMode;
 };
@@ -1591,15 +1587,15 @@ export type SubmittedProposal = {
    * @example "2022-03-10T00:00:00.000Z"
    */
   reviewsCompleteDate?: Date;
-  /**
-   * a complete proposal
-   */
-  proposal?: ObservingProposal;
   config?: ObservationConfiguration[];
   /**
    * the reviews
    */
   reviews?: ProposalReview[];
+  /**
+   * a complete proposal
+   */
+  proposal?: ObservingProposal;
   xmlId?: string;
 };
 
