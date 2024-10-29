@@ -364,7 +364,7 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                     <Combobox.Target>
                         <InputBase
                             rightSection={<IconSearch />}
-                            description={ "Search is case sensitive, but for proper nouns we recommend using capitalised strings e.g. 'Crab'" }
+                            description={ "Search is case sensitive, but we recommend using capitalised strings for proper nouns e.g., 'Crab'" }
                             value={search}
                             onChange={(event: { currentTarget: { value: SetStateAction<string>; }; }) => {
                                 combobox.openDropdown();
