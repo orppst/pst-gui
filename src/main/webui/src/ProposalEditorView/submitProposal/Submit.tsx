@@ -12,7 +12,7 @@ import {JSON_SPACES} from "src/constants.tsx";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import ValidationOverview from "./ValidationOverview.tsx";
+import ValidationOverview from "../proposal/ValidationOverview.tsx";
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -72,7 +72,7 @@ function SubmitPanel(): ReactElement {
             pathParams: {cycleCode: Number(form.values.selectedCycle)},
             body: {
                 proposalId: Number(selectedProposalCode),
-                config: [] //FIXME need to create gui to fill the obseervation->observationMode mapping.
+                config: [] //FIXME need to create gui to fill the observation->observationMode mapping.
             },
             // @ts-ignore
             headers: {"Content-Type": "text/plain"}
@@ -114,7 +114,7 @@ function SubmitPanel(): ReactElement {
                 <Grid>
                     <Grid.Col span={8}></Grid.Col>
                     <SubmitButton
-                        disabled={form.values.selectedCycle===0 || isValid == false}
+                        disabled={form.values.selectedCycle===0 || !isValid}
                         label={"Submit proposal"}
                         toolTipLabel={"Submit your proposal to the selected cycle"}
                     />
