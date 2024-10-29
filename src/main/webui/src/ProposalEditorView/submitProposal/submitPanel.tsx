@@ -1,5 +1,5 @@
 import {ReactElement, SyntheticEvent, useEffect, useState} from "react";
-import {Group, Select, Space, Stack} from "@mantine/core";
+import {Fieldset, Grid, Group, Select, Stack} from "@mantine/core";
 import {
     fetchProposalCyclesResourceGetProposalCycleDates, fetchProposalCyclesResourceGetProposalCycles,
     fetchSubmittedProposalResourceSubmitProposal,
@@ -102,34 +102,42 @@ function SubmitPanel(): ReactElement {
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Submit"} />
 
-            <ValidationOverview cycle={form.getValues().selectedCycle} setValid={setIsProposalReady}/>
+            <Grid columns={10}>
+                <Grid.Col span={5}>
+                    <Fieldset legend={"Submission Form"}>
+                        <form onSubmit={trySubmitProposal}>
+                            <Stack>
+                                <Group>
+                                    <ContextualHelpButton messageId="ManageSubmit"/>
+                                </Group>
+                                <Select
+                                    label={"Please select a proposal cycle"}
+                                    description={submissionDeadline === "" ?
+                                        "Submission deadline: " : "Submission deadline: " + submissionDeadline}
+                                    data={cyclesData}
+                                    {...form.getInputProps("selectedCycle")}
+                                />
+                                <Group justify={'flex-end'}>
+                                    <SubmitButton
+                                        disabled={!form.isValid() || !isProposalReady}
+                                        label={"Submit proposal"}
+                                        toolTipLabel={"Submit your proposal to the selected cycle"}
+                                    />
+                                    <CancelButton
+                                        onClickEvent={handleCancel}
+                                        toolTipLabel={"Go back without submitting"}/>
+                                </Group>
+                            </Stack>
+                        </form>
+                    </Fieldset>
+                </Grid.Col>
+                <Grid.Col span={5}>
+                    <Fieldset legend={"Ready Status"}>
+                        <ValidationOverview cycle={form.getValues().selectedCycle} setValid={setIsProposalReady}/>
+                    </Fieldset>
+                </Grid.Col>
 
-            <form onSubmit={trySubmitProposal}>
-                <ContextualHelpButton messageId="ManageSubmit" />
-                <Stack>
-                    <Select
-                        label={"Please select a proposal cycle"}
-                        description={submissionDeadline === "" ?
-                            "Submission deadline: " : "Submission deadline: "+ submissionDeadline}
-                        data={cyclesData}
-                        {...form.getInputProps("selectedCycle")}
-                    />
-                </Stack>
-
-                <Space h={"xl"}/>
-
-                <Group justify={'flex-end'}>
-                    <SubmitButton
-                        disabled={!form.isValid() || !isProposalReady}
-                        label={"Submit proposal"}
-                        toolTipLabel={"Submit your proposal to the selected cycle"}
-                    />
-                    <CancelButton
-                        onClickEvent={handleCancel}
-                        toolTipLabel={"Go back without submitting"}/>
-                </Group>
-
-            </form>
+            </Grid>
         </PanelFrame>
     )
 }
