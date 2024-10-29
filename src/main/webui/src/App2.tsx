@@ -27,7 +27,7 @@ import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGo
 import { TargetPanel } from "./ProposalEditorView/targets/targetPanel.tsx";
 import ObservationsPanel from "./ProposalEditorView/observations/observationPanel.tsx";
 import DocumentsPanel from "./ProposalEditorView/proposal/Documents.tsx";
-import SubmitPanel from "./ProposalEditorView/submitProposal/Submit.tsx";
+import SubmitPanel from "./ProposalEditorView/submitProposal/submitPanel.tsx";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
