@@ -1,5 +1,5 @@
 import {ReactElement, SyntheticEvent, useEffect, useState} from "react";
-import {Grid, Select, Stack, Text} from "@mantine/core";
+import {Group, Select, Space, Stack} from "@mantine/core";
 import {
     fetchProposalCyclesResourceGetProposalCycleDates, fetchProposalCyclesResourceGetProposalCycles,
     fetchSubmittedProposalResourceSubmitProposal,
@@ -10,7 +10,7 @@ import {useForm} from "@mantine/form";
 import {SubmitButton} from "src/commonButtons/save.tsx";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import ValidationOverview from "../proposal/ValidationOverview.tsx";
+import ValidationOverview from "./ValidationOverview.tsx";
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -25,11 +25,9 @@ function SubmitPanel(): ReactElement {
 
     const [cyclesData, setCyclesData] = useState<{value: string, label: string}[]>([]);
 
-    const [selectedCycle , setSelectedCycle] = useState(0);
+    const [submissionDeadline, setSubmissionDeadline] = useState("");
 
-    const [submissionDeadline, setSubmissionDeadline] = useState("undefined");
-
-    const [isValid, setIsValid] = useState(false);
+    const [isProposalReady, setIsProposalReady] = useState(false);
 
     const queryClient = useQueryClient();
 
@@ -37,6 +35,10 @@ function SubmitPanel(): ReactElement {
         initialValues: {
             selectedCycle: 0,
         },
+        validate: {
+            selectedCycle: (value) =>
+                (value === 0 ? 'Please select a cycle' : null)
+        }
     });
 
     useEffect(() => {
@@ -56,19 +58,19 @@ function SubmitPanel(): ReactElement {
     }, []);
 
 
-
-    const changeCycleDates = (value: string | null) => {
-        fetchProposalCyclesResourceGetProposalCycleDates(
-            {pathParams: {cycleCode: Number(value)}})
-            .then((dates) => {
-                setSubmissionDeadline(dates.submissionDeadline!);
-                console.log(dates)
-            })
-            .catch(console.log)
-
-        form.values.selectedCycle = Number(value);
-        setSelectedCycle(Number(value));
-    }
+    useEffect(() => {
+        if (form.getValues().selectedCycle > 0) {
+            fetchProposalCyclesResourceGetProposalCycleDates(
+                {pathParams: {cycleCode: Number(form.getValues().selectedCycle)}})
+                .then((dates) => {
+                    setSubmissionDeadline(dates.submissionDeadline!);
+                })
+                .catch((error) => {
+                    notifyError("Failed to load proposal cycle dates", getErrorMessage(error))
+                })
+        }
+        //else do nothing
+    }, [form.getValues().selectedCycle]);
 
 
     const trySubmitProposal = form.onSubmit(() => {
@@ -100,32 +102,32 @@ function SubmitPanel(): ReactElement {
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Submit"} />
 
-            <ValidationOverview cycle={selectedCycle} setValid={setIsValid}/>
+            <ValidationOverview cycle={form.getValues().selectedCycle} setValid={setIsProposalReady}/>
 
             <form onSubmit={trySubmitProposal}>
                 <ContextualHelpButton messageId="ManageSubmit" />
                 <Stack>
-                    <Select label={"Cycle"}
+                    <Select
+                        label={"Please select a proposal cycle"}
+                        description={submissionDeadline === "" ?
+                            "Submission deadline: " : "Submission deadline: "+ submissionDeadline}
                         data={cyclesData}
                         {...form.getInputProps("selectedCycle")}
-                        onChange={changeCycleDates}
                     />
-
-                    <Text>Submission deadline {submissionDeadline}</Text>
                 </Stack>
 
-                <p> </p>
-                <Grid>
-                    <Grid.Col span={8}></Grid.Col>
+                <Space h={"xl"}/>
+
+                <Group justify={'flex-end'}>
                     <SubmitButton
-                        disabled={form.values.selectedCycle===0 || !isValid}
+                        disabled={!form.isValid() || !isProposalReady}
                         label={"Submit proposal"}
                         toolTipLabel={"Submit your proposal to the selected cycle"}
                     />
                     <CancelButton
                         onClickEvent={handleCancel}
                         toolTipLabel={"Go back without submitting"}/>
-                </Grid>
+                </Group>
 
             </form>
         </PanelFrame>
