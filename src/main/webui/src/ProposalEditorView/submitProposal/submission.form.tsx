@@ -48,6 +48,8 @@ function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, i
     }, []);
 
 
+    //irritatingly we have to fetch ProposalCycleDates separately --
+    // -- perhaps we need a "CycleSynopsis" cf. "ProposalSynopsis"?
     useEffect(() => {
         if (props.form.getValues().selectedCycle > 0) {
             fetchProposalCyclesResourceGetProposalCycleDates(
@@ -75,7 +77,7 @@ function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, i
 
         fetchSubmittedProposalResourceSubmitProposal(submissionVariables)
             .then(()=> {
-                notifySuccess("Submission", "Your proposal has been submitted");
+                notifySuccess("Submission successful", "Your proposal has been submitted");
                 queryClient.invalidateQueries().then();
                 navigate("/proposal/" + selectedProposalCode);
             })
@@ -83,7 +85,7 @@ function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, i
             )
     });
 
-    function handleCancel(event: SyntheticEvent) {
+    const handleCancel = (event: SyntheticEvent)=> {
         event.preventDefault();
         navigate("../",{relative:"path"})
     }
