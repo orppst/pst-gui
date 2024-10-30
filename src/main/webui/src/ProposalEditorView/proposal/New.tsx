@@ -42,7 +42,8 @@ const textFormatData = [
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const emptyJustification : Justification = {text: "", format: "asciidoc"};
+    //single white space as work around to issue of changing format of default justification
+    const emptyJustification : Justification = {text: " ", format: "asciidoc"};
     const form = useForm({
         initialValues: {
             title: "",
