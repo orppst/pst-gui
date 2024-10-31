@@ -29,8 +29,8 @@ function ObservationModeSelect(props: {form: UseFormReturnType<SubmissionFormVal
             .then((data : ObjectIdentifier[]) => {
                 setObservationModes(
                     data?.map((mode) => (
-                        //in this context 'code' contains the mode description string
-                        {value: String(mode.dbid), label: mode.name + ": " + mode.code}
+                        //in this context 'name' contains the mode description string
+                        {value: String(mode.dbid), label: mode.code + ": " + mode.name}
                     ))
                 )
             })
