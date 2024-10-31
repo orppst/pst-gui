@@ -16,6 +16,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {SubmissionFormValues} from "./submitPanel.tsx";
+import ObservationModeSelect from "./observationMode.select.tsx";
 
 export default
 function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, isProposalReady: boolean}) :
@@ -53,7 +54,7 @@ function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, i
     useEffect(() => {
         if (props.form.getValues().selectedCycle > 0) {
             fetchProposalCyclesResourceGetProposalCycleDates(
-                {pathParams: {cycleCode: Number(props.form.getValues().selectedCycle)}})
+                {pathParams: {cycleCode: props.form.getValues().selectedCycle}})
                 .then((dates) => {
                     setSubmissionDeadline(dates.submissionDeadline!);
                 })
@@ -66,7 +67,7 @@ function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, i
 
     const trySubmitProposal = props.form.onSubmit(() => {
         const submissionVariables: SubmittedProposalResourceSubmitProposalVariables = {
-            pathParams: {cycleCode: Number(props.form.values.selectedCycle)},
+            pathParams: {cycleCode: props.form.getValues().selectedCycle},
             body: {
                 proposalId: Number(selectedProposalCode),
                 config: [] //FIXME need to create gui to fill the observation->observationMode mapping.
@@ -103,6 +104,9 @@ function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, i
                     data={cyclesData}
                     {...props.form.getInputProps("selectedCycle")}
                 />
+
+                <ObservationModeSelect form={props.form}/>
+
                 <Group justify={'flex-end'}>
                     <SubmitButton
                         disabled={!props.form.isValid() || !props.isProposalReady}
