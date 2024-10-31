@@ -22,6 +22,7 @@ function ObservationModeSelect(props: {form: UseFormReturnType<SubmissionFormVal
     const [observationModes, setObservationModes] = useState<{value: string, label: string}[]>([])
 
     useEffect(() => {
+        console.log("selected cycle: " + props.form.getValues().selectedCycle)
         fetchObservingModeResourceGetCycleObservingModes({
             pathParams: {cycleId: props.form.getValues().selectedCycle}
         })
@@ -36,7 +37,7 @@ function ObservationModeSelect(props: {form: UseFormReturnType<SubmissionFormVal
             .catch((error) => {
                 notifyError("Failed to load observation modes", getErrorMessage(error))
             })
-    }, []);
+    }, [props.form.getValues().selectedCycle]);
 
     const tableHeader = () => (
         <Table.Thead>
