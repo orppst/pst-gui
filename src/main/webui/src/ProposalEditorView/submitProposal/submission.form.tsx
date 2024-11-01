@@ -1,5 +1,5 @@
 import {ReactElement, SyntheticEvent, useEffect, useState} from "react";
-import {Group, Select, Stack} from "@mantine/core";
+import {Group, ScrollArea, Select, Stack} from "@mantine/core";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import CancelButton from "../../commonButtons/cancel.tsx";
@@ -14,7 +14,10 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {UseFormReturnType} from "@mantine/form";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
+import {
+    ObjectIdentifier,
+    ObservationConfigMapping
+} from "../../generated/proposalToolSchemas.ts";
 import {SubmissionFormValues} from "./submitPanel.tsx";
 import ObservationModeSelect from "./observationMode.select.tsx";
 
@@ -65,26 +68,54 @@ function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, i
         //else do nothing
     }, [props.form.getValues().selectedCycle]);
 
-    const trySubmitProposal = props.form.onSubmit(() => {
-        const submissionVariables: SubmittedProposalResourceSubmitProposalVariables = {
-            pathParams: {cycleCode: props.form.getValues().selectedCycle},
-            body: {
-                proposalId: Number(selectedProposalCode),
-                config: [] //FIXME need to create gui to fill the observation->observationMode mapping.
-            },
-            // @ts-ignore
-            headers: {"Content-Type": "text/plain"}
-        };
+    const trySubmitProposal =
+        props.form.onSubmit((values) => {
 
-        fetchSubmittedProposalResourceSubmitProposal(submissionVariables)
-            .then(()=> {
-                notifySuccess("Submission successful", "Your proposal has been submitted");
-                queryClient.invalidateQueries().then();
-                navigate("/proposal/" + selectedProposalCode);
+            //I feel like there might be a better way to do this using the 'filter' method
+            //of an array, but it escapes me at the moment ----------------------
+
+            let allModeIds : number[] =
+                values.selectedModes.map((modeTuple) => (
+                    modeTuple.modeId
+                ))
+
+            let distinctModeIds = [...new Set(allModeIds)];
+
+            let observationConfigMap: ObservationConfigMapping[]  = []
+
+            distinctModeIds.forEach((distinctModeId) => {
+                // as 'distinctModeId' has come from 'selectedModes' this will always give an array 'obsIds'
+                // of at least length 1
+                //@ts-ignore
+                let obsIds : number [] = values.selectedModes.map((modeTuple) => {
+                    if (distinctModeId === modeTuple.modeId)
+                        return modeTuple.observationId;
+                })
+
+                observationConfigMap.push({observationIds: obsIds, modeId: distinctModeId})
             })
-            .catch((error) => notifyError("Submission failed", getErrorMessage(error))
-            )
-    });
+
+            //------------------------------------------------------------------------
+
+            const submissionVariables: SubmittedProposalResourceSubmitProposalVariables = {
+                pathParams: {cycleCode: values.selectedCycle},
+                body: {
+                    proposalId: Number(selectedProposalCode),
+                    config: observationConfigMap
+                },
+                // @ts-ignore
+                headers: {"Content-Type": "application/json"}
+            };
+
+            fetchSubmittedProposalResourceSubmitProposal(submissionVariables)
+                .then(()=> {
+                    notifySuccess("Submission successful", "Your proposal has been submitted");
+                    queryClient.invalidateQueries().then();
+                    navigate("/proposal/" + selectedProposalCode);
+                })
+                .catch((error) => notifyError("Submission failed", getErrorMessage(error))
+                )
+        });
 
     const handleCancel = (event: SyntheticEvent)=> {
         event.preventDefault();
@@ -105,7 +136,9 @@ function SubmissionForm(props: {form: UseFormReturnType<SubmissionFormValues>, i
                     {...props.form.getInputProps("selectedCycle")}
                 />
 
-                <ObservationModeSelect form={props.form}/>
+                <ScrollArea h={200}>
+                    <ObservationModeSelect form={props.form}/>
+                </ScrollArea>
 
                 <Group justify={'flex-end'}>
                     <SubmitButton

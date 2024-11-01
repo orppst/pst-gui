@@ -65,7 +65,7 @@ function ObservationModeSelect(props: {form: UseFormReturnType<SubmissionFormVal
     }
 
     return (
-        <Table>
+        <Table stickyHeader>
             {tableHeader()}
             <Table.Tbody>
                 {

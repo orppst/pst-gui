@@ -35,20 +35,23 @@ function SubmitPanel(): ReactElement {
     let emptyObservationModeTuple : ObservationModeTuple[] = []
 
     const form : UseFormReturnType<SubmissionFormValues> = useForm({
-        mode: 'uncontrolled',
         initialValues: {
             selectedCycle: 0,
             selectedModes: emptyObservationModeTuple
         },
         validate: {
             selectedCycle: (value) =>
-                (value === 0 ? 'Please select a cycle' : null)
+                (value === 0 ? 'Please select a cycle' : null),
+            selectedModes: (value) => (
+                (value.some(e => e.modeId === 0) ?
+                    'All observations required a mode' : null)
+            )
         }
     });
 
     useEffect(() => {
         if (observations.data) {
-            //form.initialize only called once regardless of changes
+            //form.initialize called once only regardless of changes
             form.initialize({
                 selectedCycle: 0,
                 selectedModes: observations.data.map((obs) => (
@@ -63,38 +66,24 @@ function SubmitPanel(): ReactElement {
         }
     }, [observations.data]);
 
-    /*
-    useEffect(() => {
-        fetchObservationResourceGetObservations({
-            pathParams: {proposalCode: Number(selectedProposalCode)}
-        })
-            .then((data : ObjectIdentifier[]) => {
-                setInitialTuples(
-                    data?.map((obs) => (
-                        {
-                            observationId: obs.dbid!,
-                            observationName: obs.name!,
-                            observationType: obs.code!,
-                            modeId: 0
-                        }
-                    ))
-                )
-            })
-    }, []);
-    */
-
     return (
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Submit"} />
             <Grid columns={10}>
-                <Grid.Col span={5}>
+                <Grid.Col span={6}>
                     <Fieldset legend={"Submission Form"}>
-                        <SubmissionForm form={form} isProposalReady={isProposalReady} />
+                        <SubmissionForm
+                            form={form}
+                            isProposalReady={isProposalReady}
+                        />
                     </Fieldset>
                 </Grid.Col>
-                <Grid.Col span={5}>
+                <Grid.Col span={4}>
                     <Fieldset legend={"Ready Status"}>
-                        <ValidationOverview cycle={form.getValues().selectedCycle} setValid={setIsProposalReady}/>
+                        <ValidationOverview
+                            cycle={form.getValues().selectedCycle}
+                            setValid={setIsProposalReady}
+                        />
                     </Fieldset>
                 </Grid.Col>
             </Grid>
