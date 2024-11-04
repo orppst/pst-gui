@@ -17,12 +17,11 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 
 export default
-function ObservationModeSelect(props: {form: UseFormReturnType<SubmissionFormValues>}): ReactElement {
+function ObservationModeSelect(props: { form: UseFormReturnType<SubmissionFormValues> }): ReactElement {
 
     const [observationModes, setObservationModes] = useState<{value: string, label: string}[]>([])
 
     useEffect(() => {
-        console.log("selected cycle: " + props.form.getValues().selectedCycle)
         fetchObservingModeResourceGetCycleObservingModes({
             pathParams: {cycleId: props.form.getValues().selectedCycle}
         })
@@ -57,6 +56,7 @@ function ObservationModeSelect(props: {form: UseFormReturnType<SubmissionFormVal
                     <Select
                         placeholder={"select mode"}
                         data={observationModes}
+                        allowDeselect={false}
                         {...props.form.getInputProps(`selectedModes.${p.index}.modeId`)}
                     />
                 </Table.Td>
