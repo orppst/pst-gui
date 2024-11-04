@@ -318,20 +318,6 @@ function OverviewPanel(): ReactElement {
     }
 
     /**
-     * generates the display submitted panel.
-     * @return {React.ReactElement} the html for the submitted display.
-     * @constructor
-     */
-    const DisplaySubmitted = (): ReactElement => {
-        return (
-            <Group>
-                <h4>Submitted:</h4>
-                <Text>{proposalsData?.submitted ? 'yes' : 'no'}</Text>
-            </Group>
-        )
-    }
-
-    /**
      * handles the scientific justification panel
      * @return {React.ReactElement} the html for the scientific justification panel.
      * @constructor
@@ -586,7 +572,6 @@ function OverviewPanel(): ReactElement {
                             <DisplayObservations/>
                             <DisplaySupportingDocuments/>
                             <DisplayRelatedProposals/>
-                            <DisplaySubmitted/>
                         </div>
                     </Container>
             }

@@ -6974,7 +6974,7 @@ export type ObservingModeResourceGetCycleObservingModesError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ObservingModeResourceGetCycleObservingModesResponse =
-  Schemas.ObservingMode[];
+  Schemas.ObjectIdentifier[];
 
 export type ObservingModeResourceGetCycleObservingModesVariables = {
   pathParams: ObservingModeResourceGetCycleObservingModesPathParams;
