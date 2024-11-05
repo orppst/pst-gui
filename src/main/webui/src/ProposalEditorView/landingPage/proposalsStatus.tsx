@@ -7,13 +7,13 @@ import {randomId} from "@mantine/hooks";
 
 type ProposalRowProps = {
     title: string
-    submitted: boolean
+    kind: string
 }
 
 function ProposalsTableRow(props: ProposalRowProps) {
     return <Table.Tr>
         <Table.Td>{props.title}</Table.Td>
-        <Table.Td>{props.submitted?'Yes':'No'}</Table.Td>
+        <Table.Td>{props.kind}</Table.Td>
     </Table.Tr>
 
 }
@@ -33,14 +33,14 @@ function ProposalsStatus () {
             <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Title</Table.Th>
-                    <Table.Th>Submitted</Table.Th>
+                    <Table.Th>Type</Table.Th>
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
                 {data?.map((proposal) => {
                     return <ProposalsTableRow key={proposal.code}
                                               title={proposal.title!}
-                                              submitted={proposal.submitted!} />;
+                                              kind={proposal.kind!} />;
                 })}
             </Table.Tbody>
         </Table>
