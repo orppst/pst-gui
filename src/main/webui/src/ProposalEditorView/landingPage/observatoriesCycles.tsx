@@ -4,7 +4,6 @@ import {
     useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycles,
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
-import {PanelHeader} from "../../commonPanel/appearance.tsx";
 import {randomId} from "@mantine/hooks";
 
 type CycleRowProps = {
@@ -71,10 +70,11 @@ function ObservatoriesCyclesPanel (): ReactElement {
     };
 
 
-    return <>
-            <PanelHeader itemName={"Observing Cycles"} panelHeading={"Available"}/>
+    return (
+        <>
             {isLoading? 'Loading' : listCycles()}
-        </>;
+        </>
+    )
 
 }
 
