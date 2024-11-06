@@ -77,6 +77,7 @@ import ErrorPage from "./errorHandling/error-page.jsx"
 import ObservatoriesCyclesPanel from "./ProposalEditorView/landingPage/observatoriesCycles.tsx";
 import {PanelFrame} from "./commonPanel/appearance.tsx";
 import ProposalsStatus from "./ProposalEditorView/landingPage/proposalsStatus.tsx";
+import TacCycles from "./ProposalManagerView/landingPage/tacCycles.tsx";
 
 /**
  * defines the user context type.
@@ -489,17 +490,9 @@ function App2(): ReactElement {
 
     function PSTManagerStart() : ReactElement {
         return(
-            <Container pt={10}>
-
-                <Text fz={"lg"} fw={"bold"} c={"teal.7"}>
-                    Polaris Management Page
-                </Text>
-
-                <img src={"/pst/gui/ufo-mother-ship-earth.png"}
-                     alt={"welcome image of a mother-ship orbiting Earth"}
-                     width={"100%"}
-                />
-            </Container>
+            <PanelFrame>
+                <TacCycles />
+            </PanelFrame>
         )
     }
 
