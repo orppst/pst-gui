@@ -152,7 +152,6 @@ function TacCycles (): ReactElement {
         </Table>
     };
 
-
     return <>
         <PanelHeader itemName={"Observing Cycles"} panelHeading={"Open"}/>
         {isLoading? 'Loading' : listOpenCycles()}
