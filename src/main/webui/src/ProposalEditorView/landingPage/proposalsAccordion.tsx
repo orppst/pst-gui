@@ -1,23 +1,11 @@
 import {ReactElement} from "react";
-import {Accordion, Fieldset, Grid, Group, Loader, ScrollArea, Text} from "@mantine/core";
-import {useProposalResourceGetProposals} from "../../generated/proposalToolComponents.ts";
-import {notifyError} from "../../commonPanel/notifications.tsx";
-import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ProposalSynopsis} from "../../generated/proposalToolSchemas.ts";
+import {Accordion, Fieldset, Grid, Group, ScrollArea, Text} from "@mantine/core";
+import {ObjectIdentifier, ProposalSynopsis} from "../../generated/proposalToolSchemas.ts";
 
 export default
-function ProposalsAccordion() : ReactElement {
-
-    const proposals = useProposalResourceGetProposals({})
-
-    if (proposals.isError) {
-        notifyError("Error fetching proposals", getErrorMessage(proposals.error))
-        return <></>
-    }
-
-    if (proposals.isLoading) {
-        return <Loader />
-    }
+function ProposalsAccordion(
+    props: {proposals: ProposalSynopsis[], cycles: ObjectIdentifier[]})
+    : ReactElement {
 
 
     const proposalSummary = (summary: string) => {
@@ -29,7 +17,6 @@ function ProposalsAccordion() : ReactElement {
             </Fieldset>
         )
     }
-
 
     const proposalDetails = (proposal: ProposalSynopsis)  => {
         return (
@@ -65,11 +52,11 @@ function ProposalsAccordion() : ReactElement {
     }
 
     return (
-        proposals.data?.length === 0 ?
+        props.proposals.length === 0 ?
             <Text>Please create a proposal</Text>
             :
             <Accordion variant={"contained"}>
-                {proposals.data?.map(proposal => (proposalDetails(proposal)))}
+                {props.proposals.map(proposal => (proposalDetails(proposal)))}
             </Accordion>
     )
 }

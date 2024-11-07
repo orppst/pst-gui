@@ -1,81 +1,92 @@
 import {ReactElement} from "react";
-import {Box, List, Table, Tooltip} from "@mantine/core";
+import {List, Loader, Table, Tooltip} from "@mantine/core";
 import {
-    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycles,
+    useProposalCyclesResourceGetProposalCycleDates,
 } from "../../generated/proposalToolComponents.ts";
-import {JSON_SPACES} from "../../constants.tsx";
 import {randomId} from "@mantine/hooks";
+import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
+import TextErrorMessage from "../../errorHandling/textErrorMessage.tsx";
 
 type CycleRowProps = {
     cycleId: number
 }
 
 function ProposalCycleTableRow(props:CycleRowProps) {
-    const {data, error, isLoading} = useProposalCyclesResourceGetProposalCycleDates(
+    const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
         {pathParams: {cycleCode: props.cycleId}});
 
-    const tooltip = data?.observatory?.telescopes?.length + " telescopes";
+    const tooltip = cycleDates.data?.observatory?.telescopes?.length + " telescopes";
 
-    if (error) {
+    if (cycleDates.isError) {
         return (
-            <Table.Tr><Table.Td>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Table.Td></Table.Tr>
+            <Table.Tr>
+                <Table.Td>
+                    <TextErrorMessage error={cycleDates.error} preamble={"Failed to load dates"}/>
+                </Table.Td>
+            </Table.Tr>
         );
     }
 
-    if(isLoading)
-        return <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>;
-    else
-        return <Table.Tr><Tooltip label={tooltip}><Table.Td>{data?.observatory?.name}</Table.Td></Tooltip>
-            <Table.Td>{data?.title}</Table.Td>
-            <Table.Td>{data?.submissionDeadline?.substring(0,10)}</Table.Td>
-            <Table.Td>{data?.observationSessionStart?.substring(0,10)}</Table.Td>
-            <Table.Td>{data?.observationSessionEnd?.substring(0,10)}</Table.Td>
-        </Table.Tr>;
-}
-
-
-function ObservatoriesCyclesPanel (): ReactElement {
-    const { data , error, isLoading } = useProposalCyclesResourceGetProposalCycles({queryParams: {}});
-
-    if (error) {
+    if(cycleDates.isLoading) {
         return (
-            <Box>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
-        );
+            <Table.Tr>
+                <Table.Td>
+                    <Loader size={"sm"} />
+                </Table.Td>
+            </Table.Tr>
+        )
     }
-
-    const listCycles = () => {
-        if(data?.length == 0) {
-            return <List key={randomId()}>There are no proposal cycles currently available</List>
-        }
-        return <Table>
-            <Table.Thead>
-                <Table.Tr>
-                    <Table.Th>Observatory</Table.Th>
-                    <Table.Th>Name</Table.Th>
-                    <Table.Th>Deadline</Table.Th>
-                    <Table.Th>Observing start</Table.Th>
-                    <Table.Th>Observing end</Table.Th>
-                </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-            {data?.map((cycle) => {
-                return <ProposalCycleTableRow key={cycle.dbid} cycleId={cycle.dbid!} />;
-            })}
-        </Table.Tbody>
-        </Table>
-    };
-
 
     return (
-        <>
-            {isLoading? 'Loading' : listCycles()}
-        </>
+        <Table.Tr>
+            <Tooltip label={tooltip}>
+                <Table.Td>
+                    {cycleDates.data?.observatory?.name}
+                </Table.Td>
+            </Tooltip>
+            <Table.Td>
+                {cycleDates.data?.title}
+            </Table.Td>
+            <Table.Td>
+                {cycleDates.data?.submissionDeadline?.substring(0,10)}
+            </Table.Td>
+            <Table.Td>
+                {cycleDates.data?.observationSessionStart?.substring(0,10)}
+            </Table.Td>
+            <Table.Td>
+                {cycleDates.data?.observationSessionEnd?.substring(0,10)}
+            </Table.Td>
+        </Table.Tr>
     )
 
 }
 
-export default ObservatoriesCyclesPanel
+export default
+function ObservatoriesCyclesPanel (props: {cycles: ObjectIdentifier[]}): ReactElement {
+
+    const listCycles = () => {
+        if(props.cycles.length == 0) {
+            return <List key={randomId()}>There are no proposal cycles currently available</List>
+        }
+        return (
+            <Table>
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>Observatory</Table.Th>
+                        <Table.Th>Name</Table.Th>
+                        <Table.Th>Deadline</Table.Th>
+                        <Table.Th>Observing start</Table.Th>
+                        <Table.Th>Observing end</Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                    {props.cycles.map((cycle) => {
+                        return <ProposalCycleTableRow key={cycle.dbid} cycleId={cycle.dbid!} />;
+                    })}
+                </Table.Tbody>
+            </Table>
+        )
+    };
+
+    return listCycles()
+}
