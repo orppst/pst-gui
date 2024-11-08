@@ -6,9 +6,12 @@ import {PanelHeader} from "../../commonPanel/appearance.tsx";
 import {ProposalContext} from "../../App2.tsx";
 import {
     useProposalCyclesResourceGetProposalCycles,
-    useProposalResourceGetProposals
+    useProposalResourceGetProposals,
 } from "../../generated/proposalToolComponents.ts";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+
+
+
 
 export default
 function EditorLandingPage() : ReactElement {
@@ -58,6 +61,7 @@ function EditorLandingPage() : ReactElement {
             <ProposalsAccordion
                 proposals={proposals.data!}
                 cycles={proposalCycles.data!}
+                investigatorName={context.user.fullName!}
             />
         </>
     )
