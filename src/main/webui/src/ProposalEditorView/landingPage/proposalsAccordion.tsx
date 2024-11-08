@@ -2,7 +2,6 @@ import {ReactElement, useEffect, useState} from "react";
 import {Accordion, Fieldset, Grid, Group, ScrollArea, Table, Text} from "@mantine/core";
 import {ObjectIdentifier, ProposalSynopsis} from "../../generated/proposalToolSchemas.ts";
 import {fetchSubmittedProposalResourceGetSubmittedProposals} from "../../generated/proposalToolComponents.ts";
-import {randomId} from "@mantine/hooks";
 
 type SubmissionDetail = {
     cycleName: string,
@@ -115,7 +114,7 @@ function CycleSubmissionDetail(props: {
 
     return(
         submissionDetail ?
-            <Table.Tr key={randomId()}>
+            <Table.Tr>
                 <Table.Td>{submissionDetail.cycleName}</Table.Td>
                 <Table.Td>{submissionDetail.submissionDate}</Table.Td>
             </Table.Tr>
