@@ -62,12 +62,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setFetcherApiURL(localbaseUrl)
         apiURL.current=localbaseUrl
 
-        const response = await window.fetch("/pst/gui/aai/", {mode:"no-cors"}); //FIXME reintroduce CORS when keycloak is implementing it properly
+        const response = await window.fetch("/pst/gui/aai/", {mode:"no-cors", redirect:"manual"}); //FIXME reintroduce CORS when keycloak is implementing it properly
         let error;
         if (response.ok) {
 
             return await response.json() as AuthMapping
-        } else {
+        } else if(response.redirected) {
+            console.log("redirected" )
+        }
+        else {
             console.log("authentication failed");
 
             for (const entry of response.headers.entries()) {
@@ -86,9 +89,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 };
             }
 
-            throw error;
-        }
 
+        }
+        throw error;
     }
 
     function logout() {

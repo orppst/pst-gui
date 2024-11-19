@@ -128,7 +128,7 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
                                         )}
                                         onClick={()=>handleAssign(
                                             {reviewerId: reviewer.dbid!, reviewerName: reviewer.name!,
-                                                proposalId: proposal._id!, proposalTitle: proposal.proposal?.title!}
+                                                proposalId: proposal._id!, proposalTitle: proposal.title!}
                                         )}
                                     />
                                     :
@@ -140,7 +140,7 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
                                         )}
                                         onClick={() => confirmRemoval(
                                             {reviewerId: reviewer.dbid!, reviewerName: reviewer.name!,
-                                                proposalId: proposal._id!, proposalTitle: proposal.proposal?.title!}
+                                                proposalId: proposal._id!, proposalTitle: proposal.title!}
                                         )}
                                     />
                             }

@@ -38,18 +38,18 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
     return (
         <Accordion.Item value={String(allocatedProposal.data?._id)}>
             <Accordion.Control>
-                {allocatedProposal.data?.submitted?.proposal?.title}
+                {allocatedProposal.data?.submitted?.title}
             </Accordion.Control>
             <Accordion.Panel>
                 {allocatedProposal.data?.allocation ?
                     <AllocatedBlocksTable
                         allocatedBlocks={allocatedProposal.data.allocation}
-                        proposalTitle={allocatedProposal.data?.submitted?.proposal?.title!}
+                        proposalTitle={allocatedProposal.data?.submitted?.title!}
                         allocatedProposalId={allocatedProposal.data._id!}
                     /> :
                     <Group justify={"centre"} grow>
                         <AllocatedBlockModal
-                            proposalTitle={allocatedProposal.data?.submitted?.proposal?.title!}
+                            proposalTitle={allocatedProposal.data?.submitted?.title!}
                             allocatedProposalId={allocatedProposal.data?._id!}
                         />
                     </Group>
