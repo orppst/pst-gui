@@ -46,6 +46,7 @@ const textFormatData = [
     const emptyJustification : Justification = {text: " ", format: "asciidoc"};
     const form = useForm({
         initialValues: {
+            "@type": "proposal:ObservingProposal",
             title: "",
             summary: "",
             kind: "Standard" as ProposalKind,
