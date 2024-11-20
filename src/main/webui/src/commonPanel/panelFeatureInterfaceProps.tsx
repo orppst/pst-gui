@@ -1,7 +1,7 @@
 export interface headerInterfaceProps {
     isLoading?: boolean
     itemName: string
-    panelHeading: string
+    panelHeading?: string
 }
 
 export interface editorPanelHeaderInterfaceProps {
