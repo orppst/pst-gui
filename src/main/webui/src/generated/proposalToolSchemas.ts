@@ -58,7 +58,7 @@ export type AbstractProposal = {
  */
 export type AllocatedBlock = {
   _id?: number;
-  "@type"?: string;
+  "@type"?: string; //proposalManagement:AllocatedBlock
   /**
    * A resource that will be consumed by allocating an observation from a proposal
    */
