@@ -22,7 +22,17 @@ export function PanelHeader(props: headerInterfaceProps): ReactElement {
             { props.isLoading ?
                 <Badge size={"xl"} radius={0}>...</Badge> :
                 <Badge size={"xl"} radius={0}>{props.itemName}</Badge>
-            } : {props.panelHeading}
+            }
+            {
+                props.panelHeading &&
+                <Badge
+                    size={"xl"}
+                    radius={0}
+                    bg={"gray.7"}
+                >
+                    {props.panelHeading}
+                </Badge>
+            }
         </Title>);
 }
 

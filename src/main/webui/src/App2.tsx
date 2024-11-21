@@ -74,9 +74,8 @@ import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
 import ObservationFieldsPanel from "./ProposalEditorView/observationFields/ObservationFieldsPanel.tsx";
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 import ErrorPage from "./errorHandling/error-page.jsx"
-import ObservatoriesCyclesPanel from "./ProposalEditorView/landingPage/observatoriesCycles.tsx";
 import {PanelFrame} from "./commonPanel/appearance.tsx";
-import ProposalsStatus from "./ProposalEditorView/landingPage/proposalsStatus.tsx";
+import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPage.tsx";
 
 /**
  * defines the user context type.
@@ -404,8 +403,6 @@ function App2(): ReactElement {
                                             <IconLogout size={ICON_SIZE}/>
                                         </ActionIcon>
                                     </Tooltip>
-
-
                                 </Group>
                             </Grid.Col>
                         </Grid>
@@ -475,8 +472,7 @@ function App2(): ReactElement {
     function PSTStart(): ReactElement {
         return (
             <PanelFrame>
-                <ObservatoriesCyclesPanel />
-                <ProposalsStatus />
+                <EditorLandingPage/>
             </PanelFrame>
         );
     }
