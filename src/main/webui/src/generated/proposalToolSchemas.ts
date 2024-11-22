@@ -4,6 +4,56 @@
  * @version 0.4
  */
 /**
+ * base proposal
+ */
+export type AbstractProposal = {
+  _id?: number;
+  /**
+   * the proposal title
+   */
+  title?: string;
+  /**
+   * a short summary/abstract of the proposal
+   */
+  summary?: string;
+  kind?: ProposalKind;
+  /**
+   * The justification for the proposal. Note that the justification is for reading by humans and is not parsed to extract things like source lists - that sort of information must be entered in the correct place in the model.
+   */
+  scientificJustification?: Justification;
+  /**
+   * The justification for the proposal. Note that the justification is for reading by humans and is not parsed to extract things like source lists - that sort of information must be entered in the correct place in the model.
+   */
+  technicalJustification?: Justification;
+  /**
+   * the person(s) making the proposal
+   */
+  investigators?: Investigator[];
+  relatedProposals?: RelatedProposal[];
+  /**
+   * any additional documents
+   */
+  supportingDocuments?: SupportingDocument[];
+  /**
+   * the targets of the proposal
+   */
+  targets?: Target[];
+  /**
+   * the fields observed in the proposal
+   */
+  fields?: Field[];
+  /**
+   * the technical goals of the proposal
+   */
+  technicalGoals?: TechnicalGoal[];
+  /**
+   * the proposed observations
+   */
+  observations?: Observation[];
+  xmlId?: string;
+};
+
+/**
  * A block of resources that have been allocated
  */
 export type AllocatedBlock = {
@@ -27,7 +77,7 @@ export type AllocatedBlock = {
  * an instance of a proposal that is allocated observing time
  */
 export type AllocatedProposal = {
-  _id?: number
+  _id?: number;
   /**
    * what is allocated to the proposal
    */
@@ -632,7 +682,7 @@ export type InvestigatorKind = "PI" | "COI";
 /**
  * an identifier that can be used as a key to look up in an IVOA registry - see https://www.ivoa.net/documents/IVOAIdentifiers/
  */
-export type Ivorn = {
+export type Ivoid = {
   value?: string;
 };
 
@@ -708,7 +758,7 @@ export type ObjectIdentifier = {
 export type ObsType = "TargetObservation" | "CalibrationObservation";
 
 /**
- * An observation - occurs in a single non-overlapping time period
+ * An observation - a pointing of the telescope at a part of the sky, occurs in a single non-overlapping time period
  */
 export type Observation = {
   "@type"?: string; //ObsType (see above)
@@ -773,7 +823,7 @@ export type Observatory = {
   /**
    * an identifier that can be used as a key to look up in an IVOA registry - see https://www.ivoa.net/documents/IVOAIdentifiers/
    */
-  ivoid?: Ivorn;
+  ivoid?: Ivoid;
   /**
    * a WikiData identifier
    */
@@ -848,7 +898,8 @@ export type ObservingPlatform = {
  * a complete proposal
  */
 export type ObservingProposal = {
-  "_id"?: number;
+  _id?: number;
+  xmlId?: string;
   /**
    * the proposal title
    */
@@ -858,10 +909,6 @@ export type ObservingProposal = {
    */
   summary?: string;
   kind?: ProposalKind;
-  /**
-   * whether the proposal is submitted
-   */
-  submitted?: boolean;
   /**
    * The justification for the proposal. Note that the justification is for reading by humans and is not parsed to extract things like source lists - that sort of information must be entered in the correct place in the model.
    */
@@ -895,7 +942,6 @@ export type ObservingProposal = {
    * the proposed observations
    */
   observations?: Observation[];
-  xmlId?: string;
 };
 
 /**
@@ -912,7 +958,7 @@ export type Organization = {
   /**
    * an identifier that can be used as a key to look up in an IVOA registry - see https://www.ivoa.net/documents/IVOAIdentifiers/
    */
-  ivoid?: Ivorn;
+  ivoid?: Ivoid;
   /**
    * a WikiData identifier
    */
@@ -1239,7 +1285,6 @@ export type ProposalSynopsis = {
   title?: string;
   summary?: string;
   kind?: ProposalKind;
-  submitted?: boolean;
 };
 
 export type ProposalValidation = {
@@ -1309,9 +1354,9 @@ export type RefLocation = Record<string, any>;
  */
 export type RelatedProposal = {
   /**
-   * a complete proposal
+   * base proposal
    */
-  proposal?: ObservingProposal;
+  proposal?: AbstractProposal;
 };
 
 /**
@@ -1569,6 +1614,50 @@ export type SubmissionConfiguration = {
  */
 export type SubmittedProposal = {
   _id?: number;
+
+  xmlId?: string;
+  /**
+   * the proposal title
+   */
+  title?: string;
+  /**
+   * a short summary/abstract of the proposal
+   */
+  summary?: string;
+  kind?: ProposalKind;
+  /**
+   * The justification for the proposal. Note that the justification is for reading by humans and is not parsed to extract things like source lists - that sort of information must be entered in the correct place in the model.
+   */
+  scientificJustification?: Justification;
+  /**
+   * The justification for the proposal. Note that the justification is for reading by humans and is not parsed to extract things like source lists - that sort of information must be entered in the correct place in the model.
+   */
+  technicalJustification?: Justification;
+  /**
+   * the person(s) making the proposal
+   */
+  investigators?: Investigator[];
+  relatedProposals?: RelatedProposal[];
+  /**
+   * any additional documents
+   */
+  supportingDocuments?: SupportingDocument[];
+  /**
+   * the targets of the proposal
+   */
+  targets?: Target[];
+  /**
+   * the fields observed in the proposal
+   */
+  fields?: Field[];
+  /**
+   * the technical goals of the proposal
+   */
+  technicalGoals?: TechnicalGoal[];
+  /**
+   * the proposed observations
+   */
+  observations?: Observation[];
   /**
    * the date that the proposal was submitted
    *
@@ -1592,11 +1681,6 @@ export type SubmittedProposal = {
    * the reviews
    */
   reviews?: ProposalReview[];
-  /**
-   * a complete proposal
-   */
-  proposal?: ObservingProposal;
-  xmlId?: string;
 };
 
 /**

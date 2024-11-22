@@ -273,7 +273,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                 :
                 <Stack align={"center"}>
                     <Text size={"sm"} c={"gray.5"}>
-                        You are currently not assigned to review '{props.proposal?.proposal?.title}'.
+                        You are currently not assigned to review '{props.proposal?.title}'.
                         If you wish to review this proposal please click on the "Self-Assign" button.
                     </Text>
                     <AddButton
@@ -283,7 +283,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                             {
                                 reviewerId: props.reviewerId,
                                 proposalId: props.proposal?._id!,
-                                proposalTitle: props?.proposal?.proposal?.title!
+                                proposalTitle: props?.proposal?.title!
                             }
                         )}
                     />

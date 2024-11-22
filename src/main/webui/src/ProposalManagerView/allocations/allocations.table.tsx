@@ -58,7 +58,7 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
             getErrorMessage(submittedProposal.error))
     }
 
-    let title = submittedProposal.data?.proposal?.title
+    let title = submittedProposal.data?.title
 
     async function handlePass(){
 
@@ -110,7 +110,7 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 
     return(
         <Table.Tr>
-            <Table.Td>{submittedProposal.data?.proposal?.title}</Table.Td>
+            <Table.Td>{submittedProposal.data?.title}</Table.Td>
             <Table.Td>
                 {
                     submittedProposal.data?.reviews?.length! == 0 ?
