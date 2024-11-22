@@ -33,7 +33,7 @@ function SubmittedProposalItem(props: SubmittedProposalItemProp) : ReactElement 
     return (
         <Accordion.Item value={String(props.proposalId)}>
             <Accordion.Control>
-                <Text size={"lg"}>{proposal.data?.proposal?.title}</Text>
+                <Text size={"lg"}>{proposal.data?.title}</Text>
                 <Space h={"sm"}/>
                 <Group>
                     <Text size={"sm"} c={"gray.6"}> Assigned Reviewers: </Text>

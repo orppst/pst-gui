@@ -81,7 +81,7 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
             <Accordion.Item value={String(itemProps.proposalId)}>
                 <Accordion.Control>
                     <Group>
-                        <Text size={"lg"}>{proposal.data?.proposal?.title}</Text>
+                        <Text size={"lg"}>{proposal.data?.title}</Text>
                         {hasUserCompletedReview()}
                     </Group>
                     <Space h={"sm"}/>
