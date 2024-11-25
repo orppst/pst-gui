@@ -30,6 +30,7 @@ function GetCountSubmittedProposals(props:CycleRowProps) {
     }
 }
 
+// TODO: Change this from a count of committee members to a count of reviewers 
 function GetReviewers(props:CycleRowProps) {
     const {data, error, isLoading} = useTACResourceGetCommitteeMembers({pathParams:{cycleCode: props.cycleId}});
 
@@ -141,7 +142,7 @@ function TacCycles (): ReactElement {
                     <Table.Th>Observing start</Table.Th>
                     <Table.Th>Observing end</Table.Th>
                     <Table.Th>Submitted proposals</Table.Th>
-                    <Table.Th>Assigned reviewers</Table.Th>
+                    <Table.Th>TAC members</Table.Th>
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>

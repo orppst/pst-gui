@@ -75,7 +75,6 @@ import ObservationFieldsPanel from "./ProposalEditorView/observationFields/Obser
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 import ErrorPage from "./errorHandling/error-page.jsx"
 import {PanelFrame} from "./commonPanel/appearance.tsx";
-import ProposalsStatus from "./ProposalEditorView/landingPage/proposalsStatus.tsx";
 import TacCycles from "./ProposalManagerView/landingPage/tacCycles.tsx";
 import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPage.tsx";
 
