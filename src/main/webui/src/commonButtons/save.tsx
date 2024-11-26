@@ -92,17 +92,17 @@ function SubmitButton(props: BasicButtonInterfaceProps): ReactElement {
  */
 export function SaveButton(props: ClickButtonInterfaceProps): ReactElement {
     return (
-        <Tooltip position={"left"}
+        <Tooltip position={props.toolTipLabelPosition ?? "left"}
                  label={props.toolTipLabel}
                  openDelay={OPEN_DELAY}
-                 closeDelay={CLOSE_DELAY}>
-            <Button rightSection={<IconDeviceFloppy size={ICON_SIZE}/>}
-            color={"violet.5"}
-            variant={"subtle"}
-            onClick={props.onClick === undefined?
-                props.onClickEvent :
-                props.onClick}
-            disabled={props.disabled}>
+                 closeDelay={CLOSE_DELAY}
+        >
+            <Button
+                rightSection={<IconDeviceFloppy size={ICON_SIZE}/>}
+                color={"blue.7"}
+                variant={props.variant ?? "subtle"}
+                onClick={props.onClick === undefined? props.onClickEvent : props.onClick}
+                disabled={props.disabled}>
                 {props.label === undefined? 'Save' : props.label}
             </Button>
         </Tooltip>

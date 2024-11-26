@@ -1,5 +1,6 @@
-import { useParams } from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
 import {
+    fetchProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
     useSupportingDocumentResourceGetSupportingDocuments,
 } from 'src/generated/proposalToolComponents';
@@ -7,9 +8,9 @@ import {
     Accordion,
     Avatar,
     Box,
-    Container,
+    Container, Fieldset,
     Group,
-    List,
+    List, Stack,
     Table,
     Text
 } from '@mantine/core';
@@ -21,13 +22,18 @@ import {
 } from 'src/generated/proposalToolSchemas.ts';
 import { IconNorthStar } from '@tabler/icons-react';
 import { ReactElement, useRef } from 'react';
-import { SaveButton } from 'src/commonButtons/save.tsx';
 import downloadProposal from './downloadProposal.tsx';
 import { DIMMED_FONT_WEIGHT, JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import {PreviewJustification} from "../justifications/justification.preview.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import DeleteButton from "../../commonButtons/delete.tsx";
+import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {ExportButton} from "../../commonButtons/export.tsx";
+import {modals} from "@mantine/modals";
 
 /*
       title    -- string
@@ -219,8 +225,10 @@ function ObservationAccordionContent(
  * @return {ReactElement} the html of the overview panel.
  * @constructor
  */
-function OverviewPanel(): ReactElement {
+function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const { selectedProposalCode } = useParams();
+
+    const navigate = useNavigate();
 
     const {data} =
         useSupportingDocumentResourceGetSupportingDocuments(
@@ -244,36 +252,6 @@ function OverviewPanel(): ReactElement {
             </Box>
         );
     }
-
-    /**
-     * generates the overview pdf and saves it to the users disk.
-     *
-     * code extracted from: https://www.robinwieruch.de/react-component-to-pdf/
-     * @return {Promise<void>} promise that the pdf will be saved at some point.
-     */
-    const handleDownloadPdf = (): void => {
-        // get the overview page to print as well as the proposal data.
-        const element = printRef.current;
-
-        // ensure there is a rendered overview.
-        if(element !== null && proposalsData !== undefined &&
-                selectedProposalCode !== undefined && data !== undefined) {
-            downloadProposal(
-                element, proposalsData, data, selectedProposalCode).then();
-        } else {
-            // something failed in the rendering of the overview react element or
-            // extracting the proposal data.
-            if (element === null) {
-                console.error(
-                    'Tried to download a Overview that had not formed ' +
-                    'correctly.');
-            } else {
-                console.error(
-                    'Tried to download the proposal data and that had not ' +
-                    'formed correctly.');
-            }
-        }
-    };
 
     /**
      * handles the title display panel.
@@ -534,48 +512,137 @@ function OverviewPanel(): ReactElement {
         )
     }
 
+
+    /**
+     * generates the overview pdf and saves it to the users disk.
+     *
+     * code extracted from: https://www.robinwieruch.de/react-component-to-pdf/
+     * @return {Promise<void>} promise that the pdf will be saved at some point.
+     */
+    const handleDownloadPdf = (): void => {
+        // get the overview page to print as well as the proposal data.
+        const element = printRef.current;
+
+        // ensure there is a rendered overview.
+        if(element !== null && proposalsData !== undefined &&
+            selectedProposalCode !== undefined && data !== undefined) {
+            downloadProposal(
+                element, proposalsData, data, selectedProposalCode).then();
+        } else {
+            // something failed in the rendering of the overview react element or
+            // extracting the proposal data.
+            if (element === null) {
+                console.error(
+                    'Tried to download a Overview that had not formed ' +
+                    'correctly.');
+            } else {
+                console.error(
+                    'Tried to download the proposal data and that had not ' +
+                    'formed correctly.');
+            }
+        }
+    };
+
+
     /**
      * add download button for the proposal to be extracted as a tar ball.
      *
      * @return {ReactElement} the html which contains the download button.
      * @constructor
      */
-    const DownloadButton = (): ReactElement => {
-        return SaveButton(
+    const ExportProposal = (): ReactElement => {
+        return ExportButton(
             {
                 toolTipLabel: `Export to a file for download`,
                 disabled: false,
                 onClick: handleDownloadPdf,
-                label: "Export",
+                label: "Export Proposal",
+                variant: "filled",
+                toolTipLabelPosition: "top"
             });
     }
 
+    const DeleteProposal = () : ReactElement => {
+        return DeleteButton(
+            {
+                toolTipLabel: "Removes this proposal permanently",
+                disabled: false,
+                onClick: confirmDeleteProposal,
+                label: "Delete Proposal",
+                variant: "outline"
+            }
+        )
+    }
+
+
+    const confirmDeleteProposal = () : void => {
+        modals.openConfirmModal({
+            title: "Confirm Proposal Deletion",
+            centered: true,
+            children: (
+                <Stack>
+                    <Text size={"sm"}>
+                        Are you sure you want to permanently remove the proposal '{proposalsData?.title!}'?
+                    </Text>
+                    <Text size={"sm"} c={"yellow.7"}>
+                        This action cannot be undone.
+                    </Text>
+                </Stack>
+
+            ),
+            labels: {confirm: "Yes, delete this proposal", cancel: "No, do not delete!"},
+            confirmProps: {color: "red"},
+            onConfirm: () => handleDeleteProposal()
+        })
+    }
+
+
+    const handleDeleteProposal = () => {
+        fetchProposalResourceDeleteObservingProposal({
+            pathParams: {proposalCode: Number(selectedProposalCode)}
+        })
+            .then(()=> notifySuccess(
+                "Deletion successful",
+                "Proposal: '" + proposalsData?.title! + "' has been removed"))
+            .then(()=> navigate("/"))
+            .then(() => props.forceUpdate())
+            .catch(error => notifyError("Deletion failed", getErrorMessage(error)))
+    }
 
 
     /**
      * returns the HTML structure for the overview page.
      */
     return (
-        <>
-            {
-                proposalsIsLoading ? 'Loading...' :
-                    <Container fluid>
-                        <DownloadButton/>
-                        <div ref={printRef}>
-                            <DisplayTitle/>
-                            <ContextualHelpButton messageId="Overview" />
-                            <DisplayInvestigators/>
-                            <DisplaySummary/>
-                            <DisplayKind/>
-                            <DisplayScientificJustification/>
-                            <DisplayTechnicalJustification/>
-                            <DisplayObservations/>
-                            <DisplaySupportingDocuments/>
-                            <DisplayRelatedProposals/>
-                        </div>
-                    </Container>
-            }
-        </>
+        <PanelFrame>
+            <PanelHeader
+                itemName={proposalsData?.title!}
+                panelHeading={"Overview"}
+                isLoading={proposalsIsLoading}
+            />
+            <Container fluid>
+                <ContextualHelpButton messageId="Overview" />
+                <Fieldset legend={"Proposal Services"}>
+                    <Group grow>
+                        <ExportProposal/>
+                        <DeleteProposal/>
+                    </Group>
+                </Fieldset>
+                <Fieldset legend={"Proposal Overview"}>
+                    <div ref={printRef}>
+                        <DisplayTitle/>
+                        <DisplayInvestigators/>
+                        <DisplaySummary/>
+                        <DisplayKind/>
+                        <DisplayScientificJustification/>
+                        <DisplayTechnicalJustification/>
+                        <DisplayObservations/>
+                        <DisplaySupportingDocuments/>
+                        <DisplayRelatedProposals/>
+                    </div>
+                </Fieldset>
+            </Container>
+        </PanelFrame>
     );
 
 }
