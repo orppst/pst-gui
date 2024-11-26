@@ -25,7 +25,7 @@ function DeleteButton(props: ClickButtonInterfaceProps): ReactElement {
         >
             <Button
                 rightSection={<IconTrash size={ICON_SIZE}/>}
-                color={"red.5"}
+                color={"red.7"}
                 variant={props.variant ?? "subtle"}
                 onClick={props.onClick ?? props.onClickEvent}
                 disabled={props.disabled}

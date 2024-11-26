@@ -3,7 +3,7 @@ import {
     useContext,
     ReactElement,
     SyntheticEvent,
-    Context, StrictMode
+    Context, StrictMode, useReducer
 } from 'react';
 import {
     QueryClient,
@@ -134,13 +134,17 @@ function App2(): ReactElement {
 
     const GRAY = theme.colors.gray[6];
 
+    // hack to force the left-hand navbar to update after proposal deletion in Overview panel
+    // more precisely, when called, "forceUpdate" will make the entire App rerender - use sparingly!!
+    const [,forceUpdate] = useReducer(x => x + 1, 0);
+
     // the paths to route to.
     const router = createBrowserRouter(
         [
             {
                 path: "/manager",
                 element: <PSTManager />,
-                    errorElement: <ErrorPage />,
+                errorElement: <ErrorPage />,
                 children: [
                     {index: true, element: <PSTManagerStart />},
                     {
@@ -203,7 +207,7 @@ function App2(): ReactElement {
             {
                 path: "/",
                 element: <PSTEditor/>,
-                                    errorElement: <ErrorPage />,
+                errorElement: <ErrorPage />,
                 children: [
                     {index: true, element: <PSTStart/>} ,
                     {
@@ -218,7 +222,8 @@ function App2(): ReactElement {
                     },
                     {
                         path: "proposal/:selectedProposalCode",
-                        element: <OverviewPanel />,
+                        //'forceUpdate' is called following a proposal deletion in Overview panel
+                        element: <OverviewPanel forceUpdate={forceUpdate}/>,
                         errorElement: <ErrorPage />,
                     },
                     {
@@ -429,15 +434,18 @@ function App2(): ReactElement {
                             </Container>
 
                         <AddButton toolTipLabel={"new proposal"}
-                            label={"Create a new proposal"}
+                            label={"Create new proposal"}
                             onClickEvent={handleAddNew}/>
                         <FileButton onChange={handleUploadZip}
                             accept={".zip"}>
-                            {(props) => <UploadButton
-                            toolTipLabel="select a file from disk to upload"
-                            label={"Import"}
-                            onClick={props.onClick}/>}
-                            </FileButton>
+                            {(props) =>
+                                <UploadButton
+                                    toolTipLabel="select a file from disk to upload"
+                                    label={"Import existing proposal"}
+                                    onClick={props.onClick}
+                                />
+                            }
+                        </FileButton>
                         </AppShell.Section>
                         <AppShell.Section component={ScrollArea}>
                             <ProposalListWrapper
