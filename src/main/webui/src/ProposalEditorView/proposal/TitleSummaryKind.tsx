@@ -1,4 +1,4 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useEffect} from "react";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import {ProposalKind} from "../../generated/proposalToolSchemas.ts";
@@ -35,8 +35,6 @@ export default
 function TitleSummaryKind() : ReactElement {
 
     const {selectedProposalCode} = useParams();
-
-    const [bannerTitle, setBannerTitle] = useState("");
 
     const proposal = useProposalResourceGetObservingProposal({
         pathParams: {proposalCode: Number(selectedProposalCode)}
@@ -123,7 +121,6 @@ function TitleSummaryKind() : ReactElement {
 
     useEffect(() => {
         if (proposal.status === 'success') {
-            setBannerTitle(proposal.data.title!)
             form.setValues({
                 title: proposal.data.title!,
                 summary: proposal.data.summary!,
@@ -176,15 +173,12 @@ function TitleSummaryKind() : ReactElement {
         )
     }
 
-    const handleSubmit = form.onSubmit((values) => {
+    const handleSubmit = form.onSubmit((_values) => {
 
-        //Apologies for this monster but I could not get async-await method to work
-
-        //also all three fields are replaced regardless of form.isDirty result, but update notifications to the
-        //user are shown only if those fields are "dirty"
+        //Note all three fields are replaced regardless of form.isDirty result, but update notifications to the
+        //user are shown only if the field is "dirty" (see the "onSuccess" property of the mutation)
 
         titleMutation.mutateAsync()
-            .then(() => setBannerTitle(values.title))
             .then(() => summaryMutation.mutateAsync()
                 .then(() => kindMutation.mutateAsync()
                     .then(() => queryClient.invalidateQueries())
@@ -196,7 +190,7 @@ function TitleSummaryKind() : ReactElement {
     return (
         <PanelFrame>
             <PanelHeader
-                itemName={bannerTitle}
+                itemName={proposal.data?.title!}
                 panelHeading={"Title, Summary, Kind"}
                 isLoading={proposal.isLoading}
             />
