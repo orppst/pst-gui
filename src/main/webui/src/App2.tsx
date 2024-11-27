@@ -77,6 +77,7 @@ import ErrorPage from "./errorHandling/error-page.jsx"
 import {PanelFrame} from "./commonPanel/appearance.tsx";
 import TacCycles from "./ProposalManagerView/landingPage/tacCycles.tsx";
 import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPage.tsx";
+import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
 
 /**
  * defines the user context type.
@@ -225,6 +226,10 @@ function App2(): ReactElement {
                         //'forceUpdate' is called following a proposal deletion in Overview panel
                         element: <OverviewPanel forceUpdate={forceUpdate}/>,
                         errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/titleSummaryKind",
+                        element: <TitleSummaryKind />
                     },
                     {
                         path: "proposal/:selectedProposalCode/title",

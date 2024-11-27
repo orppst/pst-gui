@@ -66,6 +66,14 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                              active={"Overview" + proposal.code === active}
                              onClick={()=>setActive("Overview" + proposal.code)}
                     />
+                    <NavLink to={"proposal/" + proposal.code + "/titleSummaryKind"}
+                             component={Link}
+                             key={"TitleSummaryKind"}
+                             label={"Title, Summary, Kind"}
+                             leftSection={<IconLetterT/>}
+                             active={"TitleSummaryKind" + proposal.code === active}
+                             onClick={() => setActive("TitleSummaryKind" + proposal.code)}
+                    />
                     <NavLink to={"proposal/" + proposal.code + "/title"}
                              component={Link}
                              leftSection={<IconLetterT/>}

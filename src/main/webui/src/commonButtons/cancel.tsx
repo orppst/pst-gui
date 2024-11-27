@@ -25,7 +25,7 @@ function CancelButton(props: ClickButtonInterfaceProps): ReactElement {
         >
             <Button
                 rightSection={<IconPlayerSkipBack size={ICON_SIZE}/>}
-                color={"red.5"}
+                color={"red.8"}
                 variant={props.variant ?? "subtle"}
                 onClick={props.onClick ?? props.onClickEvent}
                 disabled={props.disabled}
