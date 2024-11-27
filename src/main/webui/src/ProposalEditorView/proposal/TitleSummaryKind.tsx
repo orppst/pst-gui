@@ -77,7 +77,8 @@ function TitleSummaryKind() : ReactElement {
             notifyError("Failed to change Title", getErrorMessage(error))
         },
         onSuccess: () => {
-            notifySuccess("Title Updated", "Title changed to: " + form.getValues().title);
+            if (form.isDirty('title'))
+                notifySuccess("Title Updated", "Title changed to: " + form.getValues().title);
         },
     })
 
@@ -95,7 +96,8 @@ function TitleSummaryKind() : ReactElement {
                 notifyError("Failed to change Summary", getErrorMessage(error));
             },
             onSuccess: () => {
-                notifySuccess("Summary Updated", "changes to the summary have been saved");
+                if (form.isDirty('summary'))
+                    notifySuccess("Summary Updated", "changes to the summary have been saved");
             }
         }
     );
@@ -114,20 +116,22 @@ function TitleSummaryKind() : ReactElement {
             notifyError("Failed to change Kind", getErrorMessage(error))
         },
         onSuccess: () => {
-            notifySuccess("Kind Updated", "Kind changed to: " + form.getValues().kind)
+            if (form.isDirty('kind'))
+                notifySuccess("Kind Updated", "Kind changed to: " + form.getValues().kind)
         }
     })
 
     useEffect(() => {
         if (proposal.status === 'success') {
             setBannerTitle(proposal.data.title!)
-            form.setInitialValues({
+            form.setValues({
                 title: proposal.data.title!,
                 summary: proposal.data.summary!,
                 kind: proposal.data.kind!
             })
+            form.resetDirty()
         }
-    }, [proposal.status]);
+    }, [proposal.status, proposal.data]);
 
 
     const TitleInput = () : ReactElement => {
@@ -173,20 +177,20 @@ function TitleSummaryKind() : ReactElement {
     }
 
     const handleSubmit = form.onSubmit((values) => {
-        if (form.isDirty('title')) {
-            titleMutation.mutate();
-            setBannerTitle(values.title)
-        }
 
-        if (form.isDirty('summary')) {
-            summaryMutation.mutate();
-        }
+        //Apologies for this monster but I could not get async-await method to work
 
-        if (form.isDirty('kind')) {
-            kindMutation.mutate();
-        }
+        //also all three fields are replaced regardless of form.isDirty result, but update notifications to the
+        //user are shown only if those fields are "dirty"
 
-        queryClient.invalidateQueries().then(()=> form.resetDirty())
+        titleMutation.mutateAsync()
+            .then(() => setBannerTitle(values.title))
+            .then(() => summaryMutation.mutateAsync()
+                .then(() => kindMutation.mutateAsync()
+                    .then(() => queryClient.invalidateQueries())
+                    .then(() => form.resetDirty())
+                )
+            )
     })
 
     return (
@@ -216,7 +220,6 @@ function TitleSummaryKind() : ReactElement {
                     </Stack>
                 </form>
             </Fieldset>
-
         </PanelFrame>
     )
 }
