@@ -10,10 +10,8 @@ import {
     QueryClientProvider,
 } from '@tanstack/react-query';
 import { Person} from "./generated/proposalToolSchemas.ts";
-import TitlePanel from './ProposalEditorView/proposal/Title.tsx';
 import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
-import SummaryPanel from "./ProposalEditorView/proposal/Summary.tsx";
 import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
 import AddInvestigatorPanel from "./ProposalEditorView/investigators/New.tsx";
 import {
@@ -230,16 +228,6 @@ function App2(): ReactElement {
                     {
                         path: "proposal/:selectedProposalCode/titleSummaryKind",
                         element: <TitleSummaryKind />
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/title",
-                        element: <TitlePanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/summary",
-                        element: <SummaryPanel />,
-                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/investigators",
