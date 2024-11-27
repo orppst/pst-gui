@@ -176,7 +176,8 @@ function TitleSummaryKind() : ReactElement {
     const handleSubmit = form.onSubmit((_values) => {
 
         //Note all three fields are replaced regardless of form.isDirty result, but update notifications to the
-        //user are shown only if the field is "dirty" (see the "onSuccess" property of the mutation)
+        //user are shown only if the field is "dirty" (see the "onSuccess" property of the mutation) - yes
+        //this is cheating but React is driving me up the wall.
 
         titleMutation.mutateAsync()
             .then(() => summaryMutation.mutateAsync()
