@@ -3,7 +3,6 @@ import {Accordion, NavLink, useMantineColorScheme, useMantineTheme} from "@manti
 import {
     IconChartLine,
     IconFileCheck, IconFiles, IconGeometry,
-    IconLetterS,
     IconLetterT,
     IconLicense, IconSend,
     IconTarget, IconTelescope,
@@ -66,21 +65,13 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                              active={"Overview" + proposal.code === active}
                              onClick={()=>setActive("Overview" + proposal.code)}
                     />
-                    <NavLink to={"proposal/" + proposal.code + "/title"}
+                    <NavLink to={"proposal/" + proposal.code + "/titleSummaryKind"}
                              component={Link}
+                             key={"TitleSummaryKind"}
+                             label={"Title, Summary, Kind"}
                              leftSection={<IconLetterT/>}
-                             label="Title"
-                             key="Title"
-                             active={"Title" + proposal.code === active}
-                             onClick={()=>setActive("Title" + proposal.code)}
-                    />
-                    <NavLink to={"proposal/" + proposal.code + "/summary"}
-                             component={Link}
-                             leftSection={<IconLetterS/>}
-                             label="Summary"
-                             key="Summary"
-                             active={"Summary" + proposal.code === active}
-                             onClick={()=>setActive("Summary" + proposal.code)}
+                             active={"TitleSummaryKind" + proposal.code === active}
+                             onClick={() => setActive("TitleSummaryKind" + proposal.code)}
                     />
                     <NavLink to={"proposal/" + proposal.code + "/investigators"}
                              component={Link}
