@@ -51,7 +51,7 @@ function TitleSummaryKind() : ReactElement {
             title: (value) =>
                 value && value.length < 1 ? 'The title cannot be empty' : null,
             summary: (value) =>
-                value && value.length < 0 ? 'The summary cannot be empty' : null
+                value && value.length < 1 ? 'The summary cannot be empty' : null
         }
     })
 
