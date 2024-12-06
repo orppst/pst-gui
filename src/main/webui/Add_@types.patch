@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2024-11-21 20:37:35
-+++ proposalToolSchemas.ts	2024-11-21 20:40:44
+--- proposalToolSchemas.ts.orig	2024-12-06 09:17:57
++++ proposalToolSchemas.ts	2024-12-06 09:18:04
 @@ -7,6 +7,7 @@
   * base proposal
   */
@@ -234,7 +234,7 @@
    xmlId?: string;
    /**
     * the proposal title
-@@ -1683,17 +1716,20 @@
+@@ -1703,17 +1736,20 @@
   * A target source
   */
  export type Target = {
@@ -255,7 +255,7 @@
    xmlId?: string;
    name?: string;
  };
-@@ -1702,6 +1738,7 @@
+@@ -1722,6 +1758,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -263,7 +263,7 @@
    xmlId?: string;
    /**
     * any constraints on the observation
-@@ -1730,10 +1767,12 @@
+@@ -1750,10 +1787,12 @@
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -276,7 +276,7 @@
    xmlId?: string;
    /**
     * telescope name
-@@ -1753,6 +1792,7 @@
+@@ -1773,6 +1812,7 @@
   * a set of telescopes that are operated together for an observation
   */
  export type TelescopeArray = {
@@ -284,7 +284,7 @@
    xmlId?: string;
    /**
     * the array name
-@@ -1834,6 +1874,10 @@
+@@ -1854,6 +1894,10 @@
   * particular time range
   */
  export type TimingWindow = {

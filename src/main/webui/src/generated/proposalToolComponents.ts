@@ -5224,7 +5224,7 @@ export const fetchProposalCyclesResourceReplaceCycleDeadline = (
   signal?: AbortSignal,
 ) =>
   proposalToolFetch<
-    Schemas.ProposalCycleDates,
+    undefined,
     ProposalCyclesResourceReplaceCycleDeadlineError,
     Schemas.Date,
     {},
@@ -5240,7 +5240,7 @@ export const fetchProposalCyclesResourceReplaceCycleDeadline = (
 export const useProposalCyclesResourceReplaceCycleDeadline = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.ProposalCycleDates,
+      undefined,
       ProposalCyclesResourceReplaceCycleDeadlineError,
       ProposalCyclesResourceReplaceCycleDeadlineVariables
     >,
@@ -5249,7 +5249,7 @@ export const useProposalCyclesResourceReplaceCycleDeadline = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    Schemas.ProposalCycleDates,
+    undefined,
     ProposalCyclesResourceReplaceCycleDeadlineError,
     ProposalCyclesResourceReplaceCycleDeadlineVariables
   >({
@@ -5284,7 +5284,7 @@ export const fetchProposalCyclesResourceReplaceCycleSessionEnd = (
   signal?: AbortSignal,
 ) =>
   proposalToolFetch<
-    Schemas.ProposalCycleDates,
+    undefined,
     ProposalCyclesResourceReplaceCycleSessionEndError,
     Schemas.Date,
     {},
@@ -5300,7 +5300,7 @@ export const fetchProposalCyclesResourceReplaceCycleSessionEnd = (
 export const useProposalCyclesResourceReplaceCycleSessionEnd = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.ProposalCycleDates,
+      undefined,
       ProposalCyclesResourceReplaceCycleSessionEndError,
       ProposalCyclesResourceReplaceCycleSessionEndVariables
     >,
@@ -5309,7 +5309,7 @@ export const useProposalCyclesResourceReplaceCycleSessionEnd = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    Schemas.ProposalCycleDates,
+    undefined,
     ProposalCyclesResourceReplaceCycleSessionEndError,
     ProposalCyclesResourceReplaceCycleSessionEndVariables
   >({
@@ -5344,7 +5344,7 @@ export const fetchProposalCyclesResourceReplaceCycleSessionStart = (
   signal?: AbortSignal,
 ) =>
   proposalToolFetch<
-    Schemas.ProposalCycleDates,
+    undefined,
     ProposalCyclesResourceReplaceCycleSessionStartError,
     Schemas.Date,
     {},
@@ -5360,7 +5360,7 @@ export const fetchProposalCyclesResourceReplaceCycleSessionStart = (
 export const useProposalCyclesResourceReplaceCycleSessionStart = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.ProposalCycleDates,
+      undefined,
       ProposalCyclesResourceReplaceCycleSessionStartError,
       ProposalCyclesResourceReplaceCycleSessionStartVariables
     >,
@@ -5369,7 +5369,7 @@ export const useProposalCyclesResourceReplaceCycleSessionStart = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    Schemas.ProposalCycleDates,
+    undefined,
     ProposalCyclesResourceReplaceCycleSessionStartError,
     ProposalCyclesResourceReplaceCycleSessionStartVariables
   >({
@@ -7322,6 +7322,63 @@ export const useProposalResourceGetObservingProposal = <
       ),
     ...options,
     ...queryOptions,
+  });
+};
+
+export type ProposalResourceCloneObservingProposalPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceCloneObservingProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceCloneObservingProposalVariables = {
+  pathParams: ProposalResourceCloneObservingProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceCloneObservingProposal = (
+  variables: ProposalResourceCloneObservingProposalVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.ObservingProposal,
+    ProposalResourceCloneObservingProposalError,
+    undefined,
+    {},
+    {},
+    ProposalResourceCloneObservingProposalPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceCloneObservingProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ObservingProposal,
+      ProposalResourceCloneObservingProposalError,
+      ProposalResourceCloneObservingProposalVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ObservingProposal,
+    ProposalResourceCloneObservingProposalError,
+    ProposalResourceCloneObservingProposalVariables
+  >({
+    mutationFn: (variables: ProposalResourceCloneObservingProposalVariables) =>
+      fetchProposalResourceCloneObservingProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
   });
 };
 
@@ -11463,6 +11520,149 @@ export const useProposalResourceValidateObservingProposal = <
   });
 };
 
+export type UserProposalsSubmittedGetProposalsSubmittedQueryParams = {
+  /**
+   * @format int64
+   */
+  cycleId?: number;
+};
+
+export type UserProposalsSubmittedGetProposalsSubmittedError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type UserProposalsSubmittedGetProposalsSubmittedResponse =
+  Schemas.SubmittedProposalSynopsis[];
+
+export type UserProposalsSubmittedGetProposalsSubmittedVariables = {
+  queryParams?: UserProposalsSubmittedGetProposalsSubmittedQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchUserProposalsSubmittedGetProposalsSubmitted = (
+  variables: UserProposalsSubmittedGetProposalsSubmittedVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    UserProposalsSubmittedGetProposalsSubmittedResponse,
+    UserProposalsSubmittedGetProposalsSubmittedError,
+    undefined,
+    {},
+    UserProposalsSubmittedGetProposalsSubmittedQueryParams,
+    {}
+  >({
+    url: "/pst/api/proposalsSubmitted",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useUserProposalsSubmittedGetProposalsSubmitted = <
+  TData = UserProposalsSubmittedGetProposalsSubmittedResponse,
+>(
+  variables: UserProposalsSubmittedGetProposalsSubmittedVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      UserProposalsSubmittedGetProposalsSubmittedResponse,
+      UserProposalsSubmittedGetProposalsSubmittedError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    UserProposalsSubmittedGetProposalsSubmittedResponse,
+    UserProposalsSubmittedGetProposalsSubmittedError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalsSubmitted",
+      operationId: "userProposalsSubmittedGetProposalsSubmitted",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchUserProposalsSubmittedGetProposalsSubmitted(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type UserProposalsSubmittedWithdrawProposalPathParams = {
+  /**
+   * @format int64
+   */
+  submittedProposalId: number;
+};
+
+export type UserProposalsSubmittedWithdrawProposalQueryParams = {
+  /**
+   * @format int64
+   */
+  cycleId?: number;
+};
+
+export type UserProposalsSubmittedWithdrawProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type UserProposalsSubmittedWithdrawProposalVariables = {
+  pathParams: UserProposalsSubmittedWithdrawProposalPathParams;
+  queryParams?: UserProposalsSubmittedWithdrawProposalQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchUserProposalsSubmittedWithdrawProposal = (
+  variables: UserProposalsSubmittedWithdrawProposalVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    UserProposalsSubmittedWithdrawProposalError,
+    undefined,
+    {},
+    UserProposalsSubmittedWithdrawProposalQueryParams,
+    UserProposalsSubmittedWithdrawProposalPathParams
+  >({
+    url: "/pst/api/proposalsSubmitted/{submittedProposalId}/withdraw",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useUserProposalsSubmittedWithdrawProposal = <TData = undefined,>(
+  variables: UserProposalsSubmittedWithdrawProposalVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      UserProposalsSubmittedWithdrawProposalError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    UserProposalsSubmittedWithdrawProposalError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalsSubmitted/{submittedProposalId}/withdraw",
+      operationId: "userProposalsSubmittedWithdrawProposal",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchUserProposalsSubmittedWithdrawProposal(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type ResourceTypeResourceGetAllResourceTypesError =
   Fetcher.ErrorWrapper<undefined>;
 
@@ -12706,6 +12906,16 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/validate";
       operationId: "proposalResourceValidateObservingProposal";
       variables: ProposalResourceValidateObservingProposalVariables;
+    }
+  | {
+      path: "/pst/api/proposalsSubmitted";
+      operationId: "userProposalsSubmittedGetProposalsSubmitted";
+      variables: UserProposalsSubmittedGetProposalsSubmittedVariables;
+    }
+  | {
+      path: "/pst/api/proposalsSubmitted/{submittedProposalId}/withdraw";
+      operationId: "userProposalsSubmittedWithdrawProposal";
+      variables: UserProposalsSubmittedWithdrawProposalVariables;
     }
   | {
       path: "/pst/api/resourceTypes";
