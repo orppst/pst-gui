@@ -38,7 +38,8 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container
+    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container,
+    ModalBody
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
 import {
@@ -457,7 +458,7 @@ function App2(): ReactElement {
     }
 
     function ProposalListWrapper(props:{proposalTitle: string, investigatorName:string, auth:boolean}) : ReactElement {
-
+        //console.log(props);
         if (props.auth) {
             return <ProposalList proposalTitle={props.proposalTitle} investigatorName={props.investigatorName} />
         }
