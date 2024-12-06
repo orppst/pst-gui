@@ -7,6 +7,7 @@ import {Notifications} from "@mantine/notifications";
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import CustomModal from './util/Modal.tsx';
 
 //if we want to override any parts of theme we can do it here
 // this 'theme' object is merged with the 'theme' property of MantineProvider
@@ -27,7 +28,7 @@ function App() {
 
     return (
             <MantineProvider theme={theme}>
-                <ModalsProvider>
+                <ModalsProvider modals={{ investigator_modal: CustomModal }}>
                     <Notifications />
                     <QueryClientProvider client={queryClient}>
                         <App2/>
