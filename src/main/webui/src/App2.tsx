@@ -39,7 +39,6 @@ import {
     Group,
     ActionIcon,
     Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container,
-    ModalBody
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
 import {
