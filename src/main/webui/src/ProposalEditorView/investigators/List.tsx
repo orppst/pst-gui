@@ -1,4 +1,4 @@
-import { Children, ReactElement, useContext, useState } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {
     fetchInvestigatorResourceRemoveInvestigator,
@@ -21,7 +21,7 @@ import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import { InvestigatorKind, Person } from 'src/generated/proposalToolSchemas.ts';
 import { ProposalContext } from 'src/App2.tsx';
 import { useModals } from "@mantine/modals";
-import { forEach } from 'jszip';
+
 
 /**
  * the data associated with a given person.
