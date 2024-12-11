@@ -67,34 +67,30 @@ export default function CycleDatesPanel() : ReactElement {
     }
 
     const handleSave = form.onSubmit((val) => {
-        const promises=[];
-
-        if(val.submissionDeadline?.getTime() !== new Date(data?.submissionDeadline as string).getTime()) {
-            promises.push(fetchProposalCyclesResourceReplaceCycleDeadline({
+        fetchProposalCyclesResourceReplaceCycleDeadline({
                 pathParams: {cycleCode: Number(selectedCycleCode)},
                 //@ts-ignore
                 body: val.submissionDeadline?.getTime()
-            }));
-        }
-        if(val.sessionStart?.getTime() !== new Date(data?.observationSessionStart as string).getTime()) {
-            promises.push(fetchProposalCyclesResourceReplaceCycleSessionStart({
-                pathParams: {cycleCode: Number(selectedCycleCode)},
-                //@ts-ignore
-                body: val.sessionStart?.getTime()
-            }));
-        }
-        if(val.sessionEnd?.getTime() !== new Date(data?.observationSessionEnd as string).getTime()) {
-            promises.push(fetchProposalCyclesResourceReplaceCycleSessionEnd({
-                pathParams: {cycleCode: Number(selectedCycleCode)},
-                //@ts-ignore
-                body: val.sessionEnd?.getTime()
-            }))
-        }
-        // FIXME: Make this .catch() work correctly
-        Promise.all(promises)
-            .then(()=> {
-                notifySuccess("Update dates", "Changes saved");
-                form.resetDirty();
+            })
+            .then(() => {
+                fetchProposalCyclesResourceReplaceCycleSessionStart({
+                    pathParams: {cycleCode: Number(selectedCycleCode)},
+                    //@ts-ignore
+                    body: val.sessionStart?.getTime()
+                }).then(() => {
+                    fetchProposalCyclesResourceReplaceCycleSessionEnd({
+                        pathParams: {cycleCode: Number(selectedCycleCode)},
+                        //@ts-ignore
+                        body: val.sessionEnd?.getTime()
+                    }).then(() => {
+                        notifySuccess("Update dates", "Changes saved");
+                        form.resetDirty();
+                    })
+                    .catch((fault)=>notifyError("Update dates", "Error saving "
+                        + getErrorMessage(fault)))
+                })
+                .catch((fault)=>notifyError("Update dates", "Error saving "
+                    + getErrorMessage(fault)))
             })
             .catch((fault)=>notifyError("Update dates", "Error saving "
                 + getErrorMessage(fault)))
