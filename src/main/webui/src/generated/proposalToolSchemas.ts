@@ -1683,6 +1683,26 @@ export type SubmittedProposal = {
   reviews?: ProposalReview[];
 };
 
+export type SubmittedProposalSynopsis = {
+  /**
+   * @format int64
+   */
+  code?: number;
+  title?: string;
+  summary?: string;
+  kind?: ProposalKind;
+  /**
+   * @format int64
+   */
+  sourceProposalId?: number;
+  /**
+   * @format int64
+   */
+  cycleId?: number;
+  submissionDate?: Date;
+  reviewStatus?: string;
+};
+
 /**
  * a document
  */
