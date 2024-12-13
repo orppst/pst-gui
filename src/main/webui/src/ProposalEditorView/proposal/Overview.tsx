@@ -1,5 +1,6 @@
 import {useNavigate, useParams} from 'react-router-dom'
 import {
+    fetchProposalResourceCloneObservingProposal,
     fetchProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
     useSupportingDocumentResourceGetSupportingDocuments,
@@ -12,7 +13,7 @@ import {
     Group,
     List, Stack,
     Table,
-    Text
+    Text,
 } from '@mantine/core';
 import {
     CalibrationObservation,
@@ -21,9 +22,9 @@ import {
     RealQuantity, Target,
 } from 'src/generated/proposalToolSchemas.ts';
 import { IconNorthStar } from '@tabler/icons-react';
-import { ReactElement, useRef } from 'react';
+import {ReactElement, useRef} from 'react';
 import downloadProposal from './downloadProposal.tsx';
-import { DIMMED_FONT_WEIGHT, JSON_SPACES } from 'src/constants.tsx';
+import {DIMMED_FONT_WEIGHT, JSON_SPACES} from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import {PreviewJustification} from "../justifications/justification.preview.tsx";
@@ -34,6 +35,7 @@ import DeleteButton from "../../commonButtons/delete.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
+import CloneButton from "../../commonButtons/clone.tsx";
 
 /*
       title    -- string
@@ -58,9 +60,6 @@ import {modals} from "@mantine/modals";
         General strategy:
         list of strings use a List
         list of objects use an Accordion
-
-        TODO: provide a means to download the 'proposal' as a zipped/tar balled file containing a PDF
-        of the overview plus the supporting document files
  */
 
 
@@ -513,6 +512,27 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
 
+
+
+
+    /**
+     * add download button for the proposal to be extracted as a tar ball.
+     *
+     * @return {ReactElement} the html which contains the download button.
+     * @constructor
+     */
+    const ExportProposal = (): ReactElement => {
+        return ExportButton(
+            {
+                toolTipLabel: `Export to a file for download`,
+                disabled: false,
+                onClick: handleDownloadPdf,
+                label: "Export Proposal",
+                variant: "filled",
+                toolTipLabelPosition: "top"
+            });
+    }
+
     /**
      * generates the overview pdf and saves it to the users disk.
      *
@@ -543,23 +563,27 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         }
     };
 
-
-    /**
-     * add download button for the proposal to be extracted as a tar ball.
-     *
-     * @return {ReactElement} the html which contains the download button.
-     * @constructor
-     */
-    const ExportProposal = (): ReactElement => {
-        return ExportButton(
+    const CloneProposal = (): ReactElement => {
+        return CloneButton(
             {
-                toolTipLabel: `Export to a file for download`,
+                toolTipLabel: `creates a new proposal from a deep copy of this proposal`,
                 disabled: false,
-                onClick: handleDownloadPdf,
-                label: "Export Proposal",
+                onClick: handleCloneProposal,
+                label: "Clone proposal",
                 variant: "filled",
                 toolTipLabelPosition: "top"
-            });
+            }
+        )
+    }
+
+    const handleCloneProposal = (): void => {
+        fetchProposalResourceCloneObservingProposal({
+            pathParams: {proposalCode: Number(selectedProposalCode)}
+        })
+            .then(() => props.forceUpdate())
+            .then(() => notifySuccess("Clone Proposal Successful",
+                "you should now change the title of the cloned proposal to something more meaningful"))
+            .catch(error => notifyError("Clone Proposal Failed", getErrorMessage(error)));
     }
 
     const DeleteProposal = () : ReactElement => {
@@ -569,7 +593,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 disabled: false,
                 onClick: confirmDeleteProposal,
                 label: "Delete Proposal",
-                variant: "outline"
+                variant: "outline",
+                toolTipLabelPosition: "top"
             }
         )
     }
@@ -625,6 +650,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 <Fieldset legend={"Proposal Services"}>
                     <Group grow>
                         <ExportProposal/>
+                        <CloneProposal/>
                         <DeleteProposal/>
                     </Group>
                 </Fieldset>

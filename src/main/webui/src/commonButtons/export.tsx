@@ -14,7 +14,7 @@ function ExportButton(props: ClickButtonInterfaceProps) : ReactElement {
         >
             <Button
                 rightSection={<IconDownload size={ICON_SIZE}/>}
-                color={"blue.7"}
+                color={"grape.7"}
                 variant={props.variant ?? "subtle"}
                 onClick={props.onClick === undefined? props.onClickEvent : props.onClick}
                 disabled={props.disabled}>
