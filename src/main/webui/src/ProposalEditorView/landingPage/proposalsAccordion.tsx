@@ -3,18 +3,19 @@ import {Accordion, Button, Fieldset, Grid, Group, ScrollArea, Stack, Table, Text
 import {ObjectIdentifier, ProposalSynopsis} from "../../generated/proposalToolSchemas.ts";
 import {
     fetchSubmittedProposalResourceGetSubmittedProposals,
-    fetchUserProposalsSubmittedWithdrawProposal
+    fetchUserProposalsSubmittedWithdrawProposal,
+    UserProposalsSubmittedWithdrawProposalVariables
 } from "../../generated/proposalToolComponents.ts";
 import {modals} from "@mantine/modals";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useToken} from "../../App2.tsx";
 
 type SubmissionDetail = {
     cycleName: string,
     submissionDate: string,
     submittedProposalId: number,
 }
-
 
 export default
 function ProposalsAccordion(
@@ -98,6 +99,7 @@ function CycleSubmissionDetail(props: {
     investigatorName: string,
     proposalTitle: string
 }):  ReactElement {
+    const token = useToken();
 
     const [submissionDetail, setSubmissionDetail] =
         useState<SubmissionDetail | null> (null);
@@ -145,10 +147,12 @@ function CycleSubmissionDetail(props: {
     }
 
     const handleWithdrawal = () => {
-        fetchUserProposalsSubmittedWithdrawProposal({
-            pathParams: {submittedProposalId: submissionDetail?.submittedProposalId!},
-            queryParams: {cycleId: props.cycle.dbid!},
-        })
+        const vars:UserProposalsSubmittedWithdrawProposalVariables = {
+                headers: {authorization: token ? `Bearer ${token}` : undefined},
+                pathParams: {submittedProposalId: submissionDetail?.submittedProposalId!},
+                queryParams: {cycleId: props.cycle.dbid!}
+        };
+        fetchUserProposalsSubmittedWithdrawProposal(vars)
             .then(() => notifySuccess(
                 "Withdrawn",
                 "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."
