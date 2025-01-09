@@ -1,13 +1,21 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Accordion, Fieldset, Grid, Group, ScrollArea, Table, Text} from "@mantine/core";
+import {Accordion, Button, Fieldset, Grid, Group, ScrollArea, Stack, Table, Text, Tooltip} from "@mantine/core";
 import {ObjectIdentifier, ProposalSynopsis} from "../../generated/proposalToolSchemas.ts";
-import {fetchSubmittedProposalResourceGetSubmittedProposals} from "../../generated/proposalToolComponents.ts";
+import {
+    fetchSubmittedProposalResourceGetSubmittedProposals,
+    fetchUserProposalsSubmittedWithdrawProposal,
+    UserProposalsSubmittedWithdrawProposalVariables
+} from "../../generated/proposalToolComponents.ts";
+import {modals} from "@mantine/modals";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useToken} from "../../App2.tsx";
 
 type SubmissionDetail = {
     cycleName: string,
-    submissionDate: string
+    submissionDate: string,
+    submittedProposalId: number,
 }
-
 
 export default
 function ProposalsAccordion(
@@ -42,15 +50,16 @@ function ProposalsAccordion(
                 </Accordion.Control>
                 <Accordion.Panel>
                     <Grid columns={8}>
-                        <Grid.Col span={5}>
+                        <Grid.Col span={4}>
                             {proposalSummary(proposal.summary!)}
                         </Grid.Col>
-                        <Grid.Col span={3}>
+                        <Grid.Col span={4}>
                             <Table withTableBorder>
                                 <Table.Thead>
                                     <Table.Tr>
                                         <Table.Th>Submitted to:</Table.Th>
                                         <Table.Th>Submission date</Table.Th>
+                                        <Table.Th>Action</Table.Th>
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
@@ -90,6 +99,7 @@ function CycleSubmissionDetail(props: {
     investigatorName: string,
     proposalTitle: string
 }):  ReactElement {
+    const token = useToken();
 
     const [submissionDetail, setSubmissionDetail] =
         useState<SubmissionDetail | null> (null);
@@ -106,17 +116,68 @@ function CycleSubmissionDetail(props: {
                         {
                             cycleName: props.cycle.name!,
                             //assume a distinct proposal is submitted once only to a particular cycle
-                            submissionDate: data.at(0)!.code!,}
+                            submissionDate: data.at(0)!.code!,
+                            submittedProposalId: data.at(0)!.dbid!
+                        }
                     )
                 }
             })
     }, [])
+
+    const confirmWithdrawal = () => {
+        modals.openConfirmModal({
+            title: "Please confirm action",
+            centered: true,
+            children: (
+                <Stack>
+                    <Text c={"yellow"}>
+                        This action will withdraw '{props.proposalTitle}' from '{props.cycle.name}'.
+                        Are you sure?
+                    </Text>
+                    <Text c={"grey"}>
+                        You may re-submit this proposal at any time up to the submission deadline.
+                    </Text>
+                </Stack>
+
+            ),
+            labels: {confirm: "Yes, withdraw the proposal", cancel: "Cancel this action"},
+            confirmProps: {color: "blue"},
+            onConfirm: () => handleWithdrawal()
+        })
+    }
+
+    const handleWithdrawal = () => {
+        const vars:UserProposalsSubmittedWithdrawProposalVariables = {
+                headers: {authorization: token ? `Bearer ${token}` : undefined},
+                pathParams: {submittedProposalId: submissionDetail?.submittedProposalId!},
+                queryParams: {cycleId: props.cycle.dbid!}
+        };
+        fetchUserProposalsSubmittedWithdrawProposal(vars)
+            .then(() => notifySuccess(
+                "Withdrawn",
+                "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."
+            ))
+            .catch(error => notifyError("Withdraw Fail", getErrorMessage(error)));
+    }
 
     return(
         submissionDetail ?
             <Table.Tr>
                 <Table.Td>{submissionDetail.cycleName}</Table.Td>
                 <Table.Td>{submissionDetail.submissionDate}</Table.Td>
+                <Table.Td>
+                    <Tooltip
+                        label={"withdraw this proposal from " + submissionDetail.cycleName}
+                    >
+                        <Button
+                            variant={"outline"}
+                            size={"xs"}
+                            onClick={() => confirmWithdrawal()}
+                        >
+                            Withdraw
+                        </Button>
+                    </Tooltip>
+                </Table.Td>
             </Table.Tr>
             :
             <></>
