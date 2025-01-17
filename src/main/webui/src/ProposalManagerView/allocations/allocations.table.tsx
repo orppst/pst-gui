@@ -13,6 +13,7 @@ import {IconAlien, IconInfoCircle} from "@tabler/icons-react";
 import {CLOSE_DELAY, ICON_SIZE, OPEN_DELAY} from "../../constants.tsx";
 import {modals} from "@mantine/modals";
 import {useQueryClient} from "@tanstack/react-query";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 type AllocationTableRowProps = {
     cycleCode: number,
@@ -22,7 +23,7 @@ type AllocationTableRowProps = {
 function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 
     const queryClient = useQueryClient();
-
+    const {fetcherOptions} = useProposalToolContext();
 
     const submittedProposal =
         useSubmittedProposalResourceGetSubmittedProposal({
@@ -63,6 +64,7 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
     async function handlePass(){
 
         await fetchSubmittedProposalResourceUpdateSubmittedProposalSuccess({
+            ...fetcherOptions,
             pathParams: {
                 cycleCode: rowProps.cycleCode,
                 submittedProposalId: rowProps.submittedProposalId
@@ -76,9 +78,10 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
             pathParams: {
                 cycleCode: rowProps.cycleCode
             },
+            // @ts-ignore
             body: rowProps.submittedProposalId,
             // @ts-ignore
-            headers: {"Content-Type": "text/plain"}
+            headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
         })
             .catch(error => notifyError("Failed to upgrade proposal for allocation",
                 getErrorMessage(error)))

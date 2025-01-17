@@ -11,11 +11,13 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export default function CycleObservatoryPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const [observatorySearchData, setSearchData] = useState([]);
     const [formReady, setFormReady] = useState(false);
+    const {fetcherOptions} = useProposalToolContext();
     const form = useForm({
         initialValues: {selectedObservatory: "0"},
         validate: {
@@ -41,7 +43,7 @@ export default function CycleObservatoryPanel() : ReactElement {
             ));
 
             fetchProposalCyclesResourceGetProposalCycleObservatory(
-                {pathParams: {cycleCode: Number(selectedCycleCode)}})
+                {...fetcherOptions, pathParams: {cycleCode: Number(selectedCycleCode)}})
                 .then((observatory) => {
                     //FIXME: None of these three ways to set the default value seem to work
                     form.values.selectedObservatory = String(observatory?._id);
@@ -65,7 +67,7 @@ export default function CycleObservatoryPanel() : ReactElement {
                     pathParams: {cycleCode: Number(selectedCycleCode)},
                     body: Number(val.selectedObservatory),
                     // @ts-ignore
-                    headers: {"Content-Type": "text/plain"}
+                    headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
                 };
 
         fetchProposalCyclesResourceReplaceCycleObservatory(newObservatory)

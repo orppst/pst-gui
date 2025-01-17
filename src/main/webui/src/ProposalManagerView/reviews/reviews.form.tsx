@@ -16,11 +16,13 @@ import {CLOSE_DELAY, ICON_SIZE, MAX_CHARS_FOR_INPUTS, OPEN_DELAY, TEXTAREA_MAX_R
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {IconSquareRoundedCheck} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export default
 function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const queryClient = useQueryClient();
+    const {fetcherOptions} = useProposalToolContext();
 
     const theReviewer = useReviewerResourceGetReviewer({
         pathParams: {reviewerId: props.reviewerId}
@@ -94,6 +96,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const handleAssign = (buttonProps: AssignButtonData) =>  {
         fetchProposalReviewResourceAddReview({
+            ...fetcherOptions,
             pathParams: {
                 cycleCode: Number(props.cycleCode),
                 submittedProposalId: props.proposal?._id!
@@ -133,7 +136,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                 },
                 body: values.comment,
                 // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions,headers, "Content-Type": "text/plain"}
             })
                .then(() => notifySuccess("Success",
                     "Review comment has been updated"))
@@ -151,7 +154,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                 },
                 body: values.score,
                 // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             })
                .then(() => notifySuccess("Success",
                     "Review score has been updated"))
@@ -170,9 +173,10 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                 //I may be going mad. The api will not accept false (boolean value) with a
                 //'No-content' exception, but will accept "false" (literal string); no such
                 //problem with true
+               // @ts-ignore
                 body: values.technicalFeasibility ? true : "false",
                 // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             })
                .then(() => notifySuccess("Success",
                     "Review feasibility has been updated"))
@@ -187,6 +191,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const handleCompletion = () => {
         fetchProposalReviewResourceConfirmReviewComplete({
+            ...fetcherOptions,
             pathParams: {
                 cycleCode: props.cycleCode,
                 submittedProposalId: props.proposal?._id!,

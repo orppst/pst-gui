@@ -12,11 +12,13 @@ import {useQueryClient} from "@tanstack/react-query";
 import DeleteButton from "../../commonButtons/delete.tsx";
 import {modals} from "@mantine/modals";
 import AddButton from "../../commonButtons/add.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export default function AssignReviewersForm(proposal: SubmittedProposal) : ReactElement {
 
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
+    const {fetcherOptions} = useProposalToolContext();
 
     const reviewers = useReviewerResourceGetReviewers({})
 
@@ -45,6 +47,7 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
             proposal.reviews?.find(review => review.reviewer?._id == props.reviewerId)!
 
         fetchProposalReviewResourceRemoveReview({
+            ...fetcherOptions,
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 submittedProposalId: props.proposalId,
@@ -78,6 +81,7 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
 
     const handleAssign = (props: ButtonData) =>  {
         fetchProposalReviewResourceAddReview({
+            ...fetcherOptions,
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 submittedProposalId: proposal._id!

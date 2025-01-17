@@ -14,6 +14,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export default function AvailableResourcesForm(props: AvailableResourcesProps) : ReactElement {
 
@@ -24,14 +25,16 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
 
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
+    const {fetcherOptions} = useProposalToolContext();
 
     const [resourceTypeData, setResourceTypeData]
         = useState<{value: string, label: string}[]>([]);
 
     useEffect(() => {
-        fetchResourceTypeResourceGetAllResourceTypes({})
+        fetchResourceTypeResourceGetAllResourceTypes({...fetcherOptions})
             .then((allTypes: ObjectIdentifier[]) => {
                 fetchAvailableResourcesResourceGetCycleResourceTypes({
+                    ...fetcherOptions,
                     pathParams: {
                         cycleCode: Number(selectedCycleCode)
                     }
@@ -81,7 +84,7 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                 },
                 body: values.amount,
                 //@ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             })
                 .then(()=>queryClient.invalidateQueries())
                 .then( () => props.closeModal!() )
@@ -90,6 +93,7 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
         } else {
             //adding a new 'available resource'
             fetchAvailableResourcesResourceAddCycleResource({
+                ...fetcherOptions,
                 pathParams: {
                     cycleCode: Number(selectedCycleCode)
                 },

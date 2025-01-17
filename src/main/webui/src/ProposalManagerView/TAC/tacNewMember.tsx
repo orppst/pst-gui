@@ -14,6 +14,7 @@ import { JSON_SPACES } from 'src/constants.tsx';
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * Renders form panel to add a reviewer to the TAC of the current cycle.
@@ -44,6 +45,7 @@ function CycleTACAddMemberPanel(): ReactElement {
     const navigate = useNavigate();
     const { selectedCycleCode } = useParams();
     const queryClient = useQueryClient();
+    const {fetcherOptions} = useProposalToolContext();
     const { data, error, status } = useReviewerResourceGetReviewers(
         {
             queryParams: { name: '%' },
@@ -75,9 +77,9 @@ function CycleTACAddMemberPanel(): ReactElement {
     const handleAdd = form.onSubmit((val) => {
         //Get full investigator from API and add back to proposal
         fetchReviewerResourceGetReviewer(
-            {pathParams:{reviewerId: form.values.selectedMember}})
+            {...fetcherOptions, pathParams:{reviewerId: form.values.selectedMember}})
             .then((data) => fetchTACResourceAddCommitteeMember(
-                {pathParams:{cycleCode: Number(selectedCycleCode)},
+                {...fetcherOptions, pathParams:{cycleCode: Number(selectedCycleCode)},
                     body:{
                         role: val.role,
                         member: data,

@@ -9,6 +9,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {IconInfoCircle} from "@tabler/icons-react";
 import ReviewsAccordion from "./reviews.accordion.tsx";
 import {SubmittedProposal} from "../../generated/proposalToolSchemas.ts";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export type ReviewsProps = {
     reviewerId: number,
@@ -20,12 +21,14 @@ export default
 function ReviewsPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
+    const {fetcherOptions} = useProposalToolContext();
+
     const { user} = useContext(ProposalContext);
 
     const [reviewerId, setReviewerId] = useState(0)
 
     useEffect(() => {
-        fetchReviewerResourceGetReviewers({})
+        fetchReviewerResourceGetReviewers({...fetcherOptions})
             .then(data => {
                 //may want to check a guaranteed unique value here, rather than the name
                 let reviewer =

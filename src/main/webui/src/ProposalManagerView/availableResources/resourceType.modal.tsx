@@ -6,6 +6,7 @@ import ResourceTypeForm from "./resourceType.form.tsx";
 import {ResourceTypeProps} from "./availableResourcesPanel.tsx";
 import {fetchResourceTypeResourceGetResourceType} from "../../generated/proposalToolComponents.ts";
 import {ResourceType} from "../../generated/proposalToolSchemas.ts";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export type ResourceTypeFormValues = {
     name: string,
@@ -16,6 +17,7 @@ export type ResourceTypeFormValues = {
 export default function ResourceTypeModal(props: ResourceTypeProps) : ReactElement {
 
     const [opened, {close, open}] = useDisclosure();
+    const {fetcherOptions} = useProposalToolContext();
 
     const [resourceType, setResourceType]
         = useState<ResourceType>({name: "", unit: ""});
@@ -23,6 +25,7 @@ export default function ResourceTypeModal(props: ResourceTypeProps) : ReactEleme
     useEffect(() => {
         if (props.resourceTypeId)
             fetchResourceTypeResourceGetResourceType({
+                ...fetcherOptions,
                 pathParams: {
                     resourceTypeId: props.resourceTypeId
                 }

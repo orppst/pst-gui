@@ -15,6 +15,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import ResourceTypeModal from "./resourceType.modal.tsx";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 
 export type AvailableResourcesProps  = {
@@ -32,6 +33,7 @@ export type ResourceTypeProps = {
 export default function CycleAvailableResourcesPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
+    const {fetcherOptions} = useProposalToolContext();
 
     const availableResources =
         useAvailableResourcesResourceGetCycleAvailableResources({
@@ -53,6 +55,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
 
     const handleDelete = (id: number) => {
         fetchAvailableResourcesResourceRemoveCycleResource({
+            ...fetcherOptions,
             pathParams:{
                 cycleCode: Number(selectedCycleCode),
                 resourceId: id

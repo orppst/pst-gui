@@ -12,6 +12,7 @@ import {
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import {notifyError, notifySuccess} from "../commonPanel/notifications.tsx";
 import {useQueryClient} from "@tanstack/react-query";
+import {useProposalToolContext} from "../generated/proposalToolContext.ts";
 
 interface NewCycleFormProps {
     closeModal?: () => void
@@ -27,12 +28,13 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         observatoryId: number | undefined
     }
     const queryClient = useQueryClient();
+    const {fetcherOptions} = useProposalToolContext();
 
     const [observatories, setObservatories]
         = useState<{ value: string, label: string }[]>([]);
 
     useEffect(() => {
-        fetchObservatoryResourceGetObservatories({})
+        fetchObservatoryResourceGetObservatories({...fetcherOptions})
             .then((data: ObjectIdentifier[]) => {
                 setObservatories(
                     data?.map((obs) => (
@@ -97,7 +99,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
             observationSessionEnd: values.sessionEnd!.getTime()
         }
 
-        fetchProposalCyclesResourceCreateProposalCycle({body: newCycle})
+        fetchProposalCyclesResourceCreateProposalCycle({...fetcherOptions, body: newCycle})
             .then(()=> queryClient.invalidateQueries())
             .then(() => notifySuccess("Success", "Proposal Cycle " + newCycle.title + " created"))
             .catch((error) => {

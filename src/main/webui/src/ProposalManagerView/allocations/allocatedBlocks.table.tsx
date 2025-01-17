@@ -9,6 +9,7 @@ import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export type AllocatedBlocksTableProps = {
     proposalTitle: string,
@@ -21,6 +22,7 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
 {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
+    const {fetcherOptions} = useProposalToolContext();
 
     type DeleteProps = {
         proposalTitle: string,
@@ -48,6 +50,7 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
 
     const handleDelete = (props: DeleteProps) => {
         fetchAllocatedBlockResourceRemoveAllocatedBlock({
+            ...fetcherOptions,
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 allocatedId: props.allocatedId,

@@ -13,6 +13,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import DeleteButton from "../../commonButtons/delete";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * the data associated with a given member.
@@ -103,6 +104,7 @@ function TACMemberRow(props: MemberProps): ReactElement {
                 },
         });
     const queryClient = useQueryClient();
+    const {fetcherOptions} = useProposalToolContext();
 
     const handleError = (error: { stack: { message: any; }; }) => {
         console.error(error);
@@ -115,7 +117,9 @@ function TACMemberRow(props: MemberProps): ReactElement {
      */
     function handleRemove() {
         setSubmitting(true);
-        fetchTACResourceRemoveCommitteeMember({pathParams:
+        fetchTACResourceRemoveCommitteeMember({
+            ...fetcherOptions,
+            pathParams:
                 {
                     memberId: props.dbid,
                     cycleCode: Number(selectedCycleCode),

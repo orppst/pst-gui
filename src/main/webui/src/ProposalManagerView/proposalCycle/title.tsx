@@ -14,6 +14,7 @@ import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 const cycleTitleFormJSON =  {
     initialValues: {title: "Loading..."},
@@ -33,6 +34,7 @@ export default function CycleTitlePanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [cycleTitle, setCycleTitle] = useState("")
+    const {fetcherOptions} = useProposalToolContext();
     const { data, error, isLoading, status } =
         useProposalCyclesResourceGetProposalCycleTitle(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
@@ -50,7 +52,7 @@ export default function CycleTitlePanel() : ReactElement {
                 pathParams: {cycleCode: Number(selectedCycleCode)},
                 body: cycleTitle,
                 // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             }
             return fetchProposalCyclesResourceReplaceCycleTitle(newTitle);
         },

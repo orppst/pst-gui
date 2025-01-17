@@ -14,6 +14,7 @@ import {useParams} from "react-router-dom";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export type AllocatedBlockFormProps ={
     proposalTitle: string,
@@ -47,6 +48,8 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
 
     const queryClient = useQueryClient();
 
+    const {fetcherOptions} = useProposalToolContext();
+
     const {selectedCycleCode} = useParams();
 
     const [resourceTypes, setResourceTypes] =
@@ -60,6 +63,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
 
     useEffect(() => {
         fetchAvailableResourcesResourceGetCycleResourceTypes({
+            ...fetcherOptions,
             pathParams: {cycleCode:Number(selectedCycleCode)}
         })
             .then((data: ObjectIdentifier[]) => {
@@ -73,6 +77,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
                 getErrorMessage(error)))
 
         fetchObservingModeResourceGetCycleObservingModes({
+            ...fetcherOptions,
             pathParams: {cycleId: Number(selectedCycleCode)}
         })
             .then((data: ObjectIdentifier[]) => {
@@ -87,6 +92,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
 
 
         fetchProposalCyclesResourceGetCycleAllocationGrades({
+            ...fetcherOptions,
             pathParams: {cycleCode: Number(selectedCycleCode)}
         })
             .then((data: ObjectIdentifier[]) => {
@@ -163,7 +169,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
                 },
                 body: values.allocatedBlock.amount,
                 // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             })
                 .then(() => queryClient.invalidateQueries())
                 .then(() => props.closeModal!())
@@ -190,6 +196,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
             }
 
             fetchAllocatedBlockResourceAddAllocatedBlock({
+                ...fetcherOptions,
                 pathParams: {
                     cycleCode: Number(selectedCycleCode),
                     allocatedId: props.allocatedProposalId
