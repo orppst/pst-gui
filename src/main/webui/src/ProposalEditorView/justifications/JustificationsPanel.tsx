@@ -9,6 +9,7 @@ import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 //no need to use an array, only two "kinds" of Justification 'scientific' and 'technical'
 export type JustificationKinds = {
@@ -24,6 +25,8 @@ export default function JustificationsPanel() : ReactElement {
 
     const [isChanged, setIsChanged] = useState<boolean>(false);
 
+    const { fetcherOptions } = useProposalToolContext();
+
     const [justifications, setJustifications] = useState<JustificationKinds>({
         scientific: {text: "", format: undefined},
         technical: {text: "", format: undefined}
@@ -31,10 +34,12 @@ export default function JustificationsPanel() : ReactElement {
 
     useEffect(() => {
         fetchJustificationsResourceGetJustification({
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode), which: "scientific"}
         })
             .then((scientific) => {
                 fetchJustificationsResourceGetJustification({
+                    ...fetcherOptions,
                     pathParams: {proposalCode: Number(selectedProposalCode), which: "technical"}
                 })
                     .then ((technical) => {

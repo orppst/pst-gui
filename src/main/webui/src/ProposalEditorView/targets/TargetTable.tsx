@@ -16,6 +16,7 @@ import {    ERROR_YELLOW,
 } from 'src/constants.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * Render a table header suitable for rows made by TargetTableRow()
@@ -47,6 +48,7 @@ function TargetTableHeader(props: TargetTableProps): ReactElement {
 function TargetTableRow(props: TargetProps): ReactElement {
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
+    const { fetcherOptions } = useProposalToolContext();
 
     const {data, error, isLoading}
         = useProposalResourceGetTarget(
@@ -75,7 +77,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
      */
     function handleRemove(): void {
         setSubmitting(true);
-        fetchProposalResourceRemoveTarget({pathParams:
+        fetchProposalResourceRemoveTarget({...fetcherOptions, pathParams:
                 {
                     proposalCode: props.proposalCode,
                     targetId: props.dbid!

@@ -23,6 +23,7 @@ import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * the entrance to building the target part of the edit panel.
@@ -35,6 +36,7 @@ import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 export default function TargetTypeForm (
     {form}: {form: UseFormReturnType<ObservationFormValues>}): ReactElement {
     const { selectedProposalCode} = useParams();
+    const { fetcherOptions } = useProposalToolContext();
     const theme = useMantineTheme();
 
     const [fieldsData, setFieldsData]
@@ -59,6 +61,7 @@ export default function TargetTypeForm (
 
     useEffect(() => {
         fetchProposalResourceGetFields({
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode)}
         })
             .then((data: ObjectIdentifier[]) => {

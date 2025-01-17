@@ -21,6 +21,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, ReactElement, SyntheticEvent } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * the different types of observation.
@@ -61,6 +62,7 @@ export default function ObservationEditGroup(
      */
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const { fetcherOptions } = useProposalToolContext();
 
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
@@ -181,6 +183,7 @@ export default function ObservationEditGroup(
                 }
 
                 fetchObservationResourceAddNewObservation({
+                    ...fetcherOptions,
                     pathParams:{proposalCode: Number(selectedProposalCode)},
                     body: values.observationType == 'Target' ?
                         targetObservation : calibrationObservation
@@ -196,6 +199,7 @@ export default function ObservationEditGroup(
                     if (tw.id === 0) {
                         //new timing window - add to the Observation
                         fetchObservationResourceAddNewConstraint({
+                            ...fetcherOptions,
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 observationId: props.observation?._id!,
@@ -212,6 +216,7 @@ export default function ObservationEditGroup(
                         //with start and end times as ISO-strings but the API excepting only the
                         //number of milliseconds since the posix epoch
                         fetchObservationResourceReplaceTimingWindow({
+                            ...fetcherOptions,
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 observationId: props.observation?._id!,
@@ -236,6 +241,7 @@ export default function ObservationEditGroup(
                     })
 
                     fetchObservationResourceReplaceTargets({
+                        ...fetcherOptions,
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!
@@ -248,6 +254,7 @@ export default function ObservationEditGroup(
 
                 if (form.isDirty('techGoalId')) {
                     fetchObservationResourceReplaceTechnicalGoal({
+                        ...fetcherOptions,
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!
@@ -262,6 +269,7 @@ export default function ObservationEditGroup(
 
                 if (form.isDirty('fieldId')) {
                     fetchObservationResourceReplaceField({
+                        ...fetcherOptions,
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!

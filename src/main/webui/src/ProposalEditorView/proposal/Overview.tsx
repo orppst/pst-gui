@@ -36,6 +36,7 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /*
       title    -- string
@@ -226,6 +227,8 @@ function ObservationAccordionContent(
  */
 function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const { selectedProposalCode } = useParams();
+    const { fetcherOptions } = useProposalToolContext();
+
 
     const navigate = useNavigate();
 
@@ -578,6 +581,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const handleCloneProposal = (): void => {
         fetchProposalResourceCloneObservingProposal({
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode)}
         })
             .then(() => props.forceUpdate())
@@ -624,6 +628,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const handleDeleteProposal = () => {
         fetchProposalResourceDeleteObservingProposal({
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode)}
         })
             .then(()=> notifySuccess(

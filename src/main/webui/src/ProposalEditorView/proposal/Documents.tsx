@@ -22,6 +22,7 @@ import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 type DocumentProps = {
     dbid: number,
@@ -30,6 +31,7 @@ type DocumentProps = {
 
 const DocumentsPanel = () => {
     const queryClient = useQueryClient();
+    const { fetcherOptions } = useProposalToolContext();
     const {selectedProposalCode} = useParams();
     const {data, error, isLoading}
         = useSupportingDocumentResourceGetSupportingDocuments(
@@ -67,7 +69,7 @@ const DocumentsPanel = () => {
                         body: formData,
                         pathParams: {proposalCode: Number(selectedProposalCode)},
                         // @ts-ignore
-                        headers: {"Content-Type": "multipart/form-data"}
+                        headers: {...fetcherOptions.headers, "Content-Type": "multipart/form-data"}
                     }
                 )
                     .then(() => {
@@ -137,6 +139,7 @@ const DocumentsPanel = () => {
 
 function RenderDocumentListItem(props: DocumentProps) {
     const queryClient = useQueryClient();
+    const { fetcherOptions } = useProposalToolContext();
     const { selectedProposalCode} = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [downloadLink, setDownloadLink] = useState("");
@@ -144,7 +147,9 @@ function RenderDocumentListItem(props: DocumentProps) {
 
     function handleRemove() {
         setSubmitting(true);
-        fetchSupportingDocumentResourceRemoveSupportingDocument({pathParams:
+        fetchSupportingDocumentResourceRemoveSupportingDocument({
+            ...fetcherOptions,
+            pathParams:
                 {
                     id: props.dbid,
                     proposalCode: Number(selectedProposalCode),

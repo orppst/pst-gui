@@ -16,6 +16,7 @@ import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * Render s form panel to add an investigator to the current proposal.
@@ -42,6 +43,7 @@ function AddInvestigatorPanel(): ReactElement {
                 value === 0 || value === null ? 'Please select an investigator' : null)
         }
     });
+    const { fetcherOptions } = useProposalToolContext();
     const typeData = [{value: "COI", label: "CO-I"}, {value: "PI", label: "PI"}];
     const [searchData, setSearchData] = useState<ComboboxData>([]);
     const navigate = useNavigate();
@@ -62,7 +64,7 @@ function AddInvestigatorPanel(): ReactElement {
 
             //Get current investigators from search data
             fetchInvestigatorResourceGetInvestigators(
-                {pathParams: {proposalCode: Number(selectedProposalCode)}})
+                {...fetcherOptions, pathParams: {proposalCode: Number(selectedProposalCode)}})
                 .then(r => {
                     r.map((i) => currentInvestigators.push(i))
 
@@ -88,9 +90,9 @@ function AddInvestigatorPanel(): ReactElement {
     const handleAdd = form.onSubmit((val) => {
         //Get full investigator from API and add back to proposal
         fetchPersonResourceGetPerson(
-            {pathParams:{id: form.values.selectedInvestigator}})
+            {...fetcherOptions, pathParams:{id: form.values.selectedInvestigator}})
             .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
-                {pathParams:{proposalCode: Number(selectedProposalCode)},
+                {...fetcherOptions, pathParams:{proposalCode: Number(selectedProposalCode)},
                     body:{
                         type: val.type,
                         forPhD: val.forPhD,

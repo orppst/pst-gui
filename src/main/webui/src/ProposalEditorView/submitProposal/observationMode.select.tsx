@@ -8,6 +8,7 @@ import {
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 
 /*
@@ -20,9 +21,11 @@ export default
 function ObservationModeSelect(props: { form: UseFormReturnType<SubmissionFormValues> }): ReactElement {
 
     const [observationModes, setObservationModes] = useState<{value: string, label: string}[]>([])
+    const { fetcherOptions } = useProposalToolContext();
 
     useEffect(() => {
         fetchObservingModeResourceGetCycleObservingModes({
+            ...fetcherOptions,
             pathParams: {cycleId: props.form.getValues().selectedCycle}
         })
             .then((data : ObjectIdentifier[]) => {

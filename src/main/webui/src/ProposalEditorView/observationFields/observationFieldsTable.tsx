@@ -13,6 +13,7 @@ import {modals} from "@mantine/modals";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {ObservationFieldsTableProps} from "./ObservationFieldsPanel.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 
 type ObservationFieldRowProps = {
@@ -31,6 +32,7 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
     })
 
     const queryClient = useQueryClient();
+    const { fetcherOptions } = useProposalToolContext();
 
     if (field.isError) {
         return (
@@ -49,6 +51,7 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
 
     const handleDelete = () => {
         fetchProposalResourceRemoveField({
+            ...fetcherOptions,
             pathParams: {
                 proposalCode: props.proposalCode,
                 fieldId: props.fieldId

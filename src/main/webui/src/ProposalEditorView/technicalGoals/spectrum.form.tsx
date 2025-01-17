@@ -21,6 +21,7 @@ import {fetchTechnicalGoalResourceRemoveSpectrum} from "src/generated/proposalTo
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * generates the spectral window panel.
@@ -36,6 +37,7 @@ export default function SpectralWindowsSection(
     //stuff to deal with spectral window deletions
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const { fetcherOptions } = useProposalToolContext();
 
     // determine color.
     const {colorScheme} = useMantineColorScheme();
@@ -151,6 +153,7 @@ export default function SpectralWindowsSection(
     const handleDelete = (spectralWindowId: number): void => {
         //existing spectral window - remove it from the database
         fetchTechnicalGoalResourceRemoveSpectrum({
+            ...fetcherOptions,
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 technicalGoalId: form.getValues().technicalGoalId!,

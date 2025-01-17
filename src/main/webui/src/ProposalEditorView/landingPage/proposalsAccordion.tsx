@@ -3,13 +3,12 @@ import {Accordion, Button, Fieldset, Grid, Group, ScrollArea, Stack, Table, Text
 import {ObjectIdentifier, ProposalSynopsis} from "../../generated/proposalToolSchemas.ts";
 import {
     fetchSubmittedProposalResourceGetSubmittedProposals,
-    fetchUserProposalsSubmittedWithdrawProposal,
-    UserProposalsSubmittedWithdrawProposalVariables
+    fetchUserProposalsSubmittedWithdrawProposal
 } from "../../generated/proposalToolComponents.ts";
 import {modals} from "@mantine/modals";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {useToken} from "../../App2.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 type SubmissionDetail = {
     cycleName: string,
@@ -99,13 +98,14 @@ function CycleSubmissionDetail(props: {
     investigatorName: string,
     proposalTitle: string
 }):  ReactElement {
-    const token = useToken();
+    const { fetcherOptions } = useProposalToolContext();
 
     const [submissionDetail, setSubmissionDetail] =
         useState<SubmissionDetail | null> (null);
 
     useEffect(() => {
         fetchSubmittedProposalResourceGetSubmittedProposals({
+            ...fetcherOptions,
             pathParams: {cycleCode: props.cycle.dbid!},
             //find exact proposal title and investigator name
             queryParams: {title: props.proposalTitle, investigatorName: props.investigatorName}
@@ -147,12 +147,11 @@ function CycleSubmissionDetail(props: {
     }
 
     const handleWithdrawal = () => {
-        const vars:UserProposalsSubmittedWithdrawProposalVariables = {
-                headers: {authorization: token ? `Bearer ${token}` : undefined},
+        fetchUserProposalsSubmittedWithdrawProposal({
+                ...fetcherOptions,
                 pathParams: {submittedProposalId: submissionDetail?.submittedProposalId!},
                 queryParams: {cycleId: props.cycle.dbid!}
-        };
-        fetchUserProposalsSubmittedWithdrawProposal(vars)
+            })
             .then(() => notifySuccess(
                 "Withdrawn",
                 "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."

@@ -36,6 +36,7 @@ import {
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /** the technical goal id data holder.
  * @param {number} id the id
@@ -93,6 +94,8 @@ function TechnicalGoalRow(
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const { fetcherOptions } = useProposalToolContext();
+
 
     const {data: goal, error: goalError, isLoading: goalLoading} =
         useTechnicalGoalResourceGetTechnicalGoal(
@@ -139,6 +142,7 @@ function TechnicalGoalRow(
      */
     const handleDelete = (): void => {
         fetchTechnicalGoalResourceRemoveTechnicalGoal( {
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode),
                          technicalGoalId: technicalGoalRowProps.id}
         })
@@ -191,6 +195,7 @@ function TechnicalGoalRow(
 
         // save the new clonedGoal to the database.
         fetchTechnicalGoalResourceAddTechnicalGoal( {
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode)},
             body: clonedGoal
         })

@@ -18,6 +18,7 @@ import "prismjs/components/prism-asciidoc.js";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import CancelButton from "../../commonButtons/cancel.tsx";
 import {modals} from "@mantine/modals";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /*
     Form contains the Justification text only. We save the Justification format
@@ -63,6 +64,7 @@ export default
 function JustificationForm(props: JustificationProps) : ReactElement {
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const { fetcherOptions } = useProposalToolContext();
 
     const [justification, setJustification] = useState<Justification>(props.justification)
 
@@ -78,6 +80,7 @@ function JustificationForm(props: JustificationProps) : ReactElement {
 
     const handleSubmit = form.onSubmit((values) => {
         fetchJustificationsResourceUpdateJustification({
+            ...fetcherOptions,
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which
@@ -99,6 +102,7 @@ function JustificationForm(props: JustificationProps) : ReactElement {
         setJustification(update);
 
         fetchJustificationsResourceUpdateJustification({
+            ...fetcherOptions,
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which

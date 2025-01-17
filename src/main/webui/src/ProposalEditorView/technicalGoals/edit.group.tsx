@@ -26,6 +26,7 @@ import {
 } from "./performanceParametersGui.tsx";
 import {notifySuccess} from "../../commonPanel/notifications.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
@@ -61,6 +62,7 @@ export default function TechnicalGoalEditGroup(
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
     const newTechnicalGoal = !props.technicalGoal;
+    const { fetcherOptions } = useProposalToolContext();
 
     // use spectral windows if we have them, else use empty array
     let initialSpectralWindows: ScienceSpectralWindowGui[] = [];
@@ -205,6 +207,7 @@ export default function TechnicalGoalEditGroup(
             }
 
             fetchTechnicalGoalResourceAddTechnicalGoal( {
+                ...fetcherOptions,
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: goal
             })
@@ -219,6 +222,7 @@ export default function TechnicalGoalEditGroup(
                     convertToPerformanceParameters(values.performanceParameters);
 
                 fetchTechnicalGoalResourceReplacePerformanceParameters({
+                    ...fetcherOptions,
                     pathParams: {
                         proposalCode: Number(selectedProposalCode),
                         technicalGoalId: props.technicalGoal?._id!
@@ -237,6 +241,7 @@ export default function TechnicalGoalEditGroup(
                     if (sw.id === 0) {
                         //new spectral window - add to the TechnicalGoal
                         fetchTechnicalGoalResourceAddSpectrum({
+                            ...fetcherOptions,
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 technicalGoalId: props.technicalGoal?._id!
@@ -249,6 +254,7 @@ export default function TechnicalGoalEditGroup(
                     } else if (form.isDirty(`spectralWindows.${index}`)) {
                         //existing spectral window and modified - update in TechnicalGoal
                         fetchTechnicalGoalResourceReplaceSpectrum({
+                            ...fetcherOptions,
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 technicalGoalId: props.technicalGoal?._id!,

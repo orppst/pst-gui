@@ -4,6 +4,7 @@ import {Organization} from "../generated/proposalToolSchemas.ts";
 import {useForm} from "@mantine/form";
 import {fetchOrganizationResourceCreateOrganization} from "../generated/proposalToolComponents.ts";
 import {notifications} from "@mantine/notifications";
+import {useProposalToolContext} from "../generated/proposalToolContext.ts";
 
 
 interface organizationValues {
@@ -12,6 +13,7 @@ interface organizationValues {
 
 
 export default function NewOrganization(closeModal: () => void) : ReactElement {
+    const { fetcherOptions } = useProposalToolContext();
 
     const form = useForm<organizationValues>( {
         initialValues: {
@@ -38,6 +40,7 @@ export default function NewOrganization(closeModal: () => void) : ReactElement {
 
     const handleSubmit = form.onSubmit((values) =>{
         fetchOrganizationResourceCreateOrganization({
+            ...fetcherOptions,
             body: values.organization
         })
             .then(closeModal)

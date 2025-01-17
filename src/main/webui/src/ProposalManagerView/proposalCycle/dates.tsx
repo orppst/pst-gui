@@ -14,6 +14,7 @@ import {JSON_SPACES} from "../../constants.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
@@ -22,6 +23,7 @@ export default function CycleDatesPanel() : ReactElement {
         sessionEnd: Date | null
     }
 
+    const {fetcherOptions} = useProposalToolContext();
     const {selectedCycleCode} = useParams();
     const [proposalCycleTitle, setCycleTitle] = useState("Loading...")
     const {data, error, isLoading, status} =
@@ -68,17 +70,20 @@ export default function CycleDatesPanel() : ReactElement {
 
     const handleSave = form.onSubmit((val) => {
         fetchProposalCyclesResourceReplaceCycleDeadline({
+                ...fetcherOptions,
                 pathParams: {cycleCode: Number(selectedCycleCode)},
                 //@ts-ignore
                 body: val.submissionDeadline?.getTime()
             })
             .then(() => {
                 fetchProposalCyclesResourceReplaceCycleSessionStart({
+                    ...fetcherOptions,
                     pathParams: {cycleCode: Number(selectedCycleCode)},
                     //@ts-ignore
                     body: val.sessionStart?.getTime()
                 }).then(() => {
                     fetchProposalCyclesResourceReplaceCycleSessionEnd({
+                        ...fetcherOptions,
                         pathParams: {cycleCode: Number(selectedCycleCode)},
                         //@ts-ignore
                         body: val.sessionEnd?.getTime()

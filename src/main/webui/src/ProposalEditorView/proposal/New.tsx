@@ -23,6 +23,7 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 
 const kindData = [
@@ -64,6 +65,7 @@ const textFormatData = [
      const createNewObservingProposal = form.onSubmit((val) => {
 
         setSubmitting(true);
+        const { fetcherOptions } = useProposalToolContext();
 
         //Add the current user as the PI
         const investigator : Investigator = {
@@ -82,11 +84,12 @@ const textFormatData = [
             "investigators": [investigator]
         };
 
-        fetchProposalResourceCreateObservingProposal({ body: newProposal})
+        fetchProposalResourceCreateObservingProposal({...fetcherOptions, body: newProposal})
             .then((data) => {
                 if(Number(data?._id) > 0) {
                     let newProposalId = Number(data?._id);
                     fetchProposalResourceAddNewField({
+                        ...fetcherOptions,
                         pathParams: {proposalCode: newProposalId},
                         body: field
                     })

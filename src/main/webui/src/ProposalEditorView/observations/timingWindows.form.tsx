@@ -14,6 +14,7 @@ import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import {notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 
 //Providing a UI for a TimingWindow:
@@ -39,6 +40,7 @@ export default function TimingWindowsForm(
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const { fetcherOptions } = useProposalToolContext();
 
     // constant used for populating new timing window guis.
     const EMPTY_TIMING_WINDOW : TimingWindowGui = {
@@ -77,6 +79,7 @@ export default function TimingWindowsForm(
     const handleDelete = (timingWindowId: number) => {
         //existing timing window - remove it from the database
         fetchObservationResourceRemoveConstraint({
+            ...fetcherOptions,
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 observationId: form.getValues().observationId!,

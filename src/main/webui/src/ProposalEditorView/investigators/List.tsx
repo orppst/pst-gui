@@ -21,6 +21,7 @@ import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import { InvestigatorKind, Person } from 'src/generated/proposalToolSchemas.ts';
 import { ProposalContext } from 'src/App2.tsx';
 import { useModals } from "@mantine/modals";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 
 /**
@@ -151,6 +152,7 @@ function InvestigatorsHeader(): ReactElement {
 function InvestigatorsRow(props: PersonProps): ReactElement {
     const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
+    const { fetcherOptions } = useProposalToolContext();
     const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
         {pathParams:
                 {
@@ -181,7 +183,9 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         let investigatorIDs = Array<number>();
         setSubmitting(true);
         fetchInvestigatorResourceGetInvestigators({
+            ...fetcherOptions,
             pathParams: {
+
                     proposalCode: Number(selectedProposalCode),
                 }
             })
@@ -245,7 +249,9 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
      */
     function handleRemove() {
         setSubmitting(true);
-        fetchInvestigatorResourceRemoveInvestigator({pathParams:
+        fetchInvestigatorResourceRemoveInvestigator(
+                {...fetcherOptions,
+                pathParams:
                 {
                     investigatorId: props.dbid,
                     proposalCode: Number(selectedProposalCode),
@@ -276,6 +282,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         setSubmitting(true);
         console.log(investigatorTypeSetting);
         fetchInvestigatorResourceChangeInvestigatorKind({
+            ...fetcherOptions,
             pathParams: {
                     investigatorId: props.dbid,
                     proposalCode: Number(selectedProposalCode),

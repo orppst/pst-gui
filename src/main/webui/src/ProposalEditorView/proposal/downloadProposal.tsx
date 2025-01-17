@@ -11,6 +11,7 @@ import {
 } from 'src/generated/proposalToolComponents.ts';
 import { JSON_FILE_NAME, OVERVIEW_PDF_FILENAME } from 'src/constants.tsx';
 import {notifyError, notifyInfo} from "../../commonPanel/notifications.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 
 /**
@@ -55,6 +56,7 @@ const populateSupportingDocuments = (zip: JSZip,
     supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
     selectedProposalCode: String): Array<Promise<void>> => {
         return supportingDocumentData.map(async (item: ObjectIdentifier) => {
+            const { fetcherOptions } = useProposalToolContext();
             if (item.dbid !== undefined && item.name !== undefined) {
                 // have to destructure this, as otherwise risk of being undefined
                 // detected later.
@@ -68,7 +70,8 @@ const populateSupportingDocuments = (zip: JSZip,
 
                 // extract the document and save into the zip.
                 await fetchSupportingDocumentResourceDownloadSupportingDocument(
-                    { pathParams: {
+                    {...fetcherOptions,
+                        pathParams: {
                         id: item.dbid,
                             proposalCode: Number(selectedProposalCode) } })
                     .then((blob) => {
@@ -99,6 +102,7 @@ async function downloadProposal(
 
     // get pdf data.
     const pdfData = generatePdf(element);
+    const { fetcherOptions } = useProposalToolContext();
 
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
@@ -110,7 +114,8 @@ async function downloadProposal(
     );
 
     promises.push(
-        fetchProposalResourceExportProposal({pathParams: {proposalCode: Number(selectedProposalCode) }})
+        fetchProposalResourceExportProposal({...fetcherOptions,
+            pathParams: {proposalCode: Number(selectedProposalCode) }})
             .then((blob)=>{
                 //ensure we got some data back.
                 if(blob!==undefined){

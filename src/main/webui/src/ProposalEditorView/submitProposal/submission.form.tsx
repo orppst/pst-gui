@@ -19,6 +19,7 @@ import {
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import ObservationModeSelect from "./observationMode.select.tsx";
 import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export default
 function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any }) :
@@ -27,6 +28,8 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
     const {selectedProposalCode} = useParams();
 
     const queryClient = useQueryClient();
+
+    const { fetcherOptions } = useProposalToolContext();
 
     const navigate = useNavigate();
 
@@ -90,6 +93,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
     useEffect(() => {
         fetchProposalCyclesResourceGetProposalCycles({
+            ...fetcherOptions,
             queryParams: {includeClosed: false}
         })
             .then((data: ObjectIdentifier[])=> {
@@ -116,7 +120,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
         if (form.getValues().selectedCycle > 0) {
             fetchProposalCyclesResourceGetProposalCycleDates(
-                {pathParams: {cycleCode: form.getValues().selectedCycle}})
+                {...fetcherOptions, pathParams: {cycleCode: form.getValues().selectedCycle}})
                 .then((dates) => {
                     setSubmissionDeadline(dates.submissionDeadline!);
                 })
@@ -186,7 +190,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
                     config: observationConfigMap
                 },
                 // @ts-ignore
-                headers: {"Content-Type": "application/json"}
+                headers: {...fetcherOptions.headers, "Content-Type": "application/json"}
             };
 
             fetchSubmittedProposalResourceSubmitProposal(submissionVariables)

@@ -35,6 +35,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SimbadSearch} from "./simbadSearch.tsx";
 import SimbadSearchHelp from "./simbadSearchHelp.tsx";
 import { AstroLib } from "@tsastro/astrolib";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export let Aladin: AladinType;
 
@@ -106,6 +107,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
+    const { fetcherOptions } = useProposalToolContext();
 
     /**
      * saves the new target to the database, if it doesn't already exist on this proposal.
@@ -144,16 +146,18 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
 
         fetchProposalResourceGetTargets({
+                ...fetcherOptions,
                 pathParams: {proposalCode: Number(selectedProposalCode) },
                 queryParams: {sourceName: val.TargetName}})
             .then((data) => {
                 if(data.length == 0) {
                     setNameUnique(true);
                     fetchSpaceSystemResourceGetSpaceSystem(
-                        {pathParams: { frameCode: 'ICRS'}})
+                        {...fetcherOptions, pathParams: { frameCode: 'ICRS'}})
                         .then((spaceSys) => assignSpaceSys(spaceSys))
                         .then(() =>
                             fetchProposalResourceAddNewTarget({
+                                ...fetcherOptions,
                                 pathParams:{proposalCode: Number(selectedProposalCode) },
                                 body: Target
                             })

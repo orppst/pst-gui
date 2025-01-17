@@ -16,6 +16,7 @@ import {
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 
 interface TitleSummaryKind {
@@ -33,12 +34,14 @@ const kindData = [
 
 export default
 function TitleSummaryKind() : ReactElement {
+    const { fetcherOptions } = useProposalToolContext();
 
     const {selectedProposalCode} = useParams();
 
     const proposal = useProposalResourceGetObservingProposal({
         pathParams: {proposalCode: Number(selectedProposalCode)}
     })
+
 
     const form = useForm<TitleSummaryKind>({
         mode: "controlled",
@@ -62,12 +65,11 @@ function TitleSummaryKind() : ReactElement {
 
     const titleMutation = useMutation({
         mutationFn: () => {
-
             const newTitle : ProposalResourceReplaceTitleVariables = {
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: form.getValues().title,
                 // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             }
             return fetchProposalResourceReplaceTitle(newTitle);
         },
@@ -86,7 +88,7 @@ function TitleSummaryKind() : ReactElement {
                     pathParams: {proposalCode: Number(selectedProposalCode)},
                     body: form.getValues().summary,
                     // @ts-ignore
-                    headers: {"Content-Type": "text/plain"}
+                    headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
                 }
                 return fetchProposalResourceReplaceSummary(newSummary);
             },
@@ -106,7 +108,7 @@ function TitleSummaryKind() : ReactElement {
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: form.getValues().kind as string,
                 //@ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             }
             return fetchProposalResourceChangeKind(newKind);
         },

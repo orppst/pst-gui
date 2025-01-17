@@ -22,6 +22,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * Function to return the "Observation Fields" form to either create a new "Field" or edit an existing one.
@@ -33,7 +34,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
 
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
-
+    const { fetcherOptions } = useProposalToolContext();
 
     /*
         Developer note: If more Field types are added to the underlying data model then this array
@@ -124,7 +125,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                 },
                 body: values.fieldName,
                 //@ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             })
                 .then(() => queryClient.invalidateQueries())
                 .then(() => notifySuccess("Success", "Field name updated"))
@@ -171,6 +172,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
             }
 
             fetchProposalResourceAddNewField({
+                ...fetcherOptions,
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: fieldToPass.theField
             })
