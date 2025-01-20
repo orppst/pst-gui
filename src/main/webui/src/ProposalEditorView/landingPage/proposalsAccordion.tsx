@@ -10,6 +10,7 @@ import {modals} from "@mantine/modals";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useToken} from "../../App2.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 type SubmissionDetail = {
     cycleName: string,
@@ -101,6 +102,8 @@ function CycleSubmissionDetail(props: {
 }):  ReactElement {
     const token = useToken();
 
+    const queryClient = useQueryClient();
+
     const [submissionDetail, setSubmissionDetail] =
         useState<SubmissionDetail | null> (null);
 
@@ -153,6 +156,7 @@ function CycleSubmissionDetail(props: {
                 queryParams: {cycleId: props.cycle.dbid!}
         };
         fetchUserProposalsSubmittedWithdrawProposal(vars)
+            .then(() => queryClient.invalidateQueries())
             .then(() => notifySuccess(
                 "Withdrawn",
                 "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."
