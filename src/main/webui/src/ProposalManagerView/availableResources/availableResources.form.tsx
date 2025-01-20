@@ -25,13 +25,13 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
 
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext();
+    const {fetcherOptions} = useProposalToolContext(); // HACK #1
 
     const [resourceTypeData, setResourceTypeData]
         = useState<{value: string, label: string}[]>([]);
 
     useEffect(() => {
-        fetchResourceTypeResourceGetAllResourceTypes({...fetcherOptions})
+        fetchResourceTypeResourceGetAllResourceTypes({...fetcherOptions}) // HACK #1
             .then((allTypes: ObjectIdentifier[]) => {
                 fetchAvailableResourcesResourceGetCycleResourceTypes({
                     ...fetcherOptions,
@@ -84,7 +84,7 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                 },
                 body: values.amount,
                 //@ts-ignore
-                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // HACK #1
             })
                 .then(()=>queryClient.invalidateQueries())
                 .then( () => props.closeModal!() )
@@ -93,7 +93,7 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
         } else {
             //adding a new 'available resource'
             fetchAvailableResourcesResourceAddCycleResource({
-                ...fetcherOptions,
+                ...fetcherOptions, // HACK #1
                 pathParams: {
                     cycleCode: Number(selectedCycleCode)
                 },

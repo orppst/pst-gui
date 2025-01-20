@@ -227,7 +227,7 @@ function ObservationAccordionContent(
  */
 function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const { selectedProposalCode } = useParams();
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
 
 
     const navigate = useNavigate();
@@ -581,7 +581,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const handleCloneProposal = (): void => {
         fetchProposalResourceCloneObservingProposal({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {proposalCode: Number(selectedProposalCode)}
         })
             .then(() => props.forceUpdate())
@@ -628,7 +628,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const handleDeleteProposal = () => {
         fetchProposalResourceDeleteObservingProposal({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {proposalCode: Number(selectedProposalCode)}
         })
             .then(()=> notifySuccess(

@@ -32,7 +32,7 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
     })
 
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
 
     if (field.isError) {
         return (
@@ -51,7 +51,7 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
 
     const handleDelete = () => {
         fetchProposalResourceRemoveField({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {
                 proposalCode: props.proposalCode,
                 fieldId: props.fieldId

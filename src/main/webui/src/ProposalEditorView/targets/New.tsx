@@ -107,7 +107,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
     const queryClient = useQueryClient();
     const { selectedProposalCode} = useParams();
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
 
     /**
      * saves the new target to the database, if it doesn't already exist on this proposal.
@@ -146,18 +146,18 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
 
         fetchProposalResourceGetTargets({
-                ...fetcherOptions,
+                ...fetcherOptions, // HACK #1
                 pathParams: {proposalCode: Number(selectedProposalCode) },
                 queryParams: {sourceName: val.TargetName}})
             .then((data) => {
                 if(data.length == 0) {
                     setNameUnique(true);
                     fetchSpaceSystemResourceGetSpaceSystem(
-                        {...fetcherOptions, pathParams: { frameCode: 'ICRS'}})
+                        {...fetcherOptions, pathParams: { frameCode: 'ICRS'}}) // HACK #1
                         .then((spaceSys) => assignSpaceSys(spaceSys))
                         .then(() =>
                             fetchProposalResourceAddNewTarget({
-                                ...fetcherOptions,
+                                ...fetcherOptions, // HACK #1
                                 pathParams:{proposalCode: Number(selectedProposalCode) },
                                 body: Target
                             })

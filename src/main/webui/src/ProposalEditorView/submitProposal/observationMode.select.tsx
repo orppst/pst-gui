@@ -21,11 +21,11 @@ export default
 function ObservationModeSelect(props: { form: UseFormReturnType<SubmissionFormValues> }): ReactElement {
 
     const [observationModes, setObservationModes] = useState<{value: string, label: string}[]>([])
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
 
     useEffect(() => {
         fetchObservingModeResourceGetCycleObservingModes({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {cycleId: props.form.getValues().selectedCycle}
         })
             .then((data : ObjectIdentifier[]) => {

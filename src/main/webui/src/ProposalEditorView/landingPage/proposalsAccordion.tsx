@@ -98,14 +98,14 @@ function CycleSubmissionDetail(props: {
     investigatorName: string,
     proposalTitle: string
 }):  ReactElement {
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
 
     const [submissionDetail, setSubmissionDetail] =
         useState<SubmissionDetail | null> (null);
 
     useEffect(() => {
         fetchSubmittedProposalResourceGetSubmittedProposals({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {cycleCode: props.cycle.dbid!},
             //find exact proposal title and investigator name
             queryParams: {title: props.proposalTitle, investigatorName: props.investigatorName}
@@ -148,7 +148,7 @@ function CycleSubmissionDetail(props: {
 
     const handleWithdrawal = () => {
         fetchUserProposalsSubmittedWithdrawProposal({
-                ...fetcherOptions,
+                ...fetcherOptions, // HACK #1
                 pathParams: {submittedProposalId: submissionDetail?.submittedProposalId!},
                 queryParams: {cycleId: props.cycle.dbid!}
             })

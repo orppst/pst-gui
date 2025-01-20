@@ -13,7 +13,7 @@ interface organizationValues {
 
 
 export default function NewOrganization(closeModal: () => void) : ReactElement {
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
 
     const form = useForm<organizationValues>( {
         initialValues: {
@@ -40,7 +40,7 @@ export default function NewOrganization(closeModal: () => void) : ReactElement {
 
     const handleSubmit = form.onSubmit((values) =>{
         fetchOrganizationResourceCreateOrganization({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             body: values.organization
         })
             .then(closeModal)

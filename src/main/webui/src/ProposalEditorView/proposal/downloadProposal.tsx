@@ -56,7 +56,7 @@ const populateSupportingDocuments = (zip: JSZip,
     supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
     selectedProposalCode: String): Array<Promise<void>> => {
         return supportingDocumentData.map(async (item: ObjectIdentifier) => {
-            const { fetcherOptions } = useProposalToolContext();
+            const { fetcherOptions } = useProposalToolContext(); // HACK #1
             if (item.dbid !== undefined && item.name !== undefined) {
                 // have to destructure this, as otherwise risk of being undefined
                 // detected later.
@@ -70,7 +70,7 @@ const populateSupportingDocuments = (zip: JSZip,
 
                 // extract the document and save into the zip.
                 await fetchSupportingDocumentResourceDownloadSupportingDocument(
-                    {...fetcherOptions,
+                    {...fetcherOptions, // HACK #1
                         pathParams: {
                         id: item.dbid,
                             proposalCode: Number(selectedProposalCode) } })
@@ -102,7 +102,7 @@ async function downloadProposal(
 
     // get pdf data.
     const pdfData = generatePdf(element);
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
 
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
@@ -114,7 +114,7 @@ async function downloadProposal(
     );
 
     promises.push(
-        fetchProposalResourceExportProposal({...fetcherOptions,
+        fetchProposalResourceExportProposal({...fetcherOptions, // HACK #1
             pathParams: {proposalCode: Number(selectedProposalCode) }})
             .then((blob)=>{
                 //ensure we got some data back.

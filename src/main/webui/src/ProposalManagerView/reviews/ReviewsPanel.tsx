@@ -21,14 +21,14 @@ export default
 function ReviewsPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
-    const {fetcherOptions} = useProposalToolContext();
+    const {fetcherOptions} = useProposalToolContext(); // HACK #1
 
     const { user} = useContext(ProposalContext);
 
     const [reviewerId, setReviewerId] = useState(0)
 
     useEffect(() => {
-        fetchReviewerResourceGetReviewers({...fetcherOptions})
+        fetchReviewerResourceGetReviewers({...fetcherOptions}) // HACK #1
             .then(data => {
                 //may want to check a guaranteed unique value here, rather than the name
                 let reviewer =

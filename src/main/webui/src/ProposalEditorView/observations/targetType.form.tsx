@@ -36,7 +36,7 @@ import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 export default function TargetTypeForm (
     {form}: {form: UseFormReturnType<ObservationFormValues>}): ReactElement {
     const { selectedProposalCode} = useParams();
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
     const theme = useMantineTheme();
 
     const [fieldsData, setFieldsData]
@@ -61,7 +61,7 @@ export default function TargetTypeForm (
 
     useEffect(() => {
         fetchProposalResourceGetFields({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {proposalCode: Number(selectedProposalCode)}
         })
             .then((data: ObjectIdentifier[]) => {

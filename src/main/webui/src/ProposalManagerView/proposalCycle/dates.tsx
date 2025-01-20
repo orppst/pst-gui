@@ -23,7 +23,7 @@ export default function CycleDatesPanel() : ReactElement {
         sessionEnd: Date | null
     }
 
-    const {fetcherOptions} = useProposalToolContext();
+    const {fetcherOptions} = useProposalToolContext(); // HACK #1
     const {selectedCycleCode} = useParams();
     const [proposalCycleTitle, setCycleTitle] = useState("Loading...")
     const {data, error, isLoading, status} =
@@ -70,20 +70,20 @@ export default function CycleDatesPanel() : ReactElement {
 
     const handleSave = form.onSubmit((val) => {
         fetchProposalCyclesResourceReplaceCycleDeadline({
-                ...fetcherOptions,
+                ...fetcherOptions, // HACK #1
                 pathParams: {cycleCode: Number(selectedCycleCode)},
                 //@ts-ignore
                 body: val.submissionDeadline?.getTime()
             })
             .then(() => {
                 fetchProposalCyclesResourceReplaceCycleSessionStart({
-                    ...fetcherOptions,
+                    ...fetcherOptions, // HACK #1
                     pathParams: {cycleCode: Number(selectedCycleCode)},
                     //@ts-ignore
                     body: val.sessionStart?.getTime()
                 }).then(() => {
                     fetchProposalCyclesResourceReplaceCycleSessionEnd({
-                        ...fetcherOptions,
+                        ...fetcherOptions, // HACK #1
                         pathParams: {cycleCode: Number(selectedCycleCode)},
                         //@ts-ignore
                         body: val.sessionEnd?.getTime()

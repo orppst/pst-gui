@@ -22,7 +22,7 @@ export default
 function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext();
+    const {fetcherOptions} = useProposalToolContext(); // HACK #1
 
     const theReviewer = useReviewerResourceGetReviewer({
         pathParams: {reviewerId: props.reviewerId}
@@ -96,7 +96,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const handleAssign = (buttonProps: AssignButtonData) =>  {
         fetchProposalReviewResourceAddReview({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {
                 cycleCode: Number(props.cycleCode),
                 submittedProposalId: props.proposal?._id!
@@ -136,7 +136,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                 },
                 body: values.comment,
                 // @ts-ignore
-                headers: {...fetcherOptions,headers, "Content-Type": "text/plain"}
+                headers: {...fetcherOptions,headers, "Content-Type": "text/plain"} // HACK #1
             })
                .then(() => notifySuccess("Success",
                     "Review comment has been updated"))

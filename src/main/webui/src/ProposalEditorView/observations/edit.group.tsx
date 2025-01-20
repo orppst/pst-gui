@@ -62,7 +62,7 @@ export default function ObservationEditGroup(
      */
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext();
+    const { fetcherOptions } = useProposalToolContext(); // HACK #1
 
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
@@ -183,7 +183,7 @@ export default function ObservationEditGroup(
                 }
 
                 fetchObservationResourceAddNewObservation({
-                    ...fetcherOptions,
+                    ...fetcherOptions, // HACK #1
                     pathParams:{proposalCode: Number(selectedProposalCode)},
                     body: values.observationType == 'Target' ?
                         targetObservation : calibrationObservation
@@ -199,7 +199,7 @@ export default function ObservationEditGroup(
                     if (tw.id === 0) {
                         //new timing window - add to the Observation
                         fetchObservationResourceAddNewConstraint({
-                            ...fetcherOptions,
+                            ...fetcherOptions, // HACK #1
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 observationId: props.observation?._id!,
@@ -216,7 +216,7 @@ export default function ObservationEditGroup(
                         //with start and end times as ISO-strings but the API excepting only the
                         //number of milliseconds since the posix epoch
                         fetchObservationResourceReplaceTimingWindow({
-                            ...fetcherOptions,
+                            ...fetcherOptions, // HACK #1
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 observationId: props.observation?._id!,
@@ -241,7 +241,7 @@ export default function ObservationEditGroup(
                     })
 
                     fetchObservationResourceReplaceTargets({
-                        ...fetcherOptions,
+                        ...fetcherOptions, // HACK #1
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!
@@ -254,7 +254,7 @@ export default function ObservationEditGroup(
 
                 if (form.isDirty('techGoalId')) {
                     fetchObservationResourceReplaceTechnicalGoal({
-                        ...fetcherOptions,
+                        ...fetcherOptions, // HACK #1
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!
@@ -269,7 +269,7 @@ export default function ObservationEditGroup(
 
                 if (form.isDirty('fieldId')) {
                     fetchObservationResourceReplaceField({
-                        ...fetcherOptions,
+                        ...fetcherOptions, // HACK #1
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!

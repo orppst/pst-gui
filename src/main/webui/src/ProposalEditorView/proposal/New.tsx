@@ -43,6 +43,7 @@ const textFormatData = [
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+     const { fetcherOptions } = useProposalToolContext(); // HACK #1
     //single white space as work around to issue of changing format of default justification
     const emptyJustification : Justification = {text: " ", format: "asciidoc"};
     const form = useForm({
@@ -65,7 +66,6 @@ const textFormatData = [
      const createNewObservingProposal = form.onSubmit((val) => {
 
         setSubmitting(true);
-        const { fetcherOptions } = useProposalToolContext();
 
         //Add the current user as the PI
         const investigator : Investigator = {
@@ -84,12 +84,12 @@ const textFormatData = [
             "investigators": [investigator]
         };
 
-        fetchProposalResourceCreateObservingProposal({...fetcherOptions, body: newProposal})
+        fetchProposalResourceCreateObservingProposal({...fetcherOptions, body: newProposal}) // HACK #1
             .then((data) => {
                 if(Number(data?._id) > 0) {
                     let newProposalId = Number(data?._id);
                     fetchProposalResourceAddNewField({
-                        ...fetcherOptions,
+                        ...fetcherOptions, // HACK #1
                         pathParams: {proposalCode: newProposalId},
                         body: field
                     })

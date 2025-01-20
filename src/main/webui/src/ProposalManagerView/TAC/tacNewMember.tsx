@@ -45,7 +45,7 @@ function CycleTACAddMemberPanel(): ReactElement {
     const navigate = useNavigate();
     const { selectedCycleCode } = useParams();
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext();
+    const {fetcherOptions} = useProposalToolContext(); // HACK #1
     const { data, error, status } = useReviewerResourceGetReviewers(
         {
             queryParams: { name: '%' },
@@ -77,9 +77,9 @@ function CycleTACAddMemberPanel(): ReactElement {
     const handleAdd = form.onSubmit((val) => {
         //Get full investigator from API and add back to proposal
         fetchReviewerResourceGetReviewer(
-            {...fetcherOptions, pathParams:{reviewerId: form.values.selectedMember}})
+            {...fetcherOptions, pathParams:{reviewerId: form.values.selectedMember}}) // HACK #1
             .then((data) => fetchTACResourceAddCommitteeMember(
-                {...fetcherOptions, pathParams:{cycleCode: Number(selectedCycleCode)},
+                {...fetcherOptions, pathParams:{cycleCode: Number(selectedCycleCode)}, // HACK #1
                     body:{
                         role: val.role,
                         member: data,

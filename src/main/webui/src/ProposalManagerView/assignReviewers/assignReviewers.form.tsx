@@ -18,7 +18,7 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
 
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext();
+    const {fetcherOptions} = useProposalToolContext(); // HACK #1
 
     const reviewers = useReviewerResourceGetReviewers({})
 
@@ -47,7 +47,7 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
             proposal.reviews?.find(review => review.reviewer?._id == props.reviewerId)!
 
         fetchProposalReviewResourceRemoveReview({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 submittedProposalId: props.proposalId,
@@ -81,7 +81,7 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
 
     const handleAssign = (props: ButtonData) =>  {
         fetchProposalReviewResourceAddReview({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 submittedProposalId: proposal._id!

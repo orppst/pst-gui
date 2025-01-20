@@ -23,7 +23,7 @@ type AllocationTableRowProps = {
 function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext();
+    const {fetcherOptions} = useProposalToolContext(); // HACK #1
 
     const submittedProposal =
         useSubmittedProposalResourceGetSubmittedProposal({
@@ -64,7 +64,7 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
     async function handlePass(){
 
         await fetchSubmittedProposalResourceUpdateSubmittedProposalSuccess({
-            ...fetcherOptions,
+            ...fetcherOptions, // HACK #1
             pathParams: {
                 cycleCode: rowProps.cycleCode,
                 submittedProposalId: rowProps.submittedProposalId
@@ -81,7 +81,7 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
             // @ts-ignore
             body: rowProps.submittedProposalId,
             // @ts-ignore
-            headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
+            headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // HACK #1
         })
             .catch(error => notifyError("Failed to upgrade proposal for allocation",
                 getErrorMessage(error)))
