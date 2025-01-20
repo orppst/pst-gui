@@ -153,6 +153,7 @@ function CycleSubmissionDetail(props: {
                 queryParams: {cycleId: props.cycle.dbid!}
         };
         fetchUserProposalsSubmittedWithdrawProposal(vars)
+            .then(() => setSubmissionDetail(null))
             .then(() => notifySuccess(
                 "Withdrawn",
                 "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."
