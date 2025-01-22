@@ -1,7 +1,9 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
     fetchInvestigatorResourceGetInvestigators,
-    fetchPersonResourceGetPerson, useInvestigatorResourceAddPersonAsInvestigator,
+    fetchPersonResourceGetPerson,
+    useInvestigatorResourceAddPersonAsInvestigator,
+    useInvestigatorResourceGetInvestigators,
     usePersonResourceGetPeople,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
@@ -56,31 +58,32 @@ function AddInvestigatorPanel(): ReactElement {
         }
     );
 
+    const { data: currentInvestigatorsData, error: currentInvestigatorsError, status: currentInvestigatorsStatus }
+        = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: Number(selectedProposalCode)}});
+
     useEffect(() => {
-        if(status === 'success') {
-            let currentInvestigators: ObjectIdentifier[] = [];
-
-            //Get current investigators from search data
-            fetchInvestigatorResourceGetInvestigators(
-                {pathParams: {proposalCode: Number(selectedProposalCode)}})
-                .then(r => {
-                    r.map((i) => currentInvestigators.push(i))
-
-                    setSearchData([]);
-                    data?.map((item) => {
-                        if(!currentInvestigators.some(e => e.name === item.name))
-                            setSearchData((current) => [...current, {
-                                value: String(item.dbid), label: item.name}] as ComboboxData)
-                        })
-                }
-            )
+        if(status === 'success' && currentInvestigatorsStatus === 'success') {
+            setSearchData([]);
+            data?.map((item) => {
+                if(!currentInvestigatorsData.some(e => e.name === item.name))
+                    setSearchData((current) => [...current, {
+                        value: String(item.dbid), label: item.name}] as ComboboxData)
+            })
         }
-    },[status,data]);
+    },[status,data, currentInvestigatorsStatus, currentInvestigatorsData]);
 
     if (error) {
         return (
             <PanelFrame>
                 <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+            </PanelFrame>
+        );
+    }
+
+    if(currentInvestigatorsError) {
+        return (
+            <PanelFrame>
+                <pre>{JSON.stringify(currentInvestigatorsError, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
