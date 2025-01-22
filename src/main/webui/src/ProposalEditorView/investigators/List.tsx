@@ -152,7 +152,7 @@ function InvestigatorsHeader(): ReactElement {
 function InvestigatorsRow(props: PersonProps): ReactElement {
     const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
-    const { fetcherOptions } = useProposalToolContext();  // HACK #1
+    const { fetcherOptions } = useProposalToolContext();  // PATCH fetch
     const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
         {pathParams:
                 {
@@ -183,7 +183,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         let investigatorIDs = Array<number>();
         setSubmitting(true);
         fetchInvestigatorResourceGetInvestigators({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {
 
                     proposalCode: Number(selectedProposalCode),
@@ -250,7 +250,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     function handleRemove() {
         setSubmitting(true);
         fetchInvestigatorResourceRemoveInvestigator(
-                {...fetcherOptions, // HACK #1
+                {...fetcherOptions, // PATCH fetch
                 pathParams:
                 {
                     investigatorId: props.dbid,
@@ -282,7 +282,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         setSubmitting(true);
         console.log(investigatorTypeSetting);
         fetchInvestigatorResourceChangeInvestigatorKind({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {
                     investigatorId: props.dbid,
                     proposalCode: Number(selectedProposalCode),

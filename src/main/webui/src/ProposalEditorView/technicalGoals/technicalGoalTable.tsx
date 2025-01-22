@@ -94,7 +94,7 @@ function TechnicalGoalRow(
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
 
     const {data: goal, error: goalError, isLoading: goalLoading} =
@@ -142,7 +142,7 @@ function TechnicalGoalRow(
      */
     const handleDelete = (): void => {
         fetchTechnicalGoalResourceRemoveTechnicalGoal( {
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {proposalCode: Number(selectedProposalCode),
                          technicalGoalId: technicalGoalRowProps.id}
         })
@@ -195,7 +195,7 @@ function TechnicalGoalRow(
 
         // save the new clonedGoal to the database.
         fetchTechnicalGoalResourceAddTechnicalGoal( {
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {proposalCode: Number(selectedProposalCode)},
             body: clonedGoal
         })

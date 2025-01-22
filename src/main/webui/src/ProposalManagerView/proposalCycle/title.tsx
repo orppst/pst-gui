@@ -34,7 +34,7 @@ export default function CycleTitlePanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [cycleTitle, setCycleTitle] = useState("")
-    const {fetcherOptions} = useProposalToolContext(); // HACK #1
+    const {fetcherOptions} = useProposalToolContext(); // PATCH fetch
     const { data, error, isLoading, status } =
         useProposalCyclesResourceGetProposalCycleTitle(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
@@ -52,7 +52,7 @@ export default function CycleTitlePanel() : ReactElement {
                 pathParams: {cycleCode: Number(selectedCycleCode)},
                 body: cycleTitle,
                 // @ts-ignore
-                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // HACK #1
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // PATCH fetch
             }
             return fetchProposalCyclesResourceReplaceCycleTitle(newTitle);
         },

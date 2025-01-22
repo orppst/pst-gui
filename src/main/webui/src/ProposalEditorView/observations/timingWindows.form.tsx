@@ -40,7 +40,7 @@ export default function TimingWindowsForm(
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     // constant used for populating new timing window guis.
     const EMPTY_TIMING_WINDOW : TimingWindowGui = {
@@ -79,7 +79,7 @@ export default function TimingWindowsForm(
     const handleDelete = (timingWindowId: number) => {
         //existing timing window - remove it from the database
         fetchObservationResourceRemoveConstraint({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 observationId: form.getValues().observationId!,

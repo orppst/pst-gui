@@ -43,7 +43,7 @@ function AddInvestigatorPanel(): ReactElement {
                 value === 0 || value === null ? 'Please select an investigator' : null)
         }
     });
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
     const typeData = [{value: "COI", label: "CO-I"}, {value: "PI", label: "PI"}];
     const [searchData, setSearchData] = useState<ComboboxData>([]);
     const navigate = useNavigate();
@@ -64,7 +64,7 @@ function AddInvestigatorPanel(): ReactElement {
 
             //Get current investigators from search data
             fetchInvestigatorResourceGetInvestigators(
-                {...fetcherOptions, pathParams: {proposalCode: Number(selectedProposalCode)}}) // HACK #1
+                {...fetcherOptions, pathParams: {proposalCode: Number(selectedProposalCode)}}) // PATCH fetch
                 .then(r => {
                     r.map((i) => currentInvestigators.push(i))
 
@@ -90,9 +90,9 @@ function AddInvestigatorPanel(): ReactElement {
     const handleAdd = form.onSubmit((val) => {
         //Get full investigator from API and add back to proposal
         fetchPersonResourceGetPerson(
-            {...fetcherOptions, pathParams:{id: form.values.selectedInvestigator}}) // HACK #1
+            {...fetcherOptions, pathParams:{id: form.values.selectedInvestigator}}) // PATCH fetch
             .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
-                {...fetcherOptions, pathParams:{proposalCode: Number(selectedProposalCode)}, // HACK #1
+                {...fetcherOptions, pathParams:{proposalCode: Number(selectedProposalCode)}, // PATCH fetch
                     body:{
                         type: val.type,
                         forPhD: val.forPhD,

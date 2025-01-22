@@ -48,7 +48,7 @@ function TargetTableHeader(props: TargetTableProps): ReactElement {
 function TargetTableRow(props: TargetProps): ReactElement {
     const queryClient = useQueryClient();
     const [submitting, setSubmitting] = useState(false);
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     const {data, error, isLoading}
         = useProposalResourceGetTarget(
@@ -77,7 +77,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
      */
     function handleRemove(): void {
         setSubmitting(true);
-        fetchProposalResourceRemoveTarget({...fetcherOptions, pathParams: // HACK #1
+        fetchProposalResourceRemoveTarget({...fetcherOptions, pathParams: // PATCH fetch
                 {
                     proposalCode: props.proposalCode,
                     targetId: props.dbid!

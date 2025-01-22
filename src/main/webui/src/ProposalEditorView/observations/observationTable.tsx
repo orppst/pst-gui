@@ -38,7 +38,7 @@ export type ObservationId = {id: number}
 export default function ObservationRow(observationId: ObservationId): ReactElement {
 
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     // the colour gray used by the tools.
     const theme = useMantineTheme();
@@ -81,7 +81,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
      */
     const handleDelete = () => {
         fetchObservationResourceRemoveObservation({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 observationId: observationId.id}
@@ -121,7 +121,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     const handleClone = () => {
         //create a new observation with the details of the current observation
         fetchObservationResourceAddNewObservation({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {proposalCode: Number(selectedProposalCode)},
             body: observation?.["@type"] === 'proposal:TargetObservation' ?
                 observation! as TargetObservation :

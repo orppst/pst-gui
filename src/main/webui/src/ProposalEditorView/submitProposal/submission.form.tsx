@@ -29,7 +29,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
     const queryClient = useQueryClient();
 
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     const navigate = useNavigate();
 
@@ -93,7 +93,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
     useEffect(() => {
         fetchProposalCyclesResourceGetProposalCycles({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             queryParams: {includeClosed: false}
         })
             .then((data: ObjectIdentifier[])=> {
@@ -120,7 +120,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
         if (form.getValues().selectedCycle > 0) {
             fetchProposalCyclesResourceGetProposalCycleDates(
-                {...fetcherOptions, pathParams: {cycleCode: form.getValues().selectedCycle}}) // HACK #1
+                {...fetcherOptions, pathParams: {cycleCode: form.getValues().selectedCycle}}) // PATCH fetch
                 .then((dates) => {
                     setSubmissionDeadline(dates.submissionDeadline!);
                 })
@@ -190,7 +190,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
                     config: observationConfigMap
                 },
                 // @ts-ignore
-                headers: {...fetcherOptions.headers, "Content-Type": "application/json"} // HACK #1
+                headers: {...fetcherOptions.headers, "Content-Type": "application/json"} // PATCH fetch
             };
 
             fetchSubmittedProposalResourceSubmitProposal(submissionVariables)

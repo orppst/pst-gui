@@ -34,7 +34,7 @@ const kindData = [
 
 export default
 function TitleSummaryKind() : ReactElement {
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     const {selectedProposalCode} = useParams();
 
@@ -69,7 +69,7 @@ function TitleSummaryKind() : ReactElement {
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: form.getValues().title,
                 // @ts-ignore
-                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // HACK #1
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // PATCH fetch
             }
             return fetchProposalResourceReplaceTitle(newTitle);
         },

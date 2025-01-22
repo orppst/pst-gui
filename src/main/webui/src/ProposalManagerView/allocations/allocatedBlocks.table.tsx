@@ -22,7 +22,7 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
 {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext(); // HACK #1
+    const {fetcherOptions} = useProposalToolContext(); // PATCH fetch
 
     type DeleteProps = {
         proposalTitle: string,
@@ -50,7 +50,7 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
 
     const handleDelete = (props: DeleteProps) => {
         fetchAllocatedBlockResourceRemoveAllocatedBlock({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 allocatedId: props.allocatedId,

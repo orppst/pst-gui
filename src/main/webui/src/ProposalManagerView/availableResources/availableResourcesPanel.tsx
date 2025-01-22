@@ -33,7 +33,7 @@ export type ResourceTypeProps = {
 export default function CycleAvailableResourcesPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext(); // HACK #1
+    const {fetcherOptions} = useProposalToolContext(); // PATCH fetch
 
     const availableResources =
         useAvailableResourcesResourceGetCycleAvailableResources({
@@ -55,7 +55,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
 
     const handleDelete = (id: number) => {
         fetchAvailableResourcesResourceRemoveCycleResource({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams:{
                 cycleCode: Number(selectedCycleCode),
                 resourceId: id

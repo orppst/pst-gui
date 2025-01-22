@@ -23,7 +23,7 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
         organizationId: number | undefined
     }
 
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
     const [organizationsData, setOrganizationsData]
         = useState<{value: string, label: string}[]>([]);
 
@@ -33,7 +33,7 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
 
     useEffect( () => {
         //grab the list of known organizations
-        fetchOrganizationResourceGetOrganizations({...fetcherOptions}) // HACK #1
+        fetchOrganizationResourceGetOrganizations({...fetcherOptions}) // PATCH fetch
             .then((data: ObjectIdentifier[]) => {
                 setOrganizationsData(
                     data?.map((org) => (
@@ -93,9 +93,9 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
             }
         }
        //create appropriate entry in the subjectmap.
-         fetchPersonResourceCreatePerson({...fetcherOptions, body: newUser}) // HACK #1
+         fetchPersonResourceCreatePerson({...fetcherOptions, body: newUser}) // PATCH fetch
              .then(p => {
-                 fetchSubjectMapResourceCreateFromUser({...fetcherOptions, body: p, queryParams: {uuid:id}}) // HACK #1
+                 fetchSubjectMapResourceCreateFromUser({...fetcherOptions, body: p, queryParams: {uuid:id}}) // PATCH fetch
                      .then(
                          sm => {
                              console.log("user successfully registered", sm)

@@ -37,7 +37,7 @@ export default function SpectralWindowsSection(
     //stuff to deal with spectral window deletions
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     // determine color.
     const {colorScheme} = useMantineColorScheme();
@@ -153,7 +153,7 @@ export default function SpectralWindowsSection(
     const handleDelete = (spectralWindowId: number): void => {
         //existing spectral window - remove it from the database
         fetchTechnicalGoalResourceRemoveSpectrum({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 technicalGoalId: form.getValues().technicalGoalId!,

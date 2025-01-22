@@ -17,7 +17,7 @@ export type ResourceTypeFormValues = {
 export default function ResourceTypeModal(props: ResourceTypeProps) : ReactElement {
 
     const [opened, {close, open}] = useDisclosure();
-    const {fetcherOptions} = useProposalToolContext(); // HACK #1
+    const {fetcherOptions} = useProposalToolContext(); // PATCH fetch
 
     const [resourceType, setResourceType]
         = useState<ResourceType>({name: "", unit: ""});
@@ -25,7 +25,7 @@ export default function ResourceTypeModal(props: ResourceTypeProps) : ReactEleme
     useEffect(() => {
         if (props.resourceTypeId)
             fetchResourceTypeResourceGetResourceType({
-                ...fetcherOptions, // HACK #1
+                ...fetcherOptions, // PATCH fetch
                 pathParams: {
                     resourceTypeId: props.resourceTypeId
                 }

@@ -48,7 +48,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
 
     const queryClient = useQueryClient();
 
-    const {fetcherOptions} = useProposalToolContext(); // HACK #1
+    const {fetcherOptions} = useProposalToolContext(); // PATCH fetch
 
     const {selectedCycleCode} = useParams();
 
@@ -63,7 +63,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
 
     useEffect(() => {
         fetchAvailableResourcesResourceGetCycleResourceTypes({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {cycleCode:Number(selectedCycleCode)}
         })
             .then((data: ObjectIdentifier[]) => {
@@ -77,7 +77,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
                 getErrorMessage(error)))
 
         fetchObservingModeResourceGetCycleObservingModes({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {cycleId: Number(selectedCycleCode)}
         })
             .then((data: ObjectIdentifier[]) => {
@@ -92,7 +92,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
 
 
         fetchProposalCyclesResourceGetCycleAllocationGrades({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {cycleCode: Number(selectedCycleCode)}
         })
             .then((data: ObjectIdentifier[]) => {
@@ -169,7 +169,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
                 },
                 body: values.allocatedBlock.amount,
                 // @ts-ignore
-                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // HACK #1
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // PATCH fetch
             })
                 .then(() => queryClient.invalidateQueries())
                 .then(() => props.closeModal!())
@@ -196,7 +196,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
             }
 
             fetchAllocatedBlockResourceAddAllocatedBlock({
-                ...fetcherOptions, // HACK #1
+                ...fetcherOptions, // PATCH fetch
                 pathParams: {
                     cycleCode: Number(selectedCycleCode),
                     allocatedId: props.allocatedProposalId

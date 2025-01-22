@@ -34,7 +34,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
 
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     /*
         Developer note: If more Field types are added to the underlying data model then this array
@@ -125,7 +125,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                 },
                 body: values.fieldName,
                 //@ts-ignore
-                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // HACK #1
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // PATCH fetch
             })
                 .then(() => queryClient.invalidateQueries())
                 .then(() => notifySuccess("Success", "Field name updated"))
@@ -172,7 +172,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
             }
 
             fetchProposalResourceAddNewField({
-                ...fetcherOptions, // HACK #1
+                ...fetcherOptions, // PATCH fetch
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: fieldToPass.theField
             })

@@ -17,7 +17,7 @@ export default function CycleObservatoryPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const [observatorySearchData, setSearchData] = useState([]);
     const [formReady, setFormReady] = useState(false);
-    const {fetcherOptions} = useProposalToolContext(); // HACK #1
+    const {fetcherOptions} = useProposalToolContext(); // PATCH fetch
     const form = useForm({
         initialValues: {selectedObservatory: "0"},
         validate: {
@@ -43,7 +43,7 @@ export default function CycleObservatoryPanel() : ReactElement {
             ));
 
             fetchProposalCyclesResourceGetProposalCycleObservatory(
-                {...fetcherOptions, pathParams: {cycleCode: Number(selectedCycleCode)}}) // HACK #1
+                {...fetcherOptions, pathParams: {cycleCode: Number(selectedCycleCode)}}) // PATCH fetch
                 .then((observatory) => {
                     //FIXME: None of these three ways to set the default value seem to work
                     form.values.selectedObservatory = String(observatory?._id);
@@ -67,7 +67,7 @@ export default function CycleObservatoryPanel() : ReactElement {
                     pathParams: {cycleCode: Number(selectedCycleCode)},
                     body: Number(val.selectedObservatory),
                     // @ts-ignore
-                    headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // HACK #1
+                    headers: {...fetcherOptions.headers, "Content-Type": "text/plain"} // PATCH fetch
                 };
 
         fetchProposalCyclesResourceReplaceCycleObservatory(newObservatory)

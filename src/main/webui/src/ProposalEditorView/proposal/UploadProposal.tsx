@@ -20,7 +20,7 @@ import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
  */
 const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => {
     const formData = new FormData();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
     console.log("Upload supporting document " + filename);
     zip.file(filename)!.async('blob')
         .then((document) => {
@@ -38,7 +38,7 @@ const UploadADocument = (proposalCode: number, zip: JSZip, filename: string) => 
                         body: formData,
                         pathParams: {proposalCode: proposalCode},
                         // @ts-ignore
-                        headers: {...fetcherOptions.headers, "Content-Type": "multipart/form-data"} // HACK #1
+                        headers: {...fetcherOptions.headers, "Content-Type": "multipart/form-data"} // PATCH fetch
                     },
                 )
                     .catch((error: { stack: { message: any; }; }) => {
@@ -60,9 +60,9 @@ const SendToImportAPI = (observingProposal: ObservingProposal, zip: JSZip)=> {
         = new RegExp("^Thumbs.db$|^__MACOS|^.DS_Store$|^"
         + OVERVIEW_PDF_FILENAME + "$");
 
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
-    fetchProposalResourceImportProposal({...fetcherOptions, body: observingProposal}) // HACK #1
+    fetchProposalResourceImportProposal({...fetcherOptions, body: observingProposal}) // PATCH fetch
         .then((uploadedProposal) => {
             if (uploadedProposal._id === undefined) {
                 notifyError("Upload failed", "An unidentified response from the API");

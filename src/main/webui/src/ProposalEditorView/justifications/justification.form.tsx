@@ -64,7 +64,7 @@ export default
 function JustificationForm(props: JustificationProps) : ReactElement {
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     const [justification, setJustification] = useState<Justification>(props.justification)
 
@@ -80,7 +80,7 @@ function JustificationForm(props: JustificationProps) : ReactElement {
 
     const handleSubmit = form.onSubmit((values) => {
         fetchJustificationsResourceUpdateJustification({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which
@@ -102,7 +102,7 @@ function JustificationForm(props: JustificationProps) : ReactElement {
         setJustification(update);
 
         fetchJustificationsResourceUpdateJustification({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which

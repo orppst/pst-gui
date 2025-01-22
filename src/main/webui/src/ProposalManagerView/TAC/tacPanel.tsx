@@ -104,7 +104,7 @@ function TACMemberRow(props: MemberProps): ReactElement {
                 },
         });
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext(); // HACK #1
+    const {fetcherOptions} = useProposalToolContext(); // PATCH fetch
 
     const handleError = (error: { stack: { message: any; }; }) => {
         console.error(error);
@@ -118,7 +118,7 @@ function TACMemberRow(props: MemberProps): ReactElement {
     function handleRemove() {
         setSubmitting(true);
         fetchTACResourceRemoveCommitteeMember({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams:
                 {
                     memberId: props.dbid,

@@ -28,13 +28,13 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         observatoryId: number | undefined
     }
     const queryClient = useQueryClient();
-    const {fetcherOptions} = useProposalToolContext(); // HACK #1
+    const {fetcherOptions} = useProposalToolContext(); // PATCH fetch
 
     const [observatories, setObservatories]
         = useState<{ value: string, label: string }[]>([]);
 
     useEffect(() => {
-        fetchObservatoryResourceGetObservatories({...fetcherOptions}) // HACK #1
+        fetchObservatoryResourceGetObservatories({...fetcherOptions}) // PATCH fetch
             .then((data: ObjectIdentifier[]) => {
                 setObservatories(
                     data?.map((obs) => (
@@ -99,7 +99,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
             observationSessionEnd: values.sessionEnd!.getTime()
         }
 
-        fetchProposalCyclesResourceCreateProposalCycle({...fetcherOptions, body: newCycle}) // HACK #1
+        fetchProposalCyclesResourceCreateProposalCycle({...fetcherOptions, body: newCycle}) // PATCH fetch
             .then(()=> queryClient.invalidateQueries())
             .then(() => notifySuccess("Success", "Proposal Cycle " + newCycle.title + " created"))
             .catch((error) => {

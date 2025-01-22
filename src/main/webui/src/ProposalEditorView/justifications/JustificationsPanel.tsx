@@ -25,7 +25,7 @@ export default function JustificationsPanel() : ReactElement {
 
     const [isChanged, setIsChanged] = useState<boolean>(false);
 
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
 
     const [justifications, setJustifications] = useState<JustificationKinds>({
         scientific: {text: "", format: undefined},
@@ -34,12 +34,12 @@ export default function JustificationsPanel() : ReactElement {
 
     useEffect(() => {
         fetchJustificationsResourceGetJustification({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams: {proposalCode: Number(selectedProposalCode), which: "scientific"}
         })
             .then((scientific) => {
                 fetchJustificationsResourceGetJustification({
-                    ...fetcherOptions, // HACK #1
+                    ...fetcherOptions, // PATCH fetch
                     pathParams: {proposalCode: Number(selectedProposalCode), which: "technical"}
                 })
                     .then ((technical) => {

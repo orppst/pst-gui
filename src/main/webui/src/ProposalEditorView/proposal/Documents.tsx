@@ -31,7 +31,7 @@ type DocumentProps = {
 
 const DocumentsPanel = () => {
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
     const {selectedProposalCode} = useParams();
     const {data, error, isLoading}
         = useSupportingDocumentResourceGetSupportingDocuments(
@@ -69,7 +69,7 @@ const DocumentsPanel = () => {
                         body: formData,
                         pathParams: {proposalCode: Number(selectedProposalCode)},
                         // @ts-ignore
-                        headers: {...fetcherOptions.headers, "Content-Type": "multipart/form-data"} // HACK #1
+                        headers: {...fetcherOptions.headers, "Content-Type": "multipart/form-data"} // PATCH fetch
                     }
                 )
                     .then(() => {
@@ -139,7 +139,7 @@ const DocumentsPanel = () => {
 
 function RenderDocumentListItem(props: DocumentProps) {
     const queryClient = useQueryClient();
-    const { fetcherOptions } = useProposalToolContext(); // HACK #1
+    const { fetcherOptions } = useProposalToolContext(); // PATCH fetch
     const { selectedProposalCode} = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [downloadLink, setDownloadLink] = useState("");
@@ -148,7 +148,7 @@ function RenderDocumentListItem(props: DocumentProps) {
     function handleRemove() {
         setSubmitting(true);
         fetchSupportingDocumentResourceRemoveSupportingDocument({
-            ...fetcherOptions, // HACK #1
+            ...fetcherOptions, // PATCH fetch
             pathParams:
                 {
                     id: props.dbid,
