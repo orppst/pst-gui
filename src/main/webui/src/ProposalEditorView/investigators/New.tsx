@@ -1,7 +1,7 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchInvestigatorResourceAddPersonAsInvestigator, fetchInvestigatorResourceGetInvestigators,
-    fetchPersonResourceGetPerson,
+    fetchInvestigatorResourceGetInvestigators,
+    fetchPersonResourceGetPerson, useInvestigatorResourceAddPersonAsInvestigator,
     usePersonResourceGetPeople,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
@@ -85,25 +85,26 @@ function AddInvestigatorPanel(): ReactElement {
         );
     }
 
+    const addInvestigatorMutation = useInvestigatorResourceAddPersonAsInvestigator({
+        onSuccess: () => {
+            queryClient.invalidateQueries();
+            navigate("../", {relative:"path"});
+        },
+        onError: (error) => notifyError("Add investigator error", getErrorMessage(error))
+
+    });
+
     const handleAdd = form.onSubmit((val) => {
         //Get full investigator from API and add back to proposal
         fetchPersonResourceGetPerson(
             {pathParams:{id: form.values.selectedInvestigator}})
-            .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
+            .then((data) => addInvestigatorMutation.mutate(
                 {pathParams:{proposalCode: Number(selectedProposalCode)},
                     body:{
                         type: val.type,
                         forPhD: val.forPhD,
                         person: data,
                     }})
-                .then(()=> {
-                    return queryClient.invalidateQueries();
-                })
-                .then(()=>navigate(  "../", {relative:"path"})) // see https://stackoverflow.com/questions/72537159/react-router-v6-and-relative-links-from-page-within-route
-                .catch((error)=>{
-                    console.log(error);
-                    notifyError("Add investigator error", getErrorMessage(error));
-                })
             )
             .catch((error)=> {
                 console.log(error);
