@@ -36,6 +36,7 @@ export interface BasicButtonInterfaceProps {
  * @param {string} label the text shown next to the buttons icon - defaults to 'save'
  * @param {ButtonVariant} varient one of 'default', 'light', 'subtle', 'filled',
  * 'outline', 'white', 'transparent' - defaults to 'subtle'
+ * @param {string} notValidToolTiplabel optional tool tip when button is disabled due to invalid form values
  */
 export interface FormSubmitButtonInterfaceProps {
     form: UseFormReturnType<any>
@@ -43,6 +44,7 @@ export interface FormSubmitButtonInterfaceProps {
     toolTipLabelPosition?: FloatingPosition
     label?: string
     variant?: ButtonVariant
+    notValidToolTipLabel?: string
 }
 
 /**
