@@ -1,11 +1,10 @@
-import { ReactElement, useContext, useState } from 'react';
+import {ReactElement, useContext, useEffect, useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {
-    fetchInvestigatorResourceRemoveInvestigator,
-    fetchInvestigatorResourceChangeInvestigatorKind,
-    fetchInvestigatorResourceGetInvestigators,
     useInvestigatorResourceGetInvestigator,
     useInvestigatorResourceGetInvestigators,
+    useInvestigatorResourceRemoveInvestigator,
+    useInvestigatorResourceChangeInvestigatorKind,
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {Box, Grid, Stack, Table, Text} from "@mantine/core";
@@ -44,6 +43,9 @@ type TypedInvestigator = {
     _id: number
 }
 
+// count of the PIs.
+let PiProfile = 0;
+
 /**
  * generates the entire panel for the investigators.
  *
@@ -52,12 +54,13 @@ type TypedInvestigator = {
  */
 function InvestigatorsPanel(): ReactElement {
     const { selectedProposalCode } = useParams();
-    const { data , error, isLoading } =
+    const { data , status, error, isLoading } =
         useInvestigatorResourceGetInvestigators(
             {pathParams: { proposalCode: Number(selectedProposalCode)},},
             {enabled: true});
     const navigate = useNavigate();
     const { user } = useContext(ProposalContext);
+    const queryClient = useQueryClient();
      
 
     if (error) {
@@ -67,6 +70,57 @@ function InvestigatorsPanel(): ReactElement {
             </Box>
         );
     }
+
+    /**
+     * maintain a count of the PIs
+     */
+    useEffect(() => {
+        let investigatorIDs = Array<number>();
+        if(status ==='success') {
+            PiProfile = 0;
+            queryClient.invalidateQueries({
+                predicate: (query) => {
+
+                    if(query.queryKey.length === 5)
+                    {
+                        const investigatorList = (query.state.data as Array<InvestigatorProps>);
+                        if(typeof(investigatorList) == "object")
+                        {
+                            if(investigatorIDs.length < investigatorList.length){
+                                investigatorList.forEach(inv => {
+                                    investigatorIDs.push(inv.dbid as number);
+                                });
+                            }
+                        }
+                    }
+
+                    if(query.queryKey.length === 6)
+                    {
+                        //find the id of this object -
+                        //see if it is in our list
+                        //if it is then we read the type
+                        //if the type is PI we add it to the pi count
+                        //then we remove the index from investigatorID so we don't do more than once per item
+                        const investigator = (query.state.data as TypedInvestigator);
+                        if(investigator !== undefined) {
+                            const target = investigatorIDs.indexOf(investigator._id ?? 0);
+                            if (target >= 0) {
+                                if (investigator.type == "PI") {
+                                    PiProfile += 1;
+
+                                }
+                                investigatorIDs[target] = -1;
+                            }
+                            //console.log("PI count: " + PiProfile);
+                        }
+                    }
+                    return true;
+                }
+            }).then()
+        }
+
+    }, [data]);
+
 
     /**
      * routes the user to the new investigator page.
@@ -145,7 +199,7 @@ function InvestigatorsHeader(): ReactElement {
  * generates a row for a given investigator person.
  * @param {PersonProps} props the data associated with a given investigator
  * person.
- * @return {ReactElement} the dynamic html for a investigator table row.
+ * @return {ReactElement} the dynamic html for an investigator table row.
  * @constructor
  */
 function InvestigatorsRow(props: PersonProps): ReactElement {
@@ -161,136 +215,101 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     const queryClient = useQueryClient();
     
 
-    //Errors come in as name: "unknown", message: "Network Error" with an object
-    // called "stack" that contains the exception and message set in the API
-    // when the exception is thrown
-    const handleError = (error: { stack: { message: any; }; }) => {
-        console.error(error);
-        notifyError("Error deleting", error.stack.message);
-        setSubmitting(false);
-    }
-
-        /**
+     /**
      * count PIs 
      * @return number
      * 
      */
-    function CheckPiCount(delegateFucntion: Function) {
+    function CheckPiCount(delegateFunction: Function) {
 
-        let PiProfile = 0;
-        let investigatorIDs = Array<number>();
+
         setSubmitting(true);
-        fetchInvestigatorResourceGetInvestigators({
-            pathParams: {
-                    proposalCode: Number(selectedProposalCode),
-                }
-            })
-            .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries({
-                predicate: (query) => {
-                    
-                    if(query.queryKey.length === 5)
-                    {   
-                        const investigatorList = (query.state.data as Array<InvestigatorProps>);
-                        if(typeof(investigatorList) == "object")
-                        {
-                            if(investigatorIDs.length < investigatorList.length){
-                                investigatorList.forEach(inv => { investigatorIDs.push(inv.dbid as number) });
-                            }
-                        }
-                    }
 
-                    if(query.queryKey.length === 6)
-                    {                      
-                        //find the id of this object - 
-                        //see if its in our list
-                        //if it is then we read the type
-                        //if the type is PI we add it to the picount
-                        //then we remove the index from investigatorID so we don't do more than once per item
-                        const investigator = (query.state.data as TypedInvestigator)
-                        const target = investigatorIDs.indexOf(investigator._id);
-                        if(target >= 0)
-                        {
-                            console.log(investigator.type)
-                            if(investigator.type == "PI")
-                            {
-                                PiProfile += 1;
-                                
-                            }
-                            console.log(PiProfile);
-                            investigatorIDs[target] = -1;
-                        }
-                    }
-                    return true;
-                }
-            }))
-            .finally(() => {
                 //if there are too few PI's prevent the action
                 if(PiProfile < 2)
                 {
                     lastPiContext();
+                    setSubmitting(false);
                 }
                 //otherwise go for it
                 else{
-                    delegateFucntion();
+                    delegateFunction();
                 }
                 
 
-            })
-            .catch(handleError);
     }
+
+
+    const removeInvestigatorMutation = useInvestigatorResourceRemoveInvestigator({
+        onSuccess: () => {
+            setSubmitting(false);
+            return queryClient.invalidateQueries({
+                predicate: (query) => {
+                // only invalidate the query for the entire list.
+                // not the separate bits.
+                    return query.queryKey.length === 5 &&
+                    query.queryKey[4] === 'investigators';
+                }
+            });
+
+        },
+        onError: (error)=> {
+            notifyError("Error deleting", error!.payload);
+            setSubmitting(false);
+        }
+    })
 
     /**
      * handles the removal of an investigator.
      */
     function handleRemove() {
         setSubmitting(true);
-        fetchInvestigatorResourceRemoveInvestigator({pathParams:
+        removeInvestigatorMutation.mutate({pathParams:
                 {
                     investigatorId: props.dbid,
                     proposalCode: Number(selectedProposalCode),
                 }})
-            .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries({
-                predicate: (query) => {
-                    // only invalidate the query for the entire list.
-                    // not the separate bits.
-                    return query.queryKey.length === 5 &&
-                        query.queryKey[4] === 'investigators';
-                }
-            }))
-            .catch(handleError);
     }
 
+
+    const changeInvestigatorKindMutation = useInvestigatorResourceChangeInvestigatorKind({
+        onSuccess: () => {
+            setSubmitting(false);
+            return queryClient.invalidateQueries({
+                    predicate: (query) => {
+                        // using 'length === 6' to ensure we get the set of investigators
+                        return query.queryKey.length === 6 &&
+                            query.queryKey[4] === 'investigators';
+                    }});
+        },
+        onError: (error)=> {
+            notifyError("Error changing kind", error!.payload);
+            setSubmitting(false);
+        }
+    })
 
     /**
      * handles the exchange of an investigator from PI to COI.
      */
     function SwitchInvestigatorKind() {
-        var investigatorTypeSetting:InvestigatorKind = "COI";
+        let investigatorTypeSetting:InvestigatorKind = "COI";
         if(data?.type == 'COI')
         {
             investigatorTypeSetting = "PI";
+            PiProfile += 1;
 
+        } else {
+            PiProfile -= 1;
         }
         setSubmitting(true);
-        console.log(investigatorTypeSetting);
-        fetchInvestigatorResourceChangeInvestigatorKind({
+        //console.log(investigatorTypeSetting);
+        changeInvestigatorKindMutation.mutate({
             pathParams: {
                     investigatorId: props.dbid,
                     proposalCode: Number(selectedProposalCode),
                 },
             body: investigatorTypeSetting
-            })
-            .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries({
-                predicate: (query) => {
-                    // using 'length === 6' to ensure we get the set of investigators
-                    return query.queryKey.length === 6 &&
-                        query.queryKey[4] === 'investigators';
-                }
-            }))
-            .catch(handleError);
+            });
     }
 
     /**
@@ -324,7 +343,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
             //if the target is a coi, allow removal
             return openRemoveModal(); 
         }
-        //if the target is a PI, dont delete, but offer to swap to a COI
+        //if the target is a PI, don't delete, but offer to swap to a COI
         else {
             return openSwitchModal();  
         }
@@ -350,7 +369,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
             centered: true,
             children: (
                 <Text size="sm">
-                    Removing yourself from the proposal will prevent you from accessing it in the future.<br/><br/>Be sure this is your inteded action before proceeding.
+                    Removing yourself from the proposal will prevent you from accessing it in the future.<br/><br/>Be sure this is your intended action before proceeding.
                 </Text>
             ),
             labels: { confirm: "Remove myself from proposal", cancel: "Cancel" },
@@ -395,7 +414,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     } else if (submitting) {
         return (
             <Table.Tr><Table.Td colSpan={5}>
-                Removing...
+                Updating...
             </Table.Td></Table.Tr>
         )
     }

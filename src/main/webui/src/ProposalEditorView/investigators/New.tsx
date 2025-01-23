@@ -1,12 +1,12 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchInvestigatorResourceAddPersonAsInvestigator, fetchInvestigatorResourceGetInvestigators,
-    fetchPersonResourceGetPerson,
-    usePersonResourceGetPeople,
+    useInvestigatorResourceAddPersonAsInvestigator,
+    useInvestigatorResourceGetInvestigators,
+    usePersonResourceGetPeople, usePersonResourceGetPerson,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {InvestigatorKind, ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
+import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
 import {Checkbox, ComboboxData, Grid, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
@@ -56,26 +56,22 @@ function AddInvestigatorPanel(): ReactElement {
         }
     );
 
+    const { data: currentInvestigatorsData, error: currentInvestigatorsError, status: currentInvestigatorsStatus }
+        = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: Number(selectedProposalCode)}});
+
+    const {data: selectedPersonData } = usePersonResourceGetPerson(
+        {pathParams:{id: form.values.selectedInvestigator}})
+
     useEffect(() => {
-        if(status === 'success') {
-            let currentInvestigators: ObjectIdentifier[] = [];
-
-            //Get current investigators from search data
-            fetchInvestigatorResourceGetInvestigators(
-                {pathParams: {proposalCode: Number(selectedProposalCode)}})
-                .then(r => {
-                    r.map((i) => currentInvestigators.push(i))
-
-                    setSearchData([]);
-                    data?.map((item) => {
-                        if(!currentInvestigators.some(e => e.name === item.name))
-                            setSearchData((current) => [...current, {
-                                value: String(item.dbid), label: item.name}] as ComboboxData)
-                        })
-                }
-            )
+        if(status === 'success' && currentInvestigatorsStatus === 'success') {
+            setSearchData([]);
+            data?.map((item) => {
+                if(!currentInvestigatorsData.some(e => e.name === item.name))
+                    setSearchData((current) => [...current, {
+                        value: String(item.dbid), label: item.name}] as ComboboxData)
+            })
         }
-    },[status,data]);
+    },[status,data, currentInvestigatorsStatus, currentInvestigatorsData]);
 
     if (error) {
         return (
@@ -85,30 +81,31 @@ function AddInvestigatorPanel(): ReactElement {
         );
     }
 
+    if(currentInvestigatorsError) {
+        return (
+            <PanelFrame>
+                <pre>{JSON.stringify(currentInvestigatorsError, null, JSON_SPACES)}</pre>
+            </PanelFrame>
+        );
+    }
+
+    const addInvestigatorMutation = useInvestigatorResourceAddPersonAsInvestigator({
+        onSuccess: () => {
+            queryClient.invalidateQueries();
+            navigate("../", {relative:"path"});
+        },
+        onError: (error) => notifyError("Add investigator error", getErrorMessage(error))
+
+    });
+
     const handleAdd = form.onSubmit((val) => {
-        //Get full investigator from API and add back to proposal
-        fetchPersonResourceGetPerson(
-            {pathParams:{id: form.values.selectedInvestigator}})
-            .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
+        addInvestigatorMutation.mutate(
                 {pathParams:{proposalCode: Number(selectedProposalCode)},
                     body:{
                         type: val.type,
                         forPhD: val.forPhD,
-                        person: data,
+                        person: selectedPersonData!,
                     }})
-                .then(()=> {
-                    return queryClient.invalidateQueries();
-                })
-                .then(()=>navigate(  "../", {relative:"path"})) // see https://stackoverflow.com/questions/72537159/react-router-v6-and-relative-links-from-page-within-route
-                .catch((error)=>{
-                    console.log(error);
-                    notifyError("Add investigator error", getErrorMessage(error));
-                })
-            )
-            .catch((error)=> {
-                console.log(error);
-                notifyError("Add investigator error", getErrorMessage(error));
-            })
     });
 
     function handleCancel(event: SyntheticEvent) {
