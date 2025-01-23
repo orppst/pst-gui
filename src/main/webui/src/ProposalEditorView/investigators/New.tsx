@@ -1,6 +1,5 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchPersonResourceGetPerson,
     useInvestigatorResourceAddPersonAsInvestigator,
     useInvestigatorResourceGetInvestigators,
     usePersonResourceGetPeople, usePersonResourceGetPerson,
