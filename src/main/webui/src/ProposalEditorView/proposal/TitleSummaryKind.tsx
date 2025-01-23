@@ -194,10 +194,10 @@ function TitleSummaryKind() : ReactElement {
                 <Stack>
                     <form onSubmit={handleSubmit}>
                         <Grid>
-                            <Grid.Col span={10}>
+                            <Grid.Col span={{base: 7, md: 8, xl: 10}}>
                                 {TitleInput()}
                             </Grid.Col>
-                            <Grid.Col span={2}>
+                            <Grid.Col span={{base: 5, md: 4, xl: 2}}>
                                 <Space h={"45"}/>
                                 <FormSubmitButton
                                     variant={"filled"}
