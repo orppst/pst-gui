@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {JustificationKinds, WhichJustification} from "./JustificationsPanel.tsx";
+import { WhichJustification} from "./JustificationsPanel.tsx";
 import {Justification} from "src/generated/proposalToolSchemas.ts";
 import {Table} from "@mantine/core";
 import JustificationsEditModal from "./edit.modal.tsx";
@@ -7,7 +7,6 @@ import JustificationsEditModal from "./edit.modal.tsx";
 export type JustificationProps = {
     which : WhichJustification,
     justification: Justification,
-    onChange: () => void,
     closeModal?: () => void
 }
 
@@ -17,8 +16,8 @@ function WordCount(text: string): number {
         .length;
 }
 
-export default function JustificationsTable(
-    {justifications, onChange}: {justifications: JustificationKinds, onChange: () => void})
+export default
+function JustificationsTable(justifications: {scientific: Justification, technical: Justification})
     : ReactElement {
 
     const justificationsHeader = () : ReactElement => {
@@ -47,7 +46,6 @@ export default function JustificationsTable(
                         <JustificationsEditModal
                             which={'scientific'}
                             justification={justifications.scientific}
-                            onChange={onChange}
                         />
                     </Table.Td>
                 </Table.Tr>
@@ -59,7 +57,6 @@ export default function JustificationsTable(
                         <JustificationsEditModal
                             which={'technical'}
                             justification={justifications.technical}
-                            onChange={onChange}
                         />
                     </Table.Td>
                 </Table.Tr>
