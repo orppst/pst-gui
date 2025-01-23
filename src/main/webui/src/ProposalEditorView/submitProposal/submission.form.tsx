@@ -2,10 +2,9 @@ import {ReactElement, useEffect, useState} from "react";
 import {Button, Group, ScrollArea, Select, Stepper, Text, Tooltip} from "@mantine/core";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
-    fetchProposalCyclesResourceGetProposalCycleDates,
-    fetchProposalCyclesResourceGetProposalCycles,
-    fetchSubmittedProposalResourceSubmitProposal,
-    SubmittedProposalResourceSubmitProposalVariables, useObservationResourceGetObservations
+    SubmittedProposalResourceSubmitProposalVariables,
+    useObservationResourceGetObservations, useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceGetProposalCycles, useSubmittedProposalResourceSubmitProposal
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -13,7 +12,6 @@ import {useForm, UseFormReturnType} from "@mantine/form";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {
-    ObjectIdentifier,
     ObservationConfigMapping
 } from "../../generated/proposalToolSchemas.ts";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
@@ -45,6 +43,10 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
     const [initialObservationModeTuple, setInitialObservationModeTuple] = useState<ObservationModeTuple[]>([]);
 
+    const {data: getCyclesData, status: getCyclesStatus, error: getCyclesError}
+        = useProposalCyclesResourceGetProposalCycles({
+                queryParams: {includeClosed: false}
+            });
 
     const form : UseFormReturnType<SubmissionFormValues> = useForm({
         initialValues: {
@@ -70,6 +72,22 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
         }
     });
 
+    const {data: cycleDatesData, status: cycleDatesStatus, error: cycleDatesError}
+        = useProposalCyclesResourceGetProposalCycleDates(
+            {pathParams: {cycleCode: form.getValues().selectedCycle}});
+
+    const submitProposalMutation = useSubmittedProposalResourceSubmitProposal({
+        onSuccess: () => {
+            setSubmissionFail("");
+            queryClient.invalidateQueries();
+            nextStep();
+        },
+        onError: (error) => {setSubmissionFail("Submission failed, cause: "
+            + getErrorMessage(error)
+            + "\nThis may be temporary, please try again, if you have tried again please try later")},
+
+        })
+
     useEffect(() => {
         if (observations.data) {
             setInitialObservationModeTuple(
@@ -89,20 +107,16 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
 
     useEffect(() => {
-        fetchProposalCyclesResourceGetProposalCycles({
-            queryParams: {includeClosed: false}
-        })
-            .then((data: ObjectIdentifier[])=> {
+        if(getCyclesError)
+            notifyError("Loading Proposal Cycles failed", getErrorMessage(getCyclesError));
+        else
+            if(getCyclesData !== undefined)
                 setCyclesData(
-                    data?.map((cycle) =>(
+                    getCyclesData?.map((cycle) =>(
                         {value: String(cycle.dbid), label: cycle.name!}
                     ))
                 )
-            })
-            .catch((error) => {
-                notifyError("Loading Proposal Cycles failed", getErrorMessage(error))
-            })
-    }, []);
+    }, [getCyclesStatus]);
 
 
     //irritatingly we have to fetch ProposalCycleDates separately --
@@ -115,17 +129,14 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
         form.setFieldValue('selectedModes', initialObservationModeTuple)
 
         if (form.getValues().selectedCycle > 0) {
-            fetchProposalCyclesResourceGetProposalCycleDates(
-                {pathParams: {cycleCode: form.getValues().selectedCycle}})
-                .then((dates) => {
-                    setSubmissionDeadline(dates.submissionDeadline!);
-                })
-                .catch((error) => {
-                    notifyError("Failed to load proposal cycle dates", getErrorMessage(error))
-                })
+            if(cycleDatesError)
+                notifyError("Failed to load proposal cycle dates", getErrorMessage(cycleDatesError));
+            else
+                if(cycleDatesData !== undefined)
+                    setSubmissionDeadline(cycleDatesData.submissionDeadline!);
         }
         //else do nothing
-    }, [form.getValues().selectedCycle]);
+    }, [cycleDatesStatus]);
 
 
     //for the Stepper
@@ -189,16 +200,8 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
                 headers: {"Content-Type": "application/json"}
             };
 
-            fetchSubmittedProposalResourceSubmitProposal(submissionVariables)
-                .then(() => setSubmissionFail(""))
-                .then(()=> queryClient.invalidateQueries())
-                .then(()=> nextStep())
-                .catch((error) =>
-                    setSubmissionFail("Submission failed, cause: "
-                        + getErrorMessage(error)
-                        + "\nThis may be temporary, please try again, if you have tried again please try later"
-                    )
-                )
+            submitProposalMutation.mutate(submissionVariables);
+
         });
 
     return (
