@@ -44,7 +44,6 @@ export default function JustificationsEditModal(justificationProps : Justificati
         ...justificationProps,
         closeModal: () =>{
             close();
-            justificationProps.onChange(); //trigger re-fetch of justifications, something may have changed
         }}
 
     return (
