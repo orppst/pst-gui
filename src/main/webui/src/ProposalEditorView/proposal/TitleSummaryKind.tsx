@@ -119,7 +119,7 @@ function TitleSummaryKind() : ReactElement {
         return (
             <Stack>
                 <TextInput
-                    label={"Title"}
+                    label={form.isDirty('title') ? "Title (unsaved changes)" : "Title"}
                     name="title"
                     maxLength={MAX_CHARS_FOR_INPUTS}
                     description={"make changes then click update"}
@@ -137,7 +137,7 @@ function TitleSummaryKind() : ReactElement {
                     label={"Summary"}
                     rows={TEXTAREA_MAX_ROWS}
                     maxLength={MAX_CHARS_FOR_INPUTS}
-                    description={"saves as you type"}
+                    description={"saves after a pause in typing"}
                     name="summary"
                     value={summary}
                     onChange={handleSummaryChange}
@@ -150,6 +150,7 @@ function TitleSummaryKind() : ReactElement {
     const KindInput = () : ReactElement => {
         return (
             <Select label={"Kind"}
+                    description={"saves on change"}
                     data={kindData}
                     allowDeselect={false}
                     value={kind}
@@ -204,6 +205,7 @@ function TitleSummaryKind() : ReactElement {
                                     label={"Update Title"}
                                     toolTipLabel={"Save Changes"}
                                     notValidToolTipLabel={"Title must be at least one character"}
+                                    notDirtyToolTipLabel={"Title has not been modified"}
                                 />
                             </Grid.Col>
                         </Grid>

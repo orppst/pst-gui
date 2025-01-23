@@ -28,7 +28,7 @@ function FormSubmitButton(props: FormSubmitButtonInterfaceProps): ReactElement {
                 props.form.isValid()?
                     props.form.isDirty()?
                         props.toolTipLabel ?? label
-                        :"No values have changed"
+                        : props.notDirtyToolTipLabel ?? "No values have changed"
                     : props.notValidToolTipLabel ?? "All fields must be complete and valid"
             }
             openDelay={OPEN_DELAY}
