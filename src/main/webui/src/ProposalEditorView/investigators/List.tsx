@@ -1,7 +1,6 @@
 import {ReactElement, useContext, useEffect, useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {
-    fetchInvestigatorResourceGetInvestigators,
     useInvestigatorResourceGetInvestigator,
     useInvestigatorResourceGetInvestigators,
     useInvestigatorResourceRemoveInvestigator,
@@ -88,7 +87,9 @@ function InvestigatorsPanel(): ReactElement {
                         if(typeof(investigatorList) == "object")
                         {
                             if(investigatorIDs.length < investigatorList.length){
-                                investigatorList.forEach(inv => { investigatorIDs.push(inv.dbid as number) });
+                                investigatorList.forEach(inv => {
+                                    investigatorIDs.push(inv.dbid as number);
+                                });
                             }
                         }
                     }
@@ -101,22 +102,21 @@ function InvestigatorsPanel(): ReactElement {
                         //if the type is PI we add it to the pi count
                         //then we remove the index from investigatorID so we don't do more than once per item
                         const investigator = (query.state.data as TypedInvestigator);
-                        const target =  investigator!==undefined ? investigatorIDs.indexOf(investigator._id ?? 0) : -1;
-                        if(target >= 0)
-                        {
-                            console.log(investigator.type)
-                            if(investigator.type == "PI")
-                            {
-                                PiProfile += 1;
+                        if(investigator !== undefined) {
+                            const target = investigatorIDs.indexOf(investigator._id ?? 0);
+                            if (target >= 0) {
+                                if (investigator.type == "PI") {
+                                    PiProfile += 1;
 
+                                }
+                                investigatorIDs[target] = -1;
                             }
-                            console.log(PiProfile);
-                            investigatorIDs[target] = -1;
+                            //console.log("PI count: " + PiProfile);
                         }
                     }
                     return true;
                 }
-            })
+            }).then()
         }
 
     }, [data]);
@@ -215,16 +215,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     const queryClient = useQueryClient();
     
 
-    //Errors come in as name: "unknown", message: "Network Error" with an object
-    // called "stack" that contains the exception and message set in the API
-    // when the exception is thrown
-    const handleError = (error: { stack: { message: any; }; }) => {
-        console.error(error);
-        notifyError("Error deleting", error.stack.message);
-        setSubmitting(false);
-    }
-
-        /**
+     /**
      * count PIs 
      * @return number
      * 
@@ -232,57 +223,13 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     function CheckPiCount(delegateFunction: Function) {
 
 
-        let investigatorIDs = Array<number>();
         setSubmitting(true);
-        fetchInvestigatorResourceGetInvestigators({
-            pathParams: {
-                    proposalCode: Number(selectedProposalCode),
-                }
-            })
-            .then(()=>setSubmitting(false))
-            .then(()=>queryClient.invalidateQueries({
-                predicate: (query) => {
-                    
-                    if(query.queryKey.length === 5)
-                    {   
-                        const investigatorList = (query.state.data as Array<InvestigatorProps>);
-                        if(typeof(investigatorList) == "object")
-                        {
-                            if(investigatorIDs.length < investigatorList.length){
-                                investigatorList.forEach(inv => { investigatorIDs.push(inv.dbid as number) });
-                            }
-                        }
-                    }
 
-                    if(query.queryKey.length === 6)
-                    {                      
-                        //find the id of this object - 
-                        //see if it is in our list
-                        //if it is then we read the type
-                        //if the type is PI we add it to the pi count
-                        //then we remove the index from investigatorID so we don't do more than once per item
-                        const investigator = (query.state.data as TypedInvestigator)
-                        const target = investigatorIDs.indexOf(investigator._id);
-                        if(target >= 0)
-                        {
-                            console.log(investigator.type)
-                            if(investigator.type == "PI")
-                            {
-                                PiProfile += 1;
-                                
-                            }
-                            console.log(PiProfile);
-                            investigatorIDs[target] = -1;
-                        }
-                    }
-                    return true;
-                }
-            }))
-            .finally(() => {
                 //if there are too few PI's prevent the action
                 if(PiProfile < 2)
                 {
                     lastPiContext();
+                    setSubmitting(false);
                 }
                 //otherwise go for it
                 else{
@@ -290,8 +237,6 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
                 }
                 
 
-            })
-            .catch(handleError);
     }
 
 
@@ -351,10 +296,13 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         if(data?.type == 'COI')
         {
             investigatorTypeSetting = "PI";
+            PiProfile += 1;
 
+        } else {
+            PiProfile -= 1;
         }
         setSubmitting(true);
-        console.log(investigatorTypeSetting);
+        //console.log(investigatorTypeSetting);
         changeInvestigatorKindMutation.mutate({
             pathParams: {
                     investigatorId: props.dbid,
