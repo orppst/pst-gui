@@ -4,7 +4,9 @@ import {MAX_CHARS_FOR_JUSTIFICATION} from "src/constants.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {Justification, TextFormats} from "src/generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
-import {fetchJustificationsResourceUpdateJustification} from "src/generated/proposalToolComponents.ts";
+import {
+    useJustificationsResourceUpdateJustification
+} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
@@ -20,11 +22,7 @@ import CancelButton from "../../commonButtons/cancel.tsx";
 import {modals} from "@mantine/modals";
 
 /*
-    Form contains the Justification text only. We save the Justification format
-    immediately on the user selecting a different format. This avoids the user having
-    to remember to "save" the justification when changing from another format to 'Latex'
-    and attempting to upload resource files, which will then be rejected by the API as the
-    Justification is not 'Latex' format.
+    Justification text is save-on-demand via a button click. Justification format is saved on change.
  */
 
 
@@ -66,6 +64,8 @@ function JustificationForm(props: JustificationProps) : ReactElement {
 
     const [justification, setJustification] = useState<Justification>(props.justification)
 
+    const justificationMutation = useJustificationsResourceUpdateJustification();
+
     const form: UseFormReturnType<{ text: string }> =
         useForm<{text: string}>({
             initialValues: {text: props.justification.text ?? "" },
@@ -77,43 +77,42 @@ function JustificationForm(props: JustificationProps) : ReactElement {
         });
 
     const handleSubmit = form.onSubmit((values) => {
-        fetchJustificationsResourceUpdateJustification({
+
+        justificationMutation.mutate({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which
             },
             body: {text: values.text, format: justification.format}
-        })
-            .then(()=>queryClient.invalidateQueries())
-            .then(() => {
+        }, {
+            onSuccess: () => {
                 notifySuccess("Update successful", props.which + " justification text updated");
-                props.onChange(); //trigger re-fetch of Justifications
-            })
-            .catch((error) => {
-                console.error(error);
+                queryClient.invalidateQueries().then();
+            },
+            onError: (error) =>
                 notifyError("Update justification error", getErrorMessage(error))
-            });
+        })
     });
 
     const handleFormatUpdate = (update: Justification) => {
         setJustification(update);
 
-        fetchJustificationsResourceUpdateJustification({
+        justificationMutation.mutate({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 which: props.which
             },
             body: update
-        })
-            .then(() => {
+        }, {
+            onSuccess: (data) => {
                 notifySuccess("Update successful",
-                    props.which + " justification format changed to " + update.format);
-            })
-            .then(() => props.onChange())
-            .catch((error) => {
-                console.error(error);
+                    props.which + " justification format changed to " + data.format);
+                queryClient.invalidateQueries().then();
+            }
+,
+            onError: (error) =>
                 notifyError("Update justification error", getErrorMessage(error))
-            });
+        })
     }
 
     const SelectTextFormatRadio = () => {
@@ -162,10 +161,12 @@ function JustificationForm(props: JustificationProps) : ReactElement {
                     />
                     <Group grow mt={"xs"}>
                         <FormSubmitButton
-                            toolTipLabel={"save justification text"}
+                            toolTipLabel={"save changes to text"}
                             form={form}
-                            variant={"light"}
+                            variant={"filled"}
                             toolTipLabelPosition={"bottom"}
+                            notValidToolTipLabel={"Justification text must not be blank"}
+                            notDirtyToolTipLabel={"Justification text has not been modified"}
                         />
                         <CancelButton
                             toolTipLabel={form.isDirty() ? "you have unsaved changes" : "close window"}
