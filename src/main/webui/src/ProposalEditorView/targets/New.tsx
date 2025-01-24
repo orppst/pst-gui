@@ -1,4 +1,4 @@
-import {Modal, TextInput, Stack, Fieldset, Grid, rem, Text} from "@mantine/core";
+import {Modal, TextInput, Stack, Fieldset, Grid, rem, Text, Loader} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
@@ -9,11 +9,12 @@ import {
 } from 'react';
 import {
     CelestialTarget,
-    EquatorialPoint, SpaceSys,
+    EquatorialPoint,
 } from "src/generated/proposalToolSchemas.ts";
 import {
-    fetchProposalResourceAddNewTarget, fetchProposalResourceGetTargets,
-    fetchSpaceSystemResourceGetSpaceSystem
+    useProposalResourceAddNewTarget,
+    useProposalResourceGetTargets,
+    useSpaceSystemResourceGetSpaceSystem
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useParams} from "react-router-dom";
@@ -35,6 +36,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SimbadSearch} from "./simbadSearch.tsx";
 import SimbadSearchHelp from "./simbadSearchHelp.tsx";
 import { AstroLib } from "@tsastro/astrolib";
+import * as React from "react";
 
 export let Aladin: AladinType;
 
@@ -80,7 +82,21 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     }, []);
 
 
+
+    const queryClient = useQueryClient();
+    const {selectedProposalCode} = useParams();
     const [nameUnique, setNameUnique] = useState(true);
+
+    const newTargetMutation = useProposalResourceAddNewTarget();
+
+    //we want targets to check that names are unique
+    const targets = useProposalResourceGetTargets({
+        pathParams: {proposalCode: Number(selectedProposalCode)}
+    });
+
+    const spaceSystem = useSpaceSystemResourceGetSpaceSystem({
+        pathParams: {frameCode: 'ICRS'}
+    })
 
     //media query used to conditionally set the height of Aladin when the modal toggles
     // between fullscreen and not
@@ -104,18 +120,15 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
             },
         });
 
-    const queryClient = useQueryClient();
-    const { selectedProposalCode} = useParams();
+    useEffect(() => {
+        setNameUnique(!targets.data?.find(t => t.name === form.getValues().TargetName));
+    }, [form.getValues().TargetName]);
 
-    /**
-     * saves the new target to the database, if it doesn't already exist on this proposal.
-     *
-     * @param {newTargetData} val the new target data.
-     */
-    const saveToDatabase = (val: newTargetData) => {
+    const handleSubmission = form.onSubmit((val: newTargetData) => {
+
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
-            coordSys: {val: "ICRS"},
+            coordSys: spaceSystem.data!,
             lat: {
                 "@type": "ivoa:RealQuantity",
                 value: parseFloat(val.RA), unit: { value: "degrees" }
@@ -132,56 +145,18 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
             positionEpoch: { value: "J2000"}
         };
 
-        /**
-         * assign the coord system to the target if feasible.
-         * @param {SpaceSys} ss the coord system to set.
-         */
-        const assignSpaceSys = (ss: SpaceSys) => {
-            if (Target.sourceCoordinates != undefined)
-                if (Target.sourceCoordinates.coordSys != undefined)
-                    Target.sourceCoordinates.coordSys = ss;
-        }
-
-
-        fetchProposalResourceGetTargets({
-                pathParams: {proposalCode: Number(selectedProposalCode) },
-                queryParams: {sourceName: val.TargetName}})
-            .then((data) => {
-                if(data.length == 0) {
-                    setNameUnique(true);
-                    fetchSpaceSystemResourceGetSpaceSystem(
-                        {pathParams: { frameCode: 'ICRS'}})
-                        .then((spaceSys) => assignSpaceSys(spaceSys))
-                        .then(() =>
-                            fetchProposalResourceAddNewTarget({
-                                pathParams:{proposalCode: Number(selectedProposalCode) },
-                                body: Target
-                            })
-                                .then(() => queryClient.invalidateQueries())
-                                .then(() =>
-                                    notifySuccess("Success",
-                                        val.TargetName + " added to the proposal"))
-                                .then(() => props.closeModal!())
-                                .catch(error => notifyError("Failed to add Target",
-                                    getErrorMessage(error)))
-                        )
-                        .catch(error => notifyError("Failed to get Space Coordinate System",
-                            getErrorMessage(error)))
-                } else {
-                    //Target already exists on this proposal
-                    setNameUnique(false);
-                    notifyError("Duplicate target",
-                        "A target called '"+val.TargetName+"' already exists");
-                }
-            })
-            .catch(error => notifyError("Failed to get existing Targets",
-                getErrorMessage(error)));
-    }
-
-
-    // alias for form.onSubmit that simply calls saveToDatabase
-    const handleSubmission = form.onSubmit((val: newTargetData) => {
-        saveToDatabase(val);
+        newTargetMutation.mutate({
+            pathParams: {proposalCode: Number(selectedProposalCode)},
+            body: Target
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries().then();
+                notifySuccess("Target added", val.TargetName + " has been added successfully.");
+                props.closeModal!();
+            },
+            onError: (error) =>
+                notifyError("Failed to add Target", getErrorMessage(error))
+        })
     });
 
     /**
@@ -262,6 +237,11 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
     const responsiveSpan = {base: 2, md: 1}
 
+    if (targets.isLoading || spaceSystem.isLoading) {
+        return (
+            <Loader />
+        )
+    }
 
     return (
         <Grid columns={2}>
@@ -281,20 +261,19 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                 <form onSubmit={handleSubmission}>
                     <Stack gap={"xs"}>
                         <TextInput
-                            withAsterisk
-                            label="Name"
+                            label="Name your target"
                             placeholder="User provided or use the SIMBAD search"
-                            {...form.getInputProps("TargetName")}
-                            onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                                setNameUnique(true);
-                                if(form.getInputProps("TargetName").onChange)
-                                    form.getInputProps("TargetName").onChange(e);
-
+                            description={nameUnique ? "Something descriptive is recommended" : null}
+                            error={nameUnique ? null :
+                                form.getValues().TargetName + " is in use, choose another name"}
+                            inputWrapperOrder={['label', 'description', 'error', 'input']}
+                            value={form.getValues().TargetName}
+                            onChange={(e: React.FormEvent<HTMLInputElement>) =>{
+                                form.setFieldValue('TargetName', e.currentTarget.value)
                             }}
                         />
                         <TextInput
                             //hideControls
-                            required={true}
                             label={"RA"}
                             //decimalScale={6}
                             //min={0}
@@ -310,10 +289,10 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 let raValue: string = form.getValues()["RA"];
                                 
                                 const regexp = new RegExp(/(\d{1,3})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
-                                //first filter to ensure input is at least in the ball park of sensible
+                                //first filter to ensure input is at least in the ballpark of sensible
                                 if(regexp.test(raValue))
                                 {
-                                    //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
+                                    //convert Sexagesimal to degrees (Sxg representation is displayed separately)
                                     raValue = String(AstroLib.HmsToDeg(raValue));
                                     //update the value to degrees
                                     form.setFieldValue("RA", raValue);
@@ -326,17 +305,16 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 //update the Aladdin viewport
                                 UpdateAladinRA(Number(raValue));
                             }}
-
-                                
                         />
-                        <Text size={"xs"} 
-                                c={"gray.6"} 
-                                style={{margin: "-4px 0px 0px 12px"}}>
-                                    {AstroLib.DegToHms(Number(form.getValues()["RA"]),3)}
-                            </Text>
+                        <Text
+                            size={"xs"}
+                            c={"gray.6"}
+                            style={{margin: "-4px 0px 0px 12px"}}
+                        >
+                            {AstroLib.DegToHms(Number(form.getValues()["RA"]),3)}
+                        </Text>
                         <TextInput
                             //hideControls
-                            required={true}
                             label={"Dec"}
                             //decimalScale={6}
                             min={-90}
@@ -351,10 +329,10 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 let decValue: string = form.getValues()["Dec"];
                                 
                                 const regexp = new RegExp(/(\d{1,2})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
-                                //first filter to ensure input is at least in the ball park of sensible
+                                //first filter to ensure input is at least in the ballpark of sensible
                                 if(regexp.test(decValue))
                                 {
-                                    //convert Sexagemsimal to degrees (Sxg representation is displayed separately)
+                                    //convert Sexagesimal to degrees (Sxg representation is displayed separately)
                                     decValue = String(AstroLib.DmsToDeg(decValue));
                                     //update the value to degrees
                                     form.setFieldValue("Dec", decValue);
@@ -368,11 +346,13 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 UpdateAladinDec(Number(decValue));
                             }}
                         />
-                        <Text size={"xs"}
-                                c={"gray.6"}
-                                style={{margin: "-4px 0px 0px 12px"}}>
-                                    {AstroLib.DegToDms(Number(form.getValues()["Dec"]),3)}
-                            </Text>
+                        <Text
+                            size={"xs"}
+                            c={"gray.6"}
+                            style={{margin: "-4px 0px 0px 12px"}}
+                        >
+                            {AstroLib.DegToDms(Number(form.getValues()["Dec"]),3)}
+                        </Text>
                         <SubmitButton
                             toolTipLabel={"Save this target"}
                             disabled={!form.isValid()}
