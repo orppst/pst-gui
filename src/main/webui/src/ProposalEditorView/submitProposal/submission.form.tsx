@@ -79,7 +79,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
     const submitProposalMutation = useSubmittedProposalResourceSubmitProposal({
         onSuccess: () => {
             setSubmissionFail("");
-            queryClient.invalidateQueries();
+            queryClient.invalidateQueries().finally();
             nextStep();
         },
         onError: (error) => {setSubmissionFail("Submission failed, cause: "
