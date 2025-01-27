@@ -1,7 +1,7 @@
 import {
-    fetchObservationResourceAddNewObservation,
-    fetchObservationResourceRemoveObservation,
-    useObservationResourceGetObservation
+    useObservationResourceAddNewObservation,
+    useObservationResourceGetObservation,
+    useObservationResourceRemoveObservation
 } from "src/generated/proposalToolComponents.ts";
 import {
     Text,
@@ -38,6 +38,12 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
 
     const queryClient = useQueryClient();
 
+    //mutation hooks
+    const addObservation =
+        useObservationResourceAddNewObservation();
+    const removeObservation =
+        useObservationResourceRemoveObservation();
+
     // the colour gray used by the tools.
     const theme = useMantineTheme();
     const GRAY = theme.colors.gray[6];
@@ -50,23 +56,20 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     const {
         data: observation,
         error: observationError,
-        isLoading: observationLoading} =
-            useObservationResourceGetObservation(
-                {
-                    pathParams:
-                    {
-                        proposalCode: Number(selectedProposalCode),
-                        observationId: observationId.id,
-                    },
-            });
+        isLoading: observationLoading
+    } = useObservationResourceGetObservation({
+        pathParams: {
+            proposalCode: Number(selectedProposalCode),
+            observationId: observationId.id,
+        },
+    });
 
     if (observationError) {
         return <pre>{getErrorMessage(observationError)}</pre>
     }
 
     useEffect(() => {
-        if(observation?.target?.length != undefined
-            && observation.target.length > 0 ) {
+        if(observation?.target?.length != undefined && observation.target.length > 0 ) {
             observationTargets.splice(0, observationTargets.length);
             observation.target.map((thisTarget) => {
                 observationTargets.push(thisTarget._id!)
@@ -78,13 +81,16 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
      * handles the deletion of an observation.
      */
     const handleDelete = () => {
-        fetchObservationResourceRemoveObservation({
+        removeObservation.mutate({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
-                observationId: observationId.id}
+                observationId: observationId.id
+            }
+        }, {
+            onSuccess: () => queryClient.invalidateQueries(),
+            onError: (error) =>
+                notifyError("Deletion Failed", getErrorMessage(error)),
         })
-            .then(() => queryClient.invalidateQueries())
-            .catch(error => notifyError("Deletion Failed", getErrorMessage(error)));
     }
 
     /**
@@ -108,8 +114,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         ),
         labels: {confirm: 'Delete', cancel: "No don't delete it"},
         confirmProps: {color: 'red'},
-        onConfirm() {handleDelete()},
-        onCancel: () => console.log('Cancel delete'),
+        onConfirm() {handleDelete()}
     })
 
     /**
@@ -117,14 +122,18 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
      */
     const handleClone = () => {
         //create a new observation with the details of the current observation
-        fetchObservationResourceAddNewObservation({
-            pathParams: {proposalCode: Number(selectedProposalCode)},
+        addObservation.mutate({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode)
+            },
             body: observation?.["@type"] === 'proposal:TargetObservation' ?
                 observation! as TargetObservation :
                 observation! as CalibrationObservation
+        }, {
+            onSuccess: () => queryClient.invalidateQueries(),
+            onError: (error) =>
+                notifyError("Clone Failed", getErrorMessage(error))
         })
-            .then(()=>queryClient.invalidateQueries())
-            .catch(console.error)
     }
 
     /**

@@ -9,11 +9,15 @@ import { ObservationFormValues } from './edit.group.tsx';
 import {AccordionRemove} from 'src/commonButtons/accordianControls.tsx';
 import { ReactElement } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
-import {fetchObservationResourceRemoveConstraint} from "src/generated/proposalToolComponents.ts";
+import {
+    useObservationResourceRemoveConstraint
+} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
-import {notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {queryKeyProposals} from "../../queryKeyProposals.tsx";
 
 
 //Providing a UI for a TimingWindow:
@@ -39,6 +43,9 @@ export default function TimingWindowsForm(
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+
+    const removeConstraint =
+        useObservationResourceRemoveConstraint();
 
     // constant used for populating new timing window guis.
     const EMPTY_TIMING_WINDOW : TimingWindowGui = {
@@ -75,19 +82,26 @@ export default function TimingWindowsForm(
      * @param {number} timingWindowId the database id for an existing timing window
      */
     const handleDelete = (timingWindowId: number) => {
-        //existing timing window - remove it from the database
-        fetchObservationResourceRemoveConstraint({
+        removeConstraint.mutate({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 observationId: form.getValues().observationId!,
                 constraintId: timingWindowId
             }
+        } , {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: queryKeyProposals({
+                        proposalId: Number(selectedProposalCode),
+                        childName: "observations",
+                        childId: form.getValues().observationId!
+                    }),
+                }).then( () => notifySuccess("Deletion confirmed",
+                    "The selected timing window has been deleted"));
+            },
+            onError: (error) =>
+                notifyError("Failed to remove timing window", getErrorMessage(error)),
         })
-            .then(()=>queryClient.invalidateQueries())
-            .then(() => {
-                    notifySuccess("Deletion confirmed", "The selected timing window has been deleted")
-                })
-            .catch(console.error);
     }
 
     /**
