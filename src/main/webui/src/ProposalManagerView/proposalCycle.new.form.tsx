@@ -1,13 +1,13 @@
 import {ReactElement, useEffect, useState} from "react";
 import {FormSubmitButton} from "../commonButtons/save.tsx";
 import {useForm} from "@mantine/form";
-import {ObjectIdentifier, ProposalCycle} from "../generated/proposalToolSchemas.ts";
+import {ProposalCycle} from "../generated/proposalToolSchemas.ts";
 import {Group, Select, Stack, Text, TextInput} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {
-    fetchObservatoryResourceGetObservatories,
-    fetchProposalCyclesResourceCreateProposalCycle
+    useObservatoryResourceGetObservatories,
+    useProposalCyclesResourceCreateProposalCycle
 } from "../generated/proposalToolComponents.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import {notifyError, notifySuccess} from "../commonPanel/notifications.tsx";
@@ -31,20 +31,31 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     const [observatories, setObservatories]
         = useState<{ value: string, label: string }[]>([]);
 
+    const {data, status, error} = useObservatoryResourceGetObservatories({});
+
+    const createProposalCycleMutation = useProposalCyclesResourceCreateProposalCycle({
+        onSuccess: (newCycle) => {
+            queryClient.invalidateQueries()
+                .then(() => notifySuccess("Success", "Proposal Cycle " + newCycle.title + " created"))
+        },
+        onError: (error) => {
+            console.error(error);
+            notifyError("Create cycle error", getErrorMessage(error))
+        }
+    });
+
     useEffect(() => {
-        fetchObservatoryResourceGetObservatories({})
-            .then((data: ObjectIdentifier[]) => {
-                setObservatories(
+        if(error)
+            notifyError("Loading Observatories failed", "Cannot load Observatories, caused by " + getErrorMessage(error));
+        else {
+              if(data != undefined)
+                  setObservatories(
                     data?.map((obs) => (
                         {value: String(obs.dbid), label: obs.name!}
                     ))
                 );
-            })
-            .catch((error) => {
-                notifyError("Loading Observatories failed", "Cannot load Observatories, caused by " + getErrorMessage(error));
-            });
-
-    }, []);
+        }
+    }, [data, status]);
 
 
     const form = useForm<NewCycleFormType>(
@@ -89,21 +100,12 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
             availableResources: {
                 resources: []
             },
-            // @ts-ignore
-            submissionDeadline: values.submissionDeadline!.getTime(),
-            // @ts-ignore
-            observationSessionStart: values.sessionStart!.getTime(),
-            // @ts-ignore
-            observationSessionEnd: values.sessionEnd!.getTime()
+            submissionDeadline: values.submissionDeadline!.getTime().toString(),
+            observationSessionStart: values.sessionStart!.getTime().toString(),
+            observationSessionEnd: values.sessionEnd!.getTime().toString(),
         }
 
-        fetchProposalCyclesResourceCreateProposalCycle({body: newCycle})
-            .then(()=> queryClient.invalidateQueries())
-            .then(() => notifySuccess("Success", "Proposal Cycle " + newCycle.title + " created"))
-            .catch((error) => {
-                console.error(error);
-                notifyError("Create cycle error", getErrorMessage(error))
-            });
+        createProposalCycleMutation.mutate({body: newCycle});
 
         closeModal && closeModal();
     }
