@@ -3,19 +3,22 @@ import {Select, Stack, Text} from "@mantine/core";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import {
-    fetchProposalCyclesResourceGetProposalCycleObservatory,
-    fetchProposalCyclesResourceReplaceCycleObservatory, ProposalCyclesResourceReplaceCycleObservatoryVariables,
-    useObservatoryResourceGetObservatories
+    ProposalCyclesResourceReplaceCycleObservatoryVariables,
+    useObservatoryResourceGetObservatories,
+    useProposalCyclesResourceGetProposalCycleObservatory,
+    useProposalCyclesResourceReplaceCycleObservatory
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 export default function CycleObservatoryPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const [observatorySearchData, setSearchData] = useState([]);
     const [formReady, setFormReady] = useState(false);
+    const queryClient = useQueryClient();
     const form = useForm({
         initialValues: {selectedObservatory: "0"},
         validate: {
@@ -31,6 +34,13 @@ export default function CycleObservatoryPanel() : ReactElement {
             getErrorMessage(observatories.error));
     }
 
+    const cycleObservatory
+        = useProposalCyclesResourceGetProposalCycleObservatory({
+            pathParams: {
+                cycleCode: Number(selectedCycleCode)
+            }
+        });
+
     useEffect(() => {
         if(observatories.status === 'success') {
             setSearchData([]);
@@ -39,24 +49,31 @@ export default function CycleObservatoryPanel() : ReactElement {
                 setSearchData((current) => [...current, {
                     value: String(item.dbid), label: item.name}])
             ));
-
-            fetchProposalCyclesResourceGetProposalCycleObservatory(
-                {pathParams: {cycleCode: Number(selectedCycleCode)}})
-                .then((observatory) => {
-                    //FIXME: None of these three ways to set the default value seem to work
-                    form.values.selectedObservatory = String(observatory?._id);
-                    //form.setFieldValue('selectedObservatory', Number(observatory?._id));
-                    //form.setInitialValues({selectedObservatory: Number(observatory?._id)});
-                    setFormReady(true);
-                })
-                .catch((error) => {
-                    console.error(error);
-                    notifyError("Failed to load proposal cycle details",
-                        getErrorMessage(error))
-                })
-
         }
     }, [observatories.status, observatories.data]);
+
+    useEffect(() => {
+        if(cycleObservatory.error || cycleObservatory.data == undefined) {
+            notifyError("Failed to load proposal cycle details",
+                getErrorMessage(cycleObservatory.error));
+        } else {
+            form.values.selectedObservatory = String(cycleObservatory.data!._id);
+            setFormReady(true);
+        }
+
+    }, [cycleObservatory.status, cycleObservatory.data]);
+
+    const replaceObservatoryMutation = useProposalCyclesResourceReplaceCycleObservatory({
+        onSuccess: () => {
+            notifySuccess("Update observatory", "Changes saved");
+            form.resetDirty();
+            queryClient.invalidateQueries(cycleObservatory).finally();
+        },
+        onError: (error) => {
+            notifyError("Error updating observatory", "Cause: "
+                + getErrorMessage(error))
+        }
+    });
 
     const updateObservatory = form.onSubmit((val) => {
         form.validate();
@@ -68,16 +85,7 @@ export default function CycleObservatoryPanel() : ReactElement {
                     headers: {"Content-Type": "text/plain"}
                 };
 
-        fetchProposalCyclesResourceReplaceCycleObservatory(newObservatory)
-            .then(()=> {
-                    notifySuccess("Update observatory", "Changes saved");
-                    form.resetDirty();
-                }
-            )
-            .catch((error) => {
-                notifyError("Error updating observatory", "Cause: "
-                    + getErrorMessage(error))
-            })
+        replaceObservatoryMutation.mutate(newObservatory);
     })
 
     return (

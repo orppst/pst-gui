@@ -4,7 +4,7 @@ import {useParams} from "react-router-dom";
 import {
     fetchProposalCyclesResourceReplaceCycleTitle,
     ProposalCyclesResourceReplaceCycleTitleVariables,
-    useProposalCyclesResourceGetProposalCycleTitle
+    useProposalCyclesResourceGetProposalCycleTitle, useProposalCyclesResourceReplaceCycleTitle
 } from "../../generated/proposalToolComponents.ts";
 import {useForm} from "@mantine/form";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
@@ -33,7 +33,7 @@ export default function CycleTitlePanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const [submitting, setSubmitting] = useState(false);
     const [cycleTitle, setCycleTitle] = useState("")
-    const { data, error, isLoading, status } =
+    const title =
         useProposalCyclesResourceGetProposalCycleTitle(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
         );
@@ -42,44 +42,34 @@ export default function CycleTitlePanel() : ReactElement {
 
     const queryClient = useQueryClient()
 
-    const mutation = useMutation({
-        mutationFn: () => {
-            //IMPL the code generator does not create the correct type
-            // signature for API calls where the body is plain text.
-            const newTitle : ProposalCyclesResourceReplaceCycleTitleVariables = {
-                pathParams: {cycleCode: Number(selectedCycleCode)},
-                body: cycleTitle,
-                // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
-            }
-            return fetchProposalCyclesResourceReplaceCycleTitle(newTitle);
-        },
+    const replaceTitleMutation = useProposalCyclesResourceReplaceCycleTitle({
         onMutate: () => {
             setSubmitting(true);
         },
         onError: () => {
             console.error("An error occurred trying to update the title");
-            notifyError("Update failed", getErrorMessage(error))
+            notifyError("Update failed", getErrorMessage(title.error));
+            setSubmitting(false);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries()
+            queryClient.invalidateQueries()//title)
                 .then(()=> setSubmitting(false));
             notifySuccess("Update title", "Update successful");
             form.resetDirty();
-        },
-    })
+        }
+    });
 
     useEffect(() => {
-        if (status === 'success') {
-            setCycleTitle(data as unknown as string);
-            form.values.title = data as unknown as string;
+        if (title.status === 'success') {
+            setCycleTitle(title.data as unknown as string);
+            form.values.title = title.data as unknown as string;
         }
-    }, [status,data]);
+    }, [title.status,title.data]);
 
-    if (error) {
+    if (title.error) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(title.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
@@ -87,13 +77,18 @@ export default function CycleTitlePanel() : ReactElement {
     const updateTitle = form.onSubmit((val) => {
         form.validate();
         setCycleTitle(val.title);
-        mutation.mutate();
+        replaceTitleMutation.mutate({
+            pathParams: {cycleCode: Number(selectedCycleCode)},
+            body: cycleTitle,
+            // @ts-ignore
+            headers: {"Content-Type": "text/plain"}
+        });
     });
 
     return (
         <PanelFrame>
-            <PanelHeader isLoading={isLoading} itemName={data as unknown as string} panelHeading={"Title"} />
-            { isLoading ? ("Loading..") :
+            <PanelHeader isLoading={title.isLoading} itemName={title.data as unknown as string} panelHeading={"Title"} />
+            { title.isLoading ? ("Loading..") :
                 submitting ? ("Submitting..."):
                     <form onSubmit={updateTitle}>
                         <Stack>

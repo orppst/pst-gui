@@ -5,10 +5,10 @@ import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useParams} from "react-router-dom";
 import {
-    fetchProposalCyclesResourceReplaceCycleDeadline,
-    fetchProposalCyclesResourceReplaceCycleSessionEnd,
-    fetchProposalCyclesResourceReplaceCycleSessionStart,
-    useProposalCyclesResourceGetProposalCycleDates
+    useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceReplaceCycleDeadline,
+    useProposalCyclesResourceReplaceCycleSessionEnd,
+    useProposalCyclesResourceReplaceCycleSessionStart
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
@@ -66,34 +66,46 @@ export default function CycleDatesPanel() : ReactElement {
         );
     }
 
-    const handleSave = form.onSubmit((val) => {
-        fetchProposalCyclesResourceReplaceCycleDeadline({
+    const replaceDeadlineMutation = useProposalCyclesResourceReplaceCycleDeadline({
+        onSuccess: () => {
+            notifySuccess("Update dates", "Changes saved");
+            form.resetDirty();
+        },
+        onError: (error) => {
+            notifyError("Update session deadline error", getErrorMessage(error));
+        }
+    });
+
+    const replaceCycleEndMutation = useProposalCyclesResourceReplaceCycleSessionEnd({
+        onSuccess: () => {
+            replaceDeadlineMutation.mutate({
                 pathParams: {cycleCode: Number(selectedCycleCode)},
-                //@ts-ignore
-                body: val.submissionDeadline?.getTime()
-            })
-            .then(() => {
-                fetchProposalCyclesResourceReplaceCycleSessionStart({
-                    pathParams: {cycleCode: Number(selectedCycleCode)},
-                    //@ts-ignore
-                    body: val.sessionStart?.getTime()
-                }).then(() => {
-                    fetchProposalCyclesResourceReplaceCycleSessionEnd({
-                        pathParams: {cycleCode: Number(selectedCycleCode)},
-                        //@ts-ignore
-                        body: val.sessionEnd?.getTime()
-                    }).then(() => {
-                        notifySuccess("Update dates", "Changes saved");
-                        form.resetDirty();
-                    })
-                    .catch((fault)=>notifyError("Update dates", "Error saving "
-                        + getErrorMessage(fault)))
-                })
-                .catch((fault)=>notifyError("Update dates", "Error saving "
-                    + getErrorMessage(fault)))
-            })
-            .catch((fault)=>notifyError("Update dates", "Error saving "
-                + getErrorMessage(fault)))
+                body: form.values.submissionDeadline?.getTime().toString()
+            });
+        },
+        onError: (error) => {
+            notifyError("Update session end error", getErrorMessage(error));
+        }
+    });
+
+    const replaceCycleStartMutation = useProposalCyclesResourceReplaceCycleSessionStart({
+        onSuccess: () => {
+            replaceCycleEndMutation.mutate({
+                pathParams: {cycleCode: Number(selectedCycleCode)},
+                body: form.values.sessionEnd?.getTime().toString()
+            });
+            form.resetDirty();
+        },
+        onError: (error) => {
+            notifyError("Update session start error", getErrorMessage(error));
+        }
+    });
+
+    const handleSave = form.onSubmit((val) => {
+        replaceCycleStartMutation.mutate({
+            pathParams: {cycleCode: Number(selectedCycleCode)},
+            body: val.sessionStart?.getTime().toString()
+        })
     });
 
     return (
