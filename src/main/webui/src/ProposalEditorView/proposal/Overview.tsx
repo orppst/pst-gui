@@ -36,6 +36,7 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
+import {useToken} from "../../App2.tsx";
 
 /*
       title    -- string
@@ -225,23 +226,29 @@ function ObservationAccordionContent(
  * @constructor
  */
 function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
+
+    const authToken = useToken();
+
     const { selectedProposalCode } = useParams();
 
     const navigate = useNavigate();
 
-    const {data} =
-        useSupportingDocumentResourceGetSupportingDocuments(
-            {pathParams: {proposalCode: Number(selectedProposalCode)},},
-            {enabled: true});
+    const {data: supportingDocs} =
+        useSupportingDocumentResourceGetSupportingDocuments({
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode)
+                }
+        });
 
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
 
     const { data: proposalsData , error: proposalsError, isLoading: proposalsIsLoading } =
         useProposalResourceGetObservingProposal({
-                pathParams: {proposalCode: Number(selectedProposalCode)},},
-            {enabled: true}
-        );
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode)
+                }
+        });
 
 
     if (proposalsError) {
@@ -386,9 +393,11 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 {
                     proposalsData?.supportingDocuments &&
                     proposalsData.supportingDocuments.length > 0 ?
-                        <List style={{whiteSpace: 'pre-wrap',
-                                      overflowWrap: 'break-word'}}>
-
+                        <List
+                            style={{
+                                whiteSpace: 'pre-wrap',
+                                overflowWrap: 'break-word'}}
+                        >
                             {documents}
                         </List> :
                         <Text c={"yellow"}>No supporting documents added</Text>
@@ -540,27 +549,13 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * @return {Promise<void>} promise that the pdf will be saved at some point.
      */
     const handleDownloadPdf = (): void => {
-        // get the overview page to print as well as the proposal data.
-        const element = printRef.current;
-
-        // ensure there is a rendered overview.
-        if(element !== null && proposalsData !== undefined &&
-            selectedProposalCode !== undefined && data !== undefined) {
-            downloadProposal(
-                element, proposalsData, data, selectedProposalCode).then();
-        } else {
-            // something failed in the rendering of the overview react element or
-            // extracting the proposal data.
-            if (element === null) {
-                console.error(
-                    'Tried to download a Overview that had not formed ' +
-                    'correctly.');
-            } else {
-                console.error(
-                    'Tried to download the proposal data and that had not ' +
-                    'formed correctly.');
-            }
-        }
+        downloadProposal(
+            printRef.current!,
+            proposalsData!,
+            supportingDocs!,
+            selectedProposalCode!,
+            authToken
+        );
     };
 
     const CloneProposal = (): ReactElement => {
