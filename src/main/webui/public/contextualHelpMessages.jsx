@@ -14,19 +14,18 @@ export const contextualHelpMessages = [
 , {
   id: "Overview-eng",
   message: " "
-          + " An overview of the selected proposal is shown below. You can choose another by clicking its dropdown button in the list."
-          + " You can maintain a component by clicking one of the menuitems, eg Title, Summary, etc."
+          + " An overview of the selected proposal is shown below."
+          + " You may 'Export' this proposal, which provides a downloaded zip file containing this proposal as JSON, any supporting documents you may have uploaded, and a screen shot of this overview."
+          + " You can 'Clone' this proposal, which will create a deep copy as a new proposal."
+          + " If you've decided that this proposal is no longer worth pursuing then you may 'Delete' it."
+          + " This will remove this proposal permanently."
 }
 , {
   id: "CreaProp-eng",
   message: " "
-       + " You must provide a title and a summary."
-       + " Once at least they have been entered, you can save immediately by clicking the Save button following the summary field,"
-       + " and come back later, or cancel and return with the Cancel button."
-       + " Or you can continue with the remaining fields"
-       + " indicating the kind of proposal and providing the scientific and technical justifications."
-       + " You have the option to provide your justification in LaTeX, RST or ASCII format."
-       + " Save your changes with the Save button at bottom right, or cancel and return without saving by clicking the Cancel button."
+       + " You must provide a title and a summary for your new proposal, and select it's 'Kind'."
+       + " After they have been entered, you can create the new proposal by clicking the Save button."
+       + " You may cancel this action with the Cancel button, which will take you back to the landing page."
 }
 , {
   id: "MaintTitle-eng",
@@ -77,7 +76,8 @@ export const contextualHelpMessages = [
 , {
   id: "MaintTargList-eng",
   message: " Add a new Target by clicking the Add button at bottom right of the list."
-    + " Remove a Target by clicking the Delete button in its row. (You can't delete a target that is in use.)"
+    + " Remove a Target by clicking the Delete button in its row."
+    + " Notice that you cannot delete a target that is in use by an 'Observation' (you must first delete the 'Observation)."
 }
 , {
   id: "MaintTarg-eng",
