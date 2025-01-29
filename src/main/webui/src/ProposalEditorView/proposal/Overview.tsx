@@ -584,12 +584,12 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         cloneProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         }, {
-            onSuccess: () => {
+            onSuccess: (data) => {
                 queryClient.invalidateQueries({
                     queryKey: ['pst', 'api', 'proposals']
                 }).then(() =>
                     notifySuccess("Clone Proposal Successful",
-                        "you should now change the title of the cloned proposal to something more meaningful")
+                        proposalsData?.title + " copied to " + data.title)
                 );
             },
             onError: (error) =>
