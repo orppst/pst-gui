@@ -7,9 +7,9 @@ import {
 } from 'react';
 import {
     QueryClient,
-    QueryClientProvider,
+    QueryClientProvider, useQueryClient,
 } from '@tanstack/react-query';
-import { Person} from "./generated/proposalToolSchemas.ts";
+import {ObservingProposal, Person} from "./generated/proposalToolSchemas.ts";
 import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
 import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
@@ -49,11 +49,11 @@ import AddButton from './commonButtons/add';
 import DatabaseSearchButton from './commonButtons/databaseSearch';
 //import {ContextualHelpButton} from "./commonButtons/contextualHelp.tsx"
 import {
-    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
+    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE, JSON_FILE_NAME,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
 } from './constants';
-import { handleUploadZip } from './ProposalEditorView/proposal/UploadProposal';
+import {SendToImportAPI} from './ProposalEditorView/proposal/UploadProposal';
 import UploadButton from './commonButtons/upload';
 import AdminPanel from "./admin/adminPanel";
 import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
@@ -76,6 +76,8 @@ import {PanelFrame} from "./commonPanel/appearance.tsx";
 import TacCycles from "./ProposalManagerView/landingPage/tacCycles.tsx";
 import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPage.tsx";
 import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
+import {notifyError} from "./commonPanel/notifications.tsx";
+import JSZip from "jszip";
 
 /**
  * defines the user context type.
@@ -131,11 +133,10 @@ function App2(): ReactElement {
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();
 
-    const GRAY = theme.colors.gray[6];
-
-    // hack to force the left-hand navbar to update after proposal deletion in Overview panel
-    // more precisely, when called, "forceUpdate" will make the entire App rerender - use sparingly!!
+    //this work around is used when deleting a proposal
     const [,forceUpdate] = useReducer(x => x + 1, 0);
+
+    const GRAY = theme.colors.gray[6];
 
     // the paths to route to.
     const router = createBrowserRouter(
@@ -221,7 +222,6 @@ function App2(): ReactElement {
                     },
                     {
                         path: "proposal/:selectedProposalCode",
-                        //'forceUpdate' is called following a proposal deletion in Overview panel
                         element: <OverviewPanel forceUpdate={forceUpdate}/>,
                         errorElement: <ErrorPage />,
                     },
@@ -300,6 +300,8 @@ function App2(): ReactElement {
      */
     function PSTEditor(): ReactElement {
         const proposalContext = useContext(ProposalContext);
+        const authToken = useToken();
+        const queryClient = useQueryClient();
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
         // acquire the state setters for proposal title and investigator name.
@@ -329,6 +331,49 @@ function App2(): ReactElement {
             event.preventDefault();
             navigate("/");
         }
+
+        /**
+         * Handles looking up a file and uploading it to the system.
+         * @param {File} chosenFile the zip file containing a json representation
+         * of the proposal and any supporting documents.
+         */
+        const handleUploadZip =
+            async (chosenFile: File | null) => {
+                // check for no file.
+                if (chosenFile === null) {
+                    notifyError("Upload failed", "There was no file to upload")
+                }
+
+                // all simple checks done. Time to verify the internals of the zip.
+                if (chosenFile !== null) {
+                    JSZip.loadAsync(chosenFile).then(function (zip) {
+                        // check the json file exists.
+                        if (!Object.keys(zip.files).includes(JSON_FILE_NAME)) {
+                            notifyError("Upload failed",
+                                "There was no file called '"+JSON_FILE_NAME+"' within the zip")
+                        }
+
+                        // extract json data to import proposal definition.
+                        zip.files[JSON_FILE_NAME].async('text').then(function (fileData) {
+                            const jsonObject: ObservingProposal = JSON.parse(fileData)
+                            // ensure not undefined
+                            if (jsonObject) {
+                                SendToImportAPI(jsonObject, zip, authToken, queryClient);
+                            } else {
+                                notifyError("Upload failed", "The JSON file failed to load correctly")
+                            }
+                        })
+                            .catch(() => {
+                                console.log("Unable to extract " + JSON_FILE_NAME + " from zip file");
+                                notifyError("Upload failed",
+                                    "Unable to extract " + JSON_FILE_NAME + " from zip file");
+                            })
+                    })
+                }
+            }
+
+
+
 
         /*
         DJW:
@@ -429,8 +474,10 @@ function App2(): ReactElement {
                         <AddButton toolTipLabel={"new proposal"}
                             label={"Create new proposal"}
                             onClickEvent={handleAddNew}/>
-                        <FileButton onChange={handleUploadZip}
-                            accept={".zip"}>
+                        <FileButton
+                            onChange={handleUploadZip}
+                            accept={".zip"}
+                        >
                             {(props) =>
                                 <UploadButton
                                     toolTipLabel="select a file from disk to upload"
