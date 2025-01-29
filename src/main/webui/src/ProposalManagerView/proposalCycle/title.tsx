@@ -2,26 +2,17 @@ import {ReactElement, useEffect, useState} from "react";
 import {Stack, TextInput} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
-    fetchProposalCyclesResourceReplaceCycleTitle,
-    ProposalCyclesResourceReplaceCycleTitleVariables,
-    useProposalCyclesResourceGetProposalCycleTitle, useProposalCyclesResourceReplaceCycleTitle
+    useProposalCyclesResourceGetProposalCycleTitle,
+    useProposalCyclesResourceReplaceCycleTitle
 } from "../../generated/proposalToolComponents.ts";
 import {useForm} from "@mantine/form";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 import {JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-
-const cycleTitleFormJSON =  {
-    initialValues: {title: "Loading..."},
-    validate: {
-        title: (value : string) => (
-            value.length < 1 ? 'Title cannot be blank' : null)
-    }
-};
 
 /**
  * Update the title of a proposal cycle, count and limit the characters to MAX_CHARS_FOR_INPUTS
@@ -32,13 +23,19 @@ const cycleTitleFormJSON =  {
 export default function CycleTitlePanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const [submitting, setSubmitting] = useState(false);
-    const [cycleTitle, setCycleTitle] = useState("")
+    const [cycleTitle, setCycleTitle] = useState("Loading...")
     const title =
         useProposalCyclesResourceGetProposalCycleTitle(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
         );
 
-    const form = useForm(cycleTitleFormJSON);
+    const form = useForm({
+        initialValues: {title: cycleTitle},
+        validate: {
+            title: (value : string) => (
+                value.length < 1 ? 'Title cannot be blank' : null)
+        }
+    });
 
     const queryClient = useQueryClient()
 
@@ -46,13 +43,13 @@ export default function CycleTitlePanel() : ReactElement {
         onMutate: () => {
             setSubmitting(true);
         },
-        onError: () => {
+        onError: (error) => {
             console.error("An error occurred trying to update the title");
-            notifyError("Update failed", getErrorMessage(title.error));
+            notifyError("Update failed", getErrorMessage(error));
             setSubmitting(false);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries()//title)
+            queryClient.invalidateQueries()
                 .then(()=> setSubmitting(false));
             notifySuccess("Update title", "Update successful");
             form.resetDirty();
@@ -79,7 +76,7 @@ export default function CycleTitlePanel() : ReactElement {
         setCycleTitle(val.title);
         replaceTitleMutation.mutate({
             pathParams: {cycleCode: Number(selectedCycleCode)},
-            body: cycleTitle,
+            body: val.title,
             // @ts-ignore
             headers: {"Content-Type": "text/plain"}
         });
