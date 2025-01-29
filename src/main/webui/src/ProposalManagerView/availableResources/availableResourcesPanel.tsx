@@ -68,7 +68,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
             })
     }
 
-    const confirmDelete = (resource: Resource): String => modals.openConfirmModal({
+    const confirmDelete = (resource: Resource): void => modals.openConfirmModal({
         title: 'Delete Available Resource?',
         children: (
             <Text c={"yellow"} size={"sm"}>
@@ -86,9 +86,12 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         return (
             resourceTypes.data?.map((rType) => {
 
-                let textColour : string =
-                    !availableResources.data?.resources!.find(res => res.type!._id == rType.dbid ) ?
-                        'green' : 'orange';
+                let textColour : string = 'green';
+
+                    if(availableResources.data !== undefined
+                        && availableResources.data.resources !== undefined
+                        && availableResources.data?.resources!.find(res => res.type!._id == rType.dbid ))
+                            textColour = 'orange';
 
                 return (
                     <Text key={rType.dbid} c={textColour}>
@@ -102,6 +105,9 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
 
     //<AvailableResourceModal resource={resource} /> can be treated as an alias for the "Edit" button
     const AvailableResourcesRows = () => {
+        if(availableResources.data === undefined || availableResources.data.resources === undefined) {
+            return (<Table.Tr><Table.Td>No resources!</Table.Td></Table.Tr>);
+        } else
         return (
             availableResources.data?.resources?.map((resource) => (
                     <Table.Tr key={resource._id}>
