@@ -4,10 +4,10 @@ import {AvailableResourcesProps} from "./availableResourcesPanel.tsx";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {NumberInput, Select, Stack} from "@mantine/core";
 import {
-    fetchAvailableResourcesResourceAddCycleResource,
     fetchAvailableResourcesResourceGetCycleResourceTypes,
-    fetchAvailableResourcesResourceUpdateCycleResourceAmount,
-    fetchResourceTypeResourceGetAllResourceTypes
+    fetchResourceTypeResourceGetAllResourceTypes,
+    useAvailableResourcesResourceAddCycleResource,
+    useAvailableResourcesResourceUpdateCycleResourceAmount
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -71,10 +71,33 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
         }
     });
 
+    const addCycleResourceMutation = useAvailableResourcesResourceAddCycleResource({
+        onSuccess: ()=> {
+            queryClient.invalidateQueries().finally(() =>
+                props.closeModal!())
+        },
+        onError: ((error)=>
+            notifyError("Adding available resource failed",
+                    "cause: " + getErrorMessage(error)))
+    })
+
+    const updateCycleResourceMutation = useAvailableResourcesResourceUpdateCycleResourceAmount({
+        onSuccess: ()=> {
+            queryClient.invalidateQueries().finally(() =>
+                props.closeModal!());
+
+            notifySuccess("Update successful",
+                "Resource amount updated");
+        },
+        onError: ((error)=>
+            notifyError("Update available resource failed",
+                "cause: " + getErrorMessage(error)))
+    })
+
     const handleSubmit = form.onSubmit((values) => {
         if (props.resource) {
             //editing an existing 'available resource' i.e., changing the 'amount' only
-            fetchAvailableResourcesResourceUpdateCycleResourceAmount({
+            updateCycleResourceMutation.mutate({
                 pathParams: {
                     cycleCode: Number(selectedCycleCode),
                     resourceId: props.resource._id!
@@ -83,13 +106,9 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                 //@ts-ignore
                 headers: {"Content-Type": "text/plain"}
             })
-                .then(()=>queryClient.invalidateQueries())
-                .then( () => props.closeModal!() )
-                .then(() => notifySuccess("Update successful",
-                    "Resource amount updated"))
         } else {
             //adding a new 'available resource'
-            fetchAvailableResourcesResourceAddCycleResource({
+            addCycleResourceMutation.mutate({
                 pathParams: {
                     cycleCode: Number(selectedCycleCode)
                 },
@@ -100,10 +119,6 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                     }
                 }
             })
-                .then( ()=>queryClient.invalidateQueries() )
-                .then( () => props.closeModal!() )
-                .catch((error) => notifyError("Adding available resource failed",
-                    "cause: " + getErrorMessage(error)))
         }
 
 
