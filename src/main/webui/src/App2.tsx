@@ -3,7 +3,7 @@ import {
     useContext,
     ReactElement,
     SyntheticEvent,
-    Context, StrictMode
+    Context, StrictMode, useReducer
 } from 'react';
 import {
     QueryClient,
@@ -133,6 +133,9 @@ function App2(): ReactElement {
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();
 
+    //this work around is used when deleting a proposal
+    const [,forceUpdate] = useReducer(x => x + 1, 0);
+
     const GRAY = theme.colors.gray[6];
 
     // the paths to route to.
@@ -219,7 +222,7 @@ function App2(): ReactElement {
                     },
                     {
                         path: "proposal/:selectedProposalCode",
-                        element: <OverviewPanel/>,
+                        element: <OverviewPanel forceUpdate={forceUpdate}/>,
                         errorElement: <ErrorPage />,
                     },
                     {

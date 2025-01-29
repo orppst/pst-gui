@@ -226,7 +226,7 @@ function ObservationAccordionContent(
  * @return {ReactElement} the html of the overview panel.
  * @constructor
  */
-function OverviewPanel(): ReactElement {
+function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const authToken = useToken();
 
@@ -634,17 +634,19 @@ function OverviewPanel(): ReactElement {
 
 
     const handleDeleteProposal = () => {
+
         deleteProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         },{
             onSuccess: () => {
-                queryClient.invalidateQueries({
-                    queryKey: ['pst', 'api', 'proposals']
-                }).then(() => {
-                    notifySuccess("Deletion successful",
-                        "Proposal: '" + proposalsData?.title! + "' has been removed");
-                });
+                notifySuccess("Deletion successful",
+                    "Proposal: '" + proposalsData?.title! + "' has been removed");
                 navigate("/");
+
+                //workaround: usually you would invalidate queries however this causes this
+                //page to rerender with the now deleted 'selectedProposalCode'. The get proposal
+                //API call will then fail and a 500 code shows up in the console.
+                props.forceUpdate();
             },
             onError: (error) =>
                 notifyError("Deletion failed", getErrorMessage(error))
