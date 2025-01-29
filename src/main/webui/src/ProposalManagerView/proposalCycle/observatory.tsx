@@ -53,10 +53,10 @@ export default function CycleObservatoryPanel() : ReactElement {
     }, [observatories.status, observatories.data]);
 
     useEffect(() => {
-        if(cycleObservatory.error || cycleObservatory.data == undefined) {
+        if(cycleObservatory.error) {
             notifyError("Failed to load proposal cycle details",
                 getErrorMessage(cycleObservatory.error));
-        } else {
+        } else if(cycleObservatory.data !== undefined) {
             form.values.selectedObservatory = String(cycleObservatory.data!._id);
             setFormReady(true);
         }
