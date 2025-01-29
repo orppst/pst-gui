@@ -4,14 +4,13 @@ import {AvailableResourcesProps} from "./availableResourcesPanel.tsx";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {NumberInput, Select, Stack} from "@mantine/core";
 import {
-    fetchAvailableResourcesResourceGetCycleResourceTypes,
-    fetchResourceTypeResourceGetAllResourceTypes,
     useAvailableResourcesResourceAddCycleResource,
-    useAvailableResourcesResourceUpdateCycleResourceAmount
+    useAvailableResourcesResourceGetCycleResourceTypes,
+    useAvailableResourcesResourceUpdateCycleResourceAmount,
+    useResourceTypeResourceGetAllResourceTypes
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
@@ -28,35 +27,36 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
     const [resourceTypeData, setResourceTypeData]
         = useState<{value: string, label: string}[]>([]);
 
+    const resourceTypes = useResourceTypeResourceGetAllResourceTypes({});
+
+    const cycleResourceTypes = useAvailableResourcesResourceGetCycleResourceTypes({
+        pathParams: {
+            cycleCode: Number(selectedCycleCode)
+        }})
+
     useEffect(() => {
-        fetchResourceTypeResourceGetAllResourceTypes({})
-            .then((allTypes: ObjectIdentifier[]) => {
-                fetchAvailableResourcesResourceGetCycleResourceTypes({
-                    pathParams: {
-                        cycleCode: Number(selectedCycleCode)
-                    }
+        if(resourceTypes.error || resourceTypes.data == undefined) {
+            notifyError("Loading resource types failed",
+                "cause: " + getErrorMessage(resourceTypes.error));
+        } else if(cycleResourceTypes.error) {
+            notifyError("Loading cycle resource types failed",
+                "cause: " + getErrorMessage(cycleResourceTypes.error));
+        } else {
+            //array with resource types in 'allTypes' that are NOT in 'cycleTypes'
+            let diff =
+                resourceTypes.data.filter(rType => {
+                    let result: boolean = false
+                    if (cycleResourceTypes.data?.find(cType => cType.dbid == rType.dbid))
+                        result = true
+                    return !result;
                 })
-                    .then((cycleTypes: ObjectIdentifier[]) => {
-                        //array with resource types in 'allTypes' that are NOT in 'cycleTypes'
-                        let diff =
-                            allTypes.filter(rType => {
-                                let result : boolean = false
-                                if(cycleTypes.find(cType => cType.dbid == rType.dbid))
-                                    result = true
-                                return !result;
-                            })
-                        setResourceTypeData(
-                            diff?.map((rType)=> (
-                                {value: String(rType.dbid), label: rType.name!}
-                            ))
-                        )
-                    })
-                    .catch((error) => notifyError("Loading cycle resource types failed",
-                        "cause: " + getErrorMessage(error)))
-            })
-            .catch((error) => notifyError("Loading resource types failed",
-                "cause: " + getErrorMessage(error)))
-    }, []);
+            setResourceTypeData(
+                diff?.map((rType) => (
+                    {value: String(rType.dbid), label: rType.name!}
+                ))
+            )
+        }
+    }, [resourceTypes.data, resourceTypes.status, cycleResourceTypes.data, cycleResourceTypes.status]);
 
     const form  = useForm<AvailableResourcesValues>({
         initialValues: {
@@ -120,8 +120,6 @@ export default function AvailableResourcesForm(props: AvailableResourcesProps) :
                 }
             })
         }
-
-
     })
 
     return (

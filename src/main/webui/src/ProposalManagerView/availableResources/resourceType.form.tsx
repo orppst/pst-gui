@@ -3,7 +3,9 @@ import {Stack, TextInput} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import {useForm} from "@mantine/form";
 import {ResourceTypeFormValues} from "./resourceType.modal.tsx";
-import {fetchResourceTypeResourceAddNewResourceType} from "../../generated/proposalToolComponents.ts";
+import {
+    useResourceTypeResourceAddNewResourceType
+} from "../../generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
@@ -32,9 +34,23 @@ export default function ResourceTypeForm(props: ResourceTypeFormValues) : ReactE
         }
     })
 
+    const addNewResourceTypeMutation = useResourceTypeResourceAddNewResourceType({
+        onSuccess: () => {
+            queryClient.invalidateQueries().finally();
+            props.closeModal!();
+            notifySuccess("Creation Successful",
+                "Added " + form.values.name + " (" + form.values.unit + ") to the resource types");
+        },
+        onError: (error) => {
+            notifyError("Creation Failed",
+                "Unable to add " + form.values.name + " (" + form.values.unit + ") due to: "
+                + getErrorMessage(error))
+        }
+    })
+
     const handleSubmit = form.onSubmit((values) => {
         //creating a new resource type
-        fetchResourceTypeResourceAddNewResourceType({
+        addNewResourceTypeMutation.mutate({
             body: {
                 name: values.name,
                 unit: values.unit
@@ -42,13 +58,6 @@ export default function ResourceTypeForm(props: ResourceTypeFormValues) : ReactE
             //@ts-ignore-
             headers: {"Content-Type": "application/json"}
         })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => props.closeModal!())
-            .then(() => notifySuccess("Creation Successful",
-                "Added " + values.name + " (" + values.unit + ") to the resource types"))
-            .catch((error) =>notifyError("Creation Failed",
-                "Unable to add " + values.name + " (" + values.unit + ") due to: "
-                + getErrorMessage(error)))
     })
 
     return (
