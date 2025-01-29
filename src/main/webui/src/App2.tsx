@@ -3,7 +3,7 @@ import {
     useContext,
     ReactElement,
     SyntheticEvent,
-    Context, StrictMode, useReducer
+    Context, StrictMode
 } from 'react';
 import {
     QueryClient,
@@ -135,10 +135,6 @@ function App2(): ReactElement {
 
     const GRAY = theme.colors.gray[6];
 
-    // hack to force the left-hand navbar to update after proposal deletion in Overview panel
-    // more precisely, when called, "forceUpdate" will make the entire App rerender - use sparingly!!
-    const [,forceUpdate] = useReducer(x => x + 1, 0);
-
     // the paths to route to.
     const router = createBrowserRouter(
         [
@@ -223,8 +219,7 @@ function App2(): ReactElement {
                     },
                     {
                         path: "proposal/:selectedProposalCode",
-                        //'forceUpdate' is called following a proposal deletion in Overview panel
-                        element: <OverviewPanel forceUpdate={forceUpdate}/>,
+                        element: <OverviewPanel/>,
                         errorElement: <ErrorPage />,
                     },
                     {

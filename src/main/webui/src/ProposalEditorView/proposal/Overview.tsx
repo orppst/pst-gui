@@ -1,7 +1,7 @@
 import {useNavigate, useParams} from 'react-router-dom'
 import {
-    fetchProposalResourceCloneObservingProposal,
-    fetchProposalResourceDeleteObservingProposal,
+    useProposalResourceCloneObservingProposal,
+    useProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
     useSupportingDocumentResourceGetSupportingDocuments,
 } from 'src/generated/proposalToolComponents';
@@ -37,6 +37,7 @@ import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
 import {useToken} from "../../App2.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 /*
       title    -- string
@@ -225,13 +226,21 @@ function ObservationAccordionContent(
  * @return {ReactElement} the html of the overview panel.
  * @constructor
  */
-function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
+function OverviewPanel(): ReactElement {
 
     const authToken = useToken();
 
     const { selectedProposalCode } = useParams();
 
     const navigate = useNavigate();
+
+    const queryClient = useQueryClient();
+
+    const cloneProposalMutation =
+        useProposalResourceCloneObservingProposal();
+
+    const deleteProposalMutation =
+        useProposalResourceDeleteObservingProposal()
 
     const {data: supportingDocs} =
         useSupportingDocumentResourceGetSupportingDocuments({
@@ -572,13 +581,20 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     const handleCloneProposal = (): void => {
-        fetchProposalResourceCloneObservingProposal({
+        cloneProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ['pst', 'api', 'proposals']
+                }).then(() =>
+                    notifySuccess("Clone Proposal Successful",
+                        "you should now change the title of the cloned proposal to something more meaningful")
+                );
+            },
+            onError: (error) =>
+                notifyError("Clone Proposal Failed", getErrorMessage(error))
         })
-            .then(() => props.forceUpdate())
-            .then(() => notifySuccess("Clone Proposal Successful",
-                "you should now change the title of the cloned proposal to something more meaningful"))
-            .catch(error => notifyError("Clone Proposal Failed", getErrorMessage(error)));
     }
 
     const DeleteProposal = () : ReactElement => {
@@ -618,15 +634,21 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
 
     const handleDeleteProposal = () => {
-        fetchProposalResourceDeleteObservingProposal({
+        deleteProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
+        },{
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ['pst', 'api', 'proposals']
+                }).then(() => {
+                    notifySuccess("Deletion successful",
+                        "Proposal: '" + proposalsData?.title! + "' has been removed");
+                });
+                navigate("/");
+            },
+            onError: (error) =>
+                notifyError("Deletion failed", getErrorMessage(error))
         })
-            .then(()=> notifySuccess(
-                "Deletion successful",
-                "Proposal: '" + proposalsData?.title! + "' has been removed"))
-            .then(()=> navigate("/"))
-            .then(() => props.forceUpdate())
-            .catch(error => notifyError("Deletion failed", getErrorMessage(error)))
     }
 
 
