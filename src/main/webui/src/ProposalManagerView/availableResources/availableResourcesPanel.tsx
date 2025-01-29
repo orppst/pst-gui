@@ -68,7 +68,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
             })
     }
 
-    const confirmDelete = (resource: Resource): void => modals.openConfirmModal({
+    const confirmDelete = (resource: Resource): String => modals.openConfirmModal({
         title: 'Delete Available Resource?',
         children: (
             <Text c={"yellow"} size={"sm"}>
