@@ -4,7 +4,9 @@ import DeleteButton from "../../commonButtons/delete.tsx";
 import AllocatedBlockModal from "./allocatedBlock.modal.tsx";
 import {ReactElement} from "react";
 import {modals} from "@mantine/modals";
-import {fetchAllocatedBlockResourceRemoveAllocatedBlock} from "../../generated/proposalToolComponents.ts";
+import {
+    useAllocatedBlockResourceRemoveAllocatedBlock
+} from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -21,6 +23,9 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
 {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
+
+    const removeAllocatedBlock =
+        useAllocatedBlockResourceRemoveAllocatedBlock();
 
     type DeleteProps = {
         proposalTitle: string,
@@ -47,18 +52,22 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
     }
 
     const handleDelete = (props: DeleteProps) => {
-        fetchAllocatedBlockResourceRemoveAllocatedBlock({
+        removeAllocatedBlock.mutate({
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 allocatedId: props.allocatedId,
                 blockId: props.blockId
             }
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries()
+                    .then(() => notifySuccess("Deletion Successful",
+                        "Deleted " + props.resourceName + " from " + props.proposalTitle))
+            },
+            onError: (error) =>
+                notifyError("Failed to delete " + props.resourceName +
+                    " from " + props.proposalTitle, getErrorMessage(error))
         })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => notifySuccess("Deletion Successful",
-                "Deleted " + props.resourceName + " from " + props.proposalTitle))
-            .catch(error => notifyError("Failed to delete " + props.resourceName +
-                " from " + props.proposalTitle, getErrorMessage(error)))
     }
 
     return (
@@ -75,35 +84,39 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody c={"orange.2"}>
-                        {props.allocatedBlocks.map(ab => (
-                            //resource.type.name + grade is unique per row in this table
-                            <Table.Tr key={ab.resource?.type?.name! + ab.grade?.name!}>
-                                <Table.Td>{ab.resource?.type?.name}</Table.Td>
-                                <Table.Td>{ab.resource?.amount} {ab.resource?.type?.unit}</Table.Td>
-                                <Table.Td>{ab.mode?.name}</Table.Td>
-                                <Table.Td>{ab.grade?.name}</Table.Td>
-                                <Table.Td>
-                                    <Group justify={"flex-end"}>
-                                        <AllocatedBlockModal
-                                            proposalTitle={props.proposalTitle}
-                                            allocatedBlock={ab}
-                                            allocatedProposalId={props.allocatedProposalId}
-                                        />
-                                        <DeleteButton
-                                            toolTipLabel={"delete this resource block"}
-                                            onClick={() => confirmDelete(
-                                                {
-                                                    proposalTitle: props.proposalTitle,
-                                                    resourceName: ab.resource?.type?.name!,
-                                                    allocatedId: props.allocatedProposalId,
-                                                    blockId: ab._id!
-                                                }
-                                            )}
-                                        />
-                                    </Group>
-                                </Table.Td>
-                            </Table.Tr>
-                        ))}
+                        {props.allocatedBlocks.map(ab => {
+                            //on second call for a "thing" we get a reference rather than the "thing"
+                            // e.g., a resource name will only display once for the entire table.
+                            console.log(ab)
+                            return (
+                                <Table.Tr key={ab._id}>
+                                    <Table.Td>{ab.resource?.type?.name}</Table.Td>
+                                    <Table.Td>{ab.resource?.amount} {ab.resource?.type?.unit}</Table.Td>
+                                    <Table.Td>{ab.mode?.name}</Table.Td>
+                                    <Table.Td>{ab.grade?.name}</Table.Td>
+                                    <Table.Td>
+                                        <Group justify={"flex-end"}>
+                                            <AllocatedBlockModal
+                                                proposalTitle={props.proposalTitle}
+                                                allocatedBlock={ab}
+                                                allocatedProposalId={props.allocatedProposalId}
+                                            />
+                                            <DeleteButton
+                                                toolTipLabel={"delete this resource block"}
+                                                onClick={() => confirmDelete(
+                                                    {
+                                                        proposalTitle: props.proposalTitle,
+                                                        resourceName: ab.resource?.type?.name!,
+                                                        allocatedId: props.allocatedProposalId,
+                                                        blockId: ab._id!
+                                                    }
+                                                )}
+                                            />
+                                        </Group>
+                                    </Table.Td>
+                                </Table.Tr>
+                            )
+                        })}
                     </Table.Tbody>
                 </Table>
             }

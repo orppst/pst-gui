@@ -37,7 +37,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const form = useForm<ReviewFormValues>({
         initialValues: {
-            comment: theReview ? theReview.comment! : "",
+            comment: theReview?.comment ?? "",
             score: theReview ? theReview.score! : 0,
             technicalFeasibility: theReview ? theReview.technicalFeasibility! : false
         },
