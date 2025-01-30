@@ -1,10 +1,9 @@
 import {ReactElement, useContext, useEffect, useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {
-    useInvestigatorResourceGetInvestigator,
-    useInvestigatorResourceGetInvestigators,
     useInvestigatorResourceRemoveInvestigator,
     useInvestigatorResourceChangeInvestigatorKind,
+    useInvestigatorResourceGetInvestigatorsAsObjects,
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {Box, Grid, Stack, Table, Text} from "@mantine/core";
@@ -17,9 +16,10 @@ import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
-import { InvestigatorKind, Person } from 'src/generated/proposalToolSchemas.ts';
+import {Investigator, InvestigatorKind, Person} from 'src/generated/proposalToolSchemas.ts';
 import { ProposalContext } from 'src/App2.tsx';
 import { useModals } from "@mantine/modals";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 
 /**
@@ -28,23 +28,11 @@ import { useModals } from "@mantine/modals";
  * @param dbid the database id for this person.
  */
 type PersonProps = {
-    dbid: number
-    email?: string
-}
-
-type InvestigatorProps = {
-    dbid?: number
-    name?: string
-}
-
-type TypedInvestigator = {
-    person: Person
-    type: InvestigatorKind
-    _id: number
+    investigator: Investigator
 }
 
 // count of the PIs.
-let PiProfile = 0;
+let PiCount = 0;
 
 /**
  * generates the entire panel for the investigators.
@@ -55,13 +43,12 @@ let PiProfile = 0;
 function InvestigatorsPanel(): ReactElement {
     const { selectedProposalCode } = useParams();
     const { data , status, error, isLoading } =
-        useInvestigatorResourceGetInvestigators(
+        useInvestigatorResourceGetInvestigatorsAsObjects(
             {pathParams: { proposalCode: Number(selectedProposalCode)},},
             {enabled: true});
     const navigate = useNavigate();
     const { user } = useContext(ProposalContext);
     const queryClient = useQueryClient();
-     
 
     if (error) {
         return (
@@ -75,48 +62,18 @@ function InvestigatorsPanel(): ReactElement {
      * maintain a count of the PIs
      */
     useEffect(() => {
-        let investigatorIDs = Array<number>();
         if(status ==='success') {
-            PiProfile = 0;
-            queryClient.invalidateQueries({
-                predicate: (query) => {
+            PiCount = 0;
+            if(data !== undefined) {
+                data.map((investigator) => {
+                    if(investigator.type == 'PI')
+                        PiCount++;
+                })
+                console.log("PiCount = "+ PiCount);
+            }
 
-                    if(query.queryKey.length === 5)
-                    {
-                        const investigatorList = (query.state.data as Array<InvestigatorProps>);
-                        if(typeof(investigatorList) == "object")
-                        {
-                            if(investigatorIDs.length < investigatorList.length){
-                                investigatorList.forEach(inv => {
-                                    investigatorIDs.push(inv.dbid as number);
-                                });
-                            }
-                        }
-                    }
-
-                    if(query.queryKey.length === 6)
-                    {
-                        //find the id of this object -
-                        //see if it is in our list
-                        //if it is then we read the type
-                        //if the type is PI we add it to the pi count
-                        //then we remove the index from investigatorID so we don't do more than once per item
-                        const investigator = (query.state.data as TypedInvestigator);
-                        if(investigator !== undefined) {
-                            const target = investigatorIDs.indexOf(investigator._id ?? 0);
-                            if (target >= 0) {
-                                if (investigator.type == "PI") {
-                                    PiProfile += 1;
-
-                                }
-                                investigatorIDs[target] = -1;
-                            }
-                            //console.log("PI count: " + PiProfile);
-                        }
-                    }
-                    return true;
-                }
-            }).then()
+        } else {
+            notifyError("Error loading investigators", getErrorMessage(error));
         }
 
     }, [data]);
@@ -141,10 +98,9 @@ function InvestigatorsPanel(): ReactElement {
                         <InvestigatorsHeader/>
                         <Table.Tbody>
                             {data?.map((item) => {
-                                if(item.dbid !== undefined) {
-                                    return (<InvestigatorsRow dbid={item.dbid}
-                                                              email={user.eMail}
-                                                              key={item.dbid}/>)
+                                if(item.person !== undefined) {
+                                    return (<InvestigatorsRow investigator={item}
+                                                              key={item.person.xmlId}/>)
                                 } else {
                                     return (
                                         <Box key={randomId()}>
@@ -205,13 +161,6 @@ function InvestigatorsHeader(): ReactElement {
 function InvestigatorsRow(props: PersonProps): ReactElement {
     const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
-    const { data, error, isLoading } = useInvestigatorResourceGetInvestigator(
-        {pathParams:
-                {
-                    investigatorId: props.dbid,
-                    proposalCode: Number(selectedProposalCode),
-                },
-        });
     const queryClient = useQueryClient();
     
 
@@ -221,21 +170,18 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
      * 
      */
     function CheckPiCount(delegateFunction: Function) {
-
-
         setSubmitting(true);
 
-                //if there are too few PI's prevent the action
-                if(PiProfile < 2)
-                {
-                    lastPiContext();
-                    setSubmitting(false);
-                }
-                //otherwise go for it
-                else{
-                    delegateFunction();
-                }
-                
+        //if there are too few PI's prevent the action
+        if(PiCount <= 1)
+        {
+            lastPiContext();
+            setSubmitting(false);
+        }
+        //otherwise go for it
+        else{
+            delegateFunction();
+        }
 
     }
 
@@ -266,7 +212,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         setSubmitting(true);
         removeInvestigatorMutation.mutate({pathParams:
                 {
-                    investigatorId: props.dbid,
+                    investigatorId: props.investigator._id!,
                     proposalCode: Number(selectedProposalCode),
                 }})
     }
@@ -293,19 +239,13 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
      */
     function SwitchInvestigatorKind() {
         let investigatorTypeSetting:InvestigatorKind = "COI";
-        if(data?.type == 'COI')
-        {
+        if(props.investigator.type == 'COI')
             investigatorTypeSetting = "PI";
-            PiProfile += 1;
 
-        } else {
-            PiProfile -= 1;
-        }
         setSubmitting(true);
-        //console.log(investigatorTypeSetting);
         changeInvestigatorKindMutation.mutate({
             pathParams: {
-                    investigatorId: props.dbid,
+                    investigatorId: props.investigator._id!,
                     proposalCode: Number(selectedProposalCode),
                 },
             body: investigatorTypeSetting
@@ -319,7 +259,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
 
     function HandleSwap()
     {
-        if(data?.type == "COI")
+        if(props.investigator.type == "COI")
         {
             //if the target is a coi, allow swap to PI
             return SwitchInvestigatorKind();
@@ -334,14 +274,16 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     function HandleDelete()
     {
         //COI or PI
-        if(data?.type == "COI")
+        if(props.investigator.type == "COI")
         {
-            //warn if the user is trying to remove themselves 
-            if(data?.person?.eMail == props.email){
+            //warn if the user is trying to remove themselves
+            if(props.investigator.person?.eMail == "fred Blogs"){
                 return openRemoveSelfModal();
             }
             //if the target is a coi, allow removal
-            return openRemoveModal(); 
+            return openRemoveModal();
+
+
         }
         //if the target is a PI, don't delete, but offer to swap to a COI
         else {
@@ -355,7 +297,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
             centered: true,
             children: (
                 <Text size="sm">
-                    Are you sure you want to remove {data?.person?.fullName} from this proposal?
+                    Are you sure you want to remove {props.investigator.person?.fullName} from this proposal?
                 </Text>
             ),
             labels: { confirm: "Delete", cancel: "Cancel" },
@@ -383,7 +325,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
             centered: true,
             children: (
                 <Text size="sm">
-                    You can't remove a PI from a proposal.<br/>Would you like to change {data?.person?.fullName} to a COI instead?
+                    You can't remove a PI from a proposal.<br/>Would you like to change {props.investigator.person?.fullName} to a COI instead?
                 </Text>
             ),
             labels: { confirm: "OK", cancel: "Cancel" },
@@ -396,22 +338,10 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         modals.openContextModal("investigator_modal", {
             title: "Alert",
             centered: true,
-            innerProps: "Proposals MUST have at least one PI. Another PI must be added before the action is allowed.",
+            innerProps: "Proposals MUST have at least one PI. Another PI must be added before the action is allowed. I can count " + PiCount,
         });
 
-    // track error states
-    if (isLoading) {
-        return (
-            <Table.Tr><Table.Td colSpan={5}>
-                Loading...
-            </Table.Td></Table.Tr>)
-    } else if (error !== null) {
-        return (
-            <Table.Tr><Table.Td colSpan={5}>
-                Error!
-            </Table.Td></Table.Tr>
-        )
-    } else if (submitting) {
+    if (submitting) {
         return (
             <Table.Tr><Table.Td colSpan={5}>
                 Updating...
@@ -423,10 +353,10 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     return (
         <>
         <Table.Tr>
-            <Table.Td>{data?.type}</Table.Td>
-            <Table.Td>{data?.person?.fullName}</Table.Td>
-            <Table.Td>{data?.person?.eMail}</Table.Td>
-            <Table.Td>{data?.person?.homeInstitute?.name}</Table.Td>
+            <Table.Td>{props.investigator.type}</Table.Td>
+            <Table.Td>{props.investigator.person?.fullName}</Table.Td>
+            <Table.Td>{props.investigator.person?.eMail}</Table.Td>
+            <Table.Td>{props.investigator.person?.homeInstitute?.name}</Table.Td>
             <Table.Td><SwapRoleButton toolTipLabel={"swap role"}
                                     onClick={HandleSwap}
                                      />

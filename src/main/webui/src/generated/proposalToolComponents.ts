@@ -8012,6 +8012,76 @@ export const useInvestigatorResourceAddPersonAsInvestigator = (
   });
 };
 
+export type InvestigatorResourceGetInvestigatorsAsObjectsPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type InvestigatorResourceGetInvestigatorsAsObjectsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InvestigatorResourceGetInvestigatorsAsObjectsResponse =
+  Schemas.Investigator[];
+
+export type InvestigatorResourceGetInvestigatorsAsObjectsVariables = {
+  pathParams: InvestigatorResourceGetInvestigatorsAsObjectsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInvestigatorResourceGetInvestigatorsAsObjects = (
+  variables: InvestigatorResourceGetInvestigatorsAsObjectsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    InvestigatorResourceGetInvestigatorsAsObjectsResponse,
+    InvestigatorResourceGetInvestigatorsAsObjectsError,
+    undefined,
+    {},
+    {},
+    InvestigatorResourceGetInvestigatorsAsObjectsPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/investigators/asObjects",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useInvestigatorResourceGetInvestigatorsAsObjects = <
+  TData = InvestigatorResourceGetInvestigatorsAsObjectsResponse,
+>(
+  variables: InvestigatorResourceGetInvestigatorsAsObjectsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      InvestigatorResourceGetInvestigatorsAsObjectsResponse,
+      InvestigatorResourceGetInvestigatorsAsObjectsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    InvestigatorResourceGetInvestigatorsAsObjectsResponse,
+    InvestigatorResourceGetInvestigatorsAsObjectsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/investigators/asObjects",
+      operationId: "investigatorResourceGetInvestigatorsAsObjects",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchInvestigatorResourceGetInvestigatorsAsObjects(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type InvestigatorResourceGetInvestigatorPathParams = {
   /**
    * @format int64
@@ -12733,6 +12803,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/investigators";
       operationId: "investigatorResourceGetInvestigators";
       variables: InvestigatorResourceGetInvestigatorsVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/investigators/asObjects";
+      operationId: "investigatorResourceGetInvestigatorsAsObjects";
+      variables: InvestigatorResourceGetInvestigatorsAsObjectsVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}";

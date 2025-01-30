@@ -666,6 +666,7 @@ export type IntegerQuantity = {
 };
 
 export type Investigator = {
+  _id?: number;
   type?: InvestigatorKind;
   /**
    * is the investigator making proposal for their PhD
