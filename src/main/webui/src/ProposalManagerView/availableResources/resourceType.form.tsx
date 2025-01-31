@@ -54,9 +54,7 @@ export default function ResourceTypeForm(props: ResourceTypeFormValues) : ReactE
             body: {
                 name: values.name,
                 unit: values.unit
-            },
-            //@ts-ignore-
-            headers: {"Content-Type": "application/json"}
+            }
         })
     })
 
