@@ -47,8 +47,6 @@ function InvestigatorsPanel(): ReactElement {
             {pathParams: { proposalCode: Number(selectedProposalCode)},},
             {enabled: true});
     const navigate = useNavigate();
-    const { user } = useContext(ProposalContext);
-    const queryClient = useQueryClient();
 
     if (error) {
         return (
@@ -69,10 +67,10 @@ function InvestigatorsPanel(): ReactElement {
                     if(investigator.type == 'PI')
                         PiCount++;
                 })
-                console.log("PiCount = "+ PiCount);
+                //console.log("PiCount = "+ PiCount);
             }
 
-        } else {
+        } else if(error) {
             notifyError("Error loading investigators", getErrorMessage(error));
         }
 
@@ -100,7 +98,7 @@ function InvestigatorsPanel(): ReactElement {
                             {data?.map((item) => {
                                 if(item.person !== undefined) {
                                     return (<InvestigatorsRow investigator={item}
-                                                              key={item.person.xmlId}/>)
+                                                              key={item.person._id}/>)
                                 } else {
                                     return (
                                         <Box key={randomId()}>
@@ -162,7 +160,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     const { selectedProposalCode } = useParams();
     const [submitting, setSubmitting] = useState(false);
     const queryClient = useQueryClient();
-    
+    const { user } = useContext(ProposalContext);
 
      /**
      * count PIs 
@@ -189,14 +187,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     const removeInvestigatorMutation = useInvestigatorResourceRemoveInvestigator({
         onSuccess: () => {
             setSubmitting(false);
-            return queryClient.invalidateQueries({
-                predicate: (query) => {
-                // only invalidate the query for the entire list.
-                // not the separate bits.
-                    return query.queryKey.length === 5 &&
-                    query.queryKey[4] === 'investigators';
-                }
-            });
+            return queryClient.invalidateQueries();
 
         },
         onError: (error)=> {
@@ -221,12 +212,15 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     const changeInvestigatorKindMutation = useInvestigatorResourceChangeInvestigatorKind({
         onSuccess: () => {
             setSubmitting(false);
-            return queryClient.invalidateQueries({
+            /*return queryClient.invalidateQueries({
                     predicate: (query) => {
                         // using 'length === 6' to ensure we get the set of investigators
                         return query.queryKey.length === 6 &&
                             query.queryKey[4] === 'investigators';
                     }});
+
+             */
+            queryClient.invalidateQueries().finally();
         },
         onError: (error)=> {
             notifyError("Error changing kind", error!.payload);
@@ -277,7 +271,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         if(props.investigator.type == "COI")
         {
             //warn if the user is trying to remove themselves
-            if(props.investigator.person?.eMail == "fred Blogs"){ // FIXME !!
+            if(props.investigator.person?._id == user._id){
                 return openRemoveSelfModal();
             }
             //if the target is a coi, allow removal
@@ -338,7 +332,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         modals.openContextModal("investigator_modal", {
             title: "Alert",
             centered: true,
-            innerProps: "Proposals MUST have at least one PI. Another PI must be added before the action is allowed. I can count " + PiCount,
+            innerProps: "Proposals MUST have at least one PI. Another PI must be added before the action is allowed.",
         });
 
     if (submitting) {

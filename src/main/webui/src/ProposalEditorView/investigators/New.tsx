@@ -62,16 +62,14 @@ function AddInvestigatorPanel(): ReactElement {
         = useInvestigatorResourceGetInvestigatorsAsObjects({pathParams: {proposalCode: Number(selectedProposalCode)}});
 
     //Get details of the currently selected person
-    const selectedPerson = usePersonResourceGetPerson(
+    let selectedPerson = usePersonResourceGetPerson(
         {pathParams:{id: form.values.selectedInvestigator}})
 
     useEffect(() => {
         if(allPeople.status === 'success' && currentInvestigators.status === 'success') {
             setSearchData([]);
-            //console.log("currentInvestigators.data = ", JSON.stringify(currentInvestigators.data, null, 2));
             allPeople.data?.map((item) => {
-                //console.log("Checking person " + item.dbid + " " + item.name);
-                if(!currentInvestigators.data.some(i => i.person?.xmlId == item.dbid))
+                if(!currentInvestigators.data.some(i => i.person?._id == item.dbid))
                     setSearchData((current) => [...current, {
                         value: String(item.dbid), label: item.name}] as ComboboxData)
             })
@@ -112,13 +110,21 @@ function AddInvestigatorPanel(): ReactElement {
     });
 
     const handleAdd = form.onSubmit((val) => {
-        addInvestigatorMutation.mutate(
-                {pathParams:{proposalCode: Number(selectedProposalCode)},
-                    body:{
+        if(selectedPerson.data != undefined) {
+            addInvestigatorMutation.mutate(
+                {
+                    pathParams: {proposalCode: Number(selectedProposalCode)},
+                    body: {
                         type: val.type,
                         forPhD: val.forPhD,
-                        person: selectedPerson.data!,
-                    }})
+                        person: selectedPerson.data,
+                    }
+                })
+        } else if(selectedPerson.error) {
+            notifyError("Add investigator error", getErrorMessage(selectedPerson.error));
+        } else {
+            notifyError("Add investigator error", "Selected person is empty??");
+        }
     });
 
     function handleCancel(event: SyntheticEvent) {
