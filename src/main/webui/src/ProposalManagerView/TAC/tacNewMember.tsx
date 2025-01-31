@@ -1,7 +1,8 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchReviewerResourceGetReviewer, fetchTACResourceAddCommitteeMember,
+    fetchReviewerResourceGetReviewer,
     useReviewerResourceGetReviewers,
+    useTACResourceAddCommitteeMember,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -12,8 +13,9 @@ import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
 import { JSON_SPACES } from 'src/constants.tsx';
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useToken} from "../../App2.tsx";
 
 /**
  * Renders form panel to add a reviewer to the TAC of the current cycle.
@@ -26,6 +28,11 @@ function CycleTACAddMemberPanel(): ReactElement {
         role: TacRole,
         selectedMember: number
     }
+
+    const addCommitteeMember =
+        useTACResourceAddCommitteeMember();
+
+    const authToken = useToken();
 
     const form = useForm<newMemberForm>({
         initialValues: {
@@ -72,34 +79,42 @@ function CycleTACAddMemberPanel(): ReactElement {
         );
     }
 
+    /*
+        We must use the 'fetch-get' here as the reviewerId comes from selectable user input.
+        Could this be redesigned to avoid this?
+     */
     const handleAdd = form.onSubmit((val) => {
-        //Get full investigator from API and add back to proposal
-        fetchReviewerResourceGetReviewer(
-            {pathParams:{reviewerId: form.values.selectedMember}})
-            .then((data) => fetchTACResourceAddCommitteeMember(
-                {pathParams:{cycleCode: Number(selectedCycleCode)},
+        //need the reviewer to add as a TAC member
+        fetchReviewerResourceGetReviewer({
+            pathParams:{
+                reviewerId: form.values.selectedMember
+            },
+            headers: {authorization: `Bearer ${authToken}`}
+        })
+            .then((data) =>
+                addCommitteeMember.mutate({
+                    pathParams: {
+                        cycleCode: Number(selectedCycleCode)
+                    },
                     body:{
                         role: val.role,
                         member: data,
-                    }})
-                .then(()=> {
-                    return queryClient.invalidateQueries({
-                        predicate: (query) => {
-                            return query.queryKey.length === 5
-                                && query.queryKey[4] === 'TAC';
-                        }
-                    });
-                })
-                .then(()=>navigate(  "../", {relative:"path"})) // see https://stackoverflow.com/questions/72537159/react-router-v6-and-relative-links-from-page-within-route
-                .catch((error)=> {
-                    console.log(error);
-                    notifyError("Add failed", getErrorMessage(error));
+                    }
+                }, {
+                    onSuccess: () => {
+                        queryClient.invalidateQueries()
+                            .then(() => notifySuccess("TAC member added",
+                                data.person?.fullName + " added as " + val.role)
+                            )
+                            .then(() => navigate("../", {relative: "path"}))
+                    },
+                    onError: () =>
+                        notifyError("TAC member NOT added", getErrorMessage(error))
                 })
             )
-            .catch((error)=> {
-                console.log(error);
-                notifyError("Add failed", getErrorMessage(error));
-            });
+            .catch((error)=>
+                notifyError("Failed to get reviewer", getErrorMessage(error))
+            );
     });
 
     function handleCancel(event: SyntheticEvent) {
