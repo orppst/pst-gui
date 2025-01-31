@@ -3,9 +3,11 @@ import {Badge, Button, Grid, Group, NumberInput, Stack, Switch, Text, Textarea, 
 import AddButton from "../../commonButtons/add.tsx";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
-    fetchProposalReviewResourceAddReview, fetchProposalReviewResourceConfirmReviewComplete,
-    fetchProposalReviewResourceUpdateReviewComment, fetchProposalReviewResourceUpdateReviewFeasibility,
+    fetchProposalReviewResourceUpdateReviewComment,
+    fetchProposalReviewResourceUpdateReviewFeasibility,
     fetchProposalReviewResourceUpdateReviewScore,
+    useProposalReviewResourceAddReview,
+    useProposalReviewResourceConfirmReviewComplete,
     useReviewerResourceGetReviewer
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -16,11 +18,20 @@ import {CLOSE_DELAY, ICON_SIZE, MAX_CHARS_FOR_INPUTS, OPEN_DELAY, TEXTAREA_MAX_R
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {IconSquareRoundedCheck} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
+import {useToken} from "../../App2.tsx";
 
 export default
 function ReviewsForm(props: ReviewsProps) : ReactElement {
 
+    const authToken = useToken();
+
     const queryClient = useQueryClient();
+
+    const addReview =
+        useProposalReviewResourceAddReview();
+
+    const confirmReview =
+        useProposalReviewResourceConfirmReviewComplete()
 
     const theReviewer = useReviewerResourceGetReviewer({
         pathParams: {reviewerId: props.reviewerId}
@@ -93,7 +104,8 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
     }
 
     const handleAssign = (buttonProps: AssignButtonData) =>  {
-        fetchProposalReviewResourceAddReview({
+
+        addReview.mutate({
             pathParams: {
                 cycleCode: Number(props.cycleCode),
                 submittedProposalId: props.proposal?._id!
@@ -107,14 +119,23 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                     _id: buttonProps.reviewerId
                 }
             }
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries()
+                    .then(() =>
+                        notifySuccess("Assigment Successful",
+                        "You have self-assigned " + " to '" + buttonProps.proposalTitle + "'")
+                    )
+            },
+            onError: (error) =>
+                notifyError("Failed to self-assign " + " to " +
+                    "'" + buttonProps.proposalTitle  + "'", getErrorMessage(error))
+
         })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => notifySuccess("Assigment Successful",
-                "You have self-assigned " + " to '" + buttonProps.proposalTitle + "'"))
-            .catch(error => notifyError("Failed to self-assign " + " to " +
-                "'" + buttonProps.proposalTitle  + "'",
-                getErrorMessage(error)))
     }
+
+    //As we are using async-await semantics to ensure multiple changes actually occur, we
+    //cannot change these fetch calls to mutations. Instead, we use the token from context.
 
     //use async and await so that any multiple "fetch" commands are done in sequence
     async function handleSubmit (values: typeof form.values) {
@@ -132,8 +153,11 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                     reviewId: theReview?._id!
                 },
                 body: values.comment,
-                // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {
+                    authorization: `Bearer ${authToken}`,
+                    // @ts-ignore
+                    "Content-Type": "text/plain"
+                }
             })
                .then(() => notifySuccess("Success",
                     "Review comment has been updated"))
@@ -144,14 +168,17 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
         if (form.isDirty('score')) {
             //update score
            await fetchProposalReviewResourceUpdateReviewScore({
-                pathParams: {
-                    cycleCode: props.cycleCode,
-                    submittedProposalId: props.proposal?._id!,
-                    reviewId: theReview?._id!
+               pathParams: {
+                   cycleCode: props.cycleCode,
+                   submittedProposalId: props.proposal?._id!,
+                   reviewId: theReview?._id!
                 },
-                body: values.score,
-                // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+               body: values.score,
+               headers: {
+                   authorization: `Bearer ${authToken}`,
+                   // @ts-ignore
+                   "Content-Type": "text/plain"
+               }
             })
                .then(() => notifySuccess("Success",
                     "Review score has been updated"))
@@ -162,17 +189,20 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
         if (form.isDirty('technicalFeasibility')) {
             //update technicalFeasibility
            await fetchProposalReviewResourceUpdateReviewFeasibility({
-                pathParams: {
-                    cycleCode: props.cycleCode,
-                    submittedProposalId: props.proposal?._id!,
-                    reviewId: theReview?._id!
-                },
-                //I may be going mad. The api will not accept false (boolean value) with a
-                //'No-content' exception, but will accept "false" (literal string); no such
-                //problem with true
-                body: values.technicalFeasibility ? true : "false",
-                // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+               pathParams: {
+                   cycleCode: props.cycleCode,
+                   submittedProposalId: props.proposal?._id!,
+                   reviewId: theReview?._id!
+               },
+               //I may be going mad. The api will not accept false (boolean value) with a
+               //'No-content' exception, but will accept "false" (literal string); no such
+               //problem with true
+               body: values.technicalFeasibility ? true : "false",
+               headers: {
+                   authorization: `Bearer ${authToken}`,
+                   // @ts-ignore
+                   "Content-Type": "text/plain"
+               }
             })
                .then(() => notifySuccess("Success",
                     "Review feasibility has been updated"))
@@ -186,18 +216,21 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
     }
 
     const handleCompletion = () => {
-        fetchProposalReviewResourceConfirmReviewComplete({
+        confirmReview.mutate({
             pathParams: {
                 cycleCode: props.cycleCode,
                 submittedProposalId: props.proposal?._id!,
                 reviewId: theReview?._id!
             }
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries()
+                    .then(() =>
+                        notifySuccess("Success", "This review is now complete"))
+            },
+            onError: (error) =>
+                notifyError("Failed to Complete", getErrorMessage(error))
         })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => notifySuccess("Success",
-                "This review is now complete"))
-            .catch(error => notifyError("Failed to Complete",
-                getErrorMessage(error)))
     }
 
     const confirmCompletion = () => {
