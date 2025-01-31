@@ -212,6 +212,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
         await queryClient.invalidateQueries()
 
+        //needed to ensure the Update button is disabled after a successful update
         form.resetDirty();
     }
 
