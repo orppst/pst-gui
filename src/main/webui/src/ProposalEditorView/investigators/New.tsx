@@ -1,7 +1,7 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
     useInvestigatorResourceAddPersonAsInvestigator,
-    useInvestigatorResourceGetInvestigators,
+    useInvestigatorResourceGetInvestigatorsAsObjects,
     usePersonResourceGetPeople, usePersonResourceGetPerson,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
@@ -47,7 +47,8 @@ function AddInvestigatorPanel(): ReactElement {
     const navigate = useNavigate();
     const { selectedProposalCode } = useParams();
     const queryClient = useQueryClient();
-    const { data, error, status } = usePersonResourceGetPeople(
+    //Get all people in the database
+    const allPeople = usePersonResourceGetPeople(
         {
             queryParams: { name: '%' },
         },
@@ -56,43 +57,55 @@ function AddInvestigatorPanel(): ReactElement {
         }
     );
 
-    const { data: currentInvestigatorsData, error: currentInvestigatorsError, status: currentInvestigatorsStatus }
-        = useInvestigatorResourceGetInvestigators({pathParams: {proposalCode: Number(selectedProposalCode)}});
+    //Get all investigators tied to this proposal
+    const currentInvestigators
+        = useInvestigatorResourceGetInvestigatorsAsObjects({pathParams: {proposalCode: Number(selectedProposalCode)}});
 
-    const {data: selectedPersonData } = usePersonResourceGetPerson(
+    //Get details of the currently selected person
+    const selectedPerson = usePersonResourceGetPerson(
         {pathParams:{id: form.values.selectedInvestigator}})
 
     useEffect(() => {
-        if(status === 'success' && currentInvestigatorsStatus === 'success') {
+        if(allPeople.status === 'success' && currentInvestigators.status === 'success') {
             setSearchData([]);
-            data?.map((item) => {
-                if(!currentInvestigatorsData.some(e => e.name === item.name))
+            //console.log("currentInvestigators.data = ", JSON.stringify(currentInvestigators.data, null, 2));
+            allPeople.data?.map((item) => {
+                //console.log("Checking person " + item.dbid + " " + item.name);
+                if(!currentInvestigators.data.some(i => i.person?.xmlId == item.dbid))
                     setSearchData((current) => [...current, {
                         value: String(item.dbid), label: item.name}] as ComboboxData)
             })
         }
-    },[status,data, currentInvestigatorsStatus, currentInvestigatorsData]);
+    },[allPeople.status, allPeople.data, currentInvestigators.status, currentInvestigators.data]);
 
-    if (error) {
+    if (allPeople.error) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(allPeople.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
 
-    if(currentInvestigatorsError) {
+    if(currentInvestigators.error) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(currentInvestigatorsError, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(currentInvestigators.error, null, JSON_SPACES)}</pre>
+            </PanelFrame>
+        );
+    }
+
+    if(selectedPerson.error) {
+        return (
+            <PanelFrame>
+                <pre>{JSON.stringify(selectedPerson.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
 
     const addInvestigatorMutation = useInvestigatorResourceAddPersonAsInvestigator({
         onSuccess: () => {
-            queryClient.invalidateQueries();
-            navigate("../", {relative:"path"});
+            queryClient.invalidateQueries().finally(() =>
+                navigate("../", {relative:"path"}));
         },
         onError: (error) => notifyError("Add investigator error", getErrorMessage(error))
 
@@ -104,7 +117,7 @@ function AddInvestigatorPanel(): ReactElement {
                     body:{
                         type: val.type,
                         forPhD: val.forPhD,
-                        person: selectedPersonData!,
+                        person: selectedPerson.data!,
                     }})
     });
 

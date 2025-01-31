@@ -16,7 +16,7 @@ import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
-import {Investigator, InvestigatorKind, Person} from 'src/generated/proposalToolSchemas.ts';
+import {Investigator, InvestigatorKind} from 'src/generated/proposalToolSchemas.ts';
 import { ProposalContext } from 'src/App2.tsx';
 import { useModals } from "@mantine/modals";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -172,15 +172,15 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     function CheckPiCount(delegateFunction: Function) {
         setSubmitting(true);
 
-        //if there are too few PI's prevent the action
-        if(PiCount <= 1)
+        //Are there enough PI's?
+        if(PiCount > 1)
         {
+            delegateFunction();
+        }
+        //if there are too few PI's prevent the action
+        else{
             lastPiContext();
             setSubmitting(false);
-        }
-        //otherwise go for it
-        else{
-            delegateFunction();
         }
 
     }
@@ -277,7 +277,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         if(props.investigator.type == "COI")
         {
             //warn if the user is trying to remove themselves
-            if(props.investigator.person?.eMail == "fred Blogs"){
+            if(props.investigator.person?.eMail == "fred Blogs"){ // FIXME !!
                 return openRemoveSelfModal();
             }
             //if the target is a coi, allow removal
