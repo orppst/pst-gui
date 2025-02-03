@@ -2,9 +2,8 @@ import {ReactElement} from "react";
 import {Group, Table, Text} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {
-    fetchProposalResourceRemoveField,
     useProposalResourceGetField,
-    useProposalResourceGetFields
+    useProposalResourceGetFields, useProposalResourceRemoveField
 } from "../../generated/proposalToolComponents.ts";
 import ObservationFieldModal from "./observationFields.modal.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -32,6 +31,8 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
 
     const queryClient = useQueryClient();
 
+    const removeFieldMutation = useProposalResourceRemoveField()
+
     if (field.isError) {
         return (
             <Table.Tr key={props.fieldId}><Table.Td>Error: {getErrorMessage(field.error)}</Table.Td>
@@ -48,17 +49,20 @@ function ObservationFieldsRow(props: ObservationFieldRowProps): ReactElement {
     }
 
     const handleDelete = () => {
-        fetchProposalResourceRemoveField({
+        removeFieldMutation.mutate({
             pathParams: {
                 proposalCode: props.proposalCode,
                 fieldId: props.fieldId
             }
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries().then();
+                notifySuccess("Deleted Successfully",
+                    "the field has been removed");
+            },
+            onError: (error) =>
+                notifyError("Deletion Failed", getErrorMessage(error))
         })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => notifySuccess("Deleted Successfully",
-                "the field has been removed"))
-            .catch(error => notifyError("Deletion Failed",
-                getErrorMessage(error)))
     }
 
     const confirmDeletion = () => modals.openConfirmModal({

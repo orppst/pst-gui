@@ -1,7 +1,7 @@
 import {useNavigate, useParams} from 'react-router-dom'
 import {
-    fetchProposalResourceCloneObservingProposal,
-    fetchProposalResourceDeleteObservingProposal,
+    useProposalResourceCloneObservingProposal,
+    useProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
     useSupportingDocumentResourceGetSupportingDocuments,
 } from 'src/generated/proposalToolComponents';
@@ -36,6 +36,8 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
+import {useToken} from "../../App2.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 /*
       title    -- string
@@ -225,23 +227,37 @@ function ObservationAccordionContent(
  * @constructor
  */
 function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
+
+    const authToken = useToken();
+
     const { selectedProposalCode } = useParams();
 
     const navigate = useNavigate();
 
-    const {data} =
-        useSupportingDocumentResourceGetSupportingDocuments(
-            {pathParams: {proposalCode: Number(selectedProposalCode)},},
-            {enabled: true});
+    const queryClient = useQueryClient();
+
+    const cloneProposalMutation =
+        useProposalResourceCloneObservingProposal();
+
+    const deleteProposalMutation =
+        useProposalResourceDeleteObservingProposal()
+
+    const {data: supportingDocs} =
+        useSupportingDocumentResourceGetSupportingDocuments({
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode)
+                }
+        });
 
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
 
     const { data: proposalsData , error: proposalsError, isLoading: proposalsIsLoading } =
         useProposalResourceGetObservingProposal({
-                pathParams: {proposalCode: Number(selectedProposalCode)},},
-            {enabled: true}
-        );
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode)
+                }
+        });
 
 
     if (proposalsError) {
@@ -386,9 +402,11 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 {
                     proposalsData?.supportingDocuments &&
                     proposalsData.supportingDocuments.length > 0 ?
-                        <List style={{whiteSpace: 'pre-wrap',
-                                      overflowWrap: 'break-word'}}>
-
+                        <List
+                            style={{
+                                whiteSpace: 'pre-wrap',
+                                overflowWrap: 'break-word'}}
+                        >
                             {documents}
                         </List> :
                         <Text c={"yellow"}>No supporting documents added</Text>
@@ -540,27 +558,13 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * @return {Promise<void>} promise that the pdf will be saved at some point.
      */
     const handleDownloadPdf = (): void => {
-        // get the overview page to print as well as the proposal data.
-        const element = printRef.current;
-
-        // ensure there is a rendered overview.
-        if(element !== null && proposalsData !== undefined &&
-            selectedProposalCode !== undefined && data !== undefined) {
-            downloadProposal(
-                element, proposalsData, data, selectedProposalCode).then();
-        } else {
-            // something failed in the rendering of the overview react element or
-            // extracting the proposal data.
-            if (element === null) {
-                console.error(
-                    'Tried to download a Overview that had not formed ' +
-                    'correctly.');
-            } else {
-                console.error(
-                    'Tried to download the proposal data and that had not ' +
-                    'formed correctly.');
-            }
-        }
+        downloadProposal(
+            printRef.current!,
+            proposalsData!,
+            supportingDocs!,
+            selectedProposalCode!,
+            authToken
+        );
     };
 
     const CloneProposal = (): ReactElement => {
@@ -577,13 +581,20 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     const handleCloneProposal = (): void => {
-        fetchProposalResourceCloneObservingProposal({
+        cloneProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
+        }, {
+            onSuccess: (data) => {
+                queryClient.invalidateQueries({
+                    queryKey: ['pst', 'api', 'proposals']
+                }).then(() =>
+                    notifySuccess("Clone Proposal Successful",
+                        proposalsData?.title + " copied to " + data.title)
+                );
+            },
+            onError: (error) =>
+                notifyError("Clone Proposal Failed", getErrorMessage(error))
         })
-            .then(() => props.forceUpdate())
-            .then(() => notifySuccess("Clone Proposal Successful",
-                "you should now change the title of the cloned proposal to something more meaningful"))
-            .catch(error => notifyError("Clone Proposal Failed", getErrorMessage(error)));
     }
 
     const DeleteProposal = () : ReactElement => {
@@ -623,15 +634,23 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
 
     const handleDeleteProposal = () => {
-        fetchProposalResourceDeleteObservingProposal({
+
+        deleteProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
+        },{
+            onSuccess: () => {
+                notifySuccess("Deletion successful",
+                    "Proposal: '" + proposalsData?.title! + "' has been removed");
+                navigate("/");
+
+                //workaround: usually you would invalidate queries however this causes this
+                //page to rerender with the now deleted 'selectedProposalCode'. The get proposal
+                //API call will then fail and a 500 code shows up in the console.
+                props.forceUpdate();
+            },
+            onError: (error) =>
+                notifyError("Deletion failed", getErrorMessage(error))
         })
-            .then(()=> notifySuccess(
-                "Deletion successful",
-                "Proposal: '" + proposalsData?.title! + "' has been removed"))
-            .then(()=> navigate("/"))
-            .then(() => props.forceUpdate())
-            .catch(error => notifyError("Deletion failed", getErrorMessage(error)))
     }
 
 

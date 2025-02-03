@@ -1,8 +1,8 @@
 import {ReactElement} from "react";
 import {Fieldset, Grid, Group, Space, Stack, Table, Text} from "@mantine/core";
 import {
-    fetchAvailableResourcesResourceRemoveCycleResource,
     useAvailableResourcesResourceGetCycleAvailableResources,
+    useAvailableResourcesResourceRemoveCycleResource,
     useResourceTypeResourceGetAllResourceTypes
 } from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
@@ -33,6 +33,9 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
+    const removeCycleResource =
+        useAvailableResourcesResourceRemoveCycleResource();
+
     const availableResources =
         useAvailableResourcesResourceGetCycleAvailableResources({
         pathParams: {
@@ -52,20 +55,23 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     }
 
     const handleDelete = (id: number) => {
-        fetchAvailableResourcesResourceRemoveCycleResource({
+        removeCycleResource.mutate({
             pathParams:{
                 cycleCode: Number(selectedCycleCode),
                 resourceId: id
             }
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries()
+                    .then(() =>
+                        notifySuccess("Available Resource Deleted",
+                            "The selected available resource has been removed")
+                    )
+            },
+            onError: (error) =>
+                notifyError("Deletion Failed", getErrorMessage(error))
+
         })
-            .then(() => queryClient.invalidateQueries())
-            .then(()=>{
-                notifySuccess("Available Resource Deleted", "The selected available resource has been removed")
-            })
-            .catch((error) => {
-                    notifyError("Deletion Failed", "Unable to remove the selected available resource, cause: "
-                        + getErrorMessage(error))
-            })
     }
 
     const confirmDelete = (resource: Resource): void => modals.openConfirmModal({
@@ -86,9 +92,12 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         return (
             resourceTypes.data?.map((rType) => {
 
-                let textColour : string =
-                    !availableResources.data?.resources!.find(res => res.type!._id == rType.dbid ) ?
-                        'green' : 'orange';
+                let textColour : string = 'green';
+
+                    if(availableResources.data !== undefined
+                        && availableResources.data.resources !== undefined
+                        && availableResources.data?.resources!.find(res => res.type!._id == rType.dbid ))
+                            textColour = 'orange';
 
                 return (
                     <Text key={rType.dbid} c={textColour}>
@@ -102,6 +111,9 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
 
     //<AvailableResourceModal resource={resource} /> can be treated as an alias for the "Edit" button
     const AvailableResourcesRows = () => {
+        if(availableResources.data === undefined || availableResources.data.resources === undefined) {
+            return (<Table.Tr><Table.Td>No resources!</Table.Td></Table.Tr>);
+        } else
         return (
             availableResources.data?.resources?.map((resource) => (
                     <Table.Tr key={resource._id}>

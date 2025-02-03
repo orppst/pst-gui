@@ -1,7 +1,8 @@
 import {ReactElement} from "react";
-import {Group, Table, Text} from "@mantine/core";
+import {Group, Loader, Table, Text} from "@mantine/core";
 import {
-    fetchProposalReviewResourceAddReview, fetchProposalReviewResourceRemoveReview,
+    useProposalReviewResourceAddReview,
+    useProposalReviewResourceRemoveReview,
     useReviewerResourceGetReviewers
 } from "../../generated/proposalToolComponents.ts";
 import {SubmittedProposal} from "../../generated/proposalToolSchemas.ts";
@@ -18,7 +19,14 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
-    const reviewers = useReviewerResourceGetReviewers({})
+    const addReview =
+        useProposalReviewResourceAddReview();
+
+    const removeReview =
+        useProposalReviewResourceRemoveReview();
+
+    const reviewers =
+        useReviewerResourceGetReviewers({})
 
     if (reviewers.error) {
         notifyError("Failed to load reviewers", getErrorMessage(reviewers.error))
@@ -26,7 +34,7 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
 
     if (reviewers.isLoading) {
         return (
-            <></>
+            <Loader/>
         )
     }
 
@@ -44,19 +52,24 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
         let reviewToRemove  =
             proposal.reviews?.find(review => review.reviewer?._id == props.reviewerId)!
 
-        fetchProposalReviewResourceRemoveReview({
+        removeReview.mutate({
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 submittedProposalId: props.proposalId,
                 reviewId: reviewToRemove._id!
             }
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries()
+                    .then(() =>
+                        notifySuccess("Removal Successful",
+                        "Removed " + props.reviewerName + " as a reviewer from '" + props.proposalTitle +"'")
+                    )
+            },
+            onError: (error) =>
+                notifyError("Failed to remove " + props.reviewerName + "from '" + props.proposalTitle + "'",
+                getErrorMessage(error))
         })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => notifySuccess("Removal Successful",
-                "Removed " + props.reviewerName + " as a reviewer from '" + props.proposalTitle +"'"))
-            .catch(error => notifyError(
-                "Failed to remove " + props.reviewerName + "from '" + props.proposalTitle + "'",
-                getErrorMessage(error)))
     }
 
     const confirmRemoval = (props: ButtonData) => {
@@ -77,7 +90,8 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
     }
 
     const handleAssign = (props: ButtonData) =>  {
-        fetchProposalReviewResourceAddReview({
+
+        addReview.mutate({
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
                 submittedProposalId: proposal._id!
@@ -91,13 +105,19 @@ export default function AssignReviewersForm(proposal: SubmittedProposal) : React
                     _id: props.reviewerId
                 }
             }
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries()
+                .then(() =>
+                    notifySuccess("Assigment Successful",
+                    "Assigned " + props.reviewerName + " to '" + props.proposalTitle + "'")
+                )
+            },
+            onError: (error) =>
+                notifyError("Failed to assign " + props.reviewerName +
+                    " to " + "'" + props.proposalTitle  + "'",
+                    getErrorMessage(error)),
         })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => notifySuccess("Assigment Successful",
-                "Assigned " + props.reviewerName + " to '" + props.proposalTitle + "'"))
-            .catch(error => notifyError("Failed to assign " + props.reviewerName +
-                " to " + "'" + props.proposalTitle  + "'",
-                getErrorMessage(error)))
     }
 
     return (

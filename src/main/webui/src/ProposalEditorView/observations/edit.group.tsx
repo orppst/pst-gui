@@ -1,7 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import { Fieldset, Grid, Text, Stack} from '@mantine/core';
+import {Fieldset, Grid, Text, Stack, Group, Space} from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, Target, TargetObservation,
@@ -9,10 +9,12 @@ import {
 } from 'src/generated/proposalToolSchemas.ts';
 import { useForm, UseFormReturnType } from '@mantine/form';
 import {
-    fetchObservationResourceAddNewConstraint,
-    fetchObservationResourceAddNewObservation, fetchObservationResourceReplaceField,
-    fetchObservationResourceReplaceTargets, fetchObservationResourceReplaceTechnicalGoal,
-    fetchObservationResourceReplaceTimingWindow
+    useObservationResourceAddNewConstraint,
+    useObservationResourceAddNewObservation,
+    useObservationResourceReplaceField, useObservationResourceReplaceIntendedUse,
+    useObservationResourceReplaceTargets,
+    useObservationResourceReplaceTechnicalGoal,
+    useObservationResourceReplaceTimingWindow
 } from 'src/generated/proposalToolComponents.ts';
 import {FormSubmitButton} from 'src/commonButtons/save.tsx';
 import CancelButton from "src/commonButtons/cancel.tsx";
@@ -21,6 +23,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, ReactElement, SyntheticEvent } from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {queryKeyProposals} from "../../queryKeyProposals.tsx";
 
 /**
  * the different types of observation.
@@ -48,19 +53,27 @@ export interface ObservationFormValues {
  * @return {ReactElement} the react HTML for the observations edit panel.
  * @constructor
  */
-export default function ObservationEditGroup(
-    props: ObservationProps): ReactElement {
+export default
+function ObservationEditGroup(props: ObservationProps): ReactElement {
 
-    /*
-    For the TimingWindowForm the timingWindows array/list parameter should
-    only contain 'TimingWindow' types rather than the generic 'Constraint',
-    the class from which it inherits in Java. Issue being that the containing
-    object, the 'observation', only has an array of 'Constraints'. We either
-    separate the 'Constraints' based on their subtypes here, or have a
-    'TimingWindow' specific API call that returns the desired list via a hook.
-     */
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+
+    //mutation hooks
+    const addNewConstraint =
+        useObservationResourceAddNewConstraint();
+    const addNewObservation =
+        useObservationResourceAddNewObservation();
+    const replaceField =
+        useObservationResourceReplaceField();
+    const replaceTargets =
+        useObservationResourceReplaceTargets();
+    const replaceTechnicalGoal =
+        useObservationResourceReplaceTechnicalGoal();
+    const replaceTimingWindow =
+        useObservationResourceReplaceTimingWindow();
+    const replaceCalibrationUse =
+        useObservationResourceReplaceIntendedUse()
 
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
@@ -180,38 +193,57 @@ export default function ObservationEditGroup(
                         "@type": "proposal:TargetObservation"}
                 }
 
-                fetchObservationResourceAddNewObservation({
-                    pathParams:{proposalCode: Number(selectedProposalCode)},
-                    body: values.observationType == 'Target' ?
-                        targetObservation : calibrationObservation
+                addNewObservation.mutate({
+                    pathParams: {
+                        proposalCode: Number(selectedProposalCode)
+                    },
+                    body: values.observationType === 'Target' ?
+                        targetObservation : calibrationObservation,
+                }, {
+                    onSuccess: () => {
+                        queryClient.invalidateQueries().then();
+                        notifySuccess("Observation Added", "new observation added to proposal")
+                        props.closeModal!();
+                    },
+                    onError: (error) =>
+                        notifyError("Failed to add Observation", getErrorMessage(error)),
                 })
-                    .then(()=>queryClient.invalidateQueries())
-                    .then(()=>props.closeModal!())
-                    .catch(console.error);
-
             }
             else {
                 //Editing an existing observation
                 form.values.timingWindows.map((tw, index) => {
                     if (tw.id === 0) {
                         //new timing window - add to the Observation
-                        fetchObservationResourceAddNewConstraint({
+                        addNewConstraint.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observation?._id!,
+                                observationId: props.observation?._id!
                             },
                             body: ConvertToTimingWindowApi(tw)
+                        }, {
+                            onSuccess: () => {
+                                queryClient.invalidateQueries({
+                                    queryKey: queryKeyProposals({
+                                        proposalId: Number(selectedProposalCode),
+                                        childName: "observations",
+                                        childId: form.getValues().observationId!
+                                    }),
+                                }).then(() =>
+                                    notifySuccess("Timing Window Added",
+                                        "new timing window added to observation")
+                                );
+                            } ,
+                            onError: (error) =>
+                                notifyError("Failed to add timing window", getErrorMessage(error)),
                         })
-                            .then(()=>queryClient.invalidateQueries())
-                            .catch(console.error)
 
                     } else if (form.isDirty(`timingWindows.${index}`)){
                         //existing timing window and modified - update in Observation
 
-                        //the ts-ignore is required due to the fetch expecting a TimingWindow type
+                        //the ts-ignore is required due to the mutation expecting a TimingWindow type
                         //with start and end times as ISO-strings but the API excepting only the
                         //number of milliseconds since the posix epoch
-                        fetchObservationResourceReplaceTimingWindow({
+                        replaceTimingWindow.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 observationId: props.observation?._id!,
@@ -219,12 +251,25 @@ export default function ObservationEditGroup(
                             },
                             // @ts-ignore
                             body: ConvertToTimingWindowApi(tw)
+                        }, {
+                            onSuccess: () => {
+                                queryClient.invalidateQueries({
+                                    queryKey: queryKeyProposals({
+                                        proposalId: Number(selectedProposalCode),
+                                        childName: "observations",
+                                        childId: form.getValues().observationId!
+                                    }),
+                                }).then(() =>
+                                    notifySuccess("Timing Window Updated",
+                                        "timing window updates saved")
+                                );
+                            },
+                            onError: (error) =>
+                                notifyError("Failed to update timing window", getErrorMessage(error)),
                         })
-                            .then(()=>queryClient.invalidateQueries())
-                            .catch(console.error)
-                    }
-                    //else do nothing
+                    } //else do nothing
                 })
+
                 if (form.isDirty('targetDBIds')) {
                     let body: Target[] = [];
 
@@ -235,43 +280,105 @@ export default function ObservationEditGroup(
                         })
                     })
 
-                    fetchObservationResourceReplaceTargets({
+                    replaceTargets.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!
                         },
                         body: body
+                    }, {
+                        onSuccess: () => {
+                            queryClient.invalidateQueries({
+                                queryKey: queryKeyProposals({
+                                    proposalId: Number(selectedProposalCode),
+                                    childName: "observations",
+                                    childId: form.getValues().observationId!
+                                }),
+                            }).then(() =>
+                                notifySuccess("Targets updated", "new targets saved")
+                            );
+                        },
+                        onError: (error) =>
+                            notifyError("Failed to update targets", getErrorMessage(error)),
                     })
-                        .then(()=>queryClient.invalidateQueries())
-                        .catch(console.error)
                 }
 
                 if (form.isDirty('techGoalId')) {
-                    fetchObservationResourceReplaceTechnicalGoal({
+                    replaceTechnicalGoal.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id!
+                            observationId: props.observation?._id!,
                         },
                         body: {
                             "_id": form.values.techGoalId
                         }
+                    }, {
+                        onSuccess: () => {
+                            queryClient.invalidateQueries({
+                                queryKey: queryKeyProposals({
+                                    proposalId: Number(selectedProposalCode),
+                                    childName: "observations",
+                                    childId: form.getValues().observationId!
+                                }),
+                            }).then(() =>
+                                notifySuccess("Technical Goal Updated",
+                                    "technical goal updates saved")
+                            );
+                        },
+                        onError: (error) =>
+                            notifyError("Failed to update technical goal", getErrorMessage(error)),
                     })
-                        .then(()=>queryClient.invalidateQueries())
-                        .catch(console.error)
                 }
 
                 if (form.isDirty('fieldId')) {
-                    fetchObservationResourceReplaceField({
+                    replaceField.mutate({
+                        pathParams: {
+                            proposalCode: Number(selectedProposalCode),
+                            observationId: props.observation?._id!,
+                        },
+                        body: {
+                            "_id": Number(form.values.fieldId),
+                        }
+                    }, {
+                        onSuccess: () => {
+                            queryClient.invalidateQueries({
+                                queryKey: queryKeyProposals({
+                                    proposalId: Number(selectedProposalCode),
+                                    childName: "observations",
+                                    childId: form.getValues().observationId!
+                                }),
+                            }).then(() =>
+                                notifySuccess("Fields updated", "new field saved")
+                            );
+                        },
+                        onError: (error) =>
+                            notifyError("Failed to update field", getErrorMessage(error)),
+                    })
+                }
+
+                if (form.isDirty('calibrationUse')) {
+                    replaceCalibrationUse.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
                             observationId: props.observation?._id!
                         },
-                        body: {
-                            "_id": Number(form.values.fieldId)
-                        }
+                        body: values.calibrationUse
+                    }, {
+                        onSuccess: () => {
+                            queryClient.invalidateQueries({
+                                queryKey: queryKeyProposals({
+                                    proposalId: Number(selectedProposalCode),
+                                    childName: "observations",
+                                    childId: form.getValues().observationId!
+                                }),
+                            }).then(() =>
+                                notifySuccess("Calibration Intended Use Updated",
+                                    "calibration use saved")
+                            );
+                        },
+                        onError: (error) =>
+                            notifyError("Failed to update calibration use", getErrorMessage(error)),
                     })
-                        .then(()=>queryClient.invalidateQueries())
-                        .catch(console.error)
                 }
             }
     });
@@ -281,43 +388,42 @@ export default function ObservationEditGroup(
   function handleCancel(event: SyntheticEvent) {
       event.preventDefault();
       navigate("../",{relative:"path"})
-      }
-    return (
-        <>
-            <form onSubmit={handleSubmit}>
-            <ContextualHelpButton messageId="MaintObs" />
-            <Stack>
-                <Grid  columns={5}>
-                    <Grid.Col span={{base: 5, lg: 2}}>
-                        <Fieldset legend={"Target and type"}>
-                            <TargetTypeForm form={form} />
-                        </Fieldset>
-                    </Grid.Col>
-                    <Grid.Col span={{base: 5, lg: 3}}>
-                        <Fieldset legend={"Timing windows"}>
-                            <Text ta={"center"}  size={"xs"} c={"gray.6"}>
-                                Timezone set to UTC
-                            </Text>
-                            <TimingWindowsForm form={form}/>
-                        </Fieldset>
+  }
 
+  /*
+    Might be worth splitting this into two forms: one for the Target(s) and type for the Observation, the
+    other for the Timing Windows. Then we could split these across Tabs in the modal.
+   */
 
-                                    <p> </p>
-                                    <Grid>
-                                      <Grid.Col span={7}></Grid.Col>
-                                         <FormSubmitButton form={form} />
-                                         <CancelButton
-                                            onClickEvent={handleCancel}
-                                            toolTipLabel={"Go back without saving"}/>
-                                    </Grid>
-                                    <p> </p>
-
-                    </Grid.Col>
-                </Grid>
-                </Stack>
-
-            </form>
-        </>
+  return (
+    <form onSubmit={handleSubmit}>
+        <ContextualHelpButton messageId="MaintObs" />
+        <Stack>
+            <Grid  columns={5}>
+                <Grid.Col span={{base: 5, lg: 2}}>
+                    <Fieldset legend={"Target and type"}>
+                        <TargetTypeForm form={form} />
+                    </Fieldset>
+                </Grid.Col>
+                <Grid.Col span={{base: 5, lg: 3}}>
+                    <Fieldset legend={"Timing windows"}>
+                        <Text ta={"center"}  size={"xs"} c={"gray.6"}>
+                            Timezone set to UTC
+                        </Text>
+                        <TimingWindowsForm form={form}/>
+                    </Fieldset>
+                    <Space h={"md"} />
+                    <Group justify={"flex-end"}>
+                        <FormSubmitButton form={form} />
+                        <CancelButton
+                            onClickEvent={handleCancel}
+                            toolTipLabel={"Go back without saving"}
+                        />
+                    </Group>
+                </Grid.Col>
+            </Grid>
+        </Stack>
+    </form>
     )
 }
 

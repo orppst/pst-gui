@@ -14,8 +14,8 @@ import {useForm} from "@mantine/form";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {
-    fetchProposalResourceAddNewField,
-    fetchProposalResourceChangeFieldName
+    useProposalResourceAddNewField,
+    useProposalResourceChangeFieldName
 } from "../../generated/proposalToolComponents.ts";
 import {useParams, useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -33,6 +33,10 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
 
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+
+    const addFieldMutation = useProposalResourceAddNewField();
+
+    const changeFieldMutation = useProposalResourceChangeFieldName();
 
 
     /*
@@ -117,7 +121,7 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
         if (props.observationField) {
             //editing an existing Field
 
-            fetchProposalResourceChangeFieldName({
+            changeFieldMutation.mutate({
                 pathParams: {
                     proposalCode: Number(selectedProposalCode),
                     fieldId: props.observationField._id!
@@ -125,11 +129,15 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                 body: values.fieldName,
                 //@ts-ignore
                 headers: {"Content-Type": "text/plain"}
+            }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries().then();
+                    notifySuccess("Success", "Field name updated");
+                    props.closeModal!();
+                },
+                onError: (error) =>
+                    notifyError("Failed to update Field Name", getErrorMessage(error))
             })
-                .then(() => queryClient.invalidateQueries())
-                .then(() => notifySuccess("Success", "Field name updated"))
-                .then(() => props.closeModal!())
-                .catch(error => notifyError("Failed to update Field Name", getErrorMessage(error)))
 
             // add more stuff as we add more Field implementation
 
@@ -146,7 +154,6 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
             }
 
             //This code may need some refactoring
-
             let targetField = baseField as TargetField;
 
             let fieldToPass : FieldToPass = {
@@ -170,14 +177,20 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                 }
             }
 
-            fetchProposalResourceAddNewField({
-                pathParams: {proposalCode: Number(selectedProposalCode)},
+            addFieldMutation.mutate({
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode)
+                },
                 body: fieldToPass.theField
+            }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries().then();
+                    notifySuccess("Success", "Field name updated");
+                    props.closeModal!();
+                },
+                onError: (error) =>
+                    notifyError("Failed to create new Field", getErrorMessage(error))
             })
-                .then(() => queryClient.invalidateQueries())
-                .then(() => notifySuccess("Success", "New Field created"))
-                .then(() => props.closeModal!())
-                .catch(error => notifyError("Failed to create new Field", getErrorMessage(error)))
         }
     })
   const navigate = useNavigate();

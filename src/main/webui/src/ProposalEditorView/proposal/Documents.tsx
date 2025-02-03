@@ -1,12 +1,12 @@
 import {
-    fetchSupportingDocumentResourceDownloadSupportingDocument,
-    fetchSupportingDocumentResourceRemoveSupportingDocument,
-    fetchSupportingDocumentResourceUploadSupportingDocument,
-    useSupportingDocumentResourceGetSupportingDocuments
+    useSupportingDocumentResourceDownloadSupportingDocument,
+    useSupportingDocumentResourceGetSupportingDocuments,
+    useSupportingDocumentResourceRemoveSupportingDocument,
+    useSupportingDocumentResourceUploadSupportingDocument
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {Box, FileButton, Grid, Stack, Table, Text} from "@mantine/core";
-import {SyntheticEvent, useState} from "react";
+import {SyntheticEvent, useEffect, useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
 import {randomId} from "@mantine/hooks";
@@ -14,8 +14,7 @@ import UploadButton from 'src/commonButtons/upload.tsx';
 import DeleteButton from 'src/commonButtons/delete.tsx';
 import CancelButton from "src/commonButtons/cancel.tsx";
 import {
-    DownloadButton,
-    DownloadRequestButton
+    DownloadButton
 } from 'src/commonButtons/download.tsx';
 import {HEADER_FONT_WEIGHT, JSON_SPACES, MAX_SUPPORTING_DOCUMENT_SIZE} from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
@@ -31,6 +30,11 @@ type DocumentProps = {
 const DocumentsPanel = () => {
     const queryClient = useQueryClient();
     const {selectedProposalCode} = useParams();
+
+    const uploadDocument =
+        useSupportingDocumentResourceUploadSupportingDocument();
+
+
     const {data, error, isLoading}
         = useSupportingDocumentResourceGetSupportingDocuments(
         {pathParams: {proposalCode: Number(selectedProposalCode)},},
@@ -61,24 +65,23 @@ const DocumentsPanel = () => {
                 formData.append("document", chosenFile);
                 formData.append("title", chosenFile.name);
 
-                fetchSupportingDocumentResourceUploadSupportingDocument(
-                    {
-                        // @ts-ignore
-                        body: formData,
-                        pathParams: {proposalCode: Number(selectedProposalCode)},
-                        // @ts-ignore
-                        headers: {"Content-Type": "multipart/form-data"}
-                    }
-                )
-                    .then(() => {
+                uploadDocument.mutate({
+                    pathParams: {proposalCode: Number(selectedProposalCode)},
+                    //@ts-ignore
+                    body: formData,
+                    //@ts-ignore
+                    headers: {"Content-Type": "multipart/form-data"}
+                }, {
+                    onSuccess: () => {
                         setStatus("success");
                         queryClient.invalidateQueries();
                         notifySuccess("Upload successful", "The supporting document has been uploaded");
-                    })
-                    .catch((error) => {
+                    },
+                    onError: (error) => {
                         setStatus("fail");
                         notifyError("Upload failed", getErrorMessage(error));
-                    })
+                    },
+                })
             }
         }
     };
@@ -142,22 +145,47 @@ function RenderDocumentListItem(props: DocumentProps) {
     const [downloadLink, setDownloadLink] = useState("");
     const [downloadReady, setDownloadReady] = useState(false);
 
+    const removeDocument =
+        useSupportingDocumentResourceRemoveSupportingDocument();
+
+    const downloadDocument =
+        useSupportingDocumentResourceDownloadSupportingDocument({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                id: props.dbid
+            }
+        })
+
+    useEffect(() => {
+        if (downloadDocument.status === 'success') {
+            setDownloadReady(true);
+            setDownloadLink(
+                window.URL.createObjectURL(downloadDocument.data as unknown as Blob)
+            );
+        }
+    }, [downloadDocument.status])
+
     function handleRemove() {
         setSubmitting(true);
-        fetchSupportingDocumentResourceRemoveSupportingDocument({pathParams:
-                {
-                    id: props.dbid,
-                    proposalCode: Number(selectedProposalCode),
-                }})
-            .then(()=> {
+        removeDocument.mutate({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                id: Number(props.dbid),
+            }
+        }, {
+            onSuccess: () => {
                 setSubmitting(false);
                 queryClient.invalidateQueries().then();
                 notifySuccess("Removed", "The supporting document has been removed");
-            })
-            .catch(console.log);
+            },
+            onError: (error) => {
+                setSubmitting(false);
+                notifyError("Failed to Removed Document", getErrorMessage(error));
+            },
+        })
     }
 
-    const openRemoveModal = () =>
+    const confirmDocumentRemoval = () =>
         modals.openConfirmModal({
             title: "Remove document",
             centered: true,
@@ -171,18 +199,6 @@ function RenderDocumentListItem(props: DocumentProps) {
             onConfirm: () => handleRemove(),
         });
 
-    //TODO: Do we need to revoke this URL after use?
-    const prepareDownload = () => {
-        fetchSupportingDocumentResourceDownloadSupportingDocument(
-            {pathParams: {
-                id: props.dbid,
-                    proposalCode: Number(selectedProposalCode)}})
-            .then((blob) => setDownloadLink(
-                window.URL.createObjectURL(blob as unknown as Blob)))
-            .then(() => setDownloadReady(true));
-
-    }
-
     if(submitting)
         return (
             <Table.Tr key={props.dbid}>
@@ -192,20 +208,16 @@ function RenderDocumentListItem(props: DocumentProps) {
         return (
                 <Table.Tr key={props.dbid}>
                     <Table.Td>{props.name}</Table.Td>
-                    {downloadReady?
+                    {downloadReady &&
                         <Table.Td align={"right"}>
                             <DownloadButton
                                 download={props.name}
                                 toolTipLabel={"Download selected file."}
-                                href={downloadLink}/></Table.Td>
-                        :<Table.Td align={"right"}>
-                            <DownloadRequestButton
-                                download={props.name}
-                                toolTipLabel={'Request the file from the database.'}
-                                onClick={prepareDownload}/>
-                        </Table.Td>}
+                                href={downloadLink}/>
+                        </Table.Td>
+                    }
                     <Table.Td align={"left"}>
-                        <DeleteButton onClick={openRemoveModal}
+                        <DeleteButton onClick={confirmDocumentRemoval}
                                       toolTipLabel={"Remove this document."}
                                       label={"Remove"}/>
                     </Table.Td>

@@ -1,11 +1,9 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement} from "react";
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from "../../commonButtons/add.tsx";
 import {Modal} from "@mantine/core";
 import ResourceTypeForm from "./resourceType.form.tsx";
 import {ResourceTypeProps} from "./availableResourcesPanel.tsx";
-import {fetchResourceTypeResourceGetResourceType} from "../../generated/proposalToolComponents.ts";
-import {ResourceType} from "../../generated/proposalToolSchemas.ts";
 
 export type ResourceTypeFormValues = {
     name: string,
@@ -13,26 +11,20 @@ export type ResourceTypeFormValues = {
     closeModal?: () => void
 }
 
+/*
+    This requires some effort to get right. Currently, you may add as many ResourceTypes as you wish,
+    all with any imagined strings for their "names" and "units". We have no means to edit a ResourceType
+    in the API (by design?); you may create or delete a ResourceType only.
+
+    We haven't exposed the ability to delete a ResourceType in the GUI as it may be in use by the Cycle
+    as an 'AvailableResource', in which case we'd have to disable the ResourceType delete button.
+
+    Currently, this function is only called with props.resourceTypeId == 'undefined'.
+ */
+
 export default function ResourceTypeModal(props: ResourceTypeProps) : ReactElement {
 
     const [opened, {close, open}] = useDisclosure();
-
-    const [resourceType, setResourceType]
-        = useState<ResourceType>({name: "", unit: ""});
-
-    useEffect(() => {
-        if (props.resourceTypeId)
-            fetchResourceTypeResourceGetResourceType({
-                pathParams: {
-                    resourceTypeId: props.resourceTypeId
-                }
-            })
-                .then(rType => {
-                    console.log("resource type found: " + rType.name)
-                    setResourceType({name: rType.name!, unit: rType.unit!})
-                })
-    }, []);
-
 
     const NewButton = () : ReactElement => {
         return (
@@ -44,20 +36,17 @@ export default function ResourceTypeModal(props: ResourceTypeProps) : ReactEleme
         )
     }
 
-
-    const isNewResourceType : boolean = !props.resourceTypeId;
-
     const ModalContent = () : ReactElement => {
         return(
             <Modal
                 opened={opened}
                 onClose={() => close()}
-                title={isNewResourceType ? "New Resource Type Form" : "Edit Resource Type Form"}
+                title={"New Resource Type Form"}
                 size={"30%"}
             >
                 <ResourceTypeForm
-                    name={resourceType.name!}
-                    unit={resourceType.unit!}
+                    name={""}
+                    unit={""}
                     closeModal={() => close()}
                 />
             </Modal>

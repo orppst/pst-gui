@@ -1,19 +1,21 @@
-import {ReactElement, useEffect, useState} from "react";
-import {AllocatedBlock, ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
+import {ReactElement} from "react";
+import {AllocatedBlock} from "../../generated/proposalToolSchemas.ts";
 import {useForm} from "@mantine/form";
-import {Alert, Group, NumberInput, Select, Stack} from "@mantine/core";
+import {Alert, Group, Loader, NumberInput, Select, Stack} from "@mantine/core";
 import {IconInfoCircle} from "@tabler/icons-react";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
-    fetchAllocatedBlockResourceAddAllocatedBlock,
-    fetchAllocatedBlockResourceUpdateResource,
-    fetchAvailableResourcesResourceGetCycleResourceTypes,
-    fetchObservingModeResourceGetCycleObservingModes, fetchProposalCyclesResourceGetCycleAllocationGrades
+    useAllocatedBlockResourceAddAllocatedBlock,
+    useAllocatedBlockResourceUpdateResource,
+    useAvailableResourcesResourceGetCycleResourceTypes,
+    useObservingModeResourceGetCycleObservingModes,
+    useProposalCyclesResourceGetCycleAllocationGrades
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 
 export type AllocatedBlockFormProps ={
     proposalTitle: string,
@@ -24,6 +26,27 @@ export type AllocatedBlockFormProps ={
 
 export default
 function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
+    const {selectedCycleCode} = useParams();
+
+    //mutations
+    const addAllocatedBlock =
+        useAllocatedBlockResourceAddAllocatedBlock();
+    const updateResource =
+        useAllocatedBlockResourceUpdateResource();
+
+    //queries
+    const getCycleResourceTypes =
+        useAvailableResourcesResourceGetCycleResourceTypes({
+            pathParams: {cycleCode: Number(selectedCycleCode)}
+        });
+    const getCycleObservingModes =
+        useObservingModeResourceGetCycleObservingModes({
+            pathParams: {cycleId: Number(selectedCycleCode)}
+        })
+    const getCycleAllocationGrades =
+        useProposalCyclesResourceGetCycleAllocationGrades({
+            pathParams: {cycleCode: Number(selectedCycleCode)}
+        })
 
     interface AllocatedBlockValues  {
         allocatedBlock: {
@@ -47,61 +70,6 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
 
     const queryClient = useQueryClient();
 
-    const {selectedCycleCode} = useParams();
-
-    const [resourceTypes, setResourceTypes] =
-        useState<{value:string, label:string}[]>([]);
-
-    const [observingModes, setObservingModes] =
-        useState<{value:string, label:string}[]>([]);
-
-    const [allocationGrades, setAllocationGrades] =
-        useState<{value:string, label:string}[]>([]);
-
-    useEffect(() => {
-        fetchAvailableResourcesResourceGetCycleResourceTypes({
-            pathParams: {cycleCode:Number(selectedCycleCode)}
-        })
-            .then((data: ObjectIdentifier[]) => {
-                setResourceTypes(
-                    data?.map(t => (
-                        {value: String(t.dbid), label: t.name!}
-                    ))
-                )
-            })
-            .catch(error => notifyError("Failed to load resource types",
-                getErrorMessage(error)))
-
-        fetchObservingModeResourceGetCycleObservingModes({
-            pathParams: {cycleId: Number(selectedCycleCode)}
-        })
-            .then((data: ObjectIdentifier[]) => {
-                setObservingModes(
-                    data?.map(m => (
-                        {value: String(m.dbid), label: m.name!}
-                    ))
-                )
-            })
-            .catch(error => notifyError("Failed to load observing modes",
-                getErrorMessage(error)))
-
-
-        fetchProposalCyclesResourceGetCycleAllocationGrades({
-            pathParams: {cycleCode: Number(selectedCycleCode)}
-        })
-            .then((data: ObjectIdentifier[]) => {
-                setAllocationGrades(
-                    data?.map(g => (
-                        {value: String(g.dbid), label: g.name!}
-                    ))
-                )
-            })
-            .catch(error => notifyError("Failed to load allocation grades",
-                getErrorMessage(error)))
-    }, []);
-
-
-
     let editExisting : boolean = props.allocatedBlock != undefined;
 
     const resourceAmountInput = () => (
@@ -118,7 +86,8 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
             disabled={editExisting}
             label={"Resource Type"}
             placeholder={"Pick one"}
-            data={resourceTypes}
+            data={getCycleResourceTypes.data!.map(t =>
+                ({value: String(t.dbid), label: t.name!}))}
             {...form.getInputProps('allocatedBlock.resourceTypeId')}
         />
     )
@@ -128,7 +97,8 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
             disabled={editExisting}
             label={"Observing Mode"}
             placeholder={"Pick one"}
-            data={observingModes}
+            data={getCycleObservingModes.data!.map(t =>
+                ({value: String(t.dbid), label: t.name!}))}
             {...form.getInputProps('allocatedBlock.observingModeId')}
         />
     )
@@ -138,7 +108,8 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
             disabled={editExisting}
             label={"Allocation Grade"}
             placeholder={"Pick one"}
-            data={allocationGrades}
+            data={getCycleAllocationGrades.data!.map(t =>
+                ({value: String(t.dbid), label: t.name!}))}
             {...form.getInputProps('allocatedBlock.allocationGradeId')}
         />
     )
@@ -155,22 +126,27 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
     const handleSubmit = form.onSubmit(values => {
         if (editExisting) {
             //users may only change the resource amount
-            fetchAllocatedBlockResourceUpdateResource({
+            updateResource.mutate({
                 pathParams: {
                     cycleCode: Number(selectedCycleCode),
                     allocatedId: props.allocatedProposalId,
                     blockId: props.allocatedBlock?._id!
                 },
                 body: values.allocatedBlock.amount,
-                // @ts-ignore
+                //@ts-ignore
                 headers: {"Content-Type": "text/plain"}
+            }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries()
+                        .then(() =>
+                            notifySuccess("Updated", "The resource amount has been changed")
+                        ).then(() => props.closeModal!())
+                },
+                onError: (error) =>
+                    notifyError("Failed to update resource amount",
+                        getErrorMessage(error))
             })
-                .then(() => queryClient.invalidateQueries())
-                .then(() => props.closeModal!())
-                .then(() => notifySuccess("Updated",
-                    "The resource amount has been changed"))
-                .catch(error => notifyError("Failed to update resource amount",
-                    getErrorMessage(error)))
+
         } else {
             //new allocation block
             let newAllocationBlock : AllocatedBlock = {
@@ -189,21 +165,61 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
                 }
             }
 
-            fetchAllocatedBlockResourceAddAllocatedBlock({
+            addAllocatedBlock.mutate({
                 pathParams: {
                     cycleCode: Number(selectedCycleCode),
                     allocatedId: props.allocatedProposalId
                 },
                 body: newAllocationBlock
+            }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries()
+                        .then(() =>
+                            notifySuccess("Added",
+                                "New allocation block has been added to the proposal")
+                        )
+                        .then(() => props.closeModal!())
+                },
+                onError: (error) =>
+                    notifyError("Failed add new allocation block",
+                    getErrorMessage(error))
             })
-                .then(() => queryClient.invalidateQueries())
-                .then(() => props.closeModal!())
-                .then(() => notifySuccess("Added",
-                    "New allocation block has been added to the proposal"))
-                .catch(error => notifyError("Failed to update resource amount",
-                    getErrorMessage(error)))
         }
     })
+
+    //check the queries before trying to access their data
+    if (getCycleAllocationGrades.isLoading || getCycleObservingModes.isLoading ||
+        getCycleResourceTypes.isLoading) {
+        return (
+            <Loader />
+        )
+    }
+
+    if (getCycleResourceTypes.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Resource Types"}
+                error={getCycleResourceTypes.error}
+            />)
+    }
+
+    if (getCycleObservingModes.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Observing Modes"}
+                error={getCycleObservingModes.error}
+            />
+        )
+    }
+
+    if (getCycleAllocationGrades.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Allocation Grades"}
+                error={getCycleAllocationGrades.error}
+            />
+        )
+    }
 
     return (
         <form onSubmit={handleSubmit}>

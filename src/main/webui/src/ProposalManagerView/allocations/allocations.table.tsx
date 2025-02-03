@@ -1,8 +1,7 @@
 import {ReactElement, useEffect, useState} from "react";
 import {Alert, Badge, Button, Container, Loader, Table, Text, Tooltip} from "@mantine/core";
 import {
-    fetchAllocatedProposalResourceAllocateProposalToCycle,
-    fetchSubmittedProposalResourceUpdateSubmittedProposalSuccess,
+    useAllocatedProposalResourceAllocateProposalToCycle,
     useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -23,6 +22,8 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 
     const queryClient = useQueryClient();
 
+    const allocateProposalToCycle =
+        useAllocatedProposalResourceAllocateProposalToCycle()
 
     const submittedProposal =
         useSubmittedProposalResourceGetSubmittedProposal({
@@ -60,30 +61,27 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 
     let title = submittedProposal.data?.title
 
-    async function handlePass(){
-
-        await fetchSubmittedProposalResourceUpdateSubmittedProposalSuccess({
-            pathParams: {
-                cycleCode: rowProps.cycleCode,
-                submittedProposalId: rowProps.submittedProposalId
-            },
-            body: true
-        })
-            .catch(error => notifyError("Failed to update success status",
-                getErrorMessage(error)))
-
-        await fetchAllocatedProposalResourceAllocateProposalToCycle({
+    function handlePass(){
+        allocateProposalToCycle.mutate({
             pathParams: {
                 cycleCode: rowProps.cycleCode
             },
             body: rowProps.submittedProposalId,
             // @ts-ignore
             headers: {"Content-Type": "text/plain"}
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries()
+                    .then(() =>
+                        notifySuccess("Success",
+                            title + " can now be allocated resources")
+                    )
+            },
+            onError: error =>
+                notifyError("Failed to upgrade proposal for allocation",
+                getErrorMessage(error))
         })
-            .catch(error => notifyError("Failed to upgrade proposal for allocation",
-                getErrorMessage(error)))
     }
-
 
     const confirmPass = () => {
         modals.openConfirmModal({
@@ -99,9 +97,6 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
             labels: {confirm: "Confirm", cancel: "You shall not pass!!"},
             confirmProps: {color: "grape"},
             onConfirm: () => handlePass()
-                .then(() => notifySuccess("Success",
-                title + " can now be allocated resources"))
-                .then(() => queryClient.invalidateQueries())
         })
     }
 
