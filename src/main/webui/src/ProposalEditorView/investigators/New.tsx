@@ -17,6 +17,7 @@ import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * Render s form panel to add an investigator to the current proposal.
@@ -30,6 +31,8 @@ function AddInvestigatorPanel(): ReactElement {
       forPhD: boolean,
       selectedInvestigator: number
     }
+    const {fetcherOptions} = useProposalToolContext();
+
 
     const form = useForm<newInvestigatorForm>({
         initialValues: {
@@ -104,7 +107,7 @@ function AddInvestigatorPanel(): ReactElement {
 
     const handleAdd = form.onSubmit((val) => {
         fetchPersonResourceGetPerson(
-            {pathParams:{id: val.selectedInvestigator}})
+            {...fetcherOptions, pathParams:{id: val.selectedInvestigator}})
             .then((selectedPerson) => {
                 if (selectedPerson != undefined) {
                     addInvestigatorMutation.mutate(
