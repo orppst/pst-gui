@@ -1,12 +1,12 @@
 import {
-    fetchProposalResourceRemoveTarget,
     useProposalResourceGetTarget,
+    useProposalResourceRemoveTarget,
 } from 'src/generated/proposalToolComponents.ts';
 
 import { Table, Text, useMantineTheme } from '@mantine/core';
 import { CelestialTarget } from 'src/generated/proposalToolSchemas.ts';
 import {useQueryClient} from "@tanstack/react-query";
-import { ReactElement, useState } from 'react';
+import { ReactElement } from 'react';
 import {modals} from "@mantine/modals";
 import DeleteButton from "src/commonButtons/delete";
 import { TargetProps, TargetTableProps } from './targetProps.tsx';
@@ -14,7 +14,7 @@ import { AstroLib } from "@tsastro/astrolib";
 import {    ERROR_YELLOW,
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
@@ -46,7 +46,9 @@ function TargetTableHeader(props: TargetTableProps): ReactElement {
  */
 function TargetTableRow(props: TargetProps): ReactElement {
     const queryClient = useQueryClient();
-    const [submitting, setSubmitting] = useState(false);
+
+    const removeTargetMutation =
+        useProposalResourceRemoveTarget();
 
     const {data, error, isLoading}
         = useProposalResourceGetTarget(
@@ -61,39 +63,25 @@ function TargetTableRow(props: TargetProps): ReactElement {
         return <Table.Tr><Table.Td>Error loading target</Table.Td></Table.Tr>
     }
 
-    //Errors come in as name: "unknown", message: "Network Error" with an
-    // object called "stack" that contains the exception and message set in
-    // the API when the exception is thrown
-    const handleError = (error: { stack: { message: any; }; }) => {
-        console.error(error);
-        notifyError("Error deleting", getErrorMessage(error));
-        setSubmitting(false);
-    }
-
     /**
      * handles the removal of a target.
      */
     function handleRemove(): void {
-        setSubmitting(true);
-        fetchProposalResourceRemoveTarget({pathParams:
-                {
-                    proposalCode: props.proposalCode,
-                    targetId: props.dbid!
-                }})
-            .then(()=> {
-                setSubmitting(false);
-                return queryClient.invalidateQueries(
-                    {
-                        predicate: (query) => {
-                            // only invalidate the query for the entire target
-                            // list. not the separate bits.
-                            return query.queryKey.length === 5 &&
-                                query.queryKey[4] === 'targets';
-                        }
-                    }
-                )
-            })
-            .catch(handleError);
+        removeTargetMutation.mutate({
+            pathParams: {
+                proposalCode: props.proposalCode,
+                targetId: props.dbid!,
+            }
+        }, {
+            onSuccess: () => {
+                notifySuccess("Target deleted", "target has been removed");
+                queryClient.invalidateQueries().then();
+            }
+                ,
+            onError: (error) =>
+                notifyError("Failed to delete target", getErrorMessage(error))
+
+        })
     }
 
     /**
@@ -189,8 +177,6 @@ function TargetTableRow(props: TargetProps): ReactElement {
     // handle error states.
     if (isLoading) {
         return (<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>);
-    } else if (submitting) {
-        return (<Table.Tr><Table.Td>Removing...</Table.Td></Table.Tr>);
     }
 
     // generate the full row.

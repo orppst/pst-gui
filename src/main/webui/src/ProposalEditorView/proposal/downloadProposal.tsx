@@ -6,11 +6,11 @@ import { jsPDF as JSPDF } from 'jspdf';
 import * as JSZip from 'jszip';
 import {
     fetchProposalResourceExportProposal,
-    fetchSupportingDocumentResourceDownloadSupportingDocument,
-    SupportingDocumentResourceGetSupportingDocumentsResponse,
+    fetchSupportingDocumentResourceDownloadSupportingDocument
 } from 'src/generated/proposalToolComponents.ts';
 import { JSON_FILE_NAME, OVERVIEW_PDF_FILENAME } from 'src/constants.tsx';
-import {notifyError, notifyInfo} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 
 /**
@@ -50,10 +50,14 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
  * @param {JSZip} zip the zip object.
  * @param supportingDocumentData the data for supporting documents.
  * @param selectedProposalCode the selected proposal code.
+ * @param authToken the authorization token required for 'fetch' type calls
  */
-const populateSupportingDocuments = (zip: JSZip,
-    supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
-    selectedProposalCode: String): Array<Promise<void>> => {
+const populateSupportingDocuments = (
+    zip: JSZip,
+    supportingDocumentData: ObjectIdentifier[],
+    selectedProposalCode: String,
+    authToken: string
+): Array<Promise<void>> => {
         return supportingDocumentData.map(async (item: ObjectIdentifier) => {
             if (item.dbid !== undefined && item.name !== undefined) {
                 // have to destructure this, as otherwise risk of being undefined
@@ -67,10 +71,13 @@ const populateSupportingDocuments = (zip: JSZip,
                 }
 
                 // extract the document and save into the zip.
-                await fetchSupportingDocumentResourceDownloadSupportingDocument(
-                    { pathParams: {
-                        id: item.dbid,
-                            proposalCode: Number(selectedProposalCode) } })
+                await fetchSupportingDocumentResourceDownloadSupportingDocument({
+                    headers: {authorization: `Bearer ${authToken}`},
+                    pathParams: {
+                        proposalCode: Number(selectedProposalCode),
+                        id: item.dbid
+                    }
+                })
                     .then((blob) => {
                         // ensure we got some data back.
                         if (blob !== undefined) {
@@ -89,13 +96,18 @@ const populateSupportingDocuments = (zip: JSZip,
  * @param {ObservingProposal} proposalData the proposal data.
  * @param { SupportingDocumentResourceGetSupportingDocumentsResponse} supportingDocumentData the data for supporting documents.
  * @param {string} selectedProposalCode the selected proposal code.
+ * @param authToken the authorization token required for 'fetch' type calls
  */
-async function downloadProposal(
+function downloadProposal(
         element: HTMLInputElement,
         proposalData:  ObservingProposal,
-        supportingDocumentData: SupportingDocumentResourceGetSupportingDocumentsResponse,
-        selectedProposalCode: String):
-    Promise<void> {
+        supportingDocumentData: ObjectIdentifier[],
+        selectedProposalCode: String,
+        authToken: string
+): void {
+
+    notifyInfo("Proposal Export Started",
+        "An export has started and the download will begin shortly");
 
     // get pdf data.
     const pdfData = generatePdf(element);
@@ -106,38 +118,42 @@ async function downloadProposal(
 
     // add supporting documents to the zip.
     const promises = populateSupportingDocuments(
-        zip, supportingDocumentData, selectedProposalCode
+        zip, supportingDocumentData, selectedProposalCode, authToken
     );
 
     promises.push(
-        fetchProposalResourceExportProposal({pathParams: {proposalCode: Number(selectedProposalCode) }})
-            .then((blob)=>{
-                //ensure we got some data back.
-                if(blob!==undefined){
-                    zip.file(JSON_FILE_NAME,blob)
-                    notifyInfo("Export", "An export has started and the download will begin shortly");
-                }else{
-                    notifyError("Export Error", "An unknown error has occurred exporting this proposal");
-                }
+        fetchProposalResourceExportProposal({
+            headers: {authorization: `Bearer ${authToken}`},
+            pathParams: {
+                proposalCode: Number(selectedProposalCode)
+            }
+        })
+            .then((blob)=> {
+                zip.file(JSON_FILE_NAME, blob!)
             })
+            .catch((error)=>
+                notifyError("Export Error", getErrorMessage(error))
+            )
     );
-
 
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(
         () => {
-            //logging for safety.
-            console.debug(`The zip currently contains the following docs:`);
-            console.debug(zip.files);
-
             // generate the zip file.
-            zip.generateAsync({type: "blob"}).then((zipData: Blob | MediaSource) => {
-                // Create a download link for the zip file
-                const link = document.createElement("a");
-                link.href = window.URL.createObjectURL(zipData);
-                link.download=proposalData.title?.replace(/\s/g,"").substring(0,31)+".zip";
-                link.click();
-            })
+            zip.generateAsync({type: "blob"})
+                .then((zipData: Blob | MediaSource) => {
+                    // Create a download link for the zip file
+                    const link = document.createElement("a");
+                    link.href = window.URL.createObjectURL(zipData);
+                    link.download=proposalData.title?.replace(/\s/g,"").substring(0,31)+".zip";
+                    link.click();
+                })
+                .then(()=>
+                    notifySuccess("Proposal Export Complete", "proposal exported and downloaded")
+                )
+                .catch((error:Error) =>
+                    notifyError("Proposal Export Failed", getErrorMessage(error))
+                )
         }
     )
 }

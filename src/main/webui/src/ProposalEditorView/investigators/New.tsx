@@ -1,12 +1,13 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchInvestigatorResourceAddPersonAsInvestigator, fetchInvestigatorResourceGetInvestigators,
     fetchPersonResourceGetPerson,
+    useInvestigatorResourceAddPersonAsInvestigator,
+    useInvestigatorResourceGetInvestigatorsAsObjects,
     usePersonResourceGetPeople,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {InvestigatorKind, ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
+import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
 import {Checkbox, ComboboxData, Grid, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
@@ -16,6 +17,7 @@ import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * Render s form panel to add an investigator to the current proposal.
@@ -29,6 +31,8 @@ function AddInvestigatorPanel(): ReactElement {
       forPhD: boolean,
       selectedInvestigator: number
     }
+    const {fetcherOptions} = useProposalToolContext();
+
 
     const form = useForm<newInvestigatorForm>({
         initialValues: {
@@ -47,7 +51,8 @@ function AddInvestigatorPanel(): ReactElement {
     const navigate = useNavigate();
     const { selectedProposalCode } = useParams();
     const queryClient = useQueryClient();
-    const { data, error, status } = usePersonResourceGetPeople(
+    //Get all people in the database
+    const allPeople = usePersonResourceGetPeople(
         {
             queryParams: { name: '%' },
         },
@@ -56,59 +61,69 @@ function AddInvestigatorPanel(): ReactElement {
         }
     );
 
+    //Get all investigators tied to this proposal
+    const currentInvestigators
+        = useInvestigatorResourceGetInvestigatorsAsObjects({pathParams: {proposalCode: Number(selectedProposalCode)}});
+/*
+    //Get details of the currently selected person
+    let selectedPerson = usePersonResourceGetPerson(
+        {pathParams:{id: form.values.selectedInvestigator}})
+*/
     useEffect(() => {
-        if(status === 'success') {
-            let currentInvestigators: ObjectIdentifier[] = [];
-
-            //Get current investigators from search data
-            fetchInvestigatorResourceGetInvestigators(
-                {pathParams: {proposalCode: Number(selectedProposalCode)}})
-                .then(r => {
-                    r.map((i) => currentInvestigators.push(i))
-
-                    setSearchData([]);
-                    data?.map((item) => {
-                        if(!currentInvestigators.some(e => e.name === item.name))
-                            setSearchData((current) => [...current, {
-                                value: String(item.dbid), label: item.name}] as ComboboxData)
-                        })
-                }
-            )
+        if(allPeople.status === 'success' && currentInvestigators.status === 'success') {
+            setSearchData([]);
+            allPeople.data?.map((item) => {
+                if(!currentInvestigators.data.some(i => i.person?._id == item.dbid))
+                    setSearchData((current) => [...current, {
+                        value: String(item.dbid), label: item.name}] as ComboboxData)
+            })
         }
-    },[status,data]);
+    },[allPeople.status, allPeople.data, currentInvestigators.status, currentInvestigators.data]);
 
-    if (error) {
+    if (allPeople.error) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(allPeople.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
 
+    if(currentInvestigators.error) {
+        return (
+            <PanelFrame>
+                <pre>{JSON.stringify(currentInvestigators.error, null, JSON_SPACES)}</pre>
+            </PanelFrame>
+        );
+    }
+
+    const addInvestigatorMutation = useInvestigatorResourceAddPersonAsInvestigator({
+        onSuccess: () => {
+            queryClient.invalidateQueries().finally(() =>
+                navigate("../", {relative:"path"}));
+        },
+        onError: (error) => notifyError("Add investigator error", getErrorMessage(error))
+
+    });
+
     const handleAdd = form.onSubmit((val) => {
-        //Get full investigator from API and add back to proposal
         fetchPersonResourceGetPerson(
-            {pathParams:{id: form.values.selectedInvestigator}})
-            .then((data) => fetchInvestigatorResourceAddPersonAsInvestigator(
-                {pathParams:{proposalCode: Number(selectedProposalCode)},
-                    body:{
-                        type: val.type,
-                        forPhD: val.forPhD,
-                        person: data,
-                    }})
-                .then(()=> {
-                    return queryClient.invalidateQueries();
-                })
-                .then(()=>navigate(  "../", {relative:"path"})) // see https://stackoverflow.com/questions/72537159/react-router-v6-and-relative-links-from-page-within-route
-                .catch((error)=>{
-                    console.log(error);
-                    notifyError("Add investigator error", getErrorMessage(error));
-                })
-            )
-            .catch((error)=> {
-                console.log(error);
-                notifyError("Add investigator error", getErrorMessage(error));
+            {...fetcherOptions, pathParams:{id: val.selectedInvestigator}})
+            .then((selectedPerson) => {
+                if (selectedPerson != undefined) {
+                    addInvestigatorMutation.mutate(
+                        {
+                            pathParams: {proposalCode: Number(selectedProposalCode)},
+                            body: {
+                                type: val.type,
+                                forPhD: val.forPhD,
+                                person: selectedPerson,
+                            }
+                        })
+                } else {
+                    notifyError("Add investigator error", "Selected person is empty??");
+                }
             })
+            .catch((error) => notifyError("Add investigator error", getErrorMessage(error)))
     });
 
     function handleCancel(event: SyntheticEvent) {

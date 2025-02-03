@@ -3,9 +3,8 @@ import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import {ReactElement, useEffect, useState} from "react";
 import {Select, Table} from "@mantine/core";
 import {
-    fetchObservingModeResourceGetCycleObservingModes,
+    useObservingModeResourceGetCycleObservingModes,
 } from "../../generated/proposalToolComponents.ts";
-import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
@@ -21,22 +20,23 @@ function ObservationModeSelect(props: { form: UseFormReturnType<SubmissionFormVa
 
     const [observationModes, setObservationModes] = useState<{value: string, label: string}[]>([])
 
-    useEffect(() => {
-        fetchObservingModeResourceGetCycleObservingModes({
+    const {data, status, error} = useObservingModeResourceGetCycleObservingModes({
             pathParams: {cycleId: props.form.getValues().selectedCycle}
-        })
-            .then((data : ObjectIdentifier[]) => {
+        });
+
+    useEffect(() => {
+        if (error)
+            notifyError("Failed to load observation modes", getErrorMessage(error))
+        else
+            if(data !== undefined)
                 setObservationModes(
-                    data?.map((mode) => (
+                    data.map((mode) => (
                         //in this context 'name' contains the mode description string
                         {value: String(mode.dbid), label: mode.code + ": " + mode.name}
                     ))
                 )
-            })
-            .catch((error) => {
-                notifyError("Failed to load observation modes", getErrorMessage(error))
-            })
-    }, [props.form.getValues().selectedCycle]);
+
+    }, [status]);
 
     const tableHeader = () => (
         <Table.Thead>

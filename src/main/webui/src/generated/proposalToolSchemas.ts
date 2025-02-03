@@ -570,13 +570,13 @@ export type GenericCoordSpace = {
  */
 export type GenericFrame = {
   /**
-   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
-   */
-  refPosition?: RefLocation;
-  /**
    * A planetary ephemeris MAY be provided, and SHOULD be provided whenever appropriate, to indicate which solar system ephemeris was used. If needed, but not provided, it is assumed to be 'DE405'
    */
   planetaryEphem?: string;
+  /**
+   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
+   */
+  refPosition?: RefLocation;
 };
 
 /**
@@ -666,6 +666,7 @@ export type IntegerQuantity = {
 };
 
 export type Investigator = {
+  _id?: number;
   type?: InvestigatorKind;
   /**
    * is the investigator making proposal for their PhD
@@ -1012,7 +1013,7 @@ export type Person = {
    * An institution that is a collection of people
    */
   homeInstitute?: Organization;
-  xmlId?: string;
+  _id?: string;
 };
 
 /**
@@ -1488,10 +1489,6 @@ export type SolarSystemTarget = {
 export type SpaceFrame = {
   "@type": string; // coords:SpaceFrame
   /**
-   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
-   */
-  refPosition?: RefLocation;
-  /**
    * The spatial reference frame. Values MUST be selected from the controlled vocabulary at the given URL.
    */
   spaceRefFrame?: string;
@@ -1503,6 +1500,10 @@ export type SpaceFrame = {
    * Ephemeris file for solar system objects SHOULD be specified whenever relevant.
    */
   planetaryEphem?: string;
+  /**
+   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
+   */
+  refPosition?: RefLocation;
 };
 
 /**
@@ -1838,13 +1839,13 @@ export type TextFormats = "latex" | "rst" | "asciidoc";
  */
 export type TimeFrame = {
   /**
-   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
-   */
-  refPosition?: RefLocation;
-  /**
    * The time scale sets the reference frame. The value MUST be selected from the controlled vocabulary at the given URL.
    */
   timescale?: string;
+  /**
+   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
+   */
+  refPosition?: RefLocation;
   /**
    * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
    */

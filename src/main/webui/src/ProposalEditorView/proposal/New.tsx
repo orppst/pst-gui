@@ -1,18 +1,16 @@
-import { SyntheticEvent, useContext, useState } from "react";
+import { SyntheticEvent, useContext } from "react";
 import {ProposalContext} from 'src/App2'
 import {
-    fetchProposalResourceAddNewField,
-    fetchProposalResourceCreateObservingProposal,
+    useProposalResourceCreateObservingProposal,
 } from "src/generated/proposalToolComponents";
 import {
     Investigator,
     Justification,
     ObservingProposal,
-    ProposalKind,
-    TargetField
+    ProposalKind
 } from "src/generated/proposalToolSchemas";
 import {useNavigate} from "react-router-dom";
-import {Box, Container, Grid, Select, Text, Textarea, TextInput, Stack, Space} from "@mantine/core";
+import {Container, Grid, Select, Textarea, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from 'src/commonButtons/save';
@@ -24,26 +22,25 @@ import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 
-
 const kindData = [
     {value: "Standard", label: "Standard"},
     {value: "ToO", label: "T.O.O"},
     {value: "Survey", label: "Survey"}
 ];
 
-const textFormatData = [
-    {value: 'latex', label: 'Latex'},
-    {value: 'rst', label: 'RST'},
-    {value: 'asciidoc', label: 'ASCIIDOC'}
-]
 
  function NewProposalPanel() {
     const { user} = useContext(ProposalContext) ;
-    const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+
+    //mutations
+     const createObservingProposal =
+         useProposalResourceCreateObservingProposal();
+
     //single white space as work around to issue of changing format of default justification
     const emptyJustification : Justification = {text: " ", format: "asciidoc"};
+
     const form = useForm({
         initialValues: {
             "@type": "proposal:ObservingProposal",
@@ -63,144 +60,75 @@ const textFormatData = [
 
      const createNewObservingProposal = form.onSubmit((val) => {
 
-        setSubmitting(true);
-
         //Add the current user as the PI
         const investigator : Investigator = {
             "type": "PI",
             "person": user
         };
 
-        //Add a blank field, FIXME: replace with a real field
-         const field : TargetField = {
-             "@type": 'proposal:TargetField',
-             name: "Default Field"
-         };
-
         const newProposal :ObservingProposal = {
             ...val,
             "investigators": [investigator]
         };
 
-        fetchProposalResourceCreateObservingProposal({ body: newProposal})
-            .then((data) => {
-                if(Number(data?._id) > 0) {
-                    let newProposalId = Number(data?._id);
-                    fetchProposalResourceAddNewField({
-                        pathParams: {proposalCode: newProposalId},
-                        body: field
-                    })
-                        .then(() => navigate("/proposal/" + newProposalId))
-                        .catch(error => notifyError("Error creating field",
-                            "cause: " + getErrorMessage(error))
-                        );
-                }
-            })
-            .then(() => queryClient.invalidateQueries())
-            .then(() => setSubmitting(false))
-            .catch((error) => {
-                console.log(error);
-                notifyError("Create proposal error", getErrorMessage(error))
-            });
+        createObservingProposal.mutate({
+            body: newProposal
+        }, {
+            onSuccess: (data) => {
+                queryClient.invalidateQueries().then(
+                    () => navigate("/proposal/" + data._id!)
+                );
+            },
+            onError: (error) =>
+                notifyError("Failed to create Observing Proposal", getErrorMessage(error))
+        })
     });
 
-  function handleCancel(event: SyntheticEvent) {
-      event.preventDefault();
-      navigate("/",{relative:"path"})
-      }
+     function handleCancel(event: SyntheticEvent) {
+         event.preventDefault();
+         navigate("/",{relative:"path"})
+     }
 
      return (
         <PanelFrame>
             <PanelHeader itemName={"Create Proposal"} />
-            {submitting &&
-                <Box>Submitting request</Box>
-            }
             <form onSubmit={createNewObservingProposal}>
-                <Container fluid>
+                <Container>
                  <ContextualHelpButton messageId="CreaProp" />
-                <Stack>
-                    <TextInput name="title"
-                        maxLength={MAX_CHARS_FOR_INPUTS}
-                        placeholder="Give your proposal a title"
-                        withAsterisk
-                        label={"Title"}
-                        {...form.getInputProps("title")}
-                    />
-                    <MaxCharsForInputRemaining
-                        length={form.values.title.length}
-                    />
+                    <Grid>
+                        <Grid.Col span={{base: 9}}>
+                            <TextInput name="title"
+                                       maxLength={MAX_CHARS_FOR_INPUTS}
+                                       placeholder="Give your proposal a title"
+                                       label={"Title"}
+                                       {...form.getInputProps("title")}
+                            />
+                            <MaxCharsForInputRemaining
+                                length={form.values.title.length}
+                            />
+                        </Grid.Col>
+                        <Grid.Col span={{base: 3}}>
+                            <Select label={"Kind"}
+                                    data={kindData}
+                                    {...form.getInputProps("kind")}
+                            />
+                        </Grid.Col>
+                    </Grid>
                     <Textarea name="summary"
                         rows={TEXTAREA_MAX_ROWS}
                         maxLength={MAX_CHARS_FOR_INPUTS}
                         placeholder="A brief summary"
-                        withAsterisk
                         label={"Summary"}
                         {...form.getInputProps("summary")}
                     />
                     <MaxCharsForInputRemaining
                         length={form.values.summary.length}
                     />
-            <p> </p>
-            <Grid>
-              <Grid.Col span={9}></Grid.Col>
-                 <FormSubmitButton form={form} />
-                 <CancelButton
-                    onClickEvent={handleCancel}
-                    toolTipLabel={"Go back without saving"}/>
-            </Grid>
-                    <Space />
-
-                    <Select label={"Kind"}
-                        data={kindData}
-                        {...form.getInputProps("kind")}
-                    />
-                    <Text size={"sm"} c={"cyan"} my={"md"}>
-                        Justifications are optional here, the text format defaults to "ASCIIDOC"
-                    </Text>
-                    <Textarea
-                        rows={TEXTAREA_MAX_ROWS}
-                        maxLength={MAX_CHARS_FOR_INPUTS}
-                        placeholder={"Scientific Justification"}
-                        label={"Scientific Justification"}
-                        {...form.getInputProps('scientificJustification.text')}
-                    />
-                    <MaxCharsForInputRemaining
-                        length={form.values.scientificJustification.text?.length!}
-                    />
-                    <Select
-                        label={"Scientific Justification text format"}
-                        placeholder={"pick one"}
-                        data={textFormatData}
-                        pt={"sm"} pb={"lg"}
-                        {...form.getInputProps('scientificJustification.format')}
-                    />
-                    <Textarea
-                        rows={TEXTAREA_MAX_ROWS}
-                        maxLength={MAX_CHARS_FOR_INPUTS}
-                        placeholder={"Technical Justification"}
-                        label={"Technical Justification"}
-                        {...form.getInputProps('technicalJustification.text')}
-                    />
-                    <MaxCharsForInputRemaining
-                        length={form.values.technicalJustification.text?.length!}
-                    />
-                    <Select
-                        label={"Technical Justification text format"}
-                        placeholder={"pick one"}
-                        data={textFormatData}
-                        pt={"sm"} pb={"lg"}
-                        {...form.getInputProps('technicalJustification.format')}
-                    />
-            <p> </p>
-            <Grid>
-              <Grid.Col span={9}></Grid.Col>
-                 <FormSubmitButton form={form} />
-                 <CancelButton
-                    onClickEvent={handleCancel}
-                    toolTipLabel={"Go back without saving"}/>
-            </Grid>
-                <Space />
-                </Stack>
+                     <FormSubmitButton form={form} />
+                     <CancelButton
+                        onClickEvent={handleCancel}
+                        toolTipLabel={"Go back without saving"}
+                     />
                 </Container>
             </form>
         </PanelFrame>

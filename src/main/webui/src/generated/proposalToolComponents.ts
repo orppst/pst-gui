@@ -3996,6 +3996,69 @@ export const useAllocatedProposalResourceGetAllocatedProposal = <
   });
 };
 
+export type AllocatedProposalResourceWithdrawAllocatedProposalPathParams = {
+  /**
+   * @format int64
+   */
+  allocatedId: number;
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type AllocatedProposalResourceWithdrawAllocatedProposalError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AllocatedProposalResourceWithdrawAllocatedProposalVariables = {
+  pathParams: AllocatedProposalResourceWithdrawAllocatedProposalPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchAllocatedProposalResourceWithdrawAllocatedProposal = (
+  variables: AllocatedProposalResourceWithdrawAllocatedProposalVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    AllocatedProposalResourceWithdrawAllocatedProposalError,
+    undefined,
+    {},
+    {},
+    AllocatedProposalResourceWithdrawAllocatedProposalPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/allocatedProposals/{allocatedId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useAllocatedProposalResourceWithdrawAllocatedProposal = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AllocatedProposalResourceWithdrawAllocatedProposalError,
+      AllocatedProposalResourceWithdrawAllocatedProposalVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    AllocatedProposalResourceWithdrawAllocatedProposalError,
+    AllocatedProposalResourceWithdrawAllocatedProposalVariables
+  >({
+    mutationFn: (
+      variables: AllocatedProposalResourceWithdrawAllocatedProposalVariables,
+    ) =>
+      fetchAllocatedProposalResourceWithdrawAllocatedProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type AllocatedBlockResourceGetAllocatedBlocksPathParams = {
   /**
    * @format int64
@@ -7949,6 +8012,76 @@ export const useInvestigatorResourceAddPersonAsInvestigator = (
   });
 };
 
+export type InvestigatorResourceGetInvestigatorsAsObjectsPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type InvestigatorResourceGetInvestigatorsAsObjectsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type InvestigatorResourceGetInvestigatorsAsObjectsResponse =
+  Schemas.Investigator[];
+
+export type InvestigatorResourceGetInvestigatorsAsObjectsVariables = {
+  pathParams: InvestigatorResourceGetInvestigatorsAsObjectsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchInvestigatorResourceGetInvestigatorsAsObjects = (
+  variables: InvestigatorResourceGetInvestigatorsAsObjectsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    InvestigatorResourceGetInvestigatorsAsObjectsResponse,
+    InvestigatorResourceGetInvestigatorsAsObjectsError,
+    undefined,
+    {},
+    {},
+    InvestigatorResourceGetInvestigatorsAsObjectsPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/investigators/asObjects",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useInvestigatorResourceGetInvestigatorsAsObjects = <
+  TData = InvestigatorResourceGetInvestigatorsAsObjectsResponse,
+>(
+  variables: InvestigatorResourceGetInvestigatorsAsObjectsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      InvestigatorResourceGetInvestigatorsAsObjectsResponse,
+      InvestigatorResourceGetInvestigatorsAsObjectsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    InvestigatorResourceGetInvestigatorsAsObjectsResponse,
+    InvestigatorResourceGetInvestigatorsAsObjectsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/investigators/asObjects",
+      operationId: "investigatorResourceGetInvestigatorsAsObjects",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchInvestigatorResourceGetInvestigatorsAsObjects(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type InvestigatorResourceGetInvestigatorPathParams = {
   /**
    * @format int64
@@ -8667,66 +8800,6 @@ export const useJustificationsResourceGetLatexResourceFiles = <
       ),
     ...options,
     ...queryOptions,
-  });
-};
-
-export type JustificationsResourceReplaceLatexResourceFilePathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type JustificationsResourceReplaceLatexResourceFileError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceReplaceLatexResourceFileVariables = {
-  pathParams: JustificationsResourceReplaceLatexResourceFilePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceReplaceLatexResourceFile = (
-  variables: JustificationsResourceReplaceLatexResourceFileVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    JustificationsResourceReplaceLatexResourceFileError,
-    undefined,
-    {},
-    {},
-    JustificationsResourceReplaceLatexResourceFilePathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceReplaceLatexResourceFile = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      JustificationsResourceReplaceLatexResourceFileError,
-      JustificationsResourceReplaceLatexResourceFileVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    JustificationsResourceReplaceLatexResourceFileError,
-    JustificationsResourceReplaceLatexResourceFileVariables
-  >({
-    mutationFn: (
-      variables: JustificationsResourceReplaceLatexResourceFileVariables,
-    ) =>
-      fetchJustificationsResourceReplaceLatexResourceFile({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
   });
 };
 
@@ -10148,74 +10221,6 @@ export const useSupportingDocumentResourceGetSupportingDocument = <
   });
 };
 
-export type SupportingDocumentResourceReplaceSupportingDocumentPathParams = {
-  /**
-   * @format int64
-   */
-  id: number;
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type SupportingDocumentResourceReplaceSupportingDocumentError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type SupportingDocumentResourceReplaceSupportingDocumentRequestBody = {
-  document?: Schemas.UploadItemSchema;
-};
-
-export type SupportingDocumentResourceReplaceSupportingDocumentVariables = {
-  body?: SupportingDocumentResourceReplaceSupportingDocumentRequestBody;
-  pathParams: SupportingDocumentResourceReplaceSupportingDocumentPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchSupportingDocumentResourceReplaceSupportingDocument = (
-  variables: SupportingDocumentResourceReplaceSupportingDocumentVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    SupportingDocumentResourceReplaceSupportingDocumentError,
-    SupportingDocumentResourceReplaceSupportingDocumentRequestBody,
-    {},
-    {},
-    SupportingDocumentResourceReplaceSupportingDocumentPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/supportingDocuments/{id}",
-    method: "put",
-    ...variables,
-    signal,
-  });
-
-export const useSupportingDocumentResourceReplaceSupportingDocument = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      SupportingDocumentResourceReplaceSupportingDocumentError,
-      SupportingDocumentResourceReplaceSupportingDocumentVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    SupportingDocumentResourceReplaceSupportingDocumentError,
-    SupportingDocumentResourceReplaceSupportingDocumentVariables
-  >({
-    mutationFn: (
-      variables: SupportingDocumentResourceReplaceSupportingDocumentVariables,
-    ) =>
-      fetchSupportingDocumentResourceReplaceSupportingDocument({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
 export type SupportingDocumentResourceRemoveSupportingDocumentPathParams = {
   /**
    * @format int64
@@ -11625,41 +11630,33 @@ export const fetchUserProposalsSubmittedWithdrawProposal = (
     UserProposalsSubmittedWithdrawProposalPathParams
   >({
     url: "/pst/api/proposalsSubmitted/{submittedProposalId}/withdraw",
-    method: "get",
+    method: "delete",
     ...variables,
     signal,
   });
 
-export const useUserProposalsSubmittedWithdrawProposal = <TData = undefined,>(
-  variables: UserProposalsSubmittedWithdrawProposalVariables,
+export const useUserProposalsSubmittedWithdrawProposal = (
   options?: Omit<
-    reactQuery.UseQueryOptions<
+    reactQuery.UseMutationOptions<
       undefined,
       UserProposalsSubmittedWithdrawProposalError,
-      TData
+      UserProposalsSubmittedWithdrawProposalVariables
     >,
-    "queryKey" | "queryFn" | "initialData"
+    "mutationFn"
   >,
 ) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
     undefined,
     UserProposalsSubmittedWithdrawProposalError,
-    TData
+    UserProposalsSubmittedWithdrawProposalVariables
   >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposalsSubmitted/{submittedProposalId}/withdraw",
-      operationId: "userProposalsSubmittedWithdrawProposal",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchUserProposalsSubmittedWithdrawProposal(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
+    mutationFn: (variables: UserProposalsSubmittedWithdrawProposalVariables) =>
+      fetchUserProposalsSubmittedWithdrawProposal({
+        ...fetcherOptions,
+        ...variables,
+      }),
     ...options,
-    ...queryOptions,
   });
 };
 
@@ -12808,6 +12805,11 @@ export type QueryOperation =
       variables: InvestigatorResourceGetInvestigatorsVariables;
     }
   | {
+      path: "/pst/api/proposals/{proposalCode}/investigators/asObjects";
+      operationId: "investigatorResourceGetInvestigatorsAsObjects";
+      variables: InvestigatorResourceGetInvestigatorsAsObjectsVariables;
+    }
+  | {
       path: "/pst/api/proposals/{proposalCode}/investigators/{investigatorId}";
       operationId: "investigatorResourceGetInvestigator";
       variables: InvestigatorResourceGetInvestigatorVariables;
@@ -12911,11 +12913,6 @@ export type QueryOperation =
       path: "/pst/api/proposalsSubmitted";
       operationId: "userProposalsSubmittedGetProposalsSubmitted";
       variables: UserProposalsSubmittedGetProposalsSubmittedVariables;
-    }
-  | {
-      path: "/pst/api/proposalsSubmitted/{submittedProposalId}/withdraw";
-      operationId: "userProposalsSubmittedWithdrawProposal";
-      variables: UserProposalsSubmittedWithdrawProposalVariables;
     }
   | {
       path: "/pst/api/resourceTypes";

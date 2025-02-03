@@ -1,6 +1,7 @@
 import {
-    fetchProposalResourceGetFields,
-    useProposalResourceGetTargets, useTechnicalGoalResourceGetTechnicalGoals,
+    useProposalResourceGetFields,
+    useProposalResourceGetTargets,
+    useTechnicalGoalResourceGetTechnicalGoals,
 } from "src/generated/proposalToolComponents.ts";
 import {
     Container,
@@ -22,7 +23,6 @@ import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 
 /**
  * the entrance to building the target part of the edit panel.
@@ -37,6 +37,7 @@ export default function TargetTypeForm (
     const { selectedProposalCode} = useParams();
     const theme = useMantineTheme();
 
+    //for the observation fields select input
     const [fieldsData, setFieldsData]
         = useState<{value: string, label: string}[]>([])
 
@@ -57,21 +58,20 @@ export default function TargetTypeForm (
                 pathParams: {proposalCode: Number(selectedProposalCode)}
             });
 
-    useEffect(() => {
-        fetchProposalResourceGetFields({
+    const observationFields =
+        useProposalResourceGetFields({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         })
-            .then((data: ObjectIdentifier[]) => {
-                setFieldsData(
-                    data?.map(field => (
-                        {value: String(field.dbid!), label: field.name!}
-                    ))
-                )
-            })
-            .catch(error => {console.error(error); notifyError("Error loading fields",
-                "cause: " + getErrorMessage(error))}
+
+    useEffect(() => {
+        if (observationFields.status === 'success') {
+            setFieldsData(
+                observationFields.data.map(field => (
+                    {value: String(field.dbid!), label: field.name!}
+                ))
             )
-    }, []);
+        }
+    }, [observationFields.status]);
 
     /**
      * generates the html for the observation type. Notice, disabled if editing

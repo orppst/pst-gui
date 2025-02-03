@@ -2,15 +2,12 @@ import {ReactElement, useEffect, useState} from "react";
 import {Accordion, Button, Fieldset, Grid, Group, ScrollArea, Stack, Table, Text, Tooltip} from "@mantine/core";
 import {ObjectIdentifier, ProposalSynopsis} from "../../generated/proposalToolSchemas.ts";
 import {
-    fetchSubmittedProposalResourceGetSubmittedProposals,
-    fetchUserProposalsSubmittedWithdrawProposal,
-    UserProposalsSubmittedWithdrawProposalVariables
+    useSubmittedProposalResourceGetSubmittedProposals,
+    useUserProposalsSubmittedWithdrawProposal
 } from "../../generated/proposalToolComponents.ts";
 import {modals} from "@mantine/modals";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {useToken} from "../../App2.tsx";
-import {useQueryClient} from "@tanstack/react-query";
 
 type SubmissionDetail = {
     cycleName: string,
@@ -100,32 +97,32 @@ function CycleSubmissionDetail(props: {
     investigatorName: string,
     proposalTitle: string
 }):  ReactElement {
-    const token = useToken();
-
-    const queryClient = useQueryClient();
 
     const [submissionDetail, setSubmissionDetail] =
         useState<SubmissionDetail | null> (null);
 
-    useEffect(() => {
-        fetchSubmittedProposalResourceGetSubmittedProposals({
+    const submissionMutation =
+        useUserProposalsSubmittedWithdrawProposal();
+
+    const submittedProposals =
+        useSubmittedProposalResourceGetSubmittedProposals({
             pathParams: {cycleCode: props.cycle.dbid!},
             //find exact proposal title and investigator name
             queryParams: {title: props.proposalTitle, investigatorName: props.investigatorName}
         })
-            .then((data: ObjectIdentifier[]) => {
-                if (data.length > 0) {
-                    setSubmissionDetail(
-                        {
-                            cycleName: props.cycle.name!,
-                            //assume a distinct proposal is submitted once only to a particular cycle
-                            submissionDate: data.at(0)!.code!,
-                            submittedProposalId: data.at(0)!.dbid!
-                        }
-                    )
+
+    useEffect(() => {
+        if (submittedProposals.status === 'success' && submittedProposals.data.length > 0) {
+            setSubmissionDetail(
+                {
+                    cycleName: props.cycle.name!,
+                    //assume a distinct proposal is submitted once only to a particular cycle
+                    submissionDate: submittedProposals.data.at(0)!.code!,
+                    submittedProposalId: submittedProposals.data.at(0)!.dbid!
                 }
-            })
-    }, [])
+            )
+        }
+    }, [submittedProposals.status])
 
     const confirmWithdrawal = () => {
         modals.openConfirmModal({
@@ -150,18 +147,21 @@ function CycleSubmissionDetail(props: {
     }
 
     const handleWithdrawal = () => {
-        const vars:UserProposalsSubmittedWithdrawProposalVariables = {
-                headers: {authorization: token ? `Bearer ${token}` : undefined},
-                pathParams: {submittedProposalId: submissionDetail?.submittedProposalId!},
-                queryParams: {cycleId: props.cycle.dbid!}
-        };
-        fetchUserProposalsSubmittedWithdrawProposal(vars)
-            .then(() => queryClient.invalidateQueries())
-            .then(() => notifySuccess(
-                "Withdrawn",
-                "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."
-            ))
-            .catch(error => notifyError("Withdraw Fail", getErrorMessage(error)));
+        submissionMutation.mutate({
+            pathParams: {submittedProposalId: submissionDetail?.submittedProposalId!},
+            queryParams: {cycleId: props.cycle.dbid!}
+        }, {
+            onSuccess: () => {
+                setSubmissionDetail(null);
+                notifySuccess(
+                    "Withdrawn",
+                    "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."
+                )
+            },
+            onError: (error) =>
+                notifyError("Withdraw Fail", getErrorMessage(error))
+        })
+
     }
 
     return(

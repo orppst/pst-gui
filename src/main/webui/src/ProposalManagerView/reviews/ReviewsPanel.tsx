@@ -1,14 +1,16 @@
 import {ReactElement, useContext, useEffect, useState} from "react";
-import {Alert, Container} from "@mantine/core";
+import {Alert, Container, Loader} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {ProposalContext} from "../../App2.tsx";
-import {fetchReviewerResourceGetReviewers} from "../../generated/proposalToolComponents.ts";
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {
+    useReviewerResourceGetReviewers
+} from "../../generated/proposalToolComponents.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {IconInfoCircle} from "@tabler/icons-react";
 import ReviewsAccordion from "./reviews.accordion.tsx";
 import {SubmittedProposal} from "../../generated/proposalToolSchemas.ts";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 
 export type ReviewsProps = {
     reviewerId: number,
@@ -20,23 +22,23 @@ export default
 function ReviewsPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
-    const { user} = useContext(ProposalContext);
+    const {user} = useContext(ProposalContext);
 
     const [reviewerId, setReviewerId] = useState(0)
 
+    const reviewers =
+        useReviewerResourceGetReviewers({})
+
     useEffect(() => {
-        fetchReviewerResourceGetReviewers({})
-            .then(data => {
-                //may want to check a guaranteed unique value here, rather than the name
-                let reviewer =
-                    data.find(rev => rev.name == user.fullName);
-                if (reviewer) {
-                    setReviewerId(reviewer.dbid!)
-                } //else do nothing
-            })
-            .catch(error => notifyError("Failed to load Reviewers",
-                getErrorMessage(error)))
-    }, []);
+        if (reviewers.status === 'success') {
+            //although unlikely, names are potentially NOT unique
+            let reviewer =
+                reviewers.data.find(rev => rev.name == user.fullName);
+            if (reviewer) {
+                setReviewerId(reviewer.dbid!)
+            } //else do nothing
+        }
+    }, [reviewers.status]);
 
     const alertNotReviewer = () => (
         <Container size={"50%"} mt={"100"}>
@@ -50,6 +52,19 @@ function ReviewsPanel() : ReactElement {
             </Alert>
         </Container>
     )
+
+    if (reviewers.isLoading) {
+        return (<Loader/>)
+    }
+
+    if (reviewers.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load reviewers"}
+                error={getErrorMessage(reviewers.error)}
+            />
+        )
+    }
 
     return (
         <PanelFrame>

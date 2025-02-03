@@ -17,10 +17,13 @@ import {ScienceSpectralWindowGui} from "./scienceSpectralWindowGui.tsx";
 import {ReactElement} from "react";
 import { MAX_COLUMNS } from 'src/constants';
 import {modals} from "@mantine/modals";
-import {fetchTechnicalGoalResourceRemoveSpectrum} from "src/generated/proposalToolComponents.ts";
+import {
+    useTechnicalGoalResourceRemoveSpectrum
+} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
  * generates the spectral window panel.
@@ -36,6 +39,9 @@ export default function SpectralWindowsSection(
     //stuff to deal with spectral window deletions
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+
+    const spectralWindowRemoveMutation =
+        useTechnicalGoalResourceRemoveSpectrum();
 
     // determine color.
     const {colorScheme} = useMantineColorScheme();
@@ -150,17 +156,22 @@ export default function SpectralWindowsSection(
      */
     const handleDelete = (spectralWindowId: number): void => {
         //existing spectral window - remove it from the database
-        fetchTechnicalGoalResourceRemoveSpectrum({
-            pathParams: {
-                proposalCode: Number(selectedProposalCode),
-                technicalGoalId: form.getValues().technicalGoalId!,
-                spectralWindowId: spectralWindowId
-            }
-        })
-            .then(()=>queryClient.invalidateQueries())
-            .then(()=> notifySuccess("Deletion successful",
-                    "The selected spectral window has been deleted"))
-            .catch(console.error)
+        spectralWindowRemoveMutation
+            .mutate({
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode),
+                    technicalGoalId: form.getValues().technicalGoalId!,
+                    spectralWindowId: spectralWindowId
+                }
+            }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries().then();
+                    notifySuccess("Deletion successful",
+                        "The selected spectral window has been deleted")
+                },
+                onError: (error) =>
+                    notifyError("Failed to delete spectral window", getErrorMessage(error)),
+            })
     }
 
     const confirmDeletion = (index: number, spectralWindowId: number) =>

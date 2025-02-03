@@ -13,9 +13,10 @@ import {
 import {useForm} from "@mantine/form";
 import {PerformanceParameters, TechnicalGoal} from "src/generated/proposalToolSchemas.ts";
 import {
-    fetchTechnicalGoalResourceAddSpectrum,
-    fetchTechnicalGoalResourceAddTechnicalGoal,
-    fetchTechnicalGoalResourceReplacePerformanceParameters, fetchTechnicalGoalResourceReplaceSpectrum
+    useTechnicalGoalResourceAddSpectrum,
+    useTechnicalGoalResourceAddTechnicalGoal,
+    useTechnicalGoalResourceReplacePerformanceParameters,
+    useTechnicalGoalResourceReplaceSpectrum
 } from "src/generated/proposalToolComponents.ts";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
 import CancelButton from "src/commonButtons/cancel.tsx";
@@ -24,8 +25,9 @@ import {
     convertToPerformanceParametersGui,
     PerformanceParametersGui
 } from "./performanceParametersGui.tsx";
-import {notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 export const notSpecified = "not specified";
 export const notSet = "not set";
@@ -61,6 +63,19 @@ export default function TechnicalGoalEditGroup(
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
     const newTechnicalGoal = !props.technicalGoal;
+
+    const addSpectrumMutation =
+        useTechnicalGoalResourceAddSpectrum();
+
+    const replaceSpectrumMutation =
+        useTechnicalGoalResourceReplaceSpectrum();
+
+    const addGoalMutation =
+        useTechnicalGoalResourceAddTechnicalGoal();
+
+    const replacePerformanceParametersMutation =
+        useTechnicalGoalResourceReplacePerformanceParameters();
+
 
     // use spectral windows if we have them, else use empty array
     let initialSpectralWindows: ScienceSpectralWindowGui[] = [];
@@ -185,15 +200,18 @@ export default function TechnicalGoalEditGroup(
         }
     )
 
+    const navigate = useNavigate();
+    function handleCancel(event: SyntheticEvent) {
+        event.preventDefault();
+        navigate("../",{relative:"path"})
+    }
 
     const handleSubmit = form.onSubmit((values) => {
 
         if(newTechnicalGoal) {
             //posting a new technical goal to the DB
-
             let performanceParameters : PerformanceParameters =
                 convertToPerformanceParameters(values.performanceParameters);
-
 
             let goal : TechnicalGoal = {
                 performance: performanceParameters,
@@ -204,71 +222,84 @@ export default function TechnicalGoalEditGroup(
                 )
             }
 
-            fetchTechnicalGoalResourceAddTechnicalGoal( {
+            addGoalMutation.mutate({
                 pathParams: {proposalCode: Number(selectedProposalCode)},
                 body: goal
+            }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries().then();
+                    props.closeModal!();
+                },
+                onError: (error) =>
+                    notifyError("Failed to add technical goal", getErrorMessage(error))
             })
-                .then(()=>queryClient.invalidateQueries())
-                .then(()=>props.closeModal!())
-                .catch(console.error);
-        } else {
-            //editing an existing technical goal
 
+        } else {
+
+            /*
+                Perhaps we should split performance parameters and spectral windows into separate forms?
+                Have a tabs in the modal for both. It may reduce the code complexity here somewhat.
+             */
+
+
+            //editing an existing technical goal
             if (form.isDirty('performanceParameters')) {
                 let performanceParameters : PerformanceParameters =
                     convertToPerformanceParameters(values.performanceParameters);
 
-                fetchTechnicalGoalResourceReplacePerformanceParameters({
-                    pathParams: {
+                replacePerformanceParametersMutation.mutate({
+                    pathParams:{
                         proposalCode: Number(selectedProposalCode),
                         technicalGoalId: props.technicalGoal?._id!
                     },
                     body: performanceParameters
+                }, {
+                    onSuccess: () => {
+                        queryClient.invalidateQueries().then();
+                        notifySuccess("Edit successful", "performance parameters updated");
+                    },
+                    onError: (error) =>
+                        notifyError("Failed to edit performance parameters", getErrorMessage(error))
                 })
-                    .then(()=>queryClient.invalidateQueries())
-                    .then(() =>
-                        notifySuccess("Edit successful",
-                            "performance parameters updated"))
-                    .catch(console.error);
             }
 
             if (form.isDirty('spectralWindows')) {
                 form.values.spectralWindows.map((sw, index) => {
                     if (sw.id === 0) {
                         //new spectral window - add to the TechnicalGoal
-                        fetchTechnicalGoalResourceAddSpectrum({
+                        addSpectrumMutation.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 technicalGoalId: props.technicalGoal?._id!
                             },
                             body: convertToScienceSpectralWindow(sw)
+                        }, {
+                            onSuccess: () => queryClient.invalidateQueries(),
+                            onError: (error) =>
+                                notifyError("Failed to add new spectral window", getErrorMessage(error))
                         })
-                            .then(()=>queryClient.invalidateQueries())
-                            .catch(console.error)
 
                     } else if (form.isDirty(`spectralWindows.${index}`)) {
                         //existing spectral window and modified - update in TechnicalGoal
-                        fetchTechnicalGoalResourceReplaceSpectrum({
+
+                        replaceSpectrumMutation.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
                                 technicalGoalId: props.technicalGoal?._id!,
                                 spectralWindowId: sw.id
                             },
                             body: convertToScienceSpectralWindow(sw)
+                        }, {
+                            onSuccess: () => queryClient.invalidateQueries(),
+                            onError: (error) =>
+                                notifyError("Failed to update spectral window", getErrorMessage(error))
                         })
-                            .then(()=>queryClient.invalidateQueries())
-                            .catch(console.error)
-
                     }//else do nothing
                 })
             }
         }
     })
-    const navigate = useNavigate();
-    function handleCancel(event: SyntheticEvent) {
-        event.preventDefault();
-        navigate("../",{relative:"path"})
-        }
+
 
     return (
         <form onSubmit={handleSubmit}>
