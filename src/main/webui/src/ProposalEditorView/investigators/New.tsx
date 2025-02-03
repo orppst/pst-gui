@@ -1,8 +1,9 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
+    fetchPersonResourceGetPerson,
     useInvestigatorResourceAddPersonAsInvestigator,
     useInvestigatorResourceGetInvestigatorsAsObjects,
-    usePersonResourceGetPeople, usePersonResourceGetPerson,
+    usePersonResourceGetPeople,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -60,11 +61,11 @@ function AddInvestigatorPanel(): ReactElement {
     //Get all investigators tied to this proposal
     const currentInvestigators
         = useInvestigatorResourceGetInvestigatorsAsObjects({pathParams: {proposalCode: Number(selectedProposalCode)}});
-
+/*
     //Get details of the currently selected person
     let selectedPerson = usePersonResourceGetPerson(
         {pathParams:{id: form.values.selectedInvestigator}})
-
+*/
     useEffect(() => {
         if(allPeople.status === 'success' && currentInvestigators.status === 'success') {
             setSearchData([]);
@@ -92,14 +93,6 @@ function AddInvestigatorPanel(): ReactElement {
         );
     }
 
-    if(selectedPerson.error) {
-        return (
-            <PanelFrame>
-                <pre>{JSON.stringify(selectedPerson.error, null, JSON_SPACES)}</pre>
-            </PanelFrame>
-        );
-    }
-
     const addInvestigatorMutation = useInvestigatorResourceAddPersonAsInvestigator({
         onSuccess: () => {
             queryClient.invalidateQueries().finally(() =>
@@ -110,21 +103,24 @@ function AddInvestigatorPanel(): ReactElement {
     });
 
     const handleAdd = form.onSubmit((val) => {
-        if(selectedPerson.data != undefined) {
-            addInvestigatorMutation.mutate(
-                {
-                    pathParams: {proposalCode: Number(selectedProposalCode)},
-                    body: {
-                        type: val.type,
-                        forPhD: val.forPhD,
-                        person: selectedPerson.data,
-                    }
-                })
-        } else if(selectedPerson.error) {
-            notifyError("Add investigator error", getErrorMessage(selectedPerson.error));
-        } else {
-            notifyError("Add investigator error", "Selected person is empty??");
-        }
+        fetchPersonResourceGetPerson(
+            {pathParams:{id: val.selectedInvestigator}})
+            .then((selectedPerson) => {
+                if (selectedPerson != undefined) {
+                    addInvestigatorMutation.mutate(
+                        {
+                            pathParams: {proposalCode: Number(selectedProposalCode)},
+                            body: {
+                                type: val.type,
+                                forPhD: val.forPhD,
+                                person: selectedPerson,
+                            }
+                        })
+                } else {
+                    notifyError("Add investigator error", "Selected person is empty??");
+                }
+            })
+            .catch((error) => notifyError("Add investigator error", getErrorMessage(error)))
     });
 
     function handleCancel(event: SyntheticEvent) {
