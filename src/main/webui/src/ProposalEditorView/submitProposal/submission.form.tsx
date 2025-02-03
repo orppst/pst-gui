@@ -17,6 +17,7 @@ import {
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import ObservationModeSelect from "./observationMode.select.tsx";
 import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
+import {useMediaQuery} from "@mantine/hooks";
 
 export default
 function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any }) :
@@ -27,6 +28,8 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
     const queryClient = useQueryClient();
 
     const navigate = useNavigate();
+
+    const smallScreen = useMediaQuery("(max-width: 1350px)");
 
     const [cyclesData, setCyclesData] = useState<{value: string, label: string}[]>([]);
 
@@ -206,7 +209,11 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
     return (
         <form onSubmit={trySubmitProposal}>
-            <Stepper active={activeStep} size={"xs"}>
+            <Stepper
+                active={activeStep}
+                size={"md"}
+                orientation={smallScreen ? 'vertical' : 'horizontal'}
+            >
                 <Stepper.Step label={"Proposal Cycle"} description={"Choose a cycle"}>
                     <Select
                         label={"Please select a proposal cycle"}
@@ -221,7 +228,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
                         <ObservationModeSelect form={form}/>
                     </ScrollArea>
                 </Stepper.Step>
-                <Stepper.Step label={"Submit"} description={"submit your proposal to the chosen cycle"}>
+                <Stepper.Step label={"Submit Proposal"} description={"Submit to the chosen cycle"}>
                     {
                         submissionFail.length === 0 ?
                             <Text>

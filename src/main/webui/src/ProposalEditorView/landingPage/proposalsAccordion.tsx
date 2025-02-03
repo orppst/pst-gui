@@ -97,6 +97,7 @@ function CycleSubmissionDetail(props: {
     investigatorName: string,
     proposalTitle: string
 }):  ReactElement {
+
     const [submissionDetail, setSubmissionDetail] =
         useState<SubmissionDetail | null> (null);
 
@@ -160,6 +161,7 @@ function CycleSubmissionDetail(props: {
             onError: (error) =>
                 notifyError("Withdraw Fail", getErrorMessage(error))
         })
+
     }
 
     return(
