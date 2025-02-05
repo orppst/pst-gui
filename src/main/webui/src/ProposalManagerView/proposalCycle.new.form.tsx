@@ -39,8 +39,11 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                 .then(() => notifySuccess("Success", "Proposal Cycle " + newCycle.title + " created"))
         },
         onError: (error) => {
-            console.error(error);
-            notifyError("Create cycle error", getErrorMessage(error))
+            if(error != undefined) {
+                console.error(error.payload);
+                notifyError("Create cycle error", error.payload);
+            } else
+                notifyError("Create cycle error", "An unknown error occurred.");
         }
     });
 
@@ -91,7 +94,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         const newCycle: ProposalCycle = {
             title: values.title,
             observatory: {
-                "@type": "proposal:Observatory",
+                "@type": "proposalManagement:Observatory",
                 _id: values.observatoryId!
             },
             tac: {
