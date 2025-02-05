@@ -29,12 +29,15 @@ function ObservationModeDetailsSelect() : ReactElement {
         <Stack>
             <Select
                 data={instruments}
+                placeholder={"Have you ever, ever felt like this?"}
             />
             <Select
                 data={backends}
+                placeholder={"Have strange things happened,"}
             />
             <Select
                 data={filters}
+                placeholder={"Are you going round the twist?"}
             />
         </Stack>
     )
