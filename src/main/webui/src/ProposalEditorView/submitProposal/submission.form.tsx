@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Button, Group, ScrollArea, Select, Stepper, Text, Tooltip} from "@mantine/core";
+import {Button, Group, Select, Stepper, Text, Tooltip} from "@mantine/core";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
     SubmittedProposalResourceSubmitProposalVariables,
@@ -224,9 +224,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
                     />
                 </Stepper.Step>
                 <Stepper.Step label={"Observing Modes"} description={"Select modes for your observations"}>
-                    <ScrollArea h={200}>
-                        <ObservationModeSelect form={form}/>
-                    </ScrollArea>
+                    <ObservationModeSelect form={form}/>
                 </Stepper.Step>
                 <Stepper.Step label={"Submit Proposal"} description={"Submit to the chosen cycle"}>
                     {
