@@ -1,69 +1,110 @@
 import {IconAlertCircle, IconCircleCheck, IconCircleX, IconInfoCircle} from '@tabler/icons-react';
-import {Box, Table, Text} from "@mantine/core";
-import {ICON_SIZE, JSON_SPACES} from "src/constants.tsx";
-import {useProposalResourceValidateObservingProposal} from "src/generated/proposalToolComponents.ts";
+import {Box, Loader, Table, Text} from "@mantine/core";
+import {ICON_SIZE} from "src/constants.tsx";
+import {
+    useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceGetProposalCycleTitle,
+    useProposalResourceValidateObservingProposal
+} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
-import {useEffect} from "react";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
-export default function ValidationOverview(props: {cycle: number, setValid: any}) {
+export default function ValidationOverview(props: {cycle: number}) {
     const { selectedProposalCode } = useParams();
-    const {data, error, isLoading}
+    const validateProposal
         = useProposalResourceValidateObservingProposal(
         {pathParams: {proposalCode: Number(selectedProposalCode)},
             queryParams: {cycleId: props.cycle}}
         );
 
-    if (error) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+    const cycleTitle = useProposalCyclesResourceGetProposalCycleTitle({
+        pathParams: {
+            cycleCode: props.cycle
+        }
+    })
+
+    const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
+        {pathParams: {cycleCode: props.cycle}});
+
+    if (validateProposal.isLoading || cycleTitle.isLoading || cycleDates.isLoading) {
+        return(
+            <Box mx={"50%"}>
+                <Loader/>
             </Box>
+        )
+    }
+
+    if (validateProposal.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load validation data"}
+                error={getErrorMessage(validateProposal.error)}
+            />
         );
     }
 
-    useEffect(() => {
-        if(data?.isValid) { props.setValid(true); }
-        else {props.setValid(false)}
-    }, [data]);
+    if (cycleTitle.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load cycle title"}
+                error={getErrorMessage(cycleTitle.error)}
+            />
+        );
+    }
+
+    if (cycleDates.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load cycle dates"}
+                error={getErrorMessage(cycleDates.error)}
+            />
+        );
+    }
 
     return (
-        <PanelFrame m={20}>Validation overview
-            {isLoading?(<Text>Loading...</Text>):(
-                <Table>
-                    <Table.Tbody>
-                        <Table.Tr>
+        <PanelFrame m={20}>Validation overview for {cycleTitle.data}
+            <Text
+                size={"sm"}
+                c={"teal"}
+                fw={"bold"}
+            >
+                Submission Deadline: {cycleDates.data?.submissionDeadline}
+            </Text>
+            <Table>
+                <Table.Tbody>
+                    <Table.Tr>
+                        <Table.Td>
+                            {validateProposal.data?.isValid?
+                                (<IconCircleCheck size={ICON_SIZE} />):
+                                (<IconInfoCircle size={ICON_SIZE} />)
+                            }
+                        </Table.Td>
+                        <Table.Td>
+                            {validateProposal.data?.info}
+                        </Table.Td>
+                    </Table.Tr>
+                    {validateProposal.data?.warnings !== undefined &&
+                        (<Table.Tr>
                             <Table.Td>
-                                {data?.isValid?
-                                    (<IconCircleCheck size={ICON_SIZE} />):
-                                    (<IconInfoCircle size={ICON_SIZE} />)
-                                }
+                                <IconAlertCircle size={ICON_SIZE} />
                             </Table.Td>
                             <Table.Td>
-                                {data?.info}
+                                {validateProposal.data?.warnings}
                             </Table.Td>
-                        </Table.Tr>
-                        {data?.warnings !== undefined &&
-                            (<Table.Tr>
-                                <Table.Td>
-                                    <IconAlertCircle size={ICON_SIZE} />
-                                </Table.Td>
-                                <Table.Td>
-                                    {data?.warnings}
-                                </Table.Td>
-                            </Table.Tr>)}
-                        {data?.errors !== undefined &&
-                            (<Table.Tr>
-                                <Table.Td>
-                                    <IconCircleX size={ICON_SIZE} />
-                                </Table.Td>
-                                <Table.Td>
-                                    {data?.errors}
-                                </Table.Td>
-                            </Table.Tr>)}
-                    </Table.Tbody>
-                </Table>
-                )}
+                        </Table.Tr>)}
+                    {validateProposal.data?.errors !== undefined &&
+                        (<Table.Tr>
+                            <Table.Td>
+                                <IconCircleX size={ICON_SIZE} />
+                            </Table.Td>
+                            <Table.Td>
+                                {validateProposal.data?.errors}
+                            </Table.Td>
+                        </Table.Tr>)}
+                </Table.Tbody>
+            </Table>
         </PanelFrame>
     );
 }

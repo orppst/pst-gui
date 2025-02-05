@@ -1,12 +1,11 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Button, Group, Select, Stepper, Text, Tooltip} from "@mantine/core";
+import {Box, Button, Group, Loader, Select, Stepper, Text, Tooltip} from "@mantine/core";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
     SubmittedProposalResourceSubmitProposalVariables,
-    useObservationResourceGetObservations, useProposalCyclesResourceGetProposalCycleDates,
+    useObservationResourceGetObservations,
     useProposalCyclesResourceGetProposalCycles, useSubmittedProposalResourceSubmitProposal
 } from "../../generated/proposalToolComponents.ts";
-import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useForm, UseFormReturnType} from "@mantine/form";
 import {useNavigate, useParams} from "react-router-dom";
@@ -18,10 +17,14 @@ import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import ObservationModeSelect from "./observationMode.select.tsx";
 import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
 import {useMediaQuery} from "@mantine/hooks";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import ValidationOverview from "./ValidationOverview.tsx";
 
 export default
-function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any }) :
+function SubmissionForm() :
     ReactElement {
+
+    const maxSteps = 4;
 
     const {selectedProposalCode} = useParams();
 
@@ -33,23 +36,20 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
     const [cyclesData, setCyclesData] = useState<{value: string, label: string}[]>([]);
 
-    const [submissionDeadline, setSubmissionDeadline] = useState("");
-
     const [submissionFail, setSubmissionFail] = useState("");
 
     //for the Stepper
     const [activeStep, setActiveStep] = useState(0);
 
+    const [initialObservationModeTuple, setInitialObservationModeTuple] = useState<ObservationModeTuple[]>([]);
+
     const observations = useObservationResourceGetObservations({
         pathParams: {proposalCode: Number(selectedProposalCode)}
     })
 
-    const [initialObservationModeTuple, setInitialObservationModeTuple] = useState<ObservationModeTuple[]>([]);
-
-    const {data: getCyclesData, status: getCyclesStatus, error: getCyclesError}
-        = useProposalCyclesResourceGetProposalCycles({
-                queryParams: {includeClosed: false}
-            });
+    const proposalCycles = useProposalCyclesResourceGetProposalCycles({
+        queryParams: {includeClosed: false}
+    });
 
     const form : UseFormReturnType<SubmissionFormValues> = useForm({
         initialValues: {
@@ -58,13 +58,15 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
         },
         validate: (values) => {
             if (activeStep === 0) {
+
+                console.log("selected cycle: " + values.selectedCycle)
                 return {
-                    selectedCycle: values.selectedCycle === 0 ?
+                    selectedCycle: values.selectedCycle === null || values.selectedCycle === 0 ?
                         'Please select a cycle' : null
                 }
             }
 
-            if (activeStep === 1) {
+            if (activeStep === 2) {
                 return {
                     selectedModes: values.selectedModes.some(e => e.modeId === 0) ?
                         'All observations required a mode' : null
@@ -75,23 +77,19 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
         }
     });
 
-    const {data: cycleDatesData, status: cycleDatesStatus, error: cycleDatesError}
-        = useProposalCyclesResourceGetProposalCycleDates(
-            {pathParams: {cycleCode: form.getValues().selectedCycle}});
-
     const submitProposalMutation = useSubmittedProposalResourceSubmitProposal({
         onSuccess: () => {
             setSubmissionFail("");
             queryClient.invalidateQueries().finally();
             nextStep();
         },
-        onError: (error) => {setSubmissionFail("Submission failed, cause: "
-            + getErrorMessage(error))},
+        onError: (error) => {
+            setSubmissionFail("Submission failed: " + getErrorMessage(error))},
 
         })
 
     useEffect(() => {
-        if (observations.data) {
+        if (observations.status === 'success') {
             setInitialObservationModeTuple(
                 observations.data.map((obs) => (
                     {
@@ -105,40 +103,22 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
             form.setFieldValue('selectedModes', initialObservationModeTuple)
         }
-    }, [observations.data]);
-
+    }, [observations.status]);
 
     useEffect(() => {
-        if(getCyclesError)
-            notifyError("Loading Proposal Cycles failed", getErrorMessage(getCyclesError));
-        else
-            if(getCyclesData !== undefined)
-                setCyclesData(
-                    getCyclesData?.map((cycle) =>(
-                        {value: String(cycle.dbid), label: cycle.name!}
-                    ))
-                )
-    }, [getCyclesStatus]);
+        if(proposalCycles.status === 'success')
+            setCyclesData(
+                proposalCycles.data?.map((cycle) =>(
+                    {value: String(cycle.dbid), label: cycle.name!}
+                ))
+            )
+    }, [proposalCycles.status]);
 
-
-    //irritatingly we have to fetch ProposalCycleDates separately --
-    // -- perhaps we need a "CycleSynopsis" cf. "ProposalSynopsis"?
     useEffect(() => {
-        //inform parent of change to selectedCycle
-        props.setSelectedCycle(form.getValues().selectedCycle);
-
-        //reset the selectedModes to initial state
+        //on cycle change reset the selectedModes to initial state
         form.setFieldValue('selectedModes', initialObservationModeTuple)
 
-        if (form.getValues().selectedCycle > 0) {
-            if(cycleDatesError)
-                notifyError("Failed to load proposal cycle dates", getErrorMessage(cycleDatesError));
-            else
-                if(cycleDatesData !== undefined)
-                    setSubmissionDeadline(cycleDatesData.submissionDeadline!);
-        }
-        //else do nothing
-    }, [cycleDatesStatus]);
+    }, [form.getValues().selectedCycle]);
 
 
     //for the Stepper
@@ -147,7 +127,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
             if (form.validate().hasErrors) {
                 return current;
             }
-            return current < 3 ? current + 1 : current;
+            return current < maxSteps ? current + 1 : current;
         });
 
     const prevStep = () =>
@@ -208,6 +188,33 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
 
         });
 
+
+    if (observations.isLoading || proposalCycles.isLoading) {
+        return (
+            <Box mx={"20%"}>
+                <Loader />
+            </Box>
+        )
+    }
+
+    if (observations.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load observations"}
+                error={getErrorMessage(observations.error)}
+            />
+        )
+    }
+
+    if (proposalCycles.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load cycles"}
+                error={getErrorMessage(proposalCycles.error)}
+            />
+        )
+    }
+
     return (
         <form onSubmit={trySubmitProposal}>
             <Stepper
@@ -215,16 +222,26 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
                 size={"md"}
                 orientation={smallScreen ? 'vertical' : 'horizontal'}
             >
-                <Stepper.Step label={"Proposal Cycle"} description={"Choose a cycle"}>
+                <Stepper.Step
+                    label={"Proposal Cycle"}
+                    description={"Choose a cycle"}
+                >
                     <Select
                         label={"Please select a proposal cycle"}
-                        description={submissionDeadline === "" ?
-                            "Submission deadline: " : "Submission deadline: " + submissionDeadline}
                         data={cyclesData}
                         {...form.getInputProps('selectedCycle')}
                     />
                 </Stepper.Step>
-                <Stepper.Step label={"Observing Modes"} description={"Select modes for your observations"}>
+                <Stepper.Step
+                    label={"Validation Overview"}
+                    description={"Is your proposal ready?"}
+                >
+                    <ValidationOverview cycle={form.getValues().selectedCycle} />
+                </Stepper.Step>
+                <Stepper.Step
+                    label={"Observing Modes"}
+                    description={"Select modes for your observations"}
+                >
                     <ObservationModeSelect form={form} smallScreen={smallScreen}/>
                 </Stepper.Step>
                 <Stepper.Step label={"Submit Proposal"} description={"Submit to the chosen cycle"}>
@@ -247,7 +264,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
             </Stepper>
             <Group justify="flex-end" mt="xl">
                 {
-                    activeStep === 3 ?
+                    activeStep === maxSteps ?
                         <Tooltip
                             label={"go to proposal overview"}
                             openDelay={OPEN_DELAY}
@@ -257,17 +274,23 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
                         </Tooltip>
                         :
                     activeStep !== 0 &&
-                        <Button variant="default" onClick={prevStep}>Back</Button>
+                        <Button
+                            variant="default"
+                            onClick={prevStep}
+                        >
+                            Back
+                        </Button>
                 }
                 {
-                    activeStep === 2 ?
+                    activeStep === 3 ?
                         <SubmitButton
-                            disabled={!form.isValid() || !props.isProposalReady}
+                            variant={"filled"}
+                            disabled={!form.isValid()}
                             label={"Submit proposal"}
                             toolTipLabel={"Submit your proposal to the selected cycle"}
                         />
                         :
-                        activeStep !== 3 &&
+                        activeStep !== maxSteps &&
                         <Button
                             onClick={nextStep}
                         >

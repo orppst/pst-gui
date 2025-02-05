@@ -1,7 +1,6 @@
-import {ReactElement, useState} from "react";
+import {ReactElement} from "react";
 import {Fieldset, Stack} from "@mantine/core";
 import {useParams} from "react-router-dom";
-import ValidationOverview from "./ValidationOverview.tsx";
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import SubmissionForm from "./submission.form.tsx";
 
@@ -22,25 +21,32 @@ function SubmitPanel(): ReactElement {
 
     const {selectedProposalCode} = useParams();
 
-    const [isProposalReady, setIsProposalReady] = useState(false);
+
+
+    /*
 
     const [selectedCycle, setSelectedCycle] = useState(0);
+                    <Fieldset legend={"Ready Status"}>
+                    {
+                        selectedCycle && selectedCycle != 0 ?
+                            <ValidationOverview cycle={selectedCycle} />:
+                            <Text c={"grey"} size={"sm"}>
+                                This will show the validation status of your proposal after you select a proposal cycle below.
+                            </Text>
+                    }
+                </Fieldset>
+     */
+
+
+
 
     return (
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Submit"} />
             <Stack>
-                <Fieldset legend={"Ready Status"}>
-                    <ValidationOverview
-                        cycle={selectedCycle}
-                        setValid={setIsProposalReady}
-                    />
-                </Fieldset>
+
                 <Fieldset legend={"Submission Form"}>
-                    <SubmissionForm
-                        isProposalReady={isProposalReady}
-                        setSelectedCycle={setSelectedCycle}
-                    />
+                    <SubmissionForm/>
                 </Fieldset>
             </Stack>
         </PanelFrame>
