@@ -86,8 +86,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
             nextStep();
         },
         onError: (error) => {setSubmissionFail("Submission failed, cause: "
-            + getErrorMessage(error)
-            + "\nThis may be temporary, please try again, if you have tried again please try later")},
+            + getErrorMessage(error))},
 
         })
 
@@ -171,9 +170,11 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
             //of an array, but it escapes me at the moment ----------------------
 
             let allModeIds : number[] =
-                values.selectedModes.map((modeTuple) => (
-                    modeTuple.modeId
-                ))
+                values.selectedModes.map((modeTuple) => {
+                    console.log(modeTuple);
+                    return modeTuple.modeId;
+
+                })
 
             let distinctModeIds = [...new Set(allModeIds)];
 
@@ -224,7 +225,7 @@ function SubmissionForm(props: {isProposalReady: boolean, setSelectedCycle: any 
                     />
                 </Stepper.Step>
                 <Stepper.Step label={"Observing Modes"} description={"Select modes for your observations"}>
-                    <ObservationModeSelect form={form}/>
+                    <ObservationModeSelect form={form} smallScreen={smallScreen}/>
                 </Stepper.Step>
                 <Stepper.Step label={"Submit Proposal"} description={"Submit to the chosen cycle"}>
                     {

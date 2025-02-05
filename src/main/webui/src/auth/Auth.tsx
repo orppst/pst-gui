@@ -115,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log("clear expiryTimer", expiryTimer.current)
             clearTimeout(expiryTimer.current)
             expiryTimer.current = setTimeout(() =>{
+                console.log("token: " + token.current)
                 console.log("access token about to expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
                 if(idleTimer.isIdle()) {
                     setExpiring(true);

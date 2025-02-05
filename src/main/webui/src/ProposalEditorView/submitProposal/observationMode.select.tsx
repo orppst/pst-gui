@@ -1,7 +1,7 @@
 import {UseFormReturnType} from "@mantine/form";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import {ReactElement, useEffect, useState} from "react";
-import {Box, Button, Modal, ScrollArea, Select, Stack, Table, Text} from "@mantine/core";
+import {Box, Button, ComboboxItem, Modal, ScrollArea, Select, Stack, Table, Text} from "@mantine/core";
 import {
     useObservingModeResourceGetCycleObservingModes,
 } from "../../generated/proposalToolComponents.ts";
@@ -20,11 +20,16 @@ import {ICON_SIZE} from "../../constants.tsx";
 
 
 export default
-function ObservationModeSelect(props: { form: UseFormReturnType<SubmissionFormValues> }): ReactElement {
+function ObservationModeSelect(props: {
+    form: UseFormReturnType<SubmissionFormValues>,
+    smallScreen?: boolean
+}): ReactElement {
 
     const [opened, { open, close}] = useDisclosure(false);
 
     const [observationModes, setObservationModes] = useState<{value: string, label: string}[]>([])
+
+    const [theOneMode, setTheOneMode] = useState<ComboboxItem | null>(null);
 
     const {data, status, error} = useObservingModeResourceGetCycleObservingModes({
             pathParams: {cycleId: props.form.getValues().selectedCycle}
@@ -43,6 +48,9 @@ function ObservationModeSelect(props: { form: UseFormReturnType<SubmissionFormVa
                 )
 
     }, [status]);
+
+
+    //const handleSelectForAllChange
 
     const tableHeader = () => (
         <Table.Thead>
@@ -63,7 +71,12 @@ function ObservationModeSelect(props: { form: UseFormReturnType<SubmissionFormVa
                         placeholder={"select mode"}
                         data={observationModes}
                         allowDeselect={false}
-                        {...props.form.getInputProps(`selectedModes.${p.index}.modeId`)}
+                        error={props.form.getValues().selectedModes.at(p.index)!.modeId === 0}
+                        value={props.form.getValues().selectedModes.at(p.index)!.modeId.toString()}
+                        onChange={(_value, option) => {
+                            props.form.setFieldValue(`selectedModes.${p.index}.modeId`, Number(option.value));
+                        }}
+
                     />
                 </Table.Td>
             </Table.Tr>
@@ -80,44 +93,65 @@ function ObservationModeSelect(props: { form: UseFormReturnType<SubmissionFormVa
                 <ObservationModeDetailsSelect />
             </Modal>
 
-
-
-            <Box maw={"75%"} ml={"10%"}>
+            <Box
+                maw={props.smallScreen ? "100%": "75%"}
+                ml={props.smallScreen ? "" : "10%"}
+            >
                 <Stack>
                     <Select
-                        mx={"20%"}
-                        c={"blue"}
+                        description={"One mode to rule them all..."}
+                        placeholder={"...and in the darkness bind them"}
                         label={"Either choose a mode for all observations..."}
-                        description={"One mode to rule them all"}
-
+                        mx={props.smallScreen? "0" : "20%"}
+                        c={"blue"}
+                        data={observationModes}
+                        value={theOneMode ? theOneMode.value : null}
+                        onChange={(_value, option) => {
+                            setTheOneMode(option);
+                            props.form.setValues({
+                                selectedModes: props.form.getValues().selectedModes.map(
+                                    mode => ({...mode, modeId: Number(option.value)})
+                                )
+                            });
+                        }}
                     />
-                    <Text size={"sm"} mx={"20%"} c={"blue"}>
+                    <Text
+                        size={"sm"}
+                        mx={props.smallScreen ? "0" : "20%"}
+                        c={"blue"}
+                    >
                         ...or select them individually.
                     </Text>
                     <ScrollArea h={250}>
-                    <Table
-                        stickyHeader
-                        withTableBorder
-                    >
-                        {tableHeader()}
-                        <Table.Tbody>
-                            {
-                                props.form.getValues().selectedModes.map(
-                                    (modeTuple: ObservationModeTuple, index: number) => {
-                                        return(tableRow({modeTuple, index}))
-                                    })
-                            }
-                        </Table.Tbody>
-                    </Table>
+                        <Table.ScrollContainer minWidth={500}>
+                        <Table
+                            stickyHeader
+                            withTableBorder
+                        >
+                            {tableHeader()}
+                            <Table.Tbody>
+                                {
+                                    props.form.getValues().selectedModes.map(
+                                        (modeTuple: ObservationModeTuple, index: number) => {
+                                            return(tableRow({modeTuple, index}))
+                                        })
+                                }
+                            </Table.Tbody>
+                        </Table>
+                        </Table.ScrollContainer>
                     </ScrollArea>
-                    <Text size={"sm"} mx={"15%"} c={"blue"}>
+                    <Text
+                        size={"sm"}
+                        mx={props.smallScreen ? "0" : "20%"}
+                        c={"blue"}
+                    >
                         If none of the currently defined observing modes suit your needs you may create a custom a mode.
                     </Text>
                     <Button
                         onClick={open}
-                        color={"grape"}
+                        color={"orange"}
                         leftSection={<IconPencilPlus size={ICON_SIZE}/> }
-                        mx={"30%"}
+                        mx={props.smallScreen ? "0" : "34%"}
                     >
                         Create custom mode
                     </Button>
