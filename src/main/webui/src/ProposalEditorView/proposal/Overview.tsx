@@ -573,7 +573,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 toolTipLabel: `creates a new proposal from a deep copy of this proposal`,
                 disabled: false,
                 onClick: handleCloneProposal,
-                label: "Clone proposal",
+                label: "Clone Proposal",
                 variant: "filled",
                 toolTipLabelPosition: "top"
             }
