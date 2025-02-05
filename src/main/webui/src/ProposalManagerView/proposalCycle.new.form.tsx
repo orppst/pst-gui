@@ -36,7 +36,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     const createProposalCycleMutation = useProposalCyclesResourceCreateProposalCycle({
         onSuccess: (newCycle) => {
             queryClient.invalidateQueries()
-                .then(() => notifySuccess("Success", "Proposal Cycle " + newCycle.title + " created"))
+                .then(() => notifySuccess("Success", "Proposal Cycle \"" + newCycle.title + "\" created"))
         },
         onError: (error) => {
             if(error != undefined) {
@@ -88,29 +88,30 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     );
 
     function createCycle(values: NewCycleFormType) {
-        //ts-ignores required as API expects dates as a number (milliseconds since posix epoch),
-        //not an ISO string which is the given type for dates in ProposalCycle.
+        if(values.observatoryId != undefined) {
+            const newCycle: ProposalCycle = {
+                title: values.title,
+                observatory: {
+                    "@type": "proposalManagement:Observatory",
+                    _id: values.observatoryId
+                },
+                tac: {
+                    members: []
+                },
+                availableResources: {
+                    resources: []
+                },
+                submissionDeadline: values.submissionDeadline!.getTime().toString(),
+                observationSessionStart: values.sessionStart!.getTime().toString(),
+                observationSessionEnd: values.sessionEnd!.getTime().toString(),
+            }
 
-        const newCycle: ProposalCycle = {
-            title: values.title,
-            observatory: {
-                "@type": "proposalManagement:Observatory",
-                _id: values.observatoryId!
-            },
-            tac: {
-                members: []
-            },
-            availableResources: {
-                resources: []
-            },
-            submissionDeadline: values.submissionDeadline!.getTime().toString(),
-            observationSessionStart: values.sessionStart!.getTime().toString(),
-            observationSessionEnd: values.sessionEnd!.getTime().toString(),
+            createProposalCycleMutation.mutate({body: newCycle});
+
+            closeModal && closeModal();
+        } else {
+            notifyError("Create cycle error", "Unable to use that observatory");
         }
-
-        createProposalCycleMutation.mutate({body: newCycle});
-
-        closeModal && closeModal();
     }
 
     return (
