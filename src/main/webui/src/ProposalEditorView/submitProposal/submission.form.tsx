@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Alert, Box, Button, Group, Loader, Select, Stepper, Tooltip} from "@mantine/core";
+import {Alert, Box, Button, Group, Loader, Select, Space, Stepper, Tooltip} from "@mantine/core";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
     SubmittedProposalResourceSubmitProposalVariables,
@@ -264,7 +264,10 @@ function SubmissionForm() :
                     <ObservationModeSelect form={form} smallScreen={smallScreen}/>
                 </Stepper.Step>
 
-                <Stepper.Step label={"Submit Proposal"} description={"Submit to the chosen cycle"}>
+                <Stepper.Step
+                    label={"Submit Proposal"}
+                    description={"Submit to the chosen cycle"}
+                >
                     {
                         submissionFail.length === 0 ?
                             <DisplaySubmissionDetails formData={form.getValues()} />
@@ -277,6 +280,7 @@ function SubmissionForm() :
                 </Stepper.Step>
 
                 <Stepper.Completed>
+                    <Space h={"xl"}/>
                     <Alert
                         title={"Submission Complete"}
                         icon={<IconCheck />}
