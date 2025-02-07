@@ -74,7 +74,12 @@ function ObservationModeSelect(props: {
                         error={props.form.getValues().selectedModes.at(p.index)!.modeId === 0}
                         value={props.form.getValues().selectedModes.at(p.index)!.modeId.toString()}
                         onChange={(_value, option) => {
-                            props.form.setFieldValue(`selectedModes.${p.index}.modeId`, Number(option.value));
+                            props.form.setFieldValue(
+                                `selectedModes.${p.index}.modeId`, Number(option.value)
+                            );
+                            props.form.setFieldValue(
+                                `selectedModes.${p.index}.modeName`, option.label
+                            );
                         }}
 
                     />
@@ -99,8 +104,7 @@ function ObservationModeSelect(props: {
             >
                 <Stack>
                     <Select
-                        description={"One mode to rule them all..."}
-                        placeholder={"...and in the darkness bind them"}
+                        placeholder={"one mode to rule them all"}
                         label={"Either choose a mode for all observations..."}
                         mx={props.smallScreen? "0" : "20%"}
                         c={"blue"}
@@ -110,7 +114,12 @@ function ObservationModeSelect(props: {
                             setTheOneMode(option);
                             props.form.setValues({
                                 selectedModes: props.form.getValues().selectedModes.map(
-                                    mode => ({...mode, modeId: Number(option.value)})
+                                    mode => ({
+                                        ...mode,
+                                        modeId: Number(option.value),
+                                        modeName: option.label
+
+                                    })
                                 )
                             });
                         }}
@@ -151,7 +160,7 @@ function ObservationModeSelect(props: {
                         onClick={open}
                         color={"orange"}
                         leftSection={<IconPencilPlus size={ICON_SIZE}/> }
-                        mx={props.smallScreen ? "0" : "34%"}
+                        mx={props.smallScreen ? "0" : "35%"}
                     >
                         Create custom mode
                     </Button>

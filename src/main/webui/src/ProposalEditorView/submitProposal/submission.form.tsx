@@ -1,10 +1,12 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Box, Button, Group, Loader, Select, Stepper, Text, Tooltip} from "@mantine/core";
+import {Alert, Box, Button, Group, Loader, Select, Stepper, Tooltip} from "@mantine/core";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
     SubmittedProposalResourceSubmitProposalVariables,
     useObservationResourceGetObservations,
-    useProposalCyclesResourceGetProposalCycles, useSubmittedProposalResourceSubmitProposal
+    useProposalCyclesResourceGetProposalCycles,
+    useProposalResourceGetObservingProposalTitle,
+    useSubmittedProposalResourceSubmitProposal
 } from "../../generated/proposalToolComponents.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useForm, UseFormReturnType} from "@mantine/form";
@@ -19,6 +21,8 @@ import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
 import {useMediaQuery} from "@mantine/hooks";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import ValidationOverview from "./ValidationOverview.tsx";
+import DisplaySubmissionDetails from "./displaySubmissionDetails.tsx";
+import {IconCheck} from "@tabler/icons-react";
 
 export default
 function SubmissionForm() :
@@ -42,6 +46,10 @@ function SubmissionForm() :
     const [activeStep, setActiveStep] = useState(0);
 
     const [initialObservationModeTuple, setInitialObservationModeTuple] = useState<ObservationModeTuple[]>([]);
+
+    const proposalTitle = useProposalResourceGetObservingProposalTitle({
+        pathParams: {proposalCode: Number(selectedProposalCode)}
+    })
 
     const observations = useObservationResourceGetObservations({
         pathParams: {proposalCode: Number(selectedProposalCode)}
@@ -84,8 +92,7 @@ function SubmissionForm() :
             nextStep();
         },
         onError: (error) => {
-            setSubmissionFail("Submission failed: " + getErrorMessage(error))},
-
+            setSubmissionFail(getErrorMessage(error))},
         })
 
     useEffect(() => {
@@ -96,7 +103,8 @@ function SubmissionForm() :
                         observationId: obs.dbid!,
                         observationName: obs.name!,
                         observationType: obs.code!,
-                        modeId: 0
+                        modeId: 0,
+                        modeName: ""
                     }
                 ))
             )
@@ -189,11 +197,20 @@ function SubmissionForm() :
         });
 
 
-    if (observations.isLoading || proposalCycles.isLoading) {
+    if (observations.isLoading || proposalCycles.isLoading || proposalTitle.isLoading) {
         return (
             <Box mx={"20%"}>
                 <Loader />
             </Box>
+        )
+    }
+
+    if (proposalTitle.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load proposalTitle"}
+                error={getErrorMessage(proposalTitle.error)}
+            />
         )
     }
 
@@ -232,36 +249,46 @@ function SubmissionForm() :
                         {...form.getInputProps('selectedCycle')}
                     />
                 </Stepper.Step>
+
                 <Stepper.Step
-                    label={"Validation Overview"}
+                    label={"Proposal Check"}
                     description={"Is your proposal ready?"}
                 >
                     <ValidationOverview cycle={form.getValues().selectedCycle} />
                 </Stepper.Step>
+
                 <Stepper.Step
                     label={"Observing Modes"}
                     description={"Select modes for your observations"}
                 >
                     <ObservationModeSelect form={form} smallScreen={smallScreen}/>
                 </Stepper.Step>
+
                 <Stepper.Step label={"Submit Proposal"} description={"Submit to the chosen cycle"}>
                     {
                         submissionFail.length === 0 ?
-                            <Text>
-                                Your proposal can now be submitted to {proposalCycleName(form.getValues().selectedCycle)}
-                            </Text>
+                            <DisplaySubmissionDetails formData={form.getValues()} />
                             :
-                            <Text c={"red"}>
-                                {submissionFail}
-                            </Text>
+                            <AlertErrorMessage
+                                title={"Submission Failed"}
+                                error={submissionFail}
+                            />
                     }
                 </Stepper.Step>
+
                 <Stepper.Completed>
-                    <Text c={"green"}>
-                        Your proposal has be submitted to {proposalCycleName(form.getValues().selectedCycle)}
-                    </Text>
+                    <Alert
+                        title={"Submission Complete"}
+                        icon={<IconCheck />}
+                        color={"green"}
+                        mx={"20%"}
+                    >
+                        You have successfully submitted '{proposalTitle.data}' to
+                        '{proposalCycleName(form.getValues().selectedCycle)}'
+                    </Alert>
                 </Stepper.Completed>
             </Stepper>
+
             <Group justify="flex-end" mt="xl">
                 {
                     activeStep === maxSteps ?

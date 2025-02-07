@@ -645,7 +645,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
                 //workaround: usually you would invalidate queries however this causes this
                 //page to rerender with the now deleted 'selectedProposalCode'. The get proposal
-                //API call will then fail and a 500 code shows up in the console.
+                //API call then fails and a 500 code shows up in the console.
                 props.forceUpdate();
             },
             onError: (error) =>
