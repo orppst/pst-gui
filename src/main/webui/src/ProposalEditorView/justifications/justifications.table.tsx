@@ -1,8 +1,9 @@
-import {ReactElement} from "react";
+import { ReactElement, useContext } from 'react';
 import { WhichJustification} from "./JustificationsPanel.tsx";
 import {Justification} from "src/generated/proposalToolSchemas.ts";
 import {Table} from "@mantine/core";
 import JustificationsEditModal from "./edit.modal.tsx";
+import { ProposalContext } from '../../App2';
 
 export type JustificationProps = {
     which : WhichJustification,

@@ -7,7 +7,7 @@ import {
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
+import { InvestigatorKind, Person } from 'src/generated/proposalToolSchemas.ts';
 import {Checkbox, ComboboxData, Grid, Select, Stack} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
@@ -63,12 +63,21 @@ function AddInvestigatorPanel(): ReactElement {
 
     //Get all investigators tied to this proposal
     const currentInvestigators
-        = useInvestigatorResourceGetInvestigatorsAsObjects({pathParams: {proposalCode: Number(selectedProposalCode)}});
-/*
+        = useInvestigatorResourceGetInvestigatorsAsObjects({pathParams: {proposalCode: Number(selectedProposalCode)}})
+
+    const addInvestigatorMutation = useInvestigatorResourceAddPersonAsInvestigator({
+        onSuccess: () => {
+            queryClient.invalidateQueries().finally(() =>
+                navigate("../", {relative:"path"}));
+        },
+        onError: (error) => notifyError("Add investigator error", getErrorMessage(error))
+    });
+
+    /*
     //Get details of the currently selected person
     let selectedPerson = usePersonResourceGetPerson(
         {pathParams:{id: form.values.selectedInvestigator}})
-*/
+    */
     useEffect(() => {
         if(allPeople.status === 'success' && currentInvestigators.status === 'success') {
             setSearchData([]);
@@ -96,19 +105,10 @@ function AddInvestigatorPanel(): ReactElement {
         );
     }
 
-    const addInvestigatorMutation = useInvestigatorResourceAddPersonAsInvestigator({
-        onSuccess: () => {
-            queryClient.invalidateQueries().finally(() =>
-                navigate("../", {relative:"path"}));
-        },
-        onError: (error) => notifyError("Add investigator error", getErrorMessage(error))
-
-    });
-
     const handleAdd = form.onSubmit((val) => {
         fetchPersonResourceGetPerson(
             {...fetcherOptions, pathParams:{id: val.selectedInvestigator}})
-            .then((selectedPerson) => {
+            .then((selectedPerson: Person | undefined) => {
                 if (selectedPerson != undefined) {
                     addInvestigatorMutation.mutate(
                         {

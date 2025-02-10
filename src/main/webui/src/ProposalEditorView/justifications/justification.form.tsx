@@ -7,7 +7,7 @@ import {useForm, UseFormReturnType} from "@mantine/form";
 import {
     useJustificationsResourceUpdateJustification
 } from "src/generated/proposalToolComponents.ts";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -33,7 +33,7 @@ const JustificationTextArea =
     ({form, format} : {form: UseFormReturnType<{text: string}>, format: TextFormats}): ReactElement => {
     return (
         <ScrollArea.Autosize mah={450} scrollbars={"y"} type={"auto"}>
-            <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} my={"xs"} mr={"xs"}>
+            <Paper withBorder={true} bg="gray.1" c="black" p={"xs"} my={"xs"} mr={"xs"}>
                 <Editor
                     value={form.getValues().text ?? ""}
                     onValueChange={newValue => {
@@ -61,6 +61,7 @@ export default
 function JustificationForm(props: JustificationProps) : ReactElement {
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const [justification, setJustification] = useState<Justification>(props.justification)
 
@@ -172,7 +173,7 @@ function JustificationForm(props: JustificationProps) : ReactElement {
                             toolTipLabel={form.isDirty() ? "you have unsaved changes" : "close window"}
                             toolTipLabelPosition={"bottom"}
                             onClick={() => {
-                                form.isDirty() ? confirmDiscardChanges() : props.closeModal!()
+                                form.isDirty() ? confirmDiscardChanges() : navigate("../",{relative:"path"})
                             }}
                             variant={"light"}
                         />
