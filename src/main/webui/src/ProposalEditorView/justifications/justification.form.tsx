@@ -33,7 +33,7 @@ const JustificationTextArea =
     ({form, format} : {form: UseFormReturnType<{text: string}>, format: TextFormats}): ReactElement => {
     return (
         <ScrollArea.Autosize mah={450} scrollbars={"y"} type={"auto"}>
-            <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} my={"xs"} mr={"xs"}>
+            <Paper withBorder={true} bg="gray.1" c="black" p={"xs"} my={"xs"} mr={"xs"}>
                 <Editor
                     value={form.getValues().text ?? ""}
                     onValueChange={newValue => {
