@@ -1,16 +1,16 @@
 import {UseFormReturnType} from "@mantine/form";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import {ReactElement, useEffect, useState} from "react";
-import {Box, Button, ComboboxItem, Modal, ScrollArea, Select, Stack, Table, Text} from "@mantine/core";
+import {Box, Button, ComboboxItem, Loader, Modal, ScrollArea, Select, Stack, Table, Text} from "@mantine/core";
 import {
     useObservingModeResourceGetCycleObservingModes,
 } from "../../generated/proposalToolComponents.ts";
-import {notifyError} from "../../commonPanel/notifications.tsx";
-import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useDisclosure} from "@mantine/hooks";
 import ObservationModeDetailsSelect from "./observationMode.detials.select.tsx";
 import {IconPencilPlus} from "@tabler/icons-react";
 import {ICON_SIZE} from "../../constants.tsx";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 
 /*
@@ -25,32 +25,31 @@ function ObservationModeSelect(props: {
     smallScreen?: boolean
 }): ReactElement {
 
-    const [opened, { open, close}] = useDisclosure(false);
+    const [opened, {open, close}] = useDisclosure(false);
 
-    const [observationModes, setObservationModes] = useState<{value: string, label: string}[]>([])
+    const [observingModes, setObservingModes] = useState<{value: string, label: string}[]>([])
 
     const [theOneMode, setTheOneMode] = useState<ComboboxItem | null>(null);
 
-    const {data, status, error} = useObservingModeResourceGetCycleObservingModes({
+    const cycleModes = useObservingModeResourceGetCycleObservingModes({
             pathParams: {cycleId: props.form.getValues().selectedCycle}
         });
 
     useEffect(() => {
-        if (error)
-            notifyError("Failed to load observation modes", getErrorMessage(error))
-        else
-            if(data !== undefined)
-                setObservationModes(
-                    data.map((mode) => (
-                        //in this context 'name' contains the mode description string
-                        {value: String(mode.dbid), label: mode.code + ": " + mode.name}
-                    ))
-                )
+        if (cycleModes.status === 'success')
+            setObservingModes(
+                cycleModes.data.map((mode) => (
+                    //in this context 'name' contains the mode description string, 'code' contains its name
+                    //the description is potentially just a duplicate of the name
+                    {
+                        value: String(mode.dbid),
+                        label: mode.code === mode.name? mode.code! : mode.code + ": " + mode.name
+                    }
+                ))
+            )
 
-    }, [status]);
+    }, [cycleModes.status]);
 
-
-    //const handleSelectForAllChange
 
     const tableHeader = () => (
         <Table.Thead>
@@ -69,7 +68,7 @@ function ObservationModeSelect(props: {
                 <Table.Td>
                     <Select
                         placeholder={"select mode"}
-                        data={observationModes}
+                        data={observingModes}
                         allowDeselect={false}
                         error={props.form.getValues().selectedModes.at(p.index)!.modeId === 0}
                         value={props.form.getValues().selectedModes.at(p.index)!.modeId.toString()}
@@ -88,12 +87,29 @@ function ObservationModeSelect(props: {
         )
     }
 
+    if (cycleModes.isLoading) {
+        return (
+            <Box mx={"20%"}>
+                <Loader />
+            </Box>
+        )
+    }
+
+    if (cycleModes.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load available observing modes"}
+                error={getErrorMessage(cycleModes.error)}
+            />
+        )
+    }
+
     return (
         <>
             <Modal
                 opened={opened}
                 onClose={close}
-                title={"ARGGGGHHHH!!!"}
+                title={"Create Custom Observing Mode"}
             >
                 <ObservationModeDetailsSelect />
             </Modal>
@@ -108,7 +124,7 @@ function ObservationModeSelect(props: {
                         label={"Either choose a mode for all observations..."}
                         mx={props.smallScreen? "0" : "20%"}
                         c={"blue"}
-                        data={observationModes}
+                        data={observingModes}
                         value={theOneMode ? theOneMode.value : null}
                         onChange={(_value, option) => {
                             setTheOneMode(option);

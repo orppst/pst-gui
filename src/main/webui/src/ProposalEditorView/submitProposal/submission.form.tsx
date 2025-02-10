@@ -51,8 +51,14 @@ function SubmissionForm() :
         pathParams: {proposalCode: Number(selectedProposalCode)}
     })
 
-    const observations = useObservationResourceGetObservations({
-        pathParams: {proposalCode: Number(selectedProposalCode)}
+    const targetObservations = useObservationResourceGetObservations({
+        pathParams: {proposalCode: Number(selectedProposalCode)},
+        queryParams: {type: "TargetObservation"}
+    })
+
+    const calibrationObservations = useObservationResourceGetObservations({
+        pathParams: {proposalCode: Number(selectedProposalCode)},
+        queryParams: {type: "CalibrationObservation"}
     })
 
     const proposalCycles = useProposalCyclesResourceGetProposalCycles({
@@ -66,8 +72,6 @@ function SubmissionForm() :
         },
         validate: (values) => {
             if (activeStep === 0) {
-
-                console.log("selected cycle: " + values.selectedCycle)
                 return {
                     selectedCycle: values.selectedCycle === null || values.selectedCycle === 0 ?
                         'Please select a cycle' : null
@@ -96,22 +100,33 @@ function SubmissionForm() :
         })
 
     useEffect(() => {
-        if (observations.status === 'success') {
-            setInitialObservationModeTuple(
-                observations.data.map((obs) => (
-                    {
-                        observationId: obs.dbid!,
-                        observationName: obs.name!,
-                        observationType: obs.code!,
-                        modeId: 0,
-                        modeName: ""
-                    }
-                ))
-            )
+        if (targetObservations.status === 'success' && calibrationObservations.status === 'success') {
+
+            let targetTuples = targetObservations.data.map((obs) => (
+                {
+                    observationId: obs.dbid!,
+                    observationName: obs.name!,
+                    observationType: obs.code!,
+                    modeId: 0,
+                    modeName: ""
+                }
+            ))
+
+            let calibrationTuples = calibrationObservations.data.map((obs) => (
+                {
+                    observationId: obs.dbid!,
+                    observationName: obs.name!,
+                    observationType: obs.code!,
+                    modeId: 0,
+                    modeName: ""
+                }
+            ))
+
+            setInitialObservationModeTuple(targetTuples.concat(calibrationTuples))
 
             form.setFieldValue('selectedModes', initialObservationModeTuple)
         }
-    }, [observations.status]);
+    }, [targetObservations.status, calibrationObservations.status]);
 
     useEffect(() => {
         if(proposalCycles.status === 'success')
@@ -151,7 +166,7 @@ function SubmissionForm() :
     )
 
 
-    const trySubmitProposal =
+    const handleSubmitProposal =
         form.onSubmit((values) => {
 
             //I feel like there might be a better way to do this using the 'filter' method
@@ -159,9 +174,7 @@ function SubmissionForm() :
 
             let allModeIds : number[] =
                 values.selectedModes.map((modeTuple) => {
-                    console.log(modeTuple);
                     return modeTuple.modeId;
-
                 })
 
             let distinctModeIds = [...new Set(allModeIds)];
@@ -197,7 +210,9 @@ function SubmissionForm() :
         });
 
 
-    if (observations.isLoading || proposalCycles.isLoading || proposalTitle.isLoading) {
+    if (targetObservations.isLoading || calibrationObservations.isLoading ||
+        proposalCycles.isLoading || proposalTitle.isLoading)
+    {
         return (
             <Box mx={"20%"}>
                 <Loader />
@@ -214,11 +229,20 @@ function SubmissionForm() :
         )
     }
 
-    if (observations.isError) {
+    if (targetObservations.isError) {
         return(
             <AlertErrorMessage
-                title={"Failed to load observations"}
-                error={getErrorMessage(observations.error)}
+                title={"Failed to load target observations"}
+                error={getErrorMessage(targetObservations.error)}
+            />
+        )
+    }
+
+    if (calibrationObservations.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load calibration observations"}
+                error={getErrorMessage(calibrationObservations.error)}
             />
         )
     }
@@ -233,7 +257,7 @@ function SubmissionForm() :
     }
 
     return (
-        <form onSubmit={trySubmitProposal}>
+        <form onSubmit={handleSubmitProposal}>
             <Stepper
                 active={activeStep}
                 size={"md"}
