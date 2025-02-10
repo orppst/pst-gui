@@ -40,7 +40,7 @@ export function JustificationsTabs() : ReactElement {
                         Editor
                     </Tabs.Tab>
 
-                    <Tabs.Tab value={'latexService'} disabled={justification.format !== 'latex'}>
+                    <Tabs.Tab value={'latexService'} disabled={justification?.format !== 'latex'}>
                         LaTeX Service
                     </Tabs.Tab>
 
