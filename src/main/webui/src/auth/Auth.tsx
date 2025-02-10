@@ -158,7 +158,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <ProposalContext.Provider value={{user:user.current, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
+        <ProposalContext.Provider value={{
+                user:user.current,
+                getToken:getToken,
+                authenticated:loggedOn,
+                selectedProposalCode:0,
+                apiUrl:apiURL.current,
+                justification: null,
+                justificationType: "scientific"}}>
             {loggedOn ? ( isNewUser ? (
 
                   <NewUser proposed={user.current} uuid={uuid.current} userConfirmed={userConfirmed}/>

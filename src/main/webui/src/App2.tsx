@@ -9,7 +9,7 @@ import {
     QueryClient,
     QueryClientProvider, useQueryClient,
 } from '@tanstack/react-query';
-import {ObservingProposal, Person} from "./generated/proposalToolSchemas.ts";
+import { Justification, ObservingProposal, Person } from './generated/proposalToolSchemas.ts';
 import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
 import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
@@ -56,7 +56,7 @@ import {
 import {SendToImportAPI} from './ProposalEditorView/proposal/UploadProposal';
 import UploadButton from './commonButtons/upload';
 import AdminPanel from "./admin/adminPanel";
-import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
+import JustificationsPanel, { WhichJustification } from './ProposalEditorView/justifications/JustificationsPanel';
 import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
 import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
@@ -78,6 +78,8 @@ import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPag
 import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
 import {notifyError} from "./commonPanel/notifications.tsx";
 import JSZip from "jszip";
+import JustificationsEditModal from './ProposalEditorView/justifications/edit.modal';
+import { JustificationsTabs } from './ProposalEditorView/justifications/justifications.tabs';
 
 /**
  * defines the user context type.
@@ -97,24 +99,35 @@ export type ProposalContextType = {
 }
 
 /**
+ * defines the justification context type
+ */
+export type JustificationContextType = {
+    justificationType: WhichJustification;
+    justification: Justification | null;
+}
+
+/**
  * generates a proposal context.
  *
  * @type {React.Context<UserContextType & ProposalContextType>} the context.
  */
 export const ProposalContext:
-    Context<UserContextType & ProposalContextType> =
-    createContext<UserContextType & ProposalContextType>({
+    Context<UserContextType & ProposalContextType & JustificationContextType> =
+    createContext<UserContextType & ProposalContextType & JustificationContextType>({
         user: {},
         getToken: ()=>{return ""},
         authenticated: false,
         selectedProposalCode: 0,
-        apiUrl:"http://api" // obviously false as a placeholder
+        apiUrl:"http://api", // obviously false as a placeholder.
+        justificationType: "scientific", // obviously false as a placeholder.
+        justification: null,
     })
 
 /**
  * provides an interface for getting the proposal context token.
  * @return {string} the token.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useToken = (): string => {
     return useContext(ProposalContext).getToken();
 };
@@ -243,6 +256,11 @@ function App2(): ReactElement {
                     {
                         path: "proposal/:selectedProposalCode/justifications",
                         element: <JustificationsPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/justifications/new",
+                        element: <JustificationsTabs />,
                         errorElement: <ErrorPage />,
                     },
                     {

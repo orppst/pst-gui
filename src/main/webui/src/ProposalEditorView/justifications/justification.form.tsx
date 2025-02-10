@@ -59,7 +59,7 @@ const JustificationTextArea =
 
 export default
 function JustificationForm(props: JustificationProps) : ReactElement {
-    const {selectedProposalCode} = useParams();
+    const {selectedProposalCode, justification, justificationType} = useParams();
     const queryClient = useQueryClient();
 
     const [justification, setJustification] = useState<Justification>(props.justification)
