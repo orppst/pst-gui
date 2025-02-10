@@ -1,7 +1,8 @@
-import {ReactElement} from "react";
+import { ReactElement, useContext } from 'react';
 import ViewEditButton from "src/commonButtons/viewEdit.tsx";
 import {JustificationProps} from "./justifications.table.tsx";
 import {useNavigate} from "react-router-dom";
+import { ProposalContext } from '../../App2';
 
 export default function JustificationsEditModal(justificationProps : JustificationProps)
     : ReactElement {
@@ -11,8 +12,10 @@ export default function JustificationsEditModal(justificationProps : Justificati
     /**
      * routes the user to the new justification page.
      */
-    function handleAddNew() {
-        // update data store with correct justifications
+    function useContextToHandleAddNew() {
+        // update data store with correct justifications and navigate to new
+        useContext(ProposalContext).justification = justificationProps.justification;
+        useContext(ProposalContext).justificationType = justificationProps.which;
         navigate("new");
     }
 
@@ -20,7 +23,7 @@ export default function JustificationsEditModal(justificationProps : Justificati
         return (
             <ViewEditButton
                 toolTipLabel={"view/edit " + justificationProps.which + " justification"}
-                onClick={handleAddNew}
+                onClick={useContextToHandleAddNew}
             />
         )
     }

@@ -59,8 +59,9 @@ const JustificationTextArea =
 
 export default
 function JustificationForm(props: JustificationProps) : ReactElement {
-    const {selectedProposalCode, justification, justificationType} = useParams();
+    const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const [justification, setJustification] = useState<Justification>(props.justification)
 
@@ -172,7 +173,7 @@ function JustificationForm(props: JustificationProps) : ReactElement {
                             toolTipLabel={form.isDirty() ? "you have unsaved changes" : "close window"}
                             toolTipLabelPosition={"bottom"}
                             onClick={() => {
-                                form.isDirty() ? confirmDiscardChanges() : props.closeModal!()
+                                form.isDirty() ? confirmDiscardChanges() : navigate("../",{relative:"path"})
                             }}
                             variant={"light"}
                         />
