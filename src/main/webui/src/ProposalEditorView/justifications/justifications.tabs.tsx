@@ -1,10 +1,11 @@
-import {ReactElement} from "react";
+import { ReactElement, useContext } from 'react';
 import {Tabs} from "@mantine/core";
 import JustificationForm from "./justification.form.tsx";
 import JustificationLatex from "./justifications.latex.tsx";
 import JustificationsHelp from "./justifications.help.tsx";
 import {useParams} from "react-router-dom";
 import { EditorPanelHeader, PanelFrame } from '../../commonPanel/appearance';
+import { ProposalContext } from '../../App2';
 
 /**
  * function that ensures the first character is capitalised.
@@ -24,7 +25,8 @@ function capitalizeFirstChar(string : string) : string {
  */
 export function JustificationsTabs() : ReactElement {
     // get the justification data we need for the new page, as well as the proposal code.
-    const { justification, justificationType, selectedProposalCode } = useParams();
+    const { selectedProposalCode } = useParams();
+    const { justification, justificationType } = useContext(ProposalContext);
 
     // returns the React html code for the justification tabs.
     return (
