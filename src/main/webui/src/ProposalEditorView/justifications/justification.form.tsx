@@ -7,7 +7,7 @@ import {useForm, UseFormReturnType} from "@mantine/form";
 import {
     useJustificationsResourceUpdateJustification
 } from "src/generated/proposalToolComponents.ts";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from "src/commonButtons/save.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
