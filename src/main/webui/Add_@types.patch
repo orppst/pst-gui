@@ -1,5 +1,5 @@
 --- proposalToolSchemas.ts.orig	2025-02-12 15:20:07
-+++ proposalToolSchemas.ts	2025-02-12 15:27:33
++++ proposalToolSchemas.ts	2025-02-12 15:45:04
 @@ -7,6 +7,7 @@
   * base proposal
   */
@@ -101,7 +101,7 @@
  };
  
  export type Investigator = {
-+  _id?: string;
++  _id?: number;
    type?: InvestigatorKind;
    /**
     * is the investigator making proposal for their PhD
@@ -154,7 +154,7 @@
     */
    homeInstitute?: Organization;
 -  xmlId?: string;
-+  _id?: string;
++  _id?: number;
  };
  
  /**
