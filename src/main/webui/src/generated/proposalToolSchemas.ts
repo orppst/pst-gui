@@ -1013,7 +1013,7 @@ export type Person = {
    * An institution that is a collection of people
    */
   homeInstitute?: Organization;
-  _id?: string;
+  _id?: number;
 };
 
 /**
