@@ -1,4 +1,4 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement} from "react";
 import {Accordion, Button, Fieldset, Grid, Group, ScrollArea, Stack, Table, Text, Tooltip} from "@mantine/core";
 import {ObjectIdentifier, ProposalSynopsis} from "../../generated/proposalToolSchemas.ts";
 import {
@@ -8,11 +8,41 @@ import {
 import {modals} from "@mantine/modals";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
-type SubmissionDetail = {
-    cycleName: string,
-    submissionDate: string,
-    submittedProposalId: number,
+function CycleSubmissionDetail(props: {
+        cycle: ObjectIdentifier,
+        investigatorName: string | undefined,
+        proposalTitle: string | undefined,
+        sourceProposalId: number | undefined,
+    }):  ReactElement | ReactElement[] {
+
+
+    const submittedProposals =
+        useSubmittedProposalResourceGetSubmittedProposals({
+            pathParams: {cycleCode: props.cycle.dbid!},
+            //find exact proposal id
+            queryParams: {sourceProposalId: props.sourceProposalId},
+        });
+
+    return(
+        submittedProposals.isLoading ?
+            <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
+            : submittedProposals.data == undefined ?
+                <Table.Tr><Table.Td>Empty!</Table.Td></Table.Tr>
+            : submittedProposals.data.map((submission) => {
+                return(
+                    <CycleSubmissionRow
+                        key={submission.dbid}
+                        submittedProposalId={submission.dbid!}
+                        cycle={props.cycle}
+                        investigatorName={props.investigatorName}
+                        submissionDate={submission.code}
+                        proposalTitle={props.proposalTitle}
+                        sourceProposalId={props.sourceProposalId}
+                    />)})
+    )
+
 }
 
 export default
@@ -68,7 +98,8 @@ function ProposalsAccordion(
                                                     key={cycle.dbid}
                                                     cycle={cycle}
                                                     investigatorName={props.investigatorName}
-                                                    proposalTitle={proposal.title!}
+                                                    proposalTitle={proposal.title}
+                                                    sourceProposalId={proposal.code}
                                                 />
                                             )
                                         })
@@ -92,37 +123,18 @@ function ProposalsAccordion(
     )
 }
 
-function CycleSubmissionDetail(props: {
+function CycleSubmissionRow(props: {
     cycle: ObjectIdentifier,
-    investigatorName: string,
-    proposalTitle: string
+    submittedProposalId: number,
+    submissionDate: string | undefined,
+    investigatorName: string | undefined,
+    proposalTitle: string | undefined,
+    sourceProposalId: number | undefined,
 }):  ReactElement {
-
-    const [submissionDetail, setSubmissionDetail] =
-        useState<SubmissionDetail | null> (null);
+    const queryClient = useQueryClient();
 
     const submissionMutation =
         useUserProposalsSubmittedWithdrawProposal();
-
-    const submittedProposals =
-        useSubmittedProposalResourceGetSubmittedProposals({
-            pathParams: {cycleCode: props.cycle.dbid!},
-            //find exact proposal title and investigator name
-            queryParams: {title: props.proposalTitle, investigatorName: props.investigatorName}
-        })
-
-    useEffect(() => {
-        if (submittedProposals.status === 'success' && submittedProposals.data.length > 0) {
-            setSubmissionDetail(
-                {
-                    cycleName: props.cycle.name!,
-                    //assume a distinct proposal is submitted once only to a particular cycle
-                    submissionDate: submittedProposals.data.at(0)!.code!,
-                    submittedProposalId: submittedProposals.data.at(0)!.dbid!
-                }
-            )
-        }
-    }, [submittedProposals.status])
 
     const confirmWithdrawal = () => {
         modals.openConfirmModal({
@@ -148,15 +160,15 @@ function CycleSubmissionDetail(props: {
 
     const handleWithdrawal = () => {
         submissionMutation.mutate({
-            pathParams: {submittedProposalId: submissionDetail?.submittedProposalId!},
+            pathParams: {submittedProposalId: props.submittedProposalId!},
             queryParams: {cycleId: props.cycle.dbid!}
         }, {
             onSuccess: () => {
-                setSubmissionDetail(null);
-                notifySuccess(
-                    "Withdrawn",
-                    "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."
-                )
+                queryClient.invalidateQueries().finally(() =>
+                    notifySuccess(
+                        "Withdrawn",
+                        "'" + props.proposalTitle + "' has been withdrawn from '" + props.cycle.name + "'."
+                    ));
             },
             onError: (error) =>
                 notifyError("Withdraw Fail", getErrorMessage(error))
@@ -164,14 +176,12 @@ function CycleSubmissionDetail(props: {
 
     }
 
-    return(
-        submissionDetail ?
-            <Table.Tr>
-                <Table.Td>{submissionDetail.cycleName}</Table.Td>
-                <Table.Td>{submissionDetail.submissionDate}</Table.Td>
+    return (<Table.Tr>
+                <Table.Td>{props.cycle.name}</Table.Td>
+                <Table.Td>{props.submissionDate}</Table.Td>
                 <Table.Td>
                     <Tooltip
-                        label={"withdraw this proposal from " + submissionDetail.cycleName}
+                        label={"withdraw this proposal from " + props.cycle.name}
                     >
                         <Button
                             variant={"outline"}
@@ -182,9 +192,7 @@ function CycleSubmissionDetail(props: {
                         </Button>
                     </Tooltip>
                 </Table.Td>
-            </Table.Tr>
-            :
-            <></>
-    )
+            </Table.Tr>);
 
 }
+
