@@ -1,14 +1,20 @@
-import {ReactElement, useState} from "react";
+import {ReactElement, useEffect, useState} from "react";
 import {
-    useObservatoryResourceGetTelescopeArray,
-    useTelescopeResourceGetObservatoryTelescopes
+    useObservatoryResourceGetTelescopeArray
 } from "../../generated/proposalToolComponents.ts";
 import {Box, Checkbox, Group, Loader} from "@mantine/core";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 
 export default
-function observingModeTelescopes(p: {observatoryId: number, observingPlatformId: number}) : ReactElement {
+function ObservingModeTelescopes(
+    p: {
+        observingPlatformId: number,
+        observatoryId: number,
+        allTelescopes: ObjectIdentifier[]
+    })
+    : ReactElement {
 
     const telescopeArray = useObservatoryResourceGetTelescopeArray({
         pathParams: {
@@ -17,14 +23,21 @@ function observingModeTelescopes(p: {observatoryId: number, observingPlatformId:
         }
     })
 
-    const allTelescopes = useTelescopeResourceGetObservatoryTelescopes({
-        pathParams: {observatoryId: p.observatoryId}
-    })
-
     const [telescopes, setTelescopes] = useState<string[]>([]);
 
 
-    if (telescopeArray.isLoading || allTelescopes.isLoading) {
+    useEffect(() => {
+        if (telescopeArray.status === 'success') {
+            setTelescopes(
+                telescopeArray.data.arrayMembers!.map(t => (
+                    String(t.telescope?._id)
+                ))
+            )
+        }
+    }, [telescopeArray.status, p.observingPlatformId]);
+
+
+    if (telescopeArray.isLoading) {
         return (
             <Box mx={"20%"}>
                 <Loader />
@@ -41,37 +54,22 @@ function observingModeTelescopes(p: {observatoryId: number, observingPlatformId:
         )
     }
 
-    if (allTelescopes.isError) {
-        return (
-            <AlertErrorMessage
-                title={"Failed to load the observatory telescopes"}
-                error={getErrorMessage(allTelescopes.error)}
-            />
-        )
-    }
-
     return (
-        <>
-            {
-                allTelescopes.data?.length && allTelescopes.data.length > 1 &&
-                <Checkbox.Group
-                    value={telescopes}
-                    onChange={setTelescopes}
-                    label={"Telescopes"}
-                >
-                    <Group mt={"sm"}>
-                        {
-                            allTelescopes.data?.map(t => (
-                                <Checkbox
-                                    key={t.dbid}
-                                    value={String(t.dbid)}
-                                    label={t.name}
-                                />
-                            ))
-                        }
-                    </Group>
-                </Checkbox.Group>
-            }
-        </>
+        <Checkbox.Group
+            value={telescopes}
+            label={"Telescopes"}
+        >
+            <Group mt={"sm"}>
+                {
+                    p.allTelescopes.map(t => (
+                        <Checkbox
+                            key={t.dbid}
+                            value={String(t.dbid)}
+                            label={t.name}
+                        />
+                    ))
+                }
+            </Group>
+        </Checkbox.Group>
     )
 }

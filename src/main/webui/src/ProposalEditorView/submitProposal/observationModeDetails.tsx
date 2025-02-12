@@ -1,12 +1,14 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Box, ComboboxItem, Loader, Select, Stack} from "@mantine/core";
+import {Box, ComboboxItem, List, Loader, Select, Stack} from "@mantine/core";
 import {
     useBackendResourceGetObservatoryBackends,
     useInstrumentResourceGetObservatoryInstruments,
-    useObservingModeResourceGetCycleObservingMode,
+    useTelescopeResourceGetObservatoryTelescopes,
 } from "../../generated/proposalToolComponents.ts";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import ObservingModeTelescopes from "./observingModeTelescopes.tsx";
+import {Filter} from "../../generated/proposalToolSchemas.ts";
 
 
 type SelectData = {
@@ -14,13 +16,19 @@ type SelectData = {
     label: string
 }
 
+
 export default
 function ObservationModeDetails(
-    p: {observatoryId: number, observingModeId: number, selectedCycleId: number})
+    p: {
+        observatoryId: number,
+        selectedCycleId: number,
+        filters: Filter[]
+    })
     : ReactElement {
 
-    const observingMode = useObservingModeResourceGetCycleObservingMode({
-        pathParams: {cycleId: p.selectedCycleId, modeId: p.observingModeId}
+
+    const allTelescopes = useTelescopeResourceGetObservatoryTelescopes({
+        pathParams: {observatoryId: p.observatoryId}
     })
 
     const allInstruments = useInstrumentResourceGetObservatoryInstruments({
@@ -31,7 +39,7 @@ function ObservationModeDetails(
         pathParams: {observatoryId: p.observatoryId}
     })
 
-    // the data lists for the 'Select' Input
+    // the data lists for the 'Select' inputs
     const [instruments, setInstruments] = useState<SelectData[]>([]);
     const [backends, setBackends] = useState<SelectData[]>([]);
 
@@ -40,7 +48,8 @@ function ObservationModeDetails(
     const [backend, setBackend] = useState<ComboboxItem | null>(null);
 
     useEffect(() => {
-        if (allInstruments.status === 'success' && allBackends.status === 'success')
+        if (allInstruments.status === 'success' &&
+            allBackends.status === 'success')
         {
             setInstruments(
                 allInstruments.data.map(i => (
@@ -56,11 +65,20 @@ function ObservationModeDetails(
     }, [allInstruments.status, allBackends.status])
 
 
-    if (allInstruments.isLoading || allBackends.isLoading || observingMode.isLoading) {
+    if (allTelescopes.isLoading || allInstruments.isLoading || allBackends.isLoading) {
         return(
             <Box mx={"20%"}>
                 <Loader />
             </Box>
+        )
+    }
+
+    if (allTelescopes.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load observatory telescopes"}
+                error={getErrorMessage(allTelescopes.error)}
+            />
         )
     }
 
@@ -82,17 +100,16 @@ function ObservationModeDetails(
         )
     }
 
-    if (observingMode.isError) {
-        return (
-            <AlertErrorMessage
-                title={"Failed to load observatory mode"}
-                error={getErrorMessage(observingMode.error)}
-            />
-        )
-    }
-
     return (
         <Stack>
+            {
+                allTelescopes.data && allTelescopes.data.length > 1 &&
+                <ObservingModeTelescopes
+                    observingPlatformId={1} //fixme
+                    observatoryId={p.observatoryId}
+                    allTelescopes={allTelescopes.data}
+                />
+            }
             <Select
                 label={"Instruments"}
                 placeholder={"pick one"}
@@ -111,6 +128,13 @@ function ObservationModeDetails(
                     setBackend(option)
                 }}
             />
+            <List>
+                {
+                    p.filters.map(f => (
+                        <List.Item>{f.name}</List.Item>
+                    ))
+                }
+            </List>
 
         </Stack>
     )

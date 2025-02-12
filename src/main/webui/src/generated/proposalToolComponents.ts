@@ -7245,6 +7245,76 @@ export const useObservingModeResourceGetCycleObservingModes = <
   });
 };
 
+export type ObservingModeResourceGetObservingModesFiltersPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+};
+
+export type ObservingModeResourceGetObservingModesFiltersError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceGetObservingModesFiltersResponse =
+  Schemas.Filter[];
+
+export type ObservingModeResourceGetObservingModesFiltersVariables = {
+  pathParams: ObservingModeResourceGetObservingModesFiltersPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceGetObservingModesFilters = (
+  variables: ObservingModeResourceGetObservingModesFiltersVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservingModeResourceGetObservingModesFiltersResponse,
+    ObservingModeResourceGetObservingModesFiltersError,
+    undefined,
+    {},
+    {},
+    ObservingModeResourceGetObservingModesFiltersPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/filters",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceGetObservingModesFilters = <
+  TData = ObservingModeResourceGetObservingModesFiltersResponse,
+>(
+  variables: ObservingModeResourceGetObservingModesFiltersVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservingModeResourceGetObservingModesFiltersResponse,
+      ObservingModeResourceGetObservingModesFiltersError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservingModeResourceGetObservingModesFiltersResponse,
+    ObservingModeResourceGetObservingModesFiltersError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/filters",
+      operationId: "observingModeResourceGetObservingModesFilters",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservingModeResourceGetObservingModesFilters(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type ObservingModeResourceGetCycleObservingModePathParams = {
   /**
    * @format int64
@@ -12921,6 +12991,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleId}/observingModes";
       operationId: "observingModeResourceGetCycleObservingModes";
       variables: ObservingModeResourceGetCycleObservingModesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/filters";
+      operationId: "observingModeResourceGetObservingModesFilters";
+      variables: ObservingModeResourceGetObservingModesFiltersVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}";

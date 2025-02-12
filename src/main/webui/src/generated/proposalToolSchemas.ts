@@ -892,6 +892,7 @@ export type ObservingMode = {
  * base type of a telescope or array of telescopes
  */
 export type ObservingPlatform = {
+  _id?: number
   xmlId?: string;
 };
 
@@ -1793,6 +1794,7 @@ export type TechnicalGoal = {
 };
 
 export type Telescope = {
+  _id?: number
   "@type"?: string;
   xmlId?: string;
   /**

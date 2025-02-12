@@ -1,13 +1,16 @@
 import {UseFormReturnType} from "@mantine/form";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import {ReactElement, useEffect, useState} from "react";
-import {Box, ComboboxItem, Fieldset, Loader, ScrollArea, Select, Stack, Table, Text} from "@mantine/core";
+import {Box, Fieldset, Loader, ScrollArea, Select, Stack, Table} from "@mantine/core";
 import {
-    useObservingModeResourceGetCycleObservingModes, useProposalCyclesResourceGetProposalCycleObservatory,
+    useObservingModeResourceGetCycleObservingModes,
+    useObservingModeResourceGetObservingModesFilters,
+    useProposalCyclesResourceGetProposalCycleObservatory,
 } from "../../generated/proposalToolComponents.ts";
-import ObservationModeDetails from "./observationModeDetails.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import ObservationModeDetailsShow from "./observationModeDetailsShow.tsx";
+import ObservationModeDetailsSelect from "./observationModeDetailsSelect.tsx";
 
 
 /*
@@ -24,8 +27,6 @@ function ObservationModeSelect(props: {
 
     const [observingModes, setObservingModes] = useState<{value: string, label: string}[]>([])
 
-    const [theOneMode, setTheOneMode] = useState<ComboboxItem | null>(null);
-
     const cycleModes = useObservingModeResourceGetCycleObservingModes({
             pathParams: {cycleId: props.form.getValues().selectedCycle}
         });
@@ -34,8 +35,12 @@ function ObservationModeSelect(props: {
         pathParams: {cycleCode: props.form.getValues().selectedCycle}
     })
 
+    const allFilters = useObservingModeResourceGetObservingModesFilters({
+        pathParams: {cycleId: props.form.getValues().selectedCycle}
+    })
+
     useEffect(() => {
-        if (cycleModes.status === 'success')
+        if (cycleModes.status === 'success') {
             setObservingModes(
                 cycleModes.data.map((mode) => (
                     //in this context 'name' contains the mode description string, 'code' contains its name
@@ -46,8 +51,9 @@ function ObservationModeSelect(props: {
                     }
                 ))
             )
-
+        }
     }, [cycleModes.status]);
+
 
 
     const tableHeader = () => (
@@ -66,17 +72,18 @@ function ObservationModeSelect(props: {
                 <Table.Td>{p.modeTuple.observationType + " | "  + p.modeTuple.observationName}</Table.Td>
                 <Table.Td>
                     <Select
+                        allowDeselect={false}
                         placeholder={"select mode"}
                         data={observingModes}
-                        allowDeselect={false}
                         error={props.form.getValues().selectedModes.at(p.index)!.modeId === 0}
                         value={props.form.getValues().selectedModes.at(p.index)!.modeId.toString()}
                         onChange={(_value, option) => {
+                            //console.log("option: " +  option.value + ":" + option.label)
                             props.form.setFieldValue(
-                                `selectedModes.${p.index}.modeId`, Number(option.value)
+                                `selectedModes.${p.index}.modeId`, option ? Number(option.value) : 0
                             );
                             props.form.setFieldValue(
-                                `selectedModes.${p.index}.modeName`, option.label
+                                `selectedModes.${p.index}.modeName`, option ? option.label : ""
                             );
                         }}
 
@@ -86,7 +93,7 @@ function ObservationModeSelect(props: {
         )
     }
 
-    if (cycleModes.isLoading || observatory.isLoading) {
+    if (cycleModes.isLoading || observatory.isLoading || allFilters.isLoading) {
         return (
             <Box mx={"20%"}>
                 <Loader />
@@ -112,6 +119,15 @@ function ObservationModeSelect(props: {
         )
     }
 
+    if (allFilters.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load the mode filters"}
+                error={getErrorMessage(allFilters.error)}
+            />
+        )
+    }
+
     return (
         <>
             <Box
@@ -119,45 +135,23 @@ function ObservationModeSelect(props: {
                 ml={props.smallScreen ? "" : "10%"}
             >
                 <Stack>
-                    <Select
-                        placeholder={"one mode to rule them all"}
-                        label={"Select a mode for ALL observations (displays details on selection)..."}
-                        mx={props.smallScreen? "0" : "20%"}
-                        c={"blue"}
-                        data={observingModes}
-                        value={theOneMode ? theOneMode.value : null}
-                        onChange={(_value, option) => {
-                            setTheOneMode(option);
-                            props.form.setValues({
-                                selectedModes: props.form.getValues().selectedModes.map(
-                                    mode => ({
-                                        ...mode,
-                                        modeId: Number(option.value),
-                                        modeName: option.label
-                                    })
-                                )
-                            });
-                        }}
-                    />
-                    {
-                        theOneMode &&
-                        <Fieldset legend={"Observing Mode Details"} >
-                            <ObservationModeDetails
-                                observatoryId={observatory.data?._id!}
-                                observingModeId={Number(theOneMode?.value)}
-                                selectedCycleId={props.form.getValues().selectedCycle}
-                            />
-                        </Fieldset>
-                    }
-                    <Text
-                        size={"sm"}
-                        mx={props.smallScreen ? "0" : "20%"}
-                        c={"blue"}
-                    >
-                        ...or select them individually.
-                    </Text>
+                    <Fieldset legend={"Observing Mode Details"} >
+                        {
+                            cycleModes.data && cycleModes.data?.length > 5 ?
+                                <ObservationModeDetailsSelect/> :
+                                <ObservationModeDetailsShow
+                                    allModes={ cycleModes.data!.map((mode) => (
+                                        {
+                                            value: String(mode.dbid),
+                                            label: mode.code === mode.name? mode.code! : mode.code + ": " + mode.name
+                                        }
+                                    ))}
+                                    selectedModes={observingModes}
+                                    setSelectedModes={setObservingModes}
+                                />
+                        }
+                    </Fieldset>
                     <ScrollArea.Autosize mah={250} >
-                        <Table.ScrollContainer minWidth={500}>
                         <Table
                             stickyHeader
                             withTableBorder
@@ -172,10 +166,10 @@ function ObservationModeSelect(props: {
                             }
                             </Table.Tbody>
                         </Table>
-                        </Table.ScrollContainer>
                     </ScrollArea.Autosize>
                 </Stack>
             </Box>
         </>
     )
 }
+

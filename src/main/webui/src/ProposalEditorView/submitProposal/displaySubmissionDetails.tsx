@@ -47,7 +47,7 @@ function DisplaySubmissionDetails(props: {formData: SubmissionFormValues}) : Rea
     const tableRow =
         (p: {modeTuple: ObservationModeTuple}) => {
             return (
-                <Table.Tr key={p.modeTuple.observationId}>
+                <Table.Tr key={p.modeTuple.observationId + p.modeTuple.observationName}>
                     <Table.Td>
                         {p.modeTuple.observationType + " | "  + p.modeTuple.observationName}
                     </Table.Td>
