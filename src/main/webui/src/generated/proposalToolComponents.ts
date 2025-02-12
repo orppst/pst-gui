@@ -705,6 +705,147 @@ export const useObservatoryResourceUpdateObservatoryWikiId = (
   });
 };
 
+export type ObservatoryResourceGetTelescopeArraysPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type ObservatoryResourceGetTelescopeArraysError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetTelescopeArraysResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ObservatoryResourceGetTelescopeArraysVariables = {
+  pathParams: ObservatoryResourceGetTelescopeArraysPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetTelescopeArrays = (
+  variables: ObservatoryResourceGetTelescopeArraysVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservatoryResourceGetTelescopeArraysResponse,
+    ObservatoryResourceGetTelescopeArraysError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetTelescopeArraysPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/array",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetTelescopeArrays = <
+  TData = ObservatoryResourceGetTelescopeArraysResponse,
+>(
+  variables: ObservatoryResourceGetTelescopeArraysVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservatoryResourceGetTelescopeArraysResponse,
+      ObservatoryResourceGetTelescopeArraysError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservatoryResourceGetTelescopeArraysResponse,
+    ObservatoryResourceGetTelescopeArraysError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/array",
+      operationId: "observatoryResourceGetTelescopeArrays",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservatoryResourceGetTelescopeArrays(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ObservatoryResourceGetTelescopeArrayPathParams = {
+  /**
+   * @format int64
+   */
+  arrayId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type ObservatoryResourceGetTelescopeArrayError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetTelescopeArrayVariables = {
+  pathParams: ObservatoryResourceGetTelescopeArrayPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetTelescopeArray = (
+  variables: ObservatoryResourceGetTelescopeArrayVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.TelescopeArray,
+    ObservatoryResourceGetTelescopeArrayError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetTelescopeArrayPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/array/{arrayId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetTelescopeArray = <
+  TData = Schemas.TelescopeArray,
+>(
+  variables: ObservatoryResourceGetTelescopeArrayVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.TelescopeArray,
+      ObservatoryResourceGetTelescopeArrayError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.TelescopeArray,
+    ObservatoryResourceGetTelescopeArrayError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/array/{arrayId}",
+      operationId: "observatoryResourceGetTelescopeArray",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservatoryResourceGetTelescopeArray(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type BackendResourceGetObservatoryBackendsPathParams = {
   /**
    * @format int64
@@ -712,13 +853,19 @@ export type BackendResourceGetObservatoryBackendsPathParams = {
   observatoryId: number;
 };
 
+export type BackendResourceGetObservatoryBackendsQueryParams = {
+  name?: string;
+};
+
 export type BackendResourceGetObservatoryBackendsError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type BackendResourceGetObservatoryBackendsResponse = Schemas.Backend[];
+export type BackendResourceGetObservatoryBackendsResponse =
+  Schemas.ObjectIdentifier[];
 
 export type BackendResourceGetObservatoryBackendsVariables = {
   pathParams: BackendResourceGetObservatoryBackendsPathParams;
+  queryParams?: BackendResourceGetObservatoryBackendsQueryParams;
 } & ProposalToolContext["fetcherOptions"];
 
 export const fetchBackendResourceGetObservatoryBackends = (
@@ -730,7 +877,7 @@ export const fetchBackendResourceGetObservatoryBackends = (
     BackendResourceGetObservatoryBackendsError,
     undefined,
     {},
-    {},
+    BackendResourceGetObservatoryBackendsQueryParams,
     BackendResourceGetObservatoryBackendsPathParams
   >({
     url: "/pst/api/observatories/{observatoryId}/backends",
@@ -12584,6 +12731,16 @@ export type QueryOperation =
       path: "/pst/api/observatories/{id}";
       operationId: "observatoryResourceGetObservatory";
       variables: ObservatoryResourceGetObservatoryVariables;
+    }
+  | {
+      path: "/pst/api/observatories/{observatoryId}/array";
+      operationId: "observatoryResourceGetTelescopeArrays";
+      variables: ObservatoryResourceGetTelescopeArraysVariables;
+    }
+  | {
+      path: "/pst/api/observatories/{observatoryId}/array/{arrayId}";
+      operationId: "observatoryResourceGetTelescopeArray";
+      variables: ObservatoryResourceGetTelescopeArrayVariables;
     }
   | {
       path: "/pst/api/observatories/{observatoryId}/backends";

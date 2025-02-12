@@ -1,14 +1,11 @@
 import {UseFormReturnType} from "@mantine/form";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import {ReactElement, useEffect, useState} from "react";
-import {Box, Button, ComboboxItem, Loader, Modal, ScrollArea, Select, Stack, Table, Text} from "@mantine/core";
+import {Box, ComboboxItem, Fieldset, Loader, ScrollArea, Select, Stack, Table, Text} from "@mantine/core";
 import {
-    useObservingModeResourceGetCycleObservingModes,
+    useObservingModeResourceGetCycleObservingModes, useProposalCyclesResourceGetProposalCycleObservatory,
 } from "../../generated/proposalToolComponents.ts";
-import {useDisclosure} from "@mantine/hooks";
-import ObservationModeDetailsSelect from "./observationMode.detials.select.tsx";
-import {IconPencilPlus} from "@tabler/icons-react";
-import {ICON_SIZE} from "../../constants.tsx";
+import ObservationModeDetails from "./observationModeDetails.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
@@ -25,8 +22,6 @@ function ObservationModeSelect(props: {
     smallScreen?: boolean
 }): ReactElement {
 
-    const [opened, {open, close}] = useDisclosure(false);
-
     const [observingModes, setObservingModes] = useState<{value: string, label: string}[]>([])
 
     const [theOneMode, setTheOneMode] = useState<ComboboxItem | null>(null);
@@ -34,6 +29,10 @@ function ObservationModeSelect(props: {
     const cycleModes = useObservingModeResourceGetCycleObservingModes({
             pathParams: {cycleId: props.form.getValues().selectedCycle}
         });
+
+    const observatory = useProposalCyclesResourceGetProposalCycleObservatory({
+        pathParams: {cycleCode: props.form.getValues().selectedCycle}
+    })
 
     useEffect(() => {
         if (cycleModes.status === 'success')
@@ -63,7 +62,7 @@ function ObservationModeSelect(props: {
     const tableRow =
         (p: {modeTuple: ObservationModeTuple, index: number}) => {
         return (
-            <Table.Tr key={p.modeTuple.observationId}>
+            <Table.Tr key={p.modeTuple.observationId + p.modeTuple.observationName}>
                 <Table.Td>{p.modeTuple.observationType + " | "  + p.modeTuple.observationName}</Table.Td>
                 <Table.Td>
                     <Select
@@ -87,7 +86,7 @@ function ObservationModeSelect(props: {
         )
     }
 
-    if (cycleModes.isLoading) {
+    if (cycleModes.isLoading || observatory.isLoading) {
         return (
             <Box mx={"20%"}>
                 <Loader />
@@ -104,16 +103,17 @@ function ObservationModeSelect(props: {
         )
     }
 
+    if (observatory.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load the associated observatory"}
+                error={getErrorMessage(observatory.error)}
+            />
+        )
+    }
+
     return (
         <>
-            <Modal
-                opened={opened}
-                onClose={close}
-                title={"Create Custom Observing Mode"}
-            >
-                <ObservationModeDetailsSelect />
-            </Modal>
-
             <Box
                 maw={props.smallScreen ? "100%": "75%"}
                 ml={props.smallScreen ? "" : "10%"}
@@ -121,7 +121,7 @@ function ObservationModeSelect(props: {
                 <Stack>
                     <Select
                         placeholder={"one mode to rule them all"}
-                        label={"Either choose a mode for all observations..."}
+                        label={"Select a mode for ALL observations (displays details on selection)..."}
                         mx={props.smallScreen? "0" : "20%"}
                         c={"blue"}
                         data={observingModes}
@@ -134,12 +134,21 @@ function ObservationModeSelect(props: {
                                         ...mode,
                                         modeId: Number(option.value),
                                         modeName: option.label
-
                                     })
                                 )
                             });
                         }}
                     />
+                    {
+                        theOneMode &&
+                        <Fieldset legend={"Observing Mode Details"} >
+                            <ObservationModeDetails
+                                observatoryId={observatory.data?._id!}
+                                observingModeId={Number(theOneMode?.value)}
+                                selectedCycleId={props.form.getValues().selectedCycle}
+                            />
+                        </Fieldset>
+                    }
                     <Text
                         size={"sm"}
                         mx={props.smallScreen ? "0" : "20%"}
@@ -147,7 +156,7 @@ function ObservationModeSelect(props: {
                     >
                         ...or select them individually.
                     </Text>
-                    <ScrollArea h={250}>
+                    <ScrollArea.Autosize mah={250} >
                         <Table.ScrollContainer minWidth={500}>
                         <Table
                             stickyHeader
@@ -155,31 +164,16 @@ function ObservationModeSelect(props: {
                         >
                             {tableHeader()}
                             <Table.Tbody>
-                                {
-                                    props.form.getValues().selectedModes.map(
-                                        (modeTuple: ObservationModeTuple, index: number) => {
-                                            return(tableRow({modeTuple, index}))
-                                        })
-                                }
+                            {
+                                props.form.getValues().selectedModes.map(
+                                    (modeTuple: ObservationModeTuple, index: number) => {
+                                        return(tableRow({modeTuple, index}))
+                                    })
+                            }
                             </Table.Tbody>
                         </Table>
                         </Table.ScrollContainer>
-                    </ScrollArea>
-                    <Text
-                        size={"sm"}
-                        mx={props.smallScreen ? "0" : "20%"}
-                        c={"blue"}
-                    >
-                        If none of the currently defined observing modes suit your needs you may create a custom a mode.
-                    </Text>
-                    <Button
-                        onClick={open}
-                        color={"orange"}
-                        leftSection={<IconPencilPlus size={ICON_SIZE}/> }
-                        mx={props.smallScreen ? "0" : "35%"}
-                    >
-                        Create custom mode
-                    </Button>
+                    </ScrollArea.Autosize>
                 </Stack>
             </Box>
         </>

@@ -146,6 +146,14 @@ export const contextualHelpMessages = [
   message: " "
          + " Select a cycle and confirm your request with the Submit proposal button at bottom right, or cancel and return without submitting by clicking the Cancel button."
 }
+, {
+  id: "ManageSubmitObservingModes-eng",
+    message: "Here you may limit the number of Observing Mode selections by specifying combinations of " +
+        "'Telescopes' (where appropriate), 'Instruments', 'Backends', and 'Filters' that you may want for your observations. " +
+        "The scrollable list shows you the modes available according to the choices you make. " +
+        "Notice that these choices are optional and can be left blank such that all modes are available " +
+        "for selection for your observations. "
+  }
 
 ];
 

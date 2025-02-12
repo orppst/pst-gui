@@ -88,7 +88,7 @@ function DisplaySubmissionDetails(props: {formData: SubmissionFormValues}) : Rea
     return (
         <>
             <Text size={"sm"} c={"grey"}>
-                If you are happy with the following details please submit your proposal else go back and fix the problem.
+                If you are happy with the following details please submit your proposal else go back and make the desired changes.
             </Text>
             <Space h={"md"}/>
             <Fieldset legend={"Submission Details"} mx={"10%"}>
