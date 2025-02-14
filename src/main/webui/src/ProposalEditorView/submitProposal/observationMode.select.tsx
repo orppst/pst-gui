@@ -140,14 +140,14 @@ function ObservationModeSelect(props: {
                             cycleModes.data && cycleModes.data?.length > 5 ?
                                 <ObservationModeDetailsSelect/> :
                                 <ObservationModeDetailsShow
+                                    form={props.form}
                                     allModes={ cycleModes.data!.map((mode) => (
                                         {
                                             value: String(mode.dbid),
                                             label: mode.code === mode.name? mode.code! : mode.code + ": " + mode.name
                                         }
                                     ))}
-                                    selectedModes={observingModes}
-                                    setSelectedModes={setObservingModes}
+                                    observatoryId={observatory.data?._id!}
                                 />
                         }
                     </Fieldset>

@@ -57,15 +57,15 @@ function ObservingModeTelescopes(
     return (
         <Checkbox.Group
             value={telescopes}
-            label={"Telescopes"}
         >
-            <Group mt={"sm"}>
+            <Group mt={"sm"} justify={"center"}>
                 {
                     p.allTelescopes.map(t => (
                         <Checkbox
                             key={t.dbid}
                             value={String(t.dbid)}
                             label={t.name}
+                            color={"blue"}
                         />
                     ))
                 }

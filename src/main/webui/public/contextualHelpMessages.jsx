@@ -149,10 +149,18 @@ export const contextualHelpMessages = [
 , {
   id: "ManageSubmitObservingModes-eng",
     message: "Here you may limit the number of Observing Mode selections by specifying combinations of " +
-        "'Telescopes' (where appropriate), 'Instruments', 'Backends', and 'Filters' that you may want for your observations. " +
+        "'Instruments', 'Backends', and 'Filters' that you may want for your observations. " +
         "The scrollable list shows you the modes available according to the choices you make. " +
         "Notice that these choices are optional and can be left blank such that all modes are available " +
         "for selection for your observations. "
+  },
+  {
+    id: "ManageSubmitObservingModesShow-eng",
+    message: "Select an observing mode to see its details i.e., instrument, backend and filter. " +
+        "Where appropriate you will also be shown the telescopes that will be used. " +
+        "The 'eye' button will toggle the mode details display. " +
+        "'Set for all' will set the currently selected observing mode for each observation." +
+        "You may set the observing modes for each observation individually."
   }
 
 ];
