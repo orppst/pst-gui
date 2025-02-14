@@ -136,6 +136,7 @@ export type Axis = {
  * a processing backend /pipeline- e.g. correlator
  */
 export type Backend = {
+  _id?: number
   /**
    * the backend name
    */
@@ -541,6 +542,7 @@ export type FileUpload = Record<string, any>;
  * Available filters /bandpasses for intruments
  */
 export type Filter = {
+  _id?: number
   /**
    * human readable name
    */
@@ -617,6 +619,7 @@ export type Handedness = "left" | "right";
  * An instrument that can be attached to a telescope - e.g. CCD, Radio Receiver
  */
 export type Instrument = {
+  _id?: number
   /**
    * the instrument name - human readable
    */

@@ -31,10 +31,12 @@ function ObservationModeSelect(props: {
             pathParams: {cycleId: props.form.getValues().selectedCycle}
         });
 
+    // to get access to all available instruments and backends
     const observatory = useProposalCyclesResourceGetProposalCycleObservatory({
         pathParams: {cycleCode: props.form.getValues().selectedCycle}
     })
 
+    // Filters are defined in the observing mode i.e., are not contained by the observatory
     const allFilters = useObservingModeResourceGetObservingModesFilters({
         pathParams: {cycleId: props.form.getValues().selectedCycle}
     })
@@ -137,8 +139,20 @@ function ObservationModeSelect(props: {
                 <Stack>
                     <Fieldset legend={"Observing Mode Details"} >
                         {
-                            cycleModes.data && cycleModes.data?.length > 5 ?
-                                <ObservationModeDetailsSelect/> :
+                            cycleModes.data && cycleModes.data.length > 5 ?
+                                <ObservationModeDetailsSelect
+                                    allInstruments={observatory.data!.instruments!.map(i => (
+                                        {dbid: i._id!, name: i.name!}
+                                    ))}
+                                    allBackends={observatory.data!.backends!.map(b => (
+                                        {dbid: b._id!, name: b.name!}
+                                    ))}
+                                    allFilters={allFilters.data!.map(f =>(
+                                        {dbid: f._id!, name: f.name!}
+                                    ))}
+                                    cycleId={props.form.getValues().selectedCycle}
+                                />
+                                :
                                 <ObservationModeDetailsShow
                                     form={props.form}
                                     allModes={ cycleModes.data!.map((mode) => (
