@@ -10,6 +10,7 @@ import {UseFormReturnType} from "@mantine/form";
 import {SubmissionFormValues} from "./submitPanel.tsx";
 import ObservationModeDetailsShow from "./observationModeDetailsShow.tsx";
 import * as React from "react";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 
 /*
@@ -104,7 +105,7 @@ function ObservationModeDetailsSelect(p: {
         setSiftedModes(siftModes(sifters))
     }, [sifters])
 
-    //this sets the observing modes available for select input of the observation table
+    //this sets the observing modes available for individual select inputs of the observation table
     useEffect(() => {
         p.setObservingModes(siftedModes.map(mode =>(
             {value: String(mode._id), label: mode.name!}
@@ -131,6 +132,7 @@ function ObservationModeDetailsSelect(p: {
     return(
         <Stack>
             <Fieldset legend={"Search Filters"}>
+                <ContextualHelpButton messageId={"ManageSubmitObservingModesFilter"}/>
                 <Group grow>
                     <Select
                         label={"Instrument"}

@@ -160,7 +160,15 @@ export const contextualHelpMessages = [
         "Where appropriate you will also be shown the telescopes that will be used. " +
         "The 'eye' button will toggle the mode details display. " +
         "'Set for all' will set the currently selected observing mode for each observation." +
-        "You may set the observing modes for each observation individually."
+        "You may also set the observing modes for each observation individually."
+  },
+  {
+    id: "ManageSubmitObservingModesFilter-eng",
+    message: "Here you may refine the number of selectable Observing Modes by choosing an Instrument, " +
+        "Backend and/or Filter. This will limit the choices in the select dropdown inputs below. " +
+        "Notice that if you specify all three items you will limit the choice of modes to one (or fewer*); " +
+        "an Observing Mode is uniquely defined as a combination of instrument, backend, and filter. " +
+        "*Observatories define their observing modes and some combinations will be incompatible."
   }
 
 ];
