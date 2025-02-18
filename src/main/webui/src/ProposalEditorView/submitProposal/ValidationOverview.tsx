@@ -1,69 +1,127 @@
 import {IconAlertCircle, IconCircleCheck, IconCircleX, IconInfoCircle} from '@tabler/icons-react';
-import {Box, Table, Text} from "@mantine/core";
-import {ICON_SIZE, JSON_SPACES} from "src/constants.tsx";
-import {useProposalResourceValidateObservingProposal} from "src/generated/proposalToolComponents.ts";
+import {Box, Divider, Loader, Stack, Table, Text} from "@mantine/core";
+import {ICON_SIZE} from "src/constants.tsx";
+import {
+    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycleObservatory,
+    useProposalCyclesResourceGetProposalCycleTitle,
+    useProposalResourceValidateObservingProposal
+} from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
-import {useEffect} from "react";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ReactElement} from "react";
 
-export default function ValidationOverview(props: {cycle: number, setValid: any}) {
+export default function ValidationOverview(props: {
+    cycle: number,
+    smallScreen?: boolean
+}): ReactElement {
+
     const { selectedProposalCode } = useParams();
-    const {data, error, isLoading}
-        = useProposalResourceValidateObservingProposal(
-        {pathParams: {proposalCode: Number(selectedProposalCode)},
+
+    const validateProposal = useProposalResourceValidateObservingProposal({
+            pathParams: {proposalCode: Number(selectedProposalCode)},
             queryParams: {cycleId: props.cycle}}
         );
 
-    if (error) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+    const cycleTitle = useProposalCyclesResourceGetProposalCycleTitle({
+        pathParams: {cycleCode: props.cycle}
+    })
+
+    const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
+        {pathParams: {cycleCode: props.cycle}});
+
+    const observatory = useProposalCyclesResourceGetProposalCycleObservatory({
+            pathParams: {cycleCode: props.cycle}
+        })
+
+    if (validateProposal.isLoading || cycleTitle.isLoading || cycleDates.isLoading || observatory.isLoading) {
+        return(
+            <Box mx={"50%"}>
+                <Loader/>
             </Box>
+        )
+    }
+
+    if (validateProposal.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load validation data"}
+                error={getErrorMessage(validateProposal.error)}
+            />
         );
     }
 
-    useEffect(() => {
-        if(data?.isValid) { props.setValid(true); }
-        else {props.setValid(false)}
-    }, [data]);
+    if (cycleTitle.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load cycle title"}
+                error={getErrorMessage(cycleTitle.error)}
+            />
+        );
+    }
+
+    if (cycleDates.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load cycle dates"}
+                error={getErrorMessage(cycleDates.error)}
+            />
+        );
+    }
 
     return (
-        <PanelFrame m={20}>Validation overview
-            {isLoading?(<Text>Loading...</Text>):(
+        <PanelFrame
+            maw={props.smallScreen ? "100%": "75%"}
+            ml={props.smallScreen ? "" : "10%"}
+        >
+            <Stack>
+                <Text>
+                    {observatory.data?.name}: {cycleTitle.data} - Proposal Check
+                </Text>
+                <Divider/>
+                Validation overview for {validateProposal.data?.title} submitting to {cycleTitle.data}
+                <Text
+                    size={"sm"}
+                    c={"teal"}
+                    fw={"bold"}
+                >
+                    Submission Deadline: {cycleDates.data?.submissionDeadline}
+                </Text>
                 <Table>
                     <Table.Tbody>
                         <Table.Tr>
                             <Table.Td>
-                                {data?.isValid?
+                                {validateProposal.data?.isValid?
                                     (<IconCircleCheck size={ICON_SIZE} />):
                                     (<IconInfoCircle size={ICON_SIZE} />)
                                 }
                             </Table.Td>
                             <Table.Td>
-                                {data?.info}
+                                {validateProposal.data?.info}
                             </Table.Td>
                         </Table.Tr>
-                        {data?.warnings !== undefined &&
+                        {validateProposal.data?.warnings !== undefined &&
                             (<Table.Tr>
                                 <Table.Td>
                                     <IconAlertCircle size={ICON_SIZE} />
                                 </Table.Td>
                                 <Table.Td>
-                                    {data?.warnings}
+                                    {validateProposal.data?.warnings}
                                 </Table.Td>
                             </Table.Tr>)}
-                        {data?.errors !== undefined &&
+                        {validateProposal.data?.errors !== undefined &&
                             (<Table.Tr>
                                 <Table.Td>
                                     <IconCircleX size={ICON_SIZE} />
                                 </Table.Td>
                                 <Table.Td>
-                                    {data?.errors}
+                                    {validateProposal.data?.errors}
                                 </Table.Td>
                             </Table.Tr>)}
                     </Table.Tbody>
                 </Table>
-                )}
+            </Stack>
         </PanelFrame>
     );
 }

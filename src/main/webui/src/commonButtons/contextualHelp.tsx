@@ -38,14 +38,16 @@ export function ContextualHelpButton(props : {messageId : string}) {
             </Group>
             {
                 showingHelp &&
-                <Group justify={"center"}>
-                    <Alert maw={"75%"}>
-                        {displayHelp}
-                    </Alert>
-                </Group>
+                <>
+                    <Group justify={"center"}>
+                        <Alert maw={"85%"}>
+                            {displayHelp}
+                        </Alert>
+                    </Group>
+                    <Space h={"xl"}/>
+                </>
 
             }
-            <Space h={"xl"}/>
         </>
     )
 }

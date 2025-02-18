@@ -705,6 +705,148 @@ export const useObservatoryResourceUpdateObservatoryWikiId = (
   });
 };
 
+
+export type ObservatoryResourceGetTelescopeArraysPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type ObservatoryResourceGetTelescopeArraysError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetTelescopeArraysResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ObservatoryResourceGetTelescopeArraysVariables = {
+  pathParams: ObservatoryResourceGetTelescopeArraysPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetTelescopeArrays = (
+  variables: ObservatoryResourceGetTelescopeArraysVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservatoryResourceGetTelescopeArraysResponse,
+    ObservatoryResourceGetTelescopeArraysError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetTelescopeArraysPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/array",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetTelescopeArrays = <
+  TData = ObservatoryResourceGetTelescopeArraysResponse,
+>(
+  variables: ObservatoryResourceGetTelescopeArraysVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservatoryResourceGetTelescopeArraysResponse,
+      ObservatoryResourceGetTelescopeArraysError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservatoryResourceGetTelescopeArraysResponse,
+    ObservatoryResourceGetTelescopeArraysError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/array",
+      operationId: "observatoryResourceGetTelescopeArrays",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservatoryResourceGetTelescopeArrays(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ObservatoryResourceGetTelescopeArrayPathParams = {
+  /**
+   * @format int64
+   */
+  arrayId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type ObservatoryResourceGetTelescopeArrayError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetTelescopeArrayVariables = {
+  pathParams: ObservatoryResourceGetTelescopeArrayPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetTelescopeArray = (
+  variables: ObservatoryResourceGetTelescopeArrayVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.TelescopeArray,
+    ObservatoryResourceGetTelescopeArrayError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetTelescopeArrayPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/array/{arrayId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetTelescopeArray = <
+  TData = Schemas.TelescopeArray,
+>(
+  variables: ObservatoryResourceGetTelescopeArrayVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.TelescopeArray,
+      ObservatoryResourceGetTelescopeArrayError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.TelescopeArray,
+    ObservatoryResourceGetTelescopeArrayError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/array/{arrayId}",
+      operationId: "observatoryResourceGetTelescopeArray",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservatoryResourceGetTelescopeArray(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type BackendResourceGetObservatoryBackendsPathParams = {
   /**
    * @format int64
@@ -7108,6 +7250,146 @@ export const useObservingModeResourceGetCycleObservingModes = <
   });
 };
 
+export type ObservingModeResourceGetObservingModesFiltersPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+};
+
+export type ObservingModeResourceGetObservingModesFiltersError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceGetObservingModesFiltersResponse =
+  Schemas.Filter[];
+
+export type ObservingModeResourceGetObservingModesFiltersVariables = {
+  pathParams: ObservingModeResourceGetObservingModesFiltersPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceGetObservingModesFilters = (
+  variables: ObservingModeResourceGetObservingModesFiltersVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservingModeResourceGetObservingModesFiltersResponse,
+    ObservingModeResourceGetObservingModesFiltersError,
+    undefined,
+    {},
+    {},
+    ObservingModeResourceGetObservingModesFiltersPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/filters",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceGetObservingModesFilters = <
+  TData = ObservingModeResourceGetObservingModesFiltersResponse,
+>(
+  variables: ObservingModeResourceGetObservingModesFiltersVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservingModeResourceGetObservingModesFiltersResponse,
+      ObservingModeResourceGetObservingModesFiltersError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservingModeResourceGetObservingModesFiltersResponse,
+    ObservingModeResourceGetObservingModesFiltersError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/filters",
+      operationId: "observingModeResourceGetObservingModesFilters",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservingModeResourceGetObservingModesFilters(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ObservingModeResourceGetObservingModeObjectsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+};
+
+export type ObservingModeResourceGetObservingModeObjectsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceGetObservingModeObjectsResponse =
+  Schemas.ObservingMode[];
+
+export type ObservingModeResourceGetObservingModeObjectsVariables = {
+  pathParams: ObservingModeResourceGetObservingModeObjectsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceGetObservingModeObjects = (
+  variables: ObservingModeResourceGetObservingModeObjectsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservingModeResourceGetObservingModeObjectsResponse,
+    ObservingModeResourceGetObservingModeObjectsError,
+    undefined,
+    {},
+    {},
+    ObservingModeResourceGetObservingModeObjectsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/objectList",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceGetObservingModeObjects = <
+  TData = ObservingModeResourceGetObservingModeObjectsResponse,
+>(
+  variables: ObservingModeResourceGetObservingModeObjectsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservingModeResourceGetObservingModeObjectsResponse,
+      ObservingModeResourceGetObservingModeObjectsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservingModeResourceGetObservingModeObjectsResponse,
+    ObservingModeResourceGetObservingModeObjectsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/objectList",
+      operationId: "observingModeResourceGetObservingModeObjects",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservingModeResourceGetObservingModeObjects(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type ObservingModeResourceGetCycleObservingModePathParams = {
   /**
    * @format int64
@@ -12596,6 +12878,16 @@ export type QueryOperation =
       variables: ObservatoryResourceGetObservatoryVariables;
     }
   | {
+      path: "/pst/api/observatories/{observatoryId}/array";
+      operationId: "observatoryResourceGetTelescopeArrays";
+      variables: ObservatoryResourceGetTelescopeArraysVariables;
+    }
+  | {
+      path: "/pst/api/observatories/{observatoryId}/array/{arrayId}";
+      operationId: "observatoryResourceGetTelescopeArray";
+      variables: ObservatoryResourceGetTelescopeArrayVariables;
+    }
+  | {
       path: "/pst/api/observatories/{observatoryId}/backends";
       operationId: "backendResourceGetObservatoryBackends";
       variables: BackendResourceGetObservatoryBackendsVariables;
@@ -12774,6 +13066,16 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleId}/observingModes";
       operationId: "observingModeResourceGetCycleObservingModes";
       variables: ObservingModeResourceGetCycleObservingModesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/filters";
+      operationId: "observingModeResourceGetObservingModesFilters";
+      variables: ObservingModeResourceGetObservingModesFiltersVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/objectList";
+      operationId: "observingModeResourceGetObservingModeObjects";
+      variables: ObservingModeResourceGetObservingModeObjectsVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}";

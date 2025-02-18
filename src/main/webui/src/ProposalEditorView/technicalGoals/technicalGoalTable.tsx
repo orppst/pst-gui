@@ -378,12 +378,12 @@ function technicalGoalsHeader(props: TechnicalGoalsTableProps) : ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
-                <Table.Th>Angular resolution</Table.Th>
-                <Table.Th>Largest scale</Table.Th>
+                <Table.Th>Angular Resolution</Table.Th>
+                <Table.Th>Largest Scale</Table.Th>
                 <Table.Th>Sensitivity</Table.Th>
                 <Table.Th>Dynamic Range</Table.Th>
-                <Table.Th>Spectral point</Table.Th>
-                <Table.Th>Spectral windows</Table.Th>
+                <Table.Th>Spectral Point</Table.Th>
+                <Table.Th>Spectral Windows</Table.Th>
                 {
                     props.showButtons ?
                         <Table.Th></Table.Th>

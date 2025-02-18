@@ -108,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             token.current=s.token
             setLoggedOn(true)
             expiry.current = new Date(s.expiry)
+            console.log("token: " + token.current)
             console.log("access token will expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
             setExpiring(false)
             console.log("clearing logout timer",logoutTimer.current)

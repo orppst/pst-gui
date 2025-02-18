@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2025-02-12 15:20:07
-+++ proposalToolSchemas.ts	2025-02-12 15:45:04
+--- proposalToolSchemas.ts.orig	2025-01-23 15:04:32
++++ proposalToolSchemas.ts	2025-02-14 16:12:17
 @@ -7,6 +7,7 @@
   * base proposal
   */
@@ -33,7 +33,15 @@
    /**
     * the name of the grade
     */
-@@ -179,6 +184,7 @@
+@@ -131,6 +136,7 @@
+  * a processing backend /pipeline- e.g. correlator
+  */
+ export type Backend = {
++  _id?: number
+   /**
+    * the backend name
+    */
+@@ -179,6 +185,7 @@
   */
  export type CalibrationObservation = {
    xmlId?: string;
@@ -41,7 +49,7 @@
    /**
     * any constraints on the observation
     */
-@@ -212,6 +218,7 @@
+@@ -212,6 +219,7 @@
   * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
   */
  export type CartesianCoordSpace = {
@@ -49,7 +57,7 @@
    axis?: Axis[];
  };
  
-@@ -238,6 +245,7 @@
+@@ -238,6 +246,7 @@
   */
  export type CelestialTarget = {
    xmlId?: string;
@@ -57,7 +65,7 @@
    /**
     * A common name for the source
     */
-@@ -247,7 +255,7 @@
+@@ -247,7 +256,7 @@
     */
    sourceCoordinates?: EquatorialPoint;
    /**
@@ -66,7 +74,7 @@
     */
    positionEpoch?: Epoch;
    /**
-@@ -338,9 +346,7 @@
+@@ -338,9 +347,7 @@
  /**
   * Abstract head of the coordinate system object tree.
   */
@@ -77,7 +85,7 @@
  
  /**
   * Abstract base class for the Coordinate data types which represent an absolute location within a coordinate space. Coordinates MUST refer to a coordinate system, providing additional metadata relevant to interpreting the coordinate value, and its representation.
-@@ -475,6 +481,8 @@
+@@ -475,6 +482,8 @@
   * A Point on the Unit Sphere
   */
  export type EquatorialPoint = {
@@ -86,7 +94,7 @@
    /**
     * A real value with a unit.
     */
-@@ -521,8 +529,10 @@
+@@ -521,8 +530,10 @@
   * Definition of an observing field pointing
   */
  export type Field = {
@@ -97,7 +105,23 @@
  };
  
  export type FileUpload = Record<string, any>;
-@@ -656,6 +666,7 @@
+@@ -531,6 +542,7 @@
+  * Available filters /bandpasses for intruments
+  */
+ export type Filter = {
++  _id?: number
+   /**
+    * human readable name
+    */
+@@ -607,6 +619,7 @@
+  * An instrument that can be attached to a telescope - e.g. CCD, Radio Receiver
+  */
+ export type Instrument = {
++  _id?: number
+   /**
+    * the instrument name - human readable
+    */
+@@ -656,6 +669,7 @@
  };
  
  export type Investigator = {
@@ -105,7 +129,7 @@
    type?: InvestigatorKind;
    /**
     * is the investigator making proposal for their PhD
-@@ -751,6 +762,8 @@
+@@ -751,6 +765,8 @@
   * An observation - a pointing of the telescope at a part of the sky, occurs in a single non-overlapping time period
   */
  export type Observation = {
@@ -114,7 +138,7 @@
    /**
     * any constraints on the observation
     */
-@@ -799,6 +812,9 @@
+@@ -799,6 +815,9 @@
   * An organisation that can perform astronomical observations
   */
  export type Observatory = {
@@ -124,7 +148,7 @@
    xmlId?: string;
    /**
     * The name of the organization
-@@ -844,6 +860,7 @@
+@@ -844,6 +863,7 @@
   * a configuration can be used to observe with.
   */
  export type ObservingMode = {
@@ -132,7 +156,15 @@
    /**
     * human readable name for the mode
     */
-@@ -882,6 +899,7 @@
+@@ -875,6 +895,7 @@
+  * base type of a telescope or array of telescopes
+  */
+ export type ObservingPlatform = {
++  _id?: number
+   xmlId?: string;
+ };
+ 
+@@ -882,6 +903,7 @@
   * a complete proposal
   */
  export type ObservingProposal = {
@@ -140,7 +172,7 @@
    xmlId?: string;
    /**
     * the proposal title
-@@ -931,6 +949,8 @@
+@@ -931,6 +953,8 @@
   * An institution that is a collection of people
   */
  export type Organization = {
@@ -149,16 +181,16 @@
    /**
     * The name of the organization
     */
-@@ -993,7 +1013,7 @@
+@@ -993,7 +1017,7 @@
     * An institution that is a collection of people
     */
    homeInstitute?: Organization;
 -  xmlId?: string;
-+  _id?: number;
++  _id?: string;
  };
  
  /**
-@@ -1155,6 +1175,8 @@
+@@ -1155,6 +1179,8 @@
   * Defines collection of resources and proposals for a particular observing season
   */
  export type ProposalCycle = {
@@ -167,7 +199,7 @@
    /**
     * a human readable description of the cycle
     */
-@@ -1228,6 +1250,7 @@
+@@ -1228,6 +1254,7 @@
   * A review of a proposal
   */
  export type ProposalReview = {
@@ -175,7 +207,7 @@
    /**
     * Description
     */
-@@ -1309,6 +1332,7 @@
+@@ -1309,6 +1336,7 @@
   * A real value with a unit.
   */
  export type RealQuantity = {
@@ -183,7 +215,7 @@
    /**
     * Must conform to definition of unit in VOUnit spec.
     */
-@@ -1340,6 +1364,8 @@
+@@ -1340,6 +1368,8 @@
   * A resource that will be consumed by allocating an observation from a proposal
   */
  export type Resource = {
@@ -192,7 +224,7 @@
    /**
     * The amount of the resource
     *
-@@ -1370,6 +1396,7 @@
+@@ -1370,6 +1400,7 @@
   * a type of resource
   */
  export type ResourceType = {
@@ -200,7 +232,7 @@
    /**
     * the name of the resource type
     */
-@@ -1382,6 +1409,7 @@
+@@ -1382,6 +1413,7 @@
   * assigned to review the proposal
   */
  export type Reviewer = {
@@ -208,7 +240,7 @@
    /**
     * person connected with the proposal
     */
-@@ -1413,6 +1441,8 @@
+@@ -1413,6 +1445,8 @@
    /**
     * Science oriented definition of a spectral window.
     */
@@ -217,7 +249,7 @@
    spectralWindowSetup?: SpectralWindowSetup;
    expectedSpectralLine?: ExpectedSpectralLine[];
  };
-@@ -1457,6 +1487,7 @@
+@@ -1457,6 +1491,7 @@
   * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
   */
  export type SpaceFrame = {
@@ -225,7 +257,7 @@
    /**
     * The spatial reference frame. Values MUST be selected from the controlled vocabulary at the given URL.
     */
-@@ -1479,6 +1510,7 @@
+@@ -1479,6 +1514,7 @@
   * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
   */
  export type SpaceSys = {
@@ -233,7 +265,7 @@
    xmlId?: string;
    /**
     * Abstract head of coordinate spaces related to physical properties.
-@@ -1562,7 +1594,7 @@
+@@ -1562,7 +1598,7 @@
    /**
     * person connected with the proposal
     */
@@ -242,7 +274,7 @@
    uid?: string;
    inKeycloakRealm?: boolean;
  };
-@@ -1582,6 +1614,8 @@
+@@ -1582,6 +1618,8 @@
   * an instance of a proposal that has been submitted
   */
  export type SubmittedProposal = {
@@ -251,7 +283,7 @@
    xmlId?: string;
    /**
     * the proposal title
-@@ -1703,17 +1737,20 @@
+@@ -1703,17 +1741,20 @@
   * A target source
   */
  export type Target = {
@@ -272,7 +304,7 @@
    xmlId?: string;
    name?: string;
  };
-@@ -1722,6 +1759,7 @@
+@@ -1722,6 +1763,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -280,7 +312,7 @@
    xmlId?: string;
    /**
     * any constraints on the observation
-@@ -1750,10 +1788,12 @@
+@@ -1750,10 +1792,13 @@
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -289,11 +321,12 @@
  };
  
  export type Telescope = {
++  _id?: number
 +  "@type"?: string;
    xmlId?: string;
    /**
     * telescope name
-@@ -1773,6 +1813,7 @@
+@@ -1773,6 +1818,7 @@
   * a set of telescopes that are operated together for an observation
   */
  export type TelescopeArray = {
@@ -301,7 +334,7 @@
    xmlId?: string;
    /**
     * the array name
-@@ -1854,6 +1895,10 @@
+@@ -1854,6 +1900,10 @@
   * particular time range
   */
  export type TimingWindow = {

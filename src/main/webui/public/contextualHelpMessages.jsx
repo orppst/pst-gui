@@ -146,6 +146,30 @@ export const contextualHelpMessages = [
   message: " "
          + " Select a cycle and confirm your request with the Submit proposal button at bottom right, or cancel and return without submitting by clicking the Cancel button."
 }
+, {
+  id: "ManageSubmitObservingModes-eng",
+    message: "Here you may limit the number of Observing Mode selections by specifying combinations of " +
+        "'Instruments', 'Backends', and 'Filters' that you may want for your observations. " +
+        "The scrollable list shows you the modes available according to the choices you make. " +
+        "Notice that these choices are optional and can be left blank such that all modes are available " +
+        "for selection for your observations. "
+  },
+  {
+    id: "ManageSubmitObservingModesShow-eng",
+    message: "Select an observing mode to see its details i.e., instrument, backend and filter. " +
+        "Where appropriate you will also be shown the telescopes that will be used. " +
+        "The 'eye' button will toggle the mode details display. " +
+        "'Set for all' will set the currently selected observing mode for each observation." +
+        "You may also set the observing modes for each observation individually."
+  },
+  {
+    id: "ManageSubmitObservingModesFilter-eng",
+    message: "Here you may refine the number of selectable Observing Modes by choosing an Instrument, " +
+        "Backend and/or Filter. This will limit the choices in the select dropdown inputs below. " +
+        "Notice that if you specify all three items you will limit the choice of modes to one (or fewer*); " +
+        "an Observing Mode is uniquely defined as a combination of instrument, backend, and filter. " +
+        "*Observatories define their observing modes and some combinations will be incompatible."
+  }
 
 ];
 
