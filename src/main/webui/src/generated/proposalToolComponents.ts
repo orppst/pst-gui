@@ -705,6 +705,7 @@ export const useObservatoryResourceUpdateObservatoryWikiId = (
   });
 };
 
+
 export type ObservatoryResourceGetTelescopeArraysPathParams = {
   /**
    * @format int64
