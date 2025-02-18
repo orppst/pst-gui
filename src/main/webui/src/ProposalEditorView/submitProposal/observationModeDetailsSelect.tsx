@@ -137,6 +137,7 @@ function ObservationModeDetailsSelect(p: {
                     <Select
                         label={"Instrument"}
                         placeholder={"none selected"}
+                        searchable
                         description={"Total defined: " + p.observatory.instruments?.length}
                         data={p.observatory.instruments?.map(i =>
                             ({value: String(i._id!), label: i.name!})
@@ -154,6 +155,7 @@ function ObservationModeDetailsSelect(p: {
                     <Select
                         label={"Backend"}
                         placeholder={"none selected"}
+                        searchable
                         description={"Total defined: " + p.observatory.backends?.length}
                         data={p.observatory.backends?.map(b =>
                             ({value: String(b._id!), label: b.name!})
@@ -171,6 +173,7 @@ function ObservationModeDetailsSelect(p: {
                     <Select
                         label={"Spectroscopic Filter"}
                         placeholder={"none selected"}
+                        searchable
                         description={"Total defined: " + p.allFilters.length}
                         data={p.allFilters.map(f =>
                             ({value: String(f.dbid!), label: f.name!})

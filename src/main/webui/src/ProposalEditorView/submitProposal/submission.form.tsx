@@ -278,7 +278,10 @@ function SubmissionForm() :
                     label={"Proposal Check"}
                     description={"Is your proposal ready?"}
                 >
-                    <ValidationOverview cycle={form.getValues().selectedCycle} />
+                    <ValidationOverview
+                        cycle={form.getValues().selectedCycle}
+                        smallScreen={smallScreen}
+                    />
                 </Stepper.Step>
 
                 <Stepper.Step
@@ -294,7 +297,10 @@ function SubmissionForm() :
                 >
                     {
                         submissionFail.length === 0 ?
-                            <DisplaySubmissionDetails formData={form.getValues()} />
+                            <DisplaySubmissionDetails
+                                formData={form.getValues()}
+                                smallScreen={smallScreen}
+                            />
                             :
                             <AlertErrorMessage
                                 title={"Submission Failed"}

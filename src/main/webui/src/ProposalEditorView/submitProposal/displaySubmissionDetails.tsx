@@ -1,15 +1,19 @@
 import {ReactElement} from "react";
 import {
-    useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycleObservatory,
     useProposalCyclesResourceGetProposalCycleTitle
 } from "../../generated/proposalToolComponents.ts";
-import {Box, Fieldset, Loader, ScrollArea, Space, Stack, Table, Text} from "@mantine/core";
+import {Box, Divider, Fieldset, Loader, ScrollArea, Stack, Table, Text} from "@mantine/core";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
+import {PanelFrame} from "../../commonPanel/appearance.tsx";
 
 export default
-function DisplaySubmissionDetails(props: {formData: SubmissionFormValues}) : ReactElement {
+function DisplaySubmissionDetails(props: {
+    formData: SubmissionFormValues,
+    smallScreen?: boolean,
+}) : ReactElement {
 
     //show cycle title, submission deadline, observations and their modes,
     //essentially a summary of the steps to this point
@@ -22,6 +26,10 @@ function DisplaySubmissionDetails(props: {formData: SubmissionFormValues}) : Rea
 
     const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
         {pathParams: {cycleCode: props.formData.selectedCycle} });
+
+    const observatory = useProposalCyclesResourceGetProposalCycleObservatory({
+        pathParams: {cycleCode: props.formData.selectedCycle}
+    })
 
 
     const tableHeader = () => (
@@ -59,7 +67,7 @@ function DisplaySubmissionDetails(props: {formData: SubmissionFormValues}) : Rea
         }
 
 
-    if (cycleTitle.isLoading || cycleDates.isLoading) {
+    if (cycleTitle.isLoading || cycleDates.isLoading || observatory.isLoading) {
         return(
             <Box mx={"50%"}>
                 <Loader/>
@@ -85,33 +93,49 @@ function DisplaySubmissionDetails(props: {formData: SubmissionFormValues}) : Rea
         );
     }
 
+    if (observatory.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load observatory data"}
+                error={getErrorMessage(observatory.error)}
+            />
+        );
+    }
+
     return (
-        <>
-            <Text size={"sm"} c={"grey"}>
-                If you are happy with the following details please submit your proposal else go back and make the desired changes.
-            </Text>
-            <Space h={"md"}/>
-            <Fieldset legend={"Submission Details"} mx={"10%"}>
-                <Stack>
-                    <Text>
-                        Submitting to: <Text span c={"blue"}>
-                            {cycleTitle.data}
+        <PanelFrame
+            maw={props.smallScreen ? "100%": "75%"}
+            ml={props.smallScreen ? "" : "10%"}>
+            <Stack>
+                <Text>
+                    {observatory.data?.name}: {cycleTitle.data} - Review Details
+                </Text>
+                <Divider/>
+                <Text size={"sm"} c={"grey"}>
+                    If you are happy with the following details please submit your proposal else go back and make the desired changes.
+                </Text>
+                <Fieldset legend={"Submission Details"}>
+                    <Stack>
+                        <Text>
+                            Submitting to: <Text span c={"blue"}>
+                                {cycleTitle.data}
+                            </Text>
                         </Text>
-                    </Text>
-                    <Text>
-                        Submission deadline: <Text span c={"teal"}>
-                            {cycleDates.data?.submissionDeadline?.slice(0, 10)}
+                        <Text>
+                            Submission deadline: <Text span c={"teal"}>
+                                {cycleDates.data?.submissionDeadline?.slice(0, 10)}
+                            </Text>
                         </Text>
-                    </Text>
-                    <ScrollArea h={250}>
-                        <Table.ScrollContainer minWidth={500}/>
-                        <Table stickyHeader>
-                            {tableHeader()}
-                            {tableBody()}
-                        </Table>
-                    </ScrollArea>
-                </Stack>
-            </Fieldset>
-        </>
+                        <ScrollArea h={250}>
+                            <Table.ScrollContainer minWidth={500}/>
+                            <Table stickyHeader>
+                                {tableHeader()}
+                                {tableBody()}
+                            </Table>
+                        </ScrollArea>
+                    </Stack>
+                </Fieldset>
+            </Stack>
+        </PanelFrame>
     )
 }
