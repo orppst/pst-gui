@@ -9,7 +9,7 @@ import {
     Select,
     Stack,
     Text,
-    Textarea
+    Textarea, Tooltip
 } from "@mantine/core";
 import {
     useObservingModeResourceGetCycleObservingMode,
@@ -17,7 +17,6 @@ import {
 } from "../../generated/proposalToolComponents.ts";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 import {
     Backend,
     Filter,
@@ -30,6 +29,8 @@ import {IconEye, IconEyeClosed} from "@tabler/icons-react";
 import {UseFormReturnType} from "@mantine/form";
 import {SubmissionFormValues} from "./submitPanel.tsx";
 import ObservingModeTelescopes from "./observingModeTelescopes.tsx";
+import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 
 function DisplayInstrument (p: {instrument?: Instrument}): ReactElement {
@@ -71,10 +72,10 @@ function DisplayInstrument (p: {instrument?: Instrument}): ReactElement {
 
     const Reference = () => (
         <Text>
-            Reference: {
+            External Link: {
             p.instrument ? p.instrument.reference && p.instrument.reference.length > 0 ?
             <Anchor href={p.instrument.reference} target="_blank" rel="noopener noreferrer">
-                {p.instrument.reference}
+                {p.instrument.name}
             </Anchor> : "No value" : ""
         }
         </Text>
@@ -124,7 +125,7 @@ function DisplayBackend(p: {backend?: Backend}) : ReactElement {
 function DisplayFilter(p: {filter?: Filter} ) : ReactElement {
 
     function displayRealQuantity(r: RealQuantity) : string {
-        return r.value + " " + r.unit?.value
+        return r.value?.toExponential(6) + " " + r.unit?.value
     }
 
     const Name = () => (
@@ -185,11 +186,13 @@ function DisplayFilter(p: {filter?: Filter} ) : ReactElement {
         <Stack>
             <Group grow>
                 <Name/>
+                <Polarisation/>
+                <SkyFrequency/>
+            </Group>
+            <Group grow>
                 <RangeStart/>
                 <RangeEnd/>
                 <Resolution/>
-                <Polarisation/>
-                <SkyFrequency/>
             </Group>
             <Description/>
         </Stack>
@@ -314,7 +317,7 @@ function ObservationModeDetailsShow(p: {
 
     return(
         <Stack>
-            <ContextualHelpButton messageId={"ManageSubmitObservingModesShow"} />
+            <ContextualHelpButton messageId={"ManageSubmitObservingModesShow"}/>
             <Grid columns={12}>
                 <Grid.Col span={9}>
                     <Select
@@ -328,11 +331,17 @@ function ObservationModeDetailsShow(p: {
                 </Grid.Col>
                 <Grid.Col span={3}>
                     <Group mt={3}>
-                        <ActionIcon
-                            onClick={toggle}
+                        <Tooltip
+                            label={opened ? "Close mode details" : "Show mode details"}
+                            openDelay={OPEN_DELAY}
+                            closeDelay={CLOSE_DELAY}
                         >
-                            {opened ? <IconEye /> : <IconEyeClosed />}
-                        </ActionIcon>
+                            <ActionIcon
+                                onClick={toggle}
+                            >
+                                {opened ? <IconEye /> : <IconEyeClosed />}
+                            </ActionIcon>
+                        </Tooltip>
                         <Button
                             onClick={setAllObservations}
                             size={"compact-md"}
@@ -342,7 +351,6 @@ function ObservationModeDetailsShow(p: {
                         </Button>
                     </Group>
                 </Grid.Col>
-
             </Grid>
             <Collapse in={opened}>
             {

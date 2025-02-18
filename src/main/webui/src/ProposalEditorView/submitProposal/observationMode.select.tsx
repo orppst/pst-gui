@@ -1,22 +1,16 @@
 import {UseFormReturnType} from "@mantine/form";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import {ReactElement, useEffect, useState} from "react";
-import {Box, Fieldset, Loader, ScrollArea, Select, Stack, Table} from "@mantine/core";
+import {Box, Divider, Fieldset, Loader, ScrollArea, Select, Stack, Table, Text} from "@mantine/core";
 import {
     useObservingModeResourceGetCycleObservingModes,
     useObservingModeResourceGetObservingModesFilters,
-    useProposalCyclesResourceGetProposalCycleObservatory,
+    useProposalCyclesResourceGetProposalCycleObservatory, useProposalCyclesResourceGetProposalCycleTitle,
 } from "../../generated/proposalToolComponents.ts";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import ObservationModeDetailsShow from "./observationModeDetailsShow.tsx";
 import ObservationModeDetailsSelect from "./observationModeDetailsSelect.tsx";
-
-
-/*
-    One select to choose an observation mode for all observations, and a table of the observations, each
-    with an observation mode select such that different observations may have different observation modes.
- */
 
 
 export default
@@ -26,6 +20,12 @@ function ObservationModeSelect(props: {
 }): ReactElement {
 
     const [observingModes, setObservingModes] = useState<{value: string, label: string}[]>([])
+
+    const cycleTitle = useProposalCyclesResourceGetProposalCycleTitle({
+        pathParams: {
+            cycleCode: props.form.getValues().selectedCycle
+        }
+    })
 
     const cycleModes = useObservingModeResourceGetCycleObservingModes({
             pathParams: {cycleId: props.form.getValues().selectedCycle}
@@ -80,7 +80,6 @@ function ObservationModeSelect(props: {
                         error={props.form.getValues().selectedModes.at(p.index)!.modeId === 0}
                         value={props.form.getValues().selectedModes.at(p.index)!.modeId.toString()}
                         onChange={(_value, option) => {
-                            //console.log("option: " +  option.value + ":" + option.label)
                             props.form.setFieldValue(
                                 `selectedModes.${p.index}.modeId`, option ? Number(option.value) : 0
                             );
@@ -88,14 +87,13 @@ function ObservationModeSelect(props: {
                                 `selectedModes.${p.index}.modeName`, option ? option.label : ""
                             );
                         }}
-
                     />
                 </Table.Td>
             </Table.Tr>
         )
     }
 
-    if (cycleModes.isLoading || observatory.isLoading || allFilters.isLoading) {
+    if (cycleModes.isLoading || observatory.isLoading || allFilters.isLoading || cycleTitle.isLoading) {
         return (
             <Box mx={"20%"}>
                 <Loader />
@@ -130,60 +128,68 @@ function ObservationModeSelect(props: {
         )
     }
 
+    if (cycleTitle.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load the cycle title"}
+                error={getErrorMessage(cycleTitle.error)}
+            />
+        )
+    }
+
     return (
-        <>
-            <Box
-                maw={props.smallScreen ? "100%": "75%"}
-                ml={props.smallScreen ? "" : "10%"}
-            >
-                <Stack>
-                    <Fieldset legend={"Observing Mode Details"} >
+        <Box
+            maw={props.smallScreen ? "100%": "75%"}
+            ml={props.smallScreen ? "" : "10%"}
+        >
+            <Stack>
+                <Text>
+                    {observatory.data?.name}: {cycleTitle.data} - Observing Modes
+                </Text>
+                <Divider/>
+                {
+                    cycleModes.data && cycleModes.data.length > 5 ?
+                        <ObservationModeDetailsSelect
+                            setObservingModes={setObservingModes}
+                            observatory={observatory.data!}
+                            allFilters={allFilters.data!.map(f =>(
+                                {dbid: f._id!, name: f.name!}
+                            ))}
+                            cycleId={props.form.getValues().selectedCycle}
+                            form={props.form}
+                        />
+                        :
+                        <Fieldset legend={"Observing Mode Details"}>
+                            <ObservationModeDetailsShow
+                                form={props.form}
+                                allModes={ cycleModes.data!.map((mode) => (
+                                    {
+                                        value: String(mode.dbid),
+                                        label: mode.code === mode.name? mode.code! : mode.code + ": " + mode.name
+                                    }
+                                ))}
+                                observatoryId={observatory.data?._id!}
+                            />
+                        </Fieldset>
+                }
+                <ScrollArea.Autosize mah={250} >
+                    <Table
+                        stickyHeader
+                        withTableBorder
+                    >
+                        {tableHeader()}
+                        <Table.Tbody>
                         {
-                            cycleModes.data && cycleModes.data.length > 5 ?
-                                <ObservationModeDetailsSelect
-                                    allInstruments={observatory.data!.instruments!.map(i => (
-                                        {dbid: i._id!, name: i.name!}
-                                    ))}
-                                    allBackends={observatory.data!.backends!.map(b => (
-                                        {dbid: b._id!, name: b.name!}
-                                    ))}
-                                    allFilters={allFilters.data!.map(f =>(
-                                        {dbid: f._id!, name: f.name!}
-                                    ))}
-                                    cycleId={props.form.getValues().selectedCycle}
-                                />
-                                :
-                                <ObservationModeDetailsShow
-                                    form={props.form}
-                                    allModes={ cycleModes.data!.map((mode) => (
-                                        {
-                                            value: String(mode.dbid),
-                                            label: mode.code === mode.name? mode.code! : mode.code + ": " + mode.name
-                                        }
-                                    ))}
-                                    observatoryId={observatory.data?._id!}
-                                />
+                            props.form.getValues().selectedModes.map(
+                                (modeTuple: ObservationModeTuple, index: number) => {
+                                    return(tableRow({modeTuple, index}))
+                                })
                         }
-                    </Fieldset>
-                    <ScrollArea.Autosize mah={250} >
-                        <Table
-                            stickyHeader
-                            withTableBorder
-                        >
-                            {tableHeader()}
-                            <Table.Tbody>
-                            {
-                                props.form.getValues().selectedModes.map(
-                                    (modeTuple: ObservationModeTuple, index: number) => {
-                                        return(tableRow({modeTuple, index}))
-                                    })
-                            }
-                            </Table.Tbody>
-                        </Table>
-                    </ScrollArea.Autosize>
-                </Stack>
-            </Box>
-        </>
+                        </Table.Tbody>
+                    </Table>
+                </ScrollArea.Autosize>
+            </Stack>
+        </Box>
     )
 }
 
