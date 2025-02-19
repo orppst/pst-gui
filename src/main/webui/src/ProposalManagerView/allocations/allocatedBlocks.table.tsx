@@ -1,4 +1,4 @@
-import {AllocatedBlock} from "../../generated/proposalToolSchemas.ts";
+import {AllocatedBlock, AllocationGrade, ObservingMode, ResourceType} from "../../generated/proposalToolSchemas.ts";
 import {Group, Stack, Table, Text} from "@mantine/core";
 import DeleteButton from "../../commonButtons/delete.tsx";
 import AllocatedBlockModal from "./allocatedBlock.modal.tsx";
@@ -18,9 +18,7 @@ export type AllocatedBlocksTableProps = {
     allocatedProposalId: number
 }
 
-export default
-function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
-{
+export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
@@ -39,7 +37,7 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
         modals.openConfirmModal({
             title: "Delete '" + props.resourceName + "' from '" + props.proposalTitle + "'?",
             centered: true,
-            children:(
+            children: (
                 <Text size={"sm"}>
                     This will remove the '{props.resourceName}' resource block from '{props.proposalTitle}'.
                     Are you sure?
@@ -70,6 +68,10 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
         })
     }
 
+    let grades: AllocationGrade[] = [];
+    let resourceTypes: ResourceType[] = [];
+    let modes: ObservingMode[] = [];
+
     return (
         <Stack>
             {props.allocatedBlocks.length > 0 &&
@@ -84,10 +86,26 @@ function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody c={"orange.2"}>
-                        {props.allocatedBlocks.map(ab => {
+                        {
+                         props.allocatedBlocks.map(ab => {
                             //on second call for a "thing" we get a reference rather than the "thing"
                             // e.g., a resource name will only display once for the entire table.
-                            console.log(ab)
+                            //console.log(ab)
+                            if(ab.grade?.name != undefined)
+                                grades.push(ab.grade)
+                            else
+                                ab.grade = grades.find(gr => gr._id == ab.grade)
+
+                            if(ab.resource?.type?.name != undefined)
+                                resourceTypes.push(ab.resource.type)
+                             else if(ab.resource != undefined)
+                                 ab.resource.type = resourceTypes.find(rt => rt._id == ab.resource?.type)
+
+                             if(ab.mode?.name != undefined)
+                                 modes.push(ab.mode)
+                             else
+                                 ab.mode = modes.find(m => m._id == ab.mode)
+
                             return (
                                 <Table.Tr key={ab._id}>
                                     <Table.Td>{ab.resource?.type?.name}</Table.Td>
