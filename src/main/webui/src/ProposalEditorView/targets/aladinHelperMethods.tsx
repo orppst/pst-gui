@@ -1,13 +1,5 @@
-import { MouseEvent } from 'react';
-import {
-    AladinBuilderType,
-    AladinType,
-    IAladinConfig
-} from './aladinTypes.tsx';
+import {MouseEvent} from 'react';
 
-// A is a global variable from aladin lite source code.
-// It is declared for the typescript checker to understand it.
-declare var A: AladinBuilderType;
 
 /**
  * code swiped from stack overflow which loads the javascript into the
@@ -24,6 +16,7 @@ export const LoadScriptIntoDOM = (
     const scriptElement = document.createElement("script");
     scriptElement.setAttribute('src', url);
     scriptElement.async = false;
+
     if (onloadCallback) {
         scriptElement.onload = onloadCallback;
     }
@@ -53,32 +46,4 @@ export const GetOffset = (event: MouseEvent): number[] => {
     y = event.clientY - y;
 
     return [x, y];
-}
-
-/**
- * builds the aladin instance.
- *
- * @param {IAladinConfig} initialConfig the configuration data.
- * @return {AladinType} the aladin instance.
- * @constructor
- */
-export const PopulateAladin = (initialConfig: IAladinConfig): AladinType => {
-    // When the import has succeeded we store the aladin js instance
-    // into its component
-    const Aladin: AladinType = A.aladin('#aladin-lite-div', initialConfig);
-
-    // add the catalog.
-    Aladin.addCatalog(A.catalog({
-        name: 'Pointing Catalogue',
-        shape: 'cross',
-        sourceSize: 20,
-    }));
-
-    // add the overlay.
-    Aladin.addOverlay(A.graphicOverlay({
-        color: '#009900',
-        lineWidth: 3
-    }));
-
-    return Aladin;
 }
