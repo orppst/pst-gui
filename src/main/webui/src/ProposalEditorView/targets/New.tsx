@@ -37,7 +37,7 @@ import SimbadSearchHelp from "./simbadSearchHelp.tsx";
 import { AstroLib } from "@tsastro/astrolib";
 import * as React from "react";
 
-//nothing to see here, move along
+//move along, nothing to see here
 //@ts-ignore
 import A from 'aladin-lite';
 
@@ -46,7 +46,7 @@ export let Aladin: AladinType;
 // setup for Aladin viewer in Polaris - settings where the defaults aren't right for us
 const initialConfig: IAladinConfig = {
     cooFrame: 'ICRSd',
-    fov: 4,
+    projection: 'STG',
     showFrame: false,
     showZoomControl: false,
     showProjectionControl: false,

@@ -1,6 +1,8 @@
 /**
  * type guidance for the IDE for the Javascript Aladin object.
  *
+ * see Aladin-lite documentation https://aladin.cds.unistra.fr/AladinLite/doc/API/
+ *
  * @param {(ra: number, dec: number) => void}} gotoRaDec route aladin to
  * location.
  * @param {(data: any) => void} addCatalog adds a catalog to aladin.
