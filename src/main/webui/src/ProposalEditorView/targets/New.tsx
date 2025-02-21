@@ -50,7 +50,6 @@ const initialConfig: IAladinConfig = {
     showFrame: false,
     showZoomControl: false,
     showProjectionControl: false,
-    showLayersControl: false,
     showGotoControl: false,
     showFullscreenControl: false,
     reticleColor: 'rgb(150, 255, 75)'
