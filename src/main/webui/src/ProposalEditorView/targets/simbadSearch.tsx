@@ -247,6 +247,8 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
 
                                         //point Aladin viewer to the target ra,dec
                                         Aladin.gotoRaDec(arr[1], arr[2])
+
+                                        Aladin.adjustFovForObject(arr[0])
                                     }
                                 });
                             } else {

@@ -25,11 +25,10 @@ import {
     AladinType,
     IAladinConfig
 } from './aladinTypes.tsx';
-import { ALADIN_SRC_URL, JQUERY_SRC_URL } from 'src/constants.tsx';
+import { ALADIN_SRC_URL } from 'src/constants.tsx';
 import {
     GetOffset,
-    LoadScriptIntoDOM,
-    PopulateAladin
+    LoadScriptIntoDOM
 } from './aladinHelperMethods.tsx';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -38,50 +37,37 @@ import SimbadSearchHelp from "./simbadSearchHelp.tsx";
 import { AstroLib } from "@tsastro/astrolib";
 import * as React from "react";
 
+//move along, nothing to see here
+//@ts-ignore
+import A from 'aladin-lite';
+
 export let Aladin: AladinType;
 
-// the initial config for the aladin viewer.
+// setup for Aladin viewer in Polaris - settings where the defaults aren't right for us
 const initialConfig: IAladinConfig = {
-    cooFrame: 'ICRS',
-    survey: 'P/DSS2/color',
-    fov: 0.25,
-    showReticule: true,
-    showZoomControl: false,
-    showLayersControl: false,
-    showGotoControl: false,
-    showShareControl: false,
-    showFullscreenControl: false,
+    cooFrame: 'ICRSd',
+    projection: 'STG',
     showFrame: false,
-    fullScreen: false,
-    reticuleColor: 'rgb(178, 50, 178)',
-    reticuleSize: 22,
-    showCooGridControl: false,
+    showZoomControl: false,
+    showProjectionControl: false,
+    showGotoControl: false,
+    showFullscreenControl: false,
+    reticleColor: 'rgb(150, 255, 75)'
 };
 
 const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
-    /**
-     * handler that creates the Aladin interface from Javascript.
-     * Empty 'deps' array in useEffect to load on initial render only.
-     * Note that in 'dev mode' (React 18) this actually runs twice for reasons.
-     */
     useEffect(() => {
 
         const bodyElement =
             document.getElementsByTagName('BODY')[0] as HTMLElement;
 
-        // jQuery is a dependency for aladin-lite and must be inserted in the DOM.
-        LoadScriptIntoDOM(bodyElement, JQUERY_SRC_URL);
-
-        // Then we load the aladin lite script.
         LoadScriptIntoDOM(
             bodyElement, ALADIN_SRC_URL,
             () => {
-                Aladin = PopulateAladin(initialConfig);
+                Aladin = A.aladin('#aladin-lite-div', initialConfig);
             })
     }, []);
-
-
 
     const queryClient = useQueryClient();
     const {selectedProposalCode} = useParams();
@@ -223,7 +209,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      */
     const UpdateAladinRA = (value: number | string) => {
         // acquire the aladin object and set it.
-        Aladin.gotoRaDec(value as number, Number(form.values.Dec));
+        Aladin.gotoRaDec(value as number, Number(form.getValues().Dec));
     }
 
     /**
@@ -232,7 +218,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      */
     const UpdateAladinDec = (value: number | string) => {
         // acquire the aladin object and set it.
-        Aladin.gotoRaDec(Number(form.values.RA), value as number);
+        Aladin.gotoRaDec(Number(form.getValues().RA), value as number);
     }
 
     const responsiveSpan = {base: 2, md: 1}
