@@ -1,6 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
+import {Telescopes} from "./telescopes"
 import {Fieldset, Grid, Text, Stack, Group, Space} from '@mantine/core';
 import {
     CalibrationObservation,
@@ -79,12 +80,12 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
     const newObservation = props.observation === undefined;
 
     // figure out the current observation type.
-    let observationType : ObservationType = newObservation ? '' :
+    const observationType : ObservationType = newObservation ? '' :
         props.observation!["@type"]
         === 'proposal:TargetObservation' ? 'Target': 'Calibration';
 
     // figure out the current calibration use.
-    let calibrationUse : CalibrationTargetIntendedUse | undefined =
+    const calibrationUse : CalibrationTargetIntendedUse | undefined =
         observationType === 'Calibration' ?
         (props.observation as CalibrationObservation).intent! : undefined;
 
@@ -151,7 +152,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
         form.onSubmit((values) => {
             if (newObservation) {
                 //Creating new observation
-                let targetList: Target[] = [];
+                const targetList: Target[] = [];
 
                 form.values.targetDBIds?.map((thisTarget) =>{
                     targetList.push({
@@ -160,7 +161,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     })
                 })
 
-                let baseObservation : Observation = {
+                const baseObservation : Observation = {
                     target: targetList,
                     technicalGoal: {
                         "_id": values.techGoalId
@@ -271,7 +272,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 })
 
                 if (form.isDirty('targetDBIds')) {
-                    let body: Target[] = [];
+                    const body: Target[] = [];
 
                     form.values.targetDBIds?.map((thisTarget) =>{
                         body.push({
@@ -413,6 +414,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         <TimingWindowsForm form={form}/>
                     </Fieldset>
                     <Space h={"md"} />
+                    <Fieldset lengard={"Telescopes"}>
+                        <Telescopes></Telescopes>
+                    </Fieldset>
                     <Group justify={"flex-end"}>
                         <FormSubmitButton form={form} />
                         <CancelButton
