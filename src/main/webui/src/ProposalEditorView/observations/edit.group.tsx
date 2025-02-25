@@ -27,6 +27,7 @@ import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {queryKeyProposals} from "../../queryKeyProposals.tsx";
+import { useOpticalTelescopeResourceLoadTelescopeData } from '../../util/telescopeCommsMock';
 
 /**
  * the different types of observation.
@@ -45,6 +46,7 @@ export interface ObservationFormValues {
     techGoalId: number | undefined,
     fieldId: string | undefined, //string for Select to show existing value in edit-form
     timingWindows: TimingWindowGui[],
+    telescopeName: string,
 }
 
 /**
@@ -75,6 +77,13 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
         useObservationResourceReplaceTimingWindow();
     const replaceCalibrationUse =
         useObservationResourceReplaceIntendedUse()
+
+    /**
+     * extract current choices.
+     */
+    const { data: SavedTelescopeData} =
+        useOpticalTelescopeResourceLoadTelescopeData(
+            { observationID: props.observation?._id?.toString(), proposalID: selectedProposalCode});
 
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
@@ -118,7 +127,8 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 targetDBIds: props.selectedTargets, //check this is working as expected
                 techGoalId: props.observation?.technicalGoal?._id,
                 fieldId: props.observation?.field?._id ? String(props.observation?.field?._id) : undefined,
-                timingWindows: initialTimingWindows
+                timingWindows: initialTimingWindows,
+                telescopeName: SavedTelescopeData?.telescopeName,
             },
 
             validate: {
@@ -415,7 +425,11 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     </Fieldset>
                     <Space h={"md"} />
                     <Fieldset lengard={"Telescopes"}>
-                        <Telescopes></Telescopes>
+                        <Telescopes
+                            proposalId={Number(selectedProposalCode)}
+                            observationID={form.getValues().observationId}
+                            form={form}>
+                        </Telescopes>
                     </Fieldset>
                     <Group justify={"flex-end"}>
                         <FormSubmitButton form={form} />
