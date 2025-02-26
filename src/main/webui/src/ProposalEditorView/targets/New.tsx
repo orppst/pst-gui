@@ -268,6 +268,13 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 {
                                     //set the field value to the input
                                     form.setFieldValue("RA", raValue);
+                                    //if we have no name for this object, generate one
+                                    if(form.values["TargetName"] == "" )
+                                    {
+                                        GenerateTargetDefaultName();
+                                    } 
+                                    //update the Aladin viewport                              
+                                    UpdateAladinRaDec();
                                 }
                                 //if we have decimal
                                 else if(regexdec.test(raValue))
@@ -275,13 +282,20 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                     //convert the decimal to sexagesimal
                                     raValue = String(AstroLib.DegToHms(parseFloat(raValue)));
                                     form.setFieldValue("RA", raValue);
+                                    //if we have no name for this object, generate one
+                                    if(form.values["TargetName"] == "")
+                                    {
+                                        GenerateTargetDefaultName();
+                                    } 
+                                    //update the Aladin viewport                              
+                                    UpdateAladinRaDec();
                                 }
-
-                                //if we don't have a name for this object, generate one
-                                if(form.values["TargetName"] == "")
+                                else
                                 {
-                                    GenerateTargetDefaultName();
-                                }                             
+                                    //if we have no valid input, reset the field - preventing submission
+                                    form.setFieldValue("TargetName", "");
+                                }
+                           
                                 //update the Aladin viewport
                                 UpdateAladinRaDec();
                             }}
@@ -318,6 +332,14 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 {
                                     //set the field value to the input
                                     form.setFieldValue("Dec", decValue);
+                                    //if we have no name for this object, generate one
+                                    if(form.values["TargetName"] == "")
+                                    {
+                                        GenerateTargetDefaultName();
+                                    } 
+
+                                    //update the Aladin viewport                              
+                                    UpdateAladinRaDec();
                                 } 
                                 //if we have decimal
                                 else if(regexdec.test(decValue))
@@ -325,14 +347,22 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                     //convert the decimal to sexagesimal
                                     decValue = String(AstroLib.DegToDms(parseFloat(decValue)));
                                     form.setFieldValue("Dec", decValue);
+                                    //if we have no name for this object, generate one
+                                    if(form.values["TargetName"] == "")
+                                    {
+                                        GenerateTargetDefaultName();
+                                    } 
+                                    //update the Aladin viewport                              
+                                    UpdateAladinRaDec();
                                 }
-                                //if we don't have a name for this object, generate one
-                                if(form.values["TargetName"] == "")
+                                else
                                 {
-                                    GenerateTargetDefaultName();
-                                }                   
-                                //update the Aladin viewport                              
-                                UpdateAladinRaDec();
+                                    //if we have no valid input, reset the field - preventing submission
+                                    form.setFieldValue("TargetName", "");
+
+                                }
+                                                                                  
+                                
                             }}
                         />
                         <Text
