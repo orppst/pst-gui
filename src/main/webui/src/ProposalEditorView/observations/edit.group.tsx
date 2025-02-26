@@ -47,6 +47,7 @@ export interface ObservationFormValues {
     fieldId: string | undefined, //string for Select to show existing value in edit-form
     timingWindows: TimingWindowGui[],
     telescopeName: string,
+    instrument: string,
 }
 
 /**
@@ -81,9 +82,10 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
     /**
      * extract current choices.
      */
-    const { data: SavedTelescopeData} =
+    const telescopeNameData: Map<string, Map<string, string>> =
         useOpticalTelescopeResourceLoadTelescopeData(
-            { observationID: props.observation?._id?.toString(), proposalID: selectedProposalCode});
+            { observationID: props.observation?._id?.toString(),
+              proposalID: selectedProposalCode});
 
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
@@ -128,7 +130,8 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 techGoalId: props.observation?.technicalGoal?._id,
                 fieldId: props.observation?.field?._id ? String(props.observation?.field?._id) : undefined,
                 timingWindows: initialTimingWindows,
-                telescopeName: SavedTelescopeData?.telescopeName,
+                telescopeName: telescopeNameData?.keys()[0] ? telescopeNameData?.keys()[0] : 'None',
+                instrument: telescopeNameData?.keys()[0][0] ? telescopeNameData?.keys()[0] : 'None',
             },
 
             validate: {

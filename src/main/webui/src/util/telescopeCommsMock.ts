@@ -1,7 +1,8 @@
 // data store. first string = proposal id+observation id.
 //             second key = telescope name
 //             third key = element name and value = choice.
-import { LoadTelescopeState, SaveTelescopeState, Type } from './telescopeComms';
+import { Instrument, LoadTelescopeState, SaveTelescopeState, Telescope, Type } from './telescopeComms';
+import { Telescopes } from '../ProposalEditorView/observations/telescopes';
 
 // data store for the mock
 const dataStore: Map<string, Map<string, Map<string, string>>> =
@@ -27,8 +28,8 @@ export const useOpticalTelescopeResourceGetNames = (signal?: AbortSignal) => {
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal) => {
-    return[
-        "TCS", {
+    return {
+        "TCS": {
             "FastCam: optical Lucky Imager": {
                 "instrumentUrl": {
                     type: Type.LIST,
@@ -37,13 +38,13 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
                     ],
                 },
                 "instrumentCustomFilter": {
-                    type:Type.TEXT, values:[]
+                    type: Type.TEXT, values: []
                 },
                 "instrumentComments": {
-                    type:Type.TEXT, values:[]
+                    type: Type.TEXT, values: []
                 },
                 "instrumentFilter": {
-                    type:Type.LIST, values:['I', 'R', 'V']
+                    type: Type.LIST, values: [ 'I', 'R', 'V' ]
                 }
             },
             "MuSCAT2: simultaneous griz photometry": {
@@ -54,135 +55,136 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
                     ],
                 },
                 "instrumentCustomFilter": {
-                    type:Type.TEXT, values:[]
+                    type: Type.TEXT, values: []
                 },
                 "instrumentComments": {
-                    type:Type.TEXT, values:[]
+                    type: Type.TEXT, values: []
                 },
                 "instrumentFilter": {
-                    type:Type.LIST, values:['g', 'r', 'i', "z"]
+                    type: Type.LIST, values: [ 'g', 'r', 'i', "z" ]
                 }
             }
         },
-        "LT", {
+        "LT": {
             "IOI": {
                 "telescopeScheduling": {
-                    type:Type.LIST,
-                    values:['Monitor', 'Time Critical', 'Override']
+                    type: Type.LIST,
+                    values: [ 'Monitor', 'Time Critical', 'Override' ]
                 },
                 "instrumentCustomFilter": {
-                    type:Type.TEXT, values:[]
+                    type: Type.TEXT, values: []
                 },
                 "instrumentComments": {
-                    type:Type.TEXT, values:[]
+                    type: Type.TEXT, values: []
                 },
                 "telescopeHours": {
-                    type:Type.BOOLEAN, values:[]
+                    type: Type.BOOLEAN, values: []
                 },
                 "telescopeMoon": {
-                    type:Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 },
                 "instrumentFilter": {
-                    type:Type.LIST, values:["H"]
+                    type: Type.LIST, values: [ "H" ]
                 }
             },
             "MOPTOP": {
                 "telescopeScheduling": {
-                    type:Type.LIST,
-                    values:["Monitor", "Time Critical", "Override"]
+                    type: Type.LIST,
+                    values: [ "Monitor", "Time Critical", "Override" ]
                 },
                 "telescopeHours": {
-                    type:Type.BOOLEAN, values:[]
+                    type: Type.BOOLEAN, values: []
                 },
                 "telescopeMoon": {
-                    type:Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 },
                 "telescopeMode": {
-                    type:Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 },
             },
             "FRODOSpec": {
                 "telescopeScheduling": {
-                    type:Type.LIST,
-                    values:["Monitor", "Time Critical", "Override"]
+                    type: Type.LIST,
+                    values: [ "Monitor", "Time Critical", "Override" ]
                 },
                 "instrumentMode": {
-                    type:Type.LIST,
-                    values:["low res", "hi res"]
+                    type: Type.LIST,
+                    values: [ "low res", "hi res" ]
                 },
                 "instrumentComments": {
-                    type:Type.TEXT, values:[]
+                    type: Type.TEXT, values: []
                 },
                 "telescopeHours": {
-                    type:Type.BOOLEAN, values:[]
+                    type: Type.BOOLEAN, values: []
                 },
                 "telescopeMoon": {
-                    type: Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 },
                 "telescopeMode": {
-                    type: Type.LIST, values:[]}
+                    type: Type.LIST, values: []
+                }
             },
             "IOO": {
                 "telescopeScheduling": {
                     type: Type.LIST,
-                    values:["Monitor", "Time Critical", "Override"]
+                    values: [ "Monitor", "Time Critical", "Override" ]
                 },
                 "instrumentCustomFilter": {
-                    type: Type.TEXT, values:[]
+                    type: Type.TEXT, values: []
                 },
                 "instrumentComments": {
                     type: Type.TEXT,
-                    values:[]
+                    values: []
                 },
                 "telescopeHours": {
                     type: Type.BOOLEAN,
-                    values:[]
+                    values: []
                 },
                 "telescopeMoon": {
-                    type: Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 },
                 "instrumentFilter": {
                     type: Type.LIST,
-                    values:["V", "B", "i", "Halpha",
-                            "u", "g", "r", "z"]
+                    values: [ "V", "B", "i", "Halpha",
+                        "u", "g", "r", "z" ]
                 },
                 "telescopeMode": {
-                    type:  Type.LIST,
-                    values:[]
+                    type: Type.LIST,
+                    values: []
                 },
             },
             "RISE": {
                 "telescopeScheduling": {
                     type: Type.LIST,
-                    values:["Monitor", "Time Critical", "Override"]
+                    values: [ "Monitor", "Time Critical", "Override" ]
                 },
                 "telescopeHours": {
-                    type:  Type.BOOLEAN, values:[]
+                    type: Type.BOOLEAN, values: []
                 },
                 "telescopeMoon": {
-                    type:  Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 },
                 "telescopeMode": {
-                    type:  Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 }
             },
             "SPRAT": {
                 "telescopeScheduling": {
                     type: Type.LIST,
-                    values:["Monitor", "Time Critical", "Override"]
+                    values: [ "Monitor", "Time Critical", "Override" ]
                 },
                 "telescopeHours": {
-                    type: Type.BOOLEAN, values:[]
+                    type: Type.BOOLEAN, values: []
                 },
                 "telescopeMoon": {
-                    type: Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 },
                 "telescopeMode": {
-                    type: Type.LIST, values:[]
+                    type: Type.LIST, values: []
                 }
             }
         },
-        "TNG", {
+        "TNG": {
             'GIANO-B': {
                 "instrumentUrl": {
                     type: Type.LIST,
@@ -193,47 +195,47 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
                 }
             },
             'DOLORES': {
-                "instrumentGrismw" :{
+                "instrumentGrismw": {
                     type: Type.LIST,
-                    values:["LR-B", "LR-R", "V390", "V486", "V510",
+                    values: [ "LR-B", "LR-R", "V390", "V486", "V510",
                         "V589", "V656", "V860", "VHRV", "VHRR",
-                        "VHRI", "GRIS-U"]
+                        "VHRI", "GRIS-U" ]
                 },
-                "instrumentSlitw" :{
+                "instrumentSlitw": {
                     type: Type.LIST,
-                    values:["0.7 arcsec" , "1.0 arcsec",
+                    values: [ "0.7 arcsec", "1.0 arcsec",
                         "1.5 arcsec", "2.0 arcsec", "10.0 arcsec",
-                        "1.1 MOS slitlets", "1.6 MOS slitlets"]
+                        "1.1 MOS slitlets", "1.6 MOS slitlets" ]
                 },
-                "instrumentMode" :{
+                "instrumentMode": {
                     type: Type.LIST,
-                    values:["Imaging", "Spectroscopy",
+                    values: [ "Imaging", "Spectroscopy",
                         "Imaging + Spectroscopy",
                         "Multi-Object Spectroscopy",
-                        "Spectroscopy + Multi-Object Spectroscopy"]
+                        "Spectroscopy + Multi-Object Spectroscopy" ]
                 },
-                "instrumentUrl" :{
+                "instrumentUrl": {
                     type: Type.LIST,
-                    values:["http://www.tng.iac.es/instruments/lrs/"]
+                    values: [ "http://www.tng.iac.es/instruments/lrs/" ]
                 },
-                "instrumentCustomFilter" :{
-                    type: Type.TEXT, values:[]
+                "instrumentCustomFilter": {
+                    type: Type.TEXT, values: []
                 },
-                "instrumentComments" :{
-                    type: Type.TEXT, values:[]
+                "instrumentComments": {
+                    type: Type.TEXT, values: []
                 },
-                "false" :{
-                    type: Type.TEXT, values:[]
+                "false": {
+                    type: Type.TEXT, values: []
                 },
-                "instrumentFilter" :{
+                "instrumentFilter": {
                     type: Type.LIST,
-                    values:["U", "B", "V", "R", "I", "u' SDSS",
-                            "g' SDSS", "r' SDSS", "i' SDSS",
-                            "z' SDSS"]
+                    values: [ "U", "B", "V", "R", "I", "u' SDSS",
+                        "g' SDSS", "r' SDSS", "i' SDSS",
+                        "z' SDSS" ]
                 }
             }
         },
-        "SALT", {
+        "SALT": {
             'Salticam': {
                 "instrumentUrl": {
                     type: Type.LIST,
@@ -275,7 +277,7 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
                     type: Type.LIST,
                     values: [ "Low Resolution",
                         "Medium Resolution",
-                        "High Resolution", "High Stability"]
+                        "High Resolution", "High Stability" ]
                 },
                 "instrumentUrl": {
                     type: Type.LIST,
@@ -283,31 +285,15 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
                 }
             }
         },
-        "CFHT", {
-
-        },
-        "NOT", {
-
-        },
-        "CAHA35", {
-
-        },
-        "AAT", {
-
-        },
-        "LCO", {
-
-        },
-        "REM", {
-
-        },
-        "CAHA22", {
-
-        },
-        "OHP193", {
-
-        },
-        "Aristarchos", {
+        "CFHT": {},
+        "NOT": {},
+        "CAHA35": {},
+        "AAT": {},
+        "LCO": {},
+        "REM": {},
+        "CAHA22": {},
+        "OHP193": {},
+        "Aristarchos": {
             'RISE2': {
                 "instrumentUrl": {
                     type: Type.LIST,
@@ -347,22 +333,22 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
                 }
             }
         },
-        "TBL", {
+        "TBL": {
             "Neo-Narval": {
-                "instrumentMode" :{
+                "instrumentMode": {
                     type: Type.LIST,
-                    values:["POL3 (polarimetry R:65000)"]
+                    values: [ "POL3 (polarimetry R:65000)" ]
                 },
-                "instrumentUrl" :{
+                "instrumentUrl": {
                     type: Type.LIST,
-                    values:["https://tbl.omp.eu/observing-with-the-telescope-bernard-lyot-tbl/"]
+                    values: [ "https://tbl.omp.eu/observing-with-the-telescope-bernard-lyot-tbl/" ]
                 },
-                "instrumentComments" :{
-                    type: Type.TEXT, values:[]
+                "instrumentComments": {
+                    type: Type.TEXT, values: []
                 }
             }
         }
-    ]
+    }
 }
 
 /**
