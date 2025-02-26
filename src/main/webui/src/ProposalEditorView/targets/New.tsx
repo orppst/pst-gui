@@ -111,17 +111,17 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     }, [form.getValues().TargetName]);
 
     const handleSubmission = form.onSubmit((val: newTargetData) => {
-
+        //remember to convert the sexagesimal to decimal
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: spaceSystem.data!,
             lat: {
                 "@type": "ivoa:RealQuantity",
-                value: parseFloat(val.RA), unit: { value: "degrees" }
+                value: AstroLib.HmsToDeg(val.RA), unit: { value: "degrees" }
             },
             lon: {
                 "@type": "ivoa:RealQuantity",
-                value: parseFloat(val.Dec), unit: { value: "degrees" }
+                value: AstroLib.DmsToDeg(val.Dec), unit: { value: "degrees" }
             }
         }
         const Target: CelestialTarget = {
