@@ -174,7 +174,6 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      * generate new default name for a target
      */
     const GenerateTargetDefaultName = () => {
-        //BJLG
         //reset the name to something generic + random suffix
         let targetProxyName = "Target_";
         let randNum = Math.random();
@@ -190,7 +189,6 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      * modify the name for a target
      */
     const ModifyTargetName = (currentName :string) => {
-        //BJLG
         //reset the name to something generic + random suffix
         let targetProxyName = "Modified " + currentName + "_";
         let randNum = Math.random();
@@ -202,23 +200,11 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
         //allow submission in case this was previously locked
         setNameUnique(true);
     }
-
     /**
-     * updates the aladin viewer to handle changes to RA.
-     * @param {number | string} value the new RA.
+     * update the Aladin viewport to the new RA and Dec
      */
-    const UpdateAladinRA = (value: number | string) => {
-        // acquire the aladin object and set it.
-        Aladin.gotoRaDec(value as number, Number(form.getValues().Dec));
-    }
-
-    /**
-     * updates the aladin viewer to handle changes to Dec.
-     * @param {number | string} value the new Dec.
-     */
-    const UpdateAladinDec = (value: number | string) => {
-        // acquire the aladin object and set it.
-        Aladin.gotoRaDec(Number(form.getValues().RA), value as number);
+    const UpdateAladinRaDec = () => {
+        Aladin.gotoRaDec(Number(AstroLib.HmsToDeg(form.getValues().RA)), AstroLib.DmsToDeg(form.getValues().Dec));
     }
 
     const responsiveSpan = {base: 2, md: 1}
@@ -273,25 +259,22 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 }
                                 //get the live value from the input
                                 let raValue: string = form.getValues()["RA"];
-                                
+                                //regex to check for sexagesimal input
                                 const regexpsgm = new RegExp(/(\d{1,3})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                                //regex to check for decimal input
                                 const regexdec = new RegExp(/[0-9]*\.[0-9]*/);
-                                //first filter to ensure input is at least in the ballpark of sensible
+                                //if we have sexagesimal input accept as is
                                 if(regexpsgm.test(raValue))
                                 {
-                                    console.log("kang kang!");
-                                    //convert Sexagesimal to degrees (Sxg representation is displayed separately)
-                                    ////raValue = String(AstroLib.HmsToDeg(raValue));
-                                    //update the value to degrees
+                                    //set the field value to the input
                                     form.setFieldValue("RA", raValue);
                                 }
+                                //if we have decimal
                                 else if(regexdec.test(raValue))
                                 {
-                                    console.log("bing bing!");
-                                    console.log(raValue);
+                                    //convert the decimal to sexagesimal
                                     raValue = String(AstroLib.DegToHms(parseFloat(raValue)));
                                     form.setFieldValue("RA", raValue);
-
                                 }
 
                                 //if we don't have a name for this object, generate one
@@ -299,8 +282,8 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 {
                                     GenerateTargetDefaultName();
                                 }                             
-                                //update the Aladdin viewport
-                                UpdateAladinRA(Number(raValue));
+                                //update the Aladin viewport
+                                UpdateAladinRaDec();
                             }}
                         />
                         <Text
@@ -325,24 +308,21 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 //get the live value from the input
                                 let decValue: string = form.getValues()["Dec"];
                                 
+                                //regex to check for sexagesimal input
                                 const regexpsgm = new RegExp(/(\d{1,2})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                                //regex to check for decimal input
                                 const regexdec = new RegExp(/[0-9]*\.[0-9]*/);
-                                //first filter to ensure input is at least in the ballpark of sensible
+
+                                //if we have sexagesimal input accept as is
                                 if(regexpsgm.test(decValue))
                                 {
-                                    console.log(regexpsgm.test(decValue));
-                                    console.log("kang!");
-                                    //convert Sexagesimal to degrees (Sxg representation is displayed separately)
-                                    //decValue = String(AstroLib.DmsToDeg(decValue));
-                                    //update the value to degrees
+                                    //set the field value to the input
                                     form.setFieldValue("Dec", decValue);
                                 } 
+                                //if we have decimal
                                 else if(regexdec.test(decValue))
                                 {
-                                    console.log(regexdec.test(decValue));
-                                    console.log("bing!");
-                                    console.log(decValue);
-                                    console.log(form.getValues()["Dec"]);
+                                    //convert the decimal to sexagesimal
                                     decValue = String(AstroLib.DegToDms(parseFloat(decValue)));
                                     form.setFieldValue("Dec", decValue);
                                 }
@@ -351,8 +331,8 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                                 {
                                     GenerateTargetDefaultName();
                                 }                   
-                                //update the Aladdin viewport
-                                UpdateAladinDec(Number(decValue));
+                                //update the Aladin viewport                              
+                                UpdateAladinRaDec();
                             }}
                         />
                         <Text
@@ -377,7 +357,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                 >
                     <div
                         id="aladin-lite-div"
-                        //onMouseUpCapture={HandleEvent}
+
                         onDoubleClick={HandleEvent}
                     >
                     </div>
