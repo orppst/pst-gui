@@ -48,6 +48,7 @@ export interface ObservationFormValues {
     timingWindows: TimingWindowGui[],
     telescopeName: string,
     instrument: string,
+    elements: Map<string, string>,
 }
 
 /**
@@ -132,6 +133,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 timingWindows: initialTimingWindows,
                 telescopeName: telescopeNameData?.keys()[0] ? telescopeNameData?.keys()[0] : 'None',
                 instrument: telescopeNameData?.keys()[0][0] ? telescopeNameData?.keys()[0] : 'None',
+                elements: new Map<string, string>(),
             },
 
             validate: {

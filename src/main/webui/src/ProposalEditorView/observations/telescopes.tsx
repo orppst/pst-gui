@@ -1,5 +1,5 @@
 import { ReactElement, useState } from 'react';
-import { Select } from '@mantine/core';
+import { Select, Text } from '@mantine/core';
 import {
     useOpticalTelescopeResourceGetNames,
     useOpticalTelescopeResourceGetTelescopeData,
@@ -9,13 +9,7 @@ import { PanelHeader } from '../../commonPanel/appearance';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
 import { ComboboxItem } from '@mantine/core/lib/components/Combobox';
-import { notifyError } from '../../commonPanel/notifications';
-import getErrorMessage from '../../errorHandling/getErrorMessage';
-import { Instrument } from '../../util/telescopeComms';
-
-export interface TelescopeNameFormValues {
-    name: string;
-}
+import { Field, Instrument, Type } from '../../util/telescopeComms';
 
 /**
  * generates the observation panel.
@@ -37,16 +31,27 @@ export function Telescopes(proposalID: number, observationID: number,
     /**
      * extract data from the back end on the telescope options.
      */
-    const telescopeDatas = useOpticalTelescopeResourceGetTelescopeData();
+    const telescopesData = useOpticalTelescopeResourceGetTelescopeData();
 
-    // state holder to force rerenders
+    /**
+     * extract current choices.
+     */
+    const observationData = useOpticalTelescopeResourceLoadTelescopeData(
+        { observationID: observationID.toString(),
+            proposalID: proposalID.toString()});
+
+    // state holder to force re renders
     const [selectedTelescope, setSelectedTelescope] = useState('None');
+    const [selectedInstrument, setSelectedInstrument] = useState('None');
 
     // function to update the UI based off the telescope name selection.
     function useTelescopeNameChange(value: string | null, option: ComboboxItem): void {
         setSelectedTelescope(value);
-        notifyError("Error names",
-            "cause: " + getErrorMessage(value));
+    }
+
+    // function to update the UI based off the instrument selection.
+    function useTelescopeInstrumentChange(value: string | null, option:ComboboxItem): void {
+        setSelectedInstrument(value);
     }
 
     /**
@@ -55,16 +60,17 @@ export function Telescopes(proposalID: number, observationID: number,
      * @return {React.ReactElement} the html for the bespoke section.
      */
     function telescopeFields(): ReactElement {
-        if (selectedTelescope == "None" || selectedTelescope == undefined) {
+        if (selectedTelescope == "None") {
             return <></>
         }
         else {
-            const telescopeData = telescopeDatas[selectedTelescope];
+            const telescopeData = telescopesData[selectedTelescope];
             const telescopeDataMap = new Map(Object.entries(telescopeData));
             return <Select
                 label={"Telescope Instrument:"}
                 placeholder={"Select the telescope instrument"}
                 data = {Array.from(telescopeDataMap.keys())}
+                onChange = {useTelescopeInstrumentChange}
                 {...form?.getInputProps('instrument') ?
                     form?.getInputProps('instrument') :
                     telescopeDataMap.keys().next().value}
@@ -73,11 +79,62 @@ export function Telescopes(proposalID: number, observationID: number,
     }
 
     /**
-     * extract current choices.
+     * Builds the section for the telescope instrument bespoke fields.
+     *
+     * @return {React.ReactElement} the html for the bespoke section.
      */
-    const observationData = useOpticalTelescopeResourceLoadTelescopeData(
-        { observationID: observationID.toString(),
-            proposalID: proposalID.toString()});
+    function instrumentFields(): ReactElement {
+        if (selectedTelescope == "None" || selectedInstrument == "None") {
+            return <></>
+        }
+        else {
+            // get the elements and their options.
+            const telescopeData = telescopesData[selectedTelescope];
+            const telescopeDataMap: Map<string, unknown> = new Map(Object.entries(telescopeData));
+            const elementsData: unknown = telescopeDataMap.get(selectedInstrument);
+            const elementsDataMap = new Map(Object.entries(elementsData))
+
+            //populate the form with new states.
+            for (const [elementName] of elementsDataMap.keys()) {
+                let storedValue = "None";
+                if (observationData != null && observationData.get(selectedInstrument) != null) {
+                    const observationElements: Map<string, string> =
+                        observationData.get(selectedInstrument);
+                    storedValue = observationElements.get(elementName);
+                }
+                form?.getInputProps("elements").set(elementName, storedValue);
+            }
+
+            // generate the html.
+            return <>
+                {  Object.keys(elementsData).map((key) => {
+                    const element: Field = elementsDataMap.get(key) as Field;
+                    switch (element.type) {
+                        case Type.LIST:
+                            return <Select
+                                label={key}
+                                placeholder={"Select the telescope instrument"}
+                                data = {Array.from(elementsDataMap.get(key).values)}
+                                {...form?.getInputProps("elements").get(key) ?
+                                    form?.getInputProps("elements").get(key) : ""}
+                            />
+                        case Type.TEXT:
+                            return <Text style={{ whiteSpace: 'pre-wrap',
+                                                  overflowWrap: 'break-word'}}>
+                                {...form?.getInputProps("elements").get(key) ?
+                                    form?.getInputProps("elements").get(key) : ""}
+                            </Text>
+                        case Type.BOOLEAN:
+                            return <input
+                                checked={form?.getInputProps("elements").get(key)}
+                                type="checkbox"/>
+                        default:
+                            return <></>
+                    }
+                })}
+                </>
+        }
+    }
 
     // add the telescope names to the list.
     let telescopeNames = ["None"]
@@ -101,6 +158,7 @@ export function Telescopes(proposalID: number, observationID: number,
                         form?.getInputProps('telescopeName') : "None"}
             />
             {telescopeFields()}
+            {instrumentFields()}
         </>
     );
 }
