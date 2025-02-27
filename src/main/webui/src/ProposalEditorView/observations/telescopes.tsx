@@ -46,11 +46,14 @@ export function Telescopes(proposalID: number, observationID: number,
 
     // function to update the UI based off the telescope name selection.
     function useTelescopeNameChange(value: string | null, option: ComboboxItem): void {
+        form?.getInputProps('elements').value.clear();
         setSelectedTelescope(value);
+        setSelectedInstrument("None")
     }
 
     // function to update the UI based off the instrument selection.
     function useTelescopeInstrumentChange(value: string | null, option:ComboboxItem): void {
+        form?.getInputProps('elements').value.clear();
         setSelectedInstrument(value);
     }
 
@@ -125,9 +128,11 @@ export function Telescopes(proposalID: number, observationID: number,
                                     form?.getInputProps("elements").get(key) : ""}
                             </Text>
                         case Type.BOOLEAN:
-                            return <input
-                                checked={form?.getInputProps("elements").get(key)}
-                                type="checkbox"/>
+                            return <label>
+                                    <input checked={form?.getInputProps("elements").get(key)}
+                                           type="checkbox"/>
+                                    {key}
+                                </label>
                         default:
                             return <></>
                     }
