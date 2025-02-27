@@ -91,8 +91,8 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     const form = useForm({
             initialValues: {
                 TargetName: "",
-                RA: "0.00",
-                Dec: "0.00",
+                RA: "+00 00 00.000",
+                Dec: "+00 00 00.000",
                 SelectedEpoch: "J2000",
                 sexagesimal: "00:00:00 +00:00:00"
             },
@@ -111,17 +111,17 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     }, [form.getValues().TargetName]);
 
     const handleSubmission = form.onSubmit((val: newTargetData) => {
-
+        //remember to convert the sexagesimal to decimal
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: spaceSystem.data!,
             lat: {
                 "@type": "ivoa:RealQuantity",
-                value: parseFloat(val.RA), unit: { value: "degrees" }
+                value: AstroLib.HmsToDeg(val.RA), unit: { value: "degrees" }
             },
             lon: {
                 "@type": "ivoa:RealQuantity",
-                value: parseFloat(val.Dec), unit: { value: "degrees" }
+                value: AstroLib.DmsToDeg(val.Dec), unit: { value: "degrees" }
             }
         }
         const Target: CelestialTarget = {
@@ -152,8 +152,8 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     const HandleEvent = (event: MouseEvent<HTMLInputElement>) => {
         const [ra, dec] = GetOffset(event);
         const [raCoords, decCoords] = Aladin.pix2world(ra, dec);
-        form.setFieldValue('RA', raCoords.toString());
-        form.setFieldValue('Dec', decCoords.toString());
+        form.setFieldValue('RA', AstroLib.DegToHms(raCoords));
+        form.setFieldValue('Dec', AstroLib.DegToDms(decCoords));
         
         //we want to update the name if there is no entry OR if the entry is from the catalogue
         if (form.values["TargetName"].slice(0,6) != "Target" && form.values["TargetName"].slice(0,8) != "Modified")
@@ -174,7 +174,6 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      * generate new default name for a target
      */
     const GenerateTargetDefaultName = () => {
-        //BJLG
         //reset the name to something generic + random suffix
         let targetProxyName = "Target_";
         let randNum = Math.random();
@@ -190,7 +189,6 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      * modify the name for a target
      */
     const ModifyTargetName = (currentName :string) => {
-        //BJLG
         //reset the name to something generic + random suffix
         let targetProxyName = "Modified " + currentName + "_";
         let randNum = Math.random();
@@ -202,23 +200,11 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
         //allow submission in case this was previously locked
         setNameUnique(true);
     }
-
     /**
-     * updates the aladin viewer to handle changes to RA.
-     * @param {number | string} value the new RA.
+     * update the Aladin viewport to the new RA and Dec
      */
-    const UpdateAladinRA = (value: number | string) => {
-        // acquire the aladin object and set it.
-        Aladin.gotoRaDec(value as number, Number(form.getValues().Dec));
-    }
-
-    /**
-     * updates the aladin viewer to handle changes to Dec.
-     * @param {number | string} value the new Dec.
-     */
-    const UpdateAladinDec = (value: number | string) => {
-        // acquire the aladin object and set it.
-        Aladin.gotoRaDec(Number(form.getValues().RA), value as number);
+    const UpdateAladinRaDec = () => {
+        Aladin.gotoRaDec(Number(AstroLib.HmsToDeg(form.getValues().RA)), AstroLib.DmsToDeg(form.getValues().Dec));
     }
 
     const responsiveSpan = {base: 2, md: 1}
@@ -267,29 +253,51 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                             //allowNegative={false}
                             //suffix="°"
                             {...form.getInputProps("RA")}
-                            onChange={(e) => {
-                                if (form.getInputProps("RA").onChange) {
-                                    form.getInputProps("RA").onChange(e);
+                            onBlur={(e) => {
+                                if (form.getInputProps("RA").onBlur) {
+                                    form.getInputProps("RA").onBlur(e);
                                 }
                                 //get the live value from the input
                                 let raValue: string = form.getValues()["RA"];
-                                
-                                const regexp = new RegExp(/(\d{1,3})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
-                                //first filter to ensure input is at least in the ballpark of sensible
-                                if(regexp.test(raValue))
+                                //regex to check for sexagesimal input
+                                const regexpsgm = new RegExp(/(\d{1,3})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                                //regex to check for decimal input
+                                const regexdec = new RegExp(/[0-9]*\.[0-9]*/);
+                                //if we have sexagesimal input accept as is
+                                if(regexpsgm.test(raValue))
                                 {
-                                    //convert Sexagesimal to degrees (Sxg representation is displayed separately)
-                                    raValue = String(AstroLib.HmsToDeg(raValue));
-                                    //update the value to degrees
+                                    //set the field value to the input
                                     form.setFieldValue("RA", raValue);
+                                    //if we have no name for this object, generate one
+                                    if(form.values["TargetName"] == "" )
+                                    {
+                                        GenerateTargetDefaultName();
+                                    } 
+                                    //update the Aladin viewport                              
+                                    UpdateAladinRaDec();
                                 }
-                                //if we don't have a name for this object, generate one
-                                if(form.values["TargetName"] == "")
+                                //if we have decimal
+                                else if(regexdec.test(raValue))
                                 {
-                                    GenerateTargetDefaultName();
-                                }                             
-                                //update the Aladdin viewport
-                                UpdateAladinRA(Number(raValue));
+                                    //convert the decimal to sexagesimal
+                                    raValue = String(AstroLib.DegToHms(parseFloat(raValue)));
+                                    form.setFieldValue("RA", raValue);
+                                    //if we have no name for this object, generate one
+                                    if(form.values["TargetName"] == "")
+                                    {
+                                        GenerateTargetDefaultName();
+                                    } 
+                                    //update the Aladin viewport                              
+                                    UpdateAladinRaDec();
+                                }
+                                else
+                                {
+                                    //if we have no valid input, reset the field - preventing submission
+                                    form.setFieldValue("TargetName", "");
+                                }
+                           
+                                //update the Aladin viewport
+                                UpdateAladinRaDec();
                             }}
                         />
                         <Text
@@ -297,7 +305,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                             c={"gray.6"}
                             style={{margin: "-4px 0px 0px 12px"}}
                         >
-                            {AstroLib.DegToHms(Number(form.getValues()["RA"]),3)}
+                            {AstroLib.HmsToDeg(form.getValues()["RA"])}°
                         </Text>
                         <TextInput
                             //hideControls
@@ -307,29 +315,54 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                             max={90}
                             //suffix="°"
                             {...form.getInputProps("Dec")}
-                            onChange={(e) => {
-                                if (form.getInputProps("Dec").onChange) {
-                                    form.getInputProps("Dec").onChange(e);
+                            onBlur={(e) => {
+                                if (form.getInputProps("Dec").onBlur) {
+                                    form.getInputProps("Dec").onBlur(e);
                                 }
                                 //get the live value from the input
                                 let decValue: string = form.getValues()["Dec"];
                                 
-                                const regexp = new RegExp(/(\d{1,2})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
-                                //first filter to ensure input is at least in the ballpark of sensible
-                                if(regexp.test(decValue))
+                                //regex to check for sexagesimal input
+                                const regexpsgm = new RegExp(/(\d{1,2})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                                //regex to check for decimal input
+                                const regexdec = new RegExp(/[0-9]*\.[0-9]*/);
+
+                                //if we have sexagesimal input accept as is
+                                if(regexpsgm.test(decValue))
                                 {
-                                    //convert Sexagesimal to degrees (Sxg representation is displayed separately)
-                                    decValue = String(AstroLib.DmsToDeg(decValue));
-                                    //update the value to degrees
+                                    //set the field value to the input
                                     form.setFieldValue("Dec", decValue);
-                                }          
-                                //if we don't have a name for this object, generate one
-                                if(form.values["TargetName"] == "")
+                                    //if we have no name for this object, generate one
+                                    if(form.values["TargetName"] == "")
+                                    {
+                                        GenerateTargetDefaultName();
+                                    } 
+
+                                    //update the Aladin viewport                              
+                                    UpdateAladinRaDec();
+                                } 
+                                //if we have decimal
+                                else if(regexdec.test(decValue))
                                 {
-                                    GenerateTargetDefaultName();
-                                }                   
-                                //update the Aladdin viewport
-                                UpdateAladinDec(Number(decValue));
+                                    //convert the decimal to sexagesimal
+                                    decValue = String(AstroLib.DegToDms(parseFloat(decValue)));
+                                    form.setFieldValue("Dec", decValue);
+                                    //if we have no name for this object, generate one
+                                    if(form.values["TargetName"] == "")
+                                    {
+                                        GenerateTargetDefaultName();
+                                    } 
+                                    //update the Aladin viewport                              
+                                    UpdateAladinRaDec();
+                                }
+                                else
+                                {
+                                    //if we have no valid input, reset the field - preventing submission
+                                    form.setFieldValue("TargetName", "");
+
+                                }
+                                                                                  
+                                
                             }}
                         />
                         <Text
@@ -337,7 +370,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                             c={"gray.6"}
                             style={{margin: "-4px 0px 0px 12px"}}
                         >
-                            {AstroLib.DegToDms(Number(form.getValues()["Dec"]),3)}
+                            {AstroLib.DmsToDeg(form.getValues()["Dec"])}°
                         </Text>
                         <SubmitButton
                             toolTipLabel={"Save this target"}
@@ -354,7 +387,8 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                 >
                     <div
                         id="aladin-lite-div"
-                        onMouseUpCapture={HandleEvent}
+
+                        onDoubleClick={HandleEvent}
                     >
                     </div>
                 </Fieldset>
