@@ -1,6 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
+import {Telescopes} from "./telescopes"
 import {Fieldset, Grid, Text, Stack, Group, Space} from '@mantine/core';
 import {
     CalibrationObservation,
@@ -26,6 +27,11 @@ import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {queryKeyProposals} from "../../queryKeyProposals.tsx";
+import {
+    opticalTelescopeResourceSaveTelescopeData,
+    useOpticalTelescopeResourceLoadTelescopeData,
+    useOpticalTelescopeResourceSaveTelescopeData
+} from '../../util/telescopeCommsMock';
 
 /**
  * the different types of observation.
@@ -44,6 +50,9 @@ export interface ObservationFormValues {
     techGoalId: number | undefined,
     fieldId: string | undefined, //string for Select to show existing value in edit-form
     timingWindows: TimingWindowGui[],
+    telescopeName: string,
+    instrument: string,
+    elements: Map<string, string>,
 }
 
 /**
@@ -75,16 +84,24 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
     const replaceCalibrationUse =
         useObservationResourceReplaceIntendedUse()
 
+    /**
+     * extract current choices.
+     */
+    const telescopeNameData: Map<string, Map<string, string>> =
+        useOpticalTelescopeResourceLoadTelescopeData(
+            { observationID: props.observation?._id?.toString(),
+              proposalID: selectedProposalCode});
+
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
 
     // figure out the current observation type.
-    let observationType : ObservationType = newObservation ? '' :
+    const observationType : ObservationType = newObservation ? '' :
         props.observation!["@type"]
         === 'proposal:TargetObservation' ? 'Target': 'Calibration';
 
     // figure out the current calibration use.
-    let calibrationUse : CalibrationTargetIntendedUse | undefined =
+    const calibrationUse : CalibrationTargetIntendedUse | undefined =
         observationType === 'Calibration' ?
         (props.observation as CalibrationObservation).intent! : undefined;
 
@@ -117,7 +134,10 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 targetDBIds: props.selectedTargets, //check this is working as expected
                 techGoalId: props.observation?.technicalGoal?._id,
                 fieldId: props.observation?.field?._id ? String(props.observation?.field?._id) : undefined,
-                timingWindows: initialTimingWindows
+                timingWindows: initialTimingWindows,
+                telescopeName: telescopeNameData?.keys()[0] ? telescopeNameData?.keys()[0] : 'None',
+                instrument: telescopeNameData?.keys()[0][0] ? telescopeNameData?.keys()[0] : 'None',
+                elements: new Map<string, string>(),
             },
 
             validate: {
@@ -151,7 +171,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
         form.onSubmit((values) => {
             if (newObservation) {
                 //Creating new observation
-                let targetList: Target[] = [];
+                const targetList: Target[] = [];
 
                 form.values.targetDBIds?.map((thisTarget) =>{
                     targetList.push({
@@ -160,7 +180,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     })
                 })
 
-                let baseObservation : Observation = {
+                const baseObservation : Observation = {
                     target: targetList,
                     technicalGoal: {
                         "_id": values.techGoalId
@@ -271,7 +291,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 })
 
                 if (form.isDirty('targetDBIds')) {
-                    let body: Target[] = [];
+                    const body: Target[] = [];
 
                     form.values.targetDBIds?.map((thisTarget) =>{
                         body.push({
@@ -380,6 +400,13 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                             notifyError("Failed to update calibration use", getErrorMessage(error)),
                     })
                 }
+
+                if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
+                    opticalTelescopeResourceSaveTelescopeData({
+                        proposalID: selectedProposalCode, observationID: form.getValues().observationId!,
+                        telescopeName: form.getValues().telescopeName, choices: form.getValues().elements
+                    });
+                }
             }
     });
 
@@ -413,6 +440,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         <TimingWindowsForm form={form}/>
                     </Fieldset>
                     <Space h={"md"} />
+                    <Fieldset lengard={"Telescopes"}>
+                        <Telescopes form={form}/>
+                    </Fieldset>
                     <Group justify={"flex-end"}>
                         <FormSubmitButton form={form} />
                         <CancelButton
