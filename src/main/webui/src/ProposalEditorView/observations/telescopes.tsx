@@ -9,7 +9,8 @@ import { PanelHeader } from '../../commonPanel/appearance';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
 import { ComboboxItem } from '@mantine/core/lib/components/Combobox';
-import { Field, Instrument, Type } from '../../util/telescopeComms';
+import {useParams} from "react-router-dom";
+import { Field, Type } from '../../util/telescopeComms';
 
 /**
  * generates the observation panel.
@@ -23,6 +24,7 @@ import { Field, Instrument, Type } from '../../util/telescopeComms';
 export function Telescopes(proposalID: number, observationID: number,
                            form: {form: UseFormReturnType<ObservationFormValues>}):
         ReactElement {
+    const { selectedProposalCode} = useParams();
     /**
      * extract data from back end on the telescope names
      */
@@ -37,8 +39,8 @@ export function Telescopes(proposalID: number, observationID: number,
      * extract current choices.
      */
     const observationData = useOpticalTelescopeResourceLoadTelescopeData(
-        { observationID: observationID.toString(),
-            proposalID: proposalID.toString()});
+        { observationID: form?.getValues().observationId!,
+            proposalID: selectedProposalCode});
 
     // state holder to force re renders
     const [selectedTelescope, setSelectedTelescope] = useState('None');

@@ -361,7 +361,7 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
 export const useOpticalTelescopeResourceSaveTelescopeData = (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
         data: SaveTelescopeState, signal?: AbortSignal) => {
-    const key = `${data.proposalID}${data.observationID}`;
+    const key = `${data.proposalID}.${data.observationID}`;
     dataStore.set(key, new Map<string, Map<string, string>>());
     dataStore.get(key).set(data.telescopeName, data.choices)
 }
@@ -376,7 +376,7 @@ export const useOpticalTelescopeResourceSaveTelescopeData = (
 export const useOpticalTelescopeResourceLoadTelescopeData = (
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         data: LoadTelescopeState, signal?: AbortSignal) => {
-    const key = `${data.proposalID}${data.observationID}$`
+    const key = `${data.proposalID}.${data.observationID}$`
     return dataStore.get(key);
 }
 
