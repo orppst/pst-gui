@@ -430,11 +430,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     </Fieldset>
                     <Space h={"md"} />
                     <Fieldset lengard={"Telescopes"}>
-                        <Telescopes
-                            proposalId={Number(selectedProposalCode)}
-                            observationID={form.getValues().observationId}
-                            form={form}>
-                        </Telescopes>
+                        <Telescopes form={form}/>
                     </Fieldset>
                     <Group justify={"flex-end"}>
                         <FormSubmitButton form={form} />

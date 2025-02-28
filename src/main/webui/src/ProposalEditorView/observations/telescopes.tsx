@@ -14,15 +14,12 @@ import { Field, Type } from '../../util/telescopeComms';
 
 /**
  * generates the observation panel.
- * @param proposalID: the proposal id.
- * @param observationID: the observation id.
  * @param {UseFormReturnType<ObservationFormValues>} form the
  * form containing all the data to display.
  * @return {ReactElement} the react html for the observation panel.
  * @constructor
  */
-export function Telescopes(proposalID: number, observationID: number,
-                           form: {form: UseFormReturnType<ObservationFormValues>}):
+export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValues>}):
         ReactElement {
     const { selectedProposalCode} = useParams();
     /**
@@ -39,7 +36,7 @@ export function Telescopes(proposalID: number, observationID: number,
      * extract current choices.
      */
     const observationData = useOpticalTelescopeResourceLoadTelescopeData(
-        { observationID: form?.getValues().observationId!,
+        { observationID: form.getValues().observationId!,
             proposalID: selectedProposalCode});
 
     // state holder to force re renders
@@ -48,14 +45,16 @@ export function Telescopes(proposalID: number, observationID: number,
 
     // function to update the UI based off the telescope name selection.
     function useTelescopeNameChange(value: string | null, option: ComboboxItem): void {
-        form?.getInputProps('elements').value.clear();
+        form.getInputProps('elements').value.clear();
+        form.setFieldValue('telescopeName', value);
         setSelectedTelescope(value);
         setSelectedInstrument("None")
     }
 
     // function to update the UI based off the instrument selection.
     function useTelescopeInstrumentChange(value: string | null, option:ComboboxItem): void {
-        form?.getInputProps('elements').value.clear();
+        form.setFieldValue('instrument', value);
+        form.getInputProps('elements').value.clear();
         setSelectedInstrument(value);
     }
 
@@ -75,10 +74,10 @@ export function Telescopes(proposalID: number, observationID: number,
                 label={"Telescope Instrument:"}
                 placeholder={"Select the telescope instrument"}
                 data = {Array.from(telescopeDataMap.keys())}
-                onChange = {useTelescopeInstrumentChange}
-                {...form?.getInputProps('instrument') ?
-                    form?.getInputProps('instrument') :
+                {...form.getInputProps('instrument') ?
+                    form.getInputProps('instrument') :
                     telescopeDataMap.keys().next().value}
+                onChange = {useTelescopeInstrumentChange}
             />
         }
     }
@@ -107,7 +106,7 @@ export function Telescopes(proposalID: number, observationID: number,
                         observationData.get(selectedInstrument);
                     storedValue = observationElements.get(elementName);
                 }
-                form?.getInputProps("elements").set(elementName, storedValue);
+                form.getInputProps("elements").value.set(elementName, storedValue);
             }
 
             // generate the html.
@@ -120,18 +119,18 @@ export function Telescopes(proposalID: number, observationID: number,
                                 label={key}
                                 placeholder={"Select the telescope instrument"}
                                 data = {Array.from(elementsDataMap.get(key).values)}
-                                {...form?.getInputProps("elements").get(key) ?
-                                    form?.getInputProps("elements").get(key) : ""}
+                                {...form.getInputProps("elements").value.get(key) ?
+                                    form.getInputProps("elements").value.get(key) : ""}
                             />
                         case Type.TEXT:
                             return <Text style={{ whiteSpace: 'pre-wrap',
                                                   overflowWrap: 'break-word'}}>
-                                {...form?.getInputProps("elements").get(key) ?
-                                    form?.getInputProps("elements").get(key) : ""}
+                                {...form.getInputProps("elements").value.get(key) ?
+                                    form.getInputProps("elements").value.get(key) : ""}
                             </Text>
                         case Type.BOOLEAN:
                             return <label>
-                                    <input checked={form?.getInputProps("elements").get(key)}
+                                    <input checked={form.getInputProps("elements").value.get(key)}
                                            type="checkbox"/>
                                     {key}
                                 </label>
@@ -160,9 +159,9 @@ export function Telescopes(proposalID: number, observationID: number,
                 label={"Telescope Name: "}
                 placeholder={"Select the optical telescope"}
                 data = {telescopeNames}
+                {...form.getInputProps('telescopeName') ?
+                        form.getInputProps('telescopeName') : "None"}
                 onChange = {useTelescopeNameChange}
-                {...form?.getInputProps('telescopeName') ?
-                        form?.getInputProps('telescopeName') : "None"}
             />
             {telescopeFields()}
             {instrumentFields()}
