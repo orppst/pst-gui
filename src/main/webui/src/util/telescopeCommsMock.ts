@@ -358,7 +358,7 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
  * @param {AbortSignal} signal: the signal for failure.
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
-export const useOpticalTelescopeResourceSaveTelescopeData = (
+export const opticalTelescopeResourceSaveTelescopeData = (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
         data: SaveTelescopeState, signal?: AbortSignal) => {
     const key = `${data.proposalID}.${data.observationID}`;

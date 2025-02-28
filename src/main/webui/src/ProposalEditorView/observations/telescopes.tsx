@@ -47,6 +47,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     function useTelescopeNameChange(value: string | null, option: ComboboxItem): void {
         form.getInputProps('elements').value.clear();
         form.setFieldValue('telescopeName', value);
+        form.setFieldValue('instrument', "None");
         setSelectedTelescope(value);
         setSelectedInstrument("None")
     }
@@ -99,7 +100,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             const elementsDataMap = new Map(Object.entries(elementsData))
 
             //populate the form with new states.
-            for (const [elementName] of elementsDataMap.keys()) {
+            for (const elementName of elementsDataMap.keys()) {
                 let storedValue = "None";
                 if (observationData != null && observationData.get(selectedInstrument) != null) {
                     const observationElements: Map<string, string> =
@@ -117,6 +118,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         case Type.LIST:
                             return <Select
                                 label={key}
+                                key={key}
                                 placeholder={"Select the telescope instrument"}
                                 data = {Array.from(elementsDataMap.get(key).values)}
                                 {...form.getInputProps("elements").value.get(key) ?
@@ -124,14 +126,16 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                             />
                         case Type.TEXT:
                             return <Text style={{ whiteSpace: 'pre-wrap',
-                                                  overflowWrap: 'break-word'}}>
+                                                  overflowWrap: 'break-word'}}
+                                         key={key}>
                                 {...form.getInputProps("elements").value.get(key) ?
                                     form.getInputProps("elements").value.get(key) : ""}
                             </Text>
                         case Type.BOOLEAN:
-                            return <label>
+                            return <label key={"label for" + key}>
                                     <input checked={form.getInputProps("elements").value.get(key)}
-                                           type="checkbox"/>
+                                           type="checkbox"
+                                           key={key}/>
                                     {key}
                                 </label>
                         default:

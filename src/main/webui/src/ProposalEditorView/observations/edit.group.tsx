@@ -27,7 +27,11 @@ import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {queryKeyProposals} from "../../queryKeyProposals.tsx";
-import { useOpticalTelescopeResourceLoadTelescopeData } from '../../util/telescopeCommsMock';
+import {
+    opticalTelescopeResourceSaveTelescopeData,
+    useOpticalTelescopeResourceLoadTelescopeData,
+    useOpticalTelescopeResourceSaveTelescopeData
+} from '../../util/telescopeCommsMock';
 
 /**
  * the different types of observation.
@@ -395,6 +399,13 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         onError: (error) =>
                             notifyError("Failed to update calibration use", getErrorMessage(error)),
                     })
+                }
+
+                if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
+                    opticalTelescopeResourceSaveTelescopeData({
+                        proposalID: selectedProposalCode, observationID: form.getValues().observationId!,
+                        telescopeName: form.getValues().telescopeName, choices: form.getValues().elements
+                    });
                 }
             }
     });
