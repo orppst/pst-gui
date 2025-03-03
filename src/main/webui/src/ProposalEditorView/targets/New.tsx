@@ -123,13 +123,23 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
             },
             validate: {
                 targetName: (value) => (
-                    value.length < 1 ? 'Name cannot be blank ' : nameUnique? null : 'Source name must be unique'),
-                ra: (value) => (
-                    value === null || value === '' ? 'RA cannot be blank': null),
+                    value.length < 1 ? 'Name cannot be blank ' : nameUnique? null : 'Source name must be unique'
+                ),
+                ra: (value) => {
+                    //at this point ra is always in sexagesimal
+                    if (value === null || value === '') return 'RA cannot be blank'
+                    const validRaSgm = /^\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
+                    if (!validRaSgm.test(value)) return 'Invalid value format'
+                    let noDecimal = !value.includes('.')
+                    let raDegrees = AstroLib.HmsToDeg(noDecimal ? value + '.0' : value)
+                    if (raDegrees < 0 || raDegrees > 360) return 'Value out-of-range'
+                    return null
+                },
                 dec: (value) => {
+                    //at this point dec is always in sexagesimal
                     if (value === null || value === '') return 'Dec cannot be blank'
-                    const validSgm = /^[-+]?\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
-                    if (!validSgm.test(value)) return 'Invalid value format'
+                    const validDecSgm = /^[-+]?\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
+                    if (!validDecSgm.test(value)) return 'Invalid value format'
                     let noDecimal = !value.includes('.')
                     let decDegrees = AstroLib.DmsToDeg(noDecimal ? value + '.0' : value);
                     if (decDegrees < -90 || decDegrees > 90 ) return 'Value out-of-range'
@@ -181,10 +191,10 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      * handles the different mouse event types.
      * @param {React.MouseEvent<HTMLInputElement>} event the event that occurred.
      */
-    const handleDoubleClick = (event: MouseEvent<HTMLInputElement>) => {
+    const handleMouseUpCapture = (event: MouseEvent<HTMLInputElement>) => {
         const [ra, dec] = GetOffset(event);
         const [raCoords, decCoords] = Aladin.pix2world(ra, dec);
-        form.setFieldValue('ra', AstroLib.DegToHms(raCoords));
+        form.setFieldValue('ra', AstroLib.DegToHms(raCoords).slice(1));
         form.setFieldValue('dec', AstroLib.DegToDms(decCoords));
         
         //we want to update the name if there is no entry OR if the entry is from the catalogue
@@ -278,7 +288,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                 >
                     <div
                         id="aladin-lite-div"
-                        onDoubleClick={handleDoubleClick}
+                        onMouseUpCapture={handleMouseUpCapture}
                     >
                     </div>
                 </Fieldset>

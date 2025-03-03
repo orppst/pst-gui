@@ -154,8 +154,8 @@ function TargetTableRow(props: TargetProps): ReactElement {
         const celestialTarget: CelestialTarget = data as CelestialTarget;
         //console.log(data);
         if(celestialTarget.sourceCoordinates?.lat?.unit?.value === "degrees")
-            //ra = celestialTarget.sourceCoordinates?.lat?.value+"°";
-            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lat.value ?? 0,3);
+            //Astrolib DegToHms returns a string with redundant (some may say even erroneous) '+' at the start
+            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lat.value ?? 0,3).slice(1);
         else
             ra = celestialTarget.sourceCoordinates?.lat?.value + " " +
                 celestialTarget.sourceCoordinates?.lat?.unit?.value;

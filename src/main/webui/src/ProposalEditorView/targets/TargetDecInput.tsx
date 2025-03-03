@@ -20,9 +20,9 @@ function TargetDecInput(p: {
                 {...p.form.getInputProps("dec")}
                 error={invalidMessage.length > 0 ? invalidMessage : null}
                 onChange={e => {
-                    if (p.form.getInputProps("dec").onChange) {
+                    if (p.form.getInputProps("dec").onChange)
                         p.form.getInputProps("dec").onChange(e);
-                    }
+
 
                     const nonValidChars = /[^0-9 :+-.]/
 
@@ -56,11 +56,9 @@ function TargetDecInput(p: {
                     }
 
                     if (testSgm) {
-                        //problem with Astrolib.DmsToDeg when no decimal point given so just append '.0'
-                        //if no fractional part is given
-                        if (!decValue.includes('.')) {
-                            decValue += '.0'
-                        }
+                        //when no fractional part is given Astrolib gives up, so we append for semantics here
+                        if (!decValue.includes('.')) decValue += '.0'
+
                     }
 
                     //check valid range for declination
@@ -72,7 +70,7 @@ function TargetDecInput(p: {
                     }
 
                     if (testDeg) {
-                        decValue = String(AstroLib.DegToDms(parseFloat(decValue)));
+                        decValue = AstroLib.DegToDms(parseFloat(decValue));
                     }
 
                     p.form.setFieldValue("dec", decValue);

@@ -238,8 +238,8 @@ function SimbadSearch(props: {form: UseFormReturnType<NewTargetFormValues>}) {
                                     } else {
                                         //set the form fields
                                         props.form.setFieldValue('targetName', displayName(arr[0]))
-                                        //convert ra,dec to sexagesimal and update input fields
-                                        props.form.setFieldValue('ra', AstroLib.DegToHms(arr[1]));
+                                        ///remove the redundant '+' prepended on string from Astrolib
+                                        props.form.setFieldValue('ra', AstroLib.DegToHms(arr[1]).slice(1));
                                         props.form.setFieldValue('dec', AstroLib.DegToDms(arr[2]));
                                         props.form.setFieldValue('sexagesimal', arr[3])
 
