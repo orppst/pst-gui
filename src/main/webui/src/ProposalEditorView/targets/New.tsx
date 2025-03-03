@@ -47,7 +47,6 @@ export let Aladin: AladinType;
 
 // setup for Aladin viewer in Polaris - settings where the defaults aren't right for us
 const initialConfig: IAladinConfig = {
-    cooFrame: 'ICRSd',
     projection: 'STG',
     showFrame: false,
     showZoomControl: false,
@@ -117,8 +116,8 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     const form = useForm<NewTargetFormValues>({
             initialValues: {
                 targetName: "",
-                ra: "+00 00 00.000",
-                dec: "+00 00 00.000",
+                ra: "",
+                dec: "",
                 selectedEpoch: "J2000",
                 sexagesimal: "00:00:00 +00:00:00"
             },
@@ -126,10 +125,16 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                 targetName: (value) => (
                     value.length < 1 ? 'Name cannot be blank ' : nameUnique? null : 'Source name must be unique'),
                 ra: (value) => (
-                    value === null || value === undefined ? 'RA cannot be blank': null),
-                dec: (value) => (
-                    value === null || value === undefined ? 'Dec cannot be blank': null
-                )
+                    value === null || value === '' ? 'RA cannot be blank': null),
+                dec: (value) => {
+                    if (value === null || value === '') return 'Dec cannot be blank'
+                    const validSgm = /^[-+]?\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
+                    if (!validSgm.test(value)) return 'Invalid value format'
+                    let noDecimal = !value.includes('.')
+                    let decDegrees = AstroLib.DmsToDeg(noDecimal ? value + '.0' : value);
+                    if (decDegrees < -90 || decDegrees > 90 ) return 'Value out-of-range'
+                    return null
+                }
             },
         });
 

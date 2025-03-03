@@ -241,7 +241,7 @@ function SimbadSearch(props: {form: UseFormReturnType<NewTargetFormValues>}) {
                                         //convert ra,dec to sexagesimal and update input fields
                                         props.form.setFieldValue('ra', AstroLib.DegToHms(arr[1]));
                                         props.form.setFieldValue('dec', AstroLib.DegToDms(arr[2]));
-                                        //props.form.setFieldValue('sexagesimal', arr[3])
+                                        props.form.setFieldValue('sexagesimal', arr[3])
 
                                         //arr[4] is the oid number - not needed by user
 

@@ -1,82 +1,98 @@
-import {ReactElement} from "react";
+import {Dispatch, ReactElement, SetStateAction, useState} from "react";
 import {Stack, Text, TextInput} from "@mantine/core";
 import {AstroLib} from "@tsastro/astrolib";
-import * as React from "react";
-import {Aladin, generateTargetDefaultName} from "./New.tsx";
+import {Aladin, generateTargetDefaultName, NewTargetFormValues} from "./New.tsx";
 import {UseFormReturnType} from "@mantine/form";
 
 export default
 function TargetDecInput(p: {
-    form: UseFormReturnType<any>
-    setNameUnique: React.Dispatch<React.SetStateAction<boolean>>
+    form: UseFormReturnType<NewTargetFormValues>
+    setNameUnique: Dispatch<SetStateAction<boolean>>
 }) : ReactElement {
 
+    const [invalidMessage, setInvalidMessage] = useState("");
+
     return (
-        <Stack>
+        <Stack gap={"xs"}>
             <TextInput
                 label={"Dec"}
+                placeholder={"e.g., -12 30 00.0 OR -12.5"}
                 {...p.form.getInputProps("dec")}
+                error={invalidMessage.length > 0 ? invalidMessage : null}
+                onChange={e => {
+                    if (p.form.getInputProps("dec").onChange) {
+                        p.form.getInputProps("dec").onChange(e);
+                    }
+
+                    const nonValidChars = /[^0-9 :+-.]/
+
+                    if (nonValidChars.test(e.currentTarget.value)) {
+                        setInvalidMessage("Invalid character entered")
+                    } else {
+                        setInvalidMessage("")
+                    }
+                }}
                 onBlur={(e) => {
                     if (p.form.getInputProps("dec").onBlur) {
                         p.form.getInputProps("dec").onBlur(e);
                     }
                     //get the live value from the input
-                    let decValue: string = p.form.getValues().dec;
+                    let decValue: string = e.currentTarget.value;
+
+                    if (decValue.length === 0) return
 
                     //regex to check for sexagesimal input
-                    const regexpsgm = new RegExp(/(\d{1,2})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
+                    const validDecSgm = /^[-+]?\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
+
                     //regex to check for decimal input
-                    const regexdec = new RegExp(/[0-9]*\.[0-9]*/);
+                    const validDecDegrees = /^[-+]?\d{1,2}(?:[.]\d+)?$/
 
-                    //if we have sexagesimal input use as is
-                    if(regexpsgm.test(decValue))
-                    {
-                        //set the field value to the input
-                        p.form.setFieldValue("dec", decValue);
-                        //if we have no name for this object, generate one
-                        if(p.form.getValues().targetName == "")
-                        {
-                            let generatedName = generateTargetDefaultName();
+                    let testSgm = validDecSgm.test(decValue)
+                    let testDeg = validDecDegrees.test(decValue)
 
-                            p.form.setFieldValue('targetName',generatedName);
-
-                            //allow submission in case this was previously locked
-                            p.setNameUnique(true);
-                        }
-
-                        //update the Aladin viewport
-                        Aladin.gotoRaDec(
-                            Number(AstroLib.HmsToDeg(p.form.getValues().ra)),
-                            AstroLib.DmsToDeg(p.form.getValues().dec)
-                        );
+                    if (!testSgm && !testDeg) {
+                        setInvalidMessage("Invalid number format")
+                        return
                     }
-                    //if we have decimal
-                    else if(regexdec.test(decValue))
-                    {
-                        //convert the decimal to sexagesimal
+
+                    if (testSgm) {
+                        //problem with Astrolib.DmsToDeg when no decimal point given so just append '.0'
+                        //if no fractional part is given
+                        if (!decValue.includes('.')) {
+                            decValue += '.0'
+                        }
+                    }
+
+                    //check valid range for declination
+                    let decFloatDegrees = testDeg ? parseFloat(decValue) : AstroLib.DmsToDeg(decValue)
+
+                    if (decFloatDegrees < -90 || decFloatDegrees > 90) {
+                        setInvalidMessage("Value out-of-bounds")
+                        return
+                    }
+
+                    if (testDeg) {
                         decValue = String(AstroLib.DegToDms(parseFloat(decValue)));
-                        p.form.setFieldValue("dec", decValue);
-                        //if we have no name for this object, generate one
-                        if(p.form.getValues().targetName == "")
-                        {
-                            let generatedName = generateTargetDefaultName();
-
-                            p.form.setFieldValue('targetName',generatedName);
-
-                            //allow submission in case this was previously locked
-                            p.setNameUnique(true);
-                        }
-                        //update the Aladin viewport
-                        Aladin.gotoRaDec(
-                            Number(AstroLib.HmsToDeg(p.form.getValues().ra)),
-                            AstroLib.DmsToDeg(p.form.getValues().dec)
-                        );
                     }
-                    else
+
+                    p.form.setFieldValue("dec", decValue);
+
+                    //if we have no name for this object, generate one
+                    if(p.form.getValues().targetName == "")
                     {
-                        //if we have no valid input, reset the field - preventing submission
-                        p.form.setFieldValue("targetName", "");
+                        let generatedName = generateTargetDefaultName();
+
+                        p.form.setFieldValue('targetName',generatedName);
+
+                        //allow submission in case this was previously locked
+                        p.setNameUnique(true);
                     }
+
+                    //update the Aladin viewport
+                    Aladin.gotoRaDec(
+                        Number(AstroLib.HmsToDeg(p.form.getValues().ra)),
+                        AstroLib.DmsToDeg(decValue)
+                    );
                 }}
             />
             <Text
