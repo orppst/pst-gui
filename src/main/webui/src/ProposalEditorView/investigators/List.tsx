@@ -48,14 +48,6 @@ function InvestigatorsPanel(): ReactElement {
             {enabled: true});
     const navigate = useNavigate();
 
-    if (error) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
-
     /**
      * maintain a count of the PIs
      */
@@ -74,8 +66,15 @@ function InvestigatorsPanel(): ReactElement {
             notifyError("Error loading investigators", getErrorMessage(error));
         }
 
-    }, [data]);
+    }, [data, error, status]);
 
+    if (error) {
+        return (
+            <Box>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+            </Box>
+        );
+    }
 
     /**
      * routes the user to the new investigator page.
@@ -212,14 +211,6 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
     const changeInvestigatorKindMutation = useInvestigatorResourceChangeInvestigatorKind({
         onSuccess: () => {
             setSubmitting(false);
-            /*return queryClient.invalidateQueries({
-                    predicate: (query) => {
-                        // using 'length === 6' to ensure we get the set of investigators
-                        return query.queryKey.length === 6 &&
-                            query.queryKey[4] === 'investigators';
-                    }});
-
-             */
             queryClient.invalidateQueries().finally();
         },
         onError: (error)=> {
