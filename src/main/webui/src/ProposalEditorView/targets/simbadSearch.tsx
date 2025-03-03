@@ -22,7 +22,7 @@ import {
     SIMBAD_URL_TAP_SERVICE
 } from "../../constants.tsx";
 import {UseFormReturnType} from "@mantine/form";
-import {Aladin, newTargetData} from "./New.tsx";
+import {Aladin, NewTargetFormValues} from "./New.tsx";
 import {IconSearch} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
 import { AstroLib } from "@tsastro/astrolib";
@@ -58,7 +58,7 @@ have children that do have coordinates.
 
 
 export
-function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
+function SimbadSearch(props: {form: UseFormReturnType<NewTargetFormValues>}) {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
@@ -237,10 +237,10 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                                         })
                                     } else {
                                         //set the form fields
-                                        props.form.setFieldValue('TargetName', displayName(arr[0]))
+                                        props.form.setFieldValue('targetName', displayName(arr[0]))
                                         //convert ra,dec to sexagesimal and update input fields
-                                        props.form.setFieldValue('RA', AstroLib.DegToHms(arr[1]));
-                                        props.form.setFieldValue('Dec', AstroLib.DegToDms(arr[2]));
+                                        props.form.setFieldValue('ra', AstroLib.DegToHms(arr[1]));
+                                        props.form.setFieldValue('dec', AstroLib.DegToDms(arr[2]));
                                         //props.form.setFieldValue('sexagesimal', arr[3])
 
                                         //arr[4] is the oid number - not needed by user

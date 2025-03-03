@@ -40,6 +40,8 @@ import * as React from "react";
 //move along, nothing to see here
 //@ts-ignore
 import A from 'aladin-lite';
+import TargetRaInput from "./TargetRaInput.tsx";
+import TargetDecInput from "./TargetDecInput.tsx";
 
 export let Aladin: AladinType;
 
@@ -54,6 +56,30 @@ const initialConfig: IAladinConfig = {
     showFullscreenControl: false,
     reticleColor: 'rgb(150, 255, 75)'
 };
+
+export interface NewTargetFormValues {
+    targetName: string
+    ra: string
+    dec: string
+    selectedEpoch: 'J2000'  // | 'B1950' | etc ??
+    sexagesimal: string
+    objectDescription?: string
+}
+
+/**
+ * generate new default name for a target
+ */
+export
+const generateTargetDefaultName = () : string => {
+    //reset the name to something generic + random suffix
+    let targetProxyName = "Target_";
+    let randNum = Math.random();
+    //convert the number into something using chars 0-9 A-Z
+    let hexString = randNum.toString(36);
+    targetProxyName += hexString.slice(6).toUpperCase();
+    return targetProxyName;
+}
+
 
 const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
@@ -88,45 +114,46 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     // between fullscreen and not
     const isTablet = useMediaQuery('(max-width: 62em)');
 
-    const form = useForm({
+    const form = useForm<NewTargetFormValues>({
             initialValues: {
-                TargetName: "",
-                RA: "+00 00 00.000",
-                Dec: "+00 00 00.000",
-                SelectedEpoch: "J2000",
+                targetName: "",
+                ra: "+00 00 00.000",
+                dec: "+00 00 00.000",
+                selectedEpoch: "J2000",
                 sexagesimal: "00:00:00 +00:00:00"
             },
             validate: {
-                TargetName: (value) => (
+                targetName: (value) => (
                     value.length < 1 ? 'Name cannot be blank ' : nameUnique? null : 'Source name must be unique'),
-                RA: (value) => (
-                    value === null || value === undefined ?
-                        'RA cannot be blank':
-                        null)
+                ra: (value) => (
+                    value === null || value === undefined ? 'RA cannot be blank': null),
+                dec: (value) => (
+                    value === null || value === undefined ? 'Dec cannot be blank': null
+                )
             },
         });
 
     useEffect(() => {
-        setNameUnique(!targets.data?.find(t => t.name === form.getValues().TargetName));
-    }, [form.getValues().TargetName]);
+        setNameUnique(!targets.data?.find(t => t.name === form.getValues().targetName));
+    }, [form.getValues().targetName]);
 
-    const handleSubmission = form.onSubmit((val: newTargetData) => {
+    const handleSubmission = form.onSubmit((val: NewTargetFormValues) => {
         //remember to convert the sexagesimal to decimal
         const sourceCoords: EquatorialPoint = {
             "@type": "coords:EquatorialPoint",
             coordSys: spaceSystem.data!,
             lat: {
                 "@type": "ivoa:RealQuantity",
-                value: AstroLib.HmsToDeg(val.RA), unit: { value: "degrees" }
+                value: AstroLib.HmsToDeg(val.ra), unit: { value: "degrees" }
             },
             lon: {
                 "@type": "ivoa:RealQuantity",
-                value: AstroLib.DmsToDeg(val.Dec), unit: { value: "degrees" }
+                value: AstroLib.DmsToDeg(val.dec), unit: { value: "degrees" }
             }
         }
         const Target: CelestialTarget = {
             "@type": "proposal:CelestialTarget",
-            sourceName: val.TargetName,
+            sourceName: val.targetName,
             sourceCoordinates: sourceCoords,
             positionEpoch: { value: "J2000"}
         };
@@ -137,7 +164,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
         }, {
             onSuccess: () => {
                 queryClient.invalidateQueries().then();
-                notifySuccess("Target added", val.TargetName + " has been added successfully.");
+                notifySuccess("Target added", val.targetName + " has been added successfully.");
                 props.closeModal!();
             },
             onError: (error) =>
@@ -149,42 +176,33 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
      * handles the different mouse event types.
      * @param {React.MouseEvent<HTMLInputElement>} event the event that occurred.
      */
-    const HandleEvent = (event: MouseEvent<HTMLInputElement>) => {
+    const handleDoubleClick = (event: MouseEvent<HTMLInputElement>) => {
         const [ra, dec] = GetOffset(event);
         const [raCoords, decCoords] = Aladin.pix2world(ra, dec);
-        form.setFieldValue('RA', AstroLib.DegToHms(raCoords));
-        form.setFieldValue('Dec', AstroLib.DegToDms(decCoords));
+        form.setFieldValue('ra', AstroLib.DegToHms(raCoords));
+        form.setFieldValue('dec', AstroLib.DegToDms(decCoords));
         
         //we want to update the name if there is no entry OR if the entry is from the catalogue
-        if (form.values["TargetName"].slice(0,6) != "Target" && form.values["TargetName"].slice(0,8) != "Modified")
+        if (form.getValues().targetName.slice(0,6) != "Target" && form.getValues().targetName.slice(0,8) != "Modified")
         {
             //if we have a catalogue name, modify it to show that the target has moved
-            if(form.values["TargetName"] != ""){
-                ModifyTargetName(form.values["TargetName"]);               
+            if(form.getValues().targetName != ""){
+                ModifyTargetName(form.getValues().targetName);
             }
             //if we have no name, add one
             else{
-                GenerateTargetDefaultName();  
+                let generatedName = generateTargetDefaultName();
+
+                form.setFieldValue('targetName',generatedName);
+
+                //allow submission in case this was previously locked
+                setNameUnique(true);
             }
             
         }
     }
 
-    /**
-     * generate new default name for a target
-     */
-    const GenerateTargetDefaultName = () => {
-        //reset the name to something generic + random suffix
-        let targetProxyName = "Target_";
-        let randNum = Math.random();
-        //convert the number into something using chars 0-9 A-Z
-        let hexString = randNum.toString(36);
-        targetProxyName += hexString.slice(6).toUpperCase();
-        form.setFieldValue('TargetName', targetProxyName);
-        
-        //allow submission in case this was previously locked
-        setNameUnique(true);
-    }
+
     /**
      * modify the name for a target
      */
@@ -195,16 +213,10 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
         //convert the number into something using chars 0-9 A-Z
         let hexString = randNum.toString(36);
         targetProxyName += hexString.slice(6).toUpperCase();
-        form.setFieldValue('TargetName', targetProxyName);
+        form.setFieldValue('targetName', targetProxyName);
         
         //allow submission in case this was previously locked
         setNameUnique(true);
-    }
-    /**
-     * update the Aladin viewport to the new RA and Dec
-     */
-    const UpdateAladinRaDec = () => {
-        Aladin.gotoRaDec(Number(AstroLib.HmsToDeg(form.getValues().RA)), AstroLib.DmsToDeg(form.getValues().Dec));
     }
 
     const responsiveSpan = {base: 2, md: 1}
@@ -237,141 +249,15 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                             placeholder="User provided or use the SIMBAD search"
                             description={nameUnique ? "Something descriptive is recommended" : null}
                             error={nameUnique ? null :
-                                form.getValues().TargetName + " is in use, choose another name"}
+                                form.getValues().targetName + " is in use, choose another name"}
                             inputWrapperOrder={['label', 'description', 'error', 'input']}
-                            value={form.getValues().TargetName}
+                            value={form.getValues().targetName}
                             onChange={(e: React.FormEvent<HTMLInputElement>) =>{
-                                form.setFieldValue('TargetName', e.currentTarget.value)
+                                form.setFieldValue('targetName', e.currentTarget.value)
                             }}
                         />
-                        <TextInput
-                            //hideControls
-                            label={"RA"}
-                            //decimalScale={6}
-                            //min={0}
-                            //max={360}
-                            //allowNegative={false}
-                            //suffix="°"
-                            {...form.getInputProps("RA")}
-                            onBlur={(e) => {
-                                if (form.getInputProps("RA").onBlur) {
-                                    form.getInputProps("RA").onBlur(e);
-                                }
-                                //get the live value from the input
-                                let raValue: string = form.getValues()["RA"];
-                                //regex to check for sexagesimal input
-                                const regexpsgm = new RegExp(/(\d{1,3})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
-                                //regex to check for decimal input
-                                const regexdec = new RegExp(/[0-9]*\.[0-9]*/);
-                                //if we have sexagesimal input accept as is
-                                if(regexpsgm.test(raValue))
-                                {
-                                    //set the field value to the input
-                                    form.setFieldValue("RA", raValue);
-                                    //if we have no name for this object, generate one
-                                    if(form.values["TargetName"] == "" )
-                                    {
-                                        GenerateTargetDefaultName();
-                                    } 
-                                    //update the Aladin viewport                              
-                                    UpdateAladinRaDec();
-                                }
-                                //if we have decimal
-                                else if(regexdec.test(raValue))
-                                {
-                                    //convert the decimal to sexagesimal
-                                    raValue = String(AstroLib.DegToHms(parseFloat(raValue)));
-                                    form.setFieldValue("RA", raValue);
-                                    //if we have no name for this object, generate one
-                                    if(form.values["TargetName"] == "")
-                                    {
-                                        GenerateTargetDefaultName();
-                                    } 
-                                    //update the Aladin viewport                              
-                                    UpdateAladinRaDec();
-                                }
-                                else
-                                {
-                                    //if we have no valid input, reset the field - preventing submission
-                                    form.setFieldValue("TargetName", "");
-                                }
-                           
-                                //update the Aladin viewport
-                                UpdateAladinRaDec();
-                            }}
-                        />
-                        <Text
-                            size={"xs"}
-                            c={"gray.6"}
-                            style={{margin: "-4px 0px 0px 12px"}}
-                        >
-                            {AstroLib.HmsToDeg(form.getValues()["RA"])}°
-                        </Text>
-                        <TextInput
-                            //hideControls
-                            label={"Dec"}
-                            //decimalScale={6}
-                            min={-90}
-                            max={90}
-                            //suffix="°"
-                            {...form.getInputProps("Dec")}
-                            onBlur={(e) => {
-                                if (form.getInputProps("Dec").onBlur) {
-                                    form.getInputProps("Dec").onBlur(e);
-                                }
-                                //get the live value from the input
-                                let decValue: string = form.getValues()["Dec"];
-                                
-                                //regex to check for sexagesimal input
-                                const regexpsgm = new RegExp(/(\d{1,2})\D(\d{1,2})\D(\d{1,2}(\.\d+)[sS]*)/);
-                                //regex to check for decimal input
-                                const regexdec = new RegExp(/[0-9]*\.[0-9]*/);
-
-                                //if we have sexagesimal input accept as is
-                                if(regexpsgm.test(decValue))
-                                {
-                                    //set the field value to the input
-                                    form.setFieldValue("Dec", decValue);
-                                    //if we have no name for this object, generate one
-                                    if(form.values["TargetName"] == "")
-                                    {
-                                        GenerateTargetDefaultName();
-                                    } 
-
-                                    //update the Aladin viewport                              
-                                    UpdateAladinRaDec();
-                                } 
-                                //if we have decimal
-                                else if(regexdec.test(decValue))
-                                {
-                                    //convert the decimal to sexagesimal
-                                    decValue = String(AstroLib.DegToDms(parseFloat(decValue)));
-                                    form.setFieldValue("Dec", decValue);
-                                    //if we have no name for this object, generate one
-                                    if(form.values["TargetName"] == "")
-                                    {
-                                        GenerateTargetDefaultName();
-                                    } 
-                                    //update the Aladin viewport                              
-                                    UpdateAladinRaDec();
-                                }
-                                else
-                                {
-                                    //if we have no valid input, reset the field - preventing submission
-                                    form.setFieldValue("TargetName", "");
-
-                                }
-                                                                                  
-                                
-                            }}
-                        />
-                        <Text
-                            size={"xs"}
-                            c={"gray.6"}
-                            style={{margin: "-4px 0px 0px 12px"}}
-                        >
-                            {AstroLib.DmsToDeg(form.getValues()["Dec"])}°
-                        </Text>
+                        <TargetRaInput form={form} setNameUnique={setNameUnique} />
+                        <TargetDecInput form={form} setNameUnique={setNameUnique} />
                         <SubmitButton
                             toolTipLabel={"Save this target"}
                             disabled={!form.isValid()}
@@ -387,8 +273,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                 >
                     <div
                         id="aladin-lite-div"
-
-                        onDoubleClick={HandleEvent}
+                        onDoubleClick={handleDoubleClick}
                     >
                     </div>
                 </Fieldset>
@@ -427,23 +312,5 @@ export default function AddTargetModal(props: {proposalTitle: string}): ReactEle
     );
 }
 
-/**
- * the new data required for target form.
- *
- * @param SelectedEpoch which epoch to use.
- * @param RA the longitude
- * @param Dec the latitude
- * @param TargetName the name of the target
- * @param sexagesimal sexagesimal string representation of Ra & Dec
- * @param objectDescription description of the target object type from SIMBAD, optional
- */
-export type newTargetData = {
-    SelectedEpoch: string;
-    RA: string;
-    Dec: string;
-    TargetName: string
-    sexagesimal: string
-    objectDescription?: string
-}
 
 
