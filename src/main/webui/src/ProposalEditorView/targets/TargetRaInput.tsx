@@ -66,7 +66,7 @@ function TargetRaInput(p: {
                     }
 
                     if (testDeg) {
-                        //remove the redundant '+' prepended on string from Astrolib
+                        //DJW: Astrolib DegToHms prepend sign issue
                         raValue = AstroLib.DegToHms(parseFloat(raValue)).slice(1)
                     }
 

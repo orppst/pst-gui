@@ -238,7 +238,7 @@ function SimbadSearch(props: {form: UseFormReturnType<NewTargetFormValues>}) {
                                     } else {
                                         //set the form fields
                                         props.form.setFieldValue('targetName', displayName(arr[0]))
-                                        ///remove the redundant '+' prepended on string from Astrolib
+                                        //DJW: Astrolib DegToHms prepend sign issue
                                         props.form.setFieldValue('ra', AstroLib.DegToHms(arr[1]).slice(1));
                                         props.form.setFieldValue('dec', AstroLib.DegToDms(arr[2]));
                                         props.form.setFieldValue('sexagesimal', arr[3])
