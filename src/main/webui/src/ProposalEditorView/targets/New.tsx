@@ -2,7 +2,6 @@ import {Modal, TextInput, Stack, Fieldset, Grid, rem, Text, Loader} from "@manti
 import {useForm} from "@mantine/form";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {
-    MouseEvent,
     ReactElement,
     useEffect,
     useState
@@ -27,7 +26,6 @@ import {
 } from './aladinTypes.tsx';
 import { ALADIN_SRC_URL } from 'src/constants.tsx';
 import {
-    GetOffset,
     LoadScriptIntoDOM
 } from './aladinHelperMethods.tsx';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -187,13 +185,14 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
         })
     });
 
-    /**
-     * handles the different mouse event types.
-     * @param {React.MouseEvent<HTMLInputElement>} event the event that occurred.
-     */
-    const handleMouseUpCapture = (event: MouseEvent<HTMLInputElement>) => {
-        const [ra, dec] = GetOffset(event);
-        const [raCoords, decCoords] = Aladin.pix2world(ra, dec);
+    const handleDoubleClick = () => {
+
+        //Notice: on double-click the sky atlas centers the view on the mouse pointer location
+        // therefore we only need to extract the central location coordinates
+
+        const [raCoords, decCoords] = Aladin.getRaDec(); //gets the view central coordinates
+
+        //DJW: Astrolib DegToHms prepend sign issue
         form.setFieldValue('ra', AstroLib.DegToHms(raCoords).slice(1));
         form.setFieldValue('dec', AstroLib.DegToDms(decCoords));
         
@@ -288,7 +287,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
                 >
                     <div
                         id="aladin-lite-div"
-                        onMouseUpCapture={handleMouseUpCapture}
+                        onDoubleClick={handleDoubleClick}
                     >
                     </div>
                 </Fieldset>

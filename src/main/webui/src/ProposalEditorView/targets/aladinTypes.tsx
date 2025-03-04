@@ -3,10 +3,12 @@
  *
  * see Aladin-lite documentation https://aladin.cds.unistra.fr/AladinLite/doc/API/
  *
- * @param {(ra: number, dec: number) => void}} gotoRaDec route aladin to
- * location.
+ * @param {(ra: number, dec: number) => void}} gotoRaDec route aladin to location.
  * @param {(data: any) => void} addCatalog adds a catalog to aladin.
  * @param {(data: any) => void} addOverlay adds an overlay to aladin.
+ * @param {(x: number, y: number) => number []} pix2world returns the ra,dec coordinates corresponding to the x,y pixel location
+ * @param {(objectName: string) => void} adjustFovForObject where possible automatically changes the FOV for best view of the given object
+ * @param {() => number []} getRaDec returns ra,dec of the Aladin Lite view center
  */
 export type AladinType = {
     gotoRaDec: (ra: number, dec: number) => void;
@@ -14,6 +16,7 @@ export type AladinType = {
     addOverlay: (data: any) => void;
     pix2world: (x: number, y: number) => number [];
     adjustFovForObject: (objectName: string) => void;
+    getRaDec: () => number [];
 }
 /**
  * defines the configuration types for aladin; default values in comments
