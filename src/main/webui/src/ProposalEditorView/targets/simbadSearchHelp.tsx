@@ -3,12 +3,15 @@ import {Anchor, List, ScrollArea, Stack, Tabs, Text} from "@mantine/core";
 import {IconAlien, IconGlobe, IconInfoCircle, IconQuestionMark} from "@tabler/icons-react";
 
 export default
-function SimbadSearchHelp() : ReactElement {
+function SimbadSearchHelp(p: {largeScrollArea: boolean}) : ReactElement {
     const headerColour = "blue"
     const highlightColour = "orange"
 
-    const STACK_PT = 10;
-    const SCROLLAREA_HEIGHT = 120;
+    const stack_pt = 10;
+    const scroll_height_md = 110;
+    const scroll_height_lg = 300;
+
+    const scroll_height = p.largeScrollArea ? scroll_height_lg : scroll_height_md;
 
     return(
         <Tabs allowTabDeactivation variant={"outline"}>
@@ -28,8 +31,12 @@ function SimbadSearchHelp() : ReactElement {
             </Tabs.List>
 
             <Tabs.Panel value={"general"}>
-                <ScrollArea h={SCROLLAREA_HEIGHT} type={"auto"} offsetScrollbars>
-                    <Stack pt={STACK_PT}>
+                <ScrollArea
+                    h={scroll_height}
+                    type={"auto"}
+                    offsetScrollbars
+                >
+                    <Stack pt={stack_pt}>
                         <Text c={headerColour} size={"sm"}>
                             <Text span inherit c={highlightColour}>S</Text>et of
                             <Text span inherit c={highlightColour}> I</Text>dentifications,
@@ -49,8 +56,8 @@ function SimbadSearchHelp() : ReactElement {
             </Tabs.Panel>
 
             <Tabs.Panel value={"aladin"}>
-                <ScrollArea h={SCROLLAREA_HEIGHT} type={"auto"} offsetScrollbars>
-                <Stack pt={STACK_PT}>
+                <ScrollArea h={scroll_height} type={"auto"} offsetScrollbars>
+                <Stack pt={stack_pt}>
                     <Text size={"sm"} c={headerColour}>
                         Aladin Sky Atlas
                     </Text>
@@ -80,8 +87,8 @@ function SimbadSearchHelp() : ReactElement {
                 </ScrollArea>
             </Tabs.Panel>
             <Tabs.Panel value={"searchInstructions"}>
-                <ScrollArea h={SCROLLAREA_HEIGHT} type={"auto"} offsetScrollbars>
-                <Stack pt={STACK_PT}>
+                <ScrollArea h={scroll_height} type={"auto"} offsetScrollbars>
+                <Stack pt={stack_pt}>
                     <Text size={"sm"} c={headerColour}>
                         How to use SIMBAD search
                     </Text>
@@ -145,8 +152,8 @@ function SimbadSearchHelp() : ReactElement {
             </Tabs.Panel>
 
             <Tabs.Panel value={"searchTips"}>
-                <ScrollArea h={SCROLLAREA_HEIGHT} type={"auto"} offsetScrollbars scrollbars={"y"}>
-                <Stack pt={STACK_PT}>
+                <ScrollArea h={scroll_height} type={"auto"} offsetScrollbars scrollbars={"y"}>
+                <Stack pt={stack_pt}>
                     <Text size={"sm"} c={headerColour}>
                         Hints and Tips
                     </Text>

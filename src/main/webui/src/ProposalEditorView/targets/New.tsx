@@ -1,4 +1,4 @@
-import { TextInput, Stack, Fieldset, Grid, rem, Text, Loader} from "@mantine/core";
+import {TextInput, Stack, Fieldset, Grid, rem, Text, Loader, Group} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import { useMediaQuery} from "@mantine/hooks";
 import {
@@ -108,8 +108,9 @@ function AddTargetPanel(): ReactElement {
         pathParams: {frameCode: 'ICRS'}
     })
 
-    //media query used to conditionally set the height of Aladin viewer
-    const isTablet = useMediaQuery('(max-width: 62em)');
+    //media queries to attempt to make the page look okay at different screen widths
+    const isTablet = useMediaQuery('(max-width: 90em)');
+    const isWide = useMediaQuery("(max-width: 2000px)");
 
     const form = useForm<NewTargetFormValues>({
             initialValues: {
@@ -233,59 +234,64 @@ function AddTargetPanel(): ReactElement {
         setNameUnique(true);
     }
 
-    const responsiveSpan = {base: 2, md: 1}
-
     if (targets.isLoading || spaceSystem.isLoading) {
         return (
             <Loader />
         )
     }
 
+    let responsiveSpan = {base: 12, xl: 6}
+
     return (
-        <PanelFrame>
+        <PanelFrame
+            mx={isWide ? "0" : "10%"}
+        >
             <EditorPanelHeader
                 proposalCode={Number(selectedProposalCode)}
                 panelHeading={"Add a Target"}
             />
-            <Grid columns={2}>
-                <Grid.Col span={2}>
+            <Grid columns={12}>
+                <Grid.Col span={12}>
                     <Fieldset legend={"User Information"}>
                         <Text size={"xs"} c={"gray.6"}>Click on a tab to toggle its content</Text>
-                        <SimbadSearchHelp/>
-                    </Fieldset>
-                </Grid.Col>
-                <Grid.Col span={2}>
-                    <Fieldset legend={"SIMBAD search"} pt={10}>
-                        <SimbadSearch form={form}/>
+                        <SimbadSearchHelp largeScrollArea={!isWide}/>
                     </Fieldset>
                 </Grid.Col>
                 <Grid.Col span={responsiveSpan}>
-                    <Fieldset legend={"Target Form"}>
-                        <form onSubmit={handleSubmission}>
-                            <Stack gap={"xs"}>
-                                <TextInput
-                                    label="Name your target"
-                                    placeholder="User provided or use the SIMBAD search"
-                                    description={nameUnique ? "Something descriptive is recommended" : null}
-                                    error={nameUnique ? null :
-                                        form.getValues().targetName + " is in use, choose another name"}
-                                    inputWrapperOrder={['label', 'description', 'error', 'input']}
-                                    value={form.getValues().targetName}
-                                    onChange={(e: React.FormEvent<HTMLInputElement>) =>{
-                                        form.setFieldValue('targetName', e.currentTarget.value)
-                                    }}
-                                />
-                                <TargetRaInput form={form} setNameUnique={setNameUnique} />
-                                <TargetDecInput form={form} setNameUnique={setNameUnique} />
+                    <Stack gap={"xs"}>
+                        <Fieldset legend={"SIMBAD search"} pt={10}>
+                            <SimbadSearch form={form}/>
+                        </Fieldset>
+                        <Fieldset legend={"Target Form"}>
+                            <form onSubmit={handleSubmission}>
+                                <Stack gap={"xs"}>
+                                    <TextInput
+                                        label="Name your target"
+                                        placeholder="User provided or use the SIMBAD search"
+                                        description={nameUnique ? "Something descriptive is recommended" : null}
+                                        error={nameUnique ? null :
+                                            form.getValues().targetName + " is in use, choose another name"}
+                                        inputWrapperOrder={['label', 'description', 'error', 'input']}
+                                        value={form.getValues().targetName}
+                                        onChange={(e: React.FormEvent<HTMLInputElement>) =>{
+                                            form.setFieldValue('targetName', e.currentTarget.value)
+                                        }}
+                                    />
+                                    <TargetRaInput form={form} setNameUnique={setNameUnique} />
+                                    <TargetDecInput form={form} setNameUnique={setNameUnique} />
 
-                                <FormSubmitButton form={form} />
-                                <CancelButton
-                                    toolTipLabel={"Go back without saving"}
-                                    onClick={() => navigate("../", {relative:"path"})}
-                                />
-                            </Stack>
-                        </form>
-                    </Fieldset>
+                                    <Group justify={"flex-end"}>
+                                        <FormSubmitButton form={form} />
+                                        <CancelButton
+                                            toolTipLabel={"Go back without saving"}
+                                            onClick={() => navigate("../", {relative:"path"})}
+                                        />
+                                    </Group>
+
+                                </Stack>
+                            </form>
+                        </Fieldset>
+                    </Stack>
                 </Grid.Col>
                 <Grid.Col span={responsiveSpan}>
                     <Fieldset
