@@ -1,6 +1,6 @@
-import {Modal, TextInput, Stack, Fieldset, Grid, rem, Text, Loader} from "@mantine/core";
+import { TextInput, Stack, Fieldset, Grid, rem, Text, Loader} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {useDisclosure, useMediaQuery} from "@mantine/hooks";
+import { useMediaQuery} from "@mantine/hooks";
 import {
     ReactElement,
     useEffect,
@@ -16,9 +16,8 @@ import {
     useSpaceSystemResourceGetSpaceSystem
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {useParams} from "react-router-dom";
-import AddButton from 'src/commonButtons/add';
-import { SubmitButton } from 'src/commonButtons/save';
+import {useNavigate, useParams} from "react-router-dom";
+import {FormSubmitButton} from 'src/commonButtons/save';
 import "./aladin.css";
 import {
     AladinType,
@@ -40,6 +39,8 @@ import * as React from "react";
 import A from 'aladin-lite';
 import TargetRaInput from "./TargetRaInput.tsx";
 import TargetDecInput from "./TargetDecInput.tsx";
+import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import CancelButton from "../../commonButtons/cancel.tsx";
 
 export let Aladin: AladinType;
 
@@ -77,8 +78,8 @@ const generateTargetDefaultName = () : string => {
     return targetProxyName;
 }
 
-
-const TargetForm = (props: {closeModal: () => void}): ReactElement => {
+export default
+function AddTargetPanel(): ReactElement {
 
     useEffect(() => {
         const bodyElement =
@@ -91,6 +92,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
             })
     }, []);
 
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const {selectedProposalCode} = useParams();
     const [nameUnique, setNameUnique] = useState(true);
@@ -106,8 +108,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
         pathParams: {frameCode: 'ICRS'}
     })
 
-    //media query used to conditionally set the height of Aladin when the modal toggles
-    // between fullscreen and not
+    //media query used to conditionally set the height of Aladin viewer
     const isTablet = useMediaQuery('(max-width: 62em)');
 
     const form = useForm<NewTargetFormValues>({
@@ -177,7 +178,7 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
             onSuccess: () => {
                 queryClient.invalidateQueries().then();
                 notifySuccess("Target added", val.targetName + " has been added successfully.");
-                props.closeModal!();
+                navigate("../", {relative:"path"})
             },
             onError: (error) =>
                 notifyError("Failed to add Target", getErrorMessage(error))
@@ -241,89 +242,67 @@ const TargetForm = (props: {closeModal: () => void}): ReactElement => {
     }
 
     return (
-        <Grid columns={2}>
-            <Grid.Col span={2}>
-                <Fieldset legend={"User Information"}>
-                    <Text size={"xs"} c={"gray.6"}>Click on a tab to toggle its content</Text>
-                    <SimbadSearchHelp/>
-                </Fieldset>
-            </Grid.Col>
-            <Grid.Col span={2}>
-                <Fieldset legend={"SIMBAD search"} pt={10}>
-                    <SimbadSearch form={form}/>
-                </Fieldset>
-            </Grid.Col>
-            <Grid.Col span={responsiveSpan}>
-                <Fieldset legend={"Target Form"}>
-                <form onSubmit={handleSubmission}>
-                    <Stack gap={"xs"}>
-                        <TextInput
-                            label="Name your target"
-                            placeholder="User provided or use the SIMBAD search"
-                            description={nameUnique ? "Something descriptive is recommended" : null}
-                            error={nameUnique ? null :
-                                form.getValues().targetName + " is in use, choose another name"}
-                            inputWrapperOrder={['label', 'description', 'error', 'input']}
-                            value={form.getValues().targetName}
-                            onChange={(e: React.FormEvent<HTMLInputElement>) =>{
-                                form.setFieldValue('targetName', e.currentTarget.value)
-                            }}
-                        />
-                        <TargetRaInput form={form} setNameUnique={setNameUnique} />
-                        <TargetDecInput form={form} setNameUnique={setNameUnique} />
-                        <SubmitButton
-                            toolTipLabel={"Save this target"}
-                            disabled={!form.isValid()}
-                        />
-                    </Stack>
-                </form>
-                </Fieldset>
-            </Grid.Col>
-            <Grid.Col span={responsiveSpan}>
-                <Fieldset
-                    legend={"Aladin Sky Atlas"}
-                    style={{height: isTablet? rem(350) : "100%"}}
-                >
-                    <div
-                        id="aladin-lite-div"
-                        onDoubleClick={handleDoubleClick}
+        <PanelFrame>
+            <EditorPanelHeader
+                proposalCode={Number(selectedProposalCode)}
+                panelHeading={"Add a Target"}
+            />
+            <Grid columns={2}>
+                <Grid.Col span={2}>
+                    <Fieldset legend={"User Information"}>
+                        <Text size={"xs"} c={"gray.6"}>Click on a tab to toggle its content</Text>
+                        <SimbadSearchHelp/>
+                    </Fieldset>
+                </Grid.Col>
+                <Grid.Col span={2}>
+                    <Fieldset legend={"SIMBAD search"} pt={10}>
+                        <SimbadSearch form={form}/>
+                    </Fieldset>
+                </Grid.Col>
+                <Grid.Col span={responsiveSpan}>
+                    <Fieldset legend={"Target Form"}>
+                        <form onSubmit={handleSubmission}>
+                            <Stack gap={"xs"}>
+                                <TextInput
+                                    label="Name your target"
+                                    placeholder="User provided or use the SIMBAD search"
+                                    description={nameUnique ? "Something descriptive is recommended" : null}
+                                    error={nameUnique ? null :
+                                        form.getValues().targetName + " is in use, choose another name"}
+                                    inputWrapperOrder={['label', 'description', 'error', 'input']}
+                                    value={form.getValues().targetName}
+                                    onChange={(e: React.FormEvent<HTMLInputElement>) =>{
+                                        form.setFieldValue('targetName', e.currentTarget.value)
+                                    }}
+                                />
+                                <TargetRaInput form={form} setNameUnique={setNameUnique} />
+                                <TargetDecInput form={form} setNameUnique={setNameUnique} />
+
+                                <FormSubmitButton form={form} />
+                                <CancelButton
+                                    toolTipLabel={"Go back without saving"}
+                                    onClick={() => navigate("../", {relative:"path"})}
+                                />
+                            </Stack>
+                        </form>
+                    </Fieldset>
+                </Grid.Col>
+                <Grid.Col span={responsiveSpan}>
+                    <Fieldset
+                        legend={"Aladin Sky Atlas"}
+                        style={{height: isTablet? rem(350) : "100%"}}
                     >
-                    </div>
-                </Fieldset>
-            </Grid.Col>
-        </Grid>
+                        <div
+                            id="aladin-lite-div"
+                            onDoubleClick={handleDoubleClick}
+                        >
+                        </div>
+                    </Fieldset>
+                </Grid.Col>
+            </Grid>
+        </PanelFrame>
     );
 };
-
-
-/**
- * On click the add button displays the add new target modal.
- *
- * @return a React Element of a visible add button and hidden modal.
- *
- */
-export default function AddTargetModal(props: {proposalTitle: string}): ReactElement {
-    const [opened, { close, open }] = useDisclosure();
-    const isMobile = useMediaQuery('(max-width: 75em)');
-
-    return (
-        <>
-            <AddButton
-                onClick={open}
-                toolTipLabel={"Add new target."}
-            />
-            <Modal title={`Add a Target to '${props.proposalTitle}'`}
-                   opened={opened}
-                   onClose={() => {close();}}
-                   fullScreen={isMobile}
-                   size={"60%"}
-                   closeOnClickOutside={false}
-            >
-                <TargetForm closeModal={close}/>
-            </Modal>
-        </>
-    );
-}
 
 
 

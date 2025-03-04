@@ -3,14 +3,15 @@ import {
     useProposalResourceGetTargets,
 } from 'src/generated/proposalToolComponents.ts';
 
-import AddTargetModal from "./New";
-import {useParams} from "react-router-dom";
-import {Box, Group, Stack} from '@mantine/core';
+import {useNavigate, useParams} from "react-router-dom";
+import {Box, Group, Loader, Stack} from '@mantine/core';
 import { ReactElement } from 'react';
-import { JSON_SPACES } from 'src/constants.tsx';
 import { TargetTable } from './TargetTable.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
+import AddButton from "../../commonButtons/add.tsx";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
 /**
  * Renders the target panel containing an add target button
@@ -21,8 +22,10 @@ import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
  * @return {ReactElement} Returns a Mantine Box
  */
 export function TargetPanel(): ReactElement {
+    const navigate = useNavigate();
+
     const {selectedProposalCode} = useParams();
-    const {data, error, isLoading} = useProposalResourceGetTargets(
+    const targets = useProposalResourceGetTargets(
         {pathParams: {proposalCode: Number(selectedProposalCode)},},
         {enabled: true});
     // needed to track which targets are locked into observations.
@@ -32,12 +35,21 @@ export function TargetPanel(): ReactElement {
             {enabled: true}
         );
 
-    if (error) {
+    if (targets.isLoading) {
         return (
-            <Box>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+            <Box mx={"20%"}>
+                <Loader />
             </Box>
-        );
+        )
+    }
+
+    if (targets.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load targets"}
+                error={getErrorMessage(targets.error)}
+            />
+        )
     }
 
     // acquire all the bound targets ids in observations.
@@ -54,17 +66,20 @@ export function TargetPanel(): ReactElement {
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Targets"} />
             <ContextualHelpButton  messageId="MaintTargList" />
             <Stack>
-                {data?.length === 0?
+                {targets.data?.length === 0?
                     <div>Please add your targets</div> :
-                    <TargetTable isLoading={isLoading}
-                                 data={data}
+                    <TargetTable isLoading={targets.isLoading}
+                                 data={targets.data}
                                  selectedProposalCode={selectedProposalCode}
                                  boundTargets={boundTargets}
                                  showButtons={true}
                                  selectedTargets={undefined}/>
                 }
                 <Group justify={"flex-end"}>
-                    <AddTargetModal proposalTitle={proposalsData?.title!}/>
+                    <AddButton
+                        toolTipLabel={"Add a target"}
+                        onClick={() => navigate("new")}
+                    />
                 </Group>
             </Stack>
         </PanelFrame>
