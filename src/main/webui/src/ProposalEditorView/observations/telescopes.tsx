@@ -58,7 +58,6 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
     const [selectedTelescope, setSelectedTelescope] = useState(telescopeState);
     const [selectedInstrument, setSelectedInstrument] = useState(instrumentState);
-    const [selectedElement, setSelectedElement] = useState("None");
 
     // update elements form, but only if a telescope and instrument has been populated.
     setupElementsInForm();
@@ -99,7 +98,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 userStoresObservationElements = userSavedObservationData.get(selectedTelescope);
                 if (userStoresObservationElements !== undefined) {
                     userStoresObservationElements =
-                        userSavedObservationData.get(selectedInstrument);
+                        userStoresObservationElements.get(selectedInstrument);
                 } else {
                     userStoresObservationElements = undefined;
                 }
@@ -111,16 +110,21 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 if (userStoresObservationElements == undefined) {
                     if (elementsDataMap.get(elementName).values.length !== 0) {
                         // set to the first value
-                        form.getInputProps("elements").value.set(
-                            elementName, elementsDataMap.get(elementName).values[0]);
+                        if (form.getInputProps("elements").value.get(elementName) == undefined) {
+                            form.getInputProps("elements").value.set(
+                                elementName, elementsDataMap.get(elementName).values[0]);
+                        }
                     } else {
                         // if no options. just set to none.
-                        form.getInputProps("elements").value.set(
-                            elementName, "");
+                        if (form.getInputProps("elements").value.get(elementName) == undefined) {
+                            form.getInputProps("elements").value.set(elementName, "");
+                        }
                     }
                 } else {
                     storedValue = userStoresObservationElements.get(elementName);
-                    form.getInputProps("elements").value.set(elementName, storedValue);
+                    if (form.getInputProps("elements").value.get(elementName) == undefined) {
+                        form.getInputProps("elements").value.set(elementName, storedValue);
+                    }
                 }
             }
         }
@@ -135,10 +139,11 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         form.getInputProps('elements').value.clear();
         form.setDirty('elements');
 
-        setupElementsInForm();
-
         // sets the state variables to force a re-render.
         setSelectedInstrument(value)
+
+        // reset elements in form.
+        setupElementsInForm();
 
         // debugger.
         notifySuccess(
@@ -149,13 +154,12 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     /**
      * saves a text area change into the form.
      *
-     * @param {React.BaseSyntheticEvent} value: the text area component.
+     * @param key: element key
+     * @param value: element value.
      */
-    function handleTextAreaChange(value: BaseSyntheticEvent): void {
-        form.getInputProps('elements').value.set(
-            value.target.labels[0].innerText, value.target.value);
+    function handleTextAreaChange(key: string, value: string): void {
+        form.getInputProps('elements').value.set(key, value);
         form.setDirty({'elements': true});
-        setSelectedElement(value);
         //notifySuccess(
         //    "new value is",
         //    form.getInputProps('elements').value.get(value.target.labels[0].innerText));
@@ -170,7 +174,6 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     function handleSelectChange(key: string, value: string): void {
         form.getInputProps('elements').value.set(key, value);
         form.setDirty({'elements': true});
-        setSelectedElement(value);
         notifySuccess(
             `new select value is ${key}`,
             form.getInputProps('elements').value.get(key));
@@ -227,7 +230,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                                 key={selectedTelescope + selectedInstrument + key}
                                 placeholder={"Select the telescope instrument"}
                                 data = {Array.from(elementsDataMap.get(key).values)}
-                                {...form.getInputProps("elements").value.get(key)}
+                                defaultValue={form.getInputProps("elements").value.get(key)}
                                 onChange={(e) => {
                                     handleSelectChange(key, e);
                                 }}
@@ -237,15 +240,17 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                                              rows={TEXTAREA_MAX_ROWS}
                                              maxLength={MAX_CHARS_FOR_INPUTS}
                                              key={selectedTelescope + selectedInstrument + key}
-                                             {...form.getInputProps("elements").value.get(key)}
-                                             onChange={handleTextAreaChange}
+                                             defaultValue={form.getInputProps("elements").value.get(key)}
+                                             onChange={(e) => {
+                                                 handleTextAreaChange(key, e.target.value);
+                                             }}
                             />
                         case Type.BOOLEAN:
                             return <label key={"label for" + key}>
                                     <input checked={form.getInputProps("elements").value.get(key)}
                                            type="checkbox"
                                            key={selectedTelescope + selectedInstrument + key}
-                                           {...form.getInputProps("elements").value.get(key)}/>
+                                           defaultValue={form.getInputProps("elements").value.get(key)}/>
                                     {key}
                                 </label>
                         default:
