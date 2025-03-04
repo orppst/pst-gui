@@ -81,7 +81,6 @@ const generateTargetDefaultName = () : string => {
 const TargetForm = (props: {closeModal: () => void}): ReactElement => {
 
     useEffect(() => {
-
         const bodyElement =
             document.getElementsByTagName('BODY')[0] as HTMLElement;
 
