@@ -1,16 +1,16 @@
-import { ReactElement, useState } from 'react';
-import { Select, Text } from '@mantine/core';
+import { BaseSyntheticEvent, ReactElement, useState } from 'react';
+import { Select, Textarea} from '@mantine/core';
 import {
     useOpticalTelescopeResourceGetNames,
     useOpticalTelescopeResourceGetTelescopeData,
     useOpticalTelescopeResourceLoadTelescopeData
 } from '../../util/telescopeCommsMock';
-import { PanelHeader } from '../../commonPanel/appearance';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
-import { ComboboxItem } from '@mantine/core/lib/components/Combobox';
 import {useParams} from "react-router-dom";
 import { Field, Type } from '../../util/telescopeComms';
+import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from '../../constants';
+import { notifySuccess } from '../../commonPanel/notifications';
 
 /**
  * generates the observation panel.
@@ -35,28 +35,145 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     /**
      * extract current choices.
      */
-    const observationData = useOpticalTelescopeResourceLoadTelescopeData(
-        { observationID: form.getValues().observationId!,
-            proposalID: selectedProposalCode});
+    let userSavedObservationData:  Map<string, Map<string, Map<string, string>>> | undefined =
+        useOpticalTelescopeResourceLoadTelescopeData(
+            { observationID: form.getValues().observationId!,
+                proposalID: selectedProposalCode});
 
     // state holder to force re renders
-    const [selectedTelescope, setSelectedTelescope] = useState('None');
-    const [selectedInstrument, setSelectedInstrument] = useState('None');
-
-    // function to update the UI based off the telescope name selection.
-    function useTelescopeNameChange(value: string | null, option: ComboboxItem): void {
-        form.getInputProps('elements').value.clear();
-        form.setFieldValue('telescopeName', value);
-        form.setFieldValue('instrument', "None");
-        setSelectedTelescope(value);
-        setSelectedInstrument("None")
+    let telescopeState = "None";
+    let instrumentState = "None";
+    if (userSavedObservationData !== undefined) {
+        telescopeState = userSavedObservationData.keys().next().value
+        instrumentState = userSavedObservationData.get(
+            userSavedObservationData.keys().next().value).keys().next().value;
+        const elements: Map<string, string> =
+            userSavedObservationData.get(telescopeState).get(instrumentState);
+        for (const elementName of elements.keys()) {
+            form.getInputProps("elements").value.set(elementName, elements.get(elementName));
+        }
+    } else {
+        userSavedObservationData = new Map<string, Map<string, Map<string, string>>>();
     }
 
-    // function to update the UI based off the instrument selection.
-    function useTelescopeInstrumentChange(value: string | null, option:ComboboxItem): void {
+    const [selectedTelescope, setSelectedTelescope] = useState(telescopeState);
+    const [selectedInstrument, setSelectedInstrument] = useState(instrumentState);
+    const [selectedElement, setSelectedElement] = useState("None");
+
+    // update elements form, but only if a telescope and instrument has been populated.
+    setupElementsInForm();
+
+    /**
+     *  function to update the UI based off the telescope name selection.
+     * @param {string | null} value: the new value of the telescope.
+     */
+    function useTelescopeNameChange(value: string | null): void {
+        form.getInputProps('elements').value.clear();
+        form.setDirty('elements');
+        form.setFieldValue('telescopeName', value);
+        form.setFieldValue('instrument', "None");
+
+        // set the states to force re-renders
+        setSelectedInstrument("None")
+        setSelectedTelescope(value);
+        notifySuccess(
+            "new value of telescope name is",
+            form.getInputProps('telescopeName').value);
+    }
+
+    /**
+     * populates the form with elements.
+     */
+    function setupElementsInForm(): void {
+        // update elements form, but only if a telescope and instrument has been populated.
+        if (selectedTelescope !== "None" && selectedInstrument !== "None") {
+            //populate the form with new states.
+            const telescopeData = telescopesData[selectedTelescope];
+            const telescopeDataMap: Map<string, unknown> = new Map(Object.entries(telescopeData));
+            const elementsData: unknown = telescopeDataMap.get(selectedInstrument);
+            const elementsDataMap = new Map(Object.entries(elementsData))
+
+            // extract the telescope
+            let userStoresObservationElements = undefined;
+            if (userSavedObservationData !== undefined) {
+                userStoresObservationElements = userSavedObservationData.get(selectedTelescope);
+                if (userStoresObservationElements !== undefined) {
+                    userStoresObservationElements =
+                        userSavedObservationData.get(selectedInstrument);
+                } else {
+                    userStoresObservationElements = undefined;
+                }
+            }
+
+            // cycle and add new elements.
+            for (const elementName of elementsDataMap.keys()) {
+                let storedValue = "None";
+                if (userStoresObservationElements == undefined) {
+                    if (elementsDataMap.get(elementName).values.length !== 0) {
+                        // set to the first value
+                        form.getInputProps("elements").value.set(
+                            elementName, elementsDataMap.get(elementName).values[0]);
+                    } else {
+                        // if no options. just set to none.
+                        form.getInputProps("elements").value.set(
+                            elementName, "");
+                    }
+                } else {
+                    storedValue = userStoresObservationElements.get(elementName);
+                    form.getInputProps("elements").value.set(elementName, storedValue);
+                }
+            }
+        }
+    }
+
+    /**
+     * function to update the UI based off the instrument selection.
+     * @param {string | null} value: the instrument change.
+     */
+    function useTelescopeInstrumentChange(value: string | null): void {
         form.setFieldValue('instrument', value);
         form.getInputProps('elements').value.clear();
-        setSelectedInstrument(value);
+        form.setDirty('elements');
+
+        setupElementsInForm();
+
+        // sets the state variables to force a re-render.
+        setSelectedInstrument(value)
+
+        // debugger.
+        notifySuccess(
+            "new value of telescope name is",
+            form.getInputProps('instrument').value);
+    }
+
+    /**
+     * saves a text area change into the form.
+     *
+     * @param {React.BaseSyntheticEvent} value: the text area component.
+     */
+    function handleTextAreaChange(value: BaseSyntheticEvent): void {
+        form.getInputProps('elements').value.set(
+            value.target.labels[0].innerText, value.target.value);
+        form.setDirty({'elements': true});
+        setSelectedElement(value);
+        //notifySuccess(
+        //    "new value is",
+        //    form.getInputProps('elements').value.get(value.target.labels[0].innerText));
+    }
+
+    /**
+     * saves the state change from the select in the list.
+     *
+     * @param {string} key: the element name.
+     * @param {string} value: the new value.
+     */
+    function handleSelectChange(key: string, value: string): void {
+        form.getInputProps('elements').value.set(key, value);
+        form.setDirty({'elements': true});
+        setSelectedElement(value);
+        notifySuccess(
+            `new select value is ${key}`,
+            form.getInputProps('elements').value.get(key));
     }
 
     /**
@@ -99,17 +216,6 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             const elementsData: unknown = telescopeDataMap.get(selectedInstrument);
             const elementsDataMap = new Map(Object.entries(elementsData))
 
-            //populate the form with new states.
-            for (const elementName of elementsDataMap.keys()) {
-                let storedValue = "None";
-                if (observationData != null && observationData.get(selectedInstrument) != null) {
-                    const observationElements: Map<string, string> =
-                        observationData.get(selectedInstrument);
-                    storedValue = observationElements.get(elementName);
-                }
-                form.getInputProps("elements").value.set(elementName, storedValue);
-            }
-
             // generate the html.
             return <>
                 {  Object.keys(elementsData).map((key) => {
@@ -118,24 +224,28 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         case Type.LIST:
                             return <Select
                                 label={key}
-                                key={key}
+                                key={selectedTelescope + selectedInstrument + key}
                                 placeholder={"Select the telescope instrument"}
                                 data = {Array.from(elementsDataMap.get(key).values)}
-                                {...form.getInputProps("elements").value.get(key) ?
-                                    form.getInputProps("elements").value.get(key) : ""}
+                                {...form.getInputProps("elements").value.get(key)}
+                                onChange={(e) => {
+                                    handleSelectChange(key, e);
+                                }}
                             />
                         case Type.TEXT:
-                            return <Text style={{ whiteSpace: 'pre-wrap',
-                                                  overflowWrap: 'break-word'}}
-                                         key={key}>
-                                {...form.getInputProps("elements").value.get(key) ?
-                                    form.getInputProps("elements").value.get(key) : ""}
-                            </Text>
+                            return <Textarea label={key}
+                                             rows={TEXTAREA_MAX_ROWS}
+                                             maxLength={MAX_CHARS_FOR_INPUTS}
+                                             key={selectedTelescope + selectedInstrument + key}
+                                             {...form.getInputProps("elements").value.get(key)}
+                                             onChange={handleTextAreaChange}
+                            />
                         case Type.BOOLEAN:
                             return <label key={"label for" + key}>
                                     <input checked={form.getInputProps("elements").value.get(key)}
                                            type="checkbox"
-                                           key={key}/>
+                                           key={selectedTelescope + selectedInstrument + key}
+                                           {...form.getInputProps("elements").value.get(key)}/>
                                     {key}
                                 </label>
                         default:
@@ -153,12 +263,6 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     // return the generated HTML.
     return (
         <>
-            <PanelHeader
-                itemName={"optical telescopes."}
-                panelHeading={"Optical Telescopes"}
-                isLoading={false}
-            />
-
             <Select
                 label={"Telescope Name: "}
                 placeholder={"Select the optical telescope"}

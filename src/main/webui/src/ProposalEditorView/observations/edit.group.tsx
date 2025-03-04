@@ -30,7 +30,6 @@ import {queryKeyProposals} from "../../queryKeyProposals.tsx";
 import {
     opticalTelescopeResourceSaveTelescopeData,
     useOpticalTelescopeResourceLoadTelescopeData,
-    useOpticalTelescopeResourceSaveTelescopeData
 } from '../../util/telescopeCommsMock';
 
 /**
@@ -135,8 +134,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 techGoalId: props.observation?.technicalGoal?._id,
                 fieldId: props.observation?.field?._id ? String(props.observation?.field?._id) : undefined,
                 timingWindows: initialTimingWindows,
-                telescopeName: telescopeNameData?.keys()[0] ? telescopeNameData?.keys()[0] : 'None',
-                instrument: telescopeNameData?.keys()[0][0] ? telescopeNameData?.keys()[0] : 'None',
+                telescopeName: telescopeNameData?.keys().next().value ? telescopeNameData?.keys().next().value : 'None',
+                instrument: telescopeNameData?.get(telescopeNameData?.keys().next().value).keys().next().value ?
+                            telescopeNameData?.get(telescopeNameData?.keys().next().value).keys().next().value : 'None',
                 elements: new Map<string, string>(),
             },
 
@@ -404,6 +404,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
                     opticalTelescopeResourceSaveTelescopeData({
                         proposalID: selectedProposalCode, observationID: form.getValues().observationId!,
+                        instrumentName: form.getValues().instrument,
                         telescopeName: form.getValues().telescopeName, choices: form.getValues().elements
                     });
                 }
@@ -440,7 +441,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         <TimingWindowsForm form={form}/>
                     </Fieldset>
                     <Space h={"md"} />
-                    <Fieldset lengard={"Telescopes"}>
+                    <Fieldset legend={"Optical Telescopes"}>
                         <Telescopes form={form}/>
                     </Fieldset>
                     <Group justify={"flex-end"}>

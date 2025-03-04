@@ -42,7 +42,7 @@ export type ReceivedTelescopes = {
 // the type for the saving of observation telescope data.
 export type SaveTelescopeState = {
     proposalID: string, observationID: string, telescopeName: string,
-    choices: Map<string, string>
+    instrumentName: string, choices: Map<string, string>
 }
 
 // the type for the loading of observation telescope data.

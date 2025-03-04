@@ -1,12 +1,11 @@
 // data store. first string = proposal id+observation id.
 //             second key = telescope name
 //             third key = element name and value = choice.
-import { Instrument, LoadTelescopeState, SaveTelescopeState, Telescope, Type } from './telescopeComms';
-import { Telescopes } from '../ProposalEditorView/observations/telescopes';
+import { LoadTelescopeState, SaveTelescopeState, Type } from './telescopeComms';
 
 // data store for the mock
-const dataStore: Map<string, Map<string, Map<string, string>>> =
-    new Map<string, Map<string, Map<string, string>>>();
+const dataStore: Map<string, Map<string, Map<string, Map<string, string>>>> =
+    new Map<string, Map<string, Map<string, Map<string, string>>>>();
 
 /**
  * bring about a call to get telescope names.
@@ -362,8 +361,9 @@ export const opticalTelescopeResourceSaveTelescopeData = (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
         data: SaveTelescopeState, signal?: AbortSignal) => {
     const key = `${data.proposalID}.${data.observationID}`;
-    dataStore.set(key, new Map<string, Map<string, string>>());
-    dataStore.get(key).set(data.telescopeName, data.choices)
+    dataStore.set(key, new Map<string, Map<string, Map<string, string>>>());
+    dataStore.get(key).set(data.telescopeName, new Map<string, Map<string, string>>);
+    dataStore.get(key).get(data.telescopeName)?.set(data.instrumentName, data.choices);
 }
 
 /**
@@ -371,12 +371,12 @@ export const opticalTelescopeResourceSaveTelescopeData = (
  *
  * @param {LoadTelescopeState} data: the data to load telescope data from.
  * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
+ * @return {Promise<Map<string, Map<string, Map<string, string>>> | undefined>}: the resulting data when received.
  */
 export const useOpticalTelescopeResourceLoadTelescopeData = (
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         data: LoadTelescopeState, signal?: AbortSignal) => {
-    const key = `${data.proposalID}.${data.observationID}$`
+    const key = `${data.proposalID}.${data.observationID}`
     return dataStore.get(key);
 }
 
