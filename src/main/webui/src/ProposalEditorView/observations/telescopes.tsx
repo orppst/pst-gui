@@ -146,9 +146,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         setupElementsInForm();
 
         // debugger.
-        notifySuccess(
-            "new value of telescope name is",
-            form.getInputProps('instrument').value);
+        //notifySuccess(
+        //    "new value of telescope name is",
+        //    form.getInputProps('instrument').value);
     }
 
     /**
@@ -158,6 +158,20 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * @param value: element value.
      */
     function handleTextAreaChange(key: string, value: string): void {
+        form.getInputProps('elements').value.set(key, value);
+        form.setDirty({'elements': true});
+        //notifySuccess(
+        //    "new value is",
+        //    form.getInputProps('elements').value.get(value.target.labels[0].innerText));
+    }
+
+    /**
+     * saves a boolean change into the form.
+     *
+     * @param key: element key
+     * @param value: element value.
+     */
+    function handleBooleanChange(key: string, value: string): void {
         form.getInputProps('elements').value.set(key, value);
         form.setDirty({'elements': true});
         //notifySuccess(
@@ -252,7 +266,11 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                                     <input checked={form.getInputProps("elements").value.get(key)}
                                            type="checkbox"
                                            key={selectedTelescope + selectedInstrument + key}
-                                           defaultValue={form.getInputProps("elements").value.get(key)}/>
+                                           defaultValue={form.getInputProps("elements").value.get(key)}
+                                           onChange={(e) => {
+                                               handleBooleanChange(key, e.target.checked);
+                                           }}
+                                    />
                                     {key}
                                 </label>
                         default:
