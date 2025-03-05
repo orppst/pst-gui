@@ -1,4 +1,4 @@
-import { BaseSyntheticEvent, ReactElement, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { Select, Textarea} from '@mantine/core';
 import {
     useOpticalTelescopeResourceGetNames,
@@ -43,7 +43,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     // state holder to force re renders
     let telescopeState = "None";
     let instrumentState = "None";
-    if (userSavedObservationData !== undefined) {
+    if (userSavedObservationData !== undefined && !form.isDirty("elements")) {
         telescopeState = userSavedObservationData.keys().next().value
         instrumentState = userSavedObservationData.get(
             userSavedObservationData.keys().next().value).keys().next().value;
