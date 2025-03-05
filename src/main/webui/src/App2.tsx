@@ -78,6 +78,7 @@ import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPag
 import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
 import {notifyError} from "./commonPanel/notifications.tsx";
 import JSZip from "jszip";
+import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 
 /**
  * defines the user context type.
@@ -249,6 +250,11 @@ function App2(): ReactElement {
                         path: "proposal/:selectedProposalCode/targets",
                         element:<TargetPanel />,
                         errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/targets/new",
+                        element: <AddTargetPanel />,
+                        errorElement: <ErrorPage />
                     },
                     {
                         path: "proposal/:selectedProposalCode/goals",
