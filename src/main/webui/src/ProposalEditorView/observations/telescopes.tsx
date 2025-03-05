@@ -229,6 +229,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                                 label={key}
                                 key={selectedTelescope + selectedInstrument + key}
                                 placeholder={"Select the telescope instrument"}
+                                readOnly={elementsDataMap.get(key).values.length == 1}
+                                disabled={elementsDataMap.get(key).values.length == 1}
                                 data = {Array.from(elementsDataMap.get(key).values)}
                                 defaultValue={form.getInputProps("elements").value.get(key)}
                                 onChange={(e) => {
