@@ -47,10 +47,17 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         telescopeState = userSavedObservationData.keys().next().value
         instrumentState = userSavedObservationData.get(
             userSavedObservationData.keys().next().value).keys().next().value;
-        const elements: Map<string, string> =
-            userSavedObservationData.get(telescopeState).get(instrumentState);
-        for (const elementName of elements.keys()) {
-            form.getInputProps("elements").value.set(elementName, elements.get(elementName));
+
+        if (telescopeState == form.getInputProps("telescopeName").value &&
+                instrumentState == form.getInputProps("instrument").value)
+        {
+            const elements: Map<string, string> =
+                userSavedObservationData.get(telescopeState).get(instrumentState);
+            for (const elementName of elements.keys()) {
+                form.getInputProps("elements").value.set(elementName, elements.get(elementName));
+            }
+        } else {
+            userSavedObservationData = new Map<string, Map<string, Map<string, string>>>();
         }
     } else {
         userSavedObservationData = new Map<string, Map<string, Map<string, string>>>();
@@ -110,10 +117,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 if (userStoresObservationElements == undefined) {
                     if (elementsDataMap.get(elementName).values.length !== 0) {
                         // set to the first value
-                        if (form.getInputProps("elements").value.get(elementName) == undefined) {
-                            form.getInputProps("elements").value.set(
-                                elementName, elementsDataMap.get(elementName).values[0]);
-                        }
+                        form.getInputProps("elements").value.set(
+                            elementName, elementsDataMap.get(elementName).values[0]);
                     } else {
                         // if no options. just set to none.
                         if (form.getInputProps("elements").value.get(elementName) == undefined) {
