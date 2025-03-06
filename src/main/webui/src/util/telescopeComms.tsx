@@ -2,7 +2,7 @@ import { proposalToolFetch } from '../generated/proposalToolFetcher';
 import * as Fetcher from '../generated/proposalToolFetcher';
 
 // the response type for the names of the telescope.
-export type ReceivedTelescopeNames = { names: string [], length: number}
+export type ReceivedTelescopeNames = { names: string []}
 
 // the error format for telescope error response with name.
 export type TelescopeNameError = Fetcher.ErrorWrapper<undefined>;
@@ -35,8 +35,7 @@ export type SaveTelescopeResourceParametersVariables = {
 
 // the type for the received data about telescopes.
 export type ReceivedTelescopes = {
-    telescopes: Telescope [],
-    length: number
+    telescopes: Map<string, Telescope>
 }
 
 // the type for the saving of observation telescope data.
