@@ -41,7 +41,7 @@ function TargetRaInput(p: {
                     if (raValue.length === 0) return
 
                     //regex to check for sexagesimal input
-                    const validRaSgm = /^\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
+                    const validRaSgm = /^\d{2}([ :])\d{2}([ :])\d{2}(?:[.]\d+)?$/
                     //regex to check for decimal input
                     const validRaDegrees = /^\d{1,3}(?:[.]\d+)?$/
 

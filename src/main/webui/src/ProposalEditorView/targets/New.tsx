@@ -127,7 +127,7 @@ function AddTargetPanel(): ReactElement {
                 ra: (value) => {
                     //at this point ra is always in sexagesimal
                     if (value === null || value === '') return 'RA cannot be blank'
-                    const validRaSgm = /^\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
+                    const validRaSgm = /^\d{2}([ :])\d{2}([ :])\d{2}(?:[.]\d+)?$/
                     if (!validRaSgm.test(value)) return 'Invalid value format'
                     let noDecimal = !value.includes('.')
                     let raDegrees = AstroLib.HmsToDeg(noDecimal ? value + '.0' : value)
@@ -137,7 +137,7 @@ function AddTargetPanel(): ReactElement {
                 dec: (value) => {
                     //at this point dec is always in sexagesimal
                     if (value === null || value === '') return 'Dec cannot be blank'
-                    const validDecSgm = /^[-+]?\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
+                    const validDecSgm = /^[-+]?\d{2}([ :])\d{2}([ :])\d{2}(?:[.]\d+)?$/
                     if (!validDecSgm.test(value)) return 'Invalid value format'
                     let noDecimal = !value.includes('.')
                     let decDegrees = AstroLib.DmsToDeg(noDecimal ? value + '.0' : value);

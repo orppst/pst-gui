@@ -42,7 +42,7 @@ function TargetDecInput(p: {
                     if (decValue.length === 0) return
 
                     //regex to check for sexagesimal input
-                    const validDecSgm = /^[-+]?\d{1,2}([ :])\d{1,2}([ :])\d{1,2}(?:[.]\d+)?$/
+                    const validDecSgm = /^[-+]?\d{2}([ :])\d{2}([ :])\d{2}(?:[.]\d+)?$/
 
                     //regex to check for decimal input
                     const validDecDegrees = /^[-+]?\d{1,2}(?:[.]\d+)?$/
