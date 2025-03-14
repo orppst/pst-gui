@@ -10,20 +10,17 @@ import { ReactElement } from 'react';
 import ObservationEditModal from './edit.modal.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
-import {IconTarget, IconChartLine, IconGeometry} from '@tabler/icons-react';
+import {IconTarget, IconChartLine} from '@tabler/icons-react';
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 
 
 /**
  * the observation props.
- * @param {Observation | undefined} observation the observation object or
- * undefined if not populated
- * @param {number} observationId the observation id - optional
+ * @param {Observation} observation the observation object or undefined if not populated
  * @param {() => void}} closeModal an optional close modal - optional
  */
 export type ObservationProps = {
-    observation: Observation | undefined,
-    selectedTargets: number[] | undefined,
+    observation?: Observation,
     closeModal?: () => void
 }
 
@@ -33,11 +30,7 @@ export type ObservationProps = {
  * @constructor
  */
 function ObservationsPanel(): ReactElement {
-    return (
-        <>
-            <Observations/>
-        </>
-    );
+    return (<Observations/>);
 }
 
 //reminder we are getting lists of 'ObjectIdentifiers' which contain only a
@@ -69,7 +62,8 @@ function Observations() {
             <PanelHeader
                 isLoading={proposal.isLoading}
                 itemName={proposal.data?.title!}
-                panelHeading={"Observations"} />
+                panelHeading={"Observations"}
+            />
         )
     }
 
@@ -87,8 +81,10 @@ function Observations() {
                     {
                         proposal.data?.observations?.map((observation) => {
                             return (
-                                <ObservationRow id={observation._id!}
-                                                key={observation._id!} />
+                                <ObservationRow
+                                    id={observation._id!}
+                                    key={observation._id!}
+                                />
                             )
                         })
                     }
@@ -131,21 +127,6 @@ function Observations() {
         )
     }
 
-    const ObservationFieldButton = () : ReactElement => {
-        return (
-            <NavigationButton
-                p={5}
-                ml={-5}
-                to={"../proposal/" + selectedProposalCode + "/observationFields"}
-                icon={IconGeometry}
-                toolTipLabel={"Go to Observation Fields page"}
-                label={"at least one observation field"}
-            />
-        )
-    }
-
-
-
     // if still loading. present a loading screen.
     if (proposal.isLoading) {
         return (
@@ -159,9 +140,7 @@ function Observations() {
         )
     }
 
-    if (proposal.data?.targets === undefined ||
-        proposal.data?.technicalGoals === undefined ||
-        proposal.data?.fields === undefined) {
+    if (proposal.data?.targets === undefined || proposal.data?.technicalGoals === undefined) {
         return (
             <PanelFrame>
                 <Header/>
@@ -177,12 +156,6 @@ function Observations() {
                             !proposal.data?.technicalGoals &&
                             <List.Item>
                                 <TechnicalGoalButton/>
-                            </List.Item>
-                        }
-                        {
-                            !proposal.data?.fields &&
-                            <List.Item>
-                                <ObservationFieldButton/>
                             </List.Item>
                         }
                     </List>
@@ -203,7 +176,7 @@ function Observations() {
                 <Space h={"xl"}/>
                 <Grid>
                    <Grid.Col span={10}></Grid.Col>
-                    <ObservationEditModal observation={undefined} selectedTargets={undefined}/>
+                    <ObservationEditModal/>
                 </Grid>
             </PanelFrame>
         )

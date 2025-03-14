@@ -72,12 +72,7 @@ export default function ObservationFieldsPanel() : ReactElement {
               <Grid.Col span={10}></Grid.Col>
                               <ObservationFieldModal observationField={undefined}
                                                      fieldNames={fieldNames} />
-                              </Grid>
-              {/*}
-           <Group justify={'center'}>
-                <ObservationFieldModal observationField={undefined} />
-            </Group>
-            */}
+            </Grid>
 
         </PanelFrame>
     )
