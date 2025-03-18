@@ -2,7 +2,7 @@ import { proposalToolFetch } from '../generated/proposalToolFetcher';
 import * as Fetcher from '../generated/proposalToolFetcher';
 
 // the response type for the names of the telescope.
-export type ReceivedTelescopeNames = { names: string []}
+export type ReceivedTelescopeNames = string [];
 
 // the error format for telescope error response with name.
 export type TelescopeNameError = Fetcher.ErrorWrapper<undefined>;
@@ -17,7 +17,7 @@ export type TelescopeLoadError = Fetcher.ErrorWrapper<undefined>;
 export type TelescopeSaveError = Fetcher.ErrorWrapper<undefined>;
 
 // the enum type of the forms of input.
-export enum Type {LIST, TEXT, BOOLEAN }
+export enum Type {LIST = "LIST", TEXT = "TEXT", BOOLEAN = "BOOLEAN" }
 
 // the type of field
 export type Field = {type: Type, values: string []}
@@ -51,7 +51,8 @@ export type LoadTelescopeState = {
 
 // the type of data returned from a load request
 export type SavedTelescopeData = {
-    proposalID: string, observationID: string, telescopeName: string, choices: Map<string, string>
+    proposalID: string, observationID: string, telescopeName: string,
+    choices: Map<string, string>
 }
 
 /**
@@ -60,16 +61,16 @@ export type SavedTelescopeData = {
  * @param {AbortSignal} signal: the signal for failure.
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
-export const useOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
-    proposalToolFetch<
-        ReceivedTelescopeNames,
+export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
+    proposalToolFetch<ReceivedTelescopeNames,
         TelescopeNameError,
         undefined,
-        {unknown},
-        {unknown},
-        {unknown}
-        >({ url: "/pst/api/opticalTelescopes/names",
-            method: "get", ...{}, signal });
+        { unknown },
+        { unknown },
+        { unknown }>({
+        url: "/pst/api/opticalTelescopes/names",
+        method: "get", signal: signal
+    });
 
 /**
  * bring about a call to get telescope data.
@@ -77,16 +78,16 @@ export const useOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
  * @param {AbortSignal} signal: the signal for failure.
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
-export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal) =>
-    proposalToolFetch<
-        ReceivedTelescopes,
+export const fetchOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal) =>
+    proposalToolFetch<ReceivedTelescopes,
         TelescopeDataError,
         undefined,
-        {unknown},
-        {unknown},
-        {unknown}
-        >({ url: "/pst/api/opticalTelescopes/telescopes",
-        method: "get", ...{}, signal });
+        { unknown },
+        { unknown },
+        { unknown }>({
+        url: "/pst/api/opticalTelescopes/telescopes",
+        method: "get", signal: signal
+    });
 
 /**
  * bring about a call to save observation telescope data.
@@ -99,13 +100,15 @@ export const useOpticalTelescopeResourceSaveTelescopeData = (
     data: SaveTelescopeState, signal?: AbortSignal) =>
     proposalToolFetch<
         boolean,
-        TelescopeDataError,
+        TelescopeSaveError,
         SaveTelescopeState,
-        {unknown},
-        {unknown},
+        { unknown },
+        { unknown },
         SaveTelescopeResourceParametersVariables
         >({ url: "/pst/api/opticalTelescopes/save",
-        method: "put", ...data, signal });
+            method: "put",
+            body: data,
+            signal: signal });
 
 /**
  * bring about a call to get observation telescope data.
@@ -114,14 +117,14 @@ export const useOpticalTelescopeResourceSaveTelescopeData = (
  * @param {AbortSignal} signal: the signal for failure.
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
-export const useOpticalTelescopeResourceLoadTelescopeData = (
+export const fetchOpticalTelescopeResourceLoadTelescopeData = (
     data: LoadTelescopeState, signal?: AbortSignal) =>
-    proposalToolFetch<
-        SavedTelescopeData,
-        TelescopeDataError,
+    proposalToolFetch<SavedTelescopeData,
+        TelescopeLoadError,
         LoadTelescopeState,
-        {unknown},
-        {unknown},
-        SaveTelescopeResourceParametersVariables
-        >({ url: "/pst/api/opticalTelescopes/load",
-        method: "post", ...data, signal });
+        { unknown },
+        { unknown },
+        SaveTelescopeResourceParametersVariables>({
+        url: "/pst/api/opticalTelescopes/load",
+        method: "post", body: data, signal: signal
+    });

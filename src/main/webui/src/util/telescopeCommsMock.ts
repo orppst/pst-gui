@@ -14,7 +14,7 @@ const dataStore: Map<string, Map<string, Map<string, Map<string, string>>>> =
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useOpticalTelescopeResourceGetNames = (signal?: AbortSignal) => {
+export const useOpticalTelescopeResourceGetNames = (signal?: AbortSignal): string [] => {
     return ["TCS", "LT", "TNG", "SALT", "CFHT", "NOT", "CAHA35", "AAT",
             "LCO", "REM", "CAHA22", "OHP193", "Aristarchos", "TBL"];
 }
@@ -26,7 +26,8 @@ export const useOpticalTelescopeResourceGetNames = (signal?: AbortSignal) => {
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal) => {
+export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal) :
+        Map<string, Map<string, Map<string, Map<string, string>>>> => {
     return {
         "TCS": {
             "FastCam: optical Lucky Imager": {
@@ -357,13 +358,14 @@ export const useOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal
  * @param {AbortSignal} signal: the signal for failure.
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
-export const opticalTelescopeResourceSaveTelescopeData = (
+export const useOpticalTelescopeResourceSaveTelescopeData = (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        data: SaveTelescopeState, signal?: AbortSignal) => {
+        data: SaveTelescopeState, signal?: AbortSignal): boolean => {
     const key = `${data.proposalID}.${data.observationID}`;
     dataStore.set(key, new Map<string, Map<string, Map<string, string>>>());
     dataStore.get(key).set(data.telescopeName, new Map<string, Map<string, string>>);
     dataStore.get(key).get(data.telescopeName)?.set(data.instrumentName, data.choices);
+    return true;
 }
 
 /**
