@@ -129,12 +129,12 @@ export const contextualHelpMessages = [
 , {
   id: "MaintObs-eng",
   message: " "
-      + " You must select one Target, and one Technical Goal (Performance parameters), followed by both Observation field and type. "
-      + " If your observation type is Calibration, you must choose Calibration intended use."
-      + " Timing windows are optional, but if you select one, you must provide start and end dates and times"
-      + " (choose the date from the calendar and then select a time from the bottom of the calendar)."
-      + " The slider next to the time fields identifies the window as one to be avoided, and you may add a brief note."
-      + " Save your changes with the Save button at bottom right of the timing windows, or cancel and return without saving by clicking the Cancel button."
+      + " Select the 'type' observation, either 'Target' or 'Calibration'. "
+      + " A 'Calibration Observation' requires you pick an intended use e.g., Pointing, Bandpass, etc."
+      + " You must select at least one Target, and one Technical Goal. "
+      + " At least one 'Timing Window' is required. Here you must provide start and end dates-times for the window. "
+      + " Notice that the end date-time must be after the start date-time. "
+      + " The semantics of the avoid flag is to communicate a timing window that must be avoided for this observation. You may also add a brief optional note."
 }
 , {
   id: "ManageDocs-eng",

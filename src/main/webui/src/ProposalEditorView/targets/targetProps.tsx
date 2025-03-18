@@ -1,6 +1,7 @@
 import {
     ProposalResourceGetTargetsResponse
 } from 'src/generated/proposalToolComponents.ts';
+import {DefaultMantineColor} from "@mantine/core";
 
 /**
  * target prop.
@@ -45,4 +46,5 @@ export type TargetTableProps = {
     boundTargets: (number | undefined)[] | undefined,
     selectedTargets: (number)[] | undefined,
     setSelectedTargetFunction?: (value: number) => void
+    borderColor?: DefaultMantineColor
 }

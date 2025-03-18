@@ -1,4 +1,4 @@
-import { useDisclosure } from '@mantine/hooks';
+import {useDisclosure, useMediaQuery} from '@mantine/hooks';
 import { Modal } from '@mantine/core';
 import ObservationEditGroup from './edit.group.tsx';
 import { ObservationProps } from './observationPanel.tsx';
@@ -8,6 +8,9 @@ import AddButton from 'src/commonButtons/add.tsx';
 
 export default function ObservationEditModal(
         observationProps: ObservationProps) {
+
+    const smallScreen = useMediaQuery("(max-width: 1350px)");
+
     /**
      * generates the html for a new button.
      * @return {React.ReactElement} the html for the new button.
@@ -44,9 +47,11 @@ export default function ObservationEditModal(
                     opened={opened}
                     onClose={props.closeModal}
                     title={newObservation ?
-                        "New Observation" :
+                        "Create an Observation" :
                         "View/Edit Observation"}
-                    size = "auto" //fullScreen
+                    size ={"75%"}
+                    fullScreen={smallScreen}
+                    closeOnClickOutside={false}
                 >
                     <ObservationEditGroup {...props}/>
                 </Modal>

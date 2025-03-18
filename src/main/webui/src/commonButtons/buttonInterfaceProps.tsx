@@ -47,6 +47,7 @@ export interface FormSubmitButtonInterfaceProps {
     variant?: ButtonVariant
     notValidToolTipLabel?: string
     notDirtyToolTipLabel?: string
+    disabled?: boolean
 }
 
 /**

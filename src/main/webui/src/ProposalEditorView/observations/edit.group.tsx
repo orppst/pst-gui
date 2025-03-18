@@ -1,7 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import {Fieldset, Grid, Text, Stack, Group, Space} from '@mantine/core';
+import {Fieldset, Grid, Text, Group, Space} from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, Target, TargetObservation,
@@ -22,10 +22,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {ReactElement, SyntheticEvent, useState} from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
-import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {queryKeyProposals} from "../../queryKeyProposals.tsx";
+import {NO_ROW_SELECTED} from "../../constants.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 /**
  * the different types of observation.
@@ -40,9 +41,55 @@ export interface ObservationFormValues {
     observationType: ObservationType,
     calibrationUse: CalibrationTargetIntendedUse | undefined,
     targetDBIds: number[],
-    techGoalId: number | undefined,
+    techGoalId: number,
     timingWindows: TimingWindowGui[],
 }
+
+
+/**
+ * Convert the TimingWindow type from the database to a type appropriate for
+ * the UI.
+ * NOTE: This is because the Type TimingWindow in proposalToolSchemas.ts has
+ * 'startTime' and 'endTime' as date strings (ISO8601 strings). We need
+ * to convert these to type Date before using them with the 'DateTimePicker'
+ * element.
+ *
+ * @param {TimingWindow} input the timing window to convert to a timing window
+ * gui.
+ * @return {TimingWindowGui} the converted timing window gui object.
+ */
+function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
+    return ({
+        startTime: new Date(input.startTime!),
+        endTime: new Date(input.endTime!),
+        note: input.note ?? "",
+        isAvoidConstraint: input.isAvoidConstraint!,
+        key: String(input._id!),
+        id: input._id!
+    })
+}
+
+/**
+ * Convert the TimingWindowGui type to a type appropriate to write to the
+ * database.
+ * Note: API expects the Dates as the number of milliseconds since the posix epoch
+ *
+ * @param {TimingWindowGui} input the timing window gui to convert to a
+ * timing window api.
+ * @return {TimingWindowApi} the converted timing window API object.
+ */
+function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
+    return ({
+        "@type": "proposal:TimingWindow",
+        startTime: input.startTime!.getTime(),
+        endTime: input.endTime!.getTime(),
+        note: input.note,
+        isAvoidConstraint: input.isAvoidConstraint,
+        _id: input.id
+    })
+}
+
+
 
 /**
  * builds the observation edit panel.
@@ -121,21 +168,21 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 observationType: observationType,
                 calibrationUse: calibrationUse,
                 targetDBIds: initialTargetIds,
-                techGoalId: props.observation?.technicalGoal?._id,
+                techGoalId: props.observation?.technicalGoal?._id ?? NO_ROW_SELECTED,
                 timingWindows: initialTimingWindows
             },
 
             validate: {
                 targetDBIds: (value: number[] ) =>
                     (value.length == 0 ? 'Please select at least one target' : null),
-                techGoalId: (value: number | undefined | string) =>
-                    (value === undefined ? 'Please select a technical goal' : null),
+                techGoalId: (value: number) =>
+                    (value === NO_ROW_SELECTED ? 'Please select a technical goal' : null),
                 observationType: (value: ObservationType) =>
                     (value === '' ? 'Please select the observation type' : null),
                 calibrationUse: (value, values) =>
                     ((values.observationType === "Calibration" && value === undefined) ?
                         'Please select the calibration use' : null),
-                timingWindows: {
+                timingWindows : {
                     startTime: (value) => (
                         value === null ? 'No start time selected' : null),
                     endTime: (value) => (
@@ -384,76 +431,28 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
 
   return (
     <form onSubmit={handleSubmit}>
-        <ContextualHelpButton messageId="MaintObs" />
-        <Stack>
-            <Grid  columns={5}>
-                <Grid.Col span={{base: 5, lg: 2}}>
-                    <Fieldset legend={"Target and type"}>
-                        <TargetTypeForm form={form} setFieldName={setFieldName}/>
-                    </Fieldset>
-                </Grid.Col>
-                <Grid.Col span={{base: 5, lg: 3}}>
-                    <Fieldset legend={"Timing windows"}>
-                        <Text ta={"center"}  size={"xs"} c={"gray.6"}>
-                            Timezone set to UTC
-                        </Text>
-                        <TimingWindowsForm form={form}/>
-                    </Fieldset>
-                    <Space h={"md"} />
-                    <Group justify={"flex-end"}>
-                        <FormSubmitButton form={form} />
-                        <CancelButton
-                            onClickEvent={handleCancel}
-                            toolTipLabel={"Go back without saving"}
-                        />
-                    </Group>
-                </Grid.Col>
-            </Grid>
-        </Stack>
+        <ContextualHelpButton messageId={"MaintObs"} />
+        <Grid columns={12}>
+            <Grid.Col span={{base: 12}}>
+                <TargetTypeForm form={form} setFieldName={setFieldName}/>
+            </Grid.Col>
+            <Grid.Col span={{base: 12}}>
+                <Fieldset legend={"Timing windows"}>
+                    <Text ta={"center"} size={"xs"} c={"gray.6"}>
+                        Timezone set to UTC
+                    </Text>
+                    <TimingWindowsForm form={form}/>
+                </Fieldset>
+                <Space h={"md"} />
+                <Group justify={"flex-end"}>
+                    <FormSubmitButton form={form} disabled={form.getValues().timingWindows.length === 0}/>
+                    <CancelButton
+                        onClickEvent={handleCancel}
+                        toolTipLabel={"Go back without saving"}
+                    />
+                </Group>
+            </Grid.Col>
+        </Grid>
     </form>
     )
 }
-
-/**
- * Convert the TimingWindow type from the database to a type appropriate for
- * the UI.
- * NOTE: This is because the Type TimingWindow in proposalToolSchemas.ts has
- * 'startTime' and 'endTime' as date strings (ISO8601 strings). We need
- * to convert these to type Date before using them with the 'DateTimePicker'
- * element.
- *
- * @param {TimingWindow} input the timing window to convert to a timing window
- * gui.
- * @return {TimingWindowGui} the converted timing window gui object.
- */
-function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
-    return ({
-        startTime: new Date(input.startTime!),
-        endTime: new Date(input.endTime!),
-        note: input.note ?? "",
-        isAvoidConstraint: input.isAvoidConstraint!,
-        key: String(input._id!),
-        id: input._id!
-    })
-}
-
-/**
- * Convert the TimingWindowGui type to a type appropriate to write to the
- * database.
- * Note: API expects the Dates as the number of milliseconds since the posix epoch
- *
- * @param {TimingWindowGui} input the timing window gui to convert to a
- * timing window api.
- * @return {TimingWindowApi} the converted timing window API object.
- */
-function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
-    return ({
-        "@type": "proposal:TimingWindow",
-        startTime: input.startTime!.getTime(),
-        endTime: input.endTime!.getTime(),
-        note: input.note,
-        isAvoidConstraint: input.isAvoidConstraint,
-        _id: input.id
-    })
-}
-

@@ -71,6 +71,9 @@ export const JQUERY_SRC_URL = 'https://code.jquery.com/jquery-1.12.1.min.js';
 /* the color selection of yellow needed for errors */
 export const ERROR_YELLOW = 6;
 
+export const err_yellow_str = "yellow.6"
+export const err_red_str = "red.6"
+
 /* this constant is the expected name of the file which contains the json data.
  */
 export const JSON_FILE_NAME = 'proposal.json';
