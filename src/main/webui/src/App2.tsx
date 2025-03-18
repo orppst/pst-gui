@@ -69,7 +69,6 @@ import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observato
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
-import ObservationFieldsPanel from "./ProposalEditorView/observationFields/ObservationFieldsPanel.tsx";
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 import ErrorPage from "./errorHandling/error-page.jsx"
 import {PanelFrame} from "./commonPanel/appearance.tsx";
@@ -262,9 +261,11 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
+                        /*
                         path: "proposal/:selectedProposalCode/observationFields",
                         element: <ObservationFieldsPanel />,
                         errorElement: <ErrorPage />,
+                         */
                     },
                     {
                         path: "proposal/:selectedProposalCode/observations",
