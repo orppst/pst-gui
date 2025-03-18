@@ -18,7 +18,7 @@ import { ObservationFormValues } from './edit.group.tsx';
 import {
     OPEN_DELAY,
     NO_ROW_SELECTED, TABLE_MIN_WIDTH,
-    TABLE_SCROLL_HEIGHT, err_red_str, err_yellow_str
+    TABLE_SCROLL_HEIGHT, err_red_str, err_yellow_str, err_green_str
 } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
@@ -136,7 +136,7 @@ export default function TargetTypeForm (p: {
                         p.form.getValues().targetDBIds.length == 0 ?
                             <Text c={err_red_str} span inherit>Please select at least one</Text>
                             :
-                            <Text c={err_yellow_str} span inherit>Multiple selections allowed</Text>
+                            <Text c={err_green_str} span inherit>Multiple selections allowed</Text>
                     }
                 </Text>
                 {
@@ -184,7 +184,7 @@ export default function TargetTypeForm (p: {
                     { p.form.getValues().techGoalId === NO_ROW_SELECTED ?
                         <Text c={err_red_str} span inherit>Please select one</Text>
                         :
-                        <Text c={err_yellow_str} span inherit>Select one only</Text>
+                        <Text c={err_green_str} span inherit>Selected</Text>
                     }
                 </Text>
                 {

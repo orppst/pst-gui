@@ -1,7 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import {Fieldset, Grid, Text, Group, Space} from '@mantine/core';
+import {Fieldset, Text, Group, Stack} from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, Target, TargetObservation,
@@ -431,28 +431,23 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
 
   return (
     <form onSubmit={handleSubmit}>
-        <ContextualHelpButton messageId={"MaintObs"} />
-        <Grid columns={12}>
-            <Grid.Col span={{base: 12}}>
-                <TargetTypeForm form={form} setFieldName={setFieldName}/>
-            </Grid.Col>
-            <Grid.Col span={{base: 12}}>
-                <Fieldset legend={"Timing windows"}>
-                    <Text ta={"center"} size={"xs"} c={"gray.6"}>
-                        Timezone set to UTC
-                    </Text>
-                    <TimingWindowsForm form={form}/>
-                </Fieldset>
-                <Space h={"md"} />
-                <Group justify={"flex-end"}>
-                    <FormSubmitButton form={form} disabled={form.getValues().timingWindows.length === 0}/>
-                    <CancelButton
-                        onClickEvent={handleCancel}
-                        toolTipLabel={"Go back without saving"}
-                    />
-                </Group>
-            </Grid.Col>
-        </Grid>
+        <Stack>
+            <ContextualHelpButton messageId={"MaintObs"} />
+            <TargetTypeForm form={form} setFieldName={setFieldName}/>
+            <Fieldset legend={"Timing windows"}>
+                <Text ta={"center"} size={"xs"} c={"gray.6"}>
+                    Timezone set to UTC
+                </Text>
+                <TimingWindowsForm form={form}/>
+            </Fieldset>
+            <Group justify={"flex-end"}>
+                <FormSubmitButton form={form} disabled={form.getValues().timingWindows.length === 0}/>
+                <CancelButton
+                    onClickEvent={handleCancel}
+                    toolTipLabel={"Go back without saving"}
+                />
+            </Group>
+        </Stack>
     </form>
     )
 }

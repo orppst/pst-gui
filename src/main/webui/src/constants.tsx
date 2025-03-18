@@ -73,6 +73,7 @@ export const ERROR_YELLOW = 6;
 
 export const err_yellow_str = "yellow.6"
 export const err_red_str = "red.6"
+export const err_green_str = "green.6"
 
 /* this constant is the expected name of the file which contains the json data.
  */
