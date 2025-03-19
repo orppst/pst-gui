@@ -2,9 +2,9 @@ import {jwtDecode} from "jwt-decode";
 import {useToken} from "../App2.tsx";
 
 /**
- * Check current users roles for any one given
- * @param roles An array of strings of roles
- * @return boolean returns true if current user has ANY of the roles in the array
+ * Check current user's roles for any one in array
+ * @param roles A string array of roles
+ * @return boolean returns true if current user has ANY of the roles passed
  */
 export function HaveRole (roles: String[]) {
     const token = useToken();
