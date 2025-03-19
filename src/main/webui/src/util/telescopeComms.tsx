@@ -1,5 +1,7 @@
 import { proposalToolFetch } from '../generated/proposalToolFetcher';
 import * as Fetcher from '../generated/proposalToolFetcher';
+import * as reactQuery from "@tanstack/react-query";
+import { useProposalToolContext } from '../generated/proposalToolContext';
 
 // the response type for the names of the telescope.
 export type ReceivedTelescopeNames = string [];
@@ -90,27 +92,6 @@ export const fetchOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSign
     });
 
 /**
- * bring about a call to save observation telescope data.
- *
- * @param {SaveTelescopeState} data: the data to save.
- * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
- */
-export const useOpticalTelescopeResourceSaveTelescopeData = (
-    data: SaveTelescopeState, signal?: AbortSignal) =>
-    proposalToolFetch<
-        boolean,
-        TelescopeSaveError,
-        SaveTelescopeState,
-        { unknown },
-        { unknown },
-        SaveTelescopeResourceParametersVariables
-        >({ url: "/pst/api/opticalTelescopes/save",
-            method: "put",
-            body: data,
-            signal: signal });
-
-/**
  * bring about a call to get observation telescope data.
  *
  * @param {LoadTelescopeState} data: the data to load telescope data from.
@@ -128,3 +109,55 @@ export const fetchOpticalTelescopeResourceLoadTelescopeData = (
         url: "/pst/api/opticalTelescopes/load",
         method: "post", body: data, signal: signal
     });
+
+export type SavedTelescopeDataError = Fetcher.ErrorWrapper<undefined>;
+
+/**
+ * mutation function wrapping around the sending of new state to the backend for telescopes.
+ * @param options: the saved data.
+ * @return mutation promise holding onSuccess, OnError.
+ */
+export const useOpticalTelescopeResourceSaveTelescopeData = (
+    options?: Omit<
+        reactQuery.UseMutationOptions<
+            undefined,
+            SavedTelescopeDataError,
+            SavedTelescopeData>,
+        "mutationFn">
+) => {
+    const { fetcherOptions } = useProposalToolContext();
+    return reactQuery.useMutation<
+        undefined,
+        SavedTelescopeDataError,
+        SavedTelescopeData
+        >({
+        mutationFn: (variables: SavedTelescopeData) =>
+            fetchOpticalTelescopeResourceSaveTelescopeData({
+                ...fetcherOptions,
+                ...variables,
+            }),
+        ...options,
+    });
+};
+
+
+/**
+ * bring about a call to save observation telescope data.
+ *
+ * @param {SaveTelescopeState} data: the data to save.
+ * @param {AbortSignal} signal: the signal for failure.
+ * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
+ */
+export const fetchOpticalTelescopeResourceSaveTelescopeData = (
+    data: SaveTelescopeState, signal?: AbortSignal) =>
+    proposalToolFetch<
+        boolean,
+        TelescopeSaveError,
+        SaveTelescopeState,
+        { unknown },
+        { unknown },
+        SaveTelescopeResourceParametersVariables
+        >({ url: "/pst/api/opticalTelescopes/save",
+        method: "put",
+        body: data,
+        signal: signal });
