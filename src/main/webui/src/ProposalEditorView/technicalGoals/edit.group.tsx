@@ -1,6 +1,6 @@
 import PerformanceParametersSection from "./performance.form.tsx";
 import SpectralWindowsSection from "./spectrum.form.tsx";
-import {Grid, Stack} from "@mantine/core";
+import {Group, Space, Tabs} from "@mantine/core";
 import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
 import { ReactElement, SyntheticEvent } from 'react';
 import {useParams, useNavigate} from "react-router-dom";
@@ -53,13 +53,6 @@ export interface TechnicalGoalValues {
 export default function TechnicalGoalEditGroup(
     props: TechnicalGoalProps ): ReactElement {
 
-    // integers specifying the proportional number of columns for the performance parameter
-    // section and the spectral window section
-    const TOTAL_COLUMNS = 10;
-    const PERFORMANCE_COLUMNS = 4;
-    const SPECTRUM_COLUMNS = TOTAL_COLUMNS - PERFORMANCE_COLUMNS
-    // setup default values (proposal code, query system,
-    // and the technical goal)
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
     const newTechnicalGoal = !props.technicalGoal;
@@ -303,26 +296,37 @@ export default function TechnicalGoalEditGroup(
 
     return (
         <form onSubmit={handleSubmit}>
-            <ContextualHelpButton messageId="MaintTechGoal" />
-        <Stack>
-            <Grid columns={TOTAL_COLUMNS}>
-                <Grid.Col span={{base: TOTAL_COLUMNS, md: PERFORMANCE_COLUMNS}}>
-                    <PerformanceParametersSection form={form}/>
-                </Grid.Col>
-                <Grid.Col span={{base: TOTAL_COLUMNS, md: SPECTRUM_COLUMNS}}>
+            <Tabs defaultValue={"performanceParameters"}>
+                <Tabs.List>
+                    <Tabs.Tab value={"performanceParameters"}>
+                        Performance Parameters
+                    </Tabs.Tab>
+                    <Tabs.Tab value={"SpectralWindows"}>
+                        Spectral Windows
+                    </Tabs.Tab>
+                </Tabs.List>
+
+                <Tabs.Panel value={"performanceParameters"}>
+                    <Space h={"sm"}/>
+                    <ContextualHelpButton messageId="MaintTechGoal" />
+                    <PerformanceParametersSection form={form} />
+                </Tabs.Panel>
+                <Tabs.Panel value={"SpectralWindows"}>
+                    <Space h={"sm"}/>
+                    <ContextualHelpButton messageId="MaintTechGoalSpectralWindows" />
                     <SpectralWindowsSection form={form}/>
-                    <p> </p>
-                    <Grid>
-                    <Grid.Col span={8}></Grid.Col>
-                       <FormSubmitButton form={form} />
-                       <CancelButton
-                          onClickEvent={handleCancel}
-                           toolTipLabel={"Go back without saving"}/>
-                     </Grid>
-                     <p> </p>
-                </Grid.Col>
-                </Grid>
-        </Stack>
+                </Tabs.Panel>
+            </Tabs>
+
+            <Space h={"xl"} />
+
+            <Group justify={"flex-end"}>
+                <FormSubmitButton form={form} />
+                <CancelButton
+                    onClickEvent={handleCancel}
+                    toolTipLabel={"Go back without saving"}
+                />
+            </Group>
         </form>
     )
 }
