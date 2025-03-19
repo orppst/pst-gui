@@ -25,7 +25,7 @@ import { TimingWindowGui } from './timingWindowGui.tsx';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {queryKeyProposals} from "../../queryKeyProposals.tsx";
-import {NO_ROW_SELECTED} from "../../constants.tsx";
+import {err_red_str, NO_ROW_SELECTED} from "../../constants.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 /**
@@ -438,6 +438,13 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 <Text ta={"center"} size={"xs"} c={"gray.6"}>
                     Timezone set to UTC
                 </Text>
+                {
+                    form.getValues().timingWindows.length === 0 &&
+                    <Text ta={'center'} c={err_red_str} size={"sm"}>
+                        Please define at least one Timing Window
+                    </Text>
+                }
+
                 <TimingWindowsForm form={form}/>
             </Fieldset>
             <Group justify={"flex-end"}>
