@@ -77,6 +77,7 @@ import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPag
 import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
 import {notifyError} from "./commonPanel/notifications.tsx";
 import JSZip from "jszip";
+import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 
 /**
@@ -417,7 +418,7 @@ function App2(): ReactElement {
                                     <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
-                                    <Tooltip
+                                    {HaveRole(["tac_admin","tac_member"]) &&  (<Tooltip
                                         label={"go to proposal management view"}
                                         openDelay={OPEN_DELAY}
                                     >
@@ -428,7 +429,7 @@ function App2(): ReactElement {
                                         >
                                             <IconUniverse />
                                         </ActionIcon>
-                                    </Tooltip>
+                                    </Tooltip>)}
                                     <DatabaseSearchButton
                                         toolTipLabel={
                                             "Locate proposals by " +
