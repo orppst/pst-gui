@@ -2,8 +2,8 @@ import PerformanceParametersSection from "./performance.form.tsx";
 import SpectralWindowsSection from "./spectrum.form.tsx";
 import {Group, Space, Tabs} from "@mantine/core";
 import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
-import { ReactElement, SyntheticEvent } from 'react';
-import {useParams, useNavigate} from "react-router-dom";
+import {ReactElement, SyntheticEvent} from 'react';
+import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {
     convertToScienceSpectralWindow,
@@ -29,7 +29,6 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
-export const notSpecified = "not specified";
 export const notSet = "not set";
 
 /**
@@ -193,10 +192,9 @@ export default function TechnicalGoalEditGroup(
         }
     )
 
-    const navigate = useNavigate();
     function handleCancel(event: SyntheticEvent) {
         event.preventDefault();
-        navigate("../",{relative:"path"})
+        props.closeModal!();
     }
 
     const handleSubmit = form.onSubmit((values) => {
@@ -228,12 +226,6 @@ export default function TechnicalGoalEditGroup(
             })
 
         } else {
-
-            /*
-                Perhaps we should split performance parameters and spectral windows into separate forms?
-                Have a tabs in the modal for both. It may reduce the code complexity here somewhat.
-             */
-
 
             //editing an existing technical goal
             if (form.isDirty('performanceParameters')) {
@@ -267,7 +259,10 @@ export default function TechnicalGoalEditGroup(
                             },
                             body: convertToScienceSpectralWindow(sw)
                         }, {
-                            onSuccess: () => queryClient.invalidateQueries(),
+                            onSuccess: () => {
+                                queryClient.invalidateQueries().then();
+                                notifySuccess("Edit successful", "A Spectral Window has been added");
+                            },
                             onError: (error) =>
                                 notifyError("Failed to add new spectral window", getErrorMessage(error))
                         })
@@ -283,7 +278,10 @@ export default function TechnicalGoalEditGroup(
                             },
                             body: convertToScienceSpectralWindow(sw)
                         }, {
-                            onSuccess: () => queryClient.invalidateQueries(),
+                            onSuccess: () => {
+                                queryClient.invalidateQueries().then();
+                                notifySuccess("Edit successful", "Spectral Windows updated");
+                            },
                             onError: (error) =>
                                 notifyError("Failed to update spectral window", getErrorMessage(error))
                         })
@@ -301,7 +299,7 @@ export default function TechnicalGoalEditGroup(
                     <Tabs.Tab value={"performanceParameters"}>
                         Performance Parameters
                     </Tabs.Tab>
-                    <Tabs.Tab value={"SpectralWindows"}>
+                    <Tabs.Tab value={"spectralWindows"}>
                         Spectral Windows
                     </Tabs.Tab>
                 </Tabs.List>
@@ -311,7 +309,7 @@ export default function TechnicalGoalEditGroup(
                     <ContextualHelpButton messageId="MaintTechGoal" />
                     <PerformanceParametersSection form={form} />
                 </Tabs.Panel>
-                <Tabs.Panel value={"SpectralWindows"}>
+                <Tabs.Panel value={"spectralWindows"}>
                     <Space h={"sm"}/>
                     <ContextualHelpButton messageId="MaintTechGoalSpectralWindows" />
                     <SpectralWindowsSection form={form}/>
