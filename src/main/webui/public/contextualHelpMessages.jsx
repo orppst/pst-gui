@@ -97,14 +97,20 @@ export const contextualHelpMessages = [
        + " You can make a copy of any existing technical goal by clicking its Copy button."
 }
 , {
-  id: "MaintTechGoal-eng",
-  message: " "
-       + " You must provide values and units for the following performance parameters"
-       + " - Angular resolution, Largest scale, Sensitivity, and Spectral point."
-       + " Spectral windows are optional, but if you select one you must enter values and units for"
-       + " Start, End, and Resolution, as well as polarization."
-       + " Save your changes with the Save button at bottom right of the spectral windows, or cancel and return without saving by clicking the Cancel button."
-}
+    id: "MaintTechGoal-eng",
+    message: " "
+        + " You must provide values and units for the following performance parameters:"
+        + " - angular resolution; largest scale; sensitivity; and spectral point."
+        + " Spectral windows are optional."
+  }
+, {
+    id: "MaintTechGoalSpectralWindows-eng",
+    message: " "
+        + " Spectral windows are optional. Click 'Add' to bring up a window form. "
+        + " You must enter values and units for the start, end, and resolution, as well as polarization, of the window."
+        + " You may add multiple windows. "
+        + " If 'Save' is enabled this will also capture the Performance Parameter input values you entered."
+  }
 , {
   id: "MaintObsFieldList-eng",
   message: " "

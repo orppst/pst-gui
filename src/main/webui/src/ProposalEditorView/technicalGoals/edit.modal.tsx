@@ -1,4 +1,4 @@
-import {useDisclosure} from "@mantine/hooks";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {Modal} from "@mantine/core";
 import ViewEditButton from "src/commonButtons/viewEdit.tsx";
 import {ReactElement} from "react";
@@ -15,6 +15,8 @@ import TechnicalGoalEditGroup from "./edit.group.tsx";
  */
 export default function TechnicalGoalEditModal(
         technicalGoalProps: TechnicalGoalProps): ReactElement {
+
+    const smallScreen = useMediaQuery("(max-width: 1350px)");
     /**
      * creates an add button under the new label.
      *
@@ -55,11 +57,9 @@ export default function TechnicalGoalEditModal(
                 title={newTechnicalGoal ?
                     "New Technical Goal" :
                     "View/Edit Technical Goal No." + technicalGoalProps.technicalGoal?._id}
-                fullScreen
-                //size="auto"
-                //width={100}
-                //height="auto"
-                //centered
+                size ={"65%"}
+                fullScreen={smallScreen}
+                closeOnClickOutside={false}
             >
                 <TechnicalGoalEditGroup {...props} />
             </Modal>

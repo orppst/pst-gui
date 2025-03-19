@@ -1,10 +1,10 @@
 import {
-    Accordion, Badge,
+    Accordion,
     Checkbox,
-    Fieldset, Grid,
+    Grid,
     Group,
     Select, useMantineColorScheme,
-    Text
+    Text, Stack, ScrollArea
 } from "@mantine/core";
 import {TechnicalGoalValues} from "./edit.group.tsx";
 import AddButton from "src/commonButtons/add.tsx";
@@ -134,20 +134,6 @@ export default function SpectralWindowsSection(
         )
     }
 
-    /**
-     * renders the spectral lines.
-     *
-     * @return {ReactElement} the dynamic html for the spectral lines.
-     */
-    const renderSpectralLines = (): ReactElement => {
-        return (
-            <Fieldset legend={"Spectral lines"}>
-                <Badge radius={0} color={"red"}>
-                    WIP: select predetermined spectral lines
-                </Badge>
-            </Fieldset>
-        )
-    }
 
     /**
      * handles the deletion of a timing window.
@@ -206,26 +192,31 @@ export default function SpectralWindowsSection(
                 />
                 <Accordion.Panel>
                     {renderWindowSetup(mapIndex)}
-                    {renderSpectralLines()}
                 </Accordion.Panel>
             </Accordion.Item>
         )
     })
 
+    //height of ScrollArea determined by good-old-fashioned trail-and-error to match height
+    //of the PerformanceParameter tab section
+
     return(
-        <Fieldset legend={"Spectral windows"}>
-            <Accordion defaultValue={"1"} chevronPosition={"left"}>
-                {windowsList}
-            </Accordion>
-            <Group justify={"center"}>
-                <AddButton
-                    toolTipLabel={"add a spectral window"}
-                    onClick={() => form.insertListItem(
-                        'spectralWindows',
-                        {...EMPTY_SPECTRAL_WINDOW, key: randomId()}
-                    )}
-                />
-            </Group>
-        </Fieldset>
+        <ScrollArea h={378}>
+            <Stack>
+                <Accordion defaultValue={"1"} chevronPosition={"left"}>
+                    {windowsList}
+                </Accordion>
+                <Group justify={"center"}>
+                    <AddButton
+                        toolTipLabel={"add a spectral window"}
+                        onClick={() => form.insertListItem(
+                            'spectralWindows',
+                            {...EMPTY_SPECTRAL_WINDOW, key: randomId()}
+                        )}
+                    />
+                </Group>
+            </Stack>
+        </ScrollArea>
+
     )
 }

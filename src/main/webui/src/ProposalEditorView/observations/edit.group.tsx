@@ -18,7 +18,7 @@ import {
 } from 'src/generated/proposalToolComponents.ts';
 import {FormSubmitButton} from 'src/commonButtons/save.tsx';
 import CancelButton from "src/commonButtons/cancel.tsx";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {ReactElement, SyntheticEvent, useState} from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
@@ -417,11 +417,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
             }
     });
 
-  const navigate = useNavigate();
-
   function handleCancel(event: SyntheticEvent) {
       event.preventDefault();
-      navigate("../",{relative:"path"})
+      props.closeModal!();
   }
 
   /*
