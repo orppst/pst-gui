@@ -1,7 +1,7 @@
 import {
     useObservationResourceAddNewObservation,
     useObservationResourceGetObservation,
-    useObservationResourceRemoveObservation
+    useObservationResourceRemoveObservation, useProposalResourceRemoveField
 } from "src/generated/proposalToolComponents.ts";
 import {
     Text,
@@ -23,8 +23,8 @@ import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import CloneButton from "src/commonButtons/clone.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
-import {ReactElement, useEffect} from 'react';
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {ReactElement} from 'react';
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
 export type ObservationId = {id: number}
 
@@ -43,13 +43,14 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         useObservationResourceAddNewObservation();
     const removeObservation =
         useObservationResourceRemoveObservation();
+    const removeField =
+        useProposalResourceRemoveField();
 
     // the colour gray used by the tools.
     const theme = useMantineTheme();
     const GRAY = theme.colors.gray[6];
 
-    const { selectedProposalCode} = useParams();
-    let observationTargets: number[] = [];
+    const {selectedProposalCode} = useParams();
     let targetName: string = "Unknown";
     let additionTargets = 0;
 
@@ -68,28 +69,30 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         return <pre>{getErrorMessage(observationError)}</pre>
     }
 
-    useEffect(() => {
-        if(observation?.target?.length != undefined && observation.target.length > 0 ) {
-            observationTargets.splice(0, observationTargets.length);
-            observation.target.map((thisTarget) => {
-                observationTargets.push(thisTarget._id!)
-            })
-        }
-    }, [observation]);
-
     /**
      * handles the deletion of an observation.
      */
-    const handleDelete = () => {
-        removeObservation.mutate({
+    const handleDelete = async () => {
+        let fieldId = observation?.field?._id!
+
+        await removeObservation.mutateAsync({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
                 observationId: observationId.id
             }
         }, {
-            onSuccess: () => queryClient.invalidateQueries(),
+            onSuccess: () =>  notifySuccess("Observation removed",
+                "Selected observation has been deleted.")
+            ,
             onError: (error) =>
-                notifyError("Deletion Failed", getErrorMessage(error)),
+                notifyError("Deletion of Observing Field failed", getErrorMessage(error)),
+        })
+
+        removeField.mutate({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                fieldId: fieldId
+            }
         })
     }
 
@@ -107,14 +110,14 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 </Text>
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
-                    Deletes the observation from the list only.
+                    Deletes the observation only.
                     Preserves everything except the timing windows.
                 </Text>
             </>
         ),
         labels: {confirm: 'Delete', cancel: "No don't delete it"},
         confirmProps: {color: 'red'},
-        onConfirm() {handleDelete()}
+        onConfirm() {handleDelete().then(()=> queryClient.invalidateQueries())}
     })
 
     /**
@@ -279,7 +282,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Group align={"right"}>
                     {
                         observationLoading ? 'Loading...' :
-                        <ObservationEditModal observation={observation} selectedTargets={observationTargets}/>
+                        <ObservationEditModal observation={observation}/>
                     }
                     <CloneButton toolTipLabel={"clone"}
                                  onClick={confirmClone} />

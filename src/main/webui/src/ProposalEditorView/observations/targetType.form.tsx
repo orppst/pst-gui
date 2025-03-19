@@ -1,45 +1,36 @@
 import {
-    useProposalResourceGetFields,
     useProposalResourceGetTargets,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from "src/generated/proposalToolComponents.ts";
 import {
-    Container,
-    Select,
-    Space,
+    Box,
+    Fieldset,
+    Group, Loader,
+    Select, Stack,
     Table,
-    Tooltip, useMantineTheme
+    Text,
+    Tooltip,
 } from '@mantine/core';
 import {useParams} from "react-router-dom";
-import {ReactElement, useEffect, useState} from 'react';
+import {Dispatch, ReactElement, SetStateAction} from 'react';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group.tsx';
 import {
     OPEN_DELAY,
     NO_ROW_SELECTED, TABLE_MIN_WIDTH,
-    TABLE_SCROLL_HEIGHT, ERROR_YELLOW
+    TABLE_SCROLL_HEIGHT, err_red_str, err_yellow_str, err_green_str
 } from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
 import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
-/**
- * the entrance to building the target part of the edit panel.
- *
- * @param {UseFormReturnType<ObservationFormValues>} form the form that governs
- * the entire observation edit.
- * @return {ReactElement} the HTML for the observation edit panel.
- * @constructor
- */
-export default function TargetTypeForm (
-    {form}: {form: UseFormReturnType<ObservationFormValues>}): ReactElement {
-    const { selectedProposalCode} = useParams();
-    const theme = useMantineTheme();
 
-    //for the observation fields select input
-    const [fieldsData, setFieldsData]
-        = useState<{value: string, label: string}[]>([])
+export default function TargetTypeForm (p: {
+    form: UseFormReturnType<ObservationFormValues>,
+    setFieldName: Dispatch<SetStateAction<string>>
+}): ReactElement {
+    const { selectedProposalCode} = useParams();
 
     const {
         data: targets,
@@ -58,21 +49,6 @@ export default function TargetTypeForm (
                 pathParams: {proposalCode: Number(selectedProposalCode)}
             });
 
-    const observationFields =
-        useProposalResourceGetFields({
-            pathParams: {proposalCode: Number(selectedProposalCode)}
-        })
-
-    useEffect(() => {
-        if (observationFields.status === 'success') {
-            setFieldsData(
-                observationFields.data.map(field => (
-                    {value: String(field.dbid!), label: field.name!}
-                ))
-            )
-        }
-    }, [observationFields.status]);
-
     /**
      * generates the html for the observation type. Notice, disabled if editing
      * an existing observation
@@ -82,19 +58,19 @@ export default function TargetTypeForm (
     function SelectObservationType(): ReactElement {
         return (
             <Tooltip
-                label={form.getValues().observationId !== undefined ?
+                label={p.form.getValues().observationId !== undefined ?
                     "Cannot change the type of an existing Observation" :
                     'Target object or Calibration object'}
                 openDelay={OPEN_DELAY}
             >
                 <Select
-                    label={"Observation Type: "}
+                    label={"Type: "}
                     placeholder={"Select observation type"}
-                    disabled={form.getValues().observationId !== undefined}
+                    disabled={p.form.getValues().observationId !== undefined}
                     data = {[
                         'Target', 'Calibration'
                     ]}
-                    {...form.getInputProps('observationType')}
+                    {...p.form.getInputProps('observationType')}
                 />
             </Tooltip>
         )
@@ -107,10 +83,12 @@ export default function TargetTypeForm (
      */
     function SelectCalibrationUse(): ReactElement
     {
+        let calibrationSelected = p.form.getValues().observationType === "Calibration";
         return (
             <Select
                 label={"Calibration intended use: "}
-                placeholder={"pick one"}
+                disabled={!calibrationSelected}
+                placeholder={calibrationSelected ? "pick one" : "for Calibration type only"}
                 maxDropdownHeight={150}
                 data = {[
                     'Amplitude',
@@ -122,103 +100,113 @@ export default function TargetTypeForm (
                     'Polarization',
                     'Delay',
                 ]}
-                {...form.getInputProps('calibrationUse')}
+                {...p.form.getInputProps('calibrationUse')}
             />
+        )
+    }
+
+    if (targetsLoading || technicalGoalsLoading) {
+        return (
+            <Box m={"20%"}>
+                <Loader />
+            </Box>
         )
     }
 
     if (targetListError) {
         notifyError("Error loading targets",
-            "cause: " + getErrorMessage(targetListError));
+            getErrorMessage(targetListError));
     }
     if (technicalGoalsError) {
         notifyError("Error loading technical goals",
-            "cause: " + getErrorMessage(technicalGoalsError));
+            getErrorMessage(technicalGoalsError));
     }
 
-    // return the html for the tables.
     return (
-        <Container fluid>
-            {/* only present the message about selecting a target when not selected */}
-            {form.getValues().targetDBIds === undefined ||
-                    form.getValues().targetDBIds?.length == 0
-                ? <p style={{color:theme.colors.yellow[ERROR_YELLOW]}}>
-                    Please select a target.
-                  </p>
-                : <></>}
-            {
-                targetsLoading ? 'loading...' :
-                    <Table.ScrollContainer h={TABLE_SCROLL_HEIGHT}
-                                           minWidth={TABLE_MIN_WIDTH}>
+        <Stack>
+            <Fieldset legend={"Observation Type"}>
+                <Group grow>
+                    {SelectObservationType()}
+                    {SelectCalibrationUse()}
+                </Group>
+            </Fieldset>
+            <Fieldset legend={"Target(s)"}>
+                <Text size={"sm"}>
+                    {
+                        p.form.getValues().targetDBIds.length == 0 ?
+                            <Text c={err_red_str} span inherit>Please select at least one</Text>
+                            :
+                            <Text c={err_green_str} span inherit>Multiple selections allowed</Text>
+                    }
+                </Text>
+                {
+                    <Table.ScrollContainer
+                        h={targets?.length &&  targets.length < 5 ? 100 : TABLE_SCROLL_HEIGHT}
+                        minWidth={TABLE_MIN_WIDTH}
+                    >
                         <TargetTable
                             selectedProposalCode={selectedProposalCode}
                             data={targets}
                             showButtons={false}
                             isLoading={false}
                             boundTargets={[]}
-                            selectedTargets={form.getValues().targetDBIds}
+                            borderColor={p.form.getValues().targetDBIds.length === 0 ?
+                                err_yellow_str : undefined}
+                            selectedTargets={p.form.getValues().targetDBIds}
                             setSelectedTargetFunction={(value: number) => {
-                                const index = form.getValues().targetDBIds?.indexOf(value);
-                                if(index === undefined || index == -1) {
-                                    if(form.getValues().targetDBIds === undefined) {
-                                        form.setFieldValue('targetDBIds', [value]);
-                                    } else {
-                                        form.getValues().targetDBIds?.push(value);
-                                    }
+                                const index = p.form.getValues().targetDBIds.indexOf(value);
+                                if(index == -1) {
+                                    //user is selecting a target
+                                    p.form.insertListItem('targetDBIds', value)
+                                    //set fieldName to latest target selected
+                                    p.setFieldName(targets?.find(t =>
+                                        t.dbid === value)?.name!)
                                 } else {
-                                    form.getValues().targetDBIds?.splice(index, 1);
+                                    //user is deselecting a target
+                                    p.form.removeListItem('targetDBIds', index)
+                                    if (p.form.getValues().targetDBIds.length !== 0) {
+                                        //set field name to first remaining in list
+                                        p.setFieldName(targets?.find(t =>
+                                            t.dbid === p.form.getValues().targetDBIds.at(0))?.name!
+                                        )
+                                    } else {
+                                        //zero targets selected, clear the field name
+                                        p.setFieldName("")
+                                    }
                                 }
-                                form.setDirty({'targetDBIds': true});
                             }}
                         />
                     </Table.ScrollContainer>
-            }
-
-            <Space h={"sm"}/>
-
-            {/* only present the message about selecting a technical
-            when not selected */}
-            {form.getValues().techGoalId === undefined ||
-            form.getValues().techGoalId === NO_ROW_SELECTED
-                ? <p style={{color:theme.colors.yellow[ERROR_YELLOW]}}>
-                    Please select a Technical Goal.
-                  </p>
-                : <></>}
-
-            {
-                technicalGoalsLoading ? 'loading...' :
-                    <Table.ScrollContainer h={TABLE_SCROLL_HEIGHT}
-                                           minWidth={TABLE_MIN_WIDTH}>
+                }
+            </Fieldset>
+            <Fieldset legend={"Technical Goal"}>
+                <Text size={"sm"}>
+                    { p.form.getValues().techGoalId === NO_ROW_SELECTED ?
+                        <Text c={err_red_str} span inherit>Please select one</Text>
+                        :
+                        <Text c={err_green_str} span inherit>Selected</Text>
+                    }
+                </Text>
+                {
+                    <Table.ScrollContainer
+                        h={technicalGoals?.length &&  technicalGoals.length < 5 ?
+                            100 : TABLE_SCROLL_HEIGHT}
+                        minWidth={TABLE_MIN_WIDTH}
+                    >
                         <TechnicalGoalsTable
                             goals={technicalGoals}
                             boundTechnicalGoalIds={[]}
                             showButtons={false}
-                            selectedTechnicalGoal={
-                                form.getValues().techGoalId != undefined ?
-                                    form.getValues().techGoalId :
-                                    NO_ROW_SELECTED}
+                            selectedTechnicalGoal={p.form.getValues().techGoalId}
                             setSelectedTechnicalGoal={(value: number) => {
-                                form.setFieldValue('techGoalId', value);
+                                p.form.setFieldValue('techGoalId', value);
                             }}
-                            />
+                            borderColor={p.form.getValues().techGoalId === NO_ROW_SELECTED ?
+                                err_yellow_str : undefined}
+                        />
                     </Table.ScrollContainer>
-            }
-
-            <Select
-                label={"Select an Observation field"}
-                placeholder={"pick one"}
-                data={fieldsData}
-                {...form.getInputProps('fieldId')}
-            />
-
-            <Space h={"xl"}/>
-            {SelectObservationType()}
-            {form.getValues().observationType === 'Calibration' &&
-                <>
-                    <Space h={"xs"}/>
-                    {SelectCalibrationUse()}
-                </>
-            }
-        </Container>
+                }
+            </Fieldset>
+        </Stack>
     );
 }
