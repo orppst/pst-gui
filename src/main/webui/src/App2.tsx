@@ -61,11 +61,9 @@ import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
 import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
 import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
-import CycleObservingModesPanel from "./ProposalManagerView/observingModes/observingModesPanel.tsx";
 import CycleAvailableResourcesPanel from "./ProposalManagerView/availableResources/availableResourcesPanel.tsx";
 import ReviewsPanel from "./ProposalManagerView/reviews/ReviewsPanel.tsx";
 import AllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
-import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observatory.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
@@ -174,11 +172,6 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/observingModes",
-                        element: <CycleObservingModesPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
                         path: "cycle/:selectedCycleCode/availableResources",
                         element: <CycleAvailableResourcesPanel />,
                         errorElement: <ErrorPage />,
@@ -191,11 +184,6 @@ function App2(): ReactElement {
                     {
                         path: "cycle/:selectedCycleCode/allocations",
                         element: <AllocationsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/observatory",
-                        element: <CycleObservatoryPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {

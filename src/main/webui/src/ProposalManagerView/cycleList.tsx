@@ -2,10 +2,12 @@ import {ReactElement, useState} from "react";
 import {Accordion, Group, NavLink} from "@mantine/core";
 import {
     IconBike,
-    IconCalendar, IconEgg, IconLetterA,
-    IconLetterO, IconLetterR,
-    IconLetterT, IconLicense,
-    IconTeapot,
+    IconCalendar,
+    IconEgg,
+    IconLetterA,
+    IconLetterR,
+    IconLetterT,
+    IconLicense,
     IconUfo,
     IconUsersGroup
 } from "@tabler/icons-react";
@@ -84,14 +86,6 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"AssignReviewers" + cycle.code === active}
                          onClick={()=>setActive("AssignReviewers" + cycle.code)}
                 />
-                <NavLink to={"cycle/" + cycle.dbid + "/observatory"}
-                         component={Link}
-                         key={"Observatory"}
-                         label={"Observatory"}
-                         leftSection={<IconTeapot/>}
-                         active={"Observatory" + cycle.code === active}
-                         onClick={()=>setActive("Observatory" + cycle.code)}
-                />
                 <NavLink to={"cycle/" + cycle.dbid + "/tac"}
                          component={Link}
                          key={"TAC"}
@@ -107,14 +101,6 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconEgg/>}
                          active={"AvailableResources" + cycle.code === active}
                          onClick={()=>setActive("AvailableResources" + cycle.code)}
-                />
-                <NavLink to={"cycle/" + cycle.dbid + "/observingModes"}
-                         component={Link}
-                         key={"ObservingModes"}
-                         label={"Observing Modes"}
-                         leftSection={<IconLetterO/>}
-                         active={"ObservingModes" + cycle.code === active}
-                         onClick={()=>setActive("ObservingModes" + cycle.code)}
                 />
                 <NavLink to={"cycle/" + cycle.dbid + "/reviews"}
                          component={Link}
