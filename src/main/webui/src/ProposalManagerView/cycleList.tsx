@@ -12,8 +12,14 @@ import {
 import {useProposalCyclesResourceGetProposalCycles} from "src/generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
 import {Link} from "react-router-dom";
+import {HaveRole} from "../auth/Roles.tsx";
 
 export default function CycleList() : ReactElement {
+
+
+    if(!HaveRole(["tac_admin", "tac_member"])) {
+        return <>Not authorised</>
+    }
 
     //FIXME: use an actual query
 
@@ -60,6 +66,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"Overview" + cycle.code === active}
                          onClick={()=>setActive("Overview" + cycle.code)}
                 />
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/title"}
                          component={Link}
                          key={"Title"}
@@ -67,7 +74,8 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconLetterT/>}
                          active={"Title" + cycle.code === active}
                          onClick={()=>setActive("Title" + cycle.code)}
-                />
+                />}
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/dates"}
                          component={Link}
                          key={"Dates"}
@@ -75,7 +83,8 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconCalendar/>}
                          active={"Dates" + cycle.code === active}
                          onClick={()=>setActive("Dates" + cycle.code)}
-                />
+                />}
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
                          component={Link}
                          key={"AssignReviewers"}
@@ -83,7 +92,8 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconLicense/>}
                          active={"AssignReviewers" + cycle.code === active}
                          onClick={()=>setActive("AssignReviewers" + cycle.code)}
-                />
+                />}
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/observatory"}
                          component={Link}
                          key={"Observatory"}
@@ -91,7 +101,8 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconTeapot/>}
                          active={"Observatory" + cycle.code === active}
                          onClick={()=>setActive("Observatory" + cycle.code)}
-                />
+                />}
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/tac"}
                          component={Link}
                          key={"TAC"}
@@ -99,7 +110,8 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconUsersGroup/>}
                          active={"TAC" + cycle.code === active}
                          onClick={()=>setActive("TAC" + cycle.code)}
-                />
+                />}
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/availableResources"}
                          component={Link}
                          key={"AvailableResources"}
@@ -107,7 +119,8 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconEgg/>}
                          active={"AvailableResources" + cycle.code === active}
                          onClick={()=>setActive("AvailableResources" + cycle.code)}
-                />
+                />}
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/observingModes"}
                          component={Link}
                          key={"ObservingModes"}
@@ -115,7 +128,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconLetterO/>}
                          active={"ObservingModes" + cycle.code === active}
                          onClick={()=>setActive("ObservingModes" + cycle.code)}
-                />
+                />}
                 <NavLink to={"cycle/" + cycle.dbid + "/reviews"}
                          component={Link}
                          key={"Reviews"}

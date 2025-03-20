@@ -139,72 +139,106 @@ function App2(): ReactElement {
 
     const GRAY = theme.colors.gray[6];
 
+
+    var pstManager = {
+            path: "/manager",
+            element: <PSTManager />,
+            errorElement: <ErrorPage />,
+            children: [ {path: '', index: true, element: <PSTManagerStart />, errorElement: <ErrorPage /> }]
+        };
+
+    const pstTACAdmin = [
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/title",
+            element: <CycleTitlePanel />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/tac",
+            element: <CycleTACPanel/>,
+            errorElement: <ErrorPage/>,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/tac/new",
+            element: <CycleTACAddMemberPanel />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/dates",
+            element: <CycleDatesPanel />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/observingModes",
+            element: <CycleObservingModesPanel />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/availableResources",
+            element: <CycleAvailableResourcesPanel />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/allocations",
+            element: <AllocationsPanel />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/observatory",
+            element: <CycleObservatoryPanel />,
+            errorElement: <ErrorPage />,
+        }
+    ];
+
+    const pstTACMember = [
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode",
+            element: <CycleOverviewPanel />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/reviews",
+            element: <ReviewsPanel />,
+            errorElement: <ErrorPage />,
+        },
+        {
+            index: true,
+            path: "cycle/:selectedCycleCode/assignReviewers",
+            element: <AssignReviewersPanel />,
+            errorElement: <ErrorPage />,
+        }
+    ]
+
+    // TAC Chair / admin only features
+    //if(HaveRole(["tac_admin"])) {
+        pstTACAdmin.forEach((element) =>
+            {pstManager.children.push(element)}
+        );
+
+    //}
+
+    //Stuff all tac people can see
+    //if(HaveRole(["tac_member", "tac_admin"])) {
+        pstTACMember.forEach((element) =>
+            {pstManager.children.push(element)}
+        );
+
+    //}
+
     // the paths to route to.
     const router = createBrowserRouter(
         [
-            {
-                path: "/manager",
-                element: <PSTManager />,
-                errorElement: <ErrorPage />,
-                children: [
-                    {index: true, element: <PSTManagerStart />},
-                    {
-                        path: "cycle/:selectedCycleCode",
-                        element: <CycleOverviewPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/title",
-                        element: <CycleTitlePanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/tac",
-                        element: <CycleTACPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/tac/new",
-                        element: <CycleTACAddMemberPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/dates",
-                        element: <CycleDatesPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/observingModes",
-                        element: <CycleObservingModesPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/availableResources",
-                        element: <CycleAvailableResourcesPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/reviews",
-                        element: <ReviewsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/allocations",
-                        element: <AllocationsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/observatory",
-                        element: <CycleObservatoryPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/assignReviewers",
-                        element: <AssignReviewersPanel />,
-                        errorElement: <ErrorPage />,
-                    }
-                ]
-            },
+            pstManager,
             {
                 path: "/",
                 element: <PSTEditor/>,
