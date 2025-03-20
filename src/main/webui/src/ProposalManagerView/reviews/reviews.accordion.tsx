@@ -4,7 +4,7 @@ import {
     useSubmittedProposalResourceGetSubmittedNotYetAllocated,
     useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
-import {Accordion, Badge, Group, Loader, Space, Text} from "@mantine/core";
+import {Accordion, Alert, Badge, Container, Group, Loader, Space, Text} from "@mantine/core";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import ReviewsForm from "./reviews.form.tsx";
@@ -24,6 +24,20 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
     if (notYetAllocated.error) {
         notifyError("Failed to load Submitted Proposal",
             getErrorMessage(notYetAllocated.error))
+    }
+
+    if (notYetAllocated.data?.length === 0) {
+        return (
+            <Container size={"50%"} mt={100}>
+                <Alert
+                    variant={"light"}
+                    title={"No outstanding Submitted Proposals"}
+                    color={"green"}
+                >
+                    There are no available submitted proposals to review
+                </Alert>
+            </Container>
+        )
     }
 
 

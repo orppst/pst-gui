@@ -8,7 +8,6 @@ import {
     useAllocatedBlockResourceAddAllocatedBlock,
     useAllocatedBlockResourceUpdateResource,
     useAvailableResourcesResourceGetCycleResourceTypes,
-    useObservingModeResourceGetCycleObservingModes,
     useProposalCyclesResourceGetCycleAllocationGrades
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
@@ -39,10 +38,6 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
         useAvailableResourcesResourceGetCycleResourceTypes({
             pathParams: {cycleCode: Number(selectedCycleCode)}
         });
-    const getCycleObservingModes =
-        useObservingModeResourceGetCycleObservingModes({
-            pathParams: {cycleId: Number(selectedCycleCode)}
-        })
     const getCycleAllocationGrades =
         useProposalCyclesResourceGetCycleAllocationGrades({
             pathParams: {cycleCode: Number(selectedCycleCode)}
@@ -52,7 +47,6 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
         allocatedBlock: {
             amount: number
             resourceTypeId: string | undefined,
-            observingModeId: string | undefined,
             allocationGradeId: string | undefined
         }
     }
@@ -62,7 +56,6 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
             allocatedBlock: {
                 amount: props.allocatedBlock?.resource?.amount ?? 0,
                 resourceTypeId: String(props.allocatedBlock?.resource?.type?._id),
-                observingModeId: String(props.allocatedBlock?.mode?._id),
                 allocationGradeId: String(props.allocatedBlock?.grade?._id)
             }
         }
@@ -92,17 +85,6 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
         />
     )
 
-    const observingModeInput = () => (
-        <Select
-            disabled={editExisting}
-            label={"Observing Mode"}
-            placeholder={"Pick one"}
-            data={getCycleObservingModes.data!.map(t =>
-                ({value: String(t.dbid), label: t.name!}))}
-            {...form.getInputProps('allocatedBlock.observingModeId')}
-        />
-    )
-
     const allocationGradeInput = () => (
         <Select
             disabled={editExisting}
@@ -118,7 +100,6 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
         <Stack>
             {resourceAmountInput()}
             {resourceTypeInput()}
-            {observingModeInput()}
             {allocationGradeInput()}
         </Stack>
     )
@@ -158,7 +139,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
                     }
                 },
                 mode: {
-                    _id: Number(values.allocatedBlock.observingModeId)
+                    _id: 1 // todo: get the mode id from the proposal.observation
                 },
                 grade: {
                     _id: Number(values.allocatedBlock.allocationGradeId)
@@ -187,9 +168,7 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
         }
     })
 
-    //check the queries before trying to access their data
-    if (getCycleAllocationGrades.isLoading || getCycleObservingModes.isLoading ||
-        getCycleResourceTypes.isLoading) {
+    if (getCycleAllocationGrades.isLoading || getCycleResourceTypes.isLoading) {
         return (
             <Loader />
         )
@@ -201,15 +180,6 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
                 title={"Resource Types"}
                 error={getCycleResourceTypes.error}
             />)
-    }
-
-    if (getCycleObservingModes.isError) {
-        return (
-            <AlertErrorMessage
-                title={"Observing Modes"}
-                error={getCycleObservingModes.error}
-            />
-        )
     }
 
     if (getCycleAllocationGrades.isError) {
@@ -234,9 +204,9 @@ function AllocatedBlockForm(props: AllocatedBlockFormProps) : ReactElement {
                             m={20}
                         >
                             When editing an existing allocation block you may only change the resource
-                            amount. You cannot change the resource type, the observation mode or the
-                            allocation grade. If you need an allocation block with a different resource
-                            type, observation mode, or allocation grade please add a new block.
+                            amount. You cannot change the resource type or the allocation grade.
+                            If you need an allocation block with a different resource type or allocation
+                            grade please add a new block.
                         </Alert>
                     </Group>
                 }
