@@ -64,7 +64,7 @@ export interface ObservationFormValues {
 export default
 function ObservationEditGroup(props: ObservationProps): ReactElement {
 
-    const { selectedProposalCode} = useParams();
+    const { selectedProposalCode } = useParams();
     const queryClient = useQueryClient();
 
     //mutation hooks
@@ -88,9 +88,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
     fetchOpticalTelescopeResourceLoadTelescopeData({
             observationID: props.observation?._id?.toString(),
             proposalID: selectedProposalCode
-    }).then((telescopeNameData: Map<string, Map<string, string>>) => {
+    }).then((telescopeNameData: Map<string, Map<string, Map<string, string>>>) => {
         const mapForm = new Map(Object.entries(telescopeNameData));
-        if(form.getInputProps("telescopeName").value == null) {
+        if(form.getInputProps("telescopeName").value == null && mapForm.size != 0) {
             form.setValues({
                 "telescopeName": mapForm?.keys().next().value ? mapForm?.keys().next().value : 'None',
                 "instrument": new Map(Object.entries(mapForm?.get(mapForm?.keys().next().value))).keys().next().value ?
@@ -409,9 +409,13 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
 
                 if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
                     saveTelescopeData.mutate({
-                        proposalID: selectedProposalCode, observationID: form.getValues().observationId!,
+                        primaryKey: {
+                            proposalID: selectedProposalCode,
+                            observationID: form.getValues().observationId?.toString(),
+                        },
                         instrumentName: form.getValues().instrument,
-                        telescopeName: form.getValues().telescopeName, choices: form.getValues().elements
+                        telescopeName: form.getValues().telescopeName,
+                        choices: Object.fromEntries(form.getValues().elements.entries())
                     }, {
                         onSuccess: () => {
                             queryClient.invalidateQueries({
@@ -426,7 +430,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                             );
                         },
                         onError: (error) =>
-                            notifyError("Failed to update calibration use", getErrorMessage(error)),
+                            notifyError("Failed to update optical telescope data", getErrorMessage(error)),
                     });
                 }
             }

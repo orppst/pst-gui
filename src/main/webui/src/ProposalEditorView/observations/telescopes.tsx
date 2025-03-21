@@ -57,14 +57,16 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         { observationID: form.getValues().observationId!,
           proposalID: selectedProposalCode})
     .then(
-        (telescopeNameData: Map<string, Map<string, string>>) => {
+        (telescopeNameData: Map<string, Map<string, Map<string, string>>>) => {
             userSavedObservationData = new Map(Object.entries(telescopeNameData));
 
             // state holder to force re renders
             if(selectedTelescope == null) {
                 let telescopeState = null;
                 let instrumentState = null;
-                if (userSavedObservationData !== undefined && !form.isDirty("elements")) {
+                if (userSavedObservationData !== undefined &&
+                        userSavedObservationData.size !== 0 &&
+                        !form.isDirty("elements")) {
                     telescopeState = userSavedObservationData.keys().next().value
                     instrumentState = new Map(Object.entries(userSavedObservationData.get(
                         userSavedObservationData.keys().next().value))).keys().next().value;
