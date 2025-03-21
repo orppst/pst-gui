@@ -1,7 +1,7 @@
 import {ReactElement} from "react";
-import {Accordion, Group, Loader} from "@mantine/core";
+import {Accordion, Fieldset, Group, Loader} from "@mantine/core";
 import {
-    useAllocatedProposalResourceGetAllocatedProposal
+    useAllocatedProposalResourceGetAllocatedProposal, useObservingModeResourceGetObservingModeObjects
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
@@ -25,7 +25,12 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
             }
         })
 
-    if (allocatedProposal.isLoading) {
+    const observingModes =
+        useObservingModeResourceGetObservingModeObjects({
+            pathParams: {cycleId: props.cycleCode }
+        })
+
+    if (allocatedProposal.isLoading || observingModes.isLoading) {
         return (<Loader/>)
     }
 
@@ -34,6 +39,10 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
             getErrorMessage(allocatedProposal.error))
     }
 
+    if (observingModes.error) {
+        notifyError("Failed to load Allocated Proposal",
+            getErrorMessage(observingModes.error))
+    }
 
     return (
         <Accordion.Item value={String(allocatedProposal.data?._id)}>
@@ -41,18 +50,39 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
                 {allocatedProposal.data?.submitted?.title}
             </Accordion.Control>
             <Accordion.Panel>
-                {allocatedProposal.data?.allocation ?
-                    <AllocatedBlocksTable
-                        allocatedBlocks={allocatedProposal.data.allocation}
-                        proposalTitle={allocatedProposal.data?.submitted?.title!}
-                        allocatedProposalId={allocatedProposal.data._id!}
-                    /> :
-                    <Group justify={"centre"} grow>
-                        <AllocatedBlockModal
-                            proposalTitle={allocatedProposal.data?.submitted?.title!}
-                            allocatedProposalId={allocatedProposal.data?._id!}
-                        />
-                    </Group>
+                {
+                    allocatedProposal.data?.submitted?.config?.map(c => {
+                        //the condition below looks wrong, but it is a product of the api
+                        //returning the "thing" on first call then a reference (the DB id)
+                        //on subsequent calls
+                        let theMode =
+                            observingModes.data?.find(o =>
+                                o._id === c.mode?._id || o._id === c.mode
+                            )
+
+
+                        return (
+                            <Fieldset legend={theMode!.name} key={String(c.mode)}>
+                                {
+                                    allocatedProposal.data?.allocation ?
+                                        <AllocatedBlocksTable
+                                            allocatedBlocks={allocatedProposal.data.allocation}
+                                            proposalTitle={allocatedProposal.data?.submitted?.title!}
+                                            allocatedProposalId={allocatedProposal.data._id!}
+                                            observingModeId={theMode!._id!}
+                                        /> :
+                                        //this is the add button when there is nothing yet allocated
+                                        <Group justify={"centre"} grow>
+                                            <AllocatedBlockModal
+                                                proposalTitle={allocatedProposal.data?.submitted?.title!}
+                                                allocatedProposalId={allocatedProposal.data?._id!}
+                                                observingModeId={theMode!._id!}
+                                            />
+                                        </Group>
+                                }
+                            </Fieldset>
+                        )
+                    })
                 }
             </Accordion.Panel>
         </Accordion.Item>
