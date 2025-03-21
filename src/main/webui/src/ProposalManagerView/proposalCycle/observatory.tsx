@@ -13,7 +13,6 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import {HaveRole} from "../../auth/Roles.tsx";
 
 export default function CycleObservatoryPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
@@ -27,10 +26,6 @@ export default function CycleObservatoryPanel() : ReactElement {
                 value === "0" || value === null ? 'Please select an observatory' : null)
         }
     });
-
-    if(!HaveRole(["tac_admin"])) {
-        return <>Not authorised</>
-    }
 
     const observatories = useObservatoryResourceGetObservatories({});
 

@@ -9,7 +9,7 @@ import {HaveRole} from "../../auth/Roles.tsx";
 export default function AssignReviewersPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
-    if(!HaveRole(["tac_admin", "tac_member"])) {
+    if(!HaveRole(["tac_admin"])) {
         return <>Not authorised</>
     }
 

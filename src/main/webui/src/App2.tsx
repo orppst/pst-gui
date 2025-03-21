@@ -61,11 +61,9 @@ import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
 import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
 import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
-import CycleObservingModesPanel from "./ProposalManagerView/observingModes/observingModesPanel.tsx";
 import CycleAvailableResourcesPanel from "./ProposalManagerView/availableResources/availableResourcesPanel.tsx";
 import ReviewsPanel from "./ProposalManagerView/reviews/ReviewsPanel.tsx";
 import AllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
-import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observatory.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
@@ -139,106 +137,62 @@ function App2(): ReactElement {
 
     const GRAY = theme.colors.gray[6];
 
-
-    var pstManager = {
-            path: "/manager",
-            element: <PSTManager />,
-            errorElement: <ErrorPage />,
-            children: [ {path: '', index: true, element: <PSTManagerStart />, errorElement: <ErrorPage /> }]
-        };
-
-    const pstTACAdmin = [
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/title",
-            element: <CycleTitlePanel />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/tac",
-            element: <CycleTACPanel/>,
-            errorElement: <ErrorPage/>,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/tac/new",
-            element: <CycleTACAddMemberPanel />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/dates",
-            element: <CycleDatesPanel />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/observingModes",
-            element: <CycleObservingModesPanel />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/availableResources",
-            element: <CycleAvailableResourcesPanel />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/allocations",
-            element: <AllocationsPanel />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/observatory",
-            element: <CycleObservatoryPanel />,
-            errorElement: <ErrorPage />,
-        }
-    ];
-
-    const pstTACMember = [
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode",
-            element: <CycleOverviewPanel />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/reviews",
-            element: <ReviewsPanel />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            index: true,
-            path: "cycle/:selectedCycleCode/assignReviewers",
-            element: <AssignReviewersPanel />,
-            errorElement: <ErrorPage />,
-        }
-    ]
-
-    // TAC Chair / admin only features
-    //if(HaveRole(["tac_admin"])) {
-        pstTACAdmin.forEach((element) =>
-            {pstManager.children.push(element)}
-        );
-
-    //}
-
-    //Stuff all tac people can see
-    //if(HaveRole(["tac_member", "tac_admin"])) {
-        pstTACMember.forEach((element) =>
-            {pstManager.children.push(element)}
-        );
-
-    //}
-
     // the paths to route to.
     const router = createBrowserRouter(
         [
-            pstManager,
+            {
+                path: "/manager",
+                element: <PSTManager />,
+                errorElement: <ErrorPage />,
+                children: [
+                    {index: true, element: <PSTManagerStart />},
+                    {
+                        path: "cycle/:selectedCycleCode",
+                        element: <CycleOverviewPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/title",
+                        element: <CycleTitlePanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/tac",
+                        element: <CycleTACPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/tac/new",
+                        element: <CycleTACAddMemberPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/dates",
+                        element: <CycleDatesPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/availableResources",
+                        element: <CycleAvailableResourcesPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/reviews",
+                        element: <ReviewsPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/allocations",
+                        element: <AllocationsPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/assignReviewers",
+                        element: <AssignReviewersPanel />,
+                        errorElement: <ErrorPage />,
+                    }
+                ]
+            },
             {
                 path: "/",
                 element: <PSTEditor/>,
@@ -513,21 +467,21 @@ function App2(): ReactElement {
                                 />
                             </Container>
 
-                        <AddButton toolTipLabel={"new proposal"}
-                            label={"Create new proposal"}
-                            onClickEvent={handleAddNew}/>
-                        <FileButton
-                            onChange={handleUploadZip}
-                            accept={".zip"}
-                        >
-                            {(props) =>
-                                <UploadButton
-                                    toolTipLabel="select a file from disk to upload"
-                                    label={"Import existing proposal"}
-                                    onClick={props.onClick}
-                                />
-                            }
-                        </FileButton>
+                            <AddButton toolTipLabel={"new proposal"}
+                                       label={"Create new proposal"}
+                                       onClickEvent={handleAddNew}/>
+                            <FileButton
+                                onChange={handleUploadZip}
+                                accept={".zip"}
+                            >
+                                {(props) =>
+                                    <UploadButton
+                                        toolTipLabel="select a file from disk to upload"
+                                        label={"Import existing proposal"}
+                                        onClick={props.onClick}
+                                    />
+                                }
+                            </FileButton>
                         </AppShell.Section>
                         <AppShell.Section component={ScrollArea}>
                             <ProposalListWrapper
