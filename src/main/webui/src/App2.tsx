@@ -467,21 +467,21 @@ function App2(): ReactElement {
                                 />
                             </Container>
 
-                        <AddButton toolTipLabel={"new proposal"}
-                            label={"Create new proposal"}
-                            onClickEvent={handleAddNew}/>
-                        <FileButton
-                            onChange={handleUploadZip}
-                            accept={".zip"}
-                        >
-                            {(props) =>
-                                <UploadButton
-                                    toolTipLabel="select a file from disk to upload"
-                                    label={"Import existing proposal"}
-                                    onClick={props.onClick}
-                                />
-                            }
-                        </FileButton>
+                            <AddButton toolTipLabel={"new proposal"}
+                                       label={"Create new proposal"}
+                                       onClickEvent={handleAddNew}/>
+                            <FileButton
+                                onChange={handleUploadZip}
+                                accept={".zip"}
+                            >
+                                {(props) =>
+                                    <UploadButton
+                                        toolTipLabel="select a file from disk to upload"
+                                        label={"Import existing proposal"}
+                                        onClick={props.onClick}
+                                    />
+                                }
+                            </FileButton>
                         </AppShell.Section>
                         <AppShell.Section component={ScrollArea}>
                             <ProposalListWrapper

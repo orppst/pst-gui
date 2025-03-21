@@ -13,6 +13,7 @@ import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {IconFolderCheck, IconFolderOpen} from "@tabler/icons-react";
 import ResourceStatsTable from "./resourceStats.table.tsx";
+import {HaveRole} from "../../auth/Roles.tsx";
 
 /*
     List all submitted proposals that have been reviewed (all reviews complete) and update
@@ -31,6 +32,10 @@ import ResourceStatsTable from "./resourceStats.table.tsx";
 
 export default function AllocationsPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
+
+    if(!HaveRole(["tac_admin", "tac_member"])) {
+        return <>Not authorised</>
+    }
 
     const notYetAllocated =
         useSubmittedProposalResourceGetSubmittedNotYetAllocated({

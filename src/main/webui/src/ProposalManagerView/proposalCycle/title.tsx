@@ -13,6 +13,7 @@ import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {HaveRole} from "../../auth/Roles.tsx";
 
 /**
  * Update the title of a proposal cycle, count and limit the characters to MAX_CHARS_FOR_INPUTS
@@ -36,6 +37,10 @@ export default function CycleTitlePanel() : ReactElement {
                 value.length < 1 ? 'Title cannot be blank' : null)
         }
     });
+
+    if(!HaveRole(["tac_admin", "tac_member"])) {
+        return <>Not authorised</>
+    }
 
     const queryClient = useQueryClient()
 
