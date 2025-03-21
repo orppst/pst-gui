@@ -5,7 +5,7 @@ import AllocatedBlockModal from "./allocatedBlock.modal.tsx";
 import {ReactElement} from "react";
 import {modals} from "@mantine/modals";
 import {
-    useAllocatedBlockResourceRemoveAllocatedBlock, useAvailableResourcesResourceGetCycleResourceTypes
+    useAllocatedBlockResourceRemoveAllocatedBlock, //useAvailableResourcesResourceGetCycleResourceTypes
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -23,10 +23,10 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
-    const cycleResourceTypes =
-        useAvailableResourcesResourceGetCycleResourceTypes({
-            pathParams: {cycleCode: Number(selectedCycleCode)}
-        })
+    // const cycleResourceTypes =
+    //     useAvailableResourcesResourceGetCycleResourceTypes({
+    //         pathParams: {cycleCode: Number(selectedCycleCode)}
+    //     })
 
     const removeAllocatedBlock =
         useAllocatedBlockResourceRemoveAllocatedBlock();
@@ -136,9 +136,6 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
                 </Table>
             }
             {
-                //if we haven't already used all available resource types then display the "+Add" button
-                !props.allocatedBlocks.filter(e =>
-                    cycleResourceTypes.data?.includes({dbid: e.resource?.type?._id, name: e.resource?.type?.name})) &&
                 <AllocatedBlockModal
                     proposalTitle={props.proposalTitle}
                     allocatedProposalId={props.allocatedProposalId}
