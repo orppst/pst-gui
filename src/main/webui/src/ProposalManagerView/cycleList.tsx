@@ -3,9 +3,8 @@ import {Accordion, Group, NavLink} from "@mantine/core";
 import {
     IconBike,
     IconCalendar, IconEgg, IconLetterA,
-    IconLetterO, IconLetterR,
+    IconLetterR,
     IconLetterT, IconLicense,
-    IconTeapot,
     IconUfo,
     IconUsersGroup
 } from "@tabler/icons-react";
@@ -93,6 +92,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"AssignReviewers" + cycle.code === active}
                          onClick={()=>setActive("AssignReviewers" + cycle.code)}
                 />}
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/tac"}
                          component={Link}
                          key={"TAC"}
