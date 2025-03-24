@@ -9,6 +9,7 @@ import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
 import {useParams} from "react-router-dom";
 import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from '../../constants';
+import { notifyError } from '../../commonPanel/notifications';
 
 /**
  * generates the observation panel.
@@ -28,7 +29,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     const [getTelescopeData, setTelescopeData] = useState(null);
 
     // data holder for the user choices from the back end.
-    let userSavedObservationData = undefined;
+    let userData = undefined;
 
     /**
      * extract data from back end on the telescope names.
@@ -49,72 +50,99 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         fetchOpticalTelescopeResourceGetTelescopeData().then(
             (backendTelescopeData: Map<string, Map<string, Map<string, string>>>) => {
                 setTelescopeData(new Map(Object.entries(backendTelescopeData)));
+
+                // ensure the telescope data is extracted before asking for the user data.
+                fetchOpticalTelescopeResourceLoadTelescopeData(
+                    {
+                        observationID: form.getValues().observationId!,
+                        proposalID: selectedProposalCode
+                    })
+                    .then(
+                        (userDataRaw: Map<string, Map<string, Map<string, string>>>) => {
+                            processUserData(userDataRaw, new Map(Object.entries(backendTelescopeData)));
+                        }
+                    );
             }
         );
     }
 
     /**
-     * only do this once. rest of renders shouldn't call this.
+     * processes user stored data into the form.
+     * @param {Map<string, Map<string, Map<string, string>>>} userDataRaw: the loaded data.
+     * @param storedTelescopeData: the stored telescope states.
      */
-    if (form.getInputProps("elements").value.size == 0) {
-        fetchOpticalTelescopeResourceLoadTelescopeData(
-            {
-                observationID: form.getValues().observationId!,
-                proposalID: selectedProposalCode
-            })
-            .then(
-                (telescopeNameData: Map<string, Map<string, Map<string, string>>>) => {
-                    userSavedObservationData = new Map(Object.entries(telescopeNameData));
+    function processUserData(
+            userDataRaw: Map<string, Map<string, Map<string, string>>>,
+            storedTelescopeData): void {
+        userData = new Map(Object.entries(userDataRaw));
 
-                    // fill out forms
-                    if(form.getInputProps("telescopeName").value == null && userSavedObservationData.size != 0) {
-                        form.setValues({
-                            "telescopeName": userSavedObservationData?.keys().next().value ?
-                                             userSavedObservationData?.keys().next().value : 'None',
-                            "instrument": new Map(Object.entries(userSavedObservationData?.get(
-                                    userSavedObservationData?.keys().next().value))).keys().next().value ?
-                                new Map(Object.entries(userSavedObservationData?.get(
-                                    userSavedObservationData?.keys().next().value))).keys().next().value : 'None',
-                        });
-                    }
+        // fill out forms
+        if(form.getInputProps("telescopeName").value == null && userData.size != 0) {
+            form.setValues({
+                "telescopeName": userData?.keys().next().value ?
+                    userData?.keys().next().value : 'None',
+                "instrument": new Map(Object.entries(userData?.get(
+                    userData?.keys().next().value))).keys().next().value ?
+                    new Map(Object.entries(userData?.get(
+                        userData?.keys().next().value))).keys().next().value : 'None',
+            });
+        }
 
-                    // state holder to force re renders
-                    if (selectedTelescope == null) {
-                        let telescopeState = null;
-                        let instrumentState = null;
-                        if (userSavedObservationData !== undefined &&
-                            userSavedObservationData.size !== 0 &&
-                            !form.isDirty("elements")) {
-                            telescopeState = userSavedObservationData.keys().next().value
-                            instrumentState = new Map(Object.entries(userSavedObservationData.get(
-                                userSavedObservationData.keys().next().value))).keys().next().value;
+        // state holder to force re renders
+        if (selectedTelescope == null) {
+            let telescopeState = null;
+            let instrumentState = null;
+            if (userData !== undefined &&
+                userData.size !== 0 &&
+                !form.isDirty("elements")) {
+                telescopeState = userData.keys().next().value
+                instrumentState = new Map(Object.entries(userData.get(
+                    userData.keys().next().value))).keys().next().value;
 
-                            if (telescopeState == form.getInputProps("telescopeName").value &&
-                                instrumentState == form.getInputProps("instrument").value) {
-                                const elements: Map<string, string> =
-                                    new Map(Object.entries(new Map(Object.entries(
-                                        userSavedObservationData.get(
-                                            telescopeState))).get(instrumentState)));
-                                for (const elementName of elements.keys()) {
-                                    form.getInputProps("elements").value.set(
-                                        elementName, elements.get(elementName));
-                                }
-                            } else {
-                                userSavedObservationData =
-                                    new Map<string, Map<string, Map<string, string>>>();
-                            }
-                        } else {
-                            userSavedObservationData =
-                                new Map<string, Map<string, Map<string, string>>>();
+                if (telescopeState == form.getInputProps("telescopeName").value &&
+                    instrumentState == form.getInputProps("instrument").value) {
+                    const elements: Map<string, string> =
+                        new Map(Object.entries(new Map(Object.entries(
+                            userData.get(telescopeState))).get(instrumentState)));
+
+                    // extract the data types for these elements. as booleans need conversions.
+                    const elementDataTypes = new Map(Object.entries(
+                        new Map(Object.entries(
+                            new Map(Object.entries(
+                                storedTelescopeData.get(telescopeState)))
+                            .get("instruments")))
+                        .get(instrumentState).elements));
+
+                    // set the form based off the data type.
+                    for (const elementName of elements.keys()) {
+                        switch(elementDataTypes.get(elementName).type) {
+                            case Type.TEXT:
+                            case Type.LIST:
+                                form.getInputProps("elements").value.set(
+                                    elementName, elements.get(elementName));
+                                break;
+                            case Type.BOOLEAN:
+                                form.getInputProps("elements").value.set(
+                                    elementName, elements.get(elementName) == "true");
+                                break;
+                            default:
+                                notifyError("none recognised type %s",
+                                            elementDataTypes.get(elementName).type);
+                                break;
                         }
-                        setSelectedTelescope(telescopeState);
-                        setSelectedInstrument(instrumentState);
                     }
-
-                    // update elements form, but only if a telescope and instrument has been populated.
-                    setupElementsInForm(selectedTelescope, selectedInstrument);
+                } else {
+                    userData = new Map<string, Map<string, Map<string, string>>>();
                 }
-            );
+            } else {
+                userData = new Map<string, Map<string, Map<string, string>>>();
+            }
+            setSelectedTelescope(telescopeState);
+            setSelectedInstrument(instrumentState);
+        }
+
+        // update elements form, but only if a telescope and instrument has been populated.
+        setupElementsInForm(selectedTelescope, selectedInstrument);
     }
 
     /**
@@ -173,10 +201,10 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         // convert to map.
         const elementsDataMap = new Map(Object.entries(elementData));
 
-        // extract the telescope
+        // extract the saved state for this telescope if it exists.
         let userStoresObservationElements = undefined;
-        if (userSavedObservationData !== undefined) {
-            userStoresObservationElements = userSavedObservationData.get(telescopeName);
+        if (userData !== undefined) {
+            userStoresObservationElements = userData.get(telescopeName);
             if (userStoresObservationElements !== undefined) {
                 // convert to proper map.
                 userStoresObservationElements =
@@ -196,24 +224,45 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         const elementNames = new Map(Object.entries(elementsDataMap.get("elements")));
         for (const elementName of elementNames.keys()) {
             let storedValue = "None";
-            if (userStoresObservationElements == undefined) {
 
-                // other types don't transmit values. so if they don't exist. assume empty text will work.
-                if (elementNames.get(elementName).values !== undefined &&
-                        elementNames.get(elementName).values.length !== 0) {
-                    // set to the first value
-                    form.getInputProps("elements").value.set(
-                        elementName, elementNames.get(elementName).values[0]);
-                } else {
-                    // if no options. just set to none.
-                    if (form.getInputProps("elements").value.get(elementName) == undefined) {
-                        form.getInputProps("elements").value.set(elementName, "");
-                    }
+            // no saved data.
+            if (userStoresObservationElements == undefined) {
+                switch(elementNames.get(elementName).type) {
+                    case Type.LIST:
+                        // set to the first value
+                        form.getInputProps("elements").value.set(
+                            elementName, elementNames.get(elementName).values[0]);
+                        break;
+                    case Type.TEXT:
+                        if (form.getInputProps("elements").value.get(elementName) == undefined) {
+                            form.getInputProps("elements").value.set(elementName, "");
+                        }
+                        break;
+                    case Type.BOOLEAN:
+                        form.getInputProps("elements").value.set(elementName, false);
+                        break;
+                    default:
+                        notifyError("none recognised type %s", elementNames.get(elementName).type);
+                        break;
                 }
+            // got saved data.
             } else {
                 storedValue = userStoresObservationElements.get(elementName);
-                if (form.getInputProps("elements").value.get(elementName) == undefined) {
-                    form.getInputProps("elements").value.set(elementName, storedValue);
+                switch(elementNames.get(elementName).type) {
+                    case Type.LIST:
+                    case Type.TEXT:
+                        if (form.getInputProps("elements").value.get(elementName) == undefined) {
+                            form.getInputProps("elements").value.set(elementName, storedValue);
+                        }
+                        break
+                    case Type.BOOLEAN:
+                        if (form.getInputProps("elements").value.get(elementName) == undefined) {
+                            form.getInputProps("elements").value.set(elementName, storedValue == "true");
+                        }
+                        break;
+                    default:
+                        notifyError("none recognised type %s", elementNames.get(elementName).type);
+                        break;
                 }
             }
         }
@@ -350,6 +399,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                                 {key}
                             </label>
                     default:
+                        notifyError("none recognised type %s", element.type);
                         return <></>
                 }
             })}
