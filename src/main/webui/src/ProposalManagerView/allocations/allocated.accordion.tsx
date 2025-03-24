@@ -1,10 +1,10 @@
-import {ReactElement} from "react";
+import {ReactElement, useEffect, useState} from "react";
 import {Accordion, Fieldset, Group, Loader} from "@mantine/core";
 import {
     useAllocatedProposalResourceGetAllocatedProposal, useObservingModeResourceGetObservingModeObjects
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
+import {AllocationGrade, ObjectIdentifier, ResourceType} from "../../generated/proposalToolSchemas.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import AllocatedBlocksTable from "./allocatedBlocks.table.tsx";
@@ -16,6 +16,9 @@ type AllocatedItemProps = {
 }
 
 function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
+
+    const [grades, setGrades] = useState<AllocationGrade[]>([]);
+    const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
 
     const allocatedProposal =
         useAllocatedProposalResourceGetAllocatedProposal({
@@ -29,6 +32,28 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
         useObservingModeResourceGetObservingModeObjects({
             pathParams: {cycleId: props.cycleCode }
         })
+
+    //Hey, have we got an object or a reference? Who TF knows, so we have to do this shit.
+    useEffect(() => {
+        if (allocatedProposal.status === 'success') {
+            let localGrades: AllocationGrade[] = []
+            let localResourceType: ResourceType[] = []
+
+            allocatedProposal.data.allocation?.map(ab => {
+                if(ab.grade?.name !== undefined) {
+                    localGrades.push(ab.grade)
+                }
+
+                if(ab.resource?.type?.name !== undefined) {
+                    localResourceType.push(ab.resource.type)
+                }
+            })
+
+            setGrades(localGrades)
+            setResourceTypes(localResourceType)
+        }
+    }, [allocatedProposal.status])
+
 
     if (allocatedProposal.isLoading || observingModes.isLoading) {
         return (<Loader/>)
@@ -51,18 +76,22 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
             </Accordion.Control>
             <Accordion.Panel>
                 {
-                    allocatedProposal.data?.submitted?.config?.map(c => {
+                    allocatedProposal.data?.submitted?.config?.map(oc => {
                         //the condition below looks wrong, but it is a product of the api
                         //returning the "thing" on first call then a reference (the DB id)
                         //on subsequent calls
                         let theMode =
-                            observingModes.data?.find(o =>
-                                o._id === c.mode?._id || o._id === c.mode
+                            observingModes.data?.find(om =>
+                                om._id === oc.mode?._id || om._id === oc.mode
                             )
 
-
+                        //key field is a pain in the arse at times - notice we are relying on
+                        //observing mode names being unique
                         return (
-                            <Fieldset legend={theMode!.name} key={String(c.mode)}>
+                            <Fieldset
+                                legend={theMode!.name}
+                                key={String(allocatedProposal.data?._id) + String(theMode!._id)}
+                            >
                                 {
                                     allocatedProposal.data?.allocation ?
                                         <AllocatedBlocksTable
@@ -70,6 +99,8 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
                                             proposalTitle={allocatedProposal.data?.submitted?.title!}
                                             allocatedProposalId={allocatedProposal.data._id!}
                                             observingModeId={theMode!._id!}
+                                            grades={grades}
+                                            resourceTypes={resourceTypes}
                                         /> :
                                         //this is the add button when there is nothing yet allocated
                                         <Group justify={"centre"} grow>

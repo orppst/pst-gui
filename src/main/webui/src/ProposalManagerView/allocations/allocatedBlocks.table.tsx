@@ -32,10 +32,12 @@ export type AllocatedBlocksTableProps = {
     proposalTitle: string,
     allocatedBlocks: AllocatedBlock[],
     allocatedProposalId: number,
-    observingModeId: number
+    observingModeId: number,
+    grades: AllocationGrade[],
+    resourceTypes: ResourceType[],
 }
 
-export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement {
+export default function AllocatedBlocksTable(p: AllocatedBlocksTableProps): ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
@@ -50,21 +52,23 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
     type DeleteProps = {
         proposalTitle: string,
         resourceName: string,
+        gradeName: string,
         allocatedId: number,
         blockId: number
     }
 
     const confirmDelete = (props: DeleteProps) => {
         modals.openConfirmModal({
-            title: "Delete '" + props.resourceName + "' from '" + props.proposalTitle + "'?",
+            title: "Delete '" + props.resourceName + " 'grade' " + props.gradeName
+                + "' from '" + props.proposalTitle + "'?",
             centered: true,
             children: (
                 <Text size={"sm"}>
-                    This will remove the '{props.resourceName}' resource block from '{props.proposalTitle}'.
-                    Are you sure?
+                    This will remove the '{props.resourceName}' grade '{props.gradeName}'
+                    resource block from '{props.proposalTitle}'. Are you sure?
                 </Text>
             ),
-            labels: {confirm: "Delete", cancel: "No, don't remove " + props.resourceName},
+            labels: {confirm: "Delete", cancel: "No, don't delete it"},
             confirmProps: {color: "red"},
             onConfirm: () => handleDelete({...props})
         })
@@ -81,21 +85,24 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
             onSuccess: () => {
                 queryClient.invalidateQueries()
                     .then(() => notifySuccess("Deletion Successful",
-                        "Deleted " + props.resourceName + " from " + props.proposalTitle))
+                        "Deleted " + props.resourceName + " 'grade' " + props.gradeName
+                        + " from " + props.proposalTitle))
             },
             onError: (error) =>
-                notifyError("Failed to delete " + props.resourceName +
+                notifyError("Failed to delete " + props.resourceName + " 'grade' " + props.gradeName +
                     " from " + props.proposalTitle, getErrorMessage(error))
         })
     }
 
-    let grades: AllocationGrade[] = [];
-    let resourceTypes: ResourceType[] = [];
+    //check we have at least one block for the particular observing mode, we filter when rendering the rows
+    let allocatedBlock = p.allocatedBlocks.find(ab => {
+        return ab.mode?._id === p.observingModeId || ab.mode === p.observingModeId;
+    })
 
     return (
         <Stack>
-            {props.allocatedBlocks.length > 0 &&
-                <Table c={"orange"}>
+            {allocatedBlock && p.grades.length > 0 && p.resourceTypes.length > 0 &&
+                <Table>
                     <Table.Thead>
                         <Table.Tr>
                             <Table.Th>Resource</Table.Th>
@@ -104,62 +111,65 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
                             <Table.Th></Table.Th>
                         </Table.Tr>
                     </Table.Thead>
-                    <Table.Tbody c={"orange.2"}>
+                    <Table.Tbody>
                         {
-                         props.allocatedBlocks.map(ab => {
-                             //on subsequent calls for the same "thing" we get a reference rather than the "thing"
-                             //store the "thing" on first call, find it on subsequent calls for the same "thing"
-                             if(ab.grade?.name != undefined)
-                                grades.push(ab.grade)
-                             else
-                                ab.grade = grades.find(gr => gr._id == ab.grade)
+                         p.allocatedBlocks
+                             .filter(ab => (ab.mode?._id === p.observingModeId
+                                 || ab.mode === p.observingModeId))
+                             .map(ab => {
+                                 //the game here is called "Object or Reference: try not to blow yer leg off"
+                                 let theGrade : AllocationGrade | undefined = ab.grade
+                                 let theResourceType : ResourceType | undefined = ab.resource?.type
 
-                             if(ab.resource?.type?.name != undefined)
-                                resourceTypes.push(ab.resource.type)
-                             else if(ab.resource != undefined)
-                                 ab.resource.type = resourceTypes.find(rt => rt._id == ab.resource?.type)
+                                 if(theGrade && theGrade.name === undefined) {
+                                     theGrade = p.grades.find(gr => gr._id == ab.grade)
+                                 }
 
-                             return (
-                                <Table.Tr key={ab._id}>
-                                    <Table.Td>{ab.resource?.type?.name}</Table.Td>
-                                    <Table.Td>{ab.resource?.amount} {ab.resource?.type?.unit}</Table.Td>
-                                    <Table.Td>{ab.grade?.name}</Table.Td>
-                                    <Table.Td>
-                                        <Group justify={"flex-end"}>
-                                            <AllocatedBlockModal
-                                                proposalTitle={props.proposalTitle}
-                                                allocatedBlock={ab}
-                                                allocatedProposalId={props.allocatedProposalId}
-                                                observingModeId={props.observingModeId}
-                                            />
-                                            <DeleteButton
-                                                toolTipLabel={"delete this resource block"}
-                                                onClick={() => confirmDelete(
-                                                    {
-                                                        proposalTitle: props.proposalTitle,
-                                                        resourceName: ab.resource?.type?.name!,
-                                                        allocatedId: props.allocatedProposalId,
-                                                        blockId: ab._id!
-                                                    }
-                                                )}
-                                            />
-                                        </Group>
-                                    </Table.Td>
-                                </Table.Tr>
-                            )
-                        })}
+                                 if(theResourceType && theResourceType.name === undefined) {
+                                     theResourceType = p.resourceTypes.find(rt =>
+                                         rt._id == ab.resource?.type)
+                                 }
+
+                                 return (
+                                    <Table.Tr key={ab._id}>
+                                        <Table.Td>{theResourceType!.name}</Table.Td>
+                                        <Table.Td>{ab.resource?.amount} {theResourceType!.unit}</Table.Td>
+                                        <Table.Td>{theGrade!.name}</Table.Td>
+                                        <Table.Td>
+                                            <Group justify={"flex-end"}>
+                                                <AllocatedBlockModal
+                                                    proposalTitle={p.proposalTitle}
+                                                    allocatedBlock={ab}
+                                                    allocatedProposalId={p.allocatedProposalId}
+                                                    observingModeId={p.observingModeId}
+                                                />
+                                                <DeleteButton
+                                                    toolTipLabel={"delete this resource block"}
+                                                    onClick={() => confirmDelete(
+                                                        {
+                                                            proposalTitle: p.proposalTitle,
+                                                            resourceName: theResourceType!.name!,
+                                                            gradeName: theGrade!.name!,
+                                                            allocatedId: p.allocatedProposalId,
+                                                            blockId: ab._id!
+                                                        }
+                                                    )}
+                                                />
+                                            </Group>
+                                        </Table.Td>
+                                    </Table.Tr>
+                                )
+                            })}
                     </Table.Tbody>
                 </Table>
             }
             {
                 <AllocatedBlockModal
-                    proposalTitle={props.proposalTitle}
-                    allocatedProposalId={props.allocatedProposalId}
-                    observingModeId={props.observingModeId}
+                    proposalTitle={p.proposalTitle}
+                    allocatedProposalId={p.allocatedProposalId}
+                    observingModeId={p.observingModeId}
                 />
             }
-
-
         </Stack>
     )
 }
