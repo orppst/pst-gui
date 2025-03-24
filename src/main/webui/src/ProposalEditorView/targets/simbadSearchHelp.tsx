@@ -3,12 +3,15 @@ import {Anchor, List, ScrollArea, Stack, Tabs, Text} from "@mantine/core";
 import {IconAlien, IconGlobe, IconInfoCircle, IconQuestionMark} from "@tabler/icons-react";
 
 export default
-function SimbadSearchHelp() : ReactElement {
+function SimbadSearchHelp(p: {largeScrollArea: boolean}) : ReactElement {
     const headerColour = "blue"
     const highlightColour = "orange"
 
-    const STACK_PT = 10;
-    const SCROLLAREA_HEIGHT = 120;
+    const stack_pt = 10;
+    const scroll_height_md = 110;
+    const scroll_height_lg = 300;
+
+    const scroll_height = p.largeScrollArea ? scroll_height_lg : scroll_height_md;
 
     return(
         <Tabs allowTabDeactivation variant={"outline"}>
@@ -28,8 +31,12 @@ function SimbadSearchHelp() : ReactElement {
             </Tabs.List>
 
             <Tabs.Panel value={"general"}>
-                <ScrollArea h={SCROLLAREA_HEIGHT} type={"auto"} offsetScrollbars>
-                    <Stack pt={STACK_PT}>
+                <ScrollArea
+                    h={scroll_height}
+                    type={"auto"}
+                    offsetScrollbars
+                >
+                    <Stack pt={stack_pt}>
                         <Text c={headerColour} size={"sm"}>
                             <Text span inherit c={highlightColour}>S</Text>et of
                             <Text span inherit c={highlightColour}> I</Text>dentifications,
@@ -49,8 +56,8 @@ function SimbadSearchHelp() : ReactElement {
             </Tabs.Panel>
 
             <Tabs.Panel value={"aladin"}>
-                <ScrollArea h={SCROLLAREA_HEIGHT} type={"auto"} offsetScrollbars>
-                <Stack pt={STACK_PT}>
+                <ScrollArea h={scroll_height} type={"auto"} offsetScrollbars>
+                <Stack pt={stack_pt}>
                     <Text size={"sm"} c={headerColour}>
                         Aladin Sky Atlas
                     </Text>
@@ -63,14 +70,13 @@ function SimbadSearchHelp() : ReactElement {
 
                     <Text size={"sm"}>
                         The Aladin viewer is connected to the form in that you may set the RA and Dec values in the form
-                        either by left click dragging the viewer to, or by left clicking on, the desired location. A
-                        double left click will also move the reticule to the location under the pointer.
-                        The field-of-view may be modified by the mouse wheel, or the scroll operation appropriate
-                        to your touchpad
-                    </Text>
-                    <Text size={"sm"}>
-                        If you click on the viewer accidentally you may reset the the Ra and Dec
-                        values and the reticule by re-selecting your desired target from the search results list.
+                        by double-clicking on the desired location in the viewer.
+                        The view will also be centred on that location i.e., the reticle will now be over the
+                        double-clicked target.
+                        If you have not yet given the target a name, one will be randomly generated for you, but
+                        we suggest you change it to something more discernible.
+                        The field-of-view may be modified by the mouse wheel, or the scroll operation appropriate to
+                        your touchpad.
                     </Text>
                     <Text size={"sm"}>
                         Notice that you may input Ra and Dec values manually and the viewer will move to that
@@ -81,8 +87,8 @@ function SimbadSearchHelp() : ReactElement {
                 </ScrollArea>
             </Tabs.Panel>
             <Tabs.Panel value={"searchInstructions"}>
-                <ScrollArea h={SCROLLAREA_HEIGHT} type={"auto"} offsetScrollbars>
-                <Stack pt={STACK_PT}>
+                <ScrollArea h={scroll_height} type={"auto"} offsetScrollbars>
+                <Stack pt={stack_pt}>
                     <Text size={"sm"} c={headerColour}>
                         How to use SIMBAD search
                     </Text>
@@ -93,6 +99,13 @@ function SimbadSearchHelp() : ReactElement {
                         with the corresponding data when an object is selected. Also, the Aladin Sky Atlas viewer
                         will move to the selected target. Feel free to ignore our search facility and input values
                         into the <Text span inherit c={highlightColour}>Target Form </Text> manually.
+                        Ra and Dec values may be entered as either sexagesimal format
+                        i.e., Ra: <Text span inherit fs={"italic"}>hh mm ss.fff</Text>,
+                        Dec: <Text span inherit fs={"italic"}>[+|-]dd mm ss.fff</Text>,
+                        or as decimal degrees Ra: <Text span inherit fs={"italic"}>ddd.fff</Text>,
+                        Dec: <Text span inherit fs={"italic"}>[+|-]dd.fff</Text>. Notice that the precision of the fraction
+                        input, <Text span inherit fs={"italic"}>f</Text>, is unlimited but the actual number stored in
+                        the database is limited to 17 significant figures (slight overkill), units of degrees.
                     </Text>
                     <Text size={"sm"} c={highlightColour}>
                         Notice that all targets, regardless of input method, are assumed to have an ICRS coordinate
@@ -132,15 +145,15 @@ function SimbadSearchHelp() : ReactElement {
                         the search box. Some SIMBAD targets, for example Stellar Streams and Gravitation Wave Events,
                         may not have definitive celestial coordinates for legitimate reasons. In this case a pop-up
                         will open asking if you would like to got to the corresponding SIMBAD site for that object.
-                        These objects may have children that will have definitive celestial coordinates.
+                        These objects may have children that may have definitive celestial coordinates.
                     </Text>
                 </Stack>
                 </ScrollArea>
             </Tabs.Panel>
 
             <Tabs.Panel value={"searchTips"}>
-                <ScrollArea h={SCROLLAREA_HEIGHT} type={"auto"} offsetScrollbars scrollbars={"y"}>
-                <Stack pt={STACK_PT}>
+                <ScrollArea h={scroll_height} type={"auto"} offsetScrollbars scrollbars={"y"}>
+                <Stack pt={stack_pt}>
                     <Text size={"sm"} c={headerColour}>
                         Hints and Tips
                     </Text>

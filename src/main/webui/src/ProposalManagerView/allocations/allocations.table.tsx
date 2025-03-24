@@ -12,6 +12,7 @@ import {IconAlien, IconInfoCircle} from "@tabler/icons-react";
 import {CLOSE_DELAY, ICON_SIZE, OPEN_DELAY} from "../../constants.tsx";
 import {modals} from "@mantine/modals";
 import {useQueryClient} from "@tanstack/react-query";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 type AllocationTableRowProps = {
     cycleCode: number,
@@ -21,6 +22,8 @@ type AllocationTableRowProps = {
 function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 
     const queryClient = useQueryClient();
+
+    const {fetcherOptions} = useProposalToolContext();
 
     const allocateProposalToCycle =
         useAllocatedProposalResourceAllocateProposalToCycle()
@@ -68,7 +71,7 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
             },
             body: rowProps.submittedProposalId,
             // @ts-ignore
-            headers: {"Content-Type": "text/plain"}
+            headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
         }, {
             onSuccess: () => {
                 queryClient.invalidateQueries()

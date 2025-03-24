@@ -151,6 +151,8 @@ export default function TimingWindowsForm(
                                 <DateTimePicker
                                     placeholder={"start time"}
                                     minDate={new Date()}
+                                    maxDate={tw.endTime != null ?
+                                        tw.endTime : undefined}
                                     {...form.getInputProps(
                                         `timingWindows.${index}.startTime`)}
                                     rightSection={<Text>start</Text>}
@@ -159,7 +161,10 @@ export default function TimingWindowsForm(
                                 <Space h={"xs"}/>
                                 <DateTimePicker
                                     placeholder={"end time"}
-                                    minDate={new Date()}
+                                    minDate={tw.startTime != null?
+                                        new Date() > tw.startTime ?
+                                            new Date() : tw.startTime
+                                        : new Date()}
                                     {...form.getInputProps(
                                         `timingWindows.${index}.endTime`)}
                                     rightSection={<Text>end</Text>}

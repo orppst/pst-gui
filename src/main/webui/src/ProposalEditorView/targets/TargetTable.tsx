@@ -3,7 +3,7 @@ import {
     useProposalResourceRemoveTarget,
 } from 'src/generated/proposalToolComponents.ts';
 
-import { Table, Text, useMantineTheme } from '@mantine/core';
+import { Table, Text } from '@mantine/core';
 import { CelestialTarget } from 'src/generated/proposalToolSchemas.ts';
 import {useQueryClient} from "@tanstack/react-query";
 import { ReactElement } from 'react';
@@ -11,7 +11,7 @@ import {modals} from "@mantine/modals";
 import DeleteButton from "src/commonButtons/delete";
 import { TargetProps, TargetTableProps } from './targetProps.tsx';
 import { AstroLib } from "@tsastro/astrolib";
-import {    ERROR_YELLOW,
+import {
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -154,8 +154,8 @@ function TargetTableRow(props: TargetProps): ReactElement {
         const celestialTarget: CelestialTarget = data as CelestialTarget;
         //console.log(data);
         if(celestialTarget.sourceCoordinates?.lat?.unit?.value === "degrees")
-            //ra = celestialTarget.sourceCoordinates?.lat?.value+"°";
-            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lat.value ?? 0,3);
+            //DJW: Astrolib DegToHms prepend sign issue
+            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lat.value ?? 0,3).slice(1);
         else
             ra = celestialTarget.sourceCoordinates?.lat?.value + " " +
                 celestialTarget.sourceCoordinates?.lat?.unit?.value;
@@ -214,12 +214,11 @@ function TargetTableRow(props: TargetProps): ReactElement {
  * @constructor
  */
 export function TargetTable(props: TargetTableProps): ReactElement {
-    const theme = useMantineTheme();
     return (
-        <Table highlightOnHover borderColor={
-                props.selectedTargets?.length === 0 ?
-                    theme.colors.yellow[ERROR_YELLOW]:
-                    undefined}>
+        <Table
+            highlightOnHover
+            borderColor={props.borderColor}
+        >
             {TargetTableHeader(props)}
             <Table.Tbody>
                 {props.isLoading ? (

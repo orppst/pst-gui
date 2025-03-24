@@ -1,11 +1,10 @@
 import { useParams } from 'react-router-dom';
 import {
-    Badge,
+    Badge, DefaultMantineColor,
     Group, Loader,
     Space,
     Table,
-    Text,
-    useMantineTheme
+    Text
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import TechnicalGoalEditModal from './edit.modal.tsx';
@@ -31,7 +30,6 @@ import {
 import { notSet } from './edit.group.tsx';
 import { ReactElement } from 'react';
 import {
-    ERROR_YELLOW,
     NO_ROW_SELECTED,
     TABLE_HIGH_LIGHT_COLOR
 } from 'src/constants.tsx';
@@ -77,6 +75,7 @@ export type TechnicalGoalsTableProps = {
     showButtons: boolean,
     selectedTechnicalGoal: number | undefined,
     setSelectedTechnicalGoal?: (value: number) => void,
+    borderColor?: DefaultMantineColor
 }
 
 /**
@@ -378,12 +377,12 @@ function technicalGoalsHeader(props: TechnicalGoalsTableProps) : ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
-                <Table.Th>Angular resolution</Table.Th>
-                <Table.Th>Largest scale</Table.Th>
+                <Table.Th>Angular Resolution</Table.Th>
+                <Table.Th>Largest Scale</Table.Th>
                 <Table.Th>Sensitivity</Table.Th>
                 <Table.Th>Dynamic Range</Table.Th>
-                <Table.Th>Spectral point</Table.Th>
-                <Table.Th>Spectral windows</Table.Th>
+                <Table.Th>Spectral Point</Table.Th>
+                <Table.Th>Spectral Windows</Table.Th>
                 {
                     props.showButtons ?
                         <Table.Th></Table.Th>
@@ -402,12 +401,10 @@ function technicalGoalsHeader(props: TechnicalGoalsTableProps) : ReactElement {
  * @constructor
  */
 export function TechnicalGoalsTable(props: TechnicalGoalsTableProps): ReactElement {
-    const theme = useMantineTheme();
     return (
         <Table
             highlightOnHover
-            borderColor={props.selectedTechnicalGoal === NO_ROW_SELECTED ?
-                theme.colors.yellow[ERROR_YELLOW]: undefined}
+            borderColor={props.borderColor}
         >
             {technicalGoalsHeader(props)}
             <Table.Tbody>

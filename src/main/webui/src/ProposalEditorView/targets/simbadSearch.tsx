@@ -22,9 +22,10 @@ import {
     SIMBAD_URL_TAP_SERVICE
 } from "../../constants.tsx";
 import {UseFormReturnType} from "@mantine/form";
-import {Aladin, newTargetData} from "./New.tsx";
+import {Aladin, NewTargetFormValues} from "./New.tsx";
 import {IconSearch} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
+import { AstroLib } from "@tsastro/astrolib";
 
 /*
 Need to obtain the "object type" from SIMBAD when a user selects a target. Some object types,
@@ -57,7 +58,7 @@ have children that do have coordinates.
 
 
 export
-function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
+function SimbadSearch(props: {form: UseFormReturnType<NewTargetFormValues>}) {
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
@@ -236,9 +237,10 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
                                         })
                                     } else {
                                         //set the form fields
-                                        props.form.setFieldValue('TargetName', displayName(arr[0]))
-                                        props.form.setFieldValue('RA', arr[1]);
-                                        props.form.setFieldValue('Dec', arr[2])
+                                        props.form.setFieldValue('targetName', displayName(arr[0]))
+                                        //DJW: Astrolib DegToHms prepend sign issue
+                                        props.form.setFieldValue('ra', AstroLib.DegToHms(arr[1]).slice(1));
+                                        props.form.setFieldValue('dec', AstroLib.DegToDms(arr[2]));
                                         props.form.setFieldValue('sexagesimal', arr[3])
 
                                         //arr[4] is the oid number - not needed by user
@@ -247,6 +249,8 @@ function SimbadSearch(props: {form: UseFormReturnType<newTargetData>}) {
 
                                         //point Aladin viewer to the target ra,dec
                                         Aladin.gotoRaDec(arr[1], arr[2])
+
+                                        Aladin.adjustFovForObject(arr[0])
                                     }
                                 });
                             } else {

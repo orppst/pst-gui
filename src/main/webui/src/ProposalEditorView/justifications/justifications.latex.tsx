@@ -25,11 +25,14 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {modals} from "@mantine/modals";
 import RemoveButton from "../../commonButtons/remove.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export default
 function JustificationLatex({which} : {which: string} ) : ReactElement {
 
     const { selectedProposalCode } = useParams();
+
+    const {fetcherOptions} = useProposalToolContext();
 
     const [resourceFiles, setResourceFiles] = useState<string[]>([])
     const [pdfDownLoad, setPdfDownload] = useState("");
@@ -44,6 +47,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
 
     useEffect(() => {
         fetchJustificationsResourceGetLatexResourceFiles({
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode), which: which}
         })
             .then((data) => {
@@ -56,6 +60,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
 
     useEffect(() => {
         fetchJustificationsResourceCheckForPdf({
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode), which: which}
         })
             .then((data) => {
@@ -114,7 +119,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                         body: formData,
                         pathParams: {proposalCode: Number(selectedProposalCode), which: which},
                         //@ts-ignore
-                        headers: {"Content-Type": "multipart/form-data"}
+                        headers: {...fetcherOptions.headers, "Content-Type": "multipart/form-data"}
                     }
                 )
                     .then(() => {
@@ -137,7 +142,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
                 //@ts-ignore
                 body: fileName,
                 // @ts-ignore
-                headers: {"Content-Type": "text/plain"}
+                headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             }
         )
             .then( () => {
@@ -167,6 +172,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
         setLoading(true);
 
         fetchJustificationsResourceCreatePDFLaTex({
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode), which: which},
             queryParams: {warningsAsErrors: warningsAsErrors}
         })
@@ -179,6 +185,7 @@ function JustificationLatex({which} : {which: string} ) : ReactElement {
 
     const prepareDownload = () => {
         fetchJustificationsResourceDownloadLatexPdf({
+            ...fetcherOptions,
             pathParams: {proposalCode: Number(selectedProposalCode), which: which},
         })
             .then((blob) => setPdfDownload(

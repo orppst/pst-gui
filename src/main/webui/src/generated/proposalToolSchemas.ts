@@ -136,6 +136,7 @@ export type Axis = {
  * a processing backend /pipeline- e.g. correlator
  */
 export type Backend = {
+  _id?: number
   /**
    * the backend name
    */
@@ -541,6 +542,7 @@ export type FileUpload = Record<string, any>;
  * Available filters /bandpasses for intruments
  */
 export type Filter = {
+  _id?: number
   /**
    * human readable name
    */
@@ -617,6 +619,7 @@ export type Handedness = "left" | "right";
  * An instrument that can be attached to a telescope - e.g. CCD, Radio Receiver
  */
 export type Instrument = {
+  _id?: number
   /**
    * the instrument name - human readable
    */
@@ -892,6 +895,7 @@ export type ObservingMode = {
  * base type of a telescope or array of telescopes
  */
 export type ObservingPlatform = {
+  _id?: number
   xmlId?: string;
 };
 
@@ -1013,7 +1017,7 @@ export type Person = {
    * An institution that is a collection of people
    */
   homeInstitute?: Organization;
-  _id?: string;
+  _id?: number;
 };
 
 /**
@@ -1793,6 +1797,7 @@ export type TechnicalGoal = {
 };
 
 export type Telescope = {
+  _id?: number
   "@type"?: string;
   xmlId?: string;
   /**

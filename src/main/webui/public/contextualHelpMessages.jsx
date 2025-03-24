@@ -97,14 +97,20 @@ export const contextualHelpMessages = [
        + " You can make a copy of any existing technical goal by clicking its Copy button."
 }
 , {
-  id: "MaintTechGoal-eng",
-  message: " "
-       + " You must provide values and units for the following performance parameters"
-       + " - Angular resolution, Largest scale, Sensitivity, and Spectral point."
-       + " Spectral windows are optional, but if you select one you must enter values and units for"
-       + " Start, End, and Resolution, as well as polarization."
-       + " Save your changes with the Save button at bottom right of the spectral windows, or cancel and return without saving by clicking the Cancel button."
-}
+    id: "MaintTechGoal-eng",
+    message: " "
+        + " You must provide values and units for the following performance parameters:"
+        + " - angular resolution; largest scale; sensitivity; and spectral point."
+        + " Spectral windows are optional."
+  }
+, {
+    id: "MaintTechGoalSpectralWindows-eng",
+    message: " "
+        + " Spectral windows are optional. Click 'Add' to bring up a window form. "
+        + " You must enter values and units for the start, end, and resolution, as well as polarization, of the window."
+        + " You may add multiple windows. "
+        + " If 'Save' is enabled this will also capture the Performance Parameter input values you entered."
+  }
 , {
   id: "MaintObsFieldList-eng",
   message: " "
@@ -129,12 +135,12 @@ export const contextualHelpMessages = [
 , {
   id: "MaintObs-eng",
   message: " "
-      + " You must select one Target, and one Technical Goal (Performance parameters), followed by both Observation field and type. "
-      + " If your observation type is Calibration, you must choose Calibration intended use."
-      + " Timing windows are optional, but if you select one, you must provide start and end dates and times"
-      + " (choose the date from the calendar and then select a time from the bottom of the calendar)."
-      + " The slider next to the time fields identifies the window as one to be avoided, and you may add a brief note."
-      + " Save your changes with the Save button at bottom right of the timing windows, or cancel and return without saving by clicking the Cancel button."
+      + " Select the 'type' observation, either 'Target' or 'Calibration'. "
+      + " A 'Calibration Observation' requires you pick an intended use e.g., Pointing, Bandpass, etc."
+      + " You must select at least one Target, and one Technical Goal. "
+      + " At least one 'Timing Window' is required. Here you must provide start and end dates-times for the window. "
+      + " Notice that the end date-time must be after the start date-time. "
+      + " The semantics of the avoid flag is to communicate a timing window that must be avoided for this observation. You may also add a brief optional note."
 }
 , {
   id: "ManageDocs-eng",
@@ -146,6 +152,30 @@ export const contextualHelpMessages = [
   message: " "
          + " Select a cycle and confirm your request with the Submit proposal button at bottom right, or cancel and return without submitting by clicking the Cancel button."
 }
+, {
+  id: "ManageSubmitObservingModes-eng",
+    message: "Here you may limit the number of Observing Mode selections by specifying combinations of " +
+        "'Instruments', 'Backends', and 'Filters' that you may want for your observations. " +
+        "The scrollable list shows you the modes available according to the choices you make. " +
+        "Notice that these choices are optional and can be left blank such that all modes are available " +
+        "for selection for your observations. "
+  },
+  {
+    id: "ManageSubmitObservingModesShow-eng",
+    message: "Select an observing mode to see its details i.e., instrument, backend and filter. " +
+        "Where appropriate you will also be shown the telescopes that will be used. " +
+        "The 'eye' button will toggle the mode details display. " +
+        "'Set for all' will set the currently selected observing mode for each observation." +
+        "You may also set the observing modes for each observation individually."
+  },
+  {
+    id: "ManageSubmitObservingModesFilter-eng",
+    message: "Here you may refine the number of selectable Observing Modes by choosing an Instrument, " +
+        "Backend and/or Filter. This will limit the choices in the select dropdown inputs below. " +
+        "Notice that if you specify all three items you will limit the choice of modes to one (or fewer*); " +
+        "an Observing Mode is uniquely defined as a combination of instrument, backend, and filter. " +
+        "*Observatories define their observing modes and some combinations will be incompatible."
+  }
 
 ];
 

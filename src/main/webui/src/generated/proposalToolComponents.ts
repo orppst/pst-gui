@@ -86,28 +86,984 @@ export type ObservatoryResourceGetObservatoryPathParams = {
 export type ObservatoryResourceGetObservatoryVariables = {
   pathParams: ObservatoryResourceGetObservatoryPathParams;
 } & ProposalToolContext["fetcherOptions"];
-export type ObservatoryResourceGetObservatoryBackendsPathParams = {
+
+export const fetchObservatoryResourceGetObservatory = (
+  variables: ObservatoryResourceGetObservatoryVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.Observatory,
+    ObservatoryResourceGetObservatoryError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetObservatoryPathParams
+  >({
+    url: "/pst/api/observatories/{id}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetObservatory = <
+  TData = Schemas.Observatory,
+>(
+  variables: ObservatoryResourceGetObservatoryVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Observatory,
+      ObservatoryResourceGetObservatoryError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Observatory,
+    ObservatoryResourceGetObservatoryError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{id}",
+      operationId: "observatoryResourceGetObservatory",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservatoryResourceGetObservatory(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ObservatoryResourceDeleteObservatoryPathParams = {
   /**
    * @format int64
    */
   id: number;
 };
-export type ObservatoryResourceGetObservatoryBackendsVariables = {
-  pathParams: ObservatoryResourceGetObservatoryBackendsPathParams;
+
+export type ObservatoryResourceDeleteObservatoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceDeleteObservatoryVariables = {
+  pathParams: ObservatoryResourceDeleteObservatoryPathParams;
 } & ProposalToolContext["fetcherOptions"];
-export type ObservatoryResourceGetObservatoryBackendPathParams = {
+
+export const fetchObservatoryResourceDeleteObservatory = (
+  variables: ObservatoryResourceDeleteObservatoryVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceDeleteObservatoryError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceDeleteObservatoryPathParams
+  >({
+    url: "/pst/api/observatories/{id}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceDeleteObservatory = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceDeleteObservatoryError,
+      ObservatoryResourceDeleteObservatoryVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceDeleteObservatoryError,
+    ObservatoryResourceDeleteObservatoryVariables
+  >({
+    mutationFn: (variables: ObservatoryResourceDeleteObservatoryVariables) =>
+      fetchObservatoryResourceDeleteObservatory({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type ObservatoryResourceUpdateAddressPathParams = {
   /**
    * @format int64
    */
   id: number;
+};
+
+export type ObservatoryResourceUpdateAddressError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateAddressVariables = {
+  pathParams: ObservatoryResourceUpdateAddressPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateAddress = (
+  variables: ObservatoryResourceUpdateAddressVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateAddressError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceUpdateAddressPathParams
+  >({
+    url: "/pst/api/observatories/{id}/address",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateAddress = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateAddressError,
+      ObservatoryResourceUpdateAddressVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateAddressError,
+    ObservatoryResourceUpdateAddressVariables
+  >({
+    mutationFn: (variables: ObservatoryResourceUpdateAddressVariables) =>
+      fetchObservatoryResourceUpdateAddress({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type ObservatoryResourceAddArrayPathParams = {
   /**
    * @format int64
    */
-  subId: number;
+  id: number;
 };
-export type ObservatoryResourceGetObservatoryBackendVariables = {
-  pathParams: ObservatoryResourceGetObservatoryBackendPathParams;
+
+export type ObservatoryResourceAddArrayError = Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceAddArrayVariables = {
+  pathParams: ObservatoryResourceAddArrayPathParams;
 } & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceAddArray = (
+  variables: ObservatoryResourceAddArrayVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceAddArrayError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceAddArrayPathParams
+  >({
+    url: "/pst/api/observatories/{id}/array",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceAddArray = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceAddArrayError,
+      ObservatoryResourceAddArrayVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceAddArrayError,
+    ObservatoryResourceAddArrayVariables
+  >({
+    mutationFn: (variables: ObservatoryResourceAddArrayVariables) =>
+      fetchObservatoryResourceAddArray({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type ObservatoryResourceCreateAndAddArrayPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceCreateAndAddArrayError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceCreateAndAddArrayVariables = {
+  body?: Schemas.TelescopeArray;
+  pathParams: ObservatoryResourceCreateAndAddArrayPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceCreateAndAddArray = (
+  variables: ObservatoryResourceCreateAndAddArrayVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.TelescopeArray,
+    ObservatoryResourceCreateAndAddArrayError,
+    Schemas.TelescopeArray,
+    {},
+    {},
+    ObservatoryResourceCreateAndAddArrayPathParams
+  >({
+    url: "/pst/api/observatories/{id}/array",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceCreateAndAddArray = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.TelescopeArray,
+      ObservatoryResourceCreateAndAddArrayError,
+      ObservatoryResourceCreateAndAddArrayVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.TelescopeArray,
+    ObservatoryResourceCreateAndAddArrayError,
+    ObservatoryResourceCreateAndAddArrayVariables
+  >({
+    mutationFn: (variables: ObservatoryResourceCreateAndAddArrayVariables) =>
+      fetchObservatoryResourceCreateAndAddArray({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type ObservatoryResourceUpdateObservatoryIvoIdPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceUpdateObservatoryIvoIdError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateObservatoryIvoIdVariables = {
+  pathParams: ObservatoryResourceUpdateObservatoryIvoIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateObservatoryIvoId = (
+  variables: ObservatoryResourceUpdateObservatoryIvoIdVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateObservatoryIvoIdError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceUpdateObservatoryIvoIdPathParams
+  >({
+    url: "/pst/api/observatories/{id}/ivoId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateObservatoryIvoId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateObservatoryIvoIdError,
+      ObservatoryResourceUpdateObservatoryIvoIdVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateObservatoryIvoIdError,
+    ObservatoryResourceUpdateObservatoryIvoIdVariables
+  >({
+    mutationFn: (
+      variables: ObservatoryResourceUpdateObservatoryIvoIdVariables,
+    ) =>
+      fetchObservatoryResourceUpdateObservatoryIvoId({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type ObservatoryResourceUpdateObservatoryNamePathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceUpdateObservatoryNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateObservatoryNameVariables = {
+  pathParams: ObservatoryResourceUpdateObservatoryNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateObservatoryName = (
+  variables: ObservatoryResourceUpdateObservatoryNameVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateObservatoryNameError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceUpdateObservatoryNamePathParams
+  >({
+    url: "/pst/api/observatories/{id}/name",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateObservatoryName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateObservatoryNameError,
+      ObservatoryResourceUpdateObservatoryNameVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateObservatoryNameError,
+    ObservatoryResourceUpdateObservatoryNameVariables
+  >({
+    mutationFn: (
+      variables: ObservatoryResourceUpdateObservatoryNameVariables,
+    ) =>
+      fetchObservatoryResourceUpdateObservatoryName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type ObservatoryResourceUpdateObservatoryWikiIdPathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type ObservatoryResourceUpdateObservatoryWikiIdError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceUpdateObservatoryWikiIdVariables = {
+  pathParams: ObservatoryResourceUpdateObservatoryWikiIdPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceUpdateObservatoryWikiId = (
+  variables: ObservatoryResourceUpdateObservatoryWikiIdVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservatoryResourceUpdateObservatoryWikiIdError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceUpdateObservatoryWikiIdPathParams
+  >({
+    url: "/pst/api/observatories/{id}/wikiId",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceUpdateObservatoryWikiId = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservatoryResourceUpdateObservatoryWikiIdError,
+      ObservatoryResourceUpdateObservatoryWikiIdVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservatoryResourceUpdateObservatoryWikiIdError,
+    ObservatoryResourceUpdateObservatoryWikiIdVariables
+  >({
+    mutationFn: (
+      variables: ObservatoryResourceUpdateObservatoryWikiIdVariables,
+    ) =>
+      fetchObservatoryResourceUpdateObservatoryWikiId({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+
+export type ObservatoryResourceGetTelescopeArraysPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type ObservatoryResourceGetTelescopeArraysError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetTelescopeArraysResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ObservatoryResourceGetTelescopeArraysVariables = {
+  pathParams: ObservatoryResourceGetTelescopeArraysPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetTelescopeArrays = (
+  variables: ObservatoryResourceGetTelescopeArraysVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservatoryResourceGetTelescopeArraysResponse,
+    ObservatoryResourceGetTelescopeArraysError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetTelescopeArraysPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/array",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetTelescopeArrays = <
+  TData = ObservatoryResourceGetTelescopeArraysResponse,
+>(
+  variables: ObservatoryResourceGetTelescopeArraysVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservatoryResourceGetTelescopeArraysResponse,
+      ObservatoryResourceGetTelescopeArraysError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservatoryResourceGetTelescopeArraysResponse,
+    ObservatoryResourceGetTelescopeArraysError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/array",
+      operationId: "observatoryResourceGetTelescopeArrays",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservatoryResourceGetTelescopeArrays(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ObservatoryResourceGetTelescopeArrayPathParams = {
+  /**
+   * @format int64
+   */
+  arrayId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type ObservatoryResourceGetTelescopeArrayError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservatoryResourceGetTelescopeArrayVariables = {
+  pathParams: ObservatoryResourceGetTelescopeArrayPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservatoryResourceGetTelescopeArray = (
+  variables: ObservatoryResourceGetTelescopeArrayVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.TelescopeArray,
+    ObservatoryResourceGetTelescopeArrayError,
+    undefined,
+    {},
+    {},
+    ObservatoryResourceGetTelescopeArrayPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/array/{arrayId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservatoryResourceGetTelescopeArray = <
+  TData = Schemas.TelescopeArray,
+>(
+  variables: ObservatoryResourceGetTelescopeArrayVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.TelescopeArray,
+      ObservatoryResourceGetTelescopeArrayError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.TelescopeArray,
+    ObservatoryResourceGetTelescopeArrayError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/array/{arrayId}",
+      operationId: "observatoryResourceGetTelescopeArray",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservatoryResourceGetTelescopeArray(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type BackendResourceGetObservatoryBackendsPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type BackendResourceGetObservatoryBackendsQueryParams = {
+  name?: string;
+};
+
+export type BackendResourceGetObservatoryBackendsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BackendResourceGetObservatoryBackendsResponse =
+  Schemas.ObjectIdentifier[];
+
+export type BackendResourceGetObservatoryBackendsVariables = {
+  pathParams: BackendResourceGetObservatoryBackendsPathParams;
+  queryParams?: BackendResourceGetObservatoryBackendsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchBackendResourceGetObservatoryBackends = (
+  variables: BackendResourceGetObservatoryBackendsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    BackendResourceGetObservatoryBackendsResponse,
+    BackendResourceGetObservatoryBackendsError,
+    undefined,
+    {},
+    BackendResourceGetObservatoryBackendsQueryParams,
+    BackendResourceGetObservatoryBackendsPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/backends",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useBackendResourceGetObservatoryBackends = <
+  TData = BackendResourceGetObservatoryBackendsResponse,
+>(
+  variables: BackendResourceGetObservatoryBackendsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      BackendResourceGetObservatoryBackendsResponse,
+      BackendResourceGetObservatoryBackendsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    BackendResourceGetObservatoryBackendsResponse,
+    BackendResourceGetObservatoryBackendsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/backends",
+      operationId: "backendResourceGetObservatoryBackends",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchBackendResourceGetObservatoryBackends(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type BackendResourceAddBackendPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type BackendResourceAddBackendError = Fetcher.ErrorWrapper<undefined>;
+
+export type BackendResourceAddBackendVariables = {
+  pathParams: BackendResourceAddBackendPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchBackendResourceAddBackend = (
+  variables: BackendResourceAddBackendVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    BackendResourceAddBackendError,
+    undefined,
+    {},
+    {},
+    BackendResourceAddBackendPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/backends",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useBackendResourceAddBackend = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      BackendResourceAddBackendError,
+      BackendResourceAddBackendVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    BackendResourceAddBackendError,
+    BackendResourceAddBackendVariables
+  >({
+    mutationFn: (variables: BackendResourceAddBackendVariables) =>
+      fetchBackendResourceAddBackend({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type BackendResourceCreateAndAddBackendPathParams = {
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type BackendResourceCreateAndAddBackendError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BackendResourceCreateAndAddBackendVariables = {
+  body?: Schemas.Backend;
+  pathParams: BackendResourceCreateAndAddBackendPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchBackendResourceCreateAndAddBackend = (
+  variables: BackendResourceCreateAndAddBackendVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.Backend,
+    BackendResourceCreateAndAddBackendError,
+    Schemas.Backend,
+    {},
+    {},
+    BackendResourceCreateAndAddBackendPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/backends",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useBackendResourceCreateAndAddBackend = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Backend,
+      BackendResourceCreateAndAddBackendError,
+      BackendResourceCreateAndAddBackendVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Backend,
+    BackendResourceCreateAndAddBackendError,
+    BackendResourceCreateAndAddBackendVariables
+  >({
+    mutationFn: (variables: BackendResourceCreateAndAddBackendVariables) =>
+      fetchBackendResourceCreateAndAddBackend({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type BackendResourceGetObservatoryBackendPathParams = {
+  /**
+   * @format int64
+   */
+  backendId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type BackendResourceGetObservatoryBackendError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BackendResourceGetObservatoryBackendVariables = {
+  pathParams: BackendResourceGetObservatoryBackendPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchBackendResourceGetObservatoryBackend = (
+  variables: BackendResourceGetObservatoryBackendVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.Backend,
+    BackendResourceGetObservatoryBackendError,
+    undefined,
+    {},
+    {},
+    BackendResourceGetObservatoryBackendPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/backends/{backendId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useBackendResourceGetObservatoryBackend = <
+  TData = Schemas.Backend,
+>(
+  variables: BackendResourceGetObservatoryBackendVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Backend,
+      BackendResourceGetObservatoryBackendError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Backend,
+    BackendResourceGetObservatoryBackendError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/observatories/{observatoryId}/backends/{backendId}",
+      operationId: "backendResourceGetObservatoryBackend",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchBackendResourceGetObservatoryBackend(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type BackendResourceReplaceBackendNamePathParams = {
+  /**
+   * @format int64
+   */
+  backendId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type BackendResourceReplaceBackendNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BackendResourceReplaceBackendNameVariables = {
+  pathParams: BackendResourceReplaceBackendNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchBackendResourceReplaceBackendName = (
+  variables: BackendResourceReplaceBackendNameVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    BackendResourceReplaceBackendNameError,
+    undefined,
+    {},
+    {},
+    BackendResourceReplaceBackendNamePathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/backends/{backendId}/name",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useBackendResourceReplaceBackendName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      BackendResourceReplaceBackendNameError,
+      BackendResourceReplaceBackendNameVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    BackendResourceReplaceBackendNameError,
+    BackendResourceReplaceBackendNameVariables
+  >({
+    mutationFn: (variables: BackendResourceReplaceBackendNameVariables) =>
+      fetchBackendResourceReplaceBackendName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type BackendResourceUpdateBackendParallelPathParams = {
+  /**
+   * @format int64
+   */
+  backendId: number;
+  /**
+   * @format int64
+   */
+  observatoryId: number;
+};
+
+export type BackendResourceUpdateBackendParallelError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BackendResourceUpdateBackendParallelVariables = {
+  body?: boolean;
+  pathParams: BackendResourceUpdateBackendParallelPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchBackendResourceUpdateBackendParallel = (
+  variables: BackendResourceUpdateBackendParallelVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    BackendResourceUpdateBackendParallelError,
+    boolean,
+    {},
+    {},
+    BackendResourceUpdateBackendParallelPathParams
+  >({
+    url: "/pst/api/observatories/{observatoryId}/backends/{backendId}/parallel",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useBackendResourceUpdateBackendParallel = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      BackendResourceUpdateBackendParallelError,
+      BackendResourceUpdateBackendParallelVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    BackendResourceUpdateBackendParallelError,
+    BackendResourceUpdateBackendParallelVariables
+  >({
+    mutationFn: (variables: BackendResourceUpdateBackendParallelVariables) =>
+      fetchBackendResourceUpdateBackendParallel({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type InstrumentResourceGetObservatoryInstrumentsPathParams = {
   /**
    * @format int64
@@ -2245,6 +3201,10 @@ export type SubmittedProposalResourceGetSubmittedProposalsPathParams = {
 
 export type SubmittedProposalResourceGetSubmittedProposalsQueryParams = {
   investigatorName?: string;
+  /**
+   * @format int64
+   */
+  sourceProposalId?: number;
   title?: string;
 };
 
@@ -3034,6 +3994,146 @@ export const useObservingModeResourceGetCycleObservingModes = <
     }),
     queryFn: ({ signal }) =>
       fetchObservingModeResourceGetCycleObservingModes(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ObservingModeResourceGetObservingModesFiltersPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+};
+
+export type ObservingModeResourceGetObservingModesFiltersError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceGetObservingModesFiltersResponse =
+  Schemas.Filter[];
+
+export type ObservingModeResourceGetObservingModesFiltersVariables = {
+  pathParams: ObservingModeResourceGetObservingModesFiltersPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceGetObservingModesFilters = (
+  variables: ObservingModeResourceGetObservingModesFiltersVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservingModeResourceGetObservingModesFiltersResponse,
+    ObservingModeResourceGetObservingModesFiltersError,
+    undefined,
+    {},
+    {},
+    ObservingModeResourceGetObservingModesFiltersPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/filters",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceGetObservingModesFilters = <
+  TData = ObservingModeResourceGetObservingModesFiltersResponse,
+>(
+  variables: ObservingModeResourceGetObservingModesFiltersVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservingModeResourceGetObservingModesFiltersResponse,
+      ObservingModeResourceGetObservingModesFiltersError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservingModeResourceGetObservingModesFiltersResponse,
+    ObservingModeResourceGetObservingModesFiltersError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/filters",
+      operationId: "observingModeResourceGetObservingModesFilters",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservingModeResourceGetObservingModesFilters(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ObservingModeResourceGetObservingModeObjectsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+};
+
+export type ObservingModeResourceGetObservingModeObjectsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceGetObservingModeObjectsResponse =
+  Schemas.ObservingMode[];
+
+export type ObservingModeResourceGetObservingModeObjectsVariables = {
+  pathParams: ObservingModeResourceGetObservingModeObjectsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceGetObservingModeObjects = (
+  variables: ObservingModeResourceGetObservingModeObjectsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservingModeResourceGetObservingModeObjectsResponse,
+    ObservingModeResourceGetObservingModeObjectsError,
+    undefined,
+    {},
+    {},
+    ObservingModeResourceGetObservingModeObjectsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/objectList",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceGetObservingModeObjects = <
+  TData = ObservingModeResourceGetObservingModeObjectsResponse,
+>(
+  variables: ObservingModeResourceGetObservingModeObjectsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ObservingModeResourceGetObservingModeObjectsResponse,
+      ObservingModeResourceGetObservingModeObjectsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ObservingModeResourceGetObservingModeObjectsResponse,
+    ObservingModeResourceGetObservingModeObjectsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/objectList",
+      operationId: "observingModeResourceGetObservingModeObjects",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchObservingModeResourceGetObservingModeObjects(
         { ...fetcherOptions, ...variables },
         signal,
       ),
@@ -6906,14 +8006,24 @@ export type QueryOperation =
       variables: ObservatoryResourceGetObservatoryVariables;
     }
   | {
-      path: "/pst/api/observatories/{id}/backend";
-      operationId: "observatoryResourceGetObservatoryBackends";
-      variables: ObservatoryResourceGetObservatoryBackendsVariables;
+      path: "/pst/api/observatories/{observatoryId}/array";
+      operationId: "observatoryResourceGetTelescopeArrays";
+      variables: ObservatoryResourceGetTelescopeArraysVariables;
     }
   | {
-      path: "/pst/api/observatories/{id}/backend/{subId}";
-      operationId: "observatoryResourceGetObservatoryBackend";
-      variables: ObservatoryResourceGetObservatoryBackendVariables;
+      path: "/pst/api/observatories/{observatoryId}/array/{arrayId}";
+      operationId: "observatoryResourceGetTelescopeArray";
+      variables: ObservatoryResourceGetTelescopeArrayVariables;
+    }
+  | {
+      path: "/pst/api/observatories/{observatoryId}/backends";
+      operationId: "backendResourceGetObservatoryBackends";
+      variables: BackendResourceGetObservatoryBackendsVariables;
+    }
+  | {
+      path: "/pst/api/observatories/{observatoryId}/backends/{backendId}";
+      operationId: "backendResourceGetObservatoryBackend";
+      variables: BackendResourceGetObservatoryBackendVariables;
     }
   | {
       path: "/pst/api/observatories/{observatoryId}/instruments";
@@ -7084,6 +8194,16 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleId}/observingModes";
       operationId: "observingModeResourceGetCycleObservingModes";
       variables: ObservingModeResourceGetCycleObservingModesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/filters";
+      operationId: "observingModeResourceGetObservingModesFilters";
+      variables: ObservingModeResourceGetObservingModesFiltersVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleId}/observingModes/objectList";
+      operationId: "observingModeResourceGetObservingModeObjects";
+      variables: ObservingModeResourceGetObservingModeObjectsVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}";
