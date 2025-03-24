@@ -84,15 +84,6 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          onClick={()=>setActive("Dates" + cycle.code)}
                 />}
                 {HaveRole(["tac_admin"]) &&
-                <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
-                         component={Link}
-                         key={"AssignReviewers"}
-                         label={"Assign Reviewers"}
-                         leftSection={<IconLicense/>}
-                         active={"AssignReviewers" + cycle.code === active}
-                         onClick={()=>setActive("AssignReviewers" + cycle.code)}
-                />}
-                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/tac"}
                          component={Link}
                          key={"TAC"}
@@ -109,6 +100,16 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconEgg/>}
                          active={"AvailableResources" + cycle.code === active}
                          onClick={()=>setActive("AvailableResources" + cycle.code)}
+                />}
+
+                {HaveRole(["tac_admin"]) &&
+                <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
+                         component={Link}
+                         key={"AssignReviewers"}
+                         label={"Assign Reviewers"}
+                         leftSection={<IconLicense/>}
+                         active={"AssignReviewers" + cycle.code === active}
+                         onClick={()=>setActive("AssignReviewers" + cycle.code)}
                 />}
                 <NavLink to={"cycle/" + cycle.dbid + "/reviews"}
                          component={Link}

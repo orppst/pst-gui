@@ -104,7 +104,7 @@ function AllocatedAccordion(props: {allocatedIds: ObjectIdentifier[]}) : ReactEl
     ))
 
     return(
-        <Accordion defaultValue={"1"}>
+        <Accordion defaultValue={"1"} variant={"separated"}>
             {allocatedBlocks}
         </Accordion>
     )

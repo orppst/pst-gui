@@ -110,6 +110,8 @@ export default function AllocationsPanel() : ReactElement {
                         </Tabs.Tab>
                     </Tabs.List>
 
+                    <Space h={"md"}/>
+
                     <Tabs.Panel value={"submitted"}>
                         <AllocationsTable submittedIds={notYetAllocated.data!} />
                     </Tabs.Panel>
@@ -120,9 +122,11 @@ export default function AllocationsPanel() : ReactElement {
                                 span={{base: 10, xl: 6}}
                                 order={{base: 2, xl: 1}}
                             >
-                                <ScrollArea>
-                                    <AllocatedAccordion allocatedIds={allocated.data!} />
-                                </ScrollArea>
+                                <Fieldset legend={"Allocate Resources"}>
+                                    <ScrollArea>
+                                        <AllocatedAccordion allocatedIds={allocated.data!} />
+                                    </ScrollArea>
+                                </Fieldset>
                             </Grid.Col>
                             <Grid.Col
                                 span={{base: 10, xl: 4}}
