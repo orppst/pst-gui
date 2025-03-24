@@ -21,6 +21,7 @@ import {useDisclosure} from "@mantine/hooks";
 import CycleList from "./cycleList.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import NewCycleForm from "./proposalCycle.new.form.tsx";
+import {HaveRole} from "../auth/Roles.tsx";
 
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
@@ -69,10 +70,11 @@ export default function ProposalManagerStartPage() : ReactElement {
                                     <IconLicense />
                                 </ActionIcon>
                             </Tooltip>
+                            {HaveRole(["tac_admin", "tac_member"]) &&
                             <AddButton toolTipLabel={"new proposal cycle"}
                                        label={"Create a new Proposal Cycle"}
                                        onClick={open}
-                            />
+                            />}
                             <Modal
                                 opened={modalOpened}
                                 onClose={close}

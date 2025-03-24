@@ -1,11 +1,11 @@
-import {AllocatedBlock, AllocationGrade, ObservingMode, ResourceType} from "../../generated/proposalToolSchemas.ts";
+import {AllocatedBlock, AllocationGrade, ResourceType} from "../../generated/proposalToolSchemas.ts";
 import {Group, Stack, Table, Text} from "@mantine/core";
 import DeleteButton from "../../commonButtons/delete.tsx";
 import AllocatedBlockModal from "./allocatedBlock.modal.tsx";
 import {ReactElement} from "react";
 import {modals} from "@mantine/modals";
 import {
-    useAllocatedBlockResourceRemoveAllocatedBlock
+    useAllocatedBlockResourceRemoveAllocatedBlock, //useAvailableResourcesResourceGetCycleResourceTypes
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
@@ -31,12 +31,18 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 export type AllocatedBlocksTableProps = {
     proposalTitle: string,
     allocatedBlocks: AllocatedBlock[],
-    allocatedProposalId: number
+    allocatedProposalId: number,
+    observingModeId: number
 }
 
 export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
+
+    // const cycleResourceTypes =
+    //     useAvailableResourcesResourceGetCycleResourceTypes({
+    //         pathParams: {cycleCode: Number(selectedCycleCode)}
+    //     })
 
     const removeAllocatedBlock =
         useAllocatedBlockResourceRemoveAllocatedBlock();
@@ -47,7 +53,6 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
         allocatedId: number,
         blockId: number
     }
-
 
     const confirmDelete = (props: DeleteProps) => {
         modals.openConfirmModal({
@@ -86,7 +91,6 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
 
     let grades: AllocationGrade[] = [];
     let resourceTypes: ResourceType[] = [];
-    let modes: ObservingMode[] = [];
 
     return (
         <Stack>
@@ -96,7 +100,6 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
                         <Table.Tr>
                             <Table.Th>Resource</Table.Th>
                             <Table.Th>Amount</Table.Th>
-                            <Table.Th>Mode</Table.Th>
                             <Table.Th>Grade</Table.Th>
                             <Table.Th></Table.Th>
                         </Table.Tr>
@@ -104,29 +107,22 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
                     <Table.Tbody c={"orange.2"}>
                         {
                          props.allocatedBlocks.map(ab => {
-                            //on second call for a "thing" we get a reference rather than the "thing"
-                            // e.g., a resource name will only display once for the entire table.
-                            //console.log(ab)
-                            if(ab.grade?.name != undefined)
+                             //on subsequent calls for the same "thing" we get a reference rather than the "thing"
+                             //store the "thing" on first call, find it on subsequent calls for the same "thing"
+                             if(ab.grade?.name != undefined)
                                 grades.push(ab.grade)
-                            else
+                             else
                                 ab.grade = grades.find(gr => gr._id == ab.grade)
 
-                            if(ab.resource?.type?.name != undefined)
+                             if(ab.resource?.type?.name != undefined)
                                 resourceTypes.push(ab.resource.type)
                              else if(ab.resource != undefined)
                                  ab.resource.type = resourceTypes.find(rt => rt._id == ab.resource?.type)
 
-                             if(ab.mode?.name != undefined)
-                                 modes.push(ab.mode)
-                             else
-                                 ab.mode = modes.find(m => m._id == ab.mode)
-
-                            return (
+                             return (
                                 <Table.Tr key={ab._id}>
                                     <Table.Td>{ab.resource?.type?.name}</Table.Td>
                                     <Table.Td>{ab.resource?.amount} {ab.resource?.type?.unit}</Table.Td>
-                                    <Table.Td>{ab.mode?.name}</Table.Td>
                                     <Table.Td>{ab.grade?.name}</Table.Td>
                                     <Table.Td>
                                         <Group justify={"flex-end"}>
@@ -134,6 +130,7 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
                                                 proposalTitle={props.proposalTitle}
                                                 allocatedBlock={ab}
                                                 allocatedProposalId={props.allocatedProposalId}
+                                                observingModeId={props.observingModeId}
                                             />
                                             <DeleteButton
                                                 toolTipLabel={"delete this resource block"}
@@ -154,10 +151,15 @@ export default function AllocatedBlocksTable(props: AllocatedBlocksTableProps): 
                     </Table.Tbody>
                 </Table>
             }
-            <AllocatedBlockModal
-                proposalTitle={props.proposalTitle}
-                allocatedProposalId={props.allocatedProposalId}
-            />
+            {
+                <AllocatedBlockModal
+                    proposalTitle={props.proposalTitle}
+                    allocatedProposalId={props.allocatedProposalId}
+                    observingModeId={props.observingModeId}
+                />
+            }
+
+
         </Stack>
     )
 }
