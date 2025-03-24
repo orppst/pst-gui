@@ -29,7 +29,6 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {queryKeyProposals} from "../../queryKeyProposals.tsx";
 import {
     useOpticalTelescopeResourceSaveTelescopeData,
-    fetchOpticalTelescopeResourceLoadTelescopeData,
 } from '../../util/telescopeComms';
 
 /**
@@ -84,20 +83,6 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
         useObservationResourceReplaceIntendedUse();
     const saveTelescopeData =
         useOpticalTelescopeResourceSaveTelescopeData();
-
-    fetchOpticalTelescopeResourceLoadTelescopeData({
-            observationID: props.observation?._id?.toString(),
-            proposalID: selectedProposalCode
-    }).then((telescopeNameData: Map<string, Map<string, Map<string, string>>>) => {
-        const mapForm = new Map(Object.entries(telescopeNameData));
-        if(form.getInputProps("telescopeName").value == null && mapForm.size != 0) {
-            form.setValues({
-                "telescopeName": mapForm?.keys().next().value ? mapForm?.keys().next().value : 'None',
-                "instrument": new Map(Object.entries(mapForm?.get(mapForm?.keys().next().value))).keys().next().value ?
-                    new Map(Object.entries(mapForm?.get(mapForm?.keys().next().value))).keys().next().value : 'None',
-            });
-        }
-    });
 
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
@@ -163,7 +148,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         value === null ? 'No start time selected' : null),
                     endTime: (value) => (
                         value === null ? 'No end time selected' : null)
-                }
+                },
+                telescopeName: (value: string) => (value == "None" ? "Please select a telescope": null),
+                instrument: (value: string) => (value == "None" ? "Please select a instrument": null),
             },
         });
 
