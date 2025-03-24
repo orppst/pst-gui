@@ -12,6 +12,22 @@ import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
+/*
+    Always have a table for each distinct observing mode in a proposal.
+
+    Each table shows a row for each available resource type in the proposal cycle.
+
+    Freshly allocated proposals start with zero resources and may be allocated by
+    the "edit" button.
+
+    For each resource type the resource "totals" table should show total amount,
+    amount used, and amount remaining for the cycle.
+
+    Additionally, this should show the breakdown of amounts between different
+    observing modes for the entire cycle.
+ */
+
+
 export type AllocatedBlocksTableProps = {
     proposalTitle: string,
     allocatedBlocks: AllocatedBlock[],
