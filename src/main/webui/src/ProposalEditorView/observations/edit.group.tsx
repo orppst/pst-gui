@@ -208,7 +208,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
 
 
     const handleSubmit =
-        form.onSubmit((values) => {
+        form.onSubmit((values: ObservationFormValues) => {
             if (newObservation) {
                 //Creating new observation
                 const targetList: Target[] = [];
