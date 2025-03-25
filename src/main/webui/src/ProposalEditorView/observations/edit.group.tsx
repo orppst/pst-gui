@@ -2,7 +2,7 @@ import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
 import {Telescopes} from "./telescopes"
-import { Fieldset, Grid, Text, Stack, Group, Space } from '@mantine/core';
+import { Fieldset, Text, Stack, Group, Space } from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, Target, TargetObservation,
@@ -48,8 +48,8 @@ export interface ObservationFormValues {
     targetDBIds: number[],
     techGoalId: number,
     timingWindows: TimingWindowGui[],
-    telescopeName: string,
-    instrument: string,
+    telescopeName: string | null,
+    instrument: string | null,
     elements: Map<string, string>,
 }
 
@@ -158,7 +158,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 (timingWindow: TimingWindow) => ConvertToTimingWindowGui(timingWindow));
     }
 
-    let initialTargetIds : number [] = [];
+    const initialTargetIds: number [] = [];
     if (!newObservation) {
         props.observation?.target?.map(t => {
             initialTargetIds.push(t._id!)
@@ -230,7 +230,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         "@type": "proposal:TargetField"
                     }
                 }) .then( data => {
-                    let baseObservation : Observation = {
+                    const baseObservation : Observation = {
                         target: targetList,
                         technicalGoal: {
                             "_id": values.techGoalId
@@ -292,7 +292,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         addNewConstraint.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observation?._id!
+                                observationId: props.observation?._id
                             },
                             body: ConvertToTimingWindowApi(tw)
                         }, {
@@ -321,10 +321,10 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         replaceTimingWindow.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observation?._id!,
+                                observationId: props.observation?._id,
                                 timingWindowId: tw.id
                             },
-                            // @ts-ignore
+
                             body: ConvertToTimingWindowApi(tw)
                         }, {
                             onSuccess: () => {
@@ -358,7 +358,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     replaceTargets.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id!
+                            observationId: props.observation?._id
                         },
                         body: body
                     }, {
@@ -382,7 +382,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     replaceTechnicalGoal.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id!,
+                            observationId: props.observation?._id,
                         },
                         body: {
                             "_id": form.values.techGoalId
@@ -409,7 +409,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     replaceCalibrationUse.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id!
+                            observationId: props.observation?._id
                         },
                         body: values.calibrationUse
                     }, {
