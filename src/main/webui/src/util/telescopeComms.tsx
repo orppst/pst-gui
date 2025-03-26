@@ -53,6 +53,7 @@ export type SavedTelescopeData = {
         observationID: string,
     }
     telescopeName: string,
+    instrumentName: string,
     choices: {[p: string]: string}
 }
 

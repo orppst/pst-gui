@@ -58,7 +58,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 // ensure the telescope data is extracted before asking for the user data.
                 fetchOpticalTelescopeResourceLoadTelescopeData(
                     {
-                        observationID: form.getValues().observationId?.toString(),
+                        observationID: form.getValues().observationId!.toString(),
                         proposalID: selectedProposalCode!
                     })
                     .then(
