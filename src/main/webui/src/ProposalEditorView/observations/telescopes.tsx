@@ -103,11 +103,11 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         // state holder to force re renders
         if (selectedTelescope == null) {
             let telescopeState: string | null = null;
-            let instrumentState: Map<string, Map<string, string>> = null;
+            let instrumentState: string | null = null;
             if (userData.size !== 0 && !form.isDirty("elements")) {
                 telescopeState = userData.keys().next().value || 'None';
                 const instrumentMap: Map<string, Map<string, string>> = userData.get(telescopeState) || new Map();
-                instrumentState = new Map(Object.entries(instrumentMap)).keys().next().value;
+                instrumentState = new Map(Object.entries(instrumentMap)).keys().next().value || 'None';
 
                 if (telescopeState == form.getInputProps("telescopeName").value &&
                     instrumentState == form.getInputProps("instrument").value) {
