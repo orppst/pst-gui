@@ -87,13 +87,13 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
         // fill out forms
         if(form.getInputProps("telescopeName").value == null && userData.size != 0) {
+            const telescopeName = userData.keys().next().value;
+            const instrumentMap = userData.get(telescopeName);
+            const instrumentValue = (new Map(Object.entries(instrumentMap))).keys().next().value || 'None';
+
             form.setValues({
-                "telescopeName": userData?.keys().next().value ?
-                    userData?.keys().next().value : 'None',
-                "instrument": new Map(Object.entries(userData?.get(
-                    userData?.keys().next().value)))?.keys().next().value ?
-                    new Map(Object.entries(userData?.get(
-                        userData?.keys().next().value)))?.keys().next().value : 'None',
+                "telescopeName": telescopeName,
+                "instrument": instrumentValue,
             });
         }
 
