@@ -41,10 +41,7 @@ export default function AllocatedBlocksTable(p: AllocatedBlocksTableProps): Reac
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
-    // const cycleResourceTypes =
-    //     useAvailableResourcesResourceGetCycleResourceTypes({
-    //         pathParams: {cycleCode: Number(selectedCycleCode)}
-    //     })
+
 
     const removeAllocatedBlock =
         useAllocatedBlockResourceRemoveAllocatedBlock();
@@ -145,15 +142,13 @@ export default function AllocatedBlocksTable(p: AllocatedBlocksTableProps): Reac
                                                 />
                                                 <DeleteButton
                                                     toolTipLabel={"delete this resource block"}
-                                                    onClick={() => confirmDelete(
-                                                        {
-                                                            proposalTitle: p.proposalTitle,
-                                                            resourceName: theResourceType!.name!,
-                                                            gradeName: theGrade!.name!,
-                                                            allocatedId: p.allocatedProposalId,
-                                                            blockId: ab._id!
-                                                        }
-                                                    )}
+                                                    onClick={() => confirmDelete({
+                                                        proposalTitle: p.proposalTitle,
+                                                        resourceName: theResourceType!.name!,
+                                                        gradeName: theGrade!.name!,
+                                                        allocatedId: p.allocatedProposalId,
+                                                        blockId: ab._id!
+                                                    })}
                                                 />
                                             </Group>
                                         </Table.Td>
@@ -164,6 +159,7 @@ export default function AllocatedBlocksTable(p: AllocatedBlocksTableProps): Reac
                 </Table>
             }
             {
+
                 <AllocatedBlockModal
                     proposalTitle={p.proposalTitle}
                     allocatedProposalId={p.allocatedProposalId}
