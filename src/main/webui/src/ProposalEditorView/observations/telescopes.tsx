@@ -4,7 +4,7 @@ import {
     fetchOpticalTelescopeResourceGetNames,
     fetchOpticalTelescopeResourceGetTelescopeData,
     Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData,
-    Telescope
+    Telescope, SavedTelescopeData
 } from '../../util/telescopeComms';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
@@ -62,7 +62,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         proposalID: selectedProposalCode!
                     })
                     .then(
-                        (userDataRaw: Map<string, Map<string, Map<string, string>>>) => {
+                        (userDataRaw: SavedTelescopeData) => {
                             processUserData(userDataRaw, new Map(Object.entries(backendTelescopeData)));
                         }
                     );
@@ -76,8 +76,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * @param storedTelescopeData: the stored telescope states.
      */
     function processUserData(
-            userDataRaw: Map<string, Map<string, Map<string, string>>>,
-            storedTelescopeData): void {
+            userDataRaw: SavedTelescopeData,
+            storedTelescopeData: Map<string, Telescope>): void {
         userData = new Map(Object.entries(userDataRaw));
 
         // fill out forms
