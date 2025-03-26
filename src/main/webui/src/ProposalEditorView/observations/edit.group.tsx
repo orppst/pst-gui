@@ -438,7 +438,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                             proposalID: selectedProposalCode!,
                             observationID: form.getValues().observationId!.toString(),
                         },
-                        instrumentName: form.getValues().instrument,
+                        instrumentName: form.getValues().instrument!,
                         telescopeName: form.getValues().telescopeName!,
                         choices: Object.fromEntries(form.getValues().elements.entries())
                     }, {
