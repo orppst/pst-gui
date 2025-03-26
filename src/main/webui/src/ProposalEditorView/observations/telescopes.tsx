@@ -3,7 +3,8 @@ import { Select, Textarea} from '@mantine/core';
 import {
     fetchOpticalTelescopeResourceGetNames,
     fetchOpticalTelescopeResourceGetTelescopeData,
-    Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData
+    Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData, 
+    Telescope
 } from '../../util/telescopeComms';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
@@ -23,10 +24,12 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     const { selectedProposalCode} = useParams();
 
     // state holder to force re renders;
-    const [selectedTelescope, setSelectedTelescope] = useState(null);
-    const [selectedInstrument, setSelectedInstrument] = useState(null);
+    const [selectedTelescope, setSelectedTelescope] = useState<string | null>(null);
+    const [selectedInstrument, setSelectedInstrument] =
+        useState<Map<string, Map<string, string>> | null>(null);
     const [getNames, setNames] = useState(["None"]);
-    const [getTelescopeData, setTelescopeData] = useState(null);
+    const [getTelescopeData, setTelescopeData] =
+        useState<Map<string, Telescope> | null>(null);
 
     // data holder for the user choices from the back end.
     let userData: Map<string, Map<string, Map<string, string>>> =
