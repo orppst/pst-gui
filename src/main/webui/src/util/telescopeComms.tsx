@@ -35,11 +35,6 @@ export type SaveTelescopeResourceParametersVariables = {
     body?: SaveTelescopeState;
 }
 
-// the type for the received data about telescopes.
-export type ReceivedTelescopes = {
-    telescopes: Map<string, Telescope>
-}
-
 // the type for the saving of observation telescope data.
 export type SaveTelescopeState = {
     primaryKey: {proposalID: string, observationID: string}, telescopeName: string,
@@ -83,7 +78,8 @@ export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
 export const fetchOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal) =>
-    proposalToolFetch<ReceivedTelescopes,
+    proposalToolFetch<
+        Map<string, Map<string, Map<string, string>>>,
         TelescopeDataError,
         undefined,
         { unknown },
