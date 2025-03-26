@@ -76,8 +76,13 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * @param storedTelescopeData: the stored telescope states.
      */
     function processUserData(
-            userDataRaw: Map<string, Map<string, Map<string, string>>>,
+            userDataRaw: Map<string, Map<string, Map<string, string>>> | undefined,
             storedTelescopeData: Map<string, Telescope>): void {
+
+        if (userDataRaw == undefined) {
+            return
+        }
+
         userData = new Map(Object.entries(userDataRaw));
 
         // fill out forms
@@ -86,9 +91,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 "telescopeName": userData?.keys().next().value ?
                     userData?.keys().next().value : 'None',
                 "instrument": new Map(Object.entries(userData?.get(
-                    userData?.keys().next().value))).keys().next().value ?
+                    userData?.keys().next().value)))?.keys().next().value ?
                     new Map(Object.entries(userData?.get(
-                        userData?.keys().next().value))).keys().next().value : 'None',
+                        userData?.keys().next().value)))?.keys().next().value : 'None',
             });
         }
 

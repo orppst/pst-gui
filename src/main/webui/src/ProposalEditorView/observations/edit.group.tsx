@@ -48,8 +48,8 @@ export interface ObservationFormValues {
     targetDBIds: number[],
     techGoalId: number,
     timingWindows: TimingWindowGui[],
-    telescopeName: string | null,
-    instrument: string | null,
+    telescopeName: string | null | undefined,
+    instrument: string | null | undefined,
     elements: Map<string, string>,
 }
 
