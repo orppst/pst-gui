@@ -433,30 +433,32 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 }
 
                 if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
-                    saveTelescopeData.mutate({
-                        primaryKey: {
-                            proposalID: selectedProposalCode,
-                            observationID: form.getValues().observationId?.toString(),
-                        },
-                        instrumentName: form.getValues().instrument,
-                        telescopeName: form.getValues().telescopeName,
-                        choices: Object.fromEntries(form.getValues().elements.entries())
-                    }, {
-                        onSuccess: () => {
-                            queryClient.invalidateQueries({
-                                queryKey: queryKeyProposals({
-                                    proposalId: Number(selectedProposalCode),
-                                    childName: "observations",
-                                    childId: form.getValues().observationId!
-                                }),
-                            }).then(() =>
-                                notifySuccess("Telescopes data Updated",
-                                    "telescope data saved")
-                            );
-                        },
-                        onError: (error) =>
-                            notifyError("Failed to update optical telescope data", getErrorMessage(error)),
-                    });
+                    if (form.getValues().telescopeName !== null) {
+                        saveTelescopeData.mutate({
+                            primaryKey: {
+                                proposalID: selectedProposalCode,
+                                observationID: form.getValues().observationId?.toString(),
+                            },
+                            instrumentName: form.getValues().instrument,
+                            telescopeName: form.getValues().telescopeName,
+                            choices: Object.fromEntries(form.getValues().elements.entries())
+                        }, {
+                            onSuccess: () => {
+                                queryClient.invalidateQueries({
+                                    queryKey: queryKeyProposals({
+                                        proposalId: Number(selectedProposalCode),
+                                        childName: "observations",
+                                        childId: form.getValues().observationId!
+                                    }),
+                                }).then(() =>
+                                    notifySuccess("Telescopes data Updated",
+                                        "telescope data saved")
+                                );
+                            },
+                            onError: (error) =>
+                                notifyError("Failed to update optical telescope data", getErrorMessage(error)),
+                        });
+                    }
                 }
             }
     });
