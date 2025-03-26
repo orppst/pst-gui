@@ -294,7 +294,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         addNewConstraint.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observation?._id
+                                observationId: props.observation?._id!
                             },
                             body: ConvertToTimingWindowApi(tw)
                         }, {
@@ -323,10 +323,10 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         replaceTimingWindow.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observation?._id,
+                                observationId: props.observation?._id!,
                                 timingWindowId: tw.id
                             },
-
+                            // @ts-ignore
                             body: ConvertToTimingWindowApi(tw)
                         }, {
                             onSuccess: () => {
@@ -360,7 +360,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     replaceTargets.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id
+                            observationId: props.observation?._id!
                         },
                         body: body
                     }, {
@@ -384,7 +384,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     replaceTechnicalGoal.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id,
+                            observationId: props.observation?._id!,
                         },
                         body: {
                             "_id": form.values.techGoalId
@@ -411,7 +411,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     replaceCalibrationUse.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id
+                            observationId: props.observation?._id!
                         },
                         body: values.calibrationUse
                     }, {
