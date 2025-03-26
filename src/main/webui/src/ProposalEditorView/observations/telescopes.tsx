@@ -3,7 +3,7 @@ import { Select, Textarea} from '@mantine/core';
 import {
     fetchOpticalTelescopeResourceGetNames,
     fetchOpticalTelescopeResourceGetTelescopeData,
-    Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData, 
+    Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData,
     Telescope
 } from '../../util/telescopeComms';
 import { UseFormReturnType } from '@mantine/form';

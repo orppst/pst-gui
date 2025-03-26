@@ -48,8 +48,10 @@ export type LoadTelescopeState = {
 
 // the type of data returned from a load request
 export type SavedTelescopeData = {
-    proposalID: string | null,
-    observationID: string,
+    primaryKey: {
+        proposalID: string | null,
+        observationID: string,
+    }
     telescopeName: string,
     choices: {[p: string]: string}
 }
