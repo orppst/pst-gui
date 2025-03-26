@@ -202,9 +202,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         value === null ? 'No end time selected' : null)
                 },
                 telescopeName: (value: string | null) => (
-                    value == "None" ? "Please select a telescope": null),
+                    value == "None" || value == null ? "Please select a telescope": null),
                 instrument: (value: string | null) => (
-                    value == "None" ? "Please select a instrument": null),
+                    value == "None" || value == null ? "Please select a instrument": null),
             },
         });
 
@@ -439,7 +439,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                             observationID: form.getValues().observationId?.toString(),
                         },
                         instrumentName: form.getValues().instrument,
-                        telescopeName: form.getValues().telescopeName,
+                        telescopeName: form.getValues().telescopeName!,
                         choices: Object.fromEntries(form.getValues().elements.entries())
                     }, {
                         onSuccess: () => {
