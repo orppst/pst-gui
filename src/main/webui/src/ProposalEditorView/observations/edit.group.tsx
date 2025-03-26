@@ -435,8 +435,8 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
                     saveTelescopeData.mutate({
                         primaryKey: {
-                            proposalID: selectedProposalCode,
-                            observationID: form.getValues().observationId?.toString(),
+                            proposalID: selectedProposalCode!,
+                            observationID: form.getValues().observationId!.toString(),
                         },
                         instrumentName: form.getValues().instrument,
                         telescopeName: form.getValues().telescopeName!,
