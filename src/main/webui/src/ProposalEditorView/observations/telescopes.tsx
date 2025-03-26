@@ -102,7 +102,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
         // state holder to force re renders
         if (selectedTelescope == null) {
-            let telescopeState: string = null;
+            let telescopeState: string | null = null;
             let instrumentState: Map<string, Map<string, string>> = null;
             if (userData.size !== 0 && !form.isDirty("elements")) {
                 telescopeState = userData.keys().next().value || 'None';
