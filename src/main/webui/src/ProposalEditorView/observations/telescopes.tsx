@@ -105,15 +105,15 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             let telescopeState = null;
             let instrumentState = null;
             if (userData.size !== 0 && !form.isDirty("elements")) {
-                telescopeState = userData.keys().next().value
-                instrumentState = new Map(Object.entries(userData.get(
-                    userData.keys().next().value))).keys().next().value;
+                telescopeState = userData.keys().next().value || 'None';
+                const instrumentMap: Map<string, Map<string, string>> = userData.get(telescopeState) || new Map();
+                instrumentState = new Map(Object.entries(instrumentMap)).keys().next().value;
 
                 if (telescopeState == form.getInputProps("telescopeName").value &&
                     instrumentState == form.getInputProps("instrument").value) {
+
                     const elements: Map<string, string> =
-                        new Map(Object.entries(new Map(Object.entries(
-                            userData.get(telescopeState))).get(instrumentState)));
+                        new Map(Object.entries(instrumentMap.get(instrumentState)));
 
                     // extract the data types for these elements. as booleans need conversions.
                     const elementDataTypes = new Map(Object.entries(
