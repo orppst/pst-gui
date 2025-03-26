@@ -87,8 +87,11 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
         // fill out forms
         if(form.getInputProps("telescopeName").value == null && userData.size != 0) {
+            // it cant be none, there has to be at least one entry.
             const telescopeName: string = userData.keys().next().value || 'None';
-            const instrumentMap: string = userData.get(telescopeName);
+
+            // it cant be none, there must be at least one instrument. else the xml is messed.
+            const instrumentMap: string = userData.get(telescopeName) || new Map();
             const instrumentValue: string = (new Map(Object.entries(instrumentMap))).keys().next().value || 'None';
 
             form.setValues({
