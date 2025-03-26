@@ -87,9 +87,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
         // fill out forms
         if(form.getInputProps("telescopeName").value == null && userData.size != 0) {
-            const telescopeName = userData.keys().next().value;
-            const instrumentMap = userData.get(telescopeName);
-            const instrumentValue = (new Map(Object.entries(instrumentMap))).keys().next().value || 'None';
+            const telescopeName: string = userData.keys().next().value || 'None';
+            const instrumentMap: string = userData.get(telescopeName);
+            const instrumentValue: string = (new Map(Object.entries(instrumentMap))).keys().next().value || 'None';
 
             form.setValues({
                 "telescopeName": telescopeName,
