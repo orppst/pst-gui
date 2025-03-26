@@ -101,7 +101,7 @@ export const fetchOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSign
  */
 export const fetchOpticalTelescopeResourceLoadTelescopeData = (
     data: LoadTelescopeState, signal?: AbortSignal) =>
-    proposalToolFetch<SavedTelescopeData,
+    proposalToolFetch<Map<string, Map<string, Map<string, string>>>,
         TelescopeLoadError,
         LoadTelescopeState,
         { unknown },

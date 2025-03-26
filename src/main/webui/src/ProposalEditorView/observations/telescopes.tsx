@@ -4,7 +4,7 @@ import {
     fetchOpticalTelescopeResourceGetNames,
     fetchOpticalTelescopeResourceGetTelescopeData,
     Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData,
-    Telescope, SavedTelescopeData
+    Telescope
 } from '../../util/telescopeComms';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
@@ -62,7 +62,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         proposalID: selectedProposalCode!
                     })
                     .then(
-                        (userDataRaw: SavedTelescopeData) => {
+                        (userDataRaw: Map<string, Map<string, Map<string, string>>>) => {
                             processUserData(userDataRaw, new Map(Object.entries(backendTelescopeData)));
                         }
                     );
@@ -76,7 +76,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * @param storedTelescopeData: the stored telescope states.
      */
     function processUserData(
-            userDataRaw: SavedTelescopeData,
+            userDataRaw: Map<string, Map<string, Map<string, string>>>,
             storedTelescopeData: Map<string, Telescope>): void {
         userData = new Map(Object.entries(userDataRaw));
 
@@ -171,16 +171,12 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     function returnElementsFromStore(telescopeName: string, instrumentName: string):
             Map<string, Map<string, string>> {
         if (telescopeName == null || instrumentName == null ||
-                getTelescopeData == null) {
+                getTelescopeData == null || telescopeName == "None") {
             return new Map<string, Map<string, string>>();
         }
 
-        const telescopeData = getTelescopeData.get(telescopeName);
-
-        // manage None state.
-        if(telescopeData == undefined) {
-            return new Map<string, Map<string, string>>();
-        }
+        const telescopeData: Telescope | undefined =
+            getTelescopeData.get(telescopeName);
 
         // got data.
         const telescopeDataMap: Map<string, unknown> =
