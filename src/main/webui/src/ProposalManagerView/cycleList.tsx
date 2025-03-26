@@ -13,8 +13,7 @@ import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
 import {Link} from "react-router-dom";
 import {HaveRole} from "../auth/Roles.tsx";
 
-export default function CycleList() : ReactElement {
-
+export default function CycleList(props:{observatory: number}) : ReactElement {
 
     if(!HaveRole(["tac_admin", "tac_member"])) {
         return <>Not authorised</>
@@ -23,7 +22,7 @@ export default function CycleList() : ReactElement {
     //FIXME: use an actual query
 
     const cycles = useProposalCyclesResourceGetProposalCycles(
-        {queryParams: {includeClosed: true}}
+        {queryParams: {includeClosed: true, observatoryId: props.observatory}}
     )
 
     const [accordionValue, setAccordionValue]

@@ -1,10 +1,10 @@
-import {ReactElement} from "react";
+import {ReactElement, useState} from "react";
 import {
     ActionIcon,
     AppShell,
     Burger, Checkbox, Container,
     Grid,
-    Group, Modal, ScrollArea,
+    Group, Modal, ScrollArea, Select,
     Tooltip, useMantineColorScheme, useMantineTheme
 } from "@mantine/core";
 import {
@@ -22,6 +22,7 @@ import CycleList from "./cycleList.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import NewCycleForm from "./proposalCycle.new.form.tsx";
 import {HaveRole} from "../auth/Roles.tsx";
+import {useObservatoryResourceGetObservatories} from "../generated/proposalToolComponents.ts";
 
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
@@ -30,6 +31,21 @@ export default function ProposalManagerStartPage() : ReactElement {
     const {colorScheme} = useMantineColorScheme();
 
     const [modalOpened, {close, open}] = useDisclosure();
+
+    const obsList = useObservatoryResourceGetObservatories(
+        {queryParams: {}}
+    );
+
+    const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
+
+    const observatoryList = obsList.data?.map(obs => {
+        if(obs.dbid) {
+            if (selectedObservatory == 0)
+                setSelectedObservatory(obs.dbid)
+            if (obs.name)
+                return {value: obs.dbid.toString(), label: obs.name};
+        }
+    })
 
     return (
         <AppShell
@@ -107,6 +123,20 @@ export default function ProposalManagerStartPage() : ReactElement {
             </AppShell.Header>
             <AppShell.Navbar>
                 <AppShell.Section>
+                     <Select
+                        label={"Choose Your Observatory"}
+                        defaultValue={selectedObservatory.toString()}
+                        allowDeselect={false}
+                        //@ts-ignore
+                        data={observatoryList}
+                        onChange={(_value) => {
+                                if(_value)
+                                    setSelectedObservatory(+_value)
+                                else
+                                    setSelectedObservatory(0)
+                            }
+                        }
+                     />
                     <Container
                         fluid
                         bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}
@@ -124,7 +154,7 @@ export default function ProposalManagerStartPage() : ReactElement {
                     </Container>
                 </AppShell.Section>
                 <AppShell.Section component={ScrollArea}>
-                    <CycleList/>
+                    <CycleList observatory={+selectedObservatory}/>
                 </AppShell.Section>
             </AppShell.Navbar>
             <AppShell.Main pr={"sm"}>
