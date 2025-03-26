@@ -201,8 +201,10 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     endTime: (value) => (
                         value === null ? 'No end time selected' : null)
                 },
-                telescopeName: (value: string) => (value == "None" ? "Please select a telescope": null),
-                instrument: (value: string) => (value == "None" ? "Please select a instrument": null),
+                telescopeName: (value: string | null) => (
+                    value == "None" ? "Please select a telescope": null),
+                instrument: (value: string | null) => (
+                    value == "None" ? "Please select a instrument": null),
             },
         });
 

@@ -29,7 +29,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     const [getTelescopeData, setTelescopeData] = useState(null);
 
     // data holder for the user choices from the back end.
-    let userData = undefined;
+    let userData: Map<string, Map<string, Map<string, string>>> =
+        new Map<string, Map<string, Map<string, string>>>();
 
     /**
      * extract data from back end on the telescope names.
@@ -92,9 +93,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         if (selectedTelescope == null) {
             let telescopeState = null;
             let instrumentState = null;
-            if (userData !== undefined &&
-                userData.size !== 0 &&
-                !form.isDirty("elements")) {
+            if (userData.size !== 0 && !form.isDirty("elements")) {
                 telescopeState = userData.keys().next().value
                 instrumentState = new Map(Object.entries(userData.get(
                     userData.keys().next().value))).keys().next().value;
@@ -167,22 +166,29 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * @return {Map<string, Map<string, string>> | undefined} data.
      */
     function returnElementsFromStore(telescopeName: string, instrumentName: string):
-            Map<string, Map<string, string>> | undefined {
-        if (telescopeName == null || instrumentName == null || getTelescopeData == null) {
-            return undefined;
+            Map<string, Map<string, string>> {
+        if (telescopeName == null || instrumentName == null ||
+                getTelescopeData == null) {
+            return new Map<string, Map<string, string>>();
         }
 
         const telescopeData = getTelescopeData.get(telescopeName);
 
         // manage None state.
         if(telescopeData == undefined) {
-            return undefined;
+            return new Map<string, Map<string, string>>();
         }
 
         // got data.
-        const telescopeDataMap: Map<string, unknown> = new Map(Object.entries(telescopeData));
-        return new Map(Object.entries(telescopeDataMap.get("instruments"))).get(
-            instrumentName);
+        const telescopeDataMap: Map<string, unknown> =
+            new Map(Object.entries(telescopeData));
+        const instrumentData = new Map(Object.entries(
+            telescopeDataMap.get("instruments"))).get(instrumentName);
+
+        if (instrumentData == undefined) {
+            return new Map<string, Map<string, string>>();
+        }
+        return instrumentData;
     }
 
     /**
@@ -193,8 +199,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     function setupElementsInForm(
             telescopeName: string, instrumentName: string): void {
         //populate the form with new states.
-        const elementData = returnElementsFromStore(telescopeName, instrumentName);
-        if (elementData == undefined) {
+        const elementData: Map<string, Map<string, string>> =
+            returnElementsFromStore(telescopeName, instrumentName);
+        if (elementData.size == 0) {
             return;
         }
 
@@ -203,7 +210,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
         // extract the saved state for this telescope if it exists.
         let userStoresObservationElements = undefined;
-        if (userData !== undefined) {
+        if (userData.size !== 0) {
             userStoresObservationElements = userData.get(telescopeName);
             if (userStoresObservationElements !== undefined) {
                 // convert to proper map.
@@ -349,9 +356,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      */
     function instrumentFields(): ReactElement {
         // get the elements and their options.
-        const elementsData: unknown = returnElementsFromStore(
-            selectedTelescope, selectedInstrument);
-        if (elementsData == undefined) {
+        const elementsData: Map<string, Map<string, string>> =
+            returnElementsFromStore(selectedTelescope, selectedInstrument);
+        if (elementsData.size == 0) {
             return <></>
         }
 
