@@ -48,8 +48,8 @@ export interface ObservationFormValues {
     targetDBIds: number[],
     techGoalId: number,
     timingWindows: TimingWindowGui[],
-    telescopeName: string | null,
-    instrument: string | null,
+    telescopeName: string,
+    instrument: string,
     elements: Map<string, string>,
 }
 
@@ -180,8 +180,8 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 targetDBIds: initialTargetIds,
                 techGoalId: props.observation?.technicalGoal?._id ?? NO_ROW_SELECTED,
                 timingWindows: initialTimingWindows,
-                telescopeName: null,
-                instrument: null,
+                telescopeName: "None",
+                instrument: "None",
                 elements: new Map<string, string>(),
             },
 
@@ -201,10 +201,10 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     endTime: (value) => (
                         value === null ? 'No end time selected' : null)
                 },
-                telescopeName: (value: string | null) => (
-                    value == "None" || value == null ? "Please select a telescope": null),
-                instrument: (value: string | null) => (
-                    value == "None" || value == null ? "Please select a instrument": null),
+                telescopeName: (value: string) => (
+                    value == "None" ? "Please select a telescope": null),
+                instrument: (value: string) => (
+                    value == "None" ? "Please select a instrument": null),
             },
         });
 
