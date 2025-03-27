@@ -25,8 +25,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
     // state holder to force re renders;
     const [selectedTelescope, setSelectedTelescope] = useState<string | null>(null);
-    const [selectedInstrument, setSelectedInstrument] =
-        useState<Map<string, Map<string, string>> | null>(null);
+    const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null);
     const [getNames, setNames] = useState(["None"]);
     const [getTelescopeData, setTelescopeData] =
         useState<Map<string, Telescope> | null>(null);
@@ -142,8 +141,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                                                 elementName, elements.get(elementName) == "true");
                                             break;
                                         default:
-                                            notifyError("none recognised type %s",
-                                                elementDataTypes.get(elementName));
+                                            notifyError("none recognised type");
                                             break;
                                     }
                                 } else {
