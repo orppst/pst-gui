@@ -4,7 +4,7 @@ import {
     fetchOpticalTelescopeResourceGetNames,
     fetchOpticalTelescopeResourceGetTelescopeData,
     Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData,
-    Telescope
+    Telescope, Instrument
 } from '../../util/telescopeComms';
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
@@ -118,29 +118,34 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                     const elements: Map<string, string> = new Map(Object.entries(elementsMap));
 
                     // extract the data types for these elements. as booleans need conversions.
-                    const instrumentDataMap =  new Map(Object.entries(
-                        storedTelescopeData.get(telescopeState).instruments)) || new Map();
-                    const elementDataTypes: Map<string, Field> =
-                        new Map<string, Field>(Object.entries(
-                            instrumentDataMap.get(instrumentState).elements)) || new Map();
+                    const telescopeInstrument: Telescope | undefined = storedTelescopeData.get(telescopeState);
+                    if (telescopeInstrument !== undefined) {
+                        const instrumentDataMap: Map<string, Instrument> =
+                            new Map(Object.entries(telescopeInstrument.instruments)) || new Map();
+                        const elementDataTypes: Map<string, Field> =
+                            new Map<string, Field>(Object.entries(
+                                instrumentDataMap.get(instrumentState).elements)) || new Map();
 
-                    // set the form based off the data type.
-                    for (const elementName of elements.keys()) {
-                        switch(elementDataTypes.get(elementName).type) {
-                            case Type.TEXT:
-                            case Type.LIST:
-                                form.getInputProps("elements").value.set(
-                                    elementName, elements.get(elementName));
-                                break;
-                            case Type.BOOLEAN:
-                                form.getInputProps("elements").value.set(
-                                    elementName, elements.get(elementName) == "true");
-                                break;
-                            default:
-                                notifyError("none recognised type %s",
-                                            elementDataTypes.get(elementName).type);
-                                break;
+                        // set the form based off the data type.
+                        for (const elementName of elements.keys()) {
+                            switch (elementDataTypes.get(elementName).type) {
+                                case Type.TEXT:
+                                case Type.LIST:
+                                    form.getInputProps("elements").value.set(
+                                        elementName, elements.get(elementName));
+                                    break;
+                                case Type.BOOLEAN:
+                                    form.getInputProps("elements").value.set(
+                                        elementName, elements.get(elementName) == "true");
+                                    break;
+                                default:
+                                    notifyError("none recognised type %s",
+                                        elementDataTypes.get(elementName).type);
+                                    break;
+                            }
                         }
+                    } else {
+                        notifyError("telescopeInstrument is undefined", "how did we get here!");
                     }
                 } else {
                     userData = new Map<string, Map<string, Map<string, string>>>();
