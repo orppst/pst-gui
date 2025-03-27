@@ -24,8 +24,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     const { selectedProposalCode} = useParams();
 
     // state holder to force re renders;
-    const [selectedTelescope, setSelectedTelescope] = useState<string>(null);
-    const [selectedInstrument, setSelectedInstrument] = useState<string>(null);
+    const [selectedTelescope, setSelectedTelescope] = useState<string>("None");
+    const [selectedInstrument, setSelectedInstrument] = useState<string>("None");
     const [getNames, setNames] = useState(["None"]);
     const [getTelescopeData, setTelescopeData] =
         useState<Map<string, Telescope> | null>(null);
@@ -170,9 +170,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
     /**
      *  function to update the UI based off the telescope name selection.
-     * @param {string | null} value: the new value of the telescope.
+     * @param {string} value: the new value of the telescope.
      */
-    function useTelescopeNameChange(value: string | null): void {
+    function useTelescopeNameChange(value: string): void {
         form.getInputProps('elements').value.clear();
         form.setDirty('elements');
         form.setFieldValue('telescopeName', value);
