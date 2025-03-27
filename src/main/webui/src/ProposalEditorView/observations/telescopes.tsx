@@ -117,12 +117,10 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                     const elements: Map<string, string> = new Map(Object.entries(elementsMap));
 
                     // extract the data types for these elements. as booleans need conversions.
+                    const instrumentDataMap =  new Map(Object.entries(
+                        storedTelescopeData.get(telescopeState).instruments)) || new Map();
                     const elementDataTypes = new Map(Object.entries(
-                        new Map(Object.entries(
-                            new Map(Object.entries(
-                                storedTelescopeData.get(telescopeState)))
-                            .get("instruments")))
-                        .get(instrumentState).elements));
+                        instrumentDataMap.get(instrumentState).elements)) || new Map();
 
                     // set the form based off the data type.
                     for (const elementName of elements.keys()) {
