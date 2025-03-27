@@ -175,7 +175,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     function useTelescopeNameChange(value: string): void {
         form.getInputProps('elements').value.clear();
         form.setDirty('elements');
-        form.setFieldValue('telescopeName', value);
+        form.setFieldValue('telescopeName', () => value);
         form.setFieldValue('instrument', "None");
 
         // set the states to force re-renders
