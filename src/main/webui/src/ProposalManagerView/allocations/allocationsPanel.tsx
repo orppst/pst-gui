@@ -1,17 +1,14 @@
 import {ReactElement} from "react";
-import {Alert, Container, Fieldset, Grid, Loader, ScrollArea, Space, Tabs} from "@mantine/core";
+import {Alert, Container, Fieldset, Grid, Loader, ScrollArea, Space} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
-import AllocationsTable from "./allocations.table.tsx";
 import AllocatedAccordion from "./allocated.accordion.tsx";
 import {
     useAllocatedProposalResourceGetAllocatedProposals,
-    useProposalCyclesResourceGetProposalCycleDates,
-    useSubmittedProposalResourceGetSubmittedNotYetAllocated
+    useProposalCyclesResourceGetProposalCycleDates
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {IconFolderCheck, IconFolderOpen} from "@tabler/icons-react";
 import ResourceStatsTable from "./resourceStats.table.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
 
@@ -31,16 +28,8 @@ import {HaveRole} from "../../auth/Roles.tsx";
  */
 
 export default function AllocationsPanel() : ReactElement {
+
     const {selectedCycleCode} = useParams();
-
-    if(!HaveRole(["tac_admin", "tac_member"])) {
-        return <>Not authorised</>
-    }
-
-    const notYetAllocated =
-        useSubmittedProposalResourceGetSubmittedNotYetAllocated({
-            pathParams: {cycleCode: Number(selectedCycleCode)}
-        })
 
     const allocated =
         useAllocatedProposalResourceGetAllocatedProposals({
@@ -52,32 +41,17 @@ export default function AllocationsPanel() : ReactElement {
         pathParams: {cycleCode: Number(selectedCycleCode)}
     })
 
-    if (allocated.isLoading) {
-        return(
-            <Loader />
-        )
+    if(!HaveRole(["tac_admin", "tac_member"])) {
+        return <>Not authorised</>
+    }
+
+    if (allocated.isLoading || cycleDates.isLoading) {
+        return(<Loader />)
     }
 
     if (allocated.error) {
         notifyError("Failed to load allocated proposals",
             getErrorMessage(allocated.error))
-    }
-
-    if (notYetAllocated.isLoading) {
-        return(
-            <Loader />
-        )
-    }
-
-    if (notYetAllocated.error) {
-        notifyError("Failed to load not yet allocated submitted proposals",
-            getErrorMessage(notYetAllocated.error))
-    }
-
-    if (cycleDates.isLoading) {
-        return(
-            <Loader />
-        )
     }
 
     if (cycleDates.error) {
@@ -100,47 +74,28 @@ export default function AllocationsPanel() : ReactElement {
                     </Alert>
                 </Container>
                 :
-                <Tabs defaultValue={"submitted"}>
-                    <Tabs.List>
-                        <Tabs.Tab value={"submitted"} leftSection={<IconFolderOpen/>}>
-                            Submitted Proposals
-                        </Tabs.Tab>
-                        <Tabs.Tab value={"allocated"} leftSection={<IconFolderCheck/>}>
-                            Allocated Proposals
-                        </Tabs.Tab>
-                    </Tabs.List>
-
-                    <Space h={"md"}/>
-
-                    <Tabs.Panel value={"submitted"}>
-                        <AllocationsTable submittedIds={notYetAllocated.data!} />
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value={"allocated"}>
-                        <Grid columns={10}>
-                            <Grid.Col
-                                span={{base: 10, xl: 6}}
-                                order={{base: 2, xl: 1}}
-                            >
-                                <Fieldset legend={"Allocate Resources"}>
-                                    <ScrollArea>
-                                        <AllocatedAccordion allocatedIds={allocated.data!} />
-                                    </ScrollArea>
-                                </Fieldset>
-                            </Grid.Col>
-                            <Grid.Col
-                                span={{base: 10, xl: 4}}
-                                order={{base: 1, xl: 2}}
-                            >
-                                <Fieldset legend={"Resource Amounts"}>
-                                    <ResourceStatsTable
-                                        cycleCode={Number(selectedCycleCode)}
-                                    />
-                                </Fieldset>
-                            </Grid.Col>
-                        </Grid>
-                    </Tabs.Panel>
-                </Tabs>
+                <Grid columns={10}>
+                    <Grid.Col
+                        span={{base: 10, xl: 6}}
+                        order={{base: 2, xl: 1}}
+                    >
+                        <Fieldset legend={"Allocate Resources"}>
+                            <ScrollArea>
+                                <AllocatedAccordion allocatedIds={allocated.data!} />
+                            </ScrollArea>
+                        </Fieldset>
+                    </Grid.Col>
+                    <Grid.Col
+                        span={{base: 10, xl: 4}}
+                        order={{base: 1, xl: 2}}
+                    >
+                        <Fieldset legend={"Resource Amounts"}>
+                            <ResourceStatsTable
+                                cycleCode={Number(selectedCycleCode)}
+                            />
+                        </Fieldset>
+                    </Grid.Col>
+                </Grid>
             }
         </PanelFrame>
     )

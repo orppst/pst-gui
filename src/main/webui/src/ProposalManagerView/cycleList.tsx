@@ -2,11 +2,10 @@ import {ReactElement, useState} from "react";
 import {Accordion, Group, NavLink} from "@mantine/core";
 import {
     IconBike,
-    IconCalendar, IconEgg, IconLetterA,
-    IconLetterR,
-    IconLetterT, IconLicense,
-    IconUfo,
-    IconUsersGroup
+    IconCalendar, IconEdit,
+    IconLetterT, IconSquareChevronsRight, IconThumbUp,
+    IconUfo, IconUserPin,
+    IconUsersGroup, IconWood
 } from "@tabler/icons-react";
 import {useProposalCyclesResourceGetProposalCycles} from "src/generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
@@ -97,7 +96,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          component={Link}
                          key={"AvailableResources"}
                          label={"Available Resources"}
-                         leftSection={<IconEgg/>}
+                         leftSection={<IconWood/>}
                          active={"AvailableResources" + cycle.code === active}
                          onClick={()=>setActive("AvailableResources" + cycle.code)}
                 />}
@@ -107,7 +106,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          component={Link}
                          key={"AssignReviewers"}
                          label={"Assign Reviewers"}
-                         leftSection={<IconLicense/>}
+                         leftSection={<IconUserPin/>}
                          active={"AssignReviewers" + cycle.code === active}
                          onClick={()=>setActive("AssignReviewers" + cycle.code)}
                 />}
@@ -115,18 +114,28 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          component={Link}
                          key={"Reviews"}
                          label={"Reviews"}
-                         leftSection={<IconLetterR/>}
+                         leftSection={<IconEdit/>}
                          active={"Reviews" + cycle.code === active}
                          onClick={()=>setActive("Reviews" + cycle.code)}
                 />
+                {HaveRole(["tac_admin"]) &&
+                <NavLink to={"cycle/" + cycle.dbid + "/passFail"}
+                         component={Link}
+                         key={"PassFail"}
+                         label={"Pass/Fail"}
+                         leftSection={<IconThumbUp/>}
+                         active={"PassFail" + cycle.code === active}
+                         onClick={()=>setActive("PassFail" + cycle.code)}
+                />}
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/allocations"}
                          component={Link}
                          key={"Allocations"}
                          label={"Allocations"}
-                         leftSection={<IconLetterA/>}
+                         leftSection={<IconSquareChevronsRight/>}
                          active={"Allocations" + cycle.code === active}
                          onClick={()=>setActive("Allocations" + cycle.code)}
-                />
+                />}
             </Accordion.Panel>
         </Accordion.Item>
     )

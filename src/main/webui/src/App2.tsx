@@ -77,6 +77,7 @@ import {notifyError} from "./commonPanel/notifications.tsx";
 import JSZip from "jszip";
 import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
+import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
 
 /**
  * defines the user context type.
@@ -177,8 +178,18 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
+                        path: "cycle/:selectedCycleCode/assignReviewers",
+                        element: <AssignReviewersPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
                         path: "cycle/:selectedCycleCode/reviews",
                         element: <ReviewsPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/passFail",
+                        element: <PassFailPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {
@@ -186,11 +197,7 @@ function App2(): ReactElement {
                         element: <AllocationsPanel />,
                         errorElement: <ErrorPage />,
                     },
-                    {
-                        path: "cycle/:selectedCycleCode/assignReviewers",
-                        element: <AssignReviewersPanel />,
-                        errorElement: <ErrorPage />,
-                    }
+
                 ]
             },
             {

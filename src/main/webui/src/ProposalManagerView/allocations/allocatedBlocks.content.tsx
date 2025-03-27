@@ -1,7 +1,6 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useState} from "react";
 import {AllocatedBlock, ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
-import {Group, Loader, NumberInput, Text} from "@mantine/core";
-import AddButton from "../../commonButtons/add.tsx";
+import {Group, Loader, NumberInput, Switch, Text} from "@mantine/core";
 import {
     useAllocatedBlockResourceAddAllocatedBlock,
     useAllocatedBlockResourceUpdateResource,
@@ -38,9 +37,24 @@ function AllocatedBlocksContent(p: {
     const {fetcherOptions} = useProposalToolContext();
 
     //number empty state is the empty string
-    const [resourceAmount, setResourceAmount] = useState<string | number>('');
+    const [resourceAmounts, setResourceAmounts] =
+        useState<{gradeId: number, amount: string | number}[]>(
+            p.allocatedBlocks.map(ab => {
+                let gradeId = !ab.grade?._id ? ab.grade as number : ab.grade._id
+                return {gradeId: gradeId, amount: ab.resource?.amount!}
+            })
+        );
 
-    const [allocatedGrades, setAllocatedGrades] = useState<ObjectIdentifier[]>([]);
+    const [addBlockSwitches, setAddBlockSwitches] =
+        useState<{gradeId: number, checked: boolean}[]>(
+            p.allGrades.map(g => {
+                return {
+                    gradeId: g.dbid!,
+                    checked: !!p.allocatedBlocks
+                        .find(ab => ab.grade === g.dbid || ab.grade?._id === g.dbid)
+                }
+            })
+        );
 
     const addAllocatedBlock =
         useAllocatedBlockResourceAddAllocatedBlock();
@@ -59,22 +73,6 @@ function AllocatedBlocksContent(p: {
     const resourceType = useResourceTypeResourceGetResourceType({
         pathParams: {resourceTypeId: p.resourceType.dbid!}
     })
-
-    //another game of "object or reference?". If the 'grade' is a reference then we'll need to
-    //compare by dbid to 'allGrades' to get the ObjectIdentifier.
-    useEffect(() => {
-        setAllocatedGrades(
-            p.allocatedBlocks.map(ab => {
-                if (ab.grade?.name === undefined) {
-                    //grade is a reference and will be contained in allGrades
-                    return p.allGrades.find(g => g.dbid === ab.grade!)!;
-                } else {
-                    //grade is the object
-                    return {dbid: ab.grade._id!, name: ab.grade.name!};
-                }
-            })
-        )
-    }, []);
 
     const handleUpdateDebounce =
         useDebouncedCallback((props:{amount: number, blockId: number}) => {
@@ -132,23 +130,56 @@ function AllocatedBlocksContent(p: {
     }
 
     function ResourceAmountInput(props: {
-        gradeName: string,
+        grade: ObjectIdentifier,
         resourceTypeUnit: string,
-        blockId: number
+        blockId?: number
     }) : ReactElement {
+
+        let checked =
+            addBlockSwitches.find(s =>
+                s.gradeId === props.grade.dbid)?.checked
+
+        let resourceAmount = resourceAmounts
+            .find(ra =>
+                ra.gradeId === props.grade.dbid)?.amount
 
         return (
             <Group>
+                <Switch
+                    checked={checked}
+                    onChange={e => {
+                        setAddBlockSwitches(
+                            addBlockSwitches.map(abs => {
+                                if (abs.gradeId === props.grade.dbid) {
+                                    return {...abs, checked: e.currentTarget.checked}
+                                } else {
+                                    return abs;
+                                }
+                            })
+                        );
+                    }}
+                    onLabel={"remove"}
+                    offLabel={"add"}
+                />
                 <NumberInput
-                    label={"Grade " + props.gradeName}
+                    label={"Grade " + props.grade.name}
                     min={0}
                     max={resourceRemaining.data}
+                    disabled={props.blockId === undefined}
                     allowNegative={false}
                     clampBehavior={'strict'}
-                    value={resourceAmount}
-                    onChange={(e) =>{
-                        setResourceAmount(e);
-                        handleUpdateDebounce({amount: e as number, blockId: props.blockId});
+                    value={resourceAmount ?? ''}
+                    onChange={(e) => {
+                        setResourceAmounts(
+                            resourceAmounts.map(ra => {
+                                if (ra.gradeId === props.grade.dbid) {
+                                    return {...ra, amount: e as number}
+                                } else {
+                                    return ra
+                                }
+                            })
+                        );
+                        handleUpdateDebounce({amount: e as number, blockId: props.blockId!});
                     }}
                 />
                 <Text>{props.resourceTypeUnit}</Text>
@@ -160,38 +191,18 @@ function AllocatedBlocksContent(p: {
         return (
             <>
                 {
-                    //display a NumberInput for each allocatedBlock associated with the proposal
-                    p.allocatedBlocks.map(ab => {
-                        let gradeName : string = ab.grade?.name ?? ""
+                    //for each grade defined in the Cycle display a number input with a switch
+                    p.allGrades.map(g => {
 
-                        if (gradeName === "") {
-                            gradeName = p.allGrades.find(o => o.dbid === ab.grade)?.name!
-                        }
+                        let allocatedBlock : AllocatedBlock | undefined =
+                            p.allocatedBlocks.find(ab =>
+                                ab.grade?._id === g.dbid || ab.grade === g.dbid)
 
                         return (
                             <ResourceAmountInput
-                                gradeName={gradeName}
+                                grade={g}
                                 resourceTypeUnit={resourceType.data?.unit!}
-                                blockId={ab._id!}
-                                key={String(ab._id)}
-                            />
-                        )
-                    })
-                }
-                {
-                    //return a list of "Add" buttons for the grades yet to be allocated
-                    p.allGrades
-                        .filter(g => {
-                            console.log(allocatedGrades)
-                            return !allocatedGrades.includes(g)
-                        })
-                        .map(grade => {
-                        return (
-                            <AddButton
-                                toolTipLabel={"add resource for grade " + grade.name}
-                                label={"Add Grade " + grade.name}
-                                onClick={() => addNewBlock(grade.dbid!)}
-                                key={String(grade.dbid)}
+                                blockId={allocatedBlock?._id}
                             />
                         )
                     })
