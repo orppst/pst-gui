@@ -129,20 +129,25 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
                             // set the form based off the data type.
                             for (const elementName of elements.keys()) {
-                                switch (elementDataTypes.get(elementName).type) {
-                                    case Type.TEXT:
-                                    case Type.LIST:
-                                        form.getInputProps("elements").value.set(
-                                            elementName, elements.get(elementName));
-                                        break;
-                                    case Type.BOOLEAN:
-                                        form.getInputProps("elements").value.set(
-                                            elementName, elements.get(elementName) == "true");
-                                        break;
-                                    default:
-                                        notifyError("none recognised type %s",
-                                            elementDataTypes.get(elementName).type);
-                                        break;
+                                const field: Field | undefined = elementDataTypes.get(elementName);
+                                if (field !== undefined) {
+                                    switch (field.type) {
+                                        case Type.TEXT:
+                                        case Type.LIST:
+                                            form.getInputProps("elements").value.set(
+                                                elementName, elements.get(elementName));
+                                            break;
+                                        case Type.BOOLEAN:
+                                            form.getInputProps("elements").value.set(
+                                                elementName, elements.get(elementName) == "true");
+                                            break;
+                                        default:
+                                            notifyError("none recognised type %s",
+                                                elementDataTypes.get(elementName));
+                                            break;
+                                    }
+                                } else {
+                                    notifyError("field is undefined", "how did we get here!");
                                 }
                             }
                         } else {
