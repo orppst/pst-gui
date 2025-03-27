@@ -77,7 +77,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      */
     function processUserData(
             userDataRaw: Map<string, Map<string, Map<string, string>>> | undefined,
-            storedTelescopeData: Map<string, Telescope>): void {
+            storedTelescopeData: Map<string, Telescope> | undefined): void {
 
         if (userDataRaw == undefined) {
             return
@@ -110,7 +110,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 instrumentState = new Map(Object.entries(instrumentMap)).keys().next().value || 'None';
 
                 if (telescopeState == form.getInputProps("telescopeName").value &&
-                    instrumentState == form.getInputProps("instrument").value) {
+                    instrumentState == form.getInputProps("instrument").value &&
+                    storedTelescopeData !== undefined) {
 
                     const elementsMap: Map<string, string> =
                         new Map(Object.entries(instrumentMap)).get(instrumentState) || new Map();
@@ -119,8 +120,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                     // extract the data types for these elements. as booleans need conversions.
                     const instrumentDataMap =  new Map(Object.entries(
                         storedTelescopeData.get(telescopeState).instruments)) || new Map();
-                    const elementDataTypes = new Map(Object.entries(
-                        instrumentDataMap.get(instrumentState).elements)) || new Map();
+                    const elementDataTypes: Map<string, Field> =
+                        new Map<string, Field>(Object.entries(
+                            instrumentDataMap.get(instrumentState).elements)) || new Map();
 
                     // set the form based off the data type.
                     for (const elementName of elements.keys()) {
@@ -341,7 +343,15 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             return <></>
         }
         else {
-            const telescopeData = getTelescopeData.get(selectedTelescope);
+            const telescopeData: Telescope | undefined = getTelescopeData.get(selectedTelescope);
+
+            // if the data is undefined, something truly gone wrong.
+            if (telescopeData == undefined) {
+                notifyError("telescope request incorrect", "hw did we get here?")
+                return <></>
+            }
+
+            // sensible telescope.
             const telescopeDataMap = new Map(Object.entries(telescopeData.instruments));
             return <Select
                 label={"Telescope Instrument:"}
