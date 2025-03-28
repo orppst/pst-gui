@@ -121,7 +121,7 @@ export type SavedTelescopeDataError = Fetcher.ErrorWrapper<undefined>;
 export const useOpticalTelescopeResourceSaveTelescopeData = (
     options?: Omit<
         reactQuery.UseMutationOptions<
-            undefined,
+            boolean,
             SavedTelescopeDataError,
             SavedTelescopeData>,
         "mutationFn">
