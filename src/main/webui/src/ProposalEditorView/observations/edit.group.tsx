@@ -1,7 +1,7 @@
 import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "./observationPanel.tsx";
-import {Telescopes} from "./telescopes"
+import { Telescopes } from './telescopes'
 import { Fieldset, Text, Stack, Group, Space } from '@mantine/core';
 import {
     CalibrationObservation,
@@ -27,7 +27,7 @@ import { TimingWindowGui } from './timingWindowGui.tsx';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {queryKeyProposals} from "../../queryKeyProposals.tsx";
-import {err_red_str, NO_ROW_SELECTED} from "../../constants.tsx";
+import { DEFAULT_STRING, err_red_str, NO_ROW_SELECTED } from '../../constants.tsx';
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 import {
     useOpticalTelescopeResourceSaveTelescopeData,
@@ -180,8 +180,8 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 targetDBIds: initialTargetIds,
                 techGoalId: props.observation?.technicalGoal?._id ?? NO_ROW_SELECTED,
                 timingWindows: initialTimingWindows,
-                telescopeName: "None",
-                instrument: "None",
+                telescopeName: DEFAULT_STRING,
+                instrument: DEFAULT_STRING,
                 elements: new Map<string, string>(),
             },
 
@@ -202,9 +202,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         value === null ? 'No end time selected' : null)
                 },
                 telescopeName: (value: string) => (
-                    value == "None" ? "Please select a telescope": null),
+                    value == DEFAULT_STRING ? "Please select a telescope": null),
                 instrument: (value: string) => (
-                    value == "None" ? "Please select a instrument": null),
+                    value == DEFAULT_STRING ? "Please select a instrument": null),
             },
         });
 

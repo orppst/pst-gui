@@ -9,7 +9,7 @@ import {
 import { UseFormReturnType } from '@mantine/form';
 import { ObservationFormValues } from './edit.group';
 import {useParams} from "react-router-dom";
-import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from '../../constants';
+import { DEFAULT_STRING, MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from '../../constants';
 import { notifyError } from '../../commonPanel/notifications';
 
 /**
@@ -24,9 +24,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     const { selectedProposalCode} = useParams();
 
     // state holder to force re renders;
-    const [selectedTelescope, setSelectedTelescope] = useState<string>("None");
-    const [selectedInstrument, setSelectedInstrument] = useState<string>("None");
-    const [getNames, setNames] = useState(["None"]);
+    const [selectedTelescope, setSelectedTelescope] = useState<string>(DEFAULT_STRING);
+    const [selectedInstrument, setSelectedInstrument] = useState<string>(DEFAULT_STRING);
+    const [getNames, setNames] = useState([DEFAULT_STRING]);
     const [getTelescopeData, setTelescopeData] =
         useState<Map<string, Telescope> | null>(null);
 
@@ -85,7 +85,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         userData = new Map(Object.entries(userDataRaw));
 
         // fill out forms
-        if(form.getInputProps("telescopeName").value == "None" && userData.size != 0) {
+        if(form.getInputProps("telescopeName").value == DEFAULT_STRING && userData.size != 0) {
             // it cant be none, there has to be at least one entry.
             const telescopeName: string = userData.keys().next().value || 'None';
 
@@ -99,11 +99,11 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             });
         }
 
-        let telescopeState = "None";
-        let instrumentState = "None";
+        let telescopeState = DEFAULT_STRING;
+        let instrumentState = DEFAULT_STRING;
 
         // state holder to force re renders
-        if (selectedTelescope == "None") {
+        if (selectedTelescope == DEFAULT_STRING) {
             if (userData.size !== 0 && !form.isDirty("elements")) {
                 telescopeState = userData.keys().next().value || 'None';
                 const instrumentMap: Map<string, Map<string, string>> = userData.get(telescopeState) || new Map();
@@ -176,11 +176,13 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     function useTelescopeNameChange(value: string): void {
         form.getInputProps('elements').value.clear();
         form.setDirty('elements');
-        form.setFieldValue('telescopeName', value);
-        form.setFieldValue('instrument', "None");
+
+        // needs the action due to TS2345
+        form.setFieldValue('telescopeName', () => value);
+        form.setFieldValue('instrument', DEFAULT_STRING);
 
         // set the states to force re-renders
-        setSelectedInstrument("None")
+        setSelectedInstrument(DEFAULT_STRING)
         setSelectedTelescope(value);
     }
 
@@ -193,7 +195,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     function returnElementsFromStore(telescopeName: string, instrumentName: string):
             Map<string, Map<string, string>> {
         if (telescopeName == null || instrumentName == null ||
-                getTelescopeData == null || telescopeName == "None") {
+                getTelescopeData == null || telescopeName == DEFAULT_STRING) {
             return new Map<string, Map<string, string>>();
         }
 
@@ -251,7 +253,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         // cycle and add new elements.
         const elementNames = new Map(Object.entries(elementsDataMap.get("elements")));
         for (const elementName of elementNames.keys()) {
-            let storedValue = "None";
+            let storedValue = DEFAULT_STRING;
 
             // no saved data.
             if (userStoresObservationElements == undefined) {
@@ -352,7 +354,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * @return {React.ReactElement} the html for the bespoke section.
      */
     function telescopeFields(): ReactElement {
-        if (getTelescopeData == null || selectedTelescope == "None") {
+        if (getTelescopeData == null || selectedTelescope == DEFAULT_STRING) {
             return <></>
         }
         else {
@@ -450,7 +452,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 placeholder={"Select the optical telescope"}
                 data = {getNames}
                 {...form.getInputProps('telescopeName') ?
-                        form.getInputProps('telescopeName') : "None"}
+                        form.getInputProps('telescopeName') : DEFAULT_STRING}
                 onChange = {useTelescopeNameChange}
             />
             {telescopeFields()}
