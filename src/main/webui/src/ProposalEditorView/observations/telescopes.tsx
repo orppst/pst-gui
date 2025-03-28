@@ -392,9 +392,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 label={"Telescope Instrument:"}
                 placeholder={"Select the telescope instrument"}
                 data = {Array.from(telescopeDataMap.keys())}
-                {...form.getInputProps('instrument') ?
-                    form.getInputProps('instrument') :
-                    telescopeDataMap.keys().next().value}
+                {...form.getInputProps('instrument')}
                 onChange = {useTelescopeInstrumentChange}
             />
         }
