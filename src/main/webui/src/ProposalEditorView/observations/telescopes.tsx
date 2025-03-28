@@ -361,11 +361,17 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * saves the state change from the select in the list.
      *
      * @param {string} key: the element name.
-     * @param {string} value: the new value.
+     * @param {string | null} value: the new value.
      */
-    function handleSelectChange(key: string, value: string): void {
-        form.getInputProps('elements').value.set(key, value);
-        form.setDirty({'elements': true});
+    function handleSelectChange(key: string, value: string| null): void {
+        // Handle the case where the selection is cleared
+        if (value === null) {
+            form.getInputProps('elements').value.set(key, DEFAULT_STRING);
+        } else {
+            // Handle the case where a valid string value is selected
+            form.getInputProps('elements').value.set(key, value);
+        }
+        form.setDirty({ 'elements': true });
     }
 
     /**
