@@ -1,5 +1,5 @@
 import { ReactElement, useState } from 'react';
-import { Select, Textarea} from '@mantine/core';
+import { ComboboxItem, Select, Textarea } from '@mantine/core';
 import {
     fetchOpticalTelescopeResourceGetNames,
     fetchOpticalTelescopeResourceGetTelescopeData,
@@ -309,19 +309,30 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
     /**
      * function to update the UI based off the instrument selection.
-     * @param {string} value: the instrument change.
+     * @param {string | null} value: the instrument change.
+     * @param {ComboboxItem} _option: the selected combobox item.
      */
-    function useTelescopeInstrumentChange(value: string): void {
-        form.setFieldValue('instrument', value);
-        form.getInputProps('elements').value.clear();
+    function useTelescopeInstrumentChange(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            value: string | null, _option: ComboboxItem): void {
+        // Handle the case where the selection is cleared
+        if (value === null) {
+            form.setFieldValue('instrument', DEFAULT_STRING);
+            form.getInputProps('elements').value.clear();
+            setSelectedInstrument(DEFAULT_STRING);
+            form.setDirty({ 'elements': true });
+        } else {
+            // Handle the case where a valid instrument is selected
+            form.setFieldValue('instrument', value);
+            form.getInputProps('elements').value.clear();
 
-        // reset elements in form.
-        setupElementsInForm(selectedTelescope, value);
+            // reset elements in form.
+            setupElementsInForm(selectedTelescope, value);
 
-        // sets the state variables to force a re-render.
-        setSelectedInstrument(value);
-        form.setDirty({'elements': true});
-
+            // sets the state variables to force a re-render.
+            setSelectedInstrument(value);
+            form.setDirty({ 'elements': true });
+        }
     }
 
     /**
