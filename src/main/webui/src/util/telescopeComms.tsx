@@ -67,9 +67,9 @@ export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
     proposalToolFetch<ReceivedTelescopeNames,
         TelescopeNameError,
         undefined,
-        { unknown },
-        { unknown },
-        { unknown }>({
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        NonNullable<unknown>>({
         url: "/pst/api/opticalTelescopes/names",
         method: "get", signal: signal
     });
@@ -85,9 +85,9 @@ export const fetchOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSign
         Map<string, Map<string, Map<string, string>>>,
         TelescopeDataError,
         undefined,
-        { unknown },
-        { unknown },
-        { unknown }>({
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        NonNullable<unknown>>({
         url: "/pst/api/opticalTelescopes/telescopes",
         method: "get", signal: signal
     });
@@ -104,8 +104,8 @@ export const fetchOpticalTelescopeResourceLoadTelescopeData = (
     proposalToolFetch<Map<string, Map<string, Map<string, string>>>,
         TelescopeLoadError,
         LoadTelescopeState,
-        { unknown },
-        { unknown },
+        NonNullable<unknown>,
+        NonNullable<unknown>,
         SaveTelescopeResourceParametersVariables>({
         url: "/pst/api/opticalTelescopes/load",
         method: "post", body: data, signal: signal
