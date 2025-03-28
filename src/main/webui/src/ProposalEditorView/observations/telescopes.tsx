@@ -54,17 +54,24 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             (backendTelescopeData: Map<string, Map<string, Map<string, string>>>) => {
                 setTelescopeData(new Map(Object.entries(backendTelescopeData)));
 
-                // ensure the telescope data is extracted before asking for the user data.
-                fetchOpticalTelescopeResourceLoadTelescopeData(
-                    {
-                        observationID: form.getValues().observationId!.toString(),
-                        proposalID: selectedProposalCode!
-                    })
-                    .then(
-                        (userDataRaw: Map<string, Map<string, Map<string, string>>>) => {
-                            processUserData(userDataRaw, new Map(Object.entries(backendTelescopeData)));
-                        }
-                    );
+                // if no observation id, no loaded data.
+                if (form.getValues().observationId == undefined) {
+                    processUserData(
+                        new Map<string, Map<string, Map<string, string>>>(),
+                        new Map(Object.entries(backendTelescopeData)))
+                } else {
+                    // ensure the telescope data is extracted before asking for the user data.
+                    fetchOpticalTelescopeResourceLoadTelescopeData(
+                        {
+                            observationID: form.getValues().observationId.toString(),
+                            proposalID: selectedProposalCode!
+                        })
+                        .then(
+                            (userDataRaw: Map<string, Map<string, Map<string, string>>>) => {
+                                processUserData(userDataRaw, new Map(Object.entries(backendTelescopeData)));
+                            }
+                        );
+                }
             }
         );
     }
