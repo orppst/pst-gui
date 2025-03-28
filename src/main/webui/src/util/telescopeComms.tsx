@@ -155,8 +155,8 @@ export const fetchOpticalTelescopeResourceSaveTelescopeData = (
         boolean,
         TelescopeSaveError,
         SavedTelescopeData,
-        { unknown },
-        { unknown },
+        NonNullable<unknown>,
+        NonNullable<unknown>,
         SaveTelescopeResourceParametersVariables
         >({ url: "/pst/api/opticalTelescopes/save",
         method: "put",

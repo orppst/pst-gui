@@ -179,7 +179,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
         // needs the action due to TS2345
         form.setFieldValue('telescopeName', () => value);
-        form.setFieldValue('instrument', DEFAULT_STRING);
+        form.setFieldValue('instrument', () => DEFAULT_STRING);
 
         // set the states to force re-renders
         setSelectedInstrument(DEFAULT_STRING)
