@@ -170,23 +170,6 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     }
 
     /**
-     *  function to update the UI based off the telescope name selection.
-     * @param {string} value: the new value of the telescope.
-     */
-    function useTelescopeNameChange(value: string): void {
-        form.getInputProps('elements').value.clear();
-        form.setDirty({elements: true});
-
-        // needs the action due to TS2345
-        form.setFieldValue('telescopeName', value);
-        form.setFieldValue('instrument', DEFAULT_STRING);
-
-        // set the states to force re-renders
-        setSelectedInstrument(DEFAULT_STRING)
-        setSelectedTelescope(value);
-    }
-
-    /**
      * extracts the telescope data for a given instrument.
      * @param {string} telescopeName: the telescope name.
      * @param {string} instrumentName: the instrument name.
@@ -313,7 +296,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * @param {ComboboxItem} _option: the selected combobox item.
      */
     function useTelescopeInstrumentChange(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             value: string | null, _option: ComboboxItem): void {
         // Handle the case where the selection is cleared
         if (value === null) {
@@ -333,6 +316,31 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             setSelectedInstrument(value);
             form.setDirty({ 'elements': true });
         }
+    }
+
+    /**
+     *  function to update the UI based off the telescope name selection.
+     * @param {string} value: the new value of the telescope.
+     * @param {ComboboxItem} _option: the selected combobox item.
+     */
+    function useTelescopeNameChange(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            value: string | null, _option: ComboboxItem): void {
+        // Handle the case where the selection is cleared
+        if (value === null) {
+            value = DEFAULT_STRING;
+        }
+
+        form.getInputProps('elements').value.clear();
+        form.setDirty({elements: true});
+
+        // needs the action due to TS2345
+        form.setFieldValue('telescopeName', value);
+        form.setFieldValue('instrument', DEFAULT_STRING);
+
+        // set the states to force re-renders
+        setSelectedInstrument(DEFAULT_STRING)
+        setSelectedTelescope(value);
     }
 
     /**

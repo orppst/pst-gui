@@ -128,7 +128,7 @@ export const useOpticalTelescopeResourceSaveTelescopeData = (
 ) => {
     const { fetcherOptions } = useProposalToolContext();
     return reactQuery.useMutation<
-        undefined,
+        boolean,
         SavedTelescopeDataError,
         SavedTelescopeData
         >({
