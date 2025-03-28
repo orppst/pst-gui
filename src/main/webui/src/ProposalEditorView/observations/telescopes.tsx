@@ -178,8 +178,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         form.setDirty({elements: true});
 
         // needs the action due to TS2345
-        form.setFieldValue('telescopeName', () => value);
-        form.setFieldValue('instrument', () => DEFAULT_STRING);
+        form.setFieldValue('telescopeName', value);
+        form.setFieldValue('instrument', DEFAULT_STRING);
 
         // set the states to force re-renders
         setSelectedInstrument(DEFAULT_STRING)
@@ -193,25 +193,32 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * @return {Map<string, Map<string, string>> | undefined} data.
      */
     function returnElementsFromStore(telescopeName: string, instrumentName: string):
-            Map<string, Map<string, string>> {
+            Map<string, Field> {
         if (telescopeName == null || instrumentName == null ||
                 getTelescopeData == null || telescopeName == DEFAULT_STRING) {
-            return new Map<string, Map<string, string>>();
+            return new Map<string, Field>();
         }
 
         const telescopeData: Telescope | undefined =
             getTelescopeData.get(telescopeName);
 
-        // got data.
-        const telescopeDataMap: Map<string, unknown> =
-            new Map(Object.entries(telescopeData));
-        const instrumentData = new Map(Object.entries(
-            telescopeDataMap.get("instruments"))).get(instrumentName);
+        if(telescopeData !== undefined) {
+            // got data.
+            const telescopeDataMap: Map<string, Instrument> =
+                new Map(Object.entries(telescopeData.instruments));
+            const instrumentData: Instrument | undefined =
+                telescopeDataMap.get(instrumentName);
 
-        if (instrumentData == undefined) {
-            return new Map<string, Map<string, string>>();
+            // check for undefined
+            if (instrumentData == undefined) {
+                return new Map<string, Field>();
+            }
+
+            // return elements as map.
+            return new Map<string, Field>(Object.entries(instrumentData.elements));
+        } else {
+            return new Map<string, Field>();
         }
-        return instrumentData;
     }
 
     /**
@@ -222,14 +229,11 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     function setupElementsInForm(
             telescopeName: string, instrumentName: string): void {
         //populate the form with new states.
-        const elementData: Map<string, Map<string, string>> =
+        const elementNames: Map<string, Field> =
             returnElementsFromStore(telescopeName, instrumentName);
-        if (elementData.size == 0) {
+        if (elementNames.size == 0) {
             return;
         }
-
-        // convert to map.
-        const elementsDataMap = new Map(Object.entries(elementData));
 
         // extract the saved state for this telescope if it exists.
         let userStoresObservationElements = undefined;
@@ -251,7 +255,6 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         }
 
         // cycle and add new elements.
-        const elementNames = new Map(Object.entries(elementsDataMap.get("elements")));
         for (const elementName of elementNames.keys()) {
             let storedValue = DEFAULT_STRING;
 
@@ -387,19 +390,15 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      */
     function instrumentFields(): ReactElement {
         // get the elements and their options.
-        const elementsData: Map<string, Map<string, string>> =
+        const elementNamesMap: Map<string, Field> =
             returnElementsFromStore(selectedTelescope, selectedInstrument);
-        if (elementsData.size == 0) {
+        if (elementNamesMap.size == 0) {
             return <></>
         }
 
-        // extract elements.
-        const elementsDataMap = new Map(Object.entries(elementsData)).get("elements");
-        const elementNamesMap = new Map(Object.entries(elementsDataMap));
-
         // generate the html.
         return <>
-            {  Object.keys(elementsDataMap).map((key) => {
+            {  Array.from(elementNamesMap.keys()).map((key) => {
                 const element: Field = elementNamesMap.get(key) as Field;
                 switch (element.type) {
                     case Type.LIST:
