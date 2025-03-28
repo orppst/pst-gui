@@ -4,7 +4,7 @@ import {
     useProposalCyclesResourceGetCycleAllocationGrades
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {Fieldset, Loader} from "@mantine/core";
+import {Group, Loader, Text} from "@mantine/core";
 import AllocatedBlocksContent from "./allocatedBlocks.content.tsx";
 import {AllocatedBlock} from "../../generated/proposalToolSchemas.ts";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
@@ -61,7 +61,8 @@ function AllocationBlocksResourceTypes(p: {
                 cycleResourceTypes.data?.map(rt => {
                     //need to filter allocatedBlocks by the resource type here
                     return (
-                        <Fieldset legend={rt.name} key={String(rt.dbid)}>
+                        <Group key={rt.dbid} justify={"center"}>
+                            <Text mt={20} size={"sm"}>{capitaliseAllWords(rt.name!)}:</Text>
                             <AllocatedBlocksContent
                                 allocatedBlocks={p.allocatedBlocks
                                     .filter(ab => {
@@ -73,10 +74,15 @@ function AllocationBlocksResourceTypes(p: {
                                 allGrades={cycleGrades.data!}
                                 resourceType={rt}
                             />
-                        </Fieldset>
+                        </Group>
                     )
                 })
             }
         </>
     )
+}
+
+function capitaliseAllWords(input: string) : string {
+    return input.toLowerCase().split(' ').map(word =>
+        word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
 }

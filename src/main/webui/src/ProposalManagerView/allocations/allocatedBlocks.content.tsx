@@ -1,8 +1,7 @@
 import {ReactElement, useState} from "react";
 import {AllocatedBlock, ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
-import {Group, Loader, NumberInput, Switch, Text} from "@mantine/core";
+import {Box, Loader, NumberInput, Text, Tooltip} from "@mantine/core";
 import {
-    useAllocatedBlockResourceAddAllocatedBlock,
     useAllocatedBlockResourceUpdateResource,
     useAvailableResourcesResourceGetCycleResourceRemaining,
     useResourceTypeResourceGetResourceType
@@ -13,15 +12,15 @@ import {useParams} from "react-router-dom";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {useDebouncedCallback} from "@mantine/hooks";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 /*
-    Rather than filtering by already allocated grades, we present a list of number inputs
-    for each Grade in the cycle. These are initially disabled, but can be enabled by a
-    checkbox / switch that adds that allocated block to the proposal with a resource amount
-    of zero. This can then be adjusted to the desired amount (update method via debounce).
-    Disabling the checkbox/switch calls the delete method to remove the block from the
-    proposal. This should be hidden behind a "confirm modal".
+    Dev note: this code assumes that an allocated proposal was assigned all its potential
+    allocation blocks with zero resource at the point where a submitted proposal is "passed"
+    to be an allocated proposal. Notice, this may not be true for proposals created during
+    setup i.e., outside this GUI.
  */
+
 
 export default
 function AllocatedBlocksContent(p: {
@@ -36,28 +35,22 @@ function AllocatedBlocksContent(p: {
 
     const {fetcherOptions} = useProposalToolContext();
 
+    const queryClient = useQueryClient();
+
+    const [amountErrors, setAmountErrors] =
+        useState<{blockId: number, message: string}[]>(
+            p.allocatedBlocks.map(ab => {
+                return {blockId: ab._id!, message: ''}
+            })
+        );
+
     //number empty state is the empty string
     const [resourceAmounts, setResourceAmounts] =
-        useState<{gradeId: number, amount: string | number}[]>(
+        useState<{blockId: number, amount: string | number}[]>(
             p.allocatedBlocks.map(ab => {
-                let gradeId = !ab.grade?._id ? ab.grade as number : ab.grade._id
-                return {gradeId: gradeId, amount: ab.resource?.amount!}
+                return {blockId: ab._id!, amount: ab.resource?.amount!}
             })
         );
-
-    const [addBlockSwitches, setAddBlockSwitches] =
-        useState<{gradeId: number, checked: boolean}[]>(
-            p.allGrades.map(g => {
-                return {
-                    gradeId: g.dbid!,
-                    checked: !!p.allocatedBlocks
-                        .find(ab => ab.grade === g.dbid || ab.grade?._id === g.dbid)
-                }
-            })
-        );
-
-    const addAllocatedBlock =
-        useAllocatedBlockResourceAddAllocatedBlock();
 
     const updateResource =
         useAllocatedBlockResourceUpdateResource();
@@ -82,132 +75,87 @@ function AllocatedBlocksContent(p: {
                     allocatedId: p.allocatedProposalId,
                     blockId: props.blockId
                 },
-                body: props.amount,
+                body: props.amount === 0 ? '0' : props.amount,
                 //@ts-ignore
                 headers: {...fetcherOptions.headers, "Content-Type": "text/plain"}
             }, {
-                onSuccess: () =>
-                    notifySuccess("Updated",
-                        "The resource amount changed to " + props.amount),
+                onSuccess: () => {
+                    queryClient.invalidateQueries().then(() =>
+                        notifySuccess("Updated",
+                            "The resource amount changed to " + props.amount) )
+                },
                 onError: (error) =>
                     notifyError("Failed to update resource amount",
                         getErrorMessage(error))
             })
-        }, 500)
-
-    const addNewBlock = (gradeId: number) => {
-        //new allocation block with zero resource amount
-        let newAllocationBlock : AllocatedBlock = {
-            "@type": "proposalManagement:AllocatedBlock",
-            resource: {
-                amount: 0,
-                type: {
-                    _id: p.resourceType.dbid,
-                }
-            },
-            mode: {
-                _id: p.observingModeId
-            },
-            grade: {
-                _id: gradeId
-            }
-        }
-
-        addAllocatedBlock.mutate({
-            pathParams: {
-                cycleCode: Number(selectedCycleCode),
-                allocatedId: p.allocatedProposalId!
-            },
-            body: newAllocationBlock
-        }, {
-            onSuccess: () =>
-                notifySuccess("Added",
-                    "New allocation block has been added to the proposal"),
-            onError: (error) =>
-                notifyError("Failed add new allocation block",
-                    getErrorMessage(error))
-        })
-    }
+        }, 1000)
 
     function ResourceAmountInput(props: {
         grade: ObjectIdentifier,
+        resourceAmount: number,
         resourceTypeUnit: string,
         blockId?: number
     }) : ReactElement {
 
-        let checked =
-            addBlockSwitches.find(s =>
-                s.gradeId === props.grade.dbid)?.checked
-
         let resourceAmount = resourceAmounts
-            .find(ra =>
-                ra.gradeId === props.grade.dbid)?.amount
+            .find(ra => ra.blockId === props.blockId)?.amount
+
+        let errorMsg = amountErrors
+            .find(e => e.blockId === props.blockId)?.message
+
+        let toolTipLabel : string = "Grade " + props.grade.name
+            + " == " + props.grade.code
 
         return (
-            <Group>
-                <Switch
-                    checked={checked}
-                    onChange={e => {
-                        setAddBlockSwitches(
-                            addBlockSwitches.map(abs => {
-                                if (abs.gradeId === props.grade.dbid) {
-                                    return {...abs, checked: e.currentTarget.checked}
-                                } else {
-                                    return abs;
-                                }
-                            })
-                        );
-                    }}
-                    onLabel={"remove"}
-                    offLabel={"add"}
-                />
+            <Tooltip label={toolTipLabel} openDelay={1000}>
                 <NumberInput
                     label={"Grade " + props.grade.name}
+                    error={errorMsg}
                     min={0}
-                    max={resourceRemaining.data}
+                    max={resourceRemaining.data! + props.resourceAmount}
+                    clampBehavior={'strict'}
                     disabled={props.blockId === undefined}
                     allowNegative={false}
-                    clampBehavior={'strict'}
-                    value={resourceAmount ?? ''}
+                    value={resourceAmount}
                     onChange={(e) => {
                         setResourceAmounts(
                             resourceAmounts.map(ra => {
-                                if (ra.gradeId === props.grade.dbid) {
-                                    return {...ra, amount: e as number}
+                                if (ra.blockId === props.blockId) {
+                                    return {...ra, amount: e}
                                 } else {
                                     return ra
                                 }
                             })
                         );
-                        handleUpdateDebounce({amount: e as number, blockId: props.blockId!});
+
+                        if (e !== '') {
+                            setAmountErrors(
+                                amountErrors.map(ae => {
+                                    if (ae.blockId === props.blockId) {
+                                        return {...ae, message: ""}
+                                    } else {
+                                        return ae
+                                    }
+                                }))
+                            handleUpdateDebounce({amount: e as number, blockId: props.blockId!});
+                        }
+
+                    }}
+                    onBlur={() => {
+                        if (resourceAmount === '') {
+                            setAmountErrors(
+                                amountErrors.map(e => {
+                                    if (e.blockId === props.blockId) {
+                                        return {...e, message: "Please provide a value"}
+                                    } else {
+                                        return e
+                                    }
+                                })
+                            )
+                        }
                     }}
                 />
-                <Text>{props.resourceTypeUnit}</Text>
-            </Group>
-        )
-    }
-
-    const DisplayElement = () : ReactElement => {
-        return (
-            <>
-                {
-                    //for each grade defined in the Cycle display a number input with a switch
-                    p.allGrades.map(g => {
-
-                        let allocatedBlock : AllocatedBlock | undefined =
-                            p.allocatedBlocks.find(ab =>
-                                ab.grade?._id === g.dbid || ab.grade === g.dbid)
-
-                        return (
-                            <ResourceAmountInput
-                                grade={g}
-                                resourceTypeUnit={resourceType.data?.unit!}
-                                blockId={allocatedBlock?._id}
-                            />
-                        )
-                    })
-                }
-            </>
+            </Tooltip>
         )
     }
 
@@ -236,6 +184,29 @@ function AllocatedBlocksContent(p: {
     }
 
     return (
-        <DisplayElement/>
+        <>
+            {
+                p.allocatedBlocks.map(ab => {
+
+                    let grade = p.allGrades.find(g =>
+                        ab.grade === g.dbid || ab.grade?._id === g.dbid
+                    )
+
+                    return (
+                        <Box key={ab._id}>
+                            {
+                                ResourceAmountInput({
+                                    grade: grade!,
+                                    resourceAmount: ab.resource?.amount!,
+                                    resourceTypeUnit: resourceType.data?.unit!,
+                                    blockId: ab._id
+                                })
+                            }
+                        </Box>
+                    )
+                })
+            }
+            <Text mt={20} size={"sm"}>{resourceType.data?.unit}</Text>
+        </>
     )
 }

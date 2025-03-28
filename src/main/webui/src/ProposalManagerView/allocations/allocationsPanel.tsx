@@ -76,16 +76,6 @@ export default function AllocationsPanel() : ReactElement {
                 :
                 <Grid columns={10}>
                     <Grid.Col
-                        span={{base: 10, xl: 6}}
-                        order={{base: 2, xl: 1}}
-                    >
-                        <Fieldset legend={"Allocate Resources"}>
-                            <ScrollArea>
-                                <AllocatedAccordion allocatedIds={allocated.data!} />
-                            </ScrollArea>
-                        </Fieldset>
-                    </Grid.Col>
-                    <Grid.Col
                         span={{base: 10, xl: 4}}
                         order={{base: 1, xl: 2}}
                     >
@@ -95,6 +85,17 @@ export default function AllocationsPanel() : ReactElement {
                             />
                         </Fieldset>
                     </Grid.Col>
+                    <Grid.Col
+                        span={{base: 10, xl: 6}}
+                        order={{base: 2, xl: 1}}
+                    >
+                        <Fieldset legend={"Allocate Resources"}>
+                            <ScrollArea>
+                                <AllocatedAccordion allocatedIds={allocated.data!} />
+                            </ScrollArea>
+                        </Fieldset>
+                    </Grid.Col>
+
                 </Grid>
             }
         </PanelFrame>

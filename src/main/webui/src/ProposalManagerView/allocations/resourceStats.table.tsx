@@ -4,7 +4,7 @@ import {
     useAvailableResourcesResourceGetCycleResourceTotal, useAvailableResourcesResourceGetCycleResourceTypes,
     useAvailableResourcesResourceGetCycleResourceUsed
 } from "../../generated/proposalToolComponents.ts";
-import {Loader, Table} from "@mantine/core";
+import {Loader, MantineColor, Table} from "@mantine/core";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 
@@ -54,8 +54,11 @@ function ResourceStatsRow(props: {cycleCode: number, resourceName: string}) : Re
             getErrorMessage(resourceRemaining.error))
     }
 
+    let textColour : MantineColor = resourceRemaining.data === 0 ? 'red.6'
+        : resourceRemaining.data! < 100 ? 'yellow.6' : 'green.6';
+
     return (
-        <Table.Tr>
+        <Table.Tr c={textColour}>
             <Table.Td>{props.resourceName}</Table.Td>
             <Table.Td>{totalAvailable.data}</Table.Td>
             <Table.Td>{resourceUsed.data}</Table.Td>

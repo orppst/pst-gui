@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Accordion, Fieldset, Loader} from "@mantine/core";
+import {Accordion, Fieldset, Loader, Text} from "@mantine/core";
 import {
     useAllocatedProposalResourceGetAllocatedProposal, useObservingModeResourceGetObservingModeObjects
 } from "../../generated/proposalToolComponents.ts";
@@ -43,10 +43,26 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
             getErrorMessage(observingModes.error))
     }
 
+    let totalHoursAllocated : number = 0
+
+    let observingTimeTypeId =
+        allocatedProposal.data?.allocation?.find(ab =>
+            ab.resource?.type?.name === 'observing time')?.resource?.type?._id
+
+    allocatedProposal.data?.allocation?.forEach((allocatedBlock) => {
+        if (allocatedBlock.resource?.type?._id === observingTimeTypeId ||
+            allocatedBlock.resource?.type === observingTimeTypeId) {
+            totalHoursAllocated += allocatedBlock.resource?.amount!
+        }
+    })
+
     return (
         <Accordion.Item value={String(allocatedProposal.data?._id)}>
             <Accordion.Control>
-                {allocatedProposal.data?.submitted?.title}
+                <Text>
+                    {allocatedProposal.data?.submitted?.title} ---- <Text size={"xs"} span c={'blue'}>
+                    allocated: {totalHoursAllocated} hours</Text>
+                </Text>
             </Accordion.Control>
             <Accordion.Panel>
                 {
@@ -63,7 +79,9 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
                             >
                                 {
                                     <AllocationBlocksResourceTypes
-                                        allocatedBlocks={allocatedProposal.data?.allocation ?? []}
+                                        allocatedBlocks={allocatedProposal.data?.allocation?.filter(ab =>
+                                           ab.mode?._id === theMode!._id || ab.mode === theMode!._id)
+                                            ?? []}
                                         allocatedProposalId={allocatedProposal.data?._id!}
                                         observingModeId={theMode!._id!}
                                     />
