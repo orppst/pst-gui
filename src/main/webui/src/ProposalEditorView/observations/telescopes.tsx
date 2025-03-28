@@ -259,12 +259,12 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             let storedValue = DEFAULT_STRING;
 
             // no saved data.
+            const field: Field = elementNames.get(elementName);
             if (userStoresObservationElements == undefined) {
-                switch(elementNames.get(elementName).type) {
+                switch(field.type) {
                     case Type.LIST:
                         // set to the first value
-                        form.getInputProps("elements").value.set(
-                            elementName, elementNames.get(elementName).values[0]);
+                        form.getInputProps("elements").value.set(elementName, field.values[0]);
                         break;
                     case Type.TEXT:
                         if (form.getInputProps("elements").value.get(elementName) == undefined) {
@@ -275,13 +275,13 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         form.getInputProps("elements").value.set(elementName, false);
                         break;
                     default:
-                        notifyError("none recognised type %s", elementNames.get(elementName).type);
+                        notifyError("none recognised type %s", field.type);
                         break;
                 }
             // got saved data.
             } else {
                 storedValue = userStoresObservationElements.get(elementName);
-                switch(elementNames.get(elementName).type) {
+                switch(field.type) {
                     case Type.LIST:
                     case Type.TEXT:
                         if (form.getInputProps("elements").value.get(elementName) == undefined) {
@@ -294,7 +294,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         }
                         break;
                     default:
-                        notifyError("none recognised type %s", elementNames.get(elementName).type);
+                        notifyError("none recognised type %s", field.type);
                         break;
                 }
             }
@@ -405,9 +405,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         return <Select
                             label={key}
                             key={selectedTelescope + selectedInstrument + key}
-                            readOnly={elementNamesMap.get(key).values.length == 1}
-                            disabled={elementNamesMap.get(key).values.length == 1}
-                            data = {Array.from(elementNamesMap.get(key).values)}
+                            readOnly={element.values.length == 1}
+                            disabled={element.values.length == 1}
+                            data = {Array.from(element.values)}
                             defaultValue={form.getInputProps("elements").value.get(key)}
                             onChange={(e) => {
                                 handleSelectChange(key, e);
