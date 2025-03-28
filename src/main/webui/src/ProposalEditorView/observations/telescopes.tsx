@@ -175,7 +175,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      */
     function useTelescopeNameChange(value: string): void {
         form.getInputProps('elements').value.clear();
-        form.setDirty('elements');
+        form.setDirty({elements: true});
 
         // needs the action due to TS2345
         form.setFieldValue('telescopeName', () => value);
