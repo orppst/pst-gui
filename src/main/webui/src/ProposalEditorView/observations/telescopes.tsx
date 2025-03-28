@@ -259,7 +259,13 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             let storedValue = DEFAULT_STRING;
 
             // no saved data.
-            const field: Field = elementNames.get(elementName);
+            const field: Field | undefined = elementNames.get(elementName);
+            if (field == undefined) {
+                notifyError("element selection fail", "element failure");
+                return;
+            }
+
+            //sensible state
             if (userStoresObservationElements == undefined) {
                 switch(field.type) {
                     case Type.LIST:
@@ -275,7 +281,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         form.getInputProps("elements").value.set(elementName, false);
                         break;
                     default:
-                        notifyError("none recognised type %s", field.type);
+                        notifyError("none recognised type", "");
                         break;
                 }
             // got saved data.
@@ -294,7 +300,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         }
                         break;
                     default:
-                        notifyError("none recognised type %s", field.type);
+                        notifyError("none recognised type", "");
                         break;
                 }
             }
