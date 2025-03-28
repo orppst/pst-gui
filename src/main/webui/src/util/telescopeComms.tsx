@@ -147,7 +147,6 @@ export const useOpticalTelescopeResourceSaveTelescopeData = (
  *
  * @param {SavedTelescopeData} data: the data to save.
  * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
 export const fetchOpticalTelescopeResourceSaveTelescopeData = (
     data: SavedTelescopeData, signal?: AbortSignal) =>

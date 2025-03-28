@@ -471,8 +471,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 label={"Telescope Name: "}
                 placeholder={"Select the optical telescope"}
                 data = {getNames}
-                {...form.getInputProps('telescopeName') ?
-                        form.getInputProps('telescopeName') : DEFAULT_STRING}
+                {...form.getInputProps('telescopeName')}
                 onChange = {useTelescopeNameChange}
             />
             {telescopeFields()}
