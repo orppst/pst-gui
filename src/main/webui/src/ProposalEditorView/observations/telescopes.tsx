@@ -309,9 +309,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
     /**
      * function to update the UI based off the instrument selection.
-     * @param {string | null} value: the instrument change.
+     * @param {string} value: the instrument change.
      */
-    function useTelescopeInstrumentChange(value: string | null): void {
+    function useTelescopeInstrumentChange(value: string): void {
         form.setFieldValue('instrument', value);
         form.getInputProps('elements').value.clear();
 
@@ -320,7 +320,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
         // sets the state variables to force a re-render.
         setSelectedInstrument(value);
-        form.setDirty('elements');
+        form.setDirty({'elements': true});
 
     }
 
