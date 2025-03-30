@@ -32,6 +32,7 @@ import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 import {
     useOpticalTelescopeResourceSaveTelescopeData,
 } from '../../util/telescopeComms';
+import * as Schemas from '../../generated/proposalToolSchemas';
 
 /**
  * the different types of observation.
@@ -272,10 +273,8 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         body: values.observationType === 'Target' ?
                             targetObservation : calibrationObservation,
                     }, {
-                        onSuccess: () => {
-                            queryClient.invalidateQueries().then();
-                            notifySuccess("Observation Added", "new observation added to proposal")
-                            props.closeModal!();
+                        onSuccess: (obs: Schemas.Observation) => {
+                            processTelescopeData(obs._id, true);
                         },
                         onError: (error) =>
                             notifyError("Failed to add Observation", getErrorMessage(error)),
@@ -431,35 +430,52 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                             notifyError("Failed to update calibration use", getErrorMessage(error)),
                     })
                 }
+                processTelescopeData(form.getValues().observationId!.toString(), false);
 
-                if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
-                    saveTelescopeData.mutate({
-                        primaryKey: {
-                            proposalID: selectedProposalCode!,
-                            observationID: form.getValues().observationId!.toString(),
-                        },
-                        instrumentName: form.getValues().instrument!,
-                        telescopeName: form.getValues().telescopeName!,
-                        choices: Object.fromEntries(form.getValues().elements.entries())
-                    }, {
-                        onSuccess: () => {
-                            queryClient.invalidateQueries({
-                                queryKey: queryKeyProposals({
-                                    proposalId: Number(selectedProposalCode),
-                                    childName: "observations",
-                                    childId: form.getValues().observationId!
-                                }),
-                            }).then(() =>
-                                notifySuccess("Telescopes data Updated",
-                                    "telescope data saved")
-                            );
-                        },
-                        onError: (error) =>
-                            notifyError("Failed to update optical telescope data", getErrorMessage(error)),
-                    });
-                }
             }
     });
+
+    /**
+     * stores optical telescope stuff.
+     *
+     * @param {string} observationId: the observation id.
+     * @param {boolean} newObs: true if new, false otherwise.
+     */
+    function processTelescopeData(observationId: string, newObs: boolean) {
+        if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
+            saveTelescopeData.mutate({
+                primaryKey: {
+                    proposalID: selectedProposalCode!,
+                    observationID: observationId,
+                },
+                instrumentName: form.getValues().instrument!,
+                telescopeName: form.getValues().telescopeName!,
+                choices: Object.fromEntries(form.getValues().elements.entries())
+            }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({
+                        queryKey: queryKeyProposals({
+                            proposalId: Number(selectedProposalCode),
+                            childName: "observations",
+                            childId: observationId
+                        }),
+                    }).then(() => {
+                        if (!newObs) {
+                            notifySuccess("Telescopes data Updated",
+                                          "telescope data saved")
+                        } else {
+                            queryClient.invalidateQueries().then();
+                            notifySuccess("Observation Added",
+                                          "new observation added to proposal")
+                            props.closeModal!();
+                        }
+                    });
+                },
+                onError: (error) =>
+                    notifyError("Failed to update optical telescope data", getErrorMessage(error)),
+            });
+        }
+    }
 
   function handleCancel(event: SyntheticEvent) {
       event.preventDefault();
