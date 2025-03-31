@@ -274,7 +274,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                             targetObservation : calibrationObservation,
                     }, {
                         onSuccess: (obs: Schemas.Observation) => {
-                            processTelescopeData(obs._id, true);
+                            if (obs._id !== undefined) {
+                                processTelescopeData(obs._id, true);
+                            }
                         },
                         onError: (error) =>
                             notifyError("Failed to add Observation", getErrorMessage(error)),
@@ -430,7 +432,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                             notifyError("Failed to update calibration use", getErrorMessage(error)),
                     })
                 }
-                processTelescopeData(form.getValues().observationId!.toString(), false);
+                processTelescopeData(form.getValues().observationId!, false);
 
             }
     });
@@ -441,12 +443,12 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
      * @param {string} observationId: the observation id.
      * @param {boolean} newObs: true if new, false otherwise.
      */
-    function processTelescopeData(observationId: string, newObs: boolean) {
+    function processTelescopeData(observationId: number, newObs: boolean) {
         if(form.isDirty("telescopeName") || form.isDirty("instrument") || form.isDirty("elements")) {
             saveTelescopeData.mutate({
                 primaryKey: {
                     proposalID: selectedProposalCode!,
-                    observationID: observationId,
+                    observationID: observationId.toString(),
                 },
                 instrumentName: form.getValues().instrument!,
                 telescopeName: form.getValues().telescopeName!,

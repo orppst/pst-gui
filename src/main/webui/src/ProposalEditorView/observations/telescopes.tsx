@@ -55,7 +55,7 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                 setTelescopeData(new Map(Object.entries(backendTelescopeData)));
 
                 // if no observation id, no loaded data.
-                if (form.getValues().observationId == undefined) {
+                if (form.getValues().observationId === undefined) {
                     processUserData(
                         new Map<string, Map<string, Map<string, string>>>(),
                         new Map(Object.entries(backendTelescopeData)))
