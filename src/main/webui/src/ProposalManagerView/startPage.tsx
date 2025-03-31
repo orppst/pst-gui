@@ -22,7 +22,7 @@ import CycleList from "./cycleList.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import NewCycleForm from "./proposalCycle.new.form.tsx";
 import {HaveRole} from "../auth/Roles.tsx";
-import {useObservatoryResourceGetObservatories} from "../generated/proposalToolComponents.ts";
+import {useObservatoryResourceGetObservatories}  from "../generated/proposalToolComponents.ts";
 
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
@@ -31,12 +31,12 @@ export default function ProposalManagerStartPage() : ReactElement {
     const {colorScheme} = useMantineColorScheme();
 
     const [modalOpened, {close, open}] = useDisclosure();
+    const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
+    //const { selectedObservatory } = useProposalToolContext()
 
     const obsList = useObservatoryResourceGetObservatories(
         {queryParams: {}}
     );
-
-    const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
 
     const observatoryList = obsList.data?.map(obs => {
         if(obs.dbid) {
@@ -86,7 +86,24 @@ export default function ProposalManagerStartPage() : ReactElement {
                                     <IconLicense />
                                 </ActionIcon>
                             </Tooltip>
-                            {HaveRole(["tac_admin", "tac_member"]) &&
+                            Observatory
+                            <Select
+                                width={500}
+                                defaultValue={selectedObservatory.toString()}
+                                allowDeselect={false}
+                                comboboxProps={{ width: 200, position: 'bottom-start' }}
+                                aria-label="Select an observatory"
+                                //@ts-ignore
+                                data={observatoryList}
+                                onChange={(_value) => {
+                                        if(_value)
+                                            setSelectedObservatory(+_value)
+                                        else
+                                            setSelectedObservatory(0)
+                                    }
+                                }
+                            />
+                            {HaveRole(["obs_administration"]) &&
                             <AddButton toolTipLabel={"new proposal cycle"}
                                        label={"Create a new Proposal Cycle"}
                                        onClick={open}
@@ -98,7 +115,7 @@ export default function ProposalManagerStartPage() : ReactElement {
                                 size={"40%"}
                                 closeOnClickOutside={false}
                             >
-                                <NewCycleForm closeModal={close}/>
+                                <NewCycleForm closeModal={close} selectedObservatory={selectedObservatory}/>
                             </Modal>
                         </Group>
                     </Grid.Col>
@@ -123,20 +140,6 @@ export default function ProposalManagerStartPage() : ReactElement {
             </AppShell.Header>
             <AppShell.Navbar>
                 <AppShell.Section>
-                     <Select
-                        label={"Choose Your Observatory"}
-                        defaultValue={selectedObservatory.toString()}
-                        allowDeselect={false}
-                        //@ts-ignore
-                        data={observatoryList}
-                        onChange={(_value) => {
-                                if(_value)
-                                    setSelectedObservatory(+_value)
-                                else
-                                    setSelectedObservatory(0)
-                            }
-                        }
-                     />
                     <Container
                         fluid
                         bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}

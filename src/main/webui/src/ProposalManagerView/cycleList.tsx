@@ -15,7 +15,7 @@ import {HaveRole} from "../auth/Roles.tsx";
 
 export default function CycleList(props:{observatory: number}) : ReactElement {
 
-    if(!HaveRole(["tac_admin", "tac_member"])) {
+    if(!HaveRole(["tac_admin", "tac_member", "obs_administration"])) {
         return <>Not authorised</>
     }
 
