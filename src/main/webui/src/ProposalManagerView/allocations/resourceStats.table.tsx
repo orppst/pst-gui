@@ -1,47 +1,38 @@
 import {ReactElement} from "react";
 import {
     useAvailableResourcesResourceGetCycleResourceRemaining,
-    useAvailableResourcesResourceGetCycleResourceTotal, useAvailableResourcesResourceGetCycleResourceTypes,
     useAvailableResourcesResourceGetCycleResourceUsed
 } from "../../generated/proposalToolComponents.ts";
 import {Loader, MantineColor, Table} from "@mantine/core";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 
-function ResourceStatsRow(props: {cycleCode: number, resourceName: string}) : ReactElement {
-
-    const totalAvailable =
-        useAvailableResourcesResourceGetCycleResourceTotal({
-            pathParams: {
-                cycleCode: props.cycleCode,
-                resourceName: props.resourceName
-            }
-        })
+function ResourceStatsRow(p: {
+    cycleCode: number,
+    resourceName: string,
+    totalAvailable: number
+}) : ReactElement {
 
     const resourceUsed =
         useAvailableResourcesResourceGetCycleResourceUsed({
             pathParams: {
-                cycleCode: props.cycleCode,
-                resourceName: props.resourceName
+                cycleCode: p.cycleCode,
+                resourceName: p.resourceName
             }
         })
 
     const resourceRemaining =
         useAvailableResourcesResourceGetCycleResourceRemaining({
             pathParams: {
-                cycleCode: props.cycleCode,
-                resourceName: props.resourceName
+                cycleCode: p.cycleCode,
+                resourceName: p.resourceName
             }
         })
 
-    if (totalAvailable.isLoading || resourceUsed.isLoading ||
+    if (resourceUsed.isLoading ||
         resourceRemaining.isLoading) {
         return <Loader/>
-    }
-
-    if (totalAvailable.error) {
-        notifyError("Failed to load total available resource",
-            getErrorMessage(totalAvailable.error))
     }
 
     if (resourceUsed.error) {
@@ -59,8 +50,8 @@ function ResourceStatsRow(props: {cycleCode: number, resourceName: string}) : Re
 
     return (
         <Table.Tr c={textColour}>
-            <Table.Td>{props.resourceName}</Table.Td>
-            <Table.Td>{totalAvailable.data}</Table.Td>
+            <Table.Td>{p.resourceName}</Table.Td>
+            <Table.Td>{p.totalAvailable}</Table.Td>
             <Table.Td>{resourceUsed.data}</Table.Td>
             <Table.Td>{resourceRemaining.data}</Table.Td>
         </Table.Tr>
@@ -68,28 +59,19 @@ function ResourceStatsRow(props: {cycleCode: number, resourceName: string}) : Re
 }
 
 export default
-function ResourceStatsTable(props: {cycleCode: number}) : ReactElement {
-
-    const cycleResourceTypes =
-        useAvailableResourcesResourceGetCycleResourceTypes({
-            pathParams: {cycleCode: props.cycleCode}
-        })
-
-    if (cycleResourceTypes.isLoading) {
-        return <Loader/>
-    }
-
-    if (cycleResourceTypes.error) {
-        notifyError("Failed to load Resource Types",
-            getErrorMessage(cycleResourceTypes.error))
-    }
+function ResourceStatsTable(p: {
+    cycleCode: number,
+    totalAvailable: number,
+    cycleResourceTypes: ObjectIdentifier[]
+}) : ReactElement {
 
     const resourceStatsRows =
-        cycleResourceTypes.data?.map(type =>(
+        p.cycleResourceTypes.map(type =>(
         <ResourceStatsRow
             key={type.dbid}
-            cycleCode={props.cycleCode}
+            cycleCode={p.cycleCode}
             resourceName={type.name!}
+            totalAvailable={p.totalAvailable}
         />
     ))
 

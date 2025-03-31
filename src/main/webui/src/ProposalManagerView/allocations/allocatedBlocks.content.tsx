@@ -1,10 +1,9 @@
 import {ReactElement, useState} from "react";
 import {AllocatedBlock, ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
-import {Box, Loader, NumberInput, Text, Tooltip} from "@mantine/core";
+import {Loader, NumberInput, Table, Tooltip} from "@mantine/core";
 import {
     useAllocatedBlockResourceUpdateResource,
-    useAvailableResourcesResourceGetCycleResourceRemaining,
-    useResourceTypeResourceGetResourceType
+    useAvailableResourcesResourceGetCycleResourceRemaining
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -21,14 +20,16 @@ import {useQueryClient} from "@tanstack/react-query";
     setup i.e., outside this GUI.
  */
 
-
 export default
 function AllocatedBlocksContent(p: {
     allocatedBlocks: AllocatedBlock[],
     allocatedProposalId: number,
-    observingModeId?: number,
-    resourceType: ObjectIdentifier,
+    observingModeId: number,
+    numberObservations: number,
+    resourceTypeName: string,
     allGrades: ObjectIdentifier[],
+    modeName: string,
+    proposalTitle: string
 }) : ReactElement {
 
     const {selectedCycleCode} = useParams();
@@ -59,16 +60,18 @@ function AllocatedBlocksContent(p: {
         useAvailableResourcesResourceGetCycleResourceRemaining({
             pathParams: {
                 cycleCode: Number(selectedCycleCode),
-                resourceName: p.resourceType.name!
+                resourceName: p.resourceTypeName
             }
         })
 
-    const resourceType = useResourceTypeResourceGetResourceType({
-        pathParams: {resourceTypeId: p.resourceType.dbid!}
-    })
-
     const handleUpdateDebounce =
-        useDebouncedCallback((props:{amount: number, blockId: number}) => {
+        useDebouncedCallback((props:{
+            amount: number,
+            blockId: number,
+            proposalTitle: string,
+            modeName: string,
+            gradeName: string
+        }) => {
             updateResource.mutate({
                 pathParams: {
                     cycleCode: Number(selectedCycleCode),
@@ -81,8 +84,10 @@ function AllocatedBlocksContent(p: {
             }, {
                 onSuccess: () => {
                     queryClient.invalidateQueries().then(() =>
-                        notifySuccess("Updated",
-                            "The resource amount changed to " + props.amount) )
+                        notifySuccess("Updated '" + props.proposalTitle + "'",
+                            props.modeName + ", grade " +  props.gradeName
+                            + " resource amount changed to " + props.amount)
+                    )
                 },
                 onError: (error) =>
                     notifyError("Failed to update resource amount",
@@ -93,7 +98,6 @@ function AllocatedBlocksContent(p: {
     function ResourceAmountInput(props: {
         grade: ObjectIdentifier,
         resourceAmount: number,
-        resourceTypeUnit: string,
         blockId?: number
     }) : ReactElement {
 
@@ -109,7 +113,6 @@ function AllocatedBlocksContent(p: {
         return (
             <Tooltip label={toolTipLabel} openDelay={1000}>
                 <NumberInput
-                    label={"Grade " + props.grade.name}
                     error={errorMsg}
                     min={0}
                     max={resourceRemaining.data! + props.resourceAmount}
@@ -120,24 +123,23 @@ function AllocatedBlocksContent(p: {
                     onChange={(e) => {
                         setResourceAmounts(
                             resourceAmounts.map(ra => {
-                                if (ra.blockId === props.blockId) {
-                                    return {...ra, amount: e}
-                                } else {
-                                    return ra
-                                }
+                                return ra.blockId === props.blockId ?
+                                    {...ra, amount: e} : ra
                             })
                         );
-
                         if (e !== '') {
                             setAmountErrors(
                                 amountErrors.map(ae => {
-                                    if (ae.blockId === props.blockId) {
-                                        return {...ae, message: ""}
-                                    } else {
-                                        return ae
-                                    }
+                                    return ae.blockId === props.blockId ?
+                                        {...ae, message: ""} : ae
                                 }))
-                            handleUpdateDebounce({amount: e as number, blockId: props.blockId!});
+                            handleUpdateDebounce({
+                                amount: e as number,
+                                blockId: props.blockId!,
+                                proposalTitle: p.proposalTitle,
+                                modeName: p.modeName,
+                                gradeName: props.grade.name!
+                            });
                         }
 
                     }}
@@ -145,11 +147,8 @@ function AllocatedBlocksContent(p: {
                         if (resourceAmount === '') {
                             setAmountErrors(
                                 amountErrors.map(e => {
-                                    if (e.blockId === props.blockId) {
-                                        return {...e, message: "Please provide a value"}
-                                    } else {
-                                        return e
-                                    }
+                                    return e.blockId === props.blockId ?
+                                        {...e, message: "Please provide a value"} : e
                                 })
                             )
                         }
@@ -159,7 +158,7 @@ function AllocatedBlocksContent(p: {
         )
     }
 
-    if (resourceRemaining.isLoading || resourceType.isLoading) {
+    if (resourceRemaining.isLoading) {
         return (
             <Loader />
         )
@@ -174,39 +173,27 @@ function AllocatedBlocksContent(p: {
         )
     }
 
-    if (resourceType.isError) {
-        return (
-            <AlertErrorMessage
-                title={"Failed to get resourceType"}
-                error={getErrorMessage(resourceType.error)}
-            />
-        )
-    }
-
     return (
         <>
             {
                 p.allocatedBlocks.map(ab => {
-
                     let grade = p.allGrades.find(g =>
                         ab.grade === g.dbid || ab.grade?._id === g.dbid
                     )
 
                     return (
-                        <Box key={ab._id}>
+                        <Table.Td key={ab._id}>
                             {
                                 ResourceAmountInput({
                                     grade: grade!,
                                     resourceAmount: ab.resource?.amount!,
-                                    resourceTypeUnit: resourceType.data?.unit!,
                                     blockId: ab._id
                                 })
                             }
-                        </Box>
+                        </Table.Td>
                     )
                 })
             }
-            <Text mt={20} size={"sm"}>{resourceType.data?.unit}</Text>
         </>
     )
 }

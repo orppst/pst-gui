@@ -5,29 +5,17 @@ import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocatedAccordion from "./allocated.accordion.tsx";
 import {
     useAllocatedProposalResourceGetAllocatedProposals,
+    useAvailableResourcesResourceGetCycleResourceTotal,
+    useAvailableResourcesResourceGetCycleResourceTypes,
     useProposalCyclesResourceGetProposalCycleDates
 } from "../../generated/proposalToolComponents.ts";
-import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import ResourceStatsTable from "./resourceStats.table.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 
-/*
-    List all submitted proposals that have been reviewed (all reviews complete) and update
-    the "success" status of each based on the reviews.
-
-    The function that assigns a true state to "success" should also "promote" the submitted
-    proposal to an allocated proposal with an initial allocation of zero resources, which
-    can be adjusted later.
-
-    List allocated proposals with the amount of resource(s) assigned to them so far, with
-    a form/function to adjust the amount of resource to a desired value.
-
-    User will likely want displayed the total amount of resources available, allocated,
-    and remaining.
- */
-
-export default function AllocationsPanel() : ReactElement {
+export default
+function AllocationsPanel() : ReactElement {
 
     const {selectedCycleCode} = useParams();
 
@@ -41,22 +29,62 @@ export default function AllocationsPanel() : ReactElement {
         pathParams: {cycleCode: Number(selectedCycleCode)}
     })
 
+    const totalTimeAvailable =
+        useAvailableResourcesResourceGetCycleResourceTotal({
+            pathParams: {
+                cycleCode: Number(selectedCycleCode),
+                resourceName: 'observing time'
+            }
+        })
+
+    const cycleResourceTypes =
+        useAvailableResourcesResourceGetCycleResourceTypes({
+            pathParams: {cycleCode: Number(selectedCycleCode)}
+        })
+
     if(!HaveRole(["tac_admin", "tac_member"])) {
         return <>Not authorised</>
     }
 
-    if (allocated.isLoading || cycleDates.isLoading) {
+    if (allocated.isLoading || cycleDates.isLoading
+        || totalTimeAvailable.isLoading || cycleResourceTypes.isLoading) {
         return(<Loader />)
     }
 
-    if (allocated.error) {
-        notifyError("Failed to load allocated proposals",
-            getErrorMessage(allocated.error))
+    if (allocated.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load allocated proposals"}
+                error={getErrorMessage(allocated.error)}
+            />
+        )
     }
 
-    if (cycleDates.error) {
-        notifyError("Failed to load Proposal Cycle dates",
-            getErrorMessage(cycleDates.error))
+    if (cycleDates.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load Proposal Cycle dates"}
+                error={getErrorMessage(cycleDates.error)}
+            />
+        )
+    }
+
+    if (totalTimeAvailable.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load total available resource"}
+                error={getErrorMessage(totalTimeAvailable.error)}
+            />
+        )
+    }
+
+    if (cycleResourceTypes.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load cycle resource types"}
+                error={getErrorMessage(cycleResourceTypes.error)}
+            />
+        )
     }
 
     return (
@@ -82,6 +110,8 @@ export default function AllocationsPanel() : ReactElement {
                         <Fieldset legend={"Resource Amounts"}>
                             <ResourceStatsTable
                                 cycleCode={Number(selectedCycleCode)}
+                                totalAvailable={totalTimeAvailable.data!}
+                                cycleResourceTypes={cycleResourceTypes.data!}
                             />
                         </Fieldset>
                     </Grid.Col>
@@ -91,7 +121,11 @@ export default function AllocationsPanel() : ReactElement {
                     >
                         <Fieldset legend={"Allocate Resources"}>
                             <ScrollArea>
-                                <AllocatedAccordion allocatedIds={allocated.data!} />
+                                <AllocatedAccordion
+                                    allocatedIds={allocated.data!}
+                                    cycleResourceTypes={cycleResourceTypes.data!}
+                                    totalTimeAvailable={totalTimeAvailable.data!}
+                                />
                             </ScrollArea>
                         </Fieldset>
                     </Grid.Col>
