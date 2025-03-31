@@ -410,10 +410,14 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
 
             // sensible telescope.
             const telescopeDataMap = new Map(Object.entries(telescopeData.instruments));
+
+            // build names of instruments with a none to resolve issue with selecting new telescopes.
+            let names = [DEFAULT_STRING];
+            names = names.concat(Array.from(telescopeDataMap.keys()))
             return <Select
                 label={"Telescope Instrument:"}
                 placeholder={"Select the telescope instrument"}
-                data = {Array.from(telescopeDataMap.keys())}
+                data = {names}
                 {...form.getInputProps('instrument')}
                 onChange = {useTelescopeInstrumentChange}
             />
