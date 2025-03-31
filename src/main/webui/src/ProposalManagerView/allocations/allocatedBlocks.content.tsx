@@ -116,6 +116,9 @@ function AllocatedBlocksContent(p: {
                     error={errorMsg}
                     min={0}
                     max={resourceRemaining.data! + props.resourceAmount}
+                    decimalScale={2}
+                    variant={'unstyled'}
+                    w={70}
                     clampBehavior={'strict'}
                     disabled={props.blockId === undefined}
                     allowNegative={false}
