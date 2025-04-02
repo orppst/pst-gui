@@ -3387,6 +3387,10 @@ export const usePersonResourceCreatePersonFromKeycloak = (
 
 export type ProposalCyclesResourceGetProposalCyclesQueryParams = {
   includeClosed?: boolean;
+  /**
+   * @format int64
+   */
+  observatoryId?: number;
 };
 
 export type ProposalCyclesResourceGetProposalCyclesError =
