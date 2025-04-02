@@ -6113,6 +6113,76 @@ export const useProposalCyclesResourceReplaceCycleObservatory = (
   });
 };
 
+export type ProposalCyclesResourceGetCycleObservingTimeTotalsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetCycleObservingTimeTotalsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetCycleObservingTimeTotalsResponse =
+  Schemas.CycleObservingTimeTotal[];
+
+export type ProposalCyclesResourceGetCycleObservingTimeTotalsVariables = {
+  pathParams: ProposalCyclesResourceGetCycleObservingTimeTotalsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetCycleObservingTimeTotals = (
+  variables: ProposalCyclesResourceGetCycleObservingTimeTotalsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetCycleObservingTimeTotalsResponse,
+    ProposalCyclesResourceGetCycleObservingTimeTotalsError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetCycleObservingTimeTotalsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/observingTimeTotals",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetCycleObservingTimeTotals = <
+  TData = ProposalCyclesResourceGetCycleObservingTimeTotalsResponse,
+>(
+  variables: ProposalCyclesResourceGetCycleObservingTimeTotalsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetCycleObservingTimeTotalsResponse,
+      ProposalCyclesResourceGetCycleObservingTimeTotalsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetCycleObservingTimeTotalsResponse,
+    ProposalCyclesResourceGetCycleObservingTimeTotalsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/observingTimeTotals",
+      operationId: "proposalCyclesResourceGetCycleObservingTimeTotals",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalCyclesResourceGetCycleObservingTimeTotals(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type SubmittedProposalResourceGetSubmittedProposalsPathParams = {
   /**
    * @format int64
@@ -13034,6 +13104,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/observatory";
       operationId: "proposalCyclesResourceGetProposalCycleObservatory";
       variables: ProposalCyclesResourceGetProposalCycleObservatoryVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/observingTimeTotals";
+      operationId: "proposalCyclesResourceGetCycleObservingTimeTotals";
+      variables: ProposalCyclesResourceGetCycleObservingTimeTotalsVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals";

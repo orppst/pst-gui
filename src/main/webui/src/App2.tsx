@@ -61,7 +61,6 @@ import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
 import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
 import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
-import CycleAvailableResourcesPanel from "./ProposalManagerView/availableResources/availableResourcesPanel.tsx";
 import ReviewsPanel from "./ProposalManagerView/reviews/ReviewsPanel.tsx";
 import AllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
@@ -77,6 +76,7 @@ import {notifyError} from "./commonPanel/notifications.tsx";
 import JSZip from "jszip";
 import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
+import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
 
 /**
  * defines the user context type.
@@ -174,8 +174,8 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/availableResources",
-                        element: <CycleAvailableResourcesPanel />,
+                        path: "cycle/:selectedCycleCode/assignReviewers",
+                        element: <AssignReviewersPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {
@@ -184,15 +184,16 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
+                        path: "cycle/:selectedCycleCode/passFail",
+                        element: <PassFailPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
                         path: "cycle/:selectedCycleCode/allocations",
                         element: <AllocationsPanel />,
                         errorElement: <ErrorPage />,
                     },
-                    {
-                        path: "cycle/:selectedCycleCode/assignReviewers",
-                        element: <AssignReviewersPanel />,
-                        errorElement: <ErrorPage />,
-                    }
+
                 ]
             },
             {

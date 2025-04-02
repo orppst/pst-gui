@@ -435,6 +435,15 @@ export type CustomRefLocation = {
   velocity?: Point1;
 };
 
+export type CycleObservingTimeTotal = {
+  modeName?: string;
+  gradeName?: string;
+  /**
+   * @format double
+   */
+  totalTime?: number;
+};
+
 /**
  * @format date
  * @example "2022-03-10T00:00:00.000Z"
