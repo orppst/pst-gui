@@ -1,5 +1,5 @@
 import {ReactElement, useState} from "react";
-import {Accordion, Group, NavLink} from "@mantine/core";
+import {Accordion, Checkbox, Container, Group, NavLink, useMantineColorScheme, useMantineTheme} from "@mantine/core";
 import {
     IconBike,
     IconCalendar, IconEgg, IconLetterA,
@@ -14,6 +14,9 @@ import {Link} from "react-router-dom";
 import {HaveRole} from "../auth/Roles.tsx";
 
 export default function CycleList(props:{observatory: number}) : ReactElement {
+    const {colorScheme} = useMantineColorScheme();
+    const theme = useMantineTheme();
+    const [includeClosed, setIncludeClosed] = useState<boolean>(false);
 
     if(!HaveRole(["tac_admin", "tac_member", "obs_administration"])) {
         return <>Not authorised</>
@@ -22,7 +25,7 @@ export default function CycleList(props:{observatory: number}) : ReactElement {
     //FIXME: use an actual query
 
     const cycles = useProposalCyclesResourceGetProposalCycles(
-        {queryParams: {includeClosed: true, observatoryId: props.observatory}}
+        {queryParams: {includeClosed: includeClosed, observatoryId: props.observatory}}
     )
 
     const [accordionValue, setAccordionValue]
@@ -34,12 +37,33 @@ export default function CycleList(props:{observatory: number}) : ReactElement {
     })
 
     return (
+        <>
+        <Container
+            fluid
+            bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}
+            py={"xs"}
+        >
+            <Checkbox.Group
+                defaultValue={['active']}
+                label={"Proposal Cycle Status"}
+            >
+                <Group mt={"md"}>
+                    <Checkbox
+                        value={"closed"}
+                        label={"Include closed"}
+                        onChange={(event) => setIncludeClosed(event.currentTarget.checked)}
+                    />
+                </Group>
+            </Checkbox.Group>
+        </Container>
+
         <Accordion value={accordionValue}
                    onChange={setAccordionValue}
                    variant={"filled"}
         >
             {cyclesList}
         </Accordion>
+        </>
     )
 }
 

@@ -2,10 +2,10 @@ import {ReactElement, useState} from "react";
 import {
     ActionIcon,
     AppShell,
-    Burger, Checkbox, Container,
+    Burger,
     Grid,
     Group, Modal, ScrollArea, Select,
-    Tooltip, useMantineColorScheme, useMantineTheme
+    Tooltip, useMantineTheme
 } from "@mantine/core";
 import {
     APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
@@ -24,15 +24,17 @@ import NewCycleForm from "./proposalCycle.new.form.tsx";
 import {HaveRole} from "../auth/Roles.tsx";
 import {useObservatoryResourceGetObservatories}  from "../generated/proposalToolComponents.ts";
 
+//import {selectedObservatory, setSelectedObservatory} from "../App2.tsx";
+
+
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
     const [opened, {toggle}] = useDisclosure();
     const theme = useMantineTheme();
-    const {colorScheme} = useMantineColorScheme();
 
     const [modalOpened, {close, open}] = useDisclosure();
+
     const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
-    //const { selectedObservatory } = useProposalToolContext()
 
     const obsList = useObservatoryResourceGetObservatories(
         {queryParams: {}}
@@ -139,23 +141,6 @@ export default function ProposalManagerStartPage() : ReactElement {
                 </Grid>
             </AppShell.Header>
             <AppShell.Navbar>
-                <AppShell.Section>
-                    <Container
-                        fluid
-                        bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}
-                        py={"xs"}
-                    >
-                        <Checkbox.Group
-                            defaultValue={['active']}
-                            label={"Proposal Cycle Status"}
-                        >
-                            <Group mt={"md"}>
-                                <Checkbox value={"active"} label={"Active"} />
-                                <Checkbox value={"closed"} label={"Closed"} />
-                            </Group>
-                        </Checkbox.Group>
-                    </Container>
-                </AppShell.Section>
                 <AppShell.Section component={ScrollArea}>
                     <CycleList observatory={+selectedObservatory}/>
                 </AppShell.Section>
