@@ -11,6 +11,7 @@ import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 function ResourceStatsRow(p: {
     cycleCode: number,
     resourceName: string,
+    resourceUnit: string
     totalAvailable: number
 }) : ReactElement {
 
@@ -50,7 +51,7 @@ function ResourceStatsRow(p: {
 
     return (
         <Table.Tr c={textColour}>
-            <Table.Td>{p.resourceName}</Table.Td>
+            <Table.Td>{p.resourceName} ({p.resourceUnit})</Table.Td>
             <Table.Td>{p.totalAvailable}</Table.Td>
             <Table.Td>{resourceUsed.data}</Table.Td>
             <Table.Td>{resourceRemaining.data}</Table.Td>
@@ -71,6 +72,7 @@ function ResourceStatsTable(p: {
             key={type.dbid}
             cycleCode={p.cycleCode}
             resourceName={type.name!}
+            resourceUnit={type.code!}
             totalAvailable={p.totalAvailable}
         />
     ))

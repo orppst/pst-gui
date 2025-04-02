@@ -61,7 +61,6 @@ import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
 import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
 import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
-import CycleAvailableResourcesPanel from "./ProposalManagerView/availableResources/availableResourcesPanel.tsx";
 import ReviewsPanel from "./ProposalManagerView/reviews/ReviewsPanel.tsx";
 import AllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
@@ -170,11 +169,6 @@ function App2(): ReactElement {
                     {
                         path: "cycle/:selectedCycleCode/dates",
                         element: <CycleDatesPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/availableResources",
-                        element: <CycleAvailableResourcesPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {

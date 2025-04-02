@@ -5,7 +5,7 @@ import {
     IconCalendar, IconEdit,
     IconLetterT, IconSquareChevronsRight, IconThumbUp,
     IconUfo, IconUserPin,
-    IconUsersGroup, IconWood
+    IconUsersGroup
 } from "@tabler/icons-react";
 import {useProposalCyclesResourceGetProposalCycles} from "src/generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
@@ -91,16 +91,6 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"TAC" + cycle.code === active}
                          onClick={()=>setActive("TAC" + cycle.code)}
                 />}
-                {HaveRole(["tac_admin"]) &&
-                <NavLink to={"cycle/" + cycle.dbid + "/availableResources"}
-                         component={Link}
-                         key={"AvailableResources"}
-                         label={"Available Resources"}
-                         leftSection={<IconWood/>}
-                         active={"AvailableResources" + cycle.code === active}
-                         onClick={()=>setActive("AvailableResources" + cycle.code)}
-                />}
-
                 {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
                          component={Link}

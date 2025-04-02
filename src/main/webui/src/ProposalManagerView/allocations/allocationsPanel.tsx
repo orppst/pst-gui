@@ -13,6 +13,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import ResourceStatsTable from "./resourceStats.table.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import ResourceModeGradeTotalsTable from "./resourceModeGradeTotals.table.tsx";
 
 export default
 function AllocationsPanel() : ReactElement {
@@ -87,6 +88,9 @@ function AllocationsPanel() : ReactElement {
         )
     }
 
+    let observingTimeUnit  = cycleResourceTypes.data?.find(o =>
+        o.name === 'observing time')?.code!
+
     return (
         <PanelFrame>
             <ManagerPanelHeader
@@ -112,6 +116,11 @@ function AllocationsPanel() : ReactElement {
                                 cycleCode={Number(selectedCycleCode)}
                                 totalAvailable={totalTimeAvailable.data!}
                                 cycleResourceTypes={cycleResourceTypes.data!}
+                            />
+                        </Fieldset>
+                        <Fieldset legend={"Observing Time Totals" + " (" + observingTimeUnit + ")"}>
+                            <ResourceModeGradeTotalsTable
+                                cycleId={Number(selectedCycleCode)}
                             />
                         </Fieldset>
                     </Grid.Col>

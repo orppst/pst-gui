@@ -52,7 +52,7 @@ function AllocatedAccordionItem(p: {
         }
     })
 
-    let timeAllocatedPercent : string = ((totalTimeAllocated / p.totalTimeAvailable) * 100).toPrecision(2)
+    let timeAllocatedPercent : string = ((totalTimeAllocated / p.totalTimeAvailable) * 100).toFixed(1)
 
     return (
         <Accordion.Item value={String(allocatedProposal.data?._id)}>
