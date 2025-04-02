@@ -1,85 +1,81 @@
 import {ReactElement} from "react";
-import {Accordion, Fieldset, Group, Loader} from "@mantine/core";
+import {Accordion, Fieldset, Loader, Text} from "@mantine/core";
 import {
-    useAllocatedProposalResourceGetAllocatedProposal, useObservingModeResourceGetObservingModeObjects
+    useAllocatedProposalResourceGetAllocatedProposal,
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
-import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import AllocatedBlocksTable from "./allocatedBlocks.table.tsx";
-import AllocatedBlockModal from "./allocatedBlock.modal.tsx";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import AllocatedBlocksObservingMode from "./allocatedBlocks.observingMode.tsx";
 
-type AllocatedItemProps = {
+
+function AllocatedAccordionItem(p: {
     cycleCode: number,
-    allocatedProposalId: number
-}
-
-function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
+    allocatedProposalId: number,
+    cycleResourceTypes: ObjectIdentifier[],
+    timeUnit: string,
+    totalTimeAvailable: number
+}) : ReactElement {
 
     const allocatedProposal =
         useAllocatedProposalResourceGetAllocatedProposal({
             pathParams: {
-                cycleCode: props.cycleCode,
-                allocatedId: props.allocatedProposalId
+                cycleCode: p.cycleCode,
+                allocatedId: p.allocatedProposalId
             }
         })
 
-    const observingModes =
-        useObservingModeResourceGetObservingModeObjects({
-            pathParams: {cycleId: props.cycleCode }
-        })
-
-    if (allocatedProposal.isLoading || observingModes.isLoading) {
+    if (allocatedProposal.isLoading) {
         return (<Loader/>)
     }
 
     if (allocatedProposal.error) {
-        notifyError("Failed to load Allocated Proposal",
-            getErrorMessage(allocatedProposal.error))
+        return (
+            <AlertErrorMessage
+                title={"Failed to load Allocated Proposal"}
+                error={getErrorMessage(allocatedProposal.error)}
+            />
+        )
     }
 
-    if (observingModes.error) {
-        notifyError("Failed to load Allocated Proposal",
-            getErrorMessage(observingModes.error))
-    }
+    let totalTimeAllocated : number = 0
+
+    let observingTimeTypeId =
+        allocatedProposal.data?.allocation?.find(ab =>
+            ab.resource?.type?.name === 'observing time')?.resource?.type?._id
+
+    allocatedProposal.data?.allocation?.forEach((allocatedBlock) => {
+        if (allocatedBlock.resource?.type?._id === observingTimeTypeId ||
+            allocatedBlock.resource?.type === observingTimeTypeId) {
+            totalTimeAllocated += allocatedBlock.resource?.amount!
+        }
+    })
+
+    let timeAllocatedPercent : string = ((totalTimeAllocated / p.totalTimeAvailable) * 100).toFixed(1)
 
     return (
         <Accordion.Item value={String(allocatedProposal.data?._id)}>
             <Accordion.Control>
-                {allocatedProposal.data?.submitted?.title}
+                <Text>
+                    {allocatedProposal.data?.submitted?.title} ---- <Text size={"xs"} span c={'blue'}>
+                    {totalTimeAllocated} {p.timeUnit} ({timeAllocatedPercent}%)</Text>
+                </Text>
             </Accordion.Control>
             <Accordion.Panel>
                 {
-                    allocatedProposal.data?.submitted?.config?.map(c => {
-                        //the condition below looks wrong, but it is a product of the api
-                        //returning the "thing" on first call then a reference (the DB id)
-                        //on subsequent calls
-                        let theMode =
-                            observingModes.data?.find(o =>
-                                o._id === c.mode?._id || o._id === c.mode
-                            )
-
-
+                    p.cycleResourceTypes.map(rt => {
                         return (
-                            <Fieldset legend={theMode!.name} key={String(c.mode)}>
-                                {
-                                    allocatedProposal.data?.allocation ?
-                                        <AllocatedBlocksTable
-                                            allocatedBlocks={allocatedProposal.data.allocation}
-                                            proposalTitle={allocatedProposal.data?.submitted?.title!}
-                                            allocatedProposalId={allocatedProposal.data._id!}
-                                            observingModeId={theMode!._id!}
-                                        /> :
-                                        //this is the add button when there is nothing yet allocated
-                                        <Group justify={"centre"} grow>
-                                            <AllocatedBlockModal
-                                                proposalTitle={allocatedProposal.data?.submitted?.title!}
-                                                allocatedProposalId={allocatedProposal.data?._id!}
-                                                observingModeId={theMode!._id!}
-                                            />
-                                        </Group>
-                                }
+                            <Fieldset
+                                legend={capitaliseAllWords(rt.name!) + " (" + p.timeUnit + ")" }
+                                key={String(allocatedProposal.data?._id) + String(rt.dbid)}
+                            >
+                                <AllocatedBlocksObservingMode
+                                    allocatedProposal={allocatedProposal.data!}
+                                    cycleId={p.cycleCode}
+                                    resourceTypeName={rt.name!}
+                                    proposalTitle={allocatedProposal.data?.submitted?.title!}
+                                />
                             </Fieldset>
                         )
                     })
@@ -91,21 +87,34 @@ function AllocatedAccordionItem(props: AllocatedItemProps) : ReactElement {
 
 
 export default
-function AllocatedAccordion(props: {allocatedIds: ObjectIdentifier[]}) : ReactElement {
+function AllocatedAccordion(p: {
+    allocatedIds: ObjectIdentifier[],
+    cycleResourceTypes: ObjectIdentifier[],
+    totalTimeAvailable: number
+}) : ReactElement {
 
     const {selectedCycleCode} = useParams();
 
-    const allocatedBlocks = props.allocatedIds.map(ap =>(
+    const allocatedBlocks = p.allocatedIds.map(ap =>(
         <AllocatedAccordionItem
             key={ap.dbid}
             cycleCode={Number(selectedCycleCode)}
             allocatedProposalId={ap.dbid!}
+            cycleResourceTypes={p.cycleResourceTypes}
+            timeUnit={p.cycleResourceTypes.find(rt =>
+                rt.name === 'observing time')?.code ?? ""}
+            totalTimeAvailable={p.totalTimeAvailable}
         />
     ))
 
     return(
-        <Accordion defaultValue={"1"}>
+        <Accordion defaultValue={"1"} variant={"separated"}>
             {allocatedBlocks}
         </Accordion>
     )
+}
+
+function capitaliseAllWords(input: string) : string {
+    return input.toLowerCase().split(' ').map(word =>
+        word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
 }
