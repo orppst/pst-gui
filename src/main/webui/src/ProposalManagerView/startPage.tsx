@@ -100,8 +100,6 @@ export default function ProposalManagerStartPage() : ReactElement {
                                 onChange={(_value) => {
                                         if(_value)
                                             setSelectedObservatory(+_value)
-                                        else
-                                            setSelectedObservatory(0)
                                     }
                                 }
                             />
