@@ -38,6 +38,7 @@ import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
 import {useToken} from "../../App2.tsx";
 import {useQueryClient} from "@tanstack/react-query";
+import {useOpticalTelescopeResourceDeleteProposalTelescopeData} from "../../util/telescopeComms";
 
 /*
       title    -- string
@@ -60,7 +61,7 @@ import {useQueryClient} from "@tanstack/react-query";
       technical goals -- list of objects - list of technical goals ""
 
         General strategy:
-        list of strings use a List
+        list of strings use a List.
         list of objects use an Accordion
  */
 
@@ -201,7 +202,8 @@ function ObservationAccordionContent(
 
     const listOfTargets = [] as ObjectIdentifier [];
 
-    targetIds.map((targetId: any) => listOfTargets.push({dbid: targetId, code: proposalCode.toString()}))
+    targetIds.map((targetId: number) => listOfTargets.push(
+        {dbid: targetId, code: proposalCode.toString()}))
 
     return (
         //TODO: consider a Grid instead of Group
@@ -242,21 +244,26 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const deleteProposalMutation =
         useProposalResourceDeleteObservingProposal()
 
+    const deleteProposalOpticalTelescopeMutation =
+        useOpticalTelescopeResourceDeleteProposalTelescopeData();
+
     const {data: supportingDocs} =
         useSupportingDocumentResourceGetSupportingDocuments({
-                pathParams: {
-                    proposalCode: Number(selectedProposalCode)
-                }
+            pathParams: {
+                proposalCode: Number(selectedProposalCode)
+            }
         });
 
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
 
-    const { data: proposalsData , error: proposalsError, isLoading: proposalsIsLoading } =
+    const { data: proposalsData ,
+            error: proposalsError,
+            isLoading: proposalsIsLoading } =
         useProposalResourceGetObservingProposal({
-                pathParams: {
-                    proposalCode: Number(selectedProposalCode)
-                }
+            pathParams: {
+                proposalCode: Number(selectedProposalCode)
+            }
         });
 
 
@@ -312,7 +319,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     /**
      * handles the scientific justification panel
-     * @return {React.ReactElement} the html for the scientific justification panel.
+     * @return {React.ReactElement} the html for the scientific justification
+     * panel.
      * @constructor
      */
     const DisplayScientificJustification = (): ReactElement => {
@@ -350,7 +358,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * @constructor
      */
     const DisplayInvestigators = (): ReactElement => {
-
         const investigators = proposalsData?.investigators?.map(
             (investigator) => (
                 <Accordion.Item key={investigator.person?.orcidId?.value}
@@ -451,19 +458,17 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * @constructor
      */
     const DisplayObservations = (): ReactElement => {
-
-
         const observations =
             proposalsData?.observations?.map((observation, index) => {
 
-                //observation.target and observation.technicalGoal are NOT objects
-                // but numbers here, specifically their DB id
+                //observation.target and observation.technicalGoal are NOT
+                // objects but numbers here, specifically their DB id
 
                 //get all the target objects
-                let targetObjs = [] as Target[];
+                const targetObjs = [] as Target[];
 
                 observation.target?.map((obsTarget) => {
-                    let targetObj = proposalsData?.targets?.find((target) =>
+                    const targetObj = proposalsData?.targets?.find((target) =>
                         target._id === obsTarget)!
 
                     targetObjs.push(targetObj);
@@ -478,20 +483,23 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     targetNames += ", " + targetObjs[targetIndex].sourceName;
                 }
 
-                let remaining =  targetObjs.length - targetIndex;
+                const remaining =  targetObjs.length - targetIndex;
 
                 if(remaining > 0) {
                     targetNames += ", and " + remaining + " more";
                 }
 
-                let technicalGoalObj  = proposalsData?.technicalGoals?.find((techGoal) =>
-                    techGoal._id === observation.technicalGoal)!
+                const technicalGoalObj =
+                    proposalsData?.technicalGoals?.find((techGoal) =>
+                        techGoal._id === observation.technicalGoal)!
 
-                let observationType = observation["@type"] === 'proposal:TargetObservation' ?
-                    'Target Obs.' : 'Calibration Obs.';
+                const observationType =
+                    observation["@type"] === 'proposal:TargetObservation' ?
+                        'Target Obs.' : 'Calibration Obs.';
 
-                // Ideally we should use the observation id for the 'key' but we don't have it at this point,
-                // so we use the map index instead
+                // Ideally we should use the observation id for the 'key' but
+                // we don't have it at this point, so we use the map index
+                // instead
                 return(
                     <Accordion.Item key={index} value={String(index)}>
                         <Accordion.Control>
@@ -529,10 +537,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         )
     }
 
-
-
-
-
     /**
      * add download button for the proposal to be extracted as a tar ball.
      *
@@ -552,7 +556,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     /**
-     * generates the overview pdf and saves it to the users disk.
+     * generates the overview pdf and saves it to the users' disk.
      *
      * code extracted from: https://www.robinwieruch.de/react-component-to-pdf/
      * @return {Promise<void>} promise that the pdf will be saved at some point.
@@ -567,10 +571,15 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         );
     };
 
+    /**
+     * creates the clone button for the proposal.
+     * @constructor
+     */
     const CloneProposal = (): ReactElement => {
         return CloneButton(
             {
-                toolTipLabel: `creates a new proposal from a deep copy of this proposal`,
+                toolTipLabel:
+                    `creates a new proposal from a deep copy of this proposal`,
                 disabled: false,
                 onClick: handleCloneProposal,
                 label: "Clone Proposal",
@@ -580,6 +589,9 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         )
     }
 
+    /**
+     * logic for handling a clone.
+     */
     const handleCloneProposal = (): void => {
         cloneProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
@@ -597,6 +609,10 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         })
     }
 
+    /**
+     * create a delete button for a proposal.
+     * @constructor
+     */
     const DeleteProposal = () : ReactElement => {
         return DeleteButton(
             {
@@ -610,7 +626,9 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         )
     }
 
-
+    /**
+     * creates the modals for the deletion of a proposal.
+     */
     const confirmDeleteProposal = () : void => {
         modals.openConfirmModal({
             title: "Confirm Proposal Deletion",
@@ -618,7 +636,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             children: (
                 <Stack>
                     <Text size={"sm"}>
-                        Are you sure you want to permanently remove the proposal '{proposalsData?.title!}'?
+                        Are you sure you want to permanently remove the
+                        proposal `{proposalsData?.title!}`?
                     </Text>
                     <Text size={"sm"} c={"yellow.7"}>
                         This action cannot be undone.
@@ -626,33 +645,58 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 </Stack>
 
             ),
-            labels: {confirm: "Yes, delete this proposal", cancel: "No, do not delete!"},
+            labels: {confirm: "Yes, delete this proposal",
+                     cancel: "No, do not delete!"},
             confirmProps: {color: "red"},
             onConfirm: () => handleDeleteProposal()
         })
     }
 
+    /**
+     * handles the deletion of optical telescope data bits for this proposal.
+     */
+    const handleDeletionOfOpticalComponents = () => {
+        if (selectedProposalCode !== undefined) {
+            deleteProposalOpticalTelescopeMutation.mutate({
+                proposalID: selectedProposalCode,
+                observationID: ""
+            }, {
+                onSuccess: () => {
+                    notifySuccess("Deletion successful",
+                        "Proposal: '" + proposalsData?.title! +
+                        "' has been removed");
+                    navigate("/");
 
+                    //workaround: usually you would invalidate queries
+                    // however this causes this page to rerender with the
+                    // now deleted 'selectedProposalCode'. The get proposal
+                    //API call then fails and a 500 code shows up in the
+                    // console.
+                    props.forceUpdate();
+                },
+                onError: (error) => {
+                    notifyError(
+                        "Deletion of proposals optical telescope" +
+                        " data failed", getErrorMessage(error))
+                }
+            })
+        }
+    }
+
+    /**
+     * handles deletion of proposal
+     */
     const handleDeleteProposal = () => {
-
         deleteProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         },{
             onSuccess: () => {
-                notifySuccess("Deletion successful",
-                    "Proposal: '" + proposalsData?.title! + "' has been removed");
-                navigate("/");
-
-                //workaround: usually you would invalidate queries however this causes this
-                //page to rerender with the now deleted 'selectedProposalCode'. The get proposal
-                //API call then fails and a 500 code shows up in the console.
-                props.forceUpdate();
+                handleDeletionOfOpticalComponents();
             },
             onError: (error) =>
                 notifyError("Deletion failed", getErrorMessage(error))
         })
     }
-
 
     /**
      * returns the HTML structure for the overview page.
@@ -689,7 +733,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             </Container>
         </PanelFrame>
     );
-
 }
 
 export default OverviewPanel

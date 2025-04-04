@@ -258,7 +258,7 @@ export const useOpticalTelescopeResourceDeleteProposalTelescopeData = (
         LoadTelescopeState
     >({
         mutationFn: (variables: LoadTelescopeState) =>
-            fetchOpticalTelescopeResourceDeleteObservationTelescopeData({
+            fetchOpticalTelescopeResourceDeleteProposalTelescopeData({
                 ...fetcherOptions,
                 ...variables,
             }),
