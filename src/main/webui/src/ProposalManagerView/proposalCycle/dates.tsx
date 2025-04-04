@@ -127,7 +127,7 @@ export default function CycleDatesPanel() : ReactElement {
                             valueFormat={"YYYY/MM/DD HH:mm"}
                             label={"Submission deadline"}
                             placeholder={"select a proposal submission deadline"}
-                            minDate={new Date()}
+                            //minDate={new Date()}
                             {...form.getInputProps('submissionDeadline')}
                         />
                         <DateTimePicker
