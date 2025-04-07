@@ -26,8 +26,8 @@ import DeleteButton from "src/commonButtons/delete.tsx";
 import {ReactElement} from 'react';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {
-    fetchOpticalTelescopeResourceGetVerification,
     useOpticalTelescopeResourceDeleteObservationTelescopeData,
+    useOpticalTelescopeResourceGetVerification,
 } from "../../util/telescopeComms";
 
 export type ObservationId = {id: number}
@@ -38,7 +38,8 @@ export type ObservationId = {id: number}
  * @return {ReactElement} the react html for the observation row.
  * @constructor
  */
-export default function ObservationRow(observationId: ObservationId): ReactElement {
+export default function ObservationRow(observationId: ObservationId):
+        ReactElement {
 
     const queryClient = useQueryClient();
 
@@ -57,9 +58,13 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     const GRAY = theme.colors.gray[6];
 
     const {selectedProposalCode} = useParams();
+    const proposalCode = selectedProposalCode!;
+
+
     let targetName = "Unknown";
     let additionTargets = 0;
 
+    // get observation data.
     const {
         data: observation,
         error: observationError,
@@ -71,8 +76,21 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         },
     });
 
+    // grab the verification of optical.
+    const {
+        data: opticalObservation,
+        error: verificationError,
+        isLoading: opticalObservationLoading,
+    } = useOpticalTelescopeResourceGetVerification({
+        proposalID: proposalCode,
+        observationID: observationId.id.toString()
+    });
+
     if (observationError) {
         return <pre>{getErrorMessage(observationError)}</pre>
+    }
+    if (verificationError) {
+        return <pre>{getErrorMessage(verificationError)}</pre>
     }
 
     /**
@@ -82,35 +100,28 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         // really this needs to be done from backend to backend, to
         // ensure transactional integrity. but oh well.
         if (selectedProposalCode !== undefined) {
-            fetchOpticalTelescopeResourceGetVerification({
-                proposalID: selectedProposalCode,
-                observationID: observationId.id.toString()
-            }).then(
-                (result: boolean) => {
-                    if (result && selectedProposalCode !== undefined) {
-                        deleteOpticalTelescope.mutate({
-                            proposalID: selectedProposalCode,
-                            observationID: observationId.id.toString()
-                        }, {
-                            onSuccess: () => {
-                                notifySuccess(
-                                    "Observation removed",
-                                    "Selected observation and optical " +
-                                    "telescope data has been deleted.")
-                            },
-                            onError: (error) => {
-                                notifyError(
-                                    "Deletion of Observing Field optical " +
-                                    "telescope data failed",
-                                    getErrorMessage(error));
-                            }
-                        })
-                    } else {
-                        notifySuccess("Observation removed",
-                            "Selected observation has been deleted.")
+            if (opticalObservation) {
+                deleteOpticalTelescope.mutate({
+                    proposalID: selectedProposalCode,
+                    observationID: observationId.id.toString()
+                }, {
+                    onSuccess: () => {
+                        notifySuccess(
+                            "Observation removed",
+                            "Selected observation and optical " +
+                            "telescope data has been deleted.")
+                    },
+                    onError: (error) => {
+                        notifyError(
+                            "Deletion of Observing Field optical " +
+                            "telescope data failed",
+                            getErrorMessage(error));
                     }
-                }
-            )
+                })
+            } else {
+                notifySuccess("Observation removed",
+                    "Selected observation has been deleted.")
+            }
         }
     }
 
@@ -207,7 +218,8 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation')
                         ? 'Target' : 'Calibration'}
-                    {` : ` + targetName + (additionTargets > 0? ` (plus ` + additionTargets + ` more)`:``)}
+                    {` : ` + targetName + (additionTargets > 0?
+                        ` (plus ` + additionTargets + ` more)`:``)}
                 </Text>
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
@@ -242,7 +254,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
 
 
     // if loading, present a loading.
-    if (observationLoading) {
+    if (observationLoading || opticalObservationLoading) {
         return (
             <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
         );
@@ -251,6 +263,9 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     // generate the correct row.
     return (
         <Table.Tr>
+            <Table.Td>
+                {opticalObservation? "Optical" : "Radio"}
+            </Table.Td>
             <Table.Td>
                 {targetName}
             </Table.Td>
@@ -345,10 +360,12 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
  *
  * @return {React.ReactElement} the html for the table header.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function observationTableHeader(): ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
+                <Table.Th>Type</Table.Th>
                 <Table.Th>Target name</Table.Th>
                 <Table.Th>Additional Targets</Table.Th>
                 <Table.Th>Type</Table.Th>

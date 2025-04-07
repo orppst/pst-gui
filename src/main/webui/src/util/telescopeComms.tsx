@@ -18,6 +18,9 @@ export type TelescopeLoadError = Fetcher.ErrorWrapper<undefined>;
 // the error format for telescope error response for save data.
 export type TelescopeSaveError = Fetcher.ErrorWrapper<undefined>;
 
+// the error format for telescope error response for verify data.
+export type TelescopeVerifyError = Fetcher.ErrorWrapper<undefined>;
+
 // the enum type of the forms of input.
 export enum Type {LIST = "LIST", TEXT = "TEXT", BOOLEAN = "BOOLEAN" }
 
@@ -105,7 +108,7 @@ export const fetchOpticalTelescopeResourceGetVerification =
         (data: LoadTelescopeState, signal?: AbortSignal) =>
     proposalToolFetch<
         boolean,
-        TelescopeDataError,
+        TelescopeVerifyError,
         LoadTelescopeState,
         NonNullable<unknown>,
         NonNullable<unknown>,
@@ -114,6 +117,39 @@ export const fetchOpticalTelescopeResourceGetVerification =
         method: "post", body: data, signal: signal
     });
 
+export const useOpticalTelescopeResourceGetVerification = (
+    variables: LoadTelescopeState,
+    options?: Omit<
+        reactQuery.UseQueryOptions<
+            boolean,
+            TelescopeVerifyError,
+            boolean
+        >,
+        "queryKey" | "queryFn" | "initialData"
+    >,
+) => {
+    const { fetcherOptions, queryOptions, queryKeyFn } =
+        useProposalToolContext(options);
+
+    const queryKey = queryKeyFn({
+        path: "/pst/api/opticalTelescopes/hasEntry",
+        operationId: "opticalTelescopeResourceGetVerification",
+        variables,
+    });
+
+    const queryFn = ({ signal }: { signal?: AbortSignal }) =>
+        fetchOpticalTelescopeResourceGetVerification(
+            { ...fetcherOptions, ...variables },
+            signal,
+        );
+
+    return reactQuery.useQuery<boolean, TelescopeVerifyError, boolean>({
+        queryKey,
+        queryFn,
+        ...options,
+        ...queryOptions,
+    });
+};
 
 /**
  * bring about a call to get observation telescope data.
