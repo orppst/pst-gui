@@ -150,3 +150,8 @@ export const DEBOUNCE_1000_ms = 1000; //milliseconds
 // default string value for optical telescope data.
 // eslint-disable-next-line react-refresh/only-export-components
 export const DEFAULT_STRING = "None";
+
+/**
+ * the different types of observation.
+ */
+export type ObservationType = 'Target' | 'Calibration' | '';

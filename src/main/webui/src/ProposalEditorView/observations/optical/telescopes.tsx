@@ -5,12 +5,12 @@ import {
     fetchOpticalTelescopeResourceGetTelescopeData,
     Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData,
     Telescope, Instrument
-} from '../../util/telescopeComms';
+} from '../../../util/telescopeComms';
 import { UseFormReturnType } from '@mantine/form';
-import { ObservationFormValues } from './edit.group';
 import {useParams} from "react-router-dom";
-import { DEFAULT_STRING, MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from '../../constants';
-import { notifyError } from '../../commonPanel/notifications';
+import { DEFAULT_STRING, MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from '../../../constants';
+import { notifyError } from '../../../commonPanel/notifications';
+import {ObservationFormValues} from "../types/ObservationFormInterface";
 
 /**
  * generates the observation panel.

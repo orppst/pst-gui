@@ -13,22 +13,22 @@ import {
 } from '@mantine/core';
 import {modals} from "@mantine/modals";
 import {
-    CalibrationObservation,
+    CalibrationObservation, Observation,
     PerformanceParameters,
     TargetObservation,
 } from "src/generated/proposalToolSchemas.ts";
-import ObservationEditModal from "./edit.modal.tsx";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import CloneButton from "src/commonButtons/clone.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
 import {ReactElement} from 'react';
-import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../../commonPanel/notifications.tsx";
 import {
     useOpticalTelescopeResourceDeleteObservationTelescopeData,
     useOpticalTelescopeResourceGetVerification,
-} from "../../util/telescopeComms";
+} from "../../../util/telescopeComms";
+import ObservationEditModal from "./editOptical.modal";
 
 export type ObservationId = {id: number}
 
@@ -38,7 +38,7 @@ export type ObservationId = {id: number}
  * @return {ReactElement} the react html for the observation row.
  * @constructor
  */
-export default function ObservationRow(observationId: ObservationId):
+function ObservationRow(observationId: ObservationId):
         ReactElement {
 
     const queryClient = useQueryClient();
@@ -93,6 +93,10 @@ export default function ObservationRow(observationId: ObservationId):
         return <pre>{getErrorMessage(verificationError)}</pre>
     }
 
+    if (!opticalObservation) {
+        return <></>
+    }
+
     /**
      * function for handling deletion of telescope data.
      */
@@ -129,7 +133,8 @@ export default function ObservationRow(observationId: ObservationId):
      * handles the deletion of an observation.
      */
     const handleDelete = async () => {
-        const fieldId = observation?.field?._id!
+        const fieldIdRaw = observation?.field?._id
+        const fieldId = fieldIdRaw!
 
         await removeObservation.mutateAsync({
             pathParams: {
@@ -224,7 +229,7 @@ export default function ObservationRow(observationId: ObservationId):
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
                     Creates a new observation with a deep copy of this
-                    observation's properties. You should edit the copied
+                    observation`s properties. You should edit the copied
                     observation for your needs.
                 </Text>
             </>
@@ -235,8 +240,8 @@ export default function ObservationRow(observationId: ObservationId):
         onCancel:() => console.log('Cancel clone'),
     })
 
-    const performance : PerformanceParameters =
-        observation?.technicalGoal?.performance!;
+    const performanceRaw = observation?.technicalGoal?.performance;
+    const performance : PerformanceParameters = performanceRaw!
 
     const performanceFull = observationLoading ? false :
         performance.desiredAngularResolution?.value !== undefined &&
@@ -263,9 +268,6 @@ export default function ObservationRow(observationId: ObservationId):
     // generate the correct row.
     return (
         <Table.Tr>
-            <Table.Td>
-                {opticalObservation? "Optical" : "Radio"}
-            </Table.Td>
             <Table.Td>
                 {targetName}
             </Table.Td>
@@ -356,23 +358,51 @@ export default function ObservationRow(observationId: ObservationId):
 }
 
 /**
- * returns the header for the observation table.
+ * generates the observation table html.
+ *
+ * @return {React.ReactElement} the dynamic html for the observation table.
+ * @constructor
+ */
+export const OpticalTableGenerator = (observations:  Observation[]):
+        ReactElement => {
+    return (
+        <>
+            <h2>Optical Telescopes</h2>
+            <Table>
+                { observationOpticalTableHeader() }
+                <Table.Tbody>
+                    {
+                        observations?.map((observation) => {
+                            return (
+                                <ObservationRow
+                                    id={observation._id!}
+                                    key={observation._id!}
+                                />
+                            )
+                        })
+                    }
+                </Table.Tbody>
+            </Table>
+        </>
+    )
+}
+
+/**
+ * returns the header for the observation optical table.
  *
  * @return {React.ReactElement} the html for the table header.
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export function observationTableHeader(): ReactElement {
+export function observationOpticalTableHeader(): ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
-                <Table.Th>Type</Table.Th>
                 <Table.Th>Target name</Table.Th>
                 <Table.Th>Additional Targets</Table.Th>
                 <Table.Th>Type</Table.Th>
                 <Table.Th>Field</Table.Th>
-                <Table.Th>Performance params</Table.Th>
-                <Table.Th>Spectral windows</Table.Th>
-                <Table.Th>Timing windows</Table.Th>
+                <Table.Th>Telescope Name</Table.Th>
+                <Table.Th>Telescope Instrument</Table.Th>
                 <Table.Th></Table.Th>
             </Table.Tr>
         </Table.Thead>
