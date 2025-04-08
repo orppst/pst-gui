@@ -1,4 +1,3 @@
-import TargetTypeForm from "../targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
 import {ObservationProps} from "../observationPanel.tsx";
 import { Fieldset, Text, Stack, Group, Space } from '@mantine/core';
@@ -30,6 +29,7 @@ import {DEFAULT_STRING, err_red_str, NO_ROW_SELECTED, ObservationType} from '../
 import {ContextualHelpButton} from "../../../commonButtons/contextualHelp.tsx";
 import {ObservationFormValues} from "../types/ObservationFormInterface";
 import {handleTargetsAndTechnicalGoals} from "../commonObservationCode";
+import TargetTypeRadioForm from "./targetTypeRadio.form";
 
 /**
  * Convert the TimingWindow type from the database to a type appropriate for
@@ -380,7 +380,7 @@ function ObservationRadioEditGroup(props: ObservationProps): ReactElement {
     <form onSubmit={handleSubmit}>
         <Stack>
             <ContextualHelpButton messageId={"MaintObs"} />
-            <TargetTypeForm form={form} setFieldName={setFieldName}/>
+            <TargetTypeRadioForm form={form} setFieldName={setFieldName}/>
             <Fieldset legend={"Timing windows"}>
                 <Text ta={"center"} size={"xs"} c={"gray.6"}>
                     Timezone set to UTC

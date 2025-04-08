@@ -19,13 +19,13 @@ import {
     NO_ROW_SELECTED, TABLE_MIN_WIDTH,
     TABLE_SCROLL_HEIGHT, err_red_str, err_yellow_str, err_green_str,
 } from 'src/constants.tsx';
-import { TargetTable } from '../targets/TargetTable.tsx';
-import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
-import {notifyError} from "../../commonPanel/notifications.tsx";
-import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ObservationFormValues} from "./types/ObservationFormInterface";
+import { TargetTable } from '../../targets/TargetTable.tsx';
+import { TechnicalGoalsTable } from '../../technicalGoals/technicalGoalTable.tsx';
+import {notifyError} from "../../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../../errorHandling/getErrorMessage.tsx";
+import {ObservationFormValues} from "../types/ObservationFormInterface";
 
-export default function TargetTypeForm (p: {
+export default function TargetTypeRadioForm (p: {
     form: UseFormReturnType<ObservationFormValues>,
     setFieldName: Dispatch<SetStateAction<string>>
 }): ReactElement {

@@ -1,4 +1,3 @@
-import TargetTypeForm from "../targetType.form.tsx";
 import {ObservationProps} from "../observationPanel.tsx";
 import { Telescopes } from './telescopes'
 import { Fieldset, Stack, Group, Space } from '@mantine/core';
@@ -29,6 +28,7 @@ import {
 import * as Schemas from '../../../generated/proposalToolSchemas';
 import {ObservationFormValues} from "../types/ObservationFormInterface";
 import {handleTargetsAndTechnicalGoals} from "../commonObservationCode";
+import TargetTypeOpticalForm from "./targetTypeOptical.form";
 
 
 /**
@@ -254,7 +254,7 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
     <form onSubmit={handleSubmit}>
         <Stack>
             <ContextualHelpButton messageId={"MaintObs"} />
-            <TargetTypeForm form={form} setFieldName={setFieldName}/>
+            <TargetTypeOpticalForm form={form} setFieldName={setFieldName}/>
             <Space h={"md"} />
             <Fieldset legend={"Optical Telescopes"}>
                 <Telescopes form={form}/>
