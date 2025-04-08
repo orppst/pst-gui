@@ -659,7 +659,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         if (selectedProposalCode !== undefined) {
             deleteProposalOpticalTelescopeMutation.mutate({
                 proposalID: selectedProposalCode,
-                observationID: ""
             }, {
                 onSuccess: () => {
                     notifySuccess("Deletion successful",

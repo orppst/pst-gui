@@ -49,6 +49,11 @@ export type LoadTelescopeState = {
     proposalID: string, observationID: string
 }
 
+// the type for aiming for a given proposal.
+export type OpticalTelescopeProposal = {
+    proposalID: string
+}
+
 // the type of data returned from a load request
 export type SavedTelescopeData = {
     primaryKey: {
@@ -83,7 +88,8 @@ export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
  * @param {AbortSignal} signal: the signal for failure.
  * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
  */
-export const fetchOpticalTelescopeResourceGetTelescopeData = (signal?: AbortSignal) =>
+export const fetchOpticalTelescopeResourceGetTelescopeData =
+        (signal?: AbortSignal) =>
     proposalToolFetch<
         Map<string, Map<string, Map<string, string>>>,
         TelescopeDataError,
@@ -117,6 +123,15 @@ export const fetchOpticalTelescopeResourceGetVerification =
         method: "post", body: data, signal: signal
     });
 
+/**
+ * bring about a call to verify if there's telescope data for a given
+ * observation.
+ *
+ * @param variables: the proposal and observation id to verify.
+ * @param  options: things that shouldn't be changed.
+ * @return the resulting verification. true stating a
+ * telescope data exists for the given observation.
+ */
 export const useOpticalTelescopeResourceGetVerification = (
     variables: LoadTelescopeState,
     options?: Omit<
@@ -144,6 +159,72 @@ export const useOpticalTelescopeResourceGetVerification = (
         );
 
     return reactQuery.useQuery<boolean, TelescopeVerifyError, boolean>({
+        queryKey,
+        queryFn,
+        ...options,
+        ...queryOptions,
+    });
+};
+
+/**
+ * bring about a call to verify if there's telescope data for a given
+ * observation.
+ *
+ * @param data: the proposal and observation id to verify.
+ * @param {AbortSignal} signal: the signal for failure.
+ * @return the resulting verification. true stating a
+ * telescope data exists for the given observation.
+ */
+export const fetchOpticalTelescopeResourceGetProposalObservationIds =
+    (data: OpticalTelescopeProposal, signal?: AbortSignal) =>
+        proposalToolFetch<
+            number [],
+            TelescopeVerifyError,
+            OpticalTelescopeProposal,
+            NonNullable<unknown>,
+            NonNullable<unknown>,
+            NonNullable<unknown>>({
+            url: "/pst/api/opticalTelescopes/verifyProposal",
+            method: "post", body: data, signal: signal
+        });
+
+/**
+ * bring about a call to verify if there's telescope data for a given
+ * observation.
+ *
+ * @param variables: the proposal and observation id to verify.
+ * @param  options: things that shouldn't be changed.
+ * @return the resulting verification. true stating a
+ * telescope data exists for the given observation.
+ */
+export const useOpticalTelescopeResourceGetProposalObservationIds = (
+    variables: OpticalTelescopeProposal,
+    options?: Omit<
+        reactQuery.UseQueryOptions<
+            number [],
+            TelescopeVerifyError,
+            number[]
+        >,
+        "queryKey" | "queryFn" | "initialData"
+    >,
+) => {
+    const { fetcherOptions, queryOptions, queryKeyFn } =
+        useProposalToolContext(options);
+
+    const queryKey = queryKeyFn({
+        path: "/pst/api/opticalTelescopes/verifyProposal",
+        operationId: "opticalTelescopeResourceGetProposalVerification",
+        variables,
+    });
+
+    const queryFn = ({ signal }: { signal?: AbortSignal }) =>
+        fetchOpticalTelescopeResourceGetProposalObservationIds(
+            { ...fetcherOptions, ...variables },
+            signal,
+        );
+
+    return reactQuery.useQuery<
+            number[], TelescopeVerifyError, number[]>({
         queryKey,
         queryFn,
         ...options,
@@ -284,16 +365,16 @@ export const useOpticalTelescopeResourceDeleteProposalTelescopeData = (
         reactQuery.UseMutationOptions<
             boolean,
             SavedTelescopeDataError,
-            LoadTelescopeState>,
+            OpticalTelescopeProposal>,
         "mutationFn">
 ) => {
     const { fetcherOptions } = useProposalToolContext();
     return reactQuery.useMutation<
         boolean,
         SavedTelescopeDataError,
-        LoadTelescopeState
+        OpticalTelescopeProposal
     >({
-        mutationFn: (variables: LoadTelescopeState) =>
+        mutationFn: (variables: OpticalTelescopeProposal) =>
             fetchOpticalTelescopeResourceDeleteProposalTelescopeData({
                 ...fetcherOptions,
                 ...variables,
@@ -310,11 +391,11 @@ export const useOpticalTelescopeResourceDeleteProposalTelescopeData = (
  * @param {AbortSignal} signal: the signal for failure.
  */
 export const fetchOpticalTelescopeResourceDeleteProposalTelescopeData = (
-    data: LoadTelescopeState, signal?: AbortSignal) =>
+    data: OpticalTelescopeProposal, signal?: AbortSignal) =>
     proposalToolFetch<
         boolean,
         TelescopeSaveError,
-        LoadTelescopeState,
+        OpticalTelescopeProposal,
         NonNullable<unknown>,
         NonNullable<unknown>,
         SaveTelescopeResourceParametersVariables

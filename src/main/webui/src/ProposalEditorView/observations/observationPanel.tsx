@@ -14,6 +14,7 @@ import {IconTarget, IconChartLine} from '@tabler/icons-react';
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {OpticalTableGenerator} from "./optical/observationOpticalTable";
 import ObservationOpticalEditModal from "./optical/editOptical.modal";
+import {useOpticalTelescopeResourceGetProposalObservationIds} from "../../util/telescopeComms";
 
 
 /**
@@ -39,11 +40,16 @@ function ObservationsPanel(): ReactElement {
 // name and DB id for the object specified i.e. we don't get any information
 // on child objects.
 function Observations() {
-    const { selectedProposalCode} = useParams();
+    let { selectedProposalCode} = useParams();
+    selectedProposalCode = selectedProposalCode!;
 
     const proposal = useProposalResourceGetObservingProposal({
         pathParams: {proposalCode: Number(selectedProposalCode)}
     })
+    const opticalObservations =
+        useOpticalTelescopeResourceGetProposalObservationIds(
+            {proposalID: selectedProposalCode}
+        )
 
     if (proposal.isError) {
         return (
@@ -140,6 +146,18 @@ function Observations() {
             </PanelFrame>
         )
     } else {
+        const opticalObservationsStore: Observation[] = [];
+        const radioObservationsStore: Observation [] = [];
+        const backendIDs: number [] = opticalObservations.data!;
+
+        for( const observation of proposal.data.observations!) {
+            if (backendIDs.includes(observation._id!)) {
+                opticalObservationsStore.push(observation);
+            } else {
+                radioObservationsStore.push(observation);
+            }
+        }
+
         //all requirements met
         return (
             <PanelFrame>
@@ -149,7 +167,7 @@ function Observations() {
                    <ContextualHelpButton messageId="MaintObsList" />
                 </Grid>
 
-                {RadioTableGenerator(proposal.data.observations!)}
+                {RadioTableGenerator(radioObservationsStore)}
 
                 <Space h={"xl"}/>
                 <Grid>
@@ -157,7 +175,7 @@ function Observations() {
                     <ObservationEditModal/>
                 </Grid>
 
-                {OpticalTableGenerator(proposal.data.observations!)}
+                {OpticalTableGenerator(opticalObservationsStore)}
 
                 <Space h={"xl"}/>
                 <Grid>

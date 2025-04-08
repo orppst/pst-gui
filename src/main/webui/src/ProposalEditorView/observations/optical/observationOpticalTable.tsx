@@ -26,7 +26,6 @@ import {ReactElement} from 'react';
 import {notifyError, notifySuccess} from "../../../commonPanel/notifications.tsx";
 import {
     useOpticalTelescopeResourceDeleteObservationTelescopeData,
-    useOpticalTelescopeResourceGetVerification,
 } from "../../../util/telescopeComms";
 import ObservationEditModal from "./editOptical.modal";
 
@@ -58,7 +57,6 @@ function ObservationRow(observationId: ObservationId):
     const GRAY = theme.colors.gray[6];
 
     const {selectedProposalCode} = useParams();
-    const proposalCode = selectedProposalCode!;
 
 
     let targetName = "Unknown";
@@ -76,25 +74,8 @@ function ObservationRow(observationId: ObservationId):
         },
     });
 
-    // grab the verification of optical.
-    const {
-        data: opticalObservation,
-        error: verificationError,
-        isLoading: opticalObservationLoading,
-    } = useOpticalTelescopeResourceGetVerification({
-        proposalID: proposalCode,
-        observationID: observationId.id.toString()
-    });
-
     if (observationError) {
         return <pre>{getErrorMessage(observationError)}</pre>
-    }
-    if (verificationError) {
-        return <pre>{getErrorMessage(verificationError)}</pre>
-    }
-
-    if (!opticalObservation) {
-        return <></>
     }
 
     /**
@@ -104,28 +85,23 @@ function ObservationRow(observationId: ObservationId):
         // really this needs to be done from backend to backend, to
         // ensure transactional integrity. but oh well.
         if (selectedProposalCode !== undefined) {
-            if (opticalObservation) {
-                deleteOpticalTelescope.mutate({
-                    proposalID: selectedProposalCode,
-                    observationID: observationId.id.toString()
-                }, {
-                    onSuccess: () => {
-                        notifySuccess(
-                            "Observation removed",
-                            "Selected observation and optical " +
-                            "telescope data has been deleted.")
-                    },
-                    onError: (error) => {
-                        notifyError(
-                            "Deletion of Observing Field optical " +
-                            "telescope data failed",
-                            getErrorMessage(error));
-                    }
-                })
-            } else {
-                notifySuccess("Observation removed",
-                    "Selected observation has been deleted.")
-            }
+            deleteOpticalTelescope.mutate({
+                proposalID: selectedProposalCode,
+                observationID: observationId.id.toString()
+            }, {
+                onSuccess: () => {
+                    notifySuccess(
+                        "Observation removed",
+                        "Selected observation and optical " +
+                        "telescope data has been deleted.")
+                },
+                onError: (error) => {
+                    notifyError(
+                        "Deletion of Observing Field optical " +
+                        "telescope data failed",
+                        getErrorMessage(error));
+                }
+            })
         }
     }
 
@@ -259,7 +235,7 @@ function ObservationRow(observationId: ObservationId):
 
 
     // if loading, present a loading.
-    if (observationLoading || opticalObservationLoading) {
+    if (observationLoading) {
         return (
             <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
         );
