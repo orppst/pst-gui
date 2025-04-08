@@ -24,6 +24,7 @@ import {ReactElement} from 'react';
 import {notifyError, notifySuccess} from "../../../commonPanel/notifications.tsx";
 import {
     useOpticalTelescopeResourceDeleteObservationTelescopeData,
+    useOpticalTelescopeTableData,
 } from "../../../util/telescopeComms";
 import ObservationEditModal from "./editOptical.modal";
 
@@ -54,8 +55,8 @@ function ObservationRow(observationId: ObservationId):
     const theme = useMantineTheme();
     const GRAY = theme.colors.gray[6];
 
-    const {selectedProposalCode} = useParams();
-
+    let {selectedProposalCode} = useParams();
+    selectedProposalCode = selectedProposalCode!;
 
     let targetName = "Unknown";
     let additionTargets = 0;
@@ -72,8 +73,19 @@ function ObservationRow(observationId: ObservationId):
         },
     });
 
+    const {
+        data: opticalData,
+        error: opticalError,
+        isLoading: opticalLoading,
+    } = useOpticalTelescopeTableData({
+        proposalID: selectedProposalCode
+    });
+
     if (observationError) {
         return <pre>{getErrorMessage(observationError)}</pre>
+    }
+    if (opticalError) {
+        return <pre>{getErrorMessage(opticalError)}</pre>
     }
 
     /**
@@ -214,11 +226,14 @@ function ObservationRow(observationId: ObservationId):
     })
 
     // if loading, present a loading.
-    if (observationLoading) {
+    if (observationLoading || opticalLoading) {
         return (
             <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
         );
     }
+
+    // get the row data
+    const opticalDaraRow = opticalData!.get(observation!._id!.toString())!;
 
     // generate the correct row.
     return (
@@ -237,10 +252,10 @@ function ObservationRow(observationId: ObservationId):
                 {observation?.field?.name}
             </Table.Td>
             <Table.Td>
-
+                {opticalDaraRow.telescopeName}
             </Table.Td>
             <Table.Td>
-
+                {opticalDaraRow.instrumentName}
             </Table.Td>
             <Table.Td>
                 <Group align={"right"}>

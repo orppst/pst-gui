@@ -224,6 +224,8 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                         if (!newObs) {
                             notifySuccess("Telescopes data Updated",
                                           "telescope data saved")
+                            queryClient.invalidateQueries().then();
+                            props.closeModal!();
                         } else {
                             queryClient.invalidateQueries().then();
                             notifySuccess("Observation Added",

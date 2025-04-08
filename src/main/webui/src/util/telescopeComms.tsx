@@ -6,6 +6,9 @@ import { useProposalToolContext } from '../generated/proposalToolContext';
 // the response type for the names of the telescope.
 export type ReceivedTelescopeNames = string [];
 
+// the error format for telescope data.
+export type SavedTelescopeDataError = Fetcher.ErrorWrapper<undefined>;
+
 // the error format for telescope error response with name.
 export type TelescopeNameError = Fetcher.ErrorWrapper<undefined>;
 
@@ -43,6 +46,16 @@ export type SaveTelescopeState = {
     primaryKey: {proposalID: string, observationID: string}, telescopeName: string,
     instrumentName: string, choices: Map<string, string>
 }
+
+// the type for the extracting data of observation telescope table.
+export type TelescopeTableState = {
+    telescopeName: string, instrumentName: string
+}
+
+// Define the type that matches the backend's HashMap structure
+export type OpticalTableDataBackendResponse = {
+    [observationID: string]: TelescopeTableState
+};
 
 // the type for the loading of observation telescope data.
 export type LoadTelescopeState = {
@@ -252,8 +265,6 @@ export const fetchOpticalTelescopeResourceLoadTelescopeData = (
         method: "post", body: data, signal: signal
     });
 
-export type SavedTelescopeDataError = Fetcher.ErrorWrapper<undefined>;
-
 /**
  * mutation function wrapping around the sending of new state to the backend for telescopes.
  * @param options: the saved data.
@@ -282,7 +293,6 @@ export const useOpticalTelescopeResourceSaveTelescopeData = (
     });
 };
 
-
 /**
  * bring about a call to save observation telescope data.
  *
@@ -302,7 +312,6 @@ export const fetchOpticalTelescopeResourceSaveTelescopeData = (
         method: "put",
         body: data,
         signal: signal });
-
 
 /**
  * mutation function wrapping around the sending of delete request
@@ -332,7 +341,6 @@ export const useOpticalTelescopeResourceDeleteObservationTelescopeData = (
         ...options,
     });
 };
-
 
 /**
  * bring about a call to delete observation telescope data.
@@ -383,7 +391,6 @@ export const useOpticalTelescopeResourceDeleteProposalTelescopeData = (
     });
 };
 
-
 /**
  * bring about a call to save observation telescope data.
  *
@@ -403,3 +410,78 @@ export const fetchOpticalTelescopeResourceDeleteProposalTelescopeData = (
         method: "post",
         body: data,
         signal: signal });
+
+/**
+ * bring about a call to get observation optical table data.
+ *
+ * @param {OpticalTelescopeProposal} data: the data to get the optical table.
+ * @param {AbortSignal} signal: the signal for failure.
+ * @return {Promise<TelescopeTableState[]>}: the resulting data when received.
+ */
+export const fetchOpticalTelescopeTableData = (
+    data: OpticalTelescopeProposal, signal?: AbortSignal) =>
+    proposalToolFetch<
+        OpticalTableDataBackendResponse,
+        TelescopeLoadError,
+        OpticalTelescopeProposal,
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        SaveTelescopeResourceParametersVariables>({
+        url: "/pst/api/opticalTelescopes/opticalTableData",
+        method: "post", body: data, signal: signal
+    });
+
+/**
+ * mutation function wrapping around data extraction for optical table.
+ * @param proposalData: the proposal id.
+ * @param options: the saved data.
+ * @return mutation promise holding onSuccess, OnError.
+ */
+export const useOpticalTelescopeTableData = (
+    proposalData: OpticalTelescopeProposal,
+    options?: Omit<
+        reactQuery.UseQueryOptions<
+            OpticalTableDataBackendResponse,
+            TelescopeLoadError,
+            Map<string, TelescopeTableState>,
+            reactQuery.QueryKey
+        >,
+        "queryKey" | "queryFn" | "select" // Add "select" to the Omit
+    >
+) => {
+    const { fetcherOptions, queryOptions, queryKeyFn } =
+        useProposalToolContext(options);
+
+    const queryKey = queryKeyFn({
+        path: "/pst/api/opticalTelescopes/opticalTableData",
+        operationId: "fetchOpticalTelescopeTableData",
+        variables: proposalData,
+    });
+
+    const queryFn = ({ signal }: { signal?: AbortSignal }) =>
+        fetchOpticalTelescopeTableData(
+            { ...fetcherOptions, ...proposalData },
+            signal
+        );
+
+    return reactQuery.useQuery<
+        OpticalTableDataBackendResponse, // Raw data from fetch
+        TelescopeLoadError,
+        Map<string, TelescopeTableState> // Transformed data for the component
+    >({
+        queryKey,
+        queryFn,
+        select: (backendResponse) => {
+            const resultsMap = new Map<string, TelescopeTableState>();
+            for (const observationID in backendResponse) {
+                if (Object.prototype.hasOwnProperty.call(
+                        backendResponse, observationID)) {
+                    resultsMap.set(observationID, backendResponse[observationID]);
+                }
+            }
+            return resultsMap;
+        },
+        ...options,
+        ...queryOptions,
+    });
+};
