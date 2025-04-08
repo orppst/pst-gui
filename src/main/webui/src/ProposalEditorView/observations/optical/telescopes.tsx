@@ -24,8 +24,10 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
     const { selectedProposalCode} = useParams();
 
     // state holder to force re renders;
-    const [selectedTelescope, setSelectedTelescope] = useState<string>(DEFAULT_STRING);
-    const [selectedInstrument, setSelectedInstrument] = useState<string>(DEFAULT_STRING);
+    const [selectedTelescope, setSelectedTelescope] =
+        useState<string>(DEFAULT_STRING);
+    const [selectedInstrument, setSelectedInstrument] =
+        useState<string>(DEFAULT_STRING);
     const [getNames, setNames] = useState([DEFAULT_STRING]);
     const [getTelescopeData, setTelescopeData] =
         useState<Map<string, Telescope> | null>(null);
@@ -39,9 +41,10 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      * only do this once. rest of renders shouldn't call this.
      */
     if (getNames.length == 1) {
-        fetchOpticalTelescopeResourceGetNames().then((serverTelescopeNames: string[]) => {
-            // populate telescope names for html display.
-            setNames(getNames.concat(serverTelescopeNames));
+        fetchOpticalTelescopeResourceGetNames().then((
+            serverTelescopeNames: string[]) => {
+                // populate telescope names for html display.
+                setNames(getNames.concat(serverTelescopeNames));
         });
     }
 
@@ -51,7 +54,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
      */
     if (getTelescopeData == null) {
         fetchOpticalTelescopeResourceGetTelescopeData().then(
-            (backendTelescopeData: Map<string, Map<string, Map<string, string>>>) => {
+            (backendTelescopeData:
+                    Map<string, Map<string, Map<string, string>>>) => {
                 setTelescopeData(new Map(Object.entries(backendTelescopeData)));
 
                 // if no observation id, no loaded data.
@@ -61,7 +65,8 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         new Map<string, Map<string, Map<string, string>>>(),
                         new Map(Object.entries(backendTelescopeData)))
                 } else {
-                    // ensure the telescope data is extracted before asking for the user data.
+                    // ensure the telescope data is extracted before asking for
+                    // the user data.
                     fetchOpticalTelescopeResourceLoadTelescopeData(
                         {
                             observationID: observationId.toString(),
@@ -69,7 +74,9 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
                         })
                         .then(
                             (userDataRaw: Map<string, Map<string, Map<string, string>>>) => {
-                                processUserData(userDataRaw, new Map(Object.entries(backendTelescopeData)));
+                                processUserData(
+                                    userDataRaw,
+                                    new Map(Object.entries(backendTelescopeData)));
                             }
                         );
                 }
@@ -98,8 +105,11 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
             const telescopeName: string = userData.keys().next().value || 'None';
 
             // it cant be none, there must be at least one instrument. else the xml is messed.
-            const instrumentMap: Map<string, Map<string, string>> = userData.get(telescopeName) || new Map();
-            const instrumentValue: string = (new Map(Object.entries(instrumentMap))).keys().next().value || 'None';
+            const instrumentMap: Map<string, Map<string, string>> =
+                userData.get(telescopeName) || new Map();
+            const instrumentValue: string =
+                (new Map(Object.entries(instrumentMap))).keys().next().value
+                || 'None';
 
             form.setValues({
                 "telescopeName": telescopeName,
@@ -114,8 +124,10 @@ export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValue
         if (selectedTelescope == DEFAULT_STRING) {
             if (userData.size !== 0 && !form.isDirty("elements")) {
                 telescopeState = userData.keys().next().value || 'None';
-                const instrumentMap: Map<string, Map<string, string>> = userData.get(telescopeState) || new Map();
-                instrumentState = new Map(Object.entries(instrumentMap)).keys().next().value || 'None';
+                const instrumentMap: Map<string, Map<string, string>> =
+                    userData.get(telescopeState) || new Map();
+                instrumentState =
+                    new Map(Object.entries(instrumentMap)).keys().next().value || 'None';
 
                 if (telescopeState == form.getInputProps("telescopeName").value &&
                     instrumentState == form.getInputProps("instrument").value &&

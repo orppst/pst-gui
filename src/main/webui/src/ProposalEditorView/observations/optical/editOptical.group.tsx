@@ -90,7 +90,8 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                 observationId: props.observation?._id,
                 observationType: observationType,
                 targetDBIds: initialTargetIds,
-                techGoalId: props.observation?.technicalGoal?._id ?? NO_ROW_SELECTED,
+                techGoalId:
+                    props.observation?.technicalGoal?._id ?? NO_ROW_SELECTED,
                 timingWindows: [],
                 calibrationUse: calibrationUse,
                 telescopeName: DEFAULT_STRING,
@@ -100,18 +101,26 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
 
             validate: {
                 targetDBIds: (value: number[] ) =>
-                    (value.length == 0 ? 'Please select at least one target' : null),
+                    (value.length == 0 ?
+                        'Please select at least one target' : null),
                 techGoalId: (value: number) =>
-                    (value === NO_ROW_SELECTED ? 'Please select a technical goal' : null),
+                    (value === NO_ROW_SELECTED ?
+                        'Please select a technical goal' : null),
                 observationType: (value: ObservationType) =>
-                    (value === '' ? 'Please select the observation type' : null),
+                    (value === '' ?
+                        'Please select the observation type' : null),
                 telescopeName: (value: string) => (
-                    value == DEFAULT_STRING ? "Please select a telescope": null),
+                    value == DEFAULT_STRING ?
+                        "Please select a telescope": null),
                 instrument: (value: string) => (
-                    value == DEFAULT_STRING ? "Please select a instrument": null),
+                    value == DEFAULT_STRING ?
+                        "Please select a instrument": null),
             },
         });
 
+    /**
+     * handles submitting of the form.
+     */
     const handleSubmit =
         form.onSubmit((values: ObservationFormValues) => {
             if (newObservation) {
@@ -125,7 +134,8 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                     })
                 })
 
-                //we need to persist an observation field which the new observation then references
+                //we need to persist an observation field which the new
+                // observation then references
                 addNewField.mutateAsync({
                     pathParams: {
                         proposalCode: Number(selectedProposalCode)
@@ -229,15 +239,14 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
         }
     }
 
+    /**
+     * handle cancelling of the form.
+     * @param event: the event.
+     */
   function handleCancel(event: SyntheticEvent) {
       event.preventDefault();
       props.closeModal!();
   }
-
-  /*
-    Might be worth splitting this into two forms: one for the Target(s) and type for the Observation, the
-    other for the Timing Windows. Then we could split these across Tabs in the modal.
-   */
 
   return (
     <form onSubmit={handleSubmit}>

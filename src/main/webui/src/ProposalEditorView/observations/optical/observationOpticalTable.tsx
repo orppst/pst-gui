@@ -6,7 +6,6 @@ import {
 import {
     Text,
     Space,
-    Badge,
     Group,
     Table,
     useMantineTheme
@@ -14,7 +13,6 @@ import {
 import {modals} from "@mantine/modals";
 import {
     CalibrationObservation, Observation,
-    PerformanceParameters,
     TargetObservation,
 } from "src/generated/proposalToolSchemas.ts";
 import {useParams} from "react-router-dom";
@@ -149,7 +147,6 @@ function ObservationRow(observationId: ObservationId):
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
                     Deletes the observation only.
-                    Preserves everything except the timing windows.
                 </Text>
             </>
         ),
@@ -182,8 +179,8 @@ function ObservationRow(observationId: ObservationId):
      * provided everything is defined
      */
     if(observation?.target !== undefined
-        && observation.target[0] !== undefined
-        && observation.target[0].sourceName !== undefined) {
+            && observation.target[0] !== undefined
+            && observation.target[0].sourceName !== undefined) {
         targetName = observation.target[0].sourceName;
         additionTargets = observation.target.length - 1;
     }
@@ -216,24 +213,6 @@ function ObservationRow(observationId: ObservationId):
         onCancel:() => console.log('Cancel clone'),
     })
 
-    const performanceRaw = observation?.technicalGoal?.performance;
-    const performance : PerformanceParameters = performanceRaw!
-
-    const performanceFull = observationLoading ? false :
-        performance.desiredAngularResolution?.value !== undefined &&
-        performance.representativeSpectralPoint?.value !== undefined &&
-        performance.desiredDynamicRange?.value !== undefined &&
-        performance.desiredSensitivity?.value !== undefined &&
-        performance.desiredLargestScale?.value !== undefined;
-
-    const performanceEmpty = observationLoading ? true :
-        performance.desiredAngularResolution?.value === undefined &&
-        performance.representativeSpectralPoint?.value === undefined &&
-        performance.desiredDynamicRange?.value === undefined &&
-        performance.desiredSensitivity?.value === undefined &&
-        performance.desiredLargestScale?.value === undefined;
-
-
     // if loading, present a loading.
     if (observationLoading) {
         return (
@@ -258,64 +237,10 @@ function ObservationRow(observationId: ObservationId):
                 {observation?.field?.name}
             </Table.Td>
             <Table.Td>
-                {
-                    performanceFull ?
-                        <Badge
-                            color={"green"}
-                            radius={0}
-                        >
-                            Set
-                        </Badge>:
-                        performanceEmpty ?
-                            <Badge
-                                color={"orange"}
-                                radius={0}
-                            >
-                                Not Set
-                            </Badge> :
-                            <Badge
-                                color={"yellow"}
-                                radius={0}
-                            >
-                                Partial
-                            </Badge>
-                }
+
             </Table.Td>
             <Table.Td>
-                {
-                    observation?.technicalGoal?.spectrum?.length! > 0 ?
-                        <Badge
-                            color={"green"}
-                            radius={0}
-                        >
-                            {observation?.technicalGoal?.spectrum?.length!}
-                        </Badge>:
-                        <Badge
-                            color={"red"}
-                            radius={0}
-                        >
-                            None
-                        </Badge>
-                }
-            </Table.Td>
-            <Table.Td>
-                <Group>
-                {
-                    observation?.constraints?.length! > 0 ?
-                        <Badge
-                            color={"green"}
-                            radius={0}
-                        >
-                            {observation?.constraints?.length!}
-                        </Badge> :
-                        <Badge
-                            color={"red"}
-                            radius={0}
-                        >
-                            None
-                        </Badge>
-                }
-                </Group>
+
             </Table.Td>
             <Table.Td>
                 <Group align={"right"}>
