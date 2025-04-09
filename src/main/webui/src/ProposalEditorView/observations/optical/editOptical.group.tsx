@@ -1,5 +1,5 @@
 import {ObservationProps} from "../observationPanel.tsx";
-import { Telescopes } from './telescopes'
+import {Telescopes, TelescopeTiming} from './telescopes'
 import { Fieldset, Stack, Group, Space } from '@mantine/core';
 import {
     CalibrationObservation,
@@ -96,6 +96,11 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                 calibrationUse: calibrationUse,
                 telescopeName: DEFAULT_STRING,
                 instrument: DEFAULT_STRING,
+                telescopeTime: {
+                    value: DEFAULT_STRING,
+                    unit: DEFAULT_STRING
+                },
+                userType: DEFAULT_STRING,
                 elements: new Map<string, string>(),
             },
 
@@ -115,7 +120,18 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                 instrument: (value: string) => (
                     value == DEFAULT_STRING ?
                         "Please select a instrument": null),
-            },
+                userType: (value: string) => (
+                    value == DEFAULT_STRING ?
+                        "Please select a user type": null),
+                telescopeTime: {
+                    value: (value: string) => (
+                        value == DEFAULT_STRING ?
+                            "Please enter a time value" : null),
+                    unit: (value: string) => (
+                        value == DEFAULT_STRING ?
+                            "Please enter a time unit" : null),
+                }
+            }
         });
 
     /**
@@ -219,6 +235,9 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                 },
                 instrumentName: form.getValues().instrument!,
                 telescopeName: form.getValues().telescopeName!,
+                telescopeTimeUnit: form.getValues().telescopeTime.unit,
+                telescopeTimeValue: form.getValues().telescopeTime.value,
+                userType: form.getValues().userType,
                 choices: Object.fromEntries(form.getValues().elements.entries())
             }, {
                 onSuccess: () => {
@@ -266,6 +285,9 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
             <Space h={"md"} />
             <Fieldset legend={"Optical Telescopes"}>
                 <Telescopes form={form}/>
+            </Fieldset>
+            <Fieldset legend={"Timing"}>
+                <TelescopeTiming form={form}/>
             </Fieldset>
             <Group justify={"flex-end"}>
                 <FormSubmitButton form={form}/>

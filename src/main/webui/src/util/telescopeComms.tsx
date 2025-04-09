@@ -43,8 +43,13 @@ export type SaveTelescopeResourceParametersVariables = {
 
 // the type for the saving of observation telescope data.
 export type SaveTelescopeState = {
-    primaryKey: {proposalID: string, observationID: string}, telescopeName: string,
-    instrumentName: string, choices: Map<string, string>
+    primaryKey: {proposalID: string, observationID: string},
+    telescopeName: string,
+    instrumentName: string,
+    telescopeTimeUnit: string,
+    telescopeTimeValue: string,
+    userType: string,
+    choices: Map<string, string>
 }
 
 // the type for the extracting data of observation telescope table.
@@ -75,6 +80,9 @@ export type SavedTelescopeData = {
     }
     telescopeName: string,
     instrumentName: string,
+    telescopeTimeValue: string,
+    telescopeTimeUnit: string,
+    userType: string,
     choices: {[p: string]: string}
 }
 
@@ -255,7 +263,7 @@ export const useOpticalTelescopeResourceGetProposalObservationIds = (
 export const fetchOpticalTelescopeResourceLoadTelescopeData = (
     data: LoadTelescopeState, signal?: AbortSignal) =>
     proposalToolFetch<
-        Map<string, Map<string, Map<string, string>>>,
+        SaveTelescopeState,
         TelescopeLoadError,
         LoadTelescopeState,
         NonNullable<unknown>,

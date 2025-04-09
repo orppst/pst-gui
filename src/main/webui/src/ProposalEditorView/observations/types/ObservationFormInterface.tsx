@@ -15,5 +15,10 @@ export interface ObservationFormValues {
     timingWindows: TimingWindowGui[],
     telescopeName: string,
     instrument: string,
+    telescopeTime: {
+        unit: string,
+        value: string,
+    },
+    userType: string,
     elements: Map<string, string>,
 }

@@ -158,6 +158,11 @@ function ObservationRadioEditGroup(props: ObservationProps): ReactElement {
                 timingWindows: initialTimingWindows,
                 telescopeName: DEFAULT_STRING,
                 instrument: DEFAULT_STRING,
+                telescopeTime: {
+                    value: DEFAULT_STRING,
+                    unit: DEFAULT_STRING
+                },
+                userType: DEFAULT_STRING,
                 elements: new Map<string, string>(),
             },
 

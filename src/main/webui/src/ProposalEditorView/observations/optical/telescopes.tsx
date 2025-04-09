@@ -4,13 +4,26 @@ import {
     fetchOpticalTelescopeResourceGetNames,
     fetchOpticalTelescopeResourceGetTelescopeData,
     Field, Type, fetchOpticalTelescopeResourceLoadTelescopeData,
-    Telescope, Instrument
+    Telescope, Instrument, SaveTelescopeState
 } from '../../../util/telescopeComms';
 import { UseFormReturnType } from '@mantine/form';
 import {useParams} from "react-router-dom";
 import { DEFAULT_STRING, MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from '../../../constants';
 import { notifyError } from '../../../commonPanel/notifications';
 import {ObservationFormValues} from "../types/ObservationFormInterface";
+import {NumberInputPlusUnit} from "../../../commonInputs/NumberInputPlusUnit";
+
+// the different types of telescope times,
+const telescopeTimeUnits = [
+    {value: 'Hours', label: 'Hours'},
+    {value: 'Nights', label: 'Nights'},
+    {value: 'Dark Moon', label: 'Dark Moon'},
+    {value: 'Gray Moon', label: 'Gray Moon'},
+    {value: 'Bright Moon', label: 'Bright Moon'},
+];
+
+// the different types of person.
+const personTypeOptions = ['Servicer', 'Visitor'];
 
 /**
  * generates the observation panel.
@@ -34,8 +47,7 @@ export function Telescopes(
         useState<Map<string, Telescope> | null>(null);
 
     // data holder for the user choices from the back end.
-    let userData: Map<string, Map<string, Map<string, string>>> =
-        new Map<string, Map<string, Map<string, string>>>();
+    let userData: SaveTelescopeState | undefined = undefined;
 
     /**
      * extract data from back end on the telescope names.
@@ -61,11 +73,7 @@ export function Telescopes(
 
                 // if no observation id, no loaded data.
                 const observationId = form.getValues().observationId;
-                if (observationId === undefined) {
-                    processUserData(
-                        new Map<string, Map<string, Map<string, string>>>(),
-                        new Map(Object.entries(backendTelescopeData)))
-                } else {
+                if (observationId !== undefined) {
                     // ensure the telescope data is extracted before asking for
                     // the user data.
                     fetchOpticalTelescopeResourceLoadTelescopeData(
@@ -74,7 +82,7 @@ export function Telescopes(
                             proposalID: selectedProposalCode!
                         })
                         .then(
-                            (userDataRaw: Map<string, Map<string, Map<string, string>>>) => {
+                            (userDataRaw: SaveTelescopeState) => {
                                 processUserData(
                                     userDataRaw,
                                     new Map(Object.entries(backendTelescopeData)));
@@ -87,35 +95,30 @@ export function Telescopes(
 
     /**
      * processes user stored data into the form.
-     * @param {Map<string, Map<string, Map<string, string>>>} userDataRaw: the loaded data.
+     * @param userDataRaw: the loaded data.
      * @param storedTelescopeData: the stored telescope states.
      */
     function processUserData(
-            userDataRaw: Map<string, Map<string, Map<string, string>>> | undefined,
+            userDataRaw: SaveTelescopeState | undefined,
             storedTelescopeData: Map<string, Telescope> | undefined): void {
 
         // no previous stored user data.
         if (userDataRaw == undefined) {
             return
         }
-
-        userData = new Map(Object.entries(userDataRaw));
+        userData = userDataRaw;
 
         // fill out forms
-        if(form.getInputProps("telescopeName").value == DEFAULT_STRING && userData.size != 0) {
-            // it cant be none, there has to be at least one entry.
-            const telescopeName: string = userData.keys().next().value || 'None';
-
-            // it cant be none, there must be at least one instrument. else the xml is messed.
-            const instrumentMap: Map<string, Map<string, string>> =
-                userData.get(telescopeName) || new Map();
-            const instrumentValue: string =
-                (new Map(Object.entries(instrumentMap))).keys().next().value
-                || 'None';
-
+        if(form.getInputProps("telescopeName").value == DEFAULT_STRING &&
+            userData.choices.size != 0) {
             form.setValues({
-                "telescopeName": telescopeName,
-                "instrument": instrumentValue,
+                "telescopeName": userData.telescopeName,
+                "instrument": userData.instrumentName,
+                "telescopeTime": {
+                    value: userData.telescopeTimeValue,
+                    unit: userData.telescopeTimeUnit,
+                },
+                "userType": userData.userType,
             });
         }
 
@@ -124,19 +127,15 @@ export function Telescopes(
 
         // state holder to force re renders
         if (selectedTelescope == DEFAULT_STRING) {
-            if (userData.size !== 0 && !form.isDirty("elements")) {
-                telescopeState = userData.keys().next().value || 'None';
-                const instrumentMap: Map<string, Map<string, string>> =
-                    userData.get(telescopeState) || new Map();
-                instrumentState =
-                    new Map(Object.entries(instrumentMap)).keys().next().value || 'None';
+            if (userData.choices.size !== 0 && !form.isDirty("elements")) {
+                telescopeState = userData.telescopeName || DEFAULT_STRING;
+                instrumentState = userData.instrumentName || DEFAULT_STRING;
 
                 if (telescopeState == form.getInputProps("telescopeName").value &&
                     instrumentState == form.getInputProps("instrument").value &&
                     storedTelescopeData !== undefined) {
 
-                    const elementsMap: Map<string, string> =
-                        new Map(Object.entries(instrumentMap)).get(instrumentState) || new Map();
+                    const elementsMap: Map<string, string> = userData.choices || new Map();
                     const elements: Map<string, string> = new Map(Object.entries(elementsMap));
 
                     // extract the data types for these elements. as booleans need conversions.
@@ -178,10 +177,10 @@ export function Telescopes(
                         notifyError("telescopeInstrument is undefined", "how did we get here!");
                     }
                 } else {
-                    userData = new Map<string, Map<string, Map<string, string>>>();
+                    userData = undefined;
                 }
             } else {
-                userData = new Map<string, Map<string, Map<string, string>>>();
+                userData = undefined;
             }
             setSelectedTelescope(telescopeState);
             setSelectedInstrument(instrumentState);
@@ -197,7 +196,8 @@ export function Telescopes(
      * @param {string} instrumentName: the instrument name.
      * @return {Map<string, Map<string, string>> | undefined} data.
      */
-    function returnElementsFromStore(telescopeName: string, instrumentName: string):
+    function returnElementsFromStore(
+            telescopeName: string, instrumentName: string):
             Map<string, Field> {
         if (telescopeName == null || instrumentName == null ||
                 getTelescopeData == null || telescopeName == DEFAULT_STRING) {
@@ -242,21 +242,9 @@ export function Telescopes(
 
         // extract the saved state for this telescope if it exists.
         let userStoresObservationElements = undefined;
-        if (userData.size !== 0) {
-            userStoresObservationElements = userData.get(telescopeName);
-            if (userStoresObservationElements !== undefined) {
-                // convert to proper map.
-                userStoresObservationElements =
-                    new Map(Object.entries(userStoresObservationElements));
-                userStoresObservationElements =
-                    userStoresObservationElements.get(instrumentName);
-                if (userStoresObservationElements !== undefined) {
-                    userStoresObservationElements =
-                        new Map(Object.entries(userStoresObservationElements));
-                }
-            } else {
-                userStoresObservationElements = undefined;
-            }
+        if (userData !== undefined) {
+            userStoresObservationElements =
+                new Map(Object.entries(userData.choices));
         }
 
         // cycle and add new elements.
@@ -512,4 +500,26 @@ export function Telescopes(
             {instrumentFields()}
         </>
     );
+}
+
+export function TelescopeTiming(
+        {form}: {form: UseFormReturnType<ObservationFormValues>}):
+        ReactElement {
+    return (
+        <>
+            <NumberInputPlusUnit
+                form={form}
+                label={"Telescope Time Requirement"}
+                toolTip={"utilising the telescope time sensitivity " +
+                    "calculator fill in this field."}
+                valueRoot={'telescopeTime'}
+                units={telescopeTimeUnits} />
+            <Select
+                label={"User type: "}
+                placeholder={"Select the type of user you are."}
+                data = {personTypeOptions}
+                {...form.getInputProps('userType')}
+            />
+        </>
+    )
 }

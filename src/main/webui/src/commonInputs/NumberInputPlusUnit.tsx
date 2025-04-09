@@ -119,7 +119,7 @@ export function NumberInputPlusUnit(
             <Grid.Col span={{base: baseCols, sm: 5}}>
                 <Select
                     bg={props.color}
-                    label={"unit:"}
+                    label={"Unit:"}
                     p={props.padding}
                     placeholder={"pick one"}
                     withAsterisk={props.withAsterisk}
