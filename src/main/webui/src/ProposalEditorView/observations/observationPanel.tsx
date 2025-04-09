@@ -133,7 +133,8 @@ function Observations() {
         )
     }
 
-    if (proposal.data?.targets === undefined || proposal.data?.technicalGoals === undefined) {
+    if (proposal.data?.targets === undefined ||
+            proposal.data?.technicalGoals === undefined) {
         return (
             <PanelFrame>
                 <Header/>

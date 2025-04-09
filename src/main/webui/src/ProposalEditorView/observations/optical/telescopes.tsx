@@ -94,6 +94,7 @@ export function Telescopes(
             userDataRaw: Map<string, Map<string, Map<string, string>>> | undefined,
             storedTelescopeData: Map<string, Telescope> | undefined): void {
 
+        // no previous stored user data.
         if (userDataRaw == undefined) {
             return
         }
