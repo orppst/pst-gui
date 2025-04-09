@@ -13,18 +13,18 @@ import {
 } from '@mantine/core';
 import {modals} from "@mantine/modals";
 import {
-    CalibrationObservation,
+    CalibrationObservation, Observation,
     PerformanceParameters,
     TargetObservation,
 } from "src/generated/proposalToolSchemas.ts";
-import ObservationEditModal from "./edit.modal.tsx";
+import ObservationEditModal from "./editRadio.modal.tsx";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import CloneButton from "src/commonButtons/clone.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
 import {ReactElement} from 'react';
-import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../../commonPanel/notifications.tsx";
 
 export type ObservationId = {id: number}
 
@@ -34,7 +34,8 @@ export type ObservationId = {id: number}
  * @return {ReactElement} the react html for the observation row.
  * @constructor
  */
-export default function ObservationRow(observationId: ObservationId): ReactElement {
+export default function ObservationRow(observationId: ObservationId):
+        ReactElement {
 
     const queryClient = useQueryClient();
 
@@ -51,9 +52,11 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     const GRAY = theme.colors.gray[6];
 
     const {selectedProposalCode} = useParams();
-    let targetName: string = "Unknown";
+
+    let targetName = "Unknown";
     let additionTargets = 0;
 
+    // get observation data.
     const {
         data: observation,
         error: observationError,
@@ -73,7 +76,8 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
      * handles the deletion of an observation.
      */
     const handleDelete = async () => {
-        let fieldId = observation?.field?._id!
+        const fieldIdRaw = observation?.field?._id
+        const fieldId = fieldIdRaw!
 
         await removeObservation.mutateAsync({
             pathParams: {
@@ -81,11 +85,13 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 observationId: observationId.id
             }
         }, {
-            onSuccess: () =>  notifySuccess("Observation removed",
-                "Selected observation has been deleted.")
-            ,
+            onSuccess: () => {
+                notifySuccess("Observation removed",
+                    "Selected observation has been deleted.")
+            },
             onError: (error) =>
-                notifyError("Deletion of Observing Field failed", getErrorMessage(error)),
+                notifyError("Deletion of Observing Field failed",
+                            getErrorMessage(error)),
         })
 
         removeField.mutate({
@@ -161,12 +167,13 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation')
                         ? 'Target' : 'Calibration'}
-                    {` : ` + targetName + (additionTargets > 0? ` (plus ` + additionTargets + ` more)`:``)}
+                    {` : ` + targetName + (additionTargets > 0?
+                        ` (plus ` + additionTargets + ` more)`:``)}
                 </Text>
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
                     Creates a new observation with a deep copy of this
-                    observation's properties. You should edit the copied
+                    observation`s properties. You should edit the copied
                     observation for your needs.
                 </Text>
             </>
@@ -177,17 +184,17 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         onCancel:() => console.log('Cancel clone'),
     })
 
-    let performance : PerformanceParameters =
-        observation?.technicalGoal?.performance!;
+    const performanceRaw = observation?.technicalGoal?.performance;
+    const performance : PerformanceParameters = performanceRaw!
 
-    let performanceFull = observationLoading ? false :
+    const performanceFull = observationLoading ? false :
         performance.desiredAngularResolution?.value !== undefined &&
         performance.representativeSpectralPoint?.value !== undefined &&
         performance.desiredDynamicRange?.value !== undefined &&
         performance.desiredSensitivity?.value !== undefined &&
         performance.desiredLargestScale?.value !== undefined;
 
-    let performanceEmpty = observationLoading ? true :
+    const performanceEmpty = observationLoading ? true :
         performance.desiredAngularResolution?.value === undefined &&
         performance.representativeSpectralPoint?.value === undefined &&
         performance.desiredDynamicRange?.value === undefined &&
@@ -295,11 +302,41 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
 }
 
 /**
- * returns the header for the observation table.
+ * generates the observation table html.
+ *
+ * @return {React.ReactElement} the dynamic html for the observation table.
+ * @constructor
+ */
+export const RadioTableGenerator = (observations:  Observation[]): ReactElement => {
+    return (
+        <>
+            <h2> Radio Telescopes </h2>
+            <Table>
+                { observationRadioTableHeader() }
+                <Table.Tbody>
+                    {
+                        observations?.map((observation) => {
+                            return (
+                                <ObservationRow
+                                    id={observation._id!}
+                                    key={observation._id!}
+                                />
+                            )
+                        })
+                    }
+                </Table.Tbody>
+            </Table>
+        </>
+    )
+}
+
+/**
+ * returns the header for the observation radio table.
  *
  * @return {React.ReactElement} the html for the table header.
  */
-export function observationTableHeader(): ReactElement {
+// eslint-disable-next-line react-refresh/only-export-components
+function observationRadioTableHeader(): ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>

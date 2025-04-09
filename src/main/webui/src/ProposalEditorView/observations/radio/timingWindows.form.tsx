@@ -5,19 +5,19 @@ import {randomId} from "@mantine/hooks";
 
 import '@mantine/dates/styles.css'
 import AddButton from "src/commonButtons/add.tsx";
-import { ObservationFormValues } from './edit.group.tsx';
 import {AccordionRemove} from 'src/commonButtons/accordianControls.tsx';
 import { ReactElement } from 'react';
-import { TimingWindowGui } from './timingWindowGui.tsx';
+import { TimingWindowGui } from '../types/timingWindowGui.tsx';
 import {
     useObservationResourceRemoveConstraint
 } from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {modals} from "@mantine/modals";
-import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
-import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {queryKeyProposals} from "../../queryKeyProposals.tsx";
+import {notifyError, notifyInfo, notifySuccess} from "../../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../../errorHandling/getErrorMessage.tsx";
+import {queryKeyProposals} from "../../../queryKeyProposals.tsx";
+import {ObservationFormValues} from "../types/ObservationFormInterface";
 
 
 //Providing a UI for a TimingWindow:
@@ -129,7 +129,7 @@ export default function TimingWindowsForm(
 
     const windowsList = form.getValues().timingWindows.map(
         (tw: TimingWindowGui, index: number) => {
-            let labelIndex = index + 1;
+            const labelIndex = index + 1;
             return (
                 <Accordion.Item value={labelIndex.toString()} key={tw.key}>
                     <AccordionRemove

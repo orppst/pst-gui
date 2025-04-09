@@ -152,7 +152,9 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                         "The selected technical goal has been deleted")
                 },
                 onError: (error) =>
-                    notifyError("Failed to delete technical goal", getErrorMessage(error)),
+                    notifyError(
+                        "Failed to delete technical goal",
+                        getErrorMessage(error)),
             })
     }
 
@@ -200,7 +202,9 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                         "The selected technical goal has been cloned");
                 },
                 onError: (error) =>
-                    notifyError("Failed to clone technical goal", getErrorMessage(error))
+                    notifyError(
+                        "Failed to clone technical goal",
+                        getErrorMessage(error))
             })
     }
 
@@ -218,7 +222,7 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                 <Space h={"xs"}/>
                 <Text c={"gray.6"} size={"sm"}>
                     Creates a new technical goal with a clone of this technical
-                    goal's properties. You should edit the cloned technical
+                    goal`s properties. You should edit the cloned technical
                     goal for your needs.
                 </Text>
             </>

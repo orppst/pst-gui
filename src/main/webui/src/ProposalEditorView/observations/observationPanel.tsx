@@ -2,16 +2,19 @@ import {
     useProposalResourceGetObservingProposal,
 } from 'src/generated/proposalToolComponents';
 import {useParams} from "react-router-dom";
-import ObservationRow, { observationTableHeader } from './observationTable.tsx';
-import {Container, Grid, Group, List, Space, Table} from "@mantine/core";
+import { RadioTableGenerator} from './radio/observationRadioTable.tsx';
+import {Container, Grid, Group, List, Space} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import { ReactElement } from 'react';
-import ObservationEditModal from './edit.modal.tsx';
+import ObservationEditModal from './radio/editRadio.modal.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import {IconTarget, IconChartLine} from '@tabler/icons-react';
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
+import {OpticalTableGenerator} from "./optical/observationOpticalTable";
+import ObservationOpticalEditModal from "./optical/editOptical.modal";
+import {useOpticalTelescopeResourceGetProposalObservationIds} from "../../util/telescopeComms";
 
 
 /**
@@ -37,16 +40,30 @@ function ObservationsPanel(): ReactElement {
 // name and DB id for the object specified i.e. we don't get any information
 // on child objects.
 function Observations() {
-    const { selectedProposalCode} = useParams();
+    let { selectedProposalCode} = useParams();
+    selectedProposalCode = selectedProposalCode!;
 
     const proposal = useProposalResourceGetObservingProposal({
         pathParams: {proposalCode: Number(selectedProposalCode)}
     })
+    const opticalObservations =
+        useOpticalTelescopeResourceGetProposalObservationIds(
+            {proposalID: selectedProposalCode}
+        )
 
     if (proposal.isError) {
         return (
             <Container>
-                Unable to load proposal: {getErrorMessage(proposal.error)}
+                Unable to load proposal:
+                {getErrorMessage(proposal.error)}
+            </Container>
+        )
+    }
+    if (opticalObservations.isError) {
+        return (
+            <Container>
+                Unable to load optical observations:
+                {getErrorMessage(opticalObservations.error)}
             </Container>
         )
     }
@@ -58,38 +75,14 @@ function Observations() {
      * @constructor
      */
     const Header = (): ReactElement => {
+        const titleRaw = proposal.data?.title;
+        const title = titleRaw!;
         return (
             <PanelHeader
                 isLoading={proposal.isLoading}
-                itemName={proposal.data?.title!}
+                itemName={title}
                 panelHeading={"Observations"}
             />
-        )
-    }
-
-    /**
-     * generates the observation table html.
-     *
-     * @return {React.ReactElement} the dynamic html for the observation table.
-     * @constructor
-     */
-    const TableGenerator = (): ReactElement => {
-        return (
-            <Table>
-                { observationTableHeader() }
-                <Table.Tbody>
-                    {
-                        proposal.data?.observations?.map((observation) => {
-                            return (
-                                <ObservationRow
-                                    id={observation._id!}
-                                    key={observation._id!}
-                                />
-                            )
-                        })
-                    }
-                </Table.Tbody>
-            </Table>
         )
     }
 
@@ -128,7 +121,7 @@ function Observations() {
     }
 
     // if still loading. present a loading screen.
-    if (proposal.isLoading) {
+    if (proposal.isLoading || opticalObservations.isLoading) {
         return (
             <PanelFrame>
                 <Header/>
@@ -140,7 +133,8 @@ function Observations() {
         )
     }
 
-    if (proposal.data?.targets === undefined || proposal.data?.technicalGoals === undefined) {
+    if (proposal.data?.targets === undefined ||
+            proposal.data?.technicalGoals === undefined) {
         return (
             <PanelFrame>
                 <Header/>
@@ -159,10 +153,23 @@ function Observations() {
                             </List.Item>
                         }
                     </List>
-
             </PanelFrame>
         )
     } else {
+        const opticalObservationsStore: Observation[] = [];
+        const radioObservationsStore: Observation [] = [];
+        const backendIDs: number [] = opticalObservations.data!;
+
+        if (proposal.data.observations) {
+            for (const observation of proposal.data.observations!) {
+                if (backendIDs.includes(observation._id!)) {
+                    opticalObservationsStore.push(observation);
+                } else {
+                    radioObservationsStore.push(observation);
+                }
+            }
+        }
+
         //all requirements met
         return (
             <PanelFrame>
@@ -172,11 +179,20 @@ function Observations() {
                    <ContextualHelpButton messageId="MaintObsList" />
                 </Grid>
 
-                <TableGenerator/>
+                {RadioTableGenerator(radioObservationsStore)}
+
                 <Space h={"xl"}/>
                 <Grid>
                    <Grid.Col span={10}></Grid.Col>
                     <ObservationEditModal/>
+                </Grid>
+
+                {OpticalTableGenerator(opticalObservationsStore)}
+
+                <Space h={"xl"}/>
+                <Grid>
+                    <Grid.Col span={10}></Grid.Col>
+                    <ObservationOpticalEditModal/>
                 </Grid>
             </PanelFrame>
         )
