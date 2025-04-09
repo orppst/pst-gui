@@ -54,7 +54,16 @@ function Observations() {
     if (proposal.isError) {
         return (
             <Container>
-                Unable to load proposal: {getErrorMessage(proposal.error)}
+                Unable to load proposal:
+                {getErrorMessage(proposal.error)}
+            </Container>
+        )
+    }
+    if (opticalObservations.isError) {
+        return (
+            <Container>
+                Unable to load optical observations:
+                {getErrorMessage(opticalObservations.error)}
             </Container>
         )
     }
@@ -112,7 +121,7 @@ function Observations() {
     }
 
     // if still loading. present a loading screen.
-    if (proposal.isLoading) {
+    if (proposal.isLoading || opticalObservations.isLoading) {
         return (
             <PanelFrame>
                 <Header/>
