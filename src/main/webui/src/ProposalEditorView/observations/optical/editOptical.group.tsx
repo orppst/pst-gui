@@ -27,7 +27,7 @@ import {
 } from '../../../util/telescopeComms';
 import * as Schemas from '../../../generated/proposalToolSchemas';
 import {ObservationFormValues} from "../types/ObservationFormInterface";
-import {handleTargetsAndTechnicalGoals} from "../commonObservationCode";
+import {handleTargets, handleTechnicalGoals} from "../commonObservationCode";
 import TargetTypeOpticalForm from "./targetTypeOptical.form";
 
 
@@ -188,9 +188,17 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
             else {
                 const id = props.observation?._id;
                 const obsID = id!;
-                handleTargetsAndTechnicalGoals(
-                    form, values, replaceTargets, selectedProposalCode,
-                    obsID, queryClient, replaceTechnicalGoal);
+                if (form.isDirty('targetDBIds')) {
+                    handleTargets(
+                        values, replaceTargets, selectedProposalCode,
+                        obsID, queryClient);
+                }
+
+                if (form.isDirty('techGoalId')) {
+                    handleTechnicalGoals(
+                        values, selectedProposalCode,
+                        obsID, queryClient, replaceTechnicalGoal);
+                }
                 processTelescopeData(form.getValues().observationId!, false);
             }
     });

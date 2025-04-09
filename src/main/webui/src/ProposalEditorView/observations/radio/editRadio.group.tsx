@@ -28,8 +28,8 @@ import {queryKeyProposals} from "../../../queryKeyProposals.tsx";
 import {DEFAULT_STRING, err_red_str, NO_ROW_SELECTED, ObservationType} from '../../../constants.tsx';
 import {ContextualHelpButton} from "../../../commonButtons/contextualHelp.tsx";
 import {ObservationFormValues} from "../types/ObservationFormInterface";
-import {handleTargetsAndTechnicalGoals} from "../commonObservationCode";
 import TargetTypeRadioForm from "./targetTypeRadio.form";
+import {handleTargets, handleTechnicalGoals} from "../commonObservationCode";
 
 /**
  * Convert the TimingWindow type from the database to a type appropriate for
@@ -333,9 +333,17 @@ function ObservationRadioEditGroup(props: ObservationProps): ReactElement {
                 })
 
                 // handles targets and technical goals.
-                handleTargetsAndTechnicalGoals(
-                    form, values, replaceTargets, selectedProposalCode,
-                    obsID, queryClient, replaceTechnicalGoal);
+                if (form.isDirty('targetDBIds')) {
+                    handleTargets(
+                        values, replaceTargets, selectedProposalCode,
+                        obsID, queryClient);
+                }
+
+                if (form.isDirty('techGoalId')) {
+                    handleTechnicalGoals(
+                        values, selectedProposalCode,
+                        obsID, queryClient, replaceTechnicalGoal);
+                }
 
                 if (form.isDirty('calibrationUse')) {
                     replaceCalibrationUse.mutate({

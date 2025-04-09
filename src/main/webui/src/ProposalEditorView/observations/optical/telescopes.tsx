@@ -19,7 +19,8 @@ import {ObservationFormValues} from "../types/ObservationFormInterface";
  * @return {ReactElement} the react html for the observation panel.
  * @constructor
  */
-export function Telescopes({form}: {form: UseFormReturnType<ObservationFormValues>}):
+export function Telescopes(
+        {form}: {form: UseFormReturnType<ObservationFormValues>}):
         ReactElement {
     const { selectedProposalCode} = useParams();
 

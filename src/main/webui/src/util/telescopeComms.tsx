@@ -472,14 +472,9 @@ export const useOpticalTelescopeTableData = (
         queryKey,
         queryFn,
         select: (backendResponse) => {
-            const resultsMap = new Map<string, TelescopeTableState>();
-            for (const observationID in backendResponse) {
-                if (Object.prototype.hasOwnProperty.call(
-                        backendResponse, observationID)) {
-                    resultsMap.set(observationID, backendResponse[observationID]);
-                }
-            }
-            return resultsMap;
+            // converts weird object into real map for easier processing later
+            // on.
+            return new Map(Object.entries(backendResponse));
         },
         ...options,
         ...queryOptions,
