@@ -67,8 +67,7 @@ export function Telescopes(
      */
     if (getTelescopeData == null) {
         fetchOpticalTelescopeResourceGetTelescopeData().then(
-            (backendTelescopeData:
-                    Map<string, Map<string, Map<string, string>>>) => {
+            (backendTelescopeData: Map<string, Telescope>) => {
                 setTelescopeData(new Map(Object.entries(backendTelescopeData)));
 
                 // if no observation id, no loaded data.

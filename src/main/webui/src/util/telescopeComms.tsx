@@ -112,7 +112,7 @@ export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
 export const fetchOpticalTelescopeResourceGetTelescopeData =
         (signal?: AbortSignal) =>
     proposalToolFetch<
-        Map<string, Map<string, Map<string, string>>>,
+        Map<string, Telescope>,
         TelescopeDataError,
         undefined,
         NonNullable<unknown>,
