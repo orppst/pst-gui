@@ -159,11 +159,13 @@ function Observations() {
         const radioObservationsStore: Observation [] = [];
         const backendIDs: number [] = opticalObservations.data!;
 
-        for( const observation of proposal.data.observations!) {
-            if (backendIDs.includes(observation._id!)) {
-                opticalObservationsStore.push(observation);
-            } else {
-                radioObservationsStore.push(observation);
+        if (proposal.data.observations) {
+            for (const observation of proposal.data.observations!) {
+                if (backendIDs.includes(observation._id!)) {
+                    opticalObservationsStore.push(observation);
+                } else {
+                    radioObservationsStore.push(observation);
+                }
             }
         }
 
