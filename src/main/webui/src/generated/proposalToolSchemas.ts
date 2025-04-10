@@ -7,7 +7,6 @@
  * base proposal
  */
 export type AbstractProposal = {
-  _id?: number;
   /**
    * the proposal title
    */

@@ -7,7 +7,10 @@ import {
     IconUfo, IconUserPin,
     IconUsersGroup
 } from "@tabler/icons-react";
-import {useProposalCyclesResourceGetProposalCycles} from "src/generated/proposalToolComponents.ts";
+import {
+    useProposalCyclesResourceGetMyTACMemberProposalCycles,
+    useProposalCyclesResourceGetProposalCycles
+} from "src/generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
 import {Link} from "react-router-dom";
 import {HaveRole} from "../auth/Roles.tsx";
@@ -23,8 +26,8 @@ export default function CycleList(props:{observatory: number}) : ReactElement {
 
     //FIXME: use an actual query
 
-    const cycles = useProposalCyclesResourceGetProposalCycles(
-        {queryParams: {includeClosed: includeClosed, observatoryId: props.observatory}}
+    const cycles = useProposalCyclesResourceGetMyTACMemberProposalCycles(
+        {queryParams: {includeClosed: includeClosed}}
     )
 
     const [accordionValue, setAccordionValue]
