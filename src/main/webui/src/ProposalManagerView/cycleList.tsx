@@ -1,5 +1,5 @@
 import {ReactElement, useState} from "react";
-import {Accordion, Group, NavLink} from "@mantine/core";
+import {Accordion, Checkbox, Container, Group, NavLink, useMantineColorScheme, useMantineTheme} from "@mantine/core";
 import {
     IconBike,
     IconCalendar, IconEdit,
@@ -7,22 +7,27 @@ import {
     IconUfo, IconUserPin,
     IconUsersGroup
 } from "@tabler/icons-react";
-import {useProposalCyclesResourceGetProposalCycles} from "src/generated/proposalToolComponents.ts";
+import {
+    useProposalCyclesResourceGetMyTACMemberProposalCycles,
+    useProposalCyclesResourceGetProposalCycles
+} from "src/generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
 import {Link} from "react-router-dom";
 import {HaveRole} from "../auth/Roles.tsx";
 
-export default function CycleList() : ReactElement {
+export default function CycleList(props:{observatory: number}) : ReactElement {
+    const {colorScheme} = useMantineColorScheme();
+    const theme = useMantineTheme();
+    const [includeClosed, setIncludeClosed] = useState<boolean>(false);
 
-
-    if(!HaveRole(["tac_admin", "tac_member"])) {
+    if(!HaveRole(["tac_admin", "tac_member", "obs_administration"])) {
         return <>Not authorised</>
     }
 
     //FIXME: use an actual query
 
-    const cycles = useProposalCyclesResourceGetProposalCycles(
-        {queryParams: {includeClosed: true}}
+    const cycles = useProposalCyclesResourceGetMyTACMemberProposalCycles(
+        {queryParams: {includeClosed: includeClosed}}
     )
 
     const [accordionValue, setAccordionValue]
@@ -34,12 +39,33 @@ export default function CycleList() : ReactElement {
     })
 
     return (
+        <>
+        <Container
+            fluid
+            bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}
+            py={"xs"}
+        >
+            <Checkbox.Group
+                defaultValue={['active']}
+                label={"Proposal Cycle Status"}
+            >
+                <Group mt={"md"}>
+                    <Checkbox
+                        value={"closed"}
+                        label={"Include closed"}
+                        onChange={(event) => setIncludeClosed(event.currentTarget.checked)}
+                    />
+                </Group>
+            </Checkbox.Group>
+        </Container>
+
         <Accordion value={accordionValue}
                    onChange={setAccordionValue}
                    variant={"filled"}
         >
             {cyclesList}
         </Accordion>
+        </>
     )
 }
 

@@ -3,7 +3,7 @@ import {
     useContext,
     ReactElement,
     SyntheticEvent,
-    Context, StrictMode, useReducer
+    Context, StrictMode, useReducer,
 } from 'react';
 import {
     QueryClient,
@@ -117,6 +117,8 @@ export const ProposalContext:
 export const useToken = (): string => {
     return useContext(ProposalContext).getToken();
 };
+
+//export const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
 
 /**
  * generates the html for the main app.

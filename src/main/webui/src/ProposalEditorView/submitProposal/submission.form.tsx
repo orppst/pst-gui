@@ -23,6 +23,7 @@ import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import ValidationOverview from "./ValidationOverview.tsx";
 import DisplaySubmissionDetails from "./displaySubmissionDetails.tsx";
 import {IconCheck} from "@tabler/icons-react";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 export default
 function SubmissionForm() :
@@ -46,6 +47,8 @@ function SubmissionForm() :
     const [activeStep, setActiveStep] = useState(0);
 
     const [initialObservationModeTuple, setInitialObservationModeTuple] = useState<ObservationModeTuple[]>([]);
+
+    const {fetcherOptions} = useProposalToolContext();
 
     const proposalTitle = useProposalResourceGetObservingProposalTitle({
         pathParams: {proposalCode: Number(selectedProposalCode)}
@@ -202,7 +205,7 @@ function SubmissionForm() :
                     config: observationConfigMap
                 },
                 // @ts-ignore
-                headers: {"Content-Type": "application/json"}
+                headers: {"Content-Type": "application/json", ...fetcherOptions.headers}
             };
 
             submitProposalMutation.mutate(submissionVariables);

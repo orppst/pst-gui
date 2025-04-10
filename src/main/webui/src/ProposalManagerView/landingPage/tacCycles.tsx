@@ -1,9 +1,10 @@
 import {ReactElement} from "react";
 import {Box, List, Table, Tooltip} from "@mantine/core";
 import {
+    useProposalCyclesResourceGetMyTACMemberProposalCycles,
     useProposalCyclesResourceGetProposalCycleDates,
-    useProposalCyclesResourceGetProposalCycles,
-    useSubmittedProposalResourceGetSubmittedProposals, useTACResourceGetCommitteeMembers,
+    useSubmittedProposalResourceGetSubmittedProposals,
+    useTACResourceGetCommitteeMembers,
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES} from "../../constants.tsx";
 import {PanelHeader} from "../../commonPanel/appearance.tsx";
@@ -96,9 +97,9 @@ function TacCycleTableRow(props:CycleRowProps) {
 }
 
 function TacCycles (): ReactElement {
-    const { data , error, isLoading } = useProposalCyclesResourceGetProposalCycles({
-            queryParams: {includeClosed: true}
-        });
+    const { data , error, isLoading } = useProposalCyclesResourceGetMyTACMemberProposalCycles(
+        {queryParams: {includeClosed: true}}
+    );
 
     if(!HaveRole(["tac_admin", "tac_member"])) {
         return <>Not authorised</>
