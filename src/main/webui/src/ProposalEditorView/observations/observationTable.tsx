@@ -25,6 +25,10 @@ import CloneButton from "src/commonButtons/clone.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
 import {ReactElement} from 'react';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {
+    fetchOpticalTelescopeResourceGetVerification,
+    useOpticalTelescopeResourceDeleteObservationTelescopeData,
+} from "../../util/telescopeComms";
 
 export type ObservationId = {id: number}
 
@@ -43,6 +47,8 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         useObservationResourceAddNewObservation();
     const removeObservation =
         useObservationResourceRemoveObservation();
+    const deleteOpticalTelescope =
+        useOpticalTelescopeResourceDeleteObservationTelescopeData();
     const removeField =
         useProposalResourceRemoveField();
 
@@ -51,7 +57,7 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     const GRAY = theme.colors.gray[6];
 
     const {selectedProposalCode} = useParams();
-    let targetName: string = "Unknown";
+    let targetName = "Unknown";
     let additionTargets = 0;
 
     const {
@@ -70,10 +76,49 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     }
 
     /**
+     * function for handling deletion of telescope data.
+     */
+    const handleDeletionOfOpticalTelescopeData = async () => {
+        // really this needs to be done from backend to backend, to
+        // ensure transactional integrity. but oh well.
+        if (selectedProposalCode !== undefined) {
+            fetchOpticalTelescopeResourceGetVerification({
+                proposalID: selectedProposalCode,
+                observationID: observationId.id.toString()
+            }).then(
+                (result: boolean) => {
+                    if (result && selectedProposalCode !== undefined) {
+                        deleteOpticalTelescope.mutate({
+                            proposalID: selectedProposalCode,
+                            observationID: observationId.id.toString()
+                        }, {
+                            onSuccess: () => {
+                                notifySuccess(
+                                    "Observation removed",
+                                    "Selected observation and optical " +
+                                    "telescope data has been deleted.")
+                            },
+                            onError: (error) => {
+                                notifyError(
+                                    "Deletion of Observing Field optical " +
+                                    "telescope data failed",
+                                    getErrorMessage(error));
+                            }
+                        })
+                    } else {
+                        notifySuccess("Observation removed",
+                            "Selected observation has been deleted.")
+                    }
+                }
+            )
+        }
+    }
+
+    /**
      * handles the deletion of an observation.
      */
     const handleDelete = async () => {
-        let fieldId = observation?.field?._id!
+        const fieldId = observation?.field?._id!
 
         await removeObservation.mutateAsync({
             pathParams: {
@@ -81,11 +126,12 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 observationId: observationId.id
             }
         }, {
-            onSuccess: () =>  notifySuccess("Observation removed",
-                "Selected observation has been deleted.")
-            ,
+            onSuccess: () => {
+                handleDeletionOfOpticalTelescopeData();
+            },
             onError: (error) =>
-                notifyError("Deletion of Observing Field failed", getErrorMessage(error)),
+                notifyError("Deletion of Observing Field failed",
+                            getErrorMessage(error)),
         })
 
         removeField.mutate({
@@ -177,17 +223,17 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         onCancel:() => console.log('Cancel clone'),
     })
 
-    let performance : PerformanceParameters =
+    const performance : PerformanceParameters =
         observation?.technicalGoal?.performance!;
 
-    let performanceFull = observationLoading ? false :
+    const performanceFull = observationLoading ? false :
         performance.desiredAngularResolution?.value !== undefined &&
         performance.representativeSpectralPoint?.value !== undefined &&
         performance.desiredDynamicRange?.value !== undefined &&
         performance.desiredSensitivity?.value !== undefined &&
         performance.desiredLargestScale?.value !== undefined;
 
-    let performanceEmpty = observationLoading ? true :
+    const performanceEmpty = observationLoading ? true :
         performance.desiredAngularResolution?.value === undefined &&
         performance.representativeSpectralPoint?.value === undefined &&
         performance.desiredDynamicRange?.value === undefined &&
