@@ -8,8 +8,7 @@ import {
     IconUsersGroup
 } from "@tabler/icons-react";
 import {
-    useProposalCyclesResourceGetMyTACMemberProposalCycles,
-    useProposalCyclesResourceGetProposalCycles
+    useProposalCyclesResourceGetMyTACMemberProposalCycles, useProposalCyclesResourceGetProposalCycles,
 } from "src/generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
 import {Link} from "react-router-dom";
@@ -19,6 +18,7 @@ export default function CycleList(props:{observatory: number}) : ReactElement {
     const {colorScheme} = useMantineColorScheme();
     const theme = useMantineTheme();
     const [includeClosed, setIncludeClosed] = useState<boolean>(false);
+    const [includeAll, setIncludeAll] = useState<boolean>(false);
 
     if(!HaveRole(["tac_admin", "tac_member", "obs_administration"])) {
         return <>Not authorised</>
@@ -26,8 +26,11 @@ export default function CycleList(props:{observatory: number}) : ReactElement {
 
     //FIXME: use an actual query
 
-    const cycles = useProposalCyclesResourceGetMyTACMemberProposalCycles(
-        {queryParams: {includeClosed: includeClosed}}
+    const cycles = includeAll
+        ? useProposalCyclesResourceGetProposalCycles(
+        {queryParams: {includeClosed: includeClosed, observatoryId: props.observatory}}
+    ) : useProposalCyclesResourceGetMyTACMemberProposalCycles(
+        {queryParams: {includeClosed: includeClosed, observatoryId: props.observatory}}
     )
 
     const [accordionValue, setAccordionValue]
@@ -55,6 +58,12 @@ export default function CycleList(props:{observatory: number}) : ReactElement {
                         label={"Include closed"}
                         onChange={(event) => setIncludeClosed(event.currentTarget.checked)}
                     />
+                    {HaveRole(["obs_administration"]) &&
+                    <Checkbox
+                        value={"allcycles"}
+                        label={"Include all"}
+                        onChange={(event) => setIncludeAll(event.currentTarget.checked)}
+                    />}
                 </Group>
             </Checkbox.Group>
         </Container>
