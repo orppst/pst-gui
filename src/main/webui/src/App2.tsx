@@ -3,8 +3,8 @@ import {
     ReactElement,
     StrictMode,
     SyntheticEvent,
-    useContext, useEffect,
-    useReducer, useRef, useState,
+    useContext,
+    useReducer,
 } from 'react';
 import {QueryClient, QueryClientProvider, useQueryClient,} from '@tanstack/react-query';
 import {ObservingProposal, Person} from "./generated/proposalToolSchemas.ts";
@@ -12,7 +12,7 @@ import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
 import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
 import AddInvestigatorPanel from "./ProposalEditorView/investigators/New.tsx";
-import {createBrowserRouter, Outlet, RouterProvider, useNavigate, useParams} from 'react-router-dom';
+import {createBrowserRouter, Outlet, RouterProvider, useNavigate} from 'react-router-dom';
 import {useHistoryState} from "./useHistoryState";
 import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGoalsPanel.tsx";
 import {TargetPanel} from "./ProposalEditorView/targets/targetPanel.tsx";
@@ -77,14 +77,12 @@ import JSZip from "jszip";
 import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
-import {fetchPolarisMode} from "./util/polarisModeComms";
-import {Dispatch, SetStateAction, FC, ReactNode} from "react";
 
 /**
  * defines the user context type.
  */
 export type UserContextType = {
-    user: () => Person;
+    user: Person;
     getToken: () => string;
     authenticated: boolean;
 }
@@ -99,7 +97,7 @@ export type ProposalListWrapperProps = {
  * defines the polaris config data.
  */
 export type PolarisConfigType = {
-    mode: () => POLARIS_MODES;
+    mode: POLARIS_MODES;
 }
 
 /**
@@ -114,13 +112,7 @@ export type ProposalContextType = {
  * defines the type of the context value.
  */
 export type ContextType = (
-    UserContextType & ProposalContextType & PolarisConfigType &
-    {setMode: (newMode: POLARIS_MODES) => void;
-    setUser: (person: Person) => void;
-    setToken: (newToken: string) => void
-    setAuthenticated: Dispatch<SetStateAction<boolean>>;
-    setProposalCode: Dispatch<SetStateAction<number>>;
-    setApiURL: Dispatch<SetStateAction<string>>});
+    UserContextType & ProposalContextType & PolarisConfigType);
 
 /**
  * generates a proposal context.
@@ -128,18 +120,12 @@ export type ContextType = (
  * @type {React.Context<UserContextType & ProposalContext>} the context.
  */
 export const ProposalContext = createContext<ContextType>({
-    user: () => {return {}},
+    user: {},
     getToken: ()=>{return "-111"},
     authenticated: false,
     selectedProposalCode: -1,
-    mode: () => { return POLARIS_MODES.RADIO},
+    mode: POLARIS_MODES.OPTICAL,
     apiUrl:"http://api",
-    setMode: (newMode: POLARIS_MODES) => {console.log(newMode)},
-    setUser: (person: Person) => {console.log(person)},
-    setToken: (newToken: string) => {console.log(newToken)},
-    setAuthenticated: () => {console.log("c")},
-    setProposalCode: () => {console.log("c")},
-    setApiURL: () => {console.log("c")},
 })
 
 /**
@@ -148,46 +134,6 @@ export const ProposalContext = createContext<ContextType>({
  */
 export const useToken = (): string => {
     return useContext(ProposalContext).getToken();
-};
-
-/**
- * Provides the proposal context to its children.
- */
-export const ProposalContextProvider:
-        FC<{ children: ReactNode }> = ({ children }) => {
-    const polarisModeRef = useRef(POLARIS_MODES.RADIO);
-    const userRef = useRef({ fullName: "Unknown" } as Person);
-    const tokenRef = useRef("");
-    const [authenticated, setAuthenticated] = useState(false);
-    const [proposalCode, setProposalCode] = useState(0);
-    const [apiUrl, setApiURL] = useState("http://api");
-
-    useEffect(() => {
-        fetchPolarisMode().then((mode: number) => {
-            polarisModeRef.current = mode;
-        });
-    }, []);
-
-    const contextValue: ContextType = {
-        mode: () => {return polarisModeRef.current},
-        setMode: (newMode: POLARIS_MODES) => {polarisModeRef.current = newMode},
-        user: () => { return userRef.current},
-        setUser: (person: Person) => {userRef.current = person},
-        getToken: () => {return tokenRef.current},
-        setToken: (newToken: string) => { tokenRef.current = newToken},
-        authenticated:authenticated,
-        setAuthenticated: setAuthenticated,
-        selectedProposalCode: proposalCode,
-        setProposalCode: setProposalCode,
-        apiUrl:apiUrl,
-        setApiURL: setApiURL,
-    };
-
-    return (
-        <ProposalContext.Provider value={contextValue}>
-            {children}
-        </ProposalContext.Provider>
-    );
 };
 
 /**
@@ -223,7 +169,7 @@ function App2(): ReactElement {
                 element: <PSTEditor/>,
                 errorElement: <ErrorPage />,
                 children: generateDefaultChildren(
-                    useContext(ProposalContext).mode())
+                    useContext(ProposalContext).mode)
             }], {
             basename: "/pst/gui/tool/"
         }
@@ -233,10 +179,8 @@ function App2(): ReactElement {
         <AuthProvider>
             <StrictMode>
                 <QueryClientProvider client={queryClient}>
-                    <ProposalContextProvider>
                         <RouterProvider router={router}/>
                         <ReactQueryDevtools initialIsOpen={false} />
-                    </ProposalContextProvider>
                 </QueryClientProvider>
             </StrictMode>
         </AuthProvider>
@@ -249,8 +193,7 @@ function App2(): ReactElement {
      */
     function PSTEditor(): ReactElement {
         const proposalContext = useContext(ProposalContext);
-        const { getToken } = useParams();
-        const authToken = getToken!;
+        const authToken = useToken();
         const queryClient = useQueryClient();
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
@@ -330,121 +273,123 @@ function App2(): ReactElement {
         the accordion collapses, and I can't figure out why.
          */
         return (
-            <AppShell
-                header={{height: APP_HEADER_HEIGHT}}
-                navbar={{
-                    width: {
-                        base: NAV_BAR_DEFAULT_WIDTH,
-                        md: NAV_BAR_MEDIUM_WIDTH,
-                        lg: NAV_BAR_LARGE_WIDTH},
-                    breakpoint: 'sm',
-                    collapsed: {mobile: !opened},
-                }}
-            >
-                <AppShell.Header p="md">
-                    <Grid columns={2}>
-                        <Grid.Col span={1}>
-                            <Group h="100%" px="md" wrap={"nowrap"}>
-                                <Burger
-                                    opened={opened}
-                                    onClick={toggle}
-                                    hiddenFrom={"sm"}
-                                    size="lg"
-                                    color={GRAY}
-                                    mr="xl"
-                                />
-                                <img src={"/pst/gui/polaris4.png"}
-                                     alt="Polaris"
-                                     width={60}/>
-                                {HaveRole(["tac_admin","tac_member"]) &&  (<Tooltip
-                                    label={"go to proposal management view"}
-                                    openDelay={OPEN_DELAY}
-                                >
-                                    <ActionIcon
-                                        color={"pink"}
-                                        variant={"subtle"}
-                                        onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
+            <ProposalContext.Provider value={proposalContext}>
+                <AppShell
+                    header={{height: APP_HEADER_HEIGHT}}
+                    navbar={{
+                        width: {
+                            base: NAV_BAR_DEFAULT_WIDTH,
+                            md: NAV_BAR_MEDIUM_WIDTH,
+                            lg: NAV_BAR_LARGE_WIDTH},
+                        breakpoint: 'sm',
+                        collapsed: {mobile: !opened},
+                    }}
+                >
+                    <AppShell.Header p="md">
+                        <Grid columns={2}>
+                            <Grid.Col span={1}>
+                                <Group h="100%" px="md" wrap={"nowrap"}>
+                                    <Burger
+                                        opened={opened}
+                                        onClick={toggle}
+                                        hiddenFrom={"sm"}
+                                        size="lg"
+                                        color={GRAY}
+                                        mr="xl"
+                                    />
+                                    <img src={"/pst/gui/polaris4.png"}
+                                         alt="Polaris"
+                                         width={60}/>
+                                    {HaveRole(["tac_admin","tac_member"]) &&  (<Tooltip
+                                        label={"go to proposal management view"}
+                                        openDelay={OPEN_DELAY}
                                     >
-                                        <IconUniverse />
-                                    </ActionIcon>
-                                </Tooltip>)}
-                                <DatabaseSearchButton
-                                    toolTipLabel={
-                                        "Locate proposals by " +
-                                        proposalContext.user().fullName + "."}
-                                    label={"Proposals for " + proposalContext.user().fullName}
-                                    onClickEvent={handleSearch}
-                                />
+                                        <ActionIcon
+                                            color={"pink"}
+                                            variant={"subtle"}
+                                            onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
+                                        >
+                                            <IconUniverse />
+                                        </ActionIcon>
+                                    </Tooltip>)}
+                                    <DatabaseSearchButton
+                                        toolTipLabel={
+                                            "Locate proposals by " +
+                                            proposalContext.user.fullName + "."}
+                                        label={"Proposals for " + proposalContext.user.fullName}
+                                        onClickEvent={handleSearch}
+                                    />
 
-                            </Group>
-                        </Grid.Col>
-                        <Grid.Col span={1}>
-                            <Group justify={"flex-end"}>
-                                {ColourSchemeToggle()}
-                                <Tooltip label={"logout"}
-                                         openDelay={OPEN_DELAY}
-                                         closeDelay={CLOSE_DELAY}
-                                >
-                                    <ActionIcon color={"orange.8"}
-                                                variant={"subtle"}
-                                                component={"a"}
-                                                href={"/pst/gui/logout"}
+                                </Group>
+                            </Grid.Col>
+                            <Grid.Col span={1}>
+                                <Group justify={"flex-end"}>
+                                    {ColourSchemeToggle()}
+                                    <Tooltip label={"logout"}
+                                             openDelay={OPEN_DELAY}
+                                             closeDelay={CLOSE_DELAY}
                                     >
-                                        <IconLogout size={ICON_SIZE}/>
-                                    </ActionIcon>
-                                </Tooltip>
-                            </Group>
-                        </Grid.Col>
-                    </Grid>
-                </AppShell.Header>
+                                        <ActionIcon color={"orange.8"}
+                                                    variant={"subtle"}
+                                                    component={"a"}
+                                                    href={"/pst/gui/logout"}
+                                        >
+                                            <IconLogout size={ICON_SIZE}/>
+                                        </ActionIcon>
+                                    </Tooltip>
+                                </Group>
+                            </Grid.Col>
+                        </Grid>
+                    </AppShell.Header>
 
-                <AppShell.Navbar>
-                    <AppShell.Section>
-                        <Container fluid bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}>
-                            <Text fz="sm">
-                                Filter existing proposals by:
-                            </Text>
-                            <TextInput label="Title"
-                                       value={proposalTitleFilter}
-                                       onChange={(e: { target: { value: string; }; }) =>
-                                           setProposalTitleFilter(e.target.value)}
-                            />
-                            <TextInput label="Investigator name"
-                                       value={investigatorNameFilter}
-                                       onChange={(e: { target: { value: string; }; }) =>
-                                           setInvestigatorNameFilter(e.target.value)}
-                                       pb={"md"}
-                            />
-                        </Container>
-
-                        <AddButton toolTipLabel={"new proposal"}
-                                   label={"Create new proposal"}
-                                   onClickEvent={handleAddNew}/>
-                        <FileButton
-                            onChange={handleUploadZip}
-                            accept={".zip"}
-                        >
-                            {(props: {onClick: () => void}) =>
-                                <UploadButton
-                                    toolTipLabel="select a file from disk to upload"
-                                    label={"Import existing proposal"}
-                                    onClick={props.onClick}
+                    <AppShell.Navbar>
+                        <AppShell.Section>
+                            <Container fluid bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}>
+                                <Text fz="sm">
+                                    Filter existing proposals by:
+                                </Text>
+                                <TextInput label="Title"
+                                           value={proposalTitleFilter}
+                                           onChange={(e: { target: { value: string; }; }) =>
+                                               setProposalTitleFilter(e.target.value)}
                                 />
-                            }
-                        </FileButton>
-                    </AppShell.Section>
-                    <AppShell.Section component={ScrollArea}>
-                        <ProposalListWrapper
-                            proposalTitle={proposalTitleFilter}
-                            investigatorName={investigatorNameFilter}
-                            auth={proposalContext.authenticated}
-                        />
-                    </AppShell.Section>
-                </AppShell.Navbar>
-                <AppShell.Main pr={"sm"}>
-                    <Outlet/>
-                </AppShell.Main>
-            </AppShell>
+                                <TextInput label="Investigator name"
+                                           value={investigatorNameFilter}
+                                           onChange={(e: { target: { value: string; }; }) =>
+                                               setInvestigatorNameFilter(e.target.value)}
+                                           pb={"md"}
+                                />
+                            </Container>
+
+                            <AddButton toolTipLabel={"new proposal"}
+                                       label={"Create new proposal"}
+                                       onClickEvent={handleAddNew}/>
+                            <FileButton
+                                onChange={handleUploadZip}
+                                accept={".zip"}
+                            >
+                                {(props: {onClick: () => void}) =>
+                                    <UploadButton
+                                        toolTipLabel="select a file from disk to upload"
+                                        label={"Import existing proposal"}
+                                        onClick={props.onClick}
+                                    />
+                                }
+                            </FileButton>
+                        </AppShell.Section>
+                        <AppShell.Section component={ScrollArea}>
+                            <ProposalListWrapper
+                                proposalTitle={proposalTitleFilter}
+                                investigatorName={investigatorNameFilter}
+                                auth={proposalContext.authenticated}
+                            />
+                        </AppShell.Section>
+                    </AppShell.Navbar>
+                    <AppShell.Main pr={"sm"}>
+                        <Outlet/>
+                    </AppShell.Main>
+                </AppShell>
+            </ProposalContext.Provider>
         )
     }
 
@@ -552,7 +497,7 @@ function App2(): ReactElement {
      * generates user children routes for a given mode.
      * @param polarisMode: the polaris mode.
      */
-    function generateDefaultChildren(polarisMode: number) {
+    function generateDefaultChildren(polarisMode: POLARIS_MODES) {
         const elements = [];
         elements.push({index: true, element: <PSTStart/>})
         elements.push({

@@ -1,4 +1,4 @@
-import {ReactElement, useState} from "react";
+import {ReactElement, useContext, useState} from "react";
 import {Accordion, NavLink, useMantineColorScheme, useMantineTheme} from "@mantine/core";
 import {
     IconChartLine,
@@ -13,6 +13,7 @@ import {Link, useParams} from "react-router-dom";
 import {useProposalResourceGetProposals} from "./generated/proposalToolComponents.ts";
 import {ProposalSynopsis} from "./generated/proposalToolSchemas.ts";
 import {POLARIS_MODES} from "./constants";
+import {ProposalContext} from "./App2";
 
 
 export function ProposalList(
@@ -27,8 +28,8 @@ export function ProposalList(
     const [active, setActive] = useState("");
 
     const {selectedProposalCode} = useParams();
-    const {mode} = useParams();
-    const polarisMode = Number(mode);
+    const mode = useContext(ProposalContext).mode;
+    const polarisMode = Number(mode) as POLARIS_MODES;
 
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();

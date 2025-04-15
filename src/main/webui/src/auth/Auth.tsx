@@ -1,12 +1,14 @@
-import {ReactNode, useState, useRef, useContext} from "react"
+import {ReactNode, useRef, useState} from "react"
 import {Person, SubjectMap} from "../generated/proposalToolSchemas.ts"
 import {ProposalContext} from "../App2.tsx"
 import {setFetcherApiURL} from "../generated/proposalToolFetcher.ts"
 import {NewUser} from "./NewUser.tsx";
-import { Modal, Button } from '@mantine/core'
-import { useIdleTimer } from 'react-idle-timer'
+import {Button, Modal} from '@mantine/core'
 import type {PresenceType} from 'react-idle-timer'
+import {useIdleTimer} from 'react-idle-timer'
 import '../../public/greeting.css'
+import {POLARIS_MODES} from "../constants";
+import {fetchPolarisMode} from "../util/polarisModeComms";
 
 export type AuthMapping = {
     subjectMap:SubjectMap;
@@ -32,9 +34,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const minuteAsMS = 60000;
 
-    const [loggedOn, setLoggedOn] = useState(false)
-    const [expiringSoon, setExpiring] = useState(false)
+    const [loggedOn, setLoggedOn] = useState(false);
+    const [expiringSoon, setExpiring] = useState(false);
     const [isNewUser, setIsNewUser] = useState(false);
+    const [mode, setMode] = useState(POLARIS_MODES.RADIO);
+    const [gotMode, setGotMode] = useState(false);
 
     //seems to be overwritten regardless
     const expiry = useRef(new Date(Date.now()))
@@ -57,6 +61,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         timeout: minuteAsMS * minutesUntilIdleTriggered,
         throttle: 500
     })
+
+    function getMode() {
+        fetchPolarisMode().then((mode: number) => {
+            setMode(mode);
+            setGotMode(true);
+        });
+    }
+
     async function getUser() {
         const apiResponse = await window.fetch(
             "/pst/gui/api-info",
@@ -171,6 +183,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       redoAuthentication()
     }
 
+    if(!gotMode) {
+        getMode();
+    }
+
 
     function userConfirmed(p :Person)
     {
@@ -178,14 +194,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsNewUser(false)
     }
 
-    //<ProposalContext.Provider value={{user:user.current, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
-    useContext(ProposalContext).setUser(user.current);
-    useContext(ProposalContext).setToken(getToken());
-    useContext(ProposalContext).setAuthenticated(loggedOn);
-    useContext(ProposalContext).setApiURL(apiURL.current);
-
     return (
-        <>
+        <ProposalContext.Provider value={{
+                user:user.current,
+                getToken:getToken,
+                authenticated:loggedOn,
+                selectedProposalCode:0,
+                apiUrl:apiURL.current,
+                mode: mode}}>
             {loggedOn ? ( isNewUser ? (
                   <NewUser proposed={user.current}
                            uuid={uuid.current}
@@ -229,6 +245,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     </>
             )
             }
-        </>
+        </ProposalContext.Provider>
     );
 }
