@@ -1,4 +1,4 @@
-import {ReactNode, useState, useRef} from "react"
+import {ReactNode, useState, useRef, useContext} from "react"
 import {Person, SubjectMap} from "../generated/proposalToolSchemas.ts"
 import {ProposalContext} from "../App2.tsx"
 import {setFetcherApiURL} from "../generated/proposalToolFetcher.ts"
@@ -26,7 +26,6 @@ export type AuthMapping = {
 //
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-
     // CONFIG VALUES ///////////////////////////////////
     const minutesUntilIdleTriggered = 5;
     // CONFIG VALUES END ///////////////////////////////
@@ -37,7 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [expiringSoon, setExpiring] = useState(false)
     const [isNewUser, setIsNewUser] = useState(false);
 
-    const expiry = useRef(new Date(Date.now())) //seems to be overwritten regardless
+    //seems to be overwritten regardless
+    const expiry = useRef(new Date(Date.now()))
     const user  = useRef({fullName:"Unknown"} as Person)
     const apiURL = useRef("")
     const logoutTimer = useRef<NodeJS.Timeout>()
@@ -46,7 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const uuid =  useRef<string>("")
 
     const onPresenceChange = (presence:PresenceType) =>{
-        console.log("activity change = " + presence.type + " at " + new Date().toISOString())
+        console.log("activity change = " + presence.type + " at " +
+                    new Date().toISOString())
     }
 
     const getToken = () => {return token.current}
@@ -57,15 +58,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throttle: 500
     })
     async function getUser() {
-        const apiResponse = await window.fetch("/pst/gui/api-info", {mode:"no-cors"}) //FIXME reintroduce CORS when keycloak is implementing it properly
+        const apiResponse = await window.fetch(
+            "/pst/gui/api-info",
+            {mode:"no-cors"}) //FIXME reintroduce CORS when keycloak is implementing it properly
         const localbaseUrl = await apiResponse.text()
         setFetcherApiURL(localbaseUrl)
         apiURL.current=localbaseUrl
 
-        const response = await window.fetch("/pst/gui/aai/", {mode:"no-cors", redirect:"manual"}); //FIXME reintroduce CORS when keycloak is implementing it properly
+        const response = await window.fetch(
+            "/pst/gui/aai/",
+            {mode:"no-cors", redirect:"manual"}); //FIXME reintroduce CORS when keycloak is implementing it properly
         let error;
         if (response.ok) {
-
             return await response.json() as AuthMapping
         } else if(response.redirected) {
             console.log("redirected" )
@@ -88,8 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             : "Unexpected error",
                 };
             }
-
-
         }
         throw error;
     }
@@ -109,36 +111,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setLoggedOn(true)
             expiry.current = new Date(s.expiry)
             console.log("token: " + token.current)
-            console.log("access token will expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
+            console.log("access token will expire - "+
+                        expiry.current.toISOString()+" ("+
+                        expiry.current.getHours()+":"+
+                        expiry.current.getMinutes()+":"+
+                        expiry.current.getSeconds()+" Local)")
             setExpiring(false)
             console.log("clearing logout timer",logoutTimer.current)
             clearTimeout(logoutTimer.current) //FIXME - this is really only necessary because
             console.log("clear expiryTimer", expiryTimer.current)
             clearTimeout(expiryTimer.current)
-            expiryTimer.current = setTimeout(() =>{
-                console.log("access token about to expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
-                if(idleTimer.isIdle()) {
-                    setExpiring(true);
-                    console.log("idle")
-                    //change multiplier value to change minutes for logout timer
-                    logoutTimer.current = setTimeout(logout, minuteAsMS * 3)
-                    console.log("setting logout timer", logoutTimer.current)
-                }
-                else
-                {
-                    console.log("not idle ", idleTimer.getLastActiveTime()?.toISOString())
-                    redoAuthentication()
-                }
-            }, expiry.current.getTime()-Date.now() - minuteAsMS) //changed from 55sec to avoid magic number
+            expiryTimer.current = setTimeout(
+                () => {
+                    console.log("access token about to expire - "+
+                                expiry.current.toISOString()+" ("+
+                                expiry.current.getHours()+":"+
+                                expiry.current.getMinutes()+":"+
+                                expiry.current.getSeconds()+" Local)")
+                    if(idleTimer.isIdle()) {
+                        setExpiring(true);
+                        console.log("idle")
+                        //change multiplier value to change minutes for logout
+                        // timer
+                        logoutTimer.current = setTimeout(logout, minuteAsMS * 3)
+                        console.log("setting logout timer", logoutTimer.current)
+                    }
+                    else
+                    {
+                        console.log(
+                            "not idle ",
+                            idleTimer.getLastActiveTime()?.toISOString())
+                        redoAuthentication()
+                    }
+                },
+                //changed from 55sec to avoid magic number
+                expiry.current.getTime()-Date.now() - minuteAsMS)
+
             console.log("setting new expiry reminder", expiryTimer.current)
 
             if(s.subjectMap.inKeycloakRealm && s.subjectMap.person) {
                 user.current= s.subjectMap.person
             }
             else {
-                console.warn("authenticated person ",s.nameFromAuth," is not registered with database")
+                console.warn(
+                    "authenticated person ",s.nameFromAuth,
+                    " is not registered with database")
                 setIsNewUser(true)
-                user.current = {fullName: s.nameFromAuth, eMail: s.emailFromAuth}
+                user.current =
+                    {fullName: s.nameFromAuth, eMail: s.emailFromAuth}
                 uuid.current = s.kc_uuid
                 console.log("new user", user.current)
             }
@@ -158,12 +178,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsNewUser(false)
     }
 
+    //<ProposalContext.Provider value={{user:user.current, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
+    useContext(ProposalContext).setUser(user.current);
+    useContext(ProposalContext).setToken(getToken());
+    useContext(ProposalContext).setAuthenticated(loggedOn);
+    useContext(ProposalContext).setApiURL(apiURL.current);
+
     return (
-        <ProposalContext.Provider value={{user:user.current, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
+        <>
             {loggedOn ? ( isNewUser ? (
-
-                  <NewUser proposed={user.current} uuid={uuid.current} userConfirmed={userConfirmed}/>
-
+                  <NewUser proposed={user.current}
+                           uuid={uuid.current}
+                           userConfirmed={userConfirmed}/>
                 ) : (
            <>
                <Modal
@@ -179,7 +205,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                    {
                      <>
                        <div>Session about to time out</div>
-                       <Button onClick={()=> {redoAuthentication()}}>Click to continue</Button>
+                       <Button onClick={()=> {redoAuthentication()}}>
+                           Click to continue
+                       </Button>
                      </>
                    }
                </Modal>
@@ -189,17 +217,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 ) ) : (
                     <>
                         <div className='introback'>
-                        <div className='greeting'>
+                            <div className='greeting'>
 
-                            <img className="intromessage" src="/pst/gui/polaris4.png"/>
-                            <h1 className='intromessage'><a href={'/pst/gui/tool/'}>Login</a></h1>
-
-                        </div>
+                                <img className="intromessage"
+                                     src="/pst/gui/polaris4.png"/>
+                                <h1 className='intromessage'>
+                                    <a href={'/pst/gui/tool/'}>Login</a>
+                                </h1>
+                            </div>
                         </div>
                     </>
             )
             }
-        </ProposalContext.Provider>
-
+        </>
     );
 }

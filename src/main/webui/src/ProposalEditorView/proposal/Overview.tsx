@@ -36,9 +36,9 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
-import {useToken} from "../../App2.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {useOpticalTelescopeResourceDeleteProposalTelescopeData} from "../../util/telescopeComms";
+import {useToken} from "../../App2";
 
 /*
       title    -- string

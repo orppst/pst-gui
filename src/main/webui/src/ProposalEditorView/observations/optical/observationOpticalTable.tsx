@@ -27,6 +27,7 @@ import {
     useOpticalTelescopeTableData,
 } from "../../../util/telescopeComms";
 import ObservationEditModal from "./editOptical.modal";
+import {POLARIS_MODES} from "../../../constants";
 
 export type ObservationId = {id: number}
 
@@ -279,11 +280,11 @@ function ObservationRow(observationId: ObservationId):
  * @return {React.ReactElement} the dynamic html for the observation table.
  * @constructor
  */
-export const OpticalTableGenerator = (observations:  Observation[]):
+export const OpticalTableGenerator = (observations:  Observation[], mode: number):
         ReactElement => {
     return (
         <>
-            <h2>Optical Telescopes</h2>
+            {mode == POLARIS_MODES.BOTH && (<h2> Optical Telescopes </h2>)}
             <Table>
                 { observationOpticalTableHeader() }
                 <Table.Tbody>

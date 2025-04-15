@@ -15,6 +15,7 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {OpticalTableGenerator} from "./optical/observationOpticalTable";
 import ObservationOpticalEditModal from "./optical/editOptical.modal";
 import {useOpticalTelescopeResourceGetProposalObservationIds} from "../../util/telescopeComms";
+import {POLARIS_MODES} from "../../constants";
 
 
 /**
@@ -41,7 +42,9 @@ function ObservationsPanel(): ReactElement {
 // on child objects.
 function Observations() {
     let { selectedProposalCode} = useParams();
+    const { mode } = useParams();
     selectedProposalCode = selectedProposalCode!;
+    const polarisMode = Number(mode);
 
     const proposal = useProposalResourceGetObservingProposal({
         pathParams: {proposalCode: Number(selectedProposalCode)}
@@ -179,7 +182,9 @@ function Observations() {
                    <ContextualHelpButton messageId="MaintObsList" />
                 </Grid>
 
-                {RadioTableGenerator(radioObservationsStore)}
+                {(polarisMode === POLARIS_MODES.BOTH ||
+                    polarisMode === POLARIS_MODES.RADIO) && (
+                        RadioTableGenerator(radioObservationsStore, polarisMode))}
 
                 <Space h={"xl"}/>
                 <Grid>
@@ -187,7 +192,9 @@ function Observations() {
                     <ObservationEditModal/>
                 </Grid>
 
-                {OpticalTableGenerator(opticalObservationsStore)}
+                {(polarisMode === POLARIS_MODES.BOTH ||
+                    polarisMode === POLARIS_MODES.OPTICAL) && (
+                        OpticalTableGenerator(opticalObservationsStore, polarisMode))}
 
                 <Space h={"xl"}/>
                 <Grid>

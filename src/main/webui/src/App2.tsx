@@ -1,57 +1,57 @@
 import {
     createContext,
-    useContext,
     ReactElement,
+    StrictMode,
     SyntheticEvent,
-    Context, StrictMode, useReducer
+    useContext, useEffect,
+    useReducer, useRef, useState,
 } from 'react';
-import {
-    QueryClient,
-    QueryClientProvider, useQueryClient,
-} from '@tanstack/react-query';
+import {QueryClient, QueryClientProvider, useQueryClient,} from '@tanstack/react-query';
 import {ObservingProposal, Person} from "./generated/proposalToolSchemas.ts";
 import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
 import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
 import AddInvestigatorPanel from "./ProposalEditorView/investigators/New.tsx";
-import {
-    createBrowserRouter,
-    Outlet,
-    RouterProvider,
-    useNavigate
-} from 'react-router-dom';
-import { useHistoryState } from "./useHistoryState";
+import {createBrowserRouter, Outlet, RouterProvider, useNavigate, useParams} from 'react-router-dom';
+import {useHistoryState} from "./useHistoryState";
 import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGoalsPanel.tsx";
-import { TargetPanel } from "./ProposalEditorView/targets/targetPanel.tsx";
+import {TargetPanel} from "./ProposalEditorView/targets/targetPanel.tsx";
 import ObservationsPanel from "./ProposalEditorView/observations/observationPanel.tsx";
 import DocumentsPanel from "./ProposalEditorView/proposal/Documents.tsx";
 import SubmitPanel from "./ProposalEditorView/submitProposal/submitPanel.tsx";
 
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
 import {
+    ActionIcon,
     AppShell,
+    Burger,
+    Container,
+    FileButton,
+    Grid,
+    Group,
+    ScrollArea,
     Text,
     TextInput,
-    Grid,
-    Burger,
-    ScrollArea,
-    Group,
-    ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container,
+    Tooltip,
+    useMantineColorScheme,
+    useMantineTheme,
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
-import {
-    IconLogout, IconUniverse
-} from '@tabler/icons-react';
+import {IconLogout, IconUniverse} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
 import DatabaseSearchButton from './commonButtons/databaseSearch';
-//import {ContextualHelpButton} from "./commonButtons/contextualHelp.tsx"
 import {
-    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE, JSON_FILE_NAME,
-    NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
-    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
+    APP_HEADER_HEIGHT,
+    CLOSE_DELAY,
+    ICON_SIZE,
+    JSON_FILE_NAME,
+    NAV_BAR_DEFAULT_WIDTH,
+    NAV_BAR_LARGE_WIDTH,
+    NAV_BAR_MEDIUM_WIDTH,
+    OPEN_DELAY,
+    POLARIS_MODES,
 } from './constants';
 import {SendToImportAPI} from './ProposalEditorView/proposal/UploadProposal';
 import UploadButton from './commonButtons/upload';
@@ -77,14 +77,29 @@ import JSZip from "jszip";
 import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
+import {fetchPolarisMode} from "./util/polarisModeComms";
+import {Dispatch, SetStateAction, FC, ReactNode} from "react";
 
 /**
  * defines the user context type.
  */
 export type UserContextType = {
-    user: Person;
+    user: () => Person;
     getToken: () => string;
     authenticated: boolean;
+}
+
+export type ProposalListWrapperProps = {
+    proposalTitle: string,
+    investigatorName:string,
+    auth:boolean
+}
+
+/**
+ * defines the polaris config data.
+ */
+export type PolarisConfigType = {
+    mode: () => POLARIS_MODES;
 }
 
 /**
@@ -96,19 +111,36 @@ export type ProposalContextType = {
 }
 
 /**
+ * defines the type of the context value.
+ */
+export type ContextType = (
+    UserContextType & ProposalContextType & PolarisConfigType &
+    {setMode: (newMode: POLARIS_MODES) => void;
+    setUser: (person: Person) => void;
+    setToken: (newToken: string) => void
+    setAuthenticated: Dispatch<SetStateAction<boolean>>;
+    setProposalCode: Dispatch<SetStateAction<number>>;
+    setApiURL: Dispatch<SetStateAction<string>>});
+
+/**
  * generates a proposal context.
  *
- * @type {React.Context<UserContextType & ProposalContextType>} the context.
+ * @type {React.Context<UserContextType & ProposalContext>} the context.
  */
-export const ProposalContext:
-    Context<UserContextType & ProposalContextType> =
-    createContext<UserContextType & ProposalContextType>({
-        user: {},
-        getToken: ()=>{return ""},
-        authenticated: false,
-        selectedProposalCode: 0,
-        apiUrl:"http://api" // obviously false as a placeholder
-    })
+export const ProposalContext = createContext<ContextType>({
+    user: () => {return {}},
+    getToken: ()=>{return "-111"},
+    authenticated: false,
+    selectedProposalCode: -1,
+    mode: () => { return POLARIS_MODES.RADIO},
+    apiUrl:"http://api",
+    setMode: (newMode: POLARIS_MODES) => {console.log(newMode)},
+    setUser: (person: Person) => {console.log(person)},
+    setToken: (newToken: string) => {console.log(newToken)},
+    setAuthenticated: () => {console.log("c")},
+    setProposalCode: () => {console.log("c")},
+    setApiURL: () => {console.log("c")},
+})
 
 /**
  * provides an interface for getting the proposal context token.
@@ -116,6 +148,46 @@ export const ProposalContext:
  */
 export const useToken = (): string => {
     return useContext(ProposalContext).getToken();
+};
+
+/**
+ * Provides the proposal context to its children.
+ */
+export const ProposalContextProvider:
+        FC<{ children: ReactNode }> = ({ children }) => {
+    const polarisModeRef = useRef(POLARIS_MODES.RADIO);
+    const userRef = useRef({ fullName: "Unknown" } as Person);
+    const tokenRef = useRef("");
+    const [authenticated, setAuthenticated] = useState(false);
+    const [proposalCode, setProposalCode] = useState(0);
+    const [apiUrl, setApiURL] = useState("http://api");
+
+    useEffect(() => {
+        fetchPolarisMode().then((mode: number) => {
+            polarisModeRef.current = mode;
+        });
+    }, []);
+
+    const contextValue: ContextType = {
+        mode: () => {return polarisModeRef.current},
+        setMode: (newMode: POLARIS_MODES) => {polarisModeRef.current = newMode},
+        user: () => { return userRef.current},
+        setUser: (person: Person) => {userRef.current = person},
+        getToken: () => {return tokenRef.current},
+        setToken: (newToken: string) => { tokenRef.current = newToken},
+        authenticated:authenticated,
+        setAuthenticated: setAuthenticated,
+        selectedProposalCode: proposalCode,
+        setProposalCode: setProposalCode,
+        apiUrl:apiUrl,
+        setApiURL: setApiURL,
+    };
+
+    return (
+        <ProposalContext.Provider value={contextValue}>
+            {children}
+        </ProposalContext.Provider>
+    );
 };
 
 /**
@@ -144,147 +216,27 @@ function App2(): ReactElement {
                 path: "/manager",
                 element: <PSTManager />,
                 errorElement: <ErrorPage />,
-                children: [
-                    {index: true, element: <PSTManagerStart />},
-                    {
-                        path: "cycle/:selectedCycleCode",
-                        element: <CycleOverviewPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/title",
-                        element: <CycleTitlePanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/tac",
-                        element: <CycleTACPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/tac/new",
-                        element: <CycleTACAddMemberPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/dates",
-                        element: <CycleDatesPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/assignReviewers",
-                        element: <AssignReviewersPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/reviews",
-                        element: <ReviewsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/passFail",
-                        element: <PassFailPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/allocations",
-                        element: <AllocationsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-
-                ]
+                children: generateManagerChildren()
             },
             {
                 path: "/",
                 element: <PSTEditor/>,
                 errorElement: <ErrorPage />,
-                children: [
-                    {index: true, element: <PSTStart/>} ,
-                    {
-                        path: "admin",
-                        element: <AdminPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/new",
-                        element: <NewProposalPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode",
-                        element: <OverviewPanel forceUpdate={forceUpdate}/>,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/titleSummaryKind",
-                        element: <TitleSummaryKind />
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/investigators",
-                        element:<InvestigatorsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path:
-                            "proposal/:selectedProposalCode/investigators/new",
-                        element:<AddInvestigatorPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/justifications",
-                        element: <JustificationsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/targets",
-                        element:<TargetPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/targets/new",
-                        element: <AddTargetPanel />,
-                        errorElement: <ErrorPage />
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/goals",
-                        element:<TechnicalGoalsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        /*
-                        path: "proposal/:selectedProposalCode/observationFields",
-                        element: <ObservationFieldsPanel />,
-                        errorElement: <ErrorPage />,
-                         */
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/observations",
-                        element:<ObservationsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/documents",
-                        element:<DocumentsPanel />,
-                        errorElement: <ErrorPage />,
-                    } ,
-                    {
-                        path: "proposal/:selectedProposalCode/submit",
-                        element:<SubmitPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-
-                ]}], {
+                children: generateDefaultChildren(
+                    useContext(ProposalContext).mode())
+            }], {
             basename: "/pst/gui/tool/"
         }
-
     )
 
     return (
         <AuthProvider>
             <StrictMode>
                 <QueryClientProvider client={queryClient}>
-                    <RouterProvider router={router}/>
-                    <ReactQueryDevtools initialIsOpen={false} />
+                    <ProposalContextProvider>
+                        <RouterProvider router={router}/>
+                        <ReactQueryDevtools initialIsOpen={false} />
+                    </ProposalContextProvider>
                 </QueryClientProvider>
             </StrictMode>
         </AuthProvider>
@@ -297,7 +249,8 @@ function App2(): ReactElement {
      */
     function PSTEditor(): ReactElement {
         const proposalContext = useContext(ProposalContext);
-        const authToken = useToken();
+        const { getToken } = useParams();
+        const authToken = getToken!;
         const queryClient = useQueryClient();
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
@@ -369,9 +322,6 @@ function App2(): ReactElement {
                 }
             }
 
-
-
-
         /*
         DJW:
         I'd like to move the 'AppShell' stuff to its own file, however in doing so the
@@ -380,135 +330,141 @@ function App2(): ReactElement {
         the accordion collapses, and I can't figure out why.
          */
         return (
-            <ProposalContext.Provider value={proposalContext}>
-                <AppShell
-                    header={{height: APP_HEADER_HEIGHT}}
-                    navbar={{
-                        width: {
-                            base: NAV_BAR_DEFAULT_WIDTH,
-                            md: NAV_BAR_MEDIUM_WIDTH,
-                            lg: NAV_BAR_LARGE_WIDTH},
-                        breakpoint: 'sm',
-                        collapsed: {mobile: !opened},
-                    }}
-                >
-                    <AppShell.Header p="md">
-                        <Grid columns={2}>
-                            <Grid.Col span={1}>
-                                <Group h="100%" px="md" wrap={"nowrap"}>
-                                    <Burger
-                                        opened={opened}
-                                        onClick={toggle}
-                                        hiddenFrom={"sm"}
-                                        size="lg"
-                                        color={GRAY}
-                                        mr="xl"
-                                    />
-                                    <img src={"/pst/gui/polaris4.png"}
-                                         alt="Polaris"
-                                         width={60}/>
-                                    {HaveRole(["tac_admin","tac_member"]) &&  (<Tooltip
-                                        label={"go to proposal management view"}
-                                        openDelay={OPEN_DELAY}
-                                    >
-                                        <ActionIcon
-                                            color={"pink"}
-                                            variant={"subtle"}
-                                            onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
-                                        >
-                                            <IconUniverse />
-                                        </ActionIcon>
-                                    </Tooltip>)}
-                                    <DatabaseSearchButton
-                                        toolTipLabel={
-                                            "Locate proposals by " +
-                                            proposalContext.user.fullName + "."}
-                                        label={"Proposals for " + proposalContext.user.fullName}
-                                        onClickEvent={handleSearch}
-                                    />
-
-                                </Group>
-                            </Grid.Col>
-                            <Grid.Col span={1}>
-                                <Group justify={"flex-end"}>
-                                    {ColourSchemeToggle()}
-                                    <Tooltip label={"logout"}
-                                             openDelay={OPEN_DELAY}
-                                             closeDelay={CLOSE_DELAY}
-                                    >
-                                        <ActionIcon color={"orange.8"}
-                                                    variant={"subtle"}
-                                                    component={"a"}
-                                                    href={"/pst/gui/logout"}
-                                        >
-                                            <IconLogout size={ICON_SIZE}/>
-                                        </ActionIcon>
-                                    </Tooltip>
-                                </Group>
-                            </Grid.Col>
-                        </Grid>
-                    </AppShell.Header>
-
-                    <AppShell.Navbar>
-                        <AppShell.Section>
-                            <Container fluid bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}>
-                                <Text fz="sm">
-                                    Filter existing proposals by:
-                                </Text>
-                                <TextInput label="Title"
-                                           value={proposalTitleFilter}
-                                           onChange={(e: { target: { value: string; }; }) =>
-                                               setProposalTitleFilter(e.target.value)}
+            <AppShell
+                header={{height: APP_HEADER_HEIGHT}}
+                navbar={{
+                    width: {
+                        base: NAV_BAR_DEFAULT_WIDTH,
+                        md: NAV_BAR_MEDIUM_WIDTH,
+                        lg: NAV_BAR_LARGE_WIDTH},
+                    breakpoint: 'sm',
+                    collapsed: {mobile: !opened},
+                }}
+            >
+                <AppShell.Header p="md">
+                    <Grid columns={2}>
+                        <Grid.Col span={1}>
+                            <Group h="100%" px="md" wrap={"nowrap"}>
+                                <Burger
+                                    opened={opened}
+                                    onClick={toggle}
+                                    hiddenFrom={"sm"}
+                                    size="lg"
+                                    color={GRAY}
+                                    mr="xl"
                                 />
-                                <TextInput label="Investigator name"
-                                           value={investigatorNameFilter}
-                                           onChange={(e: { target: { value: string; }; }) =>
-                                               setInvestigatorNameFilter(e.target.value)}
-                                           pb={"md"}
+                                <img src={"/pst/gui/polaris4.png"}
+                                     alt="Polaris"
+                                     width={60}/>
+                                {HaveRole(["tac_admin","tac_member"]) &&  (<Tooltip
+                                    label={"go to proposal management view"}
+                                    openDelay={OPEN_DELAY}
+                                >
+                                    <ActionIcon
+                                        color={"pink"}
+                                        variant={"subtle"}
+                                        onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
+                                    >
+                                        <IconUniverse />
+                                    </ActionIcon>
+                                </Tooltip>)}
+                                <DatabaseSearchButton
+                                    toolTipLabel={
+                                        "Locate proposals by " +
+                                        proposalContext.user().fullName + "."}
+                                    label={"Proposals for " + proposalContext.user().fullName}
+                                    onClickEvent={handleSearch}
                                 />
-                            </Container>
 
-                            <AddButton toolTipLabel={"new proposal"}
-                                       label={"Create new proposal"}
-                                       onClickEvent={handleAddNew}/>
-                            <FileButton
-                                onChange={handleUploadZip}
-                                accept={".zip"}
-                            >
-                                {(props) =>
-                                    <UploadButton
-                                        toolTipLabel="select a file from disk to upload"
-                                        label={"Import existing proposal"}
-                                        onClick={props.onClick}
-                                    />
-                                }
-                            </FileButton>
-                        </AppShell.Section>
-                        <AppShell.Section component={ScrollArea}>
-                            <ProposalListWrapper
-                                proposalTitle={proposalTitleFilter}
-                                investigatorName={investigatorNameFilter}
-                                auth={proposalContext.authenticated}
+                            </Group>
+                        </Grid.Col>
+                        <Grid.Col span={1}>
+                            <Group justify={"flex-end"}>
+                                {ColourSchemeToggle()}
+                                <Tooltip label={"logout"}
+                                         openDelay={OPEN_DELAY}
+                                         closeDelay={CLOSE_DELAY}
+                                >
+                                    <ActionIcon color={"orange.8"}
+                                                variant={"subtle"}
+                                                component={"a"}
+                                                href={"/pst/gui/logout"}
+                                    >
+                                        <IconLogout size={ICON_SIZE}/>
+                                    </ActionIcon>
+                                </Tooltip>
+                            </Group>
+                        </Grid.Col>
+                    </Grid>
+                </AppShell.Header>
+
+                <AppShell.Navbar>
+                    <AppShell.Section>
+                        <Container fluid bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}>
+                            <Text fz="sm">
+                                Filter existing proposals by:
+                            </Text>
+                            <TextInput label="Title"
+                                       value={proposalTitleFilter}
+                                       onChange={(e: { target: { value: string; }; }) =>
+                                           setProposalTitleFilter(e.target.value)}
                             />
-                        </AppShell.Section>
-                    </AppShell.Navbar>
-                    <AppShell.Main pr={"sm"}>
-                        <Outlet/>
-                    </AppShell.Main>
-                </AppShell>
-            </ProposalContext.Provider>
+                            <TextInput label="Investigator name"
+                                       value={investigatorNameFilter}
+                                       onChange={(e: { target: { value: string; }; }) =>
+                                           setInvestigatorNameFilter(e.target.value)}
+                                       pb={"md"}
+                            />
+                        </Container>
+
+                        <AddButton toolTipLabel={"new proposal"}
+                                   label={"Create new proposal"}
+                                   onClickEvent={handleAddNew}/>
+                        <FileButton
+                            onChange={handleUploadZip}
+                            accept={".zip"}
+                        >
+                            {(props: {onClick: () => void}) =>
+                                <UploadButton
+                                    toolTipLabel="select a file from disk to upload"
+                                    label={"Import existing proposal"}
+                                    onClick={props.onClick}
+                                />
+                            }
+                        </FileButton>
+                    </AppShell.Section>
+                    <AppShell.Section component={ScrollArea}>
+                        <ProposalListWrapper
+                            proposalTitle={proposalTitleFilter}
+                            investigatorName={investigatorNameFilter}
+                            auth={proposalContext.authenticated}
+                        />
+                    </AppShell.Section>
+                </AppShell.Navbar>
+                <AppShell.Main pr={"sm"}>
+                    <Outlet/>
+                </AppShell.Main>
+            </AppShell>
         )
     }
 
-    function ProposalListWrapper(props:{proposalTitle: string, investigatorName:string, auth:boolean}) : ReactElement {
+    /**
+     * builds the proposal list.
+     * @param props
+     * @constructor
+     */
+    function ProposalListWrapper(props:ProposalListWrapperProps):
+            ReactElement {
         //console.log(props);
         if (props.auth) {
-            return <ProposalList proposalTitle={props.proposalTitle} investigatorName={props.investigatorName} />
+            return <ProposalList proposalTitle={props.proposalTitle}
+                                 investigatorName={props.investigatorName}/>
         }
         else {
             return <></>
         }
     }
+
     /**
      * html to show in the main page when "proposals for username" is selected.
      * @return {ReactElement} the html to display when
@@ -537,6 +493,153 @@ function App2(): ReactElement {
         )
     }
 
+    /**
+     * generates manager children.
+     */
+    function generateManagerChildren() {
+        const elements = [];
+        elements.push({index: true, element: <PSTManagerStart />});
+        elements.push(
+            {
+                path: "cycle/:selectedCycleCode",
+                element: <CycleOverviewPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/title",
+                element: <CycleTitlePanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/tac",
+                element: <CycleTACPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/tac/new",
+                element: <CycleTACAddMemberPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/dates",
+                element: <CycleDatesPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/assignReviewers",
+                element: <AssignReviewersPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/reviews",
+                element: <ReviewsPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/passFail",
+                element: <PassFailPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/allocations",
+                element: <AllocationsPanel />,
+                errorElement: <ErrorPage />,
+            },);
+        return elements;
+    }
+
+    /**
+     * generates user children routes for a given mode.
+     * @param polarisMode: the polaris mode.
+     */
+    function generateDefaultChildren(polarisMode: number) {
+        const elements = [];
+        elements.push({index: true, element: <PSTStart/>})
+        elements.push({
+                path: "admin",
+                element: <AdminPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/new",
+                element: <NewProposalPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode",
+                element: <OverviewPanel forceUpdate={forceUpdate}/>,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/titleSummaryKind",
+                element: <TitleSummaryKind />
+            },
+            {
+                path: "proposal/:selectedProposalCode/investigators",
+                element:<InvestigatorsPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path:
+                    "proposal/:selectedProposalCode/investigators/new",
+                element:<AddInvestigatorPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/justifications",
+                element: <JustificationsPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/targets",
+                element:<TargetPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/targets/new",
+                element: <AddTargetPanel />,
+                errorElement: <ErrorPage />
+            })
+
+        // handle technical goals if not in optical.
+        if (polarisMode == POLARIS_MODES.RADIO ||
+                polarisMode == POLARIS_MODES.BOTH) {
+            elements.push(
+                {
+                    path: "proposal/:selectedProposalCode/goals",
+                    element:<TechnicalGoalsPanel />,
+                    errorElement: <ErrorPage />,
+                },
+            )
+        }
+
+        // add rest
+        elements.push(
+            {
+                /*
+                path: "proposal/:selectedProposalCode/observationFields",
+                element: <ObservationFieldsPanel />,
+                errorElement: <ErrorPage />,
+                 */
+            },
+            {
+                path: "proposal/:selectedProposalCode/observations",
+                element:<ObservationsPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/documents",
+                element:<DocumentsPanel />,
+                errorElement: <ErrorPage />,
+            } ,
+            {
+                path: "proposal/:selectedProposalCode/submit",
+                element:<SubmitPanel />,
+                errorElement: <ErrorPage />,
+            },
+        )
+        return elements;
+    }
 }
 
 // export the main app.

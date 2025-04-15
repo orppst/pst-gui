@@ -155,3 +155,6 @@ export const DEFAULT_STRING = "None";
  * the different types of observation.
  */
 export type ObservationType = 'Target' | 'Calibration' | '';
+
+// the mode values.
+export enum POLARIS_MODES { OPTICAL = 0, RADIO = 1, BOTH = 2}
