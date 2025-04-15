@@ -105,8 +105,8 @@ export function ProposalList(
                              active={"Targets" + proposal.code === active}
                              onClick={()=>setActive("Targets" + proposal.code)}
                     />
-                    {polarisMode === POLARIS_MODES.BOTH ||
-                        polarisMode === POLARIS_MODES.RADIO && (
+                    {(polarisMode === POLARIS_MODES.BOTH ||
+                        polarisMode === POLARIS_MODES.RADIO) && (
                             <NavLink to={"proposal/" + proposal.code + "/goals"}
                                      component={Link}
                                      leftSection={<IconChartLine/>}
