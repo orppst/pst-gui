@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loggedOn, setLoggedOn] = useState(false);
     const [expiringSoon, setExpiring] = useState(false);
     const [isNewUser, setIsNewUser] = useState(false);
-    const [mode, setMode] = useState(POLARIS_MODES.RADIO);
+    const [mode, setMode] = useState(POLARIS_MODES.BOTH);
     const [gotMode, setGotMode] = useState(false);
 
     //seems to be overwritten regardless

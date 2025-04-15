@@ -124,7 +124,7 @@ export const ProposalContext = createContext<ContextType>({
     getToken: ()=>{return "-111"},
     authenticated: false,
     selectedProposalCode: -1,
-    mode: POLARIS_MODES.OPTICAL,
+    mode: POLARIS_MODES.BOTH,
     apiUrl:"http://api",
 })
 
