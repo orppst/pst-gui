@@ -28,8 +28,7 @@ export function ProposalList(
     const [active, setActive] = useState("");
 
     const {selectedProposalCode} = useParams();
-    const mode = useContext(ProposalContext).mode;
-    const polarisMode = Number(mode) as POLARIS_MODES;
+    const polarisMode = useContext(ProposalContext).mode;
 
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();

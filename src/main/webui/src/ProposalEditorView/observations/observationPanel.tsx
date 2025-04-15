@@ -1,21 +1,20 @@
-import {
-    useProposalResourceGetObservingProposal,
-} from 'src/generated/proposalToolComponents';
+import {useProposalResourceGetObservingProposal,} from 'src/generated/proposalToolComponents';
 import {useParams} from "react-router-dom";
-import { RadioTableGenerator} from './radio/observationRadioTable.tsx';
+import {RadioTableGenerator} from './radio/observationRadioTable.tsx';
 import {Container, Grid, Group, List, Space} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
-import { ReactElement } from 'react';
+import {ReactElement, useContext} from 'react';
 import ObservationEditModal from './radio/editRadio.modal.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
-import {IconTarget, IconChartLine} from '@tabler/icons-react';
+import {IconChartLine, IconTarget} from '@tabler/icons-react';
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {OpticalTableGenerator} from "./optical/observationOpticalTable";
 import ObservationOpticalEditModal from "./optical/editOptical.modal";
 import {useOpticalTelescopeResourceGetProposalObservationIds} from "../../util/telescopeComms";
 import {POLARIS_MODES} from "../../constants";
+import {ProposalContext} from "../../App2";
 
 
 /**
@@ -42,9 +41,8 @@ function ObservationsPanel(): ReactElement {
 // on child objects.
 function Observations() {
     let { selectedProposalCode} = useParams();
-    const { mode } = useParams();
+    const polarisMode = useContext(ProposalContext).mode;
     selectedProposalCode = selectedProposalCode!;
-    const polarisMode = Number(mode);
 
     const proposal = useProposalResourceGetObservingProposal({
         pathParams: {proposalCode: Number(selectedProposalCode)}
@@ -123,6 +121,56 @@ function Observations() {
         )
     }
 
+    /**
+     * builds the radio observations.
+     *
+     * @param observations: the array of observations for radio.
+     * @param mode: the polaris observing mode.
+     * @constructor
+     */
+    const RadioObservations = (
+            observations:  Observation[], mode: POLARIS_MODES):
+            ReactElement => {
+        return (
+            <>
+                {(mode === POLARIS_MODES.BOTH) && (
+                    <h2>Radio Observations</h2>
+                )}
+                {RadioTableGenerator(observations)}
+                <Space h={"xl"}/>
+                <Grid>
+                    <Grid.Col span={10}></Grid.Col>
+                    <ObservationEditModal/>
+                </Grid>
+            </>
+        )
+    }
+
+    /**
+     * builds the optical observations.
+     *
+     * @param observations: the array of observations for optical.
+     * @param mode: the polaris observing mode.
+     * @constructor
+     */
+    const OpticalObservations = (
+            observations:  Observation[], mode: POLARIS_MODES):
+            ReactElement => {
+        return (
+            <>
+                {(mode === POLARIS_MODES.BOTH) && (
+                  <h2>Optical Observations</h2>
+                )}
+                {OpticalTableGenerator(observations)}
+                <Space h={"xl"}/>
+                <Grid>
+                    <Grid.Col span={10}></Grid.Col>
+                    <ObservationOpticalEditModal/>
+                </Grid>
+            </>
+        )
+    }
+
     // if still loading. present a loading screen.
     if (proposal.isLoading || opticalObservations.isLoading) {
         return (
@@ -137,7 +185,9 @@ function Observations() {
     }
 
     if (proposal.data?.targets === undefined ||
-            proposal.data?.technicalGoals === undefined) {
+            (proposal.data?.technicalGoals === undefined && (
+                polarisMode == POLARIS_MODES.RADIO ||
+                polarisMode == POLARIS_MODES.BOTH))) {
         return (
             <PanelFrame>
                 <Header/>
@@ -150,7 +200,9 @@ function Observations() {
                             </List.Item>
                         }
                         {
-                            !proposal.data?.technicalGoals &&
+                            (!proposal.data?.technicalGoals && (
+                                polarisMode == POLARIS_MODES.RADIO ||
+                                polarisMode == POLARIS_MODES.BOTH)) &&
                             <List.Item>
                                 <TechnicalGoalButton/>
                             </List.Item>
@@ -184,23 +236,13 @@ function Observations() {
 
                 {(polarisMode === POLARIS_MODES.BOTH ||
                     polarisMode === POLARIS_MODES.RADIO) && (
-                        RadioTableGenerator(radioObservationsStore, polarisMode))}
-
-                <Space h={"xl"}/>
-                <Grid>
-                   <Grid.Col span={10}></Grid.Col>
-                    <ObservationEditModal/>
-                </Grid>
+                        RadioObservations(
+                            radioObservationsStore, polarisMode))}
 
                 {(polarisMode === POLARIS_MODES.BOTH ||
                     polarisMode === POLARIS_MODES.OPTICAL) && (
-                        OpticalTableGenerator(opticalObservationsStore, polarisMode))}
-
-                <Space h={"xl"}/>
-                <Grid>
-                    <Grid.Col span={10}></Grid.Col>
-                    <ObservationOpticalEditModal/>
-                </Grid>
+                        OpticalObservations(
+                            opticalObservationsStore, polarisMode))}
             </PanelFrame>
         )
     }

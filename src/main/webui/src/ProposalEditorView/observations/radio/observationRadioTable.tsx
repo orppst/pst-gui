@@ -25,7 +25,6 @@ import CloneButton from "src/commonButtons/clone.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
 import {ReactElement} from 'react';
 import {notifyError, notifySuccess} from "../../../commonPanel/notifications.tsx";
-import {POLARIS_MODES} from "../../../constants";
 
 export type ObservationId = {id: number}
 
@@ -309,10 +308,9 @@ export default function ObservationRow(observationId: ObservationId):
  * @constructor
  */
 export const RadioTableGenerator = (
-        observations:  Observation[], mode: number): ReactElement => {
+        observations:  Observation[]): ReactElement => {
     return (
         <>
-            {mode == POLARIS_MODES.BOTH && (<h2> Radio Telescopes </h2>)}
             <Table>
                 { observationRadioTableHeader() }
                 <Table.Tbody>
