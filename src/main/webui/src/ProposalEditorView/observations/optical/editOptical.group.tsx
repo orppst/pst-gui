@@ -29,7 +29,7 @@ import * as Schemas from '../../../generated/proposalToolSchemas';
 import {ObservationFormValues} from "../types/ObservationFormInterface";
 import {handleTargets} from "../commonObservationCode";
 import TargetTypeOpticalForm from "./targetTypeOptical.form";
-
+import {fakeGoalData} from "./fakeTechnicalGoal";
 
 /**
  * builds the observation edit panel.
@@ -148,40 +148,13 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
         });
     }
 
+    /**
+     * handles making a fake observation technical goal if needed.
+     */
     const handleFakeTechnicalGoal = () => {
-        const goal: TechnicalGoal = {
-            performance: {
-                desiredAngularResolution: {
-                    "@type": "ivoa:RealQuantity",
-                    unit: {value: 'microarcsec'},
-                    value: 0,
-                },
-                desiredLargestScale: {
-                    "@type": "ivoa:RealQuantity",
-                    unit: {value: 'microarcsec'},
-                    value: 0,
-                },
-                desiredSensitivity: {
-                    "@type": "ivoa:RealQuantity",
-                    unit: {value: 'microJansky'},
-                    value: 0,
-                },
-                desiredDynamicRange: {
-                    "@type": "ivoa:RealQuantity",
-                    unit: {value: 'dB'},
-                    value: 0,
-                },
-                representativeSpectralPoint: {
-                    "@type": "ivoa:RealQuantity",
-                    unit: {value: 'kHz'},
-                    value: 0,
-                },
-            },
-            spectrum: []
-        }
         return addGoalMutation.mutateAsync({
             pathParams: {proposalCode: Number(selectedProposalCode)},
-            body: goal
+            body: fakeGoalData
         })
     }
 
