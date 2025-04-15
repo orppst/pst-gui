@@ -3,14 +3,14 @@ import {Telescopes, TelescopeTiming} from './telescopes'
 import { Fieldset, Stack, Group, Space } from '@mantine/core';
 import {
     CalibrationObservation,
-    CalibrationTargetIntendedUse, Observation, Target, TargetObservation,
+    CalibrationTargetIntendedUse, Observation, Target, TargetObservation, TechnicalGoal,
 } from 'src/generated/proposalToolSchemas.ts';
 import { useForm, UseFormReturnType } from '@mantine/form';
 import {
     useObservationResourceAddNewObservation,
     useObservationResourceReplaceTargets,
-    useObservationResourceReplaceTechnicalGoal,
-    useProposalResourceAddNewField
+    useProposalResourceAddNewField,
+    useTechnicalGoalResourceAddTechnicalGoal
 } from 'src/generated/proposalToolComponents.ts';
 import {FormSubmitButton} from 'src/commonButtons/save.tsx';
 import CancelButton from "src/commonButtons/cancel.tsx";
@@ -27,7 +27,7 @@ import {
 } from '../../../util/telescopeComms';
 import * as Schemas from '../../../generated/proposalToolSchemas';
 import {ObservationFormValues} from "../types/ObservationFormInterface";
-import {handleTargets, handleTechnicalGoals} from "../commonObservationCode";
+import {handleTargets} from "../commonObservationCode";
 import TargetTypeOpticalForm from "./targetTypeOptical.form";
 
 
@@ -53,10 +53,10 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
         useObservationResourceAddNewObservation();
     const replaceTargets =
         useObservationResourceReplaceTargets();
-    const replaceTechnicalGoal =
-        useObservationResourceReplaceTechnicalGoal();
     const saveTelescopeData =
         useOpticalTelescopeResourceSaveTelescopeData();
+    const addGoalMutation =
+        useTechnicalGoalResourceAddTechnicalGoal();
 
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
@@ -108,9 +108,6 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                 targetDBIds: (value: number[] ) =>
                     (value.length == 0 ?
                         'Please select at least one target' : null),
-                techGoalId: (value: number) =>
-                    (value === NO_ROW_SELECTED ?
-                        'Please select a technical goal' : null),
                 observationType: (value: ObservationType) =>
                     (value === '' ?
                         'Please select the observation type' : null),
@@ -135,71 +132,135 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
         });
 
     /**
+     * handles creating new field.
+     */
+    const handleNewTargets = () => {
+        //we need to persist an observation field which the new
+        // observation then references
+        return addNewField.mutateAsync({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode)
+            },
+            body: {
+                name: fieldName,
+                "@type": "proposal:TargetField"
+            }
+        });
+    }
+
+    const handleFakeTechnicalGoal = () => {
+        const goal: TechnicalGoal = {
+            performance: {
+                desiredAngularResolution: {
+                    "@type": "ivoa:RealQuantity",
+                    unit: {value: 'microarcsec'},
+                    value: 0,
+                },
+                desiredLargestScale: {
+                    "@type": "ivoa:RealQuantity",
+                    unit: {value: 'microarcsec'},
+                    value: 0,
+                },
+                desiredSensitivity: {
+                    "@type": "ivoa:RealQuantity",
+                    unit: {value: 'microJansky'},
+                    value: 0,
+                },
+                desiredDynamicRange: {
+                    "@type": "ivoa:RealQuantity",
+                    unit: {value: 'dB'},
+                    value: 0,
+                },
+                representativeSpectralPoint: {
+                    "@type": "ivoa:RealQuantity",
+                    unit: {value: 'kHz'},
+                    value: 0,
+                },
+            },
+            spectrum: []
+        }
+        return addGoalMutation.mutateAsync({
+            pathParams: {proposalCode: Number(selectedProposalCode)},
+            body: goal
+        })
+    }
+
+    /**
+     * handles saving a new observation.
+     *
+     * @param values: the form values.
+     * @param data: the field data.
+     * @param techGoalId: the technical goal id for this observation.
+     */
+    const handleNewObservation = (
+            values: ObservationFormValues, data: Schemas.Field,
+            techGoalId: number) => {
+        //Creating new observation
+        const targetList: Target[] = [];
+
+        values.targetDBIds.map((thisTarget) => {
+            targetList.push({
+                "@type": "proposal:CelestialTarget",
+                "_id": thisTarget
+            })
+        })
+
+        const baseObservation : Observation = {
+            target: targetList,
+            technicalGoal: {
+                "_id": techGoalId
+            },
+            field: {
+                "@type": "proposal:TargetField",
+                "_id": data._id
+            },
+        }
+
+        let targetObservation =
+            baseObservation as TargetObservation;
+
+        targetObservation = {
+            ...targetObservation,
+            "@type": "proposal:TargetObservation"}
+
+        addNewObservation.mutate({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode)
+            },
+            body:targetObservation,
+        }, {
+            onSuccess: (obs: Schemas.Observation) => {
+                if (obs._id !== undefined) {
+                    processTelescopeData(obs._id, true);
+                }
+            },
+            onError: (error) =>
+                notifyError("Failed to add Observation",
+                    getErrorMessage(error)),
+        })
+    }
+
+    /**
      * handles submitting of the form.
      */
     const handleSubmit =
         form.onSubmit((values: ObservationFormValues) => {
             if (newObservation) {
-                //Creating new observation
-                const targetList: Target[] = [];
-
-                values.targetDBIds.map((thisTarget) => {
-                    targetList.push({
-                        "@type": "proposal:CelestialTarget",
-                        "_id": thisTarget
-                    })
-                })
-
-                //we need to persist an observation field which the new
-                // observation then references
-                addNewField.mutateAsync({
-                    pathParams: {
-                        proposalCode: Number(selectedProposalCode)
-                    },
-                    body: {
-                        name: fieldName,
-                        "@type": "proposal:TargetField"
-                    }
-                }) .then( data => {
-                    const baseObservation : Observation = {
-                        target: targetList,
-                        technicalGoal: {
-                            "_id": values.techGoalId
-                        },
-                        field: {
-                            "@type": "proposal:TargetField",
-                            "_id": data._id
-                        },
-                    }
-
-                    let targetObservation =
-                        baseObservation as TargetObservation;
-
-                    targetObservation = {
-                            ...targetObservation,
-                            "@type": "proposal:TargetObservation"}
-
-                    addNewObservation.mutate({
-                        pathParams: {
-                            proposalCode: Number(selectedProposalCode)
-                        },
-                        body:targetObservation,
-                    }, {
-                        onSuccess: (obs: Schemas.Observation) => {
-                            if (obs._id !== undefined) {
-                                processTelescopeData(obs._id, true);
-                            }
-                        },
-                        onError: (error) =>
-                            notifyError("Failed to add Observation",
-                                        getErrorMessage(error)),
-                    })
-                })
-                    .catch(error => {
+                handleNewTargets().then(data => {
+                    handleFakeTechnicalGoal().then(
+                        (techData : TechnicalGoal) => {
+                            handleNewObservation(values, data, techData._id!);
+                    }).catch(error => {
                         notifyError("Cannot create Observation: " +
-                            "Failed to add Observation Field",
+                            "Failed to add Observation fake technical",
                             getErrorMessage(error));
                     })
+                })
+                .catch(error => {
+                    notifyError("Cannot create Observation: " +
+                        "Failed to add Observation Field",
+                        getErrorMessage(error));
+                })
             }
             else {
                 const id = props.observation?._id;
@@ -208,12 +269,6 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                     handleTargets(
                         values, replaceTargets, selectedProposalCode,
                         obsID, queryClient);
-                }
-
-                if (form.isDirty('techGoalId')) {
-                    handleTechnicalGoals(
-                        values, selectedProposalCode,
-                        obsID, queryClient, replaceTechnicalGoal);
                 }
                 processTelescopeData(form.getValues().observationId!, false);
             }
