@@ -424,7 +424,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const DisplayRelatedProposals = (): ReactElement => {
 
         const proposals = proposalsData?.relatedProposals?.map((related) =>(
-            <List.Item key={related.proposal?._id}>
+            <List.Item key={related.proposal?.xmlId}>
                 {related.proposal?.title}
             </List.Item>
         ))

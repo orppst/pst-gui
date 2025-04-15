@@ -3387,6 +3387,10 @@ export const usePersonResourceCreatePersonFromKeycloak = (
 
 export type ProposalCyclesResourceGetProposalCyclesQueryParams = {
   includeClosed?: boolean;
+  /**
+   * @format int64
+   */
+  observatoryId?: number;
 };
 
 export type ProposalCyclesResourceGetProposalCyclesError =
@@ -3491,6 +3495,68 @@ export const useProposalCyclesResourceCreateProposalCycle = (
         ...variables,
       }),
     ...options,
+  });
+};
+
+export type ProposalCyclesResourceGetMyTACMemberProposalCyclesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetMyTACMemberProposalCyclesResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ProposalCyclesResourceGetMyTACMemberProposalCyclesVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetMyTACMemberProposalCycles = (
+  variables: ProposalCyclesResourceGetMyTACMemberProposalCyclesVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetMyTACMemberProposalCyclesResponse,
+    ProposalCyclesResourceGetMyTACMemberProposalCyclesError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/proposalCycles/MyTACCycles",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetMyTACMemberProposalCycles = <
+  TData = ProposalCyclesResourceGetMyTACMemberProposalCyclesResponse,
+>(
+  variables: ProposalCyclesResourceGetMyTACMemberProposalCyclesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetMyTACMemberProposalCyclesResponse,
+      ProposalCyclesResourceGetMyTACMemberProposalCyclesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetMyTACMemberProposalCyclesResponse,
+    ProposalCyclesResourceGetMyTACMemberProposalCyclesError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/MyTACCycles",
+      operationId: "proposalCyclesResourceGetMyTACMemberProposalCycles",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalCyclesResourceGetMyTACMemberProposalCycles(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
   });
 };
 
@@ -13005,6 +13071,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles";
       operationId: "proposalCyclesResourceGetProposalCycles";
       variables: ProposalCyclesResourceGetProposalCyclesVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/MyTACCycles";
+      operationId: "proposalCyclesResourceGetMyTACMemberProposalCycles";
+      variables: ProposalCyclesResourceGetMyTACMemberProposalCyclesVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}";
