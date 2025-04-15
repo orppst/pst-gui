@@ -2,8 +2,8 @@ import {ReactElement} from "react";
 import {Fieldset, Grid, Group, Space, Stack, Table, Text} from "@mantine/core";
 import {
     useAvailableResourcesResourceGetCycleAvailableResources,
-    useAvailableResourcesResourceRemoveCycleResource,
-    useResourceTypeResourceGetAllResourceTypes
+    useAvailableResourcesResourceGetCycleResourceTypes,
+    useAvailableResourcesResourceRemoveCycleResource
 } from "src/generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -15,6 +15,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import ResourceTypeModal from "./resourceType.modal.tsx";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {HaveRole} from "../../auth/Roles.tsx";
 
 
 export type AvailableResourcesProps  = {
@@ -33,25 +34,29 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
+    if(!HaveRole(["tac_admin", "tac_member"])) {
+        return <>Not authorised</>
+    }
+
     const removeCycleResource =
         useAvailableResourcesResourceRemoveCycleResource();
 
     const availableResources =
         useAvailableResourcesResourceGetCycleAvailableResources({
-        pathParams: {
-            cycleCode: Number(selectedCycleCode)
-        }
+        pathParams: {cycleCode: Number(selectedCycleCode)}
     });
 
-    const resourceTypes =
-        useResourceTypeResourceGetAllResourceTypes({});
+    const cycleResourceTypes =
+        useAvailableResourcesResourceGetCycleResourceTypes({
+            pathParams: {cycleCode: Number(selectedCycleCode)}
+        })
 
     if (availableResources.error) {
-        notifyError("Error loading available resources", "cause " + getErrorMessage(availableResources.error));
+        notifyError("Error loading available resources", getErrorMessage(availableResources.error));
     }
 
-    if (resourceTypes.error) {
-        notifyError("Error loading resource types", "cause: " + getErrorMessage(resourceTypes.error));
+    if (cycleResourceTypes.error) {
+        notifyError("Error loading resource types", getErrorMessage(cycleResourceTypes.error));
     }
 
     const handleDelete = (id: number) => {
@@ -90,7 +95,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
 
     const AllResourceTypesTextLinks = () => {
         return (
-            resourceTypes.data?.map((rType) => {
+            cycleResourceTypes.data?.map((rType) => {
 
                 let textColour : string = 'green';
 
@@ -166,7 +171,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
                         <Group justify={"center"}>
                             <AvailableResourcesModal
                                 resource={undefined}
-                                disableAdd={resourceTypes.data?.length ==
+                                disableAdd={cycleResourceTypes.data?.length ==
                                     availableResources.data?.resources?.length}
                             />
                         </Group>

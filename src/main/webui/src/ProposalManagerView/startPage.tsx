@@ -1,11 +1,11 @@
-import {ReactElement} from "react";
+import {ReactElement, useState} from "react";
 import {
     ActionIcon,
     AppShell,
-    Burger, Checkbox, Container,
+    Burger,
     Grid,
-    Group, Modal, ScrollArea,
-    Tooltip, useMantineColorScheme, useMantineTheme
+    Group, Modal, ScrollArea, Select,
+    Tooltip, useMantineTheme
 } from "@mantine/core";
 import {
     APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
@@ -21,14 +21,33 @@ import {useDisclosure} from "@mantine/hooks";
 import CycleList from "./cycleList.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import NewCycleForm from "./proposalCycle.new.form.tsx";
+import {HaveRole} from "../auth/Roles.tsx";
+import {useObservatoryResourceGetObservatories}  from "../generated/proposalToolComponents.ts";
+
+//import {selectedObservatory, setSelectedObservatory} from "../App2.tsx";
+
 
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
     const [opened, {toggle}] = useDisclosure();
     const theme = useMantineTheme();
-    const {colorScheme} = useMantineColorScheme();
 
     const [modalOpened, {close, open}] = useDisclosure();
+
+    const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
+
+    const obsList = useObservatoryResourceGetObservatories(
+        {queryParams: {}}
+    );
+
+    const observatoryList = obsList.data?.map(obs => {
+        if(obs.dbid) {
+            if (selectedObservatory == 0)
+                setSelectedObservatory(obs.dbid)
+            if (obs.name)
+                return {value: obs.dbid.toString(), label: obs.name};
+        }
+    })
 
     return (
         <AppShell
@@ -69,10 +88,26 @@ export default function ProposalManagerStartPage() : ReactElement {
                                     <IconLicense />
                                 </ActionIcon>
                             </Tooltip>
+                            Observatory
+                            <Select
+                                width={500}
+                                defaultValue={selectedObservatory.toString()}
+                                allowDeselect={false}
+                                comboboxProps={{ width: 200, position: 'bottom-start' }}
+                                aria-label="Select an observatory"
+                                //@ts-ignore
+                                data={observatoryList}
+                                onChange={(_value) => {
+                                        if(_value)
+                                            setSelectedObservatory(+_value)
+                                    }
+                                }
+                            />
+                            {HaveRole(["obs_administration"]) &&
                             <AddButton toolTipLabel={"new proposal cycle"}
                                        label={"Create a new Proposal Cycle"}
                                        onClick={open}
-                            />
+                            />}
                             <Modal
                                 opened={modalOpened}
                                 onClose={close}
@@ -80,7 +115,7 @@ export default function ProposalManagerStartPage() : ReactElement {
                                 size={"40%"}
                                 closeOnClickOutside={false}
                             >
-                                <NewCycleForm closeModal={close}/>
+                                <NewCycleForm closeModal={close} selectedObservatory={selectedObservatory}/>
                             </Modal>
                         </Group>
                     </Grid.Col>
@@ -104,25 +139,8 @@ export default function ProposalManagerStartPage() : ReactElement {
                 </Grid>
             </AppShell.Header>
             <AppShell.Navbar>
-                <AppShell.Section>
-                    <Container
-                        fluid
-                        bg={colorScheme === 'dark' ? theme.colors.cyan[9] : theme.colors.blue[1]}
-                        py={"xs"}
-                    >
-                        <Checkbox.Group
-                            defaultValue={['active']}
-                            label={"Proposal Cycle Status"}
-                        >
-                            <Group mt={"md"}>
-                                <Checkbox value={"active"} label={"Active"} />
-                                <Checkbox value={"closed"} label={"Closed"} />
-                            </Group>
-                        </Checkbox.Group>
-                    </Container>
-                </AppShell.Section>
                 <AppShell.Section component={ScrollArea}>
-                    <CycleList/>
+                    <CycleList observatory={+selectedObservatory}/>
                 </AppShell.Section>
             </AppShell.Navbar>
             <AppShell.Main pr={"sm"}>

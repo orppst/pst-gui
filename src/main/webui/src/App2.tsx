@@ -3,7 +3,7 @@ import {
     useContext,
     ReactElement,
     SyntheticEvent,
-    Context, StrictMode, useReducer
+    Context, StrictMode, useReducer,
 } from 'react';
 import {
     QueryClient,
@@ -61,15 +61,11 @@ import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
 import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
 import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
-import CycleObservingModesPanel from "./ProposalManagerView/observingModes/observingModesPanel.tsx";
-import CycleAvailableResourcesPanel from "./ProposalManagerView/availableResources/availableResourcesPanel.tsx";
 import ReviewsPanel from "./ProposalManagerView/reviews/ReviewsPanel.tsx";
 import AllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
-import CycleObservatoryPanel from "./ProposalManagerView/proposalCycle/observatory.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
 import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
-import ObservationFieldsPanel from "./ProposalEditorView/observationFields/ObservationFieldsPanel.tsx";
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 import ErrorPage from "./errorHandling/error-page.jsx"
 import {PanelFrame} from "./commonPanel/appearance.tsx";
@@ -78,7 +74,9 @@ import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPag
 import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
 import {notifyError} from "./commonPanel/notifications.tsx";
 import JSZip from "jszip";
+import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
+import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
 
 /**
  * defines the user context type.
@@ -119,6 +117,8 @@ export const ProposalContext:
 export const useToken = (): string => {
     return useContext(ProposalContext).getToken();
 };
+
+//export const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
 
 /**
  * generates the html for the main app.
@@ -174,13 +174,8 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/observingModes",
-                        element: <CycleObservingModesPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/availableResources",
-                        element: <CycleAvailableResourcesPanel />,
+                        path: "cycle/:selectedCycleCode/assignReviewers",
+                        element: <AssignReviewersPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {
@@ -189,20 +184,16 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
+                        path: "cycle/:selectedCycleCode/passFail",
+                        element: <PassFailPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
                         path: "cycle/:selectedCycleCode/allocations",
                         element: <AllocationsPanel />,
                         errorElement: <ErrorPage />,
                     },
-                    {
-                        path: "cycle/:selectedCycleCode/observatory",
-                        element: <CycleObservatoryPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/assignReviewers",
-                        element: <AssignReviewersPanel />,
-                        errorElement: <ErrorPage />,
-                    }
+
                 ]
             },
             {
@@ -262,9 +253,11 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
+                        /*
                         path: "proposal/:selectedProposalCode/observationFields",
                         element: <ObservationFieldsPanel />,
                         errorElement: <ErrorPage />,
+                         */
                     },
                     {
                         path: "proposal/:selectedProposalCode/observations",
@@ -416,7 +409,7 @@ function App2(): ReactElement {
                                     <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
-                                    <Tooltip
+                                    {HaveRole(["tac_admin","tac_member"]) &&  (<Tooltip
                                         label={"go to proposal management view"}
                                         openDelay={OPEN_DELAY}
                                     >
@@ -427,7 +420,7 @@ function App2(): ReactElement {
                                         >
                                             <IconUniverse />
                                         </ActionIcon>
-                                    </Tooltip>
+                                    </Tooltip>)}
                                     <DatabaseSearchButton
                                         toolTipLabel={
                                             "Locate proposals by " +
@@ -477,21 +470,21 @@ function App2(): ReactElement {
                                 />
                             </Container>
 
-                        <AddButton toolTipLabel={"new proposal"}
-                            label={"Create new proposal"}
-                            onClickEvent={handleAddNew}/>
-                        <FileButton
-                            onChange={handleUploadZip}
-                            accept={".zip"}
-                        >
-                            {(props) =>
-                                <UploadButton
-                                    toolTipLabel="select a file from disk to upload"
-                                    label={"Import existing proposal"}
-                                    onClick={props.onClick}
-                                />
-                            }
-                        </FileButton>
+                            <AddButton toolTipLabel={"new proposal"}
+                                       label={"Create new proposal"}
+                                       onClickEvent={handleAddNew}/>
+                            <FileButton
+                                onChange={handleUploadZip}
+                                accept={".zip"}
+                            >
+                                {(props) =>
+                                    <UploadButton
+                                        toolTipLabel="select a file from disk to upload"
+                                        label={"Import existing proposal"}
+                                        onClick={props.onClick}
+                                    />
+                                }
+                            </FileButton>
                         </AppShell.Section>
                         <AppShell.Section component={ScrollArea}>
                             <ProposalListWrapper

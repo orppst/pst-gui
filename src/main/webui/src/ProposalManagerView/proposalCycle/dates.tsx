@@ -14,12 +14,17 @@ import {JSON_SPACES} from "../../constants.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {HaveRole} from "../../auth/Roles.tsx";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
         submissionDeadline: Date | null,
         sessionStart: Date | null,
         sessionEnd: Date | null
+    }
+
+    if(!HaveRole(["tac_admin", "tac_member"])) {
+        return <>Not authorised</>
     }
 
     const {selectedCycleCode} = useParams();
@@ -122,7 +127,7 @@ export default function CycleDatesPanel() : ReactElement {
                             valueFormat={"YYYY/MM/DD HH:mm"}
                             label={"Submission deadline"}
                             placeholder={"select a proposal submission deadline"}
-                            minDate={new Date()}
+                            //minDate={new Date()}
                             {...form.getInputProps('submissionDeadline')}
                         />
                         <DateTimePicker

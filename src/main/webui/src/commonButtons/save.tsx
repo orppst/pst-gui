@@ -39,7 +39,7 @@ function FormSubmitButton(props: FormSubmitButtonInterfaceProps): ReactElement {
                 color={"indigo.5"}
                 variant={props.variant ?? "subtle"}
                 type="submit"
-                disabled={!props.form.isValid() || !props.form.isDirty()}
+                disabled={!props.form.isValid() || !props.form.isDirty() || props.disabled}
             >
                 {label}
             </Button>

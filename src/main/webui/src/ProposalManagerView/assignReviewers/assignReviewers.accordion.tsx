@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Accordion, Badge, Group, Loader, Space, Text} from "@mantine/core";
+import {Accordion, Alert, Badge, Container, Group, Loader, Space, Text} from "@mantine/core";
 import {
     useSubmittedProposalResourceGetSubmittedNotYetAllocated,
     useSubmittedProposalResourceGetSubmittedProposal
@@ -91,6 +91,20 @@ export default function AssignReviewersAccordion() : ReactElement {
         notifyError("Failed to load not yet allocated submitted proposals",
             getErrorMessage(notYetAllocated.error))
 
+    }
+
+    if (notYetAllocated.data?.length === 0) {
+        return (
+            <Container size={"50%"} mt={100}>
+                <Alert
+                    variant={"light"}
+                    title={"No outstanding Submitted Proposals"}
+                    color={"green"}
+                >
+                    There are no available submitted proposals to assign reviewers
+                </Alert>
+            </Container>
+        )
     }
 
     return (
