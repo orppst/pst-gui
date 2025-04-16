@@ -13350,4 +13350,19 @@ export type QueryOperation =
       path: "/pst/api/subjectMap/{id}";
       operationId: "subjectMapResourceSubjectMap";
       variables: SubjectMapResourceSubjectMapVariables;
-    };
+    }
+  | {
+      path: "/pst/api/opticalTelescopes/hasEntry";
+      operationId: "opticalTelescopeResourceGetVerification";
+      variables: {}
+    }
+  | {
+      path: "/pst/api/opticalTelescopes/verifyProposal";
+      operationId: "opticalTelescopeResourceGetProposalVerification";
+      variables: {}
+    }
+  | {
+      path: "/pst/api/opticalTelescopes/opticalTableData";
+      operationId: "fetchOpticalTelescopeTableData";
+      variables: {}
+};

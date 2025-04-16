@@ -85,7 +85,8 @@ export default function TechnicalGoalEditGroup(
             initialValues: {
                 technicalGoalId: props.technicalGoal?._id, //required for deletion of spectral windows
                 performanceParameters:
-                    convertToPerformanceParametersGui(props.technicalGoal?.performance!),
+                    convertToPerformanceParametersGui(
+                        props.technicalGoal?.performance!),
                 spectralWindows: initialSpectralWindows
             },
 
@@ -201,10 +202,10 @@ export default function TechnicalGoalEditGroup(
 
         if(newTechnicalGoal) {
             //posting a new technical goal to the DB
-            let performanceParameters : PerformanceParameters =
+            const performanceParameters : PerformanceParameters =
                 convertToPerformanceParameters(values.performanceParameters);
 
-            let goal : TechnicalGoal = {
+            const goal : TechnicalGoal = {
                 performance: performanceParameters,
                 spectrum: values.spectralWindows.map(
                     (windowGui) => {
@@ -229,7 +230,7 @@ export default function TechnicalGoalEditGroup(
 
             //editing an existing technical goal
             if (form.isDirty('performanceParameters')) {
-                let performanceParameters : PerformanceParameters =
+                const performanceParameters : PerformanceParameters =
                     convertToPerformanceParameters(values.performanceParameters);
 
                 replacePerformanceParametersMutation.mutate({

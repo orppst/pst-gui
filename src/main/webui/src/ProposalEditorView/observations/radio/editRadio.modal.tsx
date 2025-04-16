@@ -1,7 +1,7 @@
 import {useDisclosure, useMediaQuery} from '@mantine/hooks';
 import { Modal } from '@mantine/core';
-import ObservationEditGroup from './edit.group.tsx';
-import { ObservationProps } from './observationPanel.tsx';
+import ObservationRadioEditGroup from './editRadio.group.tsx';
+import { ObservationProps } from '../observationPanel.tsx';
 import ViewEditButton from 'src/commonButtons/viewEdit.tsx';
 import { ReactElement } from 'react';
 import AddButton from 'src/commonButtons/add.tsx';
@@ -45,7 +45,7 @@ export default function ObservationEditModal(
             <>
                 <Modal
                     opened={opened}
-                    onClose={props.closeModal}
+                    onClose={() => {close()}}
                     title={newObservation ?
                         "Create an Observation" :
                         "View/Edit Observation"}
@@ -53,7 +53,7 @@ export default function ObservationEditModal(
                     fullScreen={smallScreen}
                     closeOnClickOutside={false}
                 >
-                    <ObservationEditGroup {...props}/>
+                    <ObservationRadioEditGroup {...props}/>
                 </Modal>
             </>
         )
@@ -62,7 +62,7 @@ export default function ObservationEditModal(
     // main code starts here.
     const [opened, {close, open}] = useDisclosure();
     const props = {...observationProps, closeModal: () => {close()}};
-    let newObservation = !observationProps.observation;
+    const newObservation = !observationProps.observation;
 
     return (
         <>

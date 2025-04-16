@@ -1,39 +1,30 @@
-import { useParams } from 'react-router-dom';
-import {
-    Badge, DefaultMantineColor,
-    Group, Loader,
-    Space,
-    Table,
-    Text
-} from '@mantine/core';
-import { modals } from '@mantine/modals';
+import {useParams} from 'react-router-dom';
+import {Badge, DefaultMantineColor, Group, Loader, Space, Table, Text} from '@mantine/core';
+import {modals} from '@mantine/modals';
 import TechnicalGoalEditModal from './edit.modal.tsx';
 import getErrorMessage from 'src/errorHandling/getErrorMessage.tsx';
 import CloneButton from 'src/commonButtons/clone.tsx';
 import DeleteButton from 'src/commonButtons/delete.tsx';
-import { useQueryClient } from '@tanstack/react-query';
+import {useQueryClient} from '@tanstack/react-query';
 import {
     angularUnits,
+    dynamicRangeUnits,
+    fluxUnits,
     frequencyUnits,
-    locateLabel,
-    dynamicRangeUnits, fluxUnits
+    locateLabel
 } from 'src/physicalUnits/PhysicalUnits.tsx';
-import {
-    ObjectIdentifier,
-    TechnicalGoal
-} from 'src/generated/proposalToolSchemas.ts';
+import {ObjectIdentifier, TechnicalGoal} from 'src/generated/proposalToolSchemas.ts';
 import {
     useTechnicalGoalResourceAddTechnicalGoal,
     useTechnicalGoalResourceGetTechnicalGoal,
     useTechnicalGoalResourceRemoveTechnicalGoal
 } from 'src/generated/proposalToolComponents.ts';
-import { notSet } from './edit.group.tsx';
-import { ReactElement } from 'react';
-import {
-    NO_ROW_SELECTED,
-    TABLE_HIGH_LIGHT_COLOR
-} from 'src/constants.tsx';
+import {notSet} from './edit.group.tsx';
+import {ReactElement, useContext} from 'react';
+import {NO_ROW_SELECTED, POLARIS_MODES, TABLE_HIGH_LIGHT_COLOR} from 'src/constants.tsx';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {ProposalContext} from "../../App2";
+import {checkForFake} from "../observations/optical/fakeTechnicalGoal";
 
 /** the technical goal id data holder.
  * @param {number} id the id
@@ -106,6 +97,8 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
             },
         });
 
+    const polarisMode = useContext(ProposalContext).mode;
+
     if (theGoal.error) {
         return <pre>{getErrorMessage(theGoal.error)}</pre>
     }
@@ -152,7 +145,9 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                         "The selected technical goal has been deleted")
                 },
                 onError: (error) =>
-                    notifyError("Failed to delete technical goal", getErrorMessage(error)),
+                    notifyError(
+                        "Failed to delete technical goal",
+                        getErrorMessage(error)),
             })
     }
 
@@ -200,7 +195,9 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                         "The selected technical goal has been cloned");
                 },
                 onError: (error) =>
-                    notifyError("Failed to clone technical goal", getErrorMessage(error))
+                    notifyError(
+                        "Failed to clone technical goal",
+                        getErrorMessage(error))
             })
     }
 
@@ -218,7 +215,7 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                 <Space h={"xs"}/>
                 <Text c={"gray.6"} size={"sm"}>
                     Creates a new technical goal with a clone of this technical
-                    goal's properties. You should edit the cloned technical
+                    goal`s properties. You should edit the cloned technical
                     goal for your needs.
                 </Text>
             </>
@@ -259,6 +256,11 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                 </Table.Td>
             </Table.Tr>
         )
+    }
+
+    if ((polarisMode == POLARIS_MODES.BOTH ||
+            polarisMode == POLARIS_MODES.RADIO) && checkForFake(theGoal.data!)) {
+        return <></>
     }
 
     // return the full row.
