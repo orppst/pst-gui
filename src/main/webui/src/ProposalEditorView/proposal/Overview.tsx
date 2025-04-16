@@ -5,28 +5,21 @@ import {
     useProposalResourceGetObservingProposal,
     useSupportingDocumentResourceGetSupportingDocuments,
 } from 'src/generated/proposalToolComponents';
-import {
-    Accordion,
-    Avatar,
-    Box,
-    Container, Fieldset,
-    Group,
-    List, Stack,
-    Table,
-    Text,
-} from '@mantine/core';
+import {Accordion, Avatar, Box, Container, Fieldset, Group, List, Space, Stack, Table, Text,} from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse,
-    Investigator, ObjectIdentifier,
-    RealQuantity, Target,
+    Investigator,
+    ObjectIdentifier,
+    RealQuantity,
+    Target,
 } from 'src/generated/proposalToolSchemas.ts';
-import { IconNorthStar } from '@tabler/icons-react';
-import {ReactElement, useRef} from 'react';
+import {IconNorthStar} from '@tabler/icons-react';
+import {ReactElement, useContext, useRef} from 'react';
 import downloadProposal from './downloadProposal.tsx';
-import {DIMMED_FONT_WEIGHT, JSON_SPACES} from 'src/constants.tsx';
-import { TargetTable } from '../targets/TargetTable.tsx';
-import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
+import {DIMMED_FONT_WEIGHT, JSON_SPACES, POLARIS_MODES} from 'src/constants.tsx';
+import {TargetTable} from '../targets/TargetTable.tsx';
+import {TechnicalGoalsTable} from '../technicalGoals/technicalGoalTable.tsx';
 import {PreviewJustification} from "../justifications/justification.preview.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -37,8 +30,13 @@ import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import {useOpticalTelescopeResourceDeleteProposalTelescopeData} from "../../util/telescopeComms";
-import {useToken} from "../../App2";
+import {
+    TelescopeOverviewTableState,
+    useOpticalOverviewTelescopeTableData,
+    useOpticalTelescopeResourceDeleteProposalTelescopeData,
+} from "../../util/telescopeComms";
+import {ProposalContext, useToken} from "../../App2";
+import {observationOpticalTableHeader} from "../observations/optical/observationOpticalTable";
 
 /*
       title    -- string
@@ -232,11 +230,14 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const authToken = useToken();
 
-    const { selectedProposalCode } = useParams();
+    let { selectedProposalCode } = useParams();
+    selectedProposalCode = selectedProposalCode!;
 
     const navigate = useNavigate();
 
     const queryClient = useQueryClient();
+
+    const polarisMode = useContext(ProposalContext).mode;
 
     const cloneProposalMutation =
         useProposalResourceCloneObservingProposal();
@@ -538,6 +539,83 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     /**
+     * returns the header for the observation optical table.
+     *
+     * @return {React.ReactElement} the html for the table header.
+     */
+    function observationOpticalTableHeader(): ReactElement {
+        return (
+            <Table.Thead>
+                <Table.Tr>
+                    <Table.Th>Telescope Name</Table.Th>
+                    <Table.Th>Telescope Instrument</Table.Th>
+                    <Table.Th>Telescope Time Requirement</Table.Th>
+                    <Table.Th>Telescope Condition</Table.Th>
+                    <Table.Th></Table.Th>
+                </Table.Tr>
+            </Table.Thead>
+        );
+    }
+
+    /**
+     * builds a row data.
+     *
+     * @param row: the row.
+     */
+    function OpticalRow(row: TelescopeOverviewTableState): ReactElement {
+        return <></>
+    }
+
+    /**
+     * builds a table showing all the telescopes and time based for it per
+     * instrument.
+     * @constructor
+     */
+    function DisplayTelescopeSummary(selectedProposalCode: string): ReactElement {
+        const {
+            data: opticalData,
+            error: opticalError,
+            isLoading: opticalLoading,
+        } = useOpticalOverviewTelescopeTableData({
+            proposalID: selectedProposalCode
+        });
+
+        // handle any errors
+        if(opticalError) {
+            return (
+                <Container>
+                    Unable to load optical data:
+                    {getErrorMessage(opticalError)}
+                </Container>
+            )
+        }
+
+        // handle any loading issues.
+        if(opticalLoading) {
+            return (
+                <PanelFrame>
+                    <Space h={"xs"}/>
+                    <Group justify={'flex-end'}>
+                        `Loading...`
+                    </Group>
+                </PanelFrame>
+            )
+        }
+
+        return (
+            <>
+                <h3>Telescopes</h3>
+                <Table>
+                    { observationOpticalTableHeader() }
+                    <Table.Tbody>
+
+                    </Table.Tbody>
+                </Table>
+            </>
+        );
+    }
+
+    /**
      * add download button for the proposal to be extracted as a tar ball.
      *
      * @return {ReactElement} the html which contains the download button.
@@ -725,6 +803,9 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                         <DisplayScientificJustification/>
                         <DisplayTechnicalJustification/>
                         <DisplayObservations/>
+                        {polarisMode === POLARIS_MODES.OPTICAL && (
+                            DisplayTelescopeSummary(selectedProposalCode)
+                        )}
                         <DisplaySupportingDocuments/>
                         <DisplayRelatedProposals/>
                     </div>

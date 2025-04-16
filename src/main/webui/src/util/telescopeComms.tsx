@@ -49,6 +49,7 @@ export type SaveTelescopeState = {
     telescopeTimeUnit: string,
     telescopeTimeValue: string,
     userType: string,
+    condition: string,
     choices: Map<string, string>
 }
 
@@ -57,10 +58,23 @@ export type TelescopeTableState = {
     telescopeName: string, instrumentName: string
 }
 
+// the type for the extracting data of observations for overview telescope table.
+export type  TelescopeOverviewTableState = {
+    telescopeName: string, instrumentName: string,
+    telescopeTimeValue: string, telescopeTimeUnit: string,
+    condition: string
+}
+
 // Define the type that matches the backend's HashMap structure
 export type OpticalTableDataBackendResponse = {
     [observationID: string]: TelescopeTableState
 };
+
+// Define the type that matches the backend's HashMap structure
+export type OpticalOverviewTableDataBackendResponse = {
+    [observationID: string]: TelescopeOverviewTableState
+};
+
 
 // the type for the loading of observation telescope data.
 export type LoadTelescopeState = {
@@ -83,6 +97,7 @@ export type SavedTelescopeData = {
     telescopeTimeValue: string,
     telescopeTimeUnit: string,
     userType: string,
+    condition: string,
     choices: {[p: string]: string}
 }
 
@@ -476,6 +491,76 @@ export const useOpticalTelescopeTableData = (
         OpticalTableDataBackendResponse, // Raw data from fetch
         TelescopeLoadError,
         Map<string, TelescopeTableState> // Transformed data for the component
+    >({
+        queryKey,
+        queryFn,
+        select: (backendResponse) => {
+            // converts weird object into real map for easier processing later
+            // on.
+            return new Map(Object.entries(backendResponse));
+        },
+        ...options,
+        ...queryOptions,
+    });
+};
+
+/**
+ * bring about a call to get observation optical table data.
+ *
+ * @param {OpticalTelescopeProposal} data: the data to get the optical table.
+ * @param {AbortSignal} signal: the signal for failure.
+ * @return {Promise<TelescopeTableState[]>}: the resulting data when received.
+ */
+export const fetchOpticalOverviewTelescopeTableData = (
+    data: OpticalTelescopeProposal, signal?: AbortSignal) =>
+    proposalToolFetch<
+        OpticalOverviewTableDataBackendResponse,
+        TelescopeLoadError,
+        OpticalTelescopeProposal,
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        SaveTelescopeResourceParametersVariables>({
+        url: "/pst/api/opticalTelescopes/opticalTableData",
+        method: "post", body: data, signal: signal
+    });
+
+/**
+ * mutation function wrapping around data extraction for optical overview table.
+ * @param proposalData: the proposal id.
+ * @param options: the saved data.
+ * @return mutation promise holding onSuccess, OnError.
+ */
+export const useOpticalOverviewTelescopeTableData = (
+    proposalData: OpticalTelescopeProposal,
+    options?: Omit<
+        reactQuery.UseQueryOptions<
+            OpticalOverviewTableDataBackendResponse,
+            TelescopeLoadError,
+            Map<string, TelescopeOverviewTableState>,
+            reactQuery.QueryKey
+        >,
+        "queryKey" | "queryFn" | "select" // Add "select" to the Omit
+    >
+) => {
+    const { fetcherOptions, queryOptions, queryKeyFn } =
+        useProposalToolContext(options);
+
+    const queryKey = queryKeyFn({
+        path: "/pst/api/opticalTelescopes/opticalTableData",
+        operationId: "fetchOpticalTelescopeTableData",
+        variables: proposalData,
+    });
+
+    const queryFn = ({ signal }: { signal?: AbortSignal }) =>
+        fetchOpticalOverviewTelescopeTableData(
+            { ...fetcherOptions, ...proposalData },
+            signal
+        );
+
+    return reactQuery.useQuery<
+        OpticalOverviewTableDataBackendResponse, // Raw data from fetch
+        TelescopeLoadError,
+        Map<string, TelescopeOverviewTableState> // Transformed data for the component
     >({
         queryKey,
         queryFn,

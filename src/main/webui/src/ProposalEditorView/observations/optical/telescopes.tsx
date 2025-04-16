@@ -17,9 +17,11 @@ import {NumberInputPlusUnit} from "../../../commonInputs/NumberInputPlusUnit";
 const telescopeTimeUnits = [
     {value: 'Hours', label: 'Hours'},
     {value: 'Nights', label: 'Nights'},
-    {value: 'Dark Moon', label: 'Dark Moon'},
-    {value: 'Gray Moon', label: 'Gray Moon'},
-    {value: 'Bright Moon', label: 'Bright Moon'},
+];
+
+// the different conditions of telescope conditions
+const telescopeConditions = [
+    'Dark Moon', 'Gray Moon', 'Bright Moon', DEFAULT_STRING
 ];
 
 // the different types of person.
@@ -118,6 +120,7 @@ export function Telescopes(
                     unit: userData.telescopeTimeUnit,
                 },
                 "userType": userData.userType,
+                "condition": userData.condition,
             });
         }
 
@@ -513,6 +516,12 @@ export function TelescopeTiming(
                     "calculator fill in this field."}
                 valueRoot={'telescopeTime'}
                 units={telescopeTimeUnits} />
+            <Select
+                label={"Condition: "}
+                placeholder={"Select the type of condition."}
+                data = {telescopeConditions}
+                {...form.getInputProps('condition')}
+            />
             <Select
                 label={"User type: "}
                 placeholder={"Select the type of user you are."}

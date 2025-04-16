@@ -163,6 +163,7 @@ function ObservationRadioEditGroup(props: ObservationProps): ReactElement {
                     unit: DEFAULT_STRING
                 },
                 userType: DEFAULT_STRING,
+                condition: DEFAULT_STRING,
                 elements: new Map<string, string>(),
             },
 
