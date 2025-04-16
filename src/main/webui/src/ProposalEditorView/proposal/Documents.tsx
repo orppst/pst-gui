@@ -21,6 +21,7 @@ import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 type DocumentProps = {
     dbid: number,
@@ -30,6 +31,7 @@ type DocumentProps = {
 const DocumentsPanel = () => {
     const queryClient = useQueryClient();
     const {selectedProposalCode} = useParams();
+    const {fetcherOptions} = useProposalToolContext();
 
     const uploadDocument =
         useSupportingDocumentResourceUploadSupportingDocument();
@@ -70,7 +72,7 @@ const DocumentsPanel = () => {
                     //@ts-ignore
                     body: formData,
                     //@ts-ignore
-                    headers: {"Content-Type": "multipart/form-data"}
+                    headers: {"Content-Type": "multipart/form-data", ...fetcherOptions.headers}
                 }, {
                     onSuccess: () => {
                         setStatus("success");
