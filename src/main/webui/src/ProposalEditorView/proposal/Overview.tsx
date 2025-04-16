@@ -561,8 +561,23 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * builds a row data.
      *
      * @param row: the row.
+     * @param key: the key.
      */
-    function OpticalRow(row: TelescopeOverviewTableState): ReactElement {
+    const OpticalBasicRow =
+            (row: TelescopeOverviewTableState, key: string): ReactElement => {
+        return (
+            <Table.Tr key={"observation:" + key}>
+                <Table.Td>{row.telescopeName}</Table.Td>
+                <Table.Td>{row.instrumentName}</Table.Td>
+                <Table.Td>{row.telescopeTimeValue}  {row.telescopeTimeUnit}</Table.Td>
+                <Table.Td>{row.condition}</Table.Td>
+                {/* Add more Table.Td elements based on the properties of TelescopeOverviewTableState */}
+            </Table.Tr>
+        )
+    }
+
+    function OpticalSummaryRow(
+            data: Map<string, TelescopeOverviewTableState>): ReactElement {
         return <></>
     }
 
@@ -602,13 +617,19 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             )
         }
 
+
+
         return (
             <>
                 <h3>Telescopes</h3>
                 <Table>
                     { observationOpticalTableHeader() }
                     <Table.Tbody>
-
+                        {opticalData && Array.from(opticalData.entries()).map(
+                            ([key, obj]) => (
+                                OpticalBasicRow(obj, key)
+                            ))}
+                        {opticalData && OpticalSummaryRow(opticalData)}
                     </Table.Tbody>
                 </Table>
             </>

@@ -520,7 +520,7 @@ export const fetchOpticalOverviewTelescopeTableData = (
         NonNullable<unknown>,
         NonNullable<unknown>,
         SaveTelescopeResourceParametersVariables>({
-        url: "/pst/api/opticalTelescopes/opticalTableData",
+        url: "/pst/api/opticalTelescopes/opticalOverviewTableData",
         method: "post", body: data, signal: signal
     });
 
@@ -546,8 +546,8 @@ export const useOpticalOverviewTelescopeTableData = (
         useProposalToolContext(options);
 
     const queryKey = queryKeyFn({
-        path: "/pst/api/opticalTelescopes/opticalTableData",
-        operationId: "fetchOpticalTelescopeTableData",
+        path: "/pst/api/opticalTelescopes/opticalOverviewTableData",
+        operationId: "opticalOverviewTableData",
         variables: proposalData,
     });
 

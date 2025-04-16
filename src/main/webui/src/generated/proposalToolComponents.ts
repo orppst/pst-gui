@@ -13365,4 +13365,9 @@ export type QueryOperation =
       path: "/pst/api/opticalTelescopes/opticalTableData";
       operationId: "fetchOpticalTelescopeTableData";
       variables: {}
+    }
+  | {
+      path: "/pst/api/opticalTelescopes/opticalOverviewTableData";
+      operationId: "opticalOverviewTableData";
+      variables: {}
 };
