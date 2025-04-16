@@ -45,7 +45,7 @@ export const checkForFake = (other: TechnicalGoal): boolean => {
         other.performance!.desiredLargestScale!.value == -1 &&
         other.performance!.desiredSensitivity!.value == -1 &&
         other.performance!.representativeSpectralPoint!.value == -1 &&
-        other.spectrum!.length == 0 &&
+        (other.spectrum == undefined || other.spectrum!.length == 0) &&
         other.performance!.desiredAngularResolution!.unit?.
             value == 'microarcsec' &&
         other.performance!.desiredDynamicRange!.unit?.value == 'dB' &&

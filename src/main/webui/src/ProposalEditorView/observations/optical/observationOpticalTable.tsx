@@ -233,8 +233,12 @@ function ObservationRow(observationId: ObservationId):
     }
 
     // get the row data
-    const opticalDaraRow = opticalData!.get(observation!._id!.toString())!;
+    const opticalDataRow = opticalData!.get(observation!._id!.toString())!;
 
+    //handle error row.
+    if(opticalDataRow == undefined) {
+        return <></>
+    }
     // generate the correct row.
     return (
         <Table.Tr>
@@ -252,10 +256,10 @@ function ObservationRow(observationId: ObservationId):
                 {observation?.field?.name}
             </Table.Td>
             <Table.Td>
-                {opticalDaraRow.telescopeName}
+                {opticalDataRow.telescopeName}
             </Table.Td>
             <Table.Td>
-                {opticalDaraRow.instrumentName}
+                {opticalDataRow.instrumentName}
             </Table.Td>
             <Table.Td>
                 <Group align={"right"}>
