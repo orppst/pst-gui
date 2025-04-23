@@ -16,7 +16,7 @@ import {
     RealQuantity,
     Target,
 } from 'src/generated/proposalToolSchemas.ts';
-import {IconEyeStar, IconNorthStar} from '@tabler/icons-react';
+import {IconEyeStar, IconNorthStar, IconTelescope} from '@tabler/icons-react';
 import {ReactElement, useContext, useRef} from 'react';
 import downloadProposal from './downloadProposal.tsx';
 import {DIMMED_FONT_WEIGHT, JSON_SPACES, POLARIS_MODES} from 'src/constants.tsx';
@@ -40,8 +40,6 @@ import {
 } from "../../util/telescopeComms";
 import {ProposalContext, useToken} from "../../App2";
 import {OpticalTableGenerator} from "../observations/optical/observationOpticalTable";
-import {observationOpticalTableHeader} from "../observations/optical/observationOpticalTable";
-
 
 /*
       title    -- string
@@ -82,6 +80,13 @@ interface InvestigatorLabelProps {
     role: string;
     home: string;
 }
+
+// the type for the extracting data of observations for overview telescope table.
+export type  TelescopeSummaryState = {
+    telescopeTimeValue: string, telescopeTimeUnit: string,
+    condition: string
+}
+
 
 /**
  *
@@ -708,46 +713,68 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     /**
-     * returns the header for the observation optical table.
+     * returns the header for the telescope summary table.
      *
      * @return {React.ReactElement} the html for the table header.
      */
-    function observationOpticalTableHeader(): ReactElement {
+    function observationOpticalSummaryTableHeader(): ReactElement {
         return (
             <Table.Thead>
                 <Table.Tr>
-                    <Table.Th>Telescope Name</Table.Th>
-                    <Table.Th>Telescope Instrument</Table.Th>
+                    <Table.Th>Target Name</Table.Th>
                     <Table.Th>Telescope Time Requirement</Table.Th>
                     <Table.Th>Telescope Condition</Table.Th>
-                    <Table.Th></Table.Th>
                 </Table.Tr>
             </Table.Thead>
         );
     }
 
     /**
-     * builds a row data.
+     * builds a summary row data.
      *
      * @param row: the row.
      * @param key: the key.
      */
-    const OpticalBasicRow =
-            (row: TelescopeOverviewTableState, key: string): ReactElement => {
-        return (
-            <Table.Tr key={"observation:" + key}>
-                <Table.Td>{row.telescopeName}</Table.Td>
-                <Table.Td>{row.instrumentName}</Table.Td>
-                <Table.Td>{row.telescopeTimeValue}  {row.telescopeTimeUnit}</Table.Td>
-                <Table.Td>{row.condition}</Table.Td>
-                {/* Add more Table.Td elements based on the properties of TelescopeOverviewTableState */}
-            </Table.Tr>
-        )
-    }
+    const OpticalBasicSummaryRow =
+        (row: TelescopeSummaryState, key: string): ReactElement => {
+            return (
+                <Table.Tr key={"observation:" + key}>
+                    <Table.Td></Table.Td>
+                    <Table.Td>{row.telescopeTimeValue}  {row.telescopeTimeUnit}</Table.Td>
+                    <Table.Td>{row.condition}</Table.Td>
+                </Table.Tr>
+            )
+        }
 
-    function OpticalSummaryRow(
-            data: Map<string, TelescopeOverviewTableState>): ReactElement {
-        return <></>
+    /**]
+     * builds the summary data from the observation data.
+     * @param data: the observation data.
+     * @constructor
+     */
+    function buildSummaryData(
+            data: Map<string, TelescopeOverviewTableState>):
+        Map<string, TelescopeSummaryState[]> {
+        const summaryData: Map<string, TelescopeSummaryState[]> =
+            new Map<string, TelescopeSummaryState[]>();
+
+        for (const [, observationData] of data.entries()) {
+            const key = observationData.telescopeName + " : " + observationData.instrumentName;
+            if (summaryData.has(key)) {
+                summaryData.get(key)!.push(
+                    {telescopeTimeValue: observationData.telescopeTimeValue,
+                        telescopeTimeUnit: observationData.telescopeTimeUnit,
+                        condition: observationData.condition}
+                )
+            } else {
+                const array = [{
+                    telescopeTimeValue: observationData.telescopeTimeValue,
+                    telescopeTimeUnit: observationData.telescopeTimeUnit,
+                    condition: observationData.condition}]
+                summaryData.set(key, array);
+            }
+        }
+
+        return summaryData;
     }
 
     /**
@@ -791,18 +818,77 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         return (
             <>
                 <h3>Telescopes</h3>
-                <Table>
-                    { observationOpticalTableHeader() }
-                    <Table.Tbody>
-                        {opticalData && Array.from(opticalData.entries()).map(
-                            ([key, obj]) => (
-                                OpticalBasicRow(obj, key)
-                            ))}
-                        {opticalData && OpticalSummaryRow(opticalData)}
-                    </Table.Tbody>
-                </Table>
+                {buildSummaryAccordion(buildSummaryData(opticalData!))}
             </>
         );
+    }
+
+    function TelescopeSummaryAccordionLabel(
+            title: string, arrayData: TelescopeSummaryState[]): ReactElement {
+        // determine total time.
+        let time = 0;
+        const conditions: string[] = [];
+        for (const item of arrayData) {
+            if (item.telescopeTimeUnit !== "Hours") {
+                time += Number(item.telescopeTimeValue) * 8;
+            } else {
+                time += Number(item.telescopeTimeValue);
+            }
+            if (!conditions.includes(item.condition)) {
+                conditions.push(item.condition);
+            }
+        }
+
+        // determine conditions text.
+        let conditionsString = "";
+        for (const condition of conditions) {
+            conditionsString = conditionsString + condition + ", "
+        }
+        conditionsString = conditionsString.slice(0, -2)
+
+        // generate label
+        return (
+            <Group wrap={"nowrap"}>
+                <Avatar radius={"sm"}>
+                    <IconTelescope size={"1em"}/>
+                </Avatar>
+                <div>
+                    <Text>{title}</Text>
+                    <Text size={"sm"} c={"dimmed"} fw={DIMMED_FONT_WEIGHT}>
+                        total time {time} hours{ ",  "}
+                        Conditions ({conditionsString})
+                    </Text>
+                </div>
+            </Group>
+        )
+    }
+
+    function buildSummaryAccordion(data: Map<string, TelescopeSummaryState[]>):
+            ReactElement {
+        return (
+            <Accordion>
+                {Array.from(data.entries()).map(
+                    ([key, arrayData], index) => (
+                        <Accordion.Item key={key} value={index.toString()}>
+                            <Accordion.Control>
+                                {TelescopeSummaryAccordionLabel(
+                                    key, arrayData)}
+                            </Accordion.Control>
+                            <Accordion.Panel>
+                                <Group>
+                                    <Table>
+                                        { observationOpticalSummaryTableHeader() }
+                                        <Table.Tbody>
+                                            {arrayData.map((summaryItem, itemIndex) => (
+                                                OpticalBasicSummaryRow(summaryItem, itemIndex.toString())
+                                                ))}
+                                        </Table.Tbody>
+                                    </Table>
+                                </Group>
+                            </Accordion.Panel>
+                        </Accordion.Item>
+                ))}
+            </Accordion>);
     }
 
     /**
