@@ -279,16 +279,18 @@ function ObservationRow(observationId: ObservationId):
 
 /**
  * generates the observation table html.
- *
+ * @param observations: the observations array.
+ * @param showButtons: boolean flag for showing buttons.
  * @return {React.ReactElement} the dynamic html for the observation table.
  * @constructor
  */
-export const OpticalTableGenerator = (observations:  Observation[]):
+export const OpticalTableGenerator = (
+        observations:  Observation[], showButtons: boolean):
         ReactElement => {
     return (
         <>
             <Table>
-                { observationOpticalTableHeader() }
+                { observationOpticalTableHeader(showButtons) }
                 <Table.Tbody>
                     {
                         observations?.map((observation) => {
@@ -308,11 +310,11 @@ export const OpticalTableGenerator = (observations:  Observation[]):
 
 /**
  * returns the header for the observation optical table.
- *
+ * @param showButtons: boolean flag for showing the buttons.
  * @return {React.ReactElement} the html for the table header.
  */
 // eslint-disable-next-line react-refresh/only-export-components
-export function observationOpticalTableHeader(): ReactElement {
+export function observationOpticalTableHeader(showButtons: boolean): ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
@@ -322,7 +324,7 @@ export function observationOpticalTableHeader(): ReactElement {
                 <Table.Th>Field</Table.Th>
                 <Table.Th>Telescope Name</Table.Th>
                 <Table.Th>Telescope Instrument</Table.Th>
-                <Table.Th></Table.Th>
+                { showButtons ? <Table.Th></Table.Th>: null }
             </Table.Tr>
         </Table.Thead>
     );

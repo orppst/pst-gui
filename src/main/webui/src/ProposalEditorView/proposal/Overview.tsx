@@ -5,28 +5,21 @@ import {
     useProposalResourceGetObservingProposal,
     useSupportingDocumentResourceGetSupportingDocuments,
 } from 'src/generated/proposalToolComponents';
-import {
-    Accordion,
-    Avatar,
-    Box,
-    Container, Fieldset,
-    Group,
-    List, Stack,
-    Table,
-    Text,
-} from '@mantine/core';
+import {Accordion, Avatar, Box, Container, Fieldset, Group, List, Stack, Table, Text,} from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse,
-    Investigator, ObjectIdentifier,
-    RealQuantity, Target,
+    Investigator,
+    ObjectIdentifier, Observation,
+    RealQuantity,
+    Target,
 } from 'src/generated/proposalToolSchemas.ts';
-import { IconNorthStar } from '@tabler/icons-react';
-import {ReactElement, useRef} from 'react';
+import {IconEyeStar, IconNorthStar} from '@tabler/icons-react';
+import {ReactElement, useContext, useRef} from 'react';
 import downloadProposal from './downloadProposal.tsx';
-import {DIMMED_FONT_WEIGHT, JSON_SPACES} from 'src/constants.tsx';
-import { TargetTable } from '../targets/TargetTable.tsx';
-import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
+import {DIMMED_FONT_WEIGHT, JSON_SPACES, POLARIS_MODES} from 'src/constants.tsx';
+import {TargetTable} from '../targets/TargetTable.tsx';
+import {TechnicalGoalsTable} from '../technicalGoals/technicalGoalTable.tsx';
 import {PreviewJustification} from "../justifications/justification.preview.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -37,8 +30,12 @@ import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import {useOpticalTelescopeResourceDeleteProposalTelescopeData} from "../../util/telescopeComms";
-import {useToken} from "../../App2";
+import {
+    useOpticalTelescopeResourceDeleteProposalTelescopeData,
+    useOpticalTelescopeTableData
+} from "../../util/telescopeComms";
+import {ProposalContext, useToken} from "../../App2";
+import {OpticalTableGenerator} from "../observations/optical/observationOpticalTable";
 
 /*
       title    -- string
@@ -143,9 +140,21 @@ function InvestigatorAccordionContent(
  * @param {string} targetName the target name.
  * @param {string} observationType the type of observation.
  * @param {CalibrationTargetIntendedUse} intendedUse the targets intended use.
+ */
+interface ObservationOpticalLabelProps {
+    targetName: string;
+    observationType: string;
+    intendedUse?: CalibrationTargetIntendedUse;
+}
+
+/**
+ * interface used in the observation panel.
+ * @param {string} targetName the target name.
+ * @param {string} observationType the type of observation.
+ * @param {CalibrationTargetIntendedUse} intendedUse the targets intended use.
  * @param {RealQuantity} spectralPoint the spectral point.
  */
-interface ObservationLabelProps {
+interface ObservationRadioLabelProps {
     targetName: string;
     observationType: string;
     intendedUse?: CalibrationTargetIntendedUse;
@@ -158,9 +167,9 @@ interface ObservationLabelProps {
  * @return {ReactElement} the htm for the observation accordion label.
  * @constructor
  */
-function ObservationAccordionLabel(
+function ObservationRadioAccordionLabel(
     {targetName, observationType, intendedUse, spectralPoint} :
-        ObservationLabelProps): ReactElement {
+        ObservationRadioLabelProps): ReactElement {
     return(
         <Group wrap={"nowrap"}>
             <Avatar radius={"sm"}>
@@ -179,25 +188,53 @@ function ObservationAccordionLabel(
 }
 
 /**
+ * creates the observation label for opticals.
+ * @param ObservationLabelProps: the data for the method.
+ * @return {ReactElement} the htm for the observation accordion label.
+ * @constructor
+ */
+function ObservationOpticalAccordionLabel(
+    {targetName, observationType, intendedUse}:ObservationOpticalLabelProps):
+        ReactElement {
+    const polarisMode = useContext(ProposalContext).mode;
+    return(
+        <Group wrap={"nowrap"}>
+            <Avatar radius={"sm"}>
+                {polarisMode == POLARIS_MODES.BOTH ?
+                    <IconEyeStar size={"1em"}/> :
+                    <IconNorthStar size={"1em"}/>}
+            </Avatar>
+            <div>
+                <Text>{targetName}</Text>
+                <Text size={"sm"} c={"dimmed"} fw={DIMMED_FONT_WEIGHT}>
+                    {observationType}
+                    {intendedUse && ", " + intendedUse.toLowerCase()}
+                </Text>
+            </div>
+        </Group>
+    )
+}
+
+/**
  * interface for the observation content props.
  * @param {number} proposalCode: the proposal code.
  * @param {number} targetID the target id in the database.
  * @param {number} technicalGoalId the technical goal id in the database.
  */
-interface ObservationContentProps {
+interface ObservationRadioContentProps {
     proposalCode: number;
     targetIds: number[];
     technicalGoalId: number;
 }
 
 /**
- * generates the observation accordion content.
+ * generates the observation radio accordion content.
  * @param ObservationContentProps: data for the method.
  * @return {ReactElement} the html for the observation accordion content.
  * @constructor
  */
-function ObservationAccordionContent(
-    {proposalCode, targetIds, technicalGoalId} : ObservationContentProps) :
+function ObservationRadioAccordionContent(
+    {proposalCode, targetIds, technicalGoalId} : ObservationRadioContentProps) :
     ReactElement {
 
     const listOfTargets = [] as ObjectIdentifier [];
@@ -224,6 +261,30 @@ function ObservationAccordionContent(
 }
 
 /**
+ * generates the observation optical accordion content.
+ * @return {ReactElement} the html for the observation accordion content.
+ * @constructor
+ */
+function ObservationOpticalAccordionContent(
+    proposalCode: number, targetIds: number[], observation: Observation):
+    ReactElement {
+
+    const listOfTargets = [] as ObjectIdentifier [];
+
+    targetIds.map((targetId: number) => listOfTargets.push(
+        {dbid: targetId, code: proposalCode.toString()}))
+
+    const observations: Observation[] = [observation];
+
+    return (
+        //TODO: consider a Grid instead of Group
+        <Group>
+            {OpticalTableGenerator(observations, false)}
+        </Group>
+    )
+}
+
+/**
  * creates the html for the overview panel.
  * @return {ReactElement} the html of the overview panel.
  * @constructor
@@ -237,6 +298,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const navigate = useNavigate();
 
     const queryClient = useQueryClient();
+
+    const polarisMode = useContext(ProposalContext).mode;
 
     const cloneProposalMutation =
         useProposalResourceCloneObservingProposal();
@@ -254,8 +317,19 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             }
         });
 
+    // the observation ids for the optical observations.
+    const {
+        data: opticalData,
+        error: opticalError,
+        isLoading: opticalLoading,
+    } = useOpticalTelescopeTableData({
+        proposalID: selectedProposalCode!
+    });
+
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
+
+
 
     const { data: proposalsData ,
             error: proposalsError,
@@ -271,6 +345,13 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         return (
             <Box>
                 <pre>{JSON.stringify(proposalsError, null, JSON_SPACES)}</pre>
+            </Box>
+        );
+    }
+    if (opticalError) {
+        return (
+            <Box>
+                <pre>{JSON.stringify(opticalError, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -452,6 +533,83 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     /**
+     * builds a radio accordion.
+     *
+     * @param observation: the radio observation
+     * @param targetNames: the target names
+     * @param index: the index
+     * @param observationType: the type of observation (target, or calibration)
+     */
+    const radioAccordion = (
+            observation: Observation, targetNames: string,
+            index: number, observationType: string): ReactElement => {
+        const technicalGoalObj =
+            proposalsData?.technicalGoals?.find((techGoal) =>
+                techGoal._id === observation.technicalGoal)!
+        // Ideally we should use the observation id for the 'key' but
+        // we don't have it at this point, so we use the map index
+        // instead
+        return(
+            <Accordion.Item key={observation._id} value={String(index)}>
+                <Accordion.Control>
+                    <ObservationRadioAccordionLabel
+                        targetName={targetNames}
+                        observationType={observationType}
+                        intendedUse={
+                            observationType === 'Calibration Obs.' ?
+                            (observation as CalibrationObservation).intent :
+                            undefined}
+                        spectralPoint={
+                            technicalGoalObj.performance?.representativeSpectralPoint!}
+                    />
+                </Accordion.Control>
+                <Accordion.Panel>
+                    <ObservationRadioAccordionContent
+                        proposalCode={Number(selectedProposalCode)}
+                        targetIds={observation.target as number []}
+                        technicalGoalId={technicalGoalObj._id!}
+                    />
+                </Accordion.Panel>
+            </Accordion.Item>
+        )
+    }
+
+    /**
+     * builds an optical accordion.
+     *
+     * @param observation: the optical observation
+     * @param targetNames: the target names
+     * @param index: the index
+     * @param observationType: the type of observation (target, or calibration)
+     */
+    const opticalAccordion = (
+            observation: Observation, targetNames: string,
+            index: number, observationType: string): ReactElement => {
+
+        return(
+            <Accordion.Item key={observation._id} value={String(index)}>
+                <Accordion.Control>
+                    <ObservationOpticalAccordionLabel
+                        targetName={targetNames}
+                        observationType={observationType}
+                        intendedUse={
+                            observationType === 'Calibration Obs.' ?
+                                (observation as CalibrationObservation).intent :
+                                undefined}
+                    />
+                </Accordion.Control>
+                <Accordion.Panel>
+                    {ObservationOpticalAccordionContent(
+                        Number(selectedProposalCode),
+                        observation.target as number [],
+                        observation)
+                    }
+                </Accordion.Panel>
+            </Accordion.Item>
+        )
+    }
+
+    /**
      * creates the observations panel for the overview page.
      *
      * @return ReactElement the generated HTML for the observations panel.
@@ -489,37 +647,42 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     targetNames += ", and " + remaining + " more";
                 }
 
-                const technicalGoalObj =
-                    proposalsData?.technicalGoals?.find((techGoal) =>
-                        techGoal._id === observation.technicalGoal)!
-
                 const observationType =
                     observation["@type"] === 'proposal:TargetObservation' ?
                         'Target Obs.' : 'Calibration Obs.';
 
-                // Ideally we should use the observation id for the 'key' but
-                // we don't have it at this point, so we use the map index
-                // instead
-                return(
-                    <Accordion.Item key={index} value={String(index)}>
-                        <Accordion.Control>
-                            <ObservationAccordionLabel
-                                targetName={targetNames}
-                                observationType={observationType}
-                                intendedUse={observationType === 'Calibration Obs.' ?
-                                    (observation as CalibrationObservation).intent : undefined}
-                                spectralPoint={technicalGoalObj.performance?.representativeSpectralPoint!}
-                            />
-                        </Accordion.Control>
-                        <Accordion.Panel>
-                            <ObservationAccordionContent
-                                proposalCode={Number(selectedProposalCode)}
-                                targetIds={observation.target as number []}
-                                technicalGoalId={technicalGoalObj._id!}
-                            />
-                        </Accordion.Panel>
-                    </Accordion.Item>
-                )
+                switch(polarisMode) {
+                    case POLARIS_MODES.OPTICAL:
+                        if (opticalData!.has(observation._id!.toString())) {
+                            return opticalAccordion(
+                                observation, targetNames, index,
+                                observationType);
+                        } else {
+                            return <Accordion.Item key={observation._id}
+                                                   value={String(index)}/>
+                        }
+                    case POLARIS_MODES.BOTH:
+                        if (opticalData!.has(observation._id!.toString())) {
+                            return opticalAccordion(
+                                observation, targetNames, index,
+                                observationType);
+                        } else {
+                            return radioAccordion(
+                                observation, targetNames, index,
+                                observationType);
+                        }
+                    case POLARIS_MODES.RADIO:
+                        if (!opticalData!.has(observation._id!.toString())) {
+                            return radioAccordion(
+                                observation, targetNames, index,
+                                observationType);
+                        } else {
+                            return <Accordion.Item key={observation._id}
+                                                   value={String(index)}/>
+                        }
+                    default:
+                        notifyError("invalid polaris mode", polarisMode)
+                }
             })
 
         return (
@@ -705,7 +868,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <PanelHeader
                 itemName={proposalsData?.title!}
                 panelHeading={"Overview"}
-                isLoading={proposalsIsLoading}
+                isLoading={proposalsIsLoading || opticalLoading}
             />
             <Container fluid>
                 <ContextualHelpButton messageId="Overview" />

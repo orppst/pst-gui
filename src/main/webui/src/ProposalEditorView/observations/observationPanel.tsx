@@ -161,7 +161,7 @@ function Observations() {
                 {(mode === POLARIS_MODES.BOTH) && (
                   <h2>Optical Observations</h2>
                 )}
-                {OpticalTableGenerator(observations)}
+                {OpticalTableGenerator(observations, true)}
                 <Space h={"xl"}/>
                 <Grid>
                     <Grid.Col span={10}></Grid.Col>
