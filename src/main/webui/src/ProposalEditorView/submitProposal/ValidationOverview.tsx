@@ -11,6 +11,7 @@ import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ReactElement} from "react";
+import React from 'react';
 
 export default function ValidationOverview(props: {
     cycle: number,
@@ -107,7 +108,15 @@ export default function ValidationOverview(props: {
                                     <IconAlertCircle size={ICON_SIZE} />
                                 </Table.Td>
                                 <Table.Td>
-                                    {validateProposal.data?.warnings}
+                                    {validateProposal.data?.warnings.replace('<br/>$','g')
+                                        .split("<br/>")
+                                        .map((s, index) => (
+                                            s.length>0 &&
+                                            <React.Fragment key={index}>
+                                                {s}
+                                                <br />
+                                            </React.Fragment>
+                                        ))}
                                 </Table.Td>
                             </Table.Tr>)}
                         {validateProposal.data?.errors !== undefined &&
@@ -116,7 +125,16 @@ export default function ValidationOverview(props: {
                                     <IconCircleX size={ICON_SIZE} />
                                 </Table.Td>
                                 <Table.Td>
-                                    {validateProposal.data?.errors}
+                                    {validateProposal.data?.errors.replace('<br/>$','g')
+                                        .split("<br/>")
+                                        .map((s, index) => (
+                                            s.length>0 &&
+                                            <React.Fragment key={index}>
+                                                {s}
+                                                <br />
+                                            </React.Fragment>
+                                        ))}
+
                                 </Table.Td>
                             </Table.Tr>)}
                     </Table.Tbody>
