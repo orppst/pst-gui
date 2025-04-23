@@ -40,6 +40,7 @@ import {
 } from "../../util/telescopeComms";
 import {ProposalContext, useToken} from "../../App2";
 import {OpticalTableGenerator} from "../observations/optical/observationOpticalTable";
+import * as Schemas from "../../generated/proposalToolSchemas";
 
 /*
       title    -- string
@@ -84,7 +85,7 @@ interface InvestigatorLabelProps {
 // the type for the extracting data of observations for overview telescope table.
 export type  TelescopeSummaryState = {
     telescopeTimeValue: string, telescopeTimeUnit: string,
-    condition: string
+    condition: string, targetName: string,
 }
 
 
@@ -622,6 +623,38 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     /**
+     * returns the target name
+     * @param observation
+     */
+    const getTargetName = (observation:  Observation): string => {
+        //get all the target objects
+        const targetObjs = [] as Target[];
+
+        observation.target?.map((obsTarget) => {
+            const targetObj = proposalsData?.targets?.find((target) =>
+                target._id === obsTarget)!
+
+            targetObjs.push(targetObj);
+        });
+
+        // create a string of the first target names
+        let targetNames = targetObjs[0].sourceName!;
+        let targetIndex = 0;
+
+        while(++targetIndex < 3
+        && targetIndex < targetObjs.length) {
+            targetNames += ", " + targetObjs[targetIndex].sourceName;
+        }
+
+        const remaining =  targetObjs.length - targetIndex;
+
+        if(remaining > 0) {
+            targetNames += ", and " + remaining + " more";
+        }
+        return targetNames;
+    }
+
+    /**
      * creates the observations panel for the overview page.
      *
      * @return ReactElement the generated HTML for the observations panel.
@@ -630,34 +663,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const DisplayObservations = (): ReactElement => {
         const observations =
             proposalsData?.observations?.map((observation, index) => {
-
-                //observation.target and observation.technicalGoal are NOT
-                // objects but numbers here, specifically their DB id
-
-                //get all the target objects
-                const targetObjs = [] as Target[];
-
-                observation.target?.map((obsTarget) => {
-                    const targetObj = proposalsData?.targets?.find((target) =>
-                        target._id === obsTarget)!
-
-                    targetObjs.push(targetObj);
-                });
-
-                // create a string of the first target names
-                let targetNames = targetObjs[0].sourceName!;
-                let targetIndex = 0;
-
-                while(++targetIndex < 3
-                && targetIndex < targetObjs.length) {
-                    targetNames += ", " + targetObjs[targetIndex].sourceName;
-                }
-
-                const remaining =  targetObjs.length - targetIndex;
-
-                if(remaining > 0) {
-                    targetNames += ", and " + remaining + " more";
-                }
+                const targetNames = getTargetName(observation);
 
                 const observationType =
                     observation["@type"] === 'proposal:TargetObservation' ?
@@ -739,37 +745,59 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         (row: TelescopeSummaryState, key: string): ReactElement => {
             return (
                 <Table.Tr key={"observation:" + key}>
-                    <Table.Td></Table.Td>
+                    <Table.Td>{row.targetName}</Table.Td>
                     <Table.Td>{row.telescopeTimeValue}  {row.telescopeTimeUnit}</Table.Td>
                     <Table.Td>{row.condition}</Table.Td>
                 </Table.Tr>
             )
         }
 
-    /**]
+    /**
+     * locates the observation from a given id.
+     *
+     * @param obsId: the observation id to find the observation of.
+     * @param observations: the list of observations.
+     */
+    const findObs = (obsId: string, observations: Observation[]): Observation => {
+        for (const obs of observations) {
+            if (obs._id!.toString() == obsId) {
+                return obs;
+            }
+        }
+        return {};
+    }
+
+    /**
      * builds the summary data from the observation data.
      * @param data: the observation data.
+     * @param proposalData: the proposal data.
      * @constructor
      */
     function buildSummaryData(
-            data: Map<string, TelescopeOverviewTableState>):
+            data: Map<string, TelescopeOverviewTableState>,
+            proposalData: Schemas.ObservingProposal):
         Map<string, TelescopeSummaryState[]> {
         const summaryData: Map<string, TelescopeSummaryState[]> =
             new Map<string, TelescopeSummaryState[]>();
 
-        for (const [, observationData] of data.entries()) {
-            const key = observationData.telescopeName + " : " + observationData.instrumentName;
+        for (const [obsID, observationData] of data.entries()) {
+            const key = observationData.telescopeName + " : " +
+                observationData.instrumentName;
+            const obs = findObs(obsID, proposalData!.observations!);
+
             if (summaryData.has(key)) {
                 summaryData.get(key)!.push(
                     {telescopeTimeValue: observationData.telescopeTimeValue,
-                        telescopeTimeUnit: observationData.telescopeTimeUnit,
-                        condition: observationData.condition}
+                     telescopeTimeUnit: observationData.telescopeTimeUnit,
+                     condition: observationData.condition,
+                     targetName: getTargetName(obs)}
                 )
             } else {
                 const array = [{
                     telescopeTimeValue: observationData.telescopeTimeValue,
                     telescopeTimeUnit: observationData.telescopeTimeUnit,
-                    condition: observationData.condition}]
+                    condition: observationData.condition,
+                    targetName: getTargetName(obs)}]
                 summaryData.set(key, array);
             }
         }
@@ -813,12 +841,11 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             )
         }
 
-
-
         return (
             <>
                 <h3>Telescopes</h3>
-                {buildSummaryAccordion(buildSummaryData(opticalData!))}
+                {buildSummaryAccordion(
+                    buildSummaryData(opticalData!, proposalsData!))}
             </>
         );
     }
