@@ -15,7 +15,7 @@ export function ContextualHelpButton(props : {messageId : string}) {
         aMessage.id === props.messageId + userLang
       );
 
-    const displayHelp = singleMessage ? singleMessage.message : "";
+    const displayHelp  = singleMessage ? singleMessage.message : "";
 
     return (
         <>
@@ -40,7 +40,7 @@ export function ContextualHelpButton(props : {messageId : string}) {
                 showingHelp &&
                 <>
                     <Group justify={"center"}>
-                        <Alert maw={"85%"}>
+                        <Alert maw={"65%"}>
                             {displayHelp}
                         </Alert>
                     </Group>

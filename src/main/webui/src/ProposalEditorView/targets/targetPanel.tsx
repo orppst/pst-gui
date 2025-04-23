@@ -12,6 +12,7 @@ import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 import AddButton from "../../commonButtons/add.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import AddListOfTargets from "./addListOfTargets.tsx";
 
 /**
  * Renders the target panel containing an add target button
@@ -65,9 +66,22 @@ export function TargetPanel(): ReactElement {
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Targets"} />
             <ContextualHelpButton  messageId="MaintTargList" />
+            {
+                targets.data?.length! > 10 &&
+                <Group justify={"center"}>
+                    <AddButton
+                        label={"Add One Target"}
+                        toolTipLabel={"Add a single target"}
+                        onClick={() => navigate("new")}
+                    />
+                    <AddListOfTargets
+                        proposalCode={Number(selectedProposalCode)}
+                    />
+                </Group>
+            }
             <Stack>
                 {targets.data?.length === 0?
-                    <div>Please add your targets</div> :
+                    <div>No targets have been added</div> :
                     <TargetTable isLoading={targets.isLoading}
                                  data={targets.data}
                                  selectedProposalCode={selectedProposalCode}
@@ -75,10 +89,14 @@ export function TargetPanel(): ReactElement {
                                  showButtons={true}
                                  selectedTargets={undefined}/>
                 }
-                <Group justify={"flex-end"}>
+                <Group justify={"center"}>
                     <AddButton
-                        toolTipLabel={"Add a target"}
+                        label={"Add One Target"}
+                        toolTipLabel={"Add a single target"}
                         onClick={() => navigate("new")}
+                    />
+                    <AddListOfTargets
+                        proposalCode={Number(selectedProposalCode)}
                     />
                 </Group>
             </Stack>
