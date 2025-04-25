@@ -4,7 +4,7 @@ import {
 } from 'src/generated/proposalToolComponents.ts';
 
 import {useNavigate, useParams} from "react-router-dom";
-import {Box, Group, Loader, Stack} from '@mantine/core';
+import {Box, Group, Loader, Stack, Text} from '@mantine/core';
 import { ReactElement } from 'react';
 import { TargetTable } from './TargetTable.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
@@ -81,13 +81,17 @@ export function TargetPanel(): ReactElement {
             }
             <Stack>
                 {targets.data?.length === 0?
-                    <div>No targets have been added</div> :
-                    <TargetTable isLoading={targets.isLoading}
-                                 data={targets.data}
-                                 selectedProposalCode={selectedProposalCode}
-                                 boundTargets={boundTargets}
-                                 showButtons={true}
-                                 selectedTargets={undefined}/>
+                    <Text>No targets have been added</Text> :
+                    <Stack>
+                        <Text>Total targets added: {targets.data?.length}</Text>
+                        <TargetTable isLoading={targets.isLoading}
+                                     data={targets.data}
+                                     selectedProposalCode={selectedProposalCode}
+                                     boundTargets={boundTargets}
+                                     showButtons={true}
+                                     selectedTargets={undefined}
+                        />
+                    </Stack>
                 }
                 <Group justify={"center"}>
                     <AddButton
