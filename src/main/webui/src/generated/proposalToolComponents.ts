@@ -6340,12 +6340,17 @@ export type SubmittedProposalResourceSubmitProposalVariables = {
   pathParams: SubmittedProposalResourceSubmitProposalPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
+export type SubmittedProposalResponse = {
+  id: string,
+  obs: Schemas.Observation []
+}
+
 export const fetchSubmittedProposalResourceSubmitProposal = (
   variables: SubmittedProposalResourceSubmitProposalVariables,
   signal?: AbortSignal,
 ) =>
   proposalToolFetch<
-    Schemas.ProposalSynopsis,
+    SubmittedProposalResponse,
     SubmittedProposalResourceSubmitProposalError,
     Schemas.SubmissionConfiguration,
     {},
@@ -6361,7 +6366,7 @@ export const fetchSubmittedProposalResourceSubmitProposal = (
 export const useSubmittedProposalResourceSubmitProposal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.ProposalSynopsis,
+      SubmittedProposalResponse,
       SubmittedProposalResourceSubmitProposalError,
       SubmittedProposalResourceSubmitProposalVariables
     >,
@@ -6370,7 +6375,7 @@ export const useSubmittedProposalResourceSubmitProposal = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    Schemas.ProposalSynopsis,
+    SubmittedProposalResponse,
     SubmittedProposalResourceSubmitProposalError,
     SubmittedProposalResourceSubmitProposalVariables
   >({
@@ -13441,4 +13446,9 @@ export type QueryOperation =
       path: "/pst/api/opticalTelescopes/opticalOverviewTableData";
       operationId: "opticalOverviewTableData";
       variables: {}
-};
+    }
+  | {
+      path: "/pst/api/opticalTelescopes/copyProposal";
+      operationId: "opticalCopyProposal";
+      variables: {}
+}

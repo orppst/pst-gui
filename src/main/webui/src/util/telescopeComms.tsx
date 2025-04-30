@@ -24,6 +24,9 @@ export type TelescopeSaveError = Fetcher.ErrorWrapper<undefined>;
 // the error format for telescope error response for verify data.
 export type TelescopeVerifyError = Fetcher.ErrorWrapper<undefined>;
 
+// the error format for telescope copy response for verify data.
+export type TelescopeCopyError = Fetcher.ErrorWrapper<undefined>;
+
 // the enum type of the forms of input.
 export enum Type {LIST = "LIST", TEXT = "TEXT", BOOLEAN = "BOOLEAN" }
 
@@ -84,6 +87,14 @@ export type LoadTelescopeState = {
 // the type for aiming for a given proposal.
 export type OpticalTelescopeProposal = {
     proposalID: string
+}
+
+// the type for cloning
+export type OpticalTelescopeCopyData = {
+    proposalID: string,
+    cloneID: string,
+    obsIds: number[],
+    cloneObsIDs: number[],
 }
 
 // the type of data returned from a load request
@@ -571,5 +582,101 @@ export const useOpticalOverviewTelescopeTableData = (
         },
         ...options,
         ...queryOptions,
+    });
+};
+
+
+/**
+ * bring about a call to get observation optical table data.
+ *
+ * @param {OpticalTelescopeProposal} data: the data to get the optical table.
+ * @param {AbortSignal} signal: the signal for failure.
+ * @return {Promise<TelescopeTableState[]>}: the resulting data when received.
+ */
+export const fetchOpticalCopyProposal = (
+    data: OpticalTelescopeCopyData,
+    signal?: AbortSignal
+): Promise<boolean> => // Explicitly return Promise<boolean>
+    proposalToolFetch<
+        boolean,
+        TelescopeCopyError,
+        OpticalTelescopeCopyData,
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        NonNullable<unknown>
+    >({
+        url: "/pst/api/opticalTelescopes/copyProposal",
+        method: "post",
+        body: data,
+        signal: signal,
+    });
+
+/**
+ * mutation function wrapping around data extraction for optical overview table.
+ * @param proposalData: the proposal id.
+ * @param options: the saved data.
+ * @return mutation promise holding onSuccess, OnError.
+ */
+export const useOpticalCopyProposal = (
+    proposalData: OpticalTelescopeCopyData,
+    options?: Omit<
+        reactQuery.UseQueryOptions<
+            boolean,
+            TelescopeCopyError,
+            Map<string, TelescopeOverviewTableState>,
+            reactQuery.QueryKey
+        >,
+        "queryKey" | "queryFn" | "select" // Add "select" to the Omit
+    >
+) => {
+    const { fetcherOptions, queryOptions, queryKeyFn } =
+        useProposalToolContext(options);
+
+    const queryKey = queryKeyFn({
+        path: "/pst/api/opticalTelescopes/copyProposal",
+        operationId: "opticalCopyProposal",
+        variables: proposalData,
+    });
+
+    const queryFn = ({ signal }: { signal?: AbortSignal }) =>
+        fetchOpticalCopyProposal(
+            { ...fetcherOptions, ...proposalData },
+            signal
+        );
+
+    return reactQuery.useQuery<
+        boolean, // Raw data from fetch
+        TelescopeCopyError,
+        Map<string, TelescopeOverviewTableState> // Transformed data for the component
+    >({
+        queryKey,
+        queryFn,
+        ...options,
+        ...queryOptions,
+    });
+};
+
+export const useMutationOpticalCopyProposal = (
+    options?: Omit<
+        reactQuery.UseMutationOptions<
+            boolean,
+            TelescopeCopyError,
+            OpticalTelescopeCopyData
+        >,
+        "mutationFn"
+    >,
+) => {
+    const { fetcherOptions } = useProposalToolContext();
+    return reactQuery.useMutation<
+        boolean,
+        TelescopeCopyError,
+        OpticalTelescopeCopyData
+    >({
+        mutationFn: (variables: OpticalTelescopeCopyData) =>
+            fetchOpticalCopyProposal({
+                ...fetcherOptions,
+                ...variables,
+            }),
+        ...options,
     });
 };

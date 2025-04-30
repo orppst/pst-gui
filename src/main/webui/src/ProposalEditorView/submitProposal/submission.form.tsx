@@ -2,7 +2,7 @@ import {ReactElement, useEffect, useState} from "react";
 import {Alert, Box, Button, Group, Loader, Select, Space, Stepper, Tooltip} from "@mantine/core";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
-    SubmittedProposalResourceSubmitProposalVariables,
+    SubmittedProposalResourceSubmitProposalVariables, SubmittedProposalResponse,
     useObservationResourceGetObservations,
     useProposalCyclesResourceGetProposalCycles,
     useProposalResourceGetObservingProposalTitle,
@@ -24,6 +24,7 @@ import ValidationOverview from "./ValidationOverview.tsx";
 import DisplaySubmissionDetails from "./displaySubmissionDetails.tsx";
 import {IconCheck} from "@tabler/icons-react";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import {useMutationOpticalCopyProposal} from "../../util/telescopeComms";
 
 export default
 function SubmissionForm() :
@@ -92,11 +93,34 @@ function SubmissionForm() :
         }
     });
 
-    const submitProposalMutation = useSubmittedProposalResourceSubmitProposal({
+    // mutation for the optical side. this allows us to bypass the 2 database
+    // transaction issue.
+    const submitOpticalProposalMutation = useMutationOpticalCopyProposal({
         onSuccess: () => {
             setSubmissionFail("");
             queryClient.invalidateQueries().finally();
             nextStep();
+        },
+        onError: (error) => {
+            setSubmissionFail(getErrorMessage(error))},
+    })
+
+    const submitProposalMutation = useSubmittedProposalResourceSubmitProposal({
+        onSuccess: (submittedProposalObs: SubmittedProposalResponse) => {
+            const proposalObsIDs: number [] =
+                targetObservations.data!.map<number>((obs) => obs.dbid!);
+            const submittedProposalObsIDs = submittedProposalObs.obs.map<number>(
+                (obs) => obs._id!);
+
+            if (proposalObsIDs !== undefined &&
+                    submittedProposalObsIDs !== undefined) {
+                submitOpticalProposalMutation.mutate({
+                    proposalID: selectedProposalCode!,
+                    obsIds: proposalObsIDs,
+                    cloneID: submittedProposalObs.id,
+                    cloneObsIDs: submittedProposalObsIDs
+                });
+            }
         },
         onError: (error) => {
             setSubmissionFail(getErrorMessage(error))},
@@ -105,7 +129,7 @@ function SubmissionForm() :
     useEffect(() => {
         if (targetObservations.status === 'success' && calibrationObservations.status === 'success') {
 
-            let targetTuples = targetObservations.data.map((obs) => (
+            const targetTuples = targetObservations.data.map((obs) => (
                 {
                     observationId: obs.dbid!,
                     observationName: obs.name!,
@@ -115,7 +139,7 @@ function SubmissionForm() :
                 }
             ))
 
-            let calibrationTuples = calibrationObservations.data.map((obs) => (
+            const calibrationTuples = calibrationObservations.data.map((obs) => (
                 {
                     observationId: obs.dbid!,
                     observationName: obs.name!,
@@ -175,20 +199,20 @@ function SubmissionForm() :
             //I feel like there might be a better way to do this using the 'filter' method
             //of an array, but it escapes me at the moment ----------------------
 
-            let allModeIds : number[] =
+            const allModeIds : number[] =
                 values.selectedModes.map((modeTuple) => {
                     return modeTuple.modeId;
                 })
 
-            let distinctModeIds = [...new Set(allModeIds)];
+            const distinctModeIds = [...new Set(allModeIds)];
 
-            let observationConfigMap: ObservationConfigMapping[]  = []
+            const observationConfigMap: ObservationConfigMapping[]  = []
 
             distinctModeIds.forEach((distinctModeId) => {
                 // as 'distinctModeId' has come from 'selectedModes' this will always give an array 'obsIds'
                 // of at least length 1
                 //@ts-ignore
-                let obsIds : number [] = values.selectedModes.map((modeTuple) => {
+                const obsIds : number [] = values.selectedModes.map((modeTuple) => {
                     if (distinctModeId === modeTuple.modeId)
                         return modeTuple.observationId;
                 })
