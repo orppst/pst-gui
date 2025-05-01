@@ -95,7 +95,7 @@ function SubmissionForm() :
 
     // mutation for the optical side. this allows us to bypass the 2 database
     // transaction issue.
-    const submitOpticalProposalMutation = useMutationOpticalCopyProposal({
+    const opticalCloneProposalMutation = useMutationOpticalCopyProposal({
         onSuccess: () => {
             setSubmissionFail("");
             queryClient.invalidateQueries().finally();
@@ -105,16 +105,20 @@ function SubmissionForm() :
             setSubmissionFail(getErrorMessage(error))},
     })
 
+    /**
+     * mutation to handle submitting a proposal.
+     */
     const submitProposalMutation = useSubmittedProposalResourceSubmitProposal({
         onSuccess: (submittedProposalObs: SubmittedProposalResponse) => {
+            // send a clone request to optical.
             const proposalObsIDs: number [] =
                 targetObservations.data!.map<number>((obs) => obs.dbid!);
-            const submittedProposalObsIDs = submittedProposalObs.obs.map<number>(
-                (obs) => obs._id!);
+            const submittedProposalObsIDs: number [] =
+                submittedProposalObs.obs.map<number>((obs) => obs._id!);
 
             if (proposalObsIDs !== undefined &&
                     submittedProposalObsIDs !== undefined) {
-                submitOpticalProposalMutation.mutate({
+                opticalCloneProposalMutation.mutate({
                     proposalID: selectedProposalCode!,
                     obsIds: proposalObsIDs,
                     cloneID: submittedProposalObs.id,
@@ -126,6 +130,9 @@ function SubmissionForm() :
             setSubmissionFail(getErrorMessage(error))},
         })
 
+    /**
+     * use effect hook.
+     */
     useEffect(() => {
         if (targetObservations.status === 'success' && calibrationObservations.status === 'success') {
 
