@@ -33,7 +33,7 @@ import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {
-    TelescopeOverviewTableState,
+    TelescopeOverviewTableState, useMutationOpticalCopyProposal,
     useOpticalOverviewTelescopeTableData,
     useOpticalTelescopeResourceDeleteProposalTelescopeData,
     useOpticalTelescopeTableData
@@ -322,6 +322,10 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const deleteProposalOpticalTelescopeMutation =
         useOpticalTelescopeResourceDeleteProposalTelescopeData();
+
+    // mutation for the optical side. this allows us to bypass the 2 database
+    // transaction issue.
+    const submitOpticalProposalMutation = useMutationOpticalCopyProposal()
 
     const {data: supportingDocs} =
         useSupportingDocumentResourceGetSupportingDocuments({
@@ -638,20 +642,23 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         });
 
         // create a string of the first target names
-        let targetNames = targetObjs[0].sourceName!;
-        let targetIndex = 0;
+        if (targetObjs.length != 0) {
+            let targetNames = targetObjs[0].sourceName!;
+            let targetIndex = 0;
 
-        while(++targetIndex < 3
-        && targetIndex < targetObjs.length) {
-            targetNames += ", " + targetObjs[targetIndex].sourceName;
+            while (++targetIndex < 3
+            && targetIndex < targetObjs.length) {
+                targetNames += ", " + targetObjs[targetIndex].sourceName;
+            }
+
+            const remaining = targetObjs.length - targetIndex;
+
+            if (remaining > 0) {
+                targetNames += ", and " + remaining + " more";
+            }
+            return targetNames;
         }
-
-        const remaining =  targetObjs.length - targetIndex;
-
-        if(remaining > 0) {
-            targetNames += ", and " + remaining + " more";
-        }
-        return targetNames;
+        return "";
     }
 
     /**
@@ -841,6 +848,17 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             )
         }
 
+        if(proposalsIsLoading) {
+            return (
+                <PanelFrame>
+                    <Space h={"xs"}/>
+                    <Group justify={'flex-end'}>
+                        `Loading...`
+                    </Group>
+                </PanelFrame>
+            )
+        }
+
         return (
             <>
                 <h3>Telescopes</h3>
@@ -977,13 +995,32 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         cloneProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         }, {
-            onSuccess: (data) => {
-                queryClient.invalidateQueries({
-                    queryKey: ['pst', 'api', 'proposals']
-                }).then(() =>
-                    notifySuccess("Clone Proposal Successful",
-                        proposalsData?.title + " copied to " + data.title)
-                );
+            onSuccess: (data: Schemas.ObservingProposal) => {
+                const proposalObsIDs: number [] =
+                    proposalsData!.observations!.map<number>((obs) => obs._id!);
+                const submittedProposalObsIDs = data.observations!.map<number>(
+                    (obs) => obs._id!);
+
+                if (proposalObsIDs !== undefined &&
+                        submittedProposalObsIDs !== undefined) {
+                    submitOpticalProposalMutation.mutate({
+                        proposalID: selectedProposalCode!,
+                        obsIds: proposalObsIDs,
+                        cloneID: data!._id!.toString(),
+                        cloneObsIDs: submittedProposalObsIDs
+                    }, {
+                    onSuccess: () => {
+                        queryClient.invalidateQueries({
+                            queryKey: ['pst', 'api', 'proposals']
+                        }).then(() =>
+                            notifySuccess("Clone Proposal Successful",
+                                proposalsData?.title + " copied to " + data.title)
+                        );
+                    },
+                    onError: (error) => {
+                        notifyError("Clone Proposal Failed", getErrorMessage(error))
+                    }});
+                }
             },
             onError: (error) =>
                 notifyError("Clone Proposal Failed", getErrorMessage(error))

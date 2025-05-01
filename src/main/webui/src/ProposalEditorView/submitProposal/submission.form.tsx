@@ -344,8 +344,8 @@ function SubmissionForm() :
                         color={"green"}
                         mx={"20%"}
                     >
-                        You have successfully submitted '{proposalTitle.data}' to
-                        '{proposalCycleName(form.getValues().selectedCycle)}'
+                        You have successfully submitted `{proposalTitle.data}` to
+                        `{proposalCycleName(form.getValues().selectedCycle)}`
                     </Alert>
                 </Stepper.Completed>
             </Stepper>
