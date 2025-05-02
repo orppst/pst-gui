@@ -219,8 +219,7 @@ export const useOpticalTelescopeResourceGetVerification = (
  *
  * @param data: the proposal and observation id to verify.
  * @param {AbortSignal} signal: the signal for failure.
- * @return the resulting verification. true stating a
- * telescope data exists for the given observation.
+ * @return the resulting observation ids that contain optical data.
  */
 export const fetchOpticalTelescopeResourceGetProposalObservationIds =
     (data: OpticalTelescopeProposal, signal?: AbortSignal) =>
@@ -241,8 +240,7 @@ export const fetchOpticalTelescopeResourceGetProposalObservationIds =
  *
  * @param variables: the proposal and observation id to verify.
  * @param  options: things that shouldn't be changed.
- * @return the resulting verification. true stating a
- * telescope data exists for the given observation.
+ * @return the resulting observation ids that contain optical data.
  */
 export const useOpticalTelescopeResourceGetProposalObservationIds = (
     variables: OpticalTelescopeProposal,
@@ -613,49 +611,9 @@ export const fetchOpticalCopyProposal = (
 
 /**
  * mutation function wrapping around data extraction for optical overview table.
- * @param proposalData: the proposal id.
  * @param options: the saved data.
  * @return mutation promise holding onSuccess, OnError.
  */
-export const useOpticalCopyProposal = (
-    proposalData: OpticalTelescopeCopyData,
-    options?: Omit<
-        reactQuery.UseQueryOptions<
-            boolean,
-            TelescopeCopyError,
-            Map<string, TelescopeOverviewTableState>,
-            reactQuery.QueryKey
-        >,
-        "queryKey" | "queryFn" | "select" // Add "select" to the Omit
-    >
-) => {
-    const { fetcherOptions, queryOptions, queryKeyFn } =
-        useProposalToolContext(options);
-
-    const queryKey = queryKeyFn({
-        path: "/pst/api/opticalTelescopes/copyProposal",
-        operationId: "opticalCopyProposal",
-        variables: proposalData,
-    });
-
-    const queryFn = ({ signal }: { signal?: AbortSignal }) =>
-        fetchOpticalCopyProposal(
-            { ...fetcherOptions, ...proposalData },
-            signal
-        );
-
-    return reactQuery.useQuery<
-        boolean, // Raw data from fetch
-        TelescopeCopyError,
-        Map<string, TelescopeOverviewTableState> // Transformed data for the component
-    >({
-        queryKey,
-        queryFn,
-        ...options,
-        ...queryOptions,
-    });
-};
-
 export const useMutationOpticalCopyProposal = (
     options?: Omit<
         reactQuery.UseMutationOptions<

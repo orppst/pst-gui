@@ -7,7 +7,7 @@ import {
     useReducer,
 } from 'react';
 import {QueryClient, QueryClientProvider, useQueryClient,} from '@tanstack/react-query';
-import {ObservingProposal, Person} from "./generated/proposalToolSchemas.ts";
+import {Person} from "./generated/proposalToolSchemas.ts";
 import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
 import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
@@ -46,14 +46,13 @@ import {
     APP_HEADER_HEIGHT,
     CLOSE_DELAY,
     ICON_SIZE,
-    JSON_FILE_NAME,
     NAV_BAR_DEFAULT_WIDTH,
     NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH,
     OPEN_DELAY,
     POLARIS_MODES,
 } from './constants';
-import {SendToImportAPI} from './ProposalEditorView/proposal/UploadProposal';
+import {handleZip} from './ProposalEditorView/proposal/UploadProposal';
 import UploadButton from './commonButtons/upload';
 import AdminPanel from "./admin/adminPanel";
 import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
@@ -72,8 +71,6 @@ import {PanelFrame} from "./commonPanel/appearance.tsx";
 import TacCycles from "./ProposalManagerView/landingPage/tacCycles.tsx";
 import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPage.tsx";
 import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
-import {notifyError} from "./commonPanel/notifications.tsx";
-import JSZip from "jszip";
 import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
@@ -232,40 +229,9 @@ function App2(): ReactElement {
          * @param {File} chosenFile the zip file containing a json representation
          * of the proposal and any supporting documents.
          */
-        const handleUploadZip =
-            async (chosenFile: File | null) => {
-                // check for no file.
-                if (chosenFile === null) {
-                    notifyError("Upload failed", "There was no file to upload")
-                }
-
-                // all simple checks done. Time to verify the internals of the zip.
-                if (chosenFile !== null) {
-                    JSZip.loadAsync(chosenFile).then(function (zip) {
-                        // check the json file exists.
-                        if (!Object.keys(zip.files).includes(JSON_FILE_NAME)) {
-                            notifyError("Upload failed",
-                                "There was no file called '"+JSON_FILE_NAME+"' within the zip")
-                        }
-
-                        // extract json data to import proposal definition.
-                        zip.files[JSON_FILE_NAME].async('text').then(function (fileData) {
-                            const jsonObject: ObservingProposal = JSON.parse(fileData)
-                            // ensure not undefined
-                            if (jsonObject) {
-                                SendToImportAPI(jsonObject, zip, authToken, queryClient);
-                            } else {
-                                notifyError("Upload failed", "The JSON file failed to load correctly")
-                            }
-                        })
-                            .catch(() => {
-                                console.log("Unable to extract " + JSON_FILE_NAME + " from zip file");
-                                notifyError("Upload failed",
-                                    "Unable to extract " + JSON_FILE_NAME + " from zip file");
-                            })
-                    })
-                }
-            }
+        const handleUploadZip = async (chosenFile: File | null) => {
+            handleZip(chosenFile, authToken, queryClient);
+        }
 
         /*
         DJW:
