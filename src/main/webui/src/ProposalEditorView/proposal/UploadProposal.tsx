@@ -56,12 +56,10 @@ const uploadDocument =
                 formData.append("document", document);
                 fetchSupportingDocumentResourceUploadSupportingDocument(
                     {
-                        //@ts-ignore
                         body: formData,
                         pathParams: {proposalCode: proposalCode},
                         headers: {
                             authorization: `Bearer ${authToken}`,
-                            // @ts-ignore
                             "Content-Type": "multipart/form-data"
                         }
                     },

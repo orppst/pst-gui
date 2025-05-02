@@ -10526,10 +10526,10 @@ export type SupportingDocumentResourceUploadSupportingDocumentError =
 export type SupportingDocumentResourceUploadSupportingDocumentRequestBody = {
   document?: Schemas.UploadItemSchema;
   title?: string;
-};
+} | FormData;
 
 export type SupportingDocumentResourceUploadSupportingDocumentVariables = {
-  body?: SupportingDocumentResourceUploadSupportingDocumentRequestBody;
+  body?: SupportingDocumentResourceUploadSupportingDocumentRequestBody | FormData;
   pathParams: SupportingDocumentResourceUploadSupportingDocumentPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
