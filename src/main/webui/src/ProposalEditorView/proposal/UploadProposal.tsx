@@ -12,8 +12,9 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {QueryClient} from "@tanstack/react-query";
 import {
-    fetchOpticalTelescopeResourceSaveTelescopeData,
-    SavedTelescopeData,
+    fetchOpticalTelescopeResourceGetTelescopeData,
+    fetchOpticalTelescopeResourceSaveTelescopeData, Field, Instrument,
+    SavedTelescopeData, Telescope, Type,
 } from "../../util/telescopeComms";
 
 //Files to skip
@@ -90,44 +91,255 @@ const findObservationIndex =
  *
  * @param uploadedProposal: the uploaded proposal with new observation ids.
  * @param zipedProposal: the zipped up proposal which we're uploading.
- * @param opticalFolder: the optical zip folder containing optical data.
- * @param filename: the observation file.
+ * @param opticalData: the optical data that's valid.
  */
 const uploadOpticalObservation =
-    (uploadedProposal: ObservingProposal, zipedProposal: ObservingProposal,
-     opticalFolder: JSZip, filename: string) => {
-        opticalFolder.files[filename].async('text')
-            .then(function (fileData) {
-                const opticalData: SavedTelescopeData = JSON.parse(fileData);
+        (uploadedProposal: ObservingProposal, zipedProposal: ObservingProposal,
+         opticalData: SavedTelescopeData) => {
 
-                // locate new obs id.
-                const originalIndex = findObservationIndex(
-                    zipedProposal,
-                    Number(opticalData.primaryKey.observationID));
-                const newObservationID =
-                    uploadedProposal.observations![originalIndex]._id!;
+    // locate new obs id.
+    const originalIndex = findObservationIndex(
+        zipedProposal,
+        Number(opticalData.primaryKey.observationID));
+    const newObservationID =
+        uploadedProposal.observations![originalIndex]._id!;
 
-                // update primary key.
-                opticalData.primaryKey.observationID =
-                    newObservationID.toString();
-                opticalData.primaryKey.proposalID =
-                    uploadedProposal._id!.toString();
+    // update primary key.
+    opticalData.primaryKey.observationID =
+        newObservationID.toString();
+    opticalData.primaryKey.proposalID =
+        uploadedProposal._id!.toString();
 
-                // need to convert to basic object for transmission.
-                const opticalDataToSend: SavedTelescopeData = {
-                    ...opticalData,
-                    choices: opticalData.choices,
-                };
+    // need to convert to basic object for transmission.
+    const opticalDataToSend: SavedTelescopeData = {
+        ...opticalData,
+        choices: opticalData.choices,
+    };
 
-                // send new data to backend for saving.
-                fetchOpticalTelescopeResourceSaveTelescopeData(opticalDataToSend)
-                    .catch(
-                    (error) => {
-                        console.error("Error saving optical data:", error);
-                        throw error;
-                    }
-                );
-            });
+    // send new data to backend for saving.
+    fetchOpticalTelescopeResourceSaveTelescopeData(opticalDataToSend)
+        .catch(
+        (error) => {
+            console.error("Error saving optical data:", error);
+            throw error;
+        }
+    );
+}
+
+/**
+ *
+ * @param {SavedTelescopeData} opticalState: the possible valid optical state.
+ * @param {Map<string, Telescope>} polarisTelescopes: the set of polaris data.
+ */
+const isOpticalValid = (
+        opticalState: SavedTelescopeData,
+        polarisTelescopes: Map<string, Telescope>) => {
+    if (!polarisTelescopes.has(opticalState.telescopeName)) {
+        notifyError(
+            "Missing Telescope",
+            `Importing observation ${opticalState.primaryKey.observationID} 
+            has the telescope ${opticalState.telescopeName} which does not 
+            exist in this polaris instance. So this observation data will not 
+            be imported.`);
+        return false;
+    }
+
+    // process instrument.
+    const polarisTelescope: Telescope =
+        polarisTelescopes.get(opticalState.telescopeName)!;
+    const polarisInstruments = new Map<string, Instrument>(
+        Object.entries(polarisTelescope.instruments))
+    if(!polarisInstruments.has(opticalState.instrumentName)) {
+        notifyError(
+            "Missing instrument",
+            `Importing observation ${opticalState.primaryKey.observationID} 
+            has the instrument ${opticalState.instrumentName} which does not 
+            exist in this polaris instance. So this observation data will not 
+            be imported.`);
+        return false;
+    }
+
+    // verify choices are matching.
+    const polarisChoices: Map<string, Field> = new Map<string, Field>(
+        Object.entries(polarisInstruments.get(
+            opticalState.instrumentName)!.elements));
+    const importChoices: Map<string, string> =
+        new Map(Object.entries(opticalState.choices ?? {}));
+    for (const [opticalChoiceName, opticalChoiceValue] of importChoices) {
+        if (!polarisChoices.has(opticalChoiceName)) {
+            notifyError(
+                "Extra choice",
+                `Importing observation ${opticalState.primaryKey.observationID}
+                has an unexpected choice '${opticalChoiceName}' for
+                telescope ${opticalState.telescopeName} and instrument 
+                ${opticalState.instrumentName}. This observation data will 
+                not be imported.`);
+            return false;
+        }
+
+        // verify the value is valid.
+        const polarisField: Field = polarisChoices.get(opticalChoiceName)!;
+        switch(polarisField.type) {
+            case Type.BOOLEAN:
+                if (opticalChoiceValue !== "true" &&
+                        opticalChoiceValue !== "false") {
+                    notifyError(
+                        "Invalid boolean choice",
+                        `Importing observation 
+                        ${opticalState.primaryKey.observationID}
+                        has an unexpected choice value for 
+                        '${opticalChoiceName}' for telescope 
+                        ${opticalState.telescopeName} and instrument 
+                        ${opticalState.instrumentName}. This observation data 
+                        will not be imported.`);
+                        return false;
+                }
+                break;
+            case Type.LIST:
+                if(!polarisField.values.includes(opticalChoiceValue)) {
+                    notifyError(
+                        "Invalid list choice",
+                        `Importing observation 
+                        ${opticalState.primaryKey.observationID}
+                        has an unexpected choice value for 
+                        '${opticalChoiceName}' for telescope
+                        ${opticalState.telescopeName} and instrument 
+                        ${opticalState.instrumentName}. This observation data 
+                        will not be imported.`);
+                        return false;
+                }
+                break;
+            case Type.TEXT:
+                break;
+            default:
+                notifyError(
+                    "Missing data type",
+                    `Importing observation 
+                    ${opticalState.primaryKey.observationID}
+                    has an unexpected choice type for '${opticalChoiceName}' for
+                    telescope ${opticalState.telescopeName} and instrument 
+                    ${opticalState.instrumentName}. This observation data will 
+                    not be imported.`);
+                return false;
+        }
+    }
+
+    // verify that each polaris choice exists in the imported one.
+    for (const polarisChoiceName of polarisChoices.keys()) {
+        if (!importChoices.has(polarisChoiceName)) {
+            notifyError(
+                "missing choice",
+                `Importing observation ${opticalState.primaryKey.observationID}
+                is missing the expected choice '${polarisChoiceName}' for
+                telescope ${opticalState.telescopeName} and instrument
+                ${opticalState.instrumentName}. This observation data will 
+                not be imported.`,
+            );
+            return false;
+        }
+    }
+
+    // if all these checks have passed. then the imported choices are
+    // valid for this current version of polaris.
+    return true;
+}
+
+/**
+ * process an optical folder for valid states given the current polaris
+ * settings.
+ *
+ * @param zip: the zip folder.
+ * @param proposal: the proposal from the zip.
+ */
+const processOpticalErrors = async (zip: JSZip, proposal: ObservingProposal):
+        Promise<SavedTelescopeData[]> => {
+    // extract optical states.
+    const possibleValidStatesPromise: Promise<SavedTelescopeData>[] = [];
+    const opticalFolder: JSZip | null = zip.folder(OPTICAL_FOLDER_NAME);
+    if (opticalFolder !== null) {
+        Object.keys(opticalFolder.files).forEach((filename) => {
+            if (SKIP_FILES_PAR_OPTICAL.test(filename)) {
+                const filePromise =
+                    opticalFolder.files[filename].async('text').then(
+                        function (fileData: string) {
+                            return JSON.parse(fileData) as SavedTelescopeData;
+                        }
+                    );
+                possibleValidStatesPromise.push(filePromise);
+            }
+        })
+    }
+
+    // Wait for all asynchronous file reads to complete
+    const possibleValidStates = await Promise.all(possibleValidStatesPromise);
+
+    // if no optical, return empty array, as no errors or valid.
+    if (possibleValidStates.length === 0) {
+        return [];
+    }
+
+    // call the optical telescope data to validate each possible,
+    const validStates: SavedTelescopeData[] = [];
+    await fetchOpticalTelescopeResourceGetTelescopeData().then(
+        (polarisTelescopesRaw: Map<string, Telescope>) => {
+            const polarisTelescopes = new Map<string, Telescope>(
+                Object.entries(polarisTelescopesRaw));
+            possibleValidStates.forEach((opticalState: SavedTelescopeData) => {
+                if(isOpticalValid(opticalState, polarisTelescopes)) {
+                    validStates.push(opticalState);
+                } else {
+                    //kill that obs as its not valid anymore and as optical
+                    // we cant assume they just want a radio instead.
+                    const obs = proposal.observations?.find(
+                        obs => obs._id!.toString() ===
+                            opticalState.primaryKey.observationID);
+                    proposal.observations?.splice(
+                        proposal.observations?.indexOf(obs!), 1);
+                }
+            })
+        }
+    )
+
+    return validStates;
+}
+
+/**
+ * processes documents.
+ *
+ * @param {ObservingProposal} uploadedProposal the observing proposal when uploaded.
+ * @param {JSZip} zip zip file containing any supporting documents
+ * @param {string} authToken authorization token from caller
+ */
+const processDocument = (zip: JSZip, authToken: string,
+                         uploadedProposal: ObservingProposal) => {
+    Object.keys(zip.files).forEach((filename: string) => {
+        if (filename !== JSON_FILE_NAME &&
+            !SKIP_FILES_PAR_DOCUMENT.test(filename)) {
+            uploadDocument(
+                Number(uploadedProposal._id), zip, filename, authToken);
+        }
+    })
+}
+
+/**
+ *
+ * @param {JSZip} zip zip file containing any supporting documents
+ * @param {SavedTelescopeData[]} opticalValidStates: optical data which is valid.
+ * @param {ObservingProposal} observingProposal: the original proposal.
+ * @param {ObservingProposal} uploadedProposal: the uploaded one.
+ */
+const processOptical = (zip: JSZip, opticalValidStates: SavedTelescopeData[],
+                        observingProposal: ObservingProposal,
+                        uploadedProposal: ObservingProposal) => {
+    const opticalFolder: JSZip | null = zip.folder(OPTICAL_FOLDER_NAME);
+    if (opticalFolder !== null) {
+        opticalValidStates.forEach(
+            (opticalData:  SavedTelescopeData) => {
+                uploadOpticalObservation(
+                    uploadedProposal, observingProposal,
+                    opticalData);
+            })
+    }
 }
 
 /**
@@ -144,45 +356,37 @@ function sendToImportAPI(
     authToken: string,
     queryClient: QueryClient
 ) {
-    // send proposal to import process.
-    fetchProposalResourceImportProposal({
-        body: observingProposal,
-        headers: {authorization: `Bearer ${authToken}`}
-    })
-        .then((uploadedProposal: ObservingProposal) => {
-            // handles documents to upload to new proposal version.
-            Object.keys(zip.files).forEach((filename: string) => {
-                if (filename !== JSON_FILE_NAME &&
-                        !SKIP_FILES_PAR_DOCUMENT.test(filename)) {
-                    uploadDocument(
-                        Number(uploadedProposal._id), zip, filename, authToken);
-                }
+    // process optical for issues.
+    processOpticalErrors(zip, observingProposal).then(
+        (opticalValidStates: SavedTelescopeData[]) => {
+            // send proposal to import process.
+            fetchProposalResourceImportProposal({
+                body: observingProposal,
+                headers: {authorization: `Bearer ${authToken}`}
             })
+                .then((uploadedProposal: ObservingProposal) => {
+                    // handles documents to upload to new proposal version.
+                    processDocument(zip, authToken, uploadedProposal);
 
-            //handles optical components for the new proposal.
-            // expect the opticals data if it exists.
-            const opticalFolder: JSZip | null = zip.folder(OPTICAL_FOLDER_NAME);
-            if (opticalFolder !== null) {
-                Object.keys(opticalFolder.files).forEach((filename) => {
-                    if(SKIP_FILES_PAR_OPTICAL.test(filename)) {
-                        uploadOpticalObservation(
-                            uploadedProposal, observingProposal, opticalFolder,
-                            filename);
-                    }
+                    //handles optical components for the new proposal.
+                    // expect the optical data if it exists.
+                    processOptical(
+                        zip, opticalValidStates, observingProposal,
+                        uploadedProposal);
                 })
-            }
-        })
-        .then(() => {
-            queryClient.invalidateQueries({
-                queryKey: ['pst', 'api', 'proposals']
-            }).then(() => {
-                notifySuccess(
-                    "Upload successful", "The proposal has been uploaded")
-            })
-        })
-        .catch((error) => {
-            notifyError("Upload failed", getErrorMessage(error));
-        })
+                .then(() => {
+                    queryClient.invalidateQueries({
+                        queryKey: ['pst', 'api', 'proposals']
+                    }).then(() => {
+                        notifySuccess(
+                            "Upload successful",
+                            "The proposal has been uploaded")
+                    })
+                })
+                .catch((error) => {
+                    notifyError("Upload failed", getErrorMessage(error));
+                })
+        });
 }
 
 /**
@@ -193,9 +397,8 @@ function sendToImportAPI(
  * @param queryClient: the query client.
  */
 export const handleZip = (
-    chosenFileRaw: File | null, authToken: string, queryClient: QueryClient):
-    void => {
-
+        chosenFileRaw: File | null, authToken: string,
+        queryClient: QueryClient): void => {
     // check for no file.
     if (chosenFileRaw === null) {
         notifyError("Upload failed", "There was no file to upload")
