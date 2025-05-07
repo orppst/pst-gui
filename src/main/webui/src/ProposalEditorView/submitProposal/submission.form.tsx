@@ -40,7 +40,13 @@ function SubmissionForm() :
 
     const smallScreen = useMediaQuery("(max-width: 1350px)");
 
-    const [cyclesData, setCyclesData] = useState<{value: string, label: string}[]>([]);
+    const [cyclesData, setCyclesData] =
+        useState<{value: string, label: string}[]>([]);
+
+    // container for the validation error if any exists.
+    const [validationError, setValidationError] =
+        useState<string | undefined>(undefined);
+
 
     const [submissionFail, setSubmissionFail] = useState("");
 
@@ -134,7 +140,8 @@ function SubmissionForm() :
      * use effect hook.
      */
     useEffect(() => {
-        if (targetObservations.status === 'success' && calibrationObservations.status === 'success') {
+        if (targetObservations.status === 'success' &&
+            calibrationObservations.status === 'success') {
 
             const targetTuples = targetObservations.data.map((obs) => (
                 {
@@ -157,25 +164,30 @@ function SubmissionForm() :
             ))
 
             setInitialObservationModeTuple(targetTuples.concat(calibrationTuples))
-
             form.setFieldValue('selectedModes', initialObservationModeTuple)
         }
-    }, [targetObservations.status, calibrationObservations.status]);
+    },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [targetObservations.status, calibrationObservations.status]);
 
-    useEffect(() => {
-        if(proposalCycles.status === 'success')
-            setCyclesData(
-                proposalCycles.data?.map((cycle) =>(
-                    {value: String(cycle.dbid), label: cycle.name!}
-                ))
-            )
-    }, [proposalCycles.status]);
+    useEffect(
+        () => {
+            if(proposalCycles.status === 'success')
+                setCyclesData(
+                    proposalCycles.data?.map((cycle) =>(
+                        {value: String(cycle.dbid), label: cycle.name!}
+                    ))
+                )
+            },
+        [proposalCycles.status, proposalCycles.data]);
 
-    useEffect(() => {
-        //on cycle change reset the selectedModes to initial state
-        form.setFieldValue('selectedModes', initialObservationModeTuple)
-
-    }, [form.getValues().selectedCycle]);
+    useEffect(
+        () => {
+            //on cycle change reset the selectedModes to initial state
+            form.setFieldValue('selectedModes', initialObservationModeTuple)
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [form.getValues().selectedCycle]);
 
 
     //for the Stepper
@@ -216,28 +228,31 @@ function SubmissionForm() :
             const observationConfigMap: ObservationConfigMapping[]  = []
 
             distinctModeIds.forEach((distinctModeId) => {
-                // as 'distinctModeId' has come from 'selectedModes' this will always give an array 'obsIds'
-                // of at least length 1
-                //@ts-ignore
+                // as 'distinctModeId' has come from 'selectedModes' this will
+                // always give an array 'obsIds' of at least length 1
                 const obsIds : number [] = values.selectedModes.map((modeTuple) => {
                     if (distinctModeId === modeTuple.modeId)
                         return modeTuple.observationId;
-                })
+                    return undefined;
+                }).filter((id): id is number => id !== undefined);
 
-                observationConfigMap.push({observationIds: obsIds, modeId: distinctModeId})
+                observationConfigMap.push(
+                    {observationIds: obsIds, modeId: distinctModeId})
             })
 
             //------------------------------------------------------------------------
 
-            const submissionVariables: SubmittedProposalResourceSubmitProposalVariables = {
-                pathParams: {cycleCode: values.selectedCycle},
-                body: {
-                    proposalId: Number(selectedProposalCode),
-                    config: observationConfigMap
-                },
-                // @ts-ignore
-                headers: {"Content-Type": "application/json", ...fetcherOptions.headers}
-            };
+            const submissionVariables:
+                SubmittedProposalResourceSubmitProposalVariables = {
+                    pathParams: {cycleCode: values.selectedCycle},
+                    body: {
+                        proposalId: Number(selectedProposalCode),
+                        config: observationConfigMap
+                    },
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...fetcherOptions.headers}
+                };
 
             submitProposalMutation.mutate(submissionVariables);
 
@@ -315,6 +330,7 @@ function SubmissionForm() :
                     <ValidationOverview
                         cycle={form.getValues().selectedCycle}
                         smallScreen={smallScreen}
+                        onValidationError={setValidationError}
                     />
                 </Stepper.Step>
 
@@ -388,6 +404,9 @@ function SubmissionForm() :
                         activeStep !== maxSteps &&
                         <Button
                             onClick={nextStep}
+                            disabled={
+                                !form.isValid() ||
+                                validationError !== undefined}
                         >
                             Next step
                         </Button>
