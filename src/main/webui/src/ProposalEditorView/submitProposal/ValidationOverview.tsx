@@ -1,16 +1,17 @@
 import {IconAlertCircle, IconCircleCheck, IconCircleX, IconInfoCircle} from '@tabler/icons-react';
-import {Box, Divider, Loader, Stack, Table, Text} from "@mantine/core";
+import {Box, Divider, Loader, NavLink, Stack, Table, Text} from "@mantine/core";
 import {ICON_SIZE} from "src/constants.tsx";
 import {
     useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycleObservatory,
     useProposalCyclesResourceGetProposalCycleTitle,
     useProposalResourceValidateObservingProposal
 } from "src/generated/proposalToolComponents.ts";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ReactElement, useEffect} from "react";
+import React from 'react';
 
 // interface to support destructuring to avoid infinite loop.
 interface ValidationOverviewProps {
@@ -86,6 +87,26 @@ export default function ValidationOverview(
         );
     }
 
+    const formatTextWithLinks = (text: string) : ReactElement => {
+        return (
+            <Table.Td>
+                {text.replace('<br/>$', 'g')
+                .split("<br/>")
+                .map((s, index) => (
+                    s.length > 0 &&
+                    <React.Fragment key={index}>
+                        {s.includes("No observations defined")||s.includes("A timing window for")?
+                            <NavLink to={"/proposal/"+selectedProposalCode+"/observations"} component={Link} label={s} />
+                            :s.includes("No targets defined")?
+                                <NavLink to={"/proposal/"+selectedProposalCode+"/targets"} component={Link} label={s} />
+                                :s.includes("No technical goals defined")?
+                                    <NavLink to={"/proposal/"+selectedProposalCode+"/goals"} component={Link} label={s} />
+                                    :<Text size={"sm"}>{s}</Text>}
+                    </React.Fragment>
+                ))}
+            </Table.Td>)
+    }
+
     return (
         <PanelFrame
             maw={smallScreen ? "100%": "75%"}
@@ -114,7 +135,7 @@ export default function ValidationOverview(
                                 }
                             </Table.Td>
                             <Table.Td>
-                                {validateProposal.data?.info}
+                                {validateProposal.data?.info && formatTextWithLinks(validateProposal.data?.info)}
                             </Table.Td>
                         </Table.Tr>
                         {validateProposal.data?.warnings !== undefined &&
@@ -122,18 +143,14 @@ export default function ValidationOverview(
                                 <Table.Td>
                                     <IconAlertCircle size={ICON_SIZE} />
                                 </Table.Td>
-                                <Table.Td>
-                                    {validateProposal.data?.warnings}
-                                </Table.Td>
+                                {formatTextWithLinks(validateProposal.data.warnings)}
                             </Table.Tr>)}
                         {validateProposal.data?.errors !== undefined &&
                             (<Table.Tr>
                                 <Table.Td>
                                     <IconCircleX size={ICON_SIZE} />
                                 </Table.Td>
-                                <Table.Td>
-                                    {validateProposal.data?.errors}
-                                </Table.Td>
+                                {formatTextWithLinks(validateProposal.data.errors)}
                             </Table.Tr>)}
                     </Table.Tbody>
                 </Table>
