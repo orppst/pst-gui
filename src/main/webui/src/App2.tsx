@@ -127,6 +127,7 @@ export const ProposalContext = createContext<ContextType>({
 
 /**
  * provides an interface for getting the proposal context token.
+ *
  * @return {string} the token.
  */
 export const useToken = (): string => {
@@ -137,6 +138,7 @@ export const useToken = (): string => {
 
 /**
  * generates the html for the main app.
+ *
  * @return {ReactElement} dynamic html for the main app.
  * @constructor
  */
@@ -363,7 +365,8 @@ function App2(): ReactElement {
 
     /**
      * builds the proposal list.
-     * @param props
+     *
+     * @param {ProposalListWrapperProps} props the input data.
      * @constructor
      */
     function ProposalListWrapper(props:ProposalListWrapperProps):
@@ -380,6 +383,7 @@ function App2(): ReactElement {
 
     /**
      * html to show in the main page when "proposals for username" is selected.
+     *
      * @return {ReactElement} the html to display when
      * "proposals for username" is selected.
      * @constructor
@@ -463,7 +467,8 @@ function App2(): ReactElement {
 
     /**
      * generates user children routes for a given mode.
-     * @param polarisMode: the polaris mode.
+     *
+     * @param {POLARIS_MODES} polarisMode the polaris mode.
      */
     function generateDefaultChildren(polarisMode: POLARIS_MODES) {
         const elements = [];

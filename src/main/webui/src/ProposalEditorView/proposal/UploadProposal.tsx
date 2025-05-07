@@ -75,8 +75,8 @@ const uploadDocument =
 /**
  * returns the index for the given observation in a given proposal.
  *
- * @param zippedProposal: the zipped up proposal.
- * @param observationID: the observation id to find the index of.
+ * @param {ObservingProposal} zippedProposal the zipped up proposal.
+ * @param {number} observationID the observation id to find the index of.
  */
 const findObservationIndex =
     (zippedProposal: ObservingProposal, observationID: number): number => {
@@ -89,9 +89,10 @@ const findObservationIndex =
 /**
  * uploads a given optical data for a given observation.
  *
- * @param uploadedProposal: the uploaded proposal with new observation ids.
- * @param zipedProposal: the zipped up proposal which we're uploading.
- * @param opticalData: the optical data that's valid.
+ * @param {ObservingProposal} uploadedProposal the uploaded proposal with new
+ * observation ids.
+ * @param {ObservingProposal} zipedProposal the zipped up proposal which we're uploading.
+ * @param {SavedTelescopeData} opticalData the optical data that's valid.
  */
 const uploadOpticalObservation =
         (uploadedProposal: ObservingProposal, zipedProposal: ObservingProposal,
@@ -128,8 +129,8 @@ const uploadOpticalObservation =
 
 /**
  *
- * @param {SavedTelescopeData} opticalState: the possible valid optical state.
- * @param {Map<string, Telescope>} polarisTelescopes: the set of polaris data.
+ * @param {SavedTelescopeData} opticalState the possible valid optical state.
+ * @param {Map<string, Telescope>} polarisTelescopes the set of polaris data.
  */
 const isOpticalValid = (
         opticalState: SavedTelescopeData,
@@ -248,8 +249,8 @@ const isOpticalValid = (
  * process an optical folder for valid states given the current polaris
  * settings.
  *
- * @param zip: the zip folder.
- * @param proposal: the proposal from the zip.
+ * @param {JSZip} zip the zip folder.
+ * @param {ObservingProposal} proposal the proposal from the zip.
  */
 const processOpticalErrors = async (zip: JSZip, proposal: ObservingProposal):
         Promise<SavedTelescopeData[]> => {
@@ -324,9 +325,9 @@ const processDocument = (zip: JSZip, authToken: string,
 /**
  *
  * @param {JSZip} zip zip file containing any supporting documents
- * @param {SavedTelescopeData[]} opticalValidStates: optical data which is valid.
- * @param {ObservingProposal} observingProposal: the original proposal.
- * @param {ObservingProposal} uploadedProposal: the uploaded one.
+ * @param {SavedTelescopeData[]} opticalValidStates optical data which is valid.
+ * @param {ObservingProposal} observingProposal the original proposal.
+ * @param {ObservingProposal} uploadedProposal the uploaded one.
  */
 const processOptical = (zip: JSZip, opticalValidStates: SavedTelescopeData[],
                         observingProposal: ObservingProposal,
@@ -392,9 +393,9 @@ function sendToImportAPI(
 /**
  * processes the incoming zip file.
  *
- * @param chosenFileRaw: the zip file or null.
- * @param authToken: the authentication token.
- * @param queryClient: the query client.
+ * @param {File | null} chosenFileRaw the zip file or null.
+ * @param {string} authToken the authentication token.
+ * @param {QueryClient} queryClient the query client.
  */
 export const handleZip = (
         chosenFileRaw: File | null, authToken: string,
