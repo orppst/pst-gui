@@ -11,7 +11,10 @@ export type ProposalToolContext = {
      */
     headers?: {
       authorization ?: string;
+      // Explicitly add Content-Type to resolve linter.
       "Content-Type"?: string;
+      // Allow other headers
+      [key: string]: string | undefined;
     };
     /**
      * Query params to inject in the fetcher

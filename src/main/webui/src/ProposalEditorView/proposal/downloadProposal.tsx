@@ -8,9 +8,13 @@ import {
     fetchProposalResourceExportProposal,
     fetchSupportingDocumentResourceDownloadSupportingDocument
 } from 'src/generated/proposalToolComponents.ts';
-import { JSON_FILE_NAME, OVERVIEW_PDF_FILENAME } from 'src/constants.tsx';
+import {JSON_FILE_NAME, OPTICAL_FOLDER_NAME, OVERVIEW_PDF_FILENAME} from 'src/constants.tsx';
 import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {
+    fetchOpticalTelescopeResourceGetProposalObservationIds,
+    fetchOpticalTelescopeResourceLoadTelescopeData, SaveTelescopeState
+} from "../../util/telescopeComms";
 
 
 /**
@@ -55,7 +59,7 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
 const populateSupportingDocuments = (
     zip: JSZip,
     supportingDocumentData: ObjectIdentifier[],
-    selectedProposalCode: String,
+    selectedProposalCode: string,
     authToken: string
 ): Array<Promise<void>> => {
         return supportingDocumentData.map(async (item: ObjectIdentifier) => {
@@ -94,7 +98,7 @@ const populateSupportingDocuments = (
  *
  * @param {HTMLInputElement} element the overview page to print as a pdf.
  * @param {ObservingProposal} proposalData the proposal data.
- * @param { SupportingDocumentResourceGetSupportingDocumentsResponse} supportingDocumentData the data for supporting documents.
+ * @param {SupportingDocumentResourceGetSupportingDocumentsResponse} supportingDocumentData the data for supporting documents.
  * @param {string} selectedProposalCode the selected proposal code.
  * @param authToken the authorization token required for 'fetch' type calls
  */
@@ -102,7 +106,7 @@ function downloadProposal(
         element: HTMLInputElement,
         proposalData:  ObservingProposal,
         supportingDocumentData: ObjectIdentifier[],
-        selectedProposalCode: String,
+        selectedProposalCode: string,
         authToken: string
 ): void {
 
@@ -121,6 +125,7 @@ function downloadProposal(
         zip, supportingDocumentData, selectedProposalCode, authToken
     );
 
+    // get proposal json.
     promises.push(
         fetchProposalResourceExportProposal({
             headers: {authorization: `Bearer ${authToken}`},
@@ -136,6 +141,27 @@ function downloadProposal(
             )
     );
 
+    // process optical data.
+    promises.push(
+        fetchOpticalTelescopeResourceGetProposalObservationIds({
+            proposalID: selectedProposalCode})
+        .then((observationIds: number []) => {
+            observationIds.map((observationId: number) => {
+                promises.push(
+                    fetchOpticalTelescopeResourceLoadTelescopeData({
+                        proposalID: selectedProposalCode,
+                        observationID: observationId.toString()
+                    })
+                    .then((data: SaveTelescopeState) => {
+                        zip.file(
+                            `${OPTICAL_FOLDER_NAME}/obs_${observationId}.json`,
+                            JSON.stringify(data))
+                    })
+                )
+            })
+        })
+    )
+
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(
         () => {
@@ -145,14 +171,18 @@ function downloadProposal(
                     // Create a download link for the zip file
                     const link = document.createElement("a");
                     link.href = window.URL.createObjectURL(zipData);
-                    link.download=proposalData.title?.replace(/\s/g,"").substring(0,31)+".zip";
+                    link.download=proposalData.title?.replace(
+                        /\s/g,"").substring(0,31)+".zip";
                     link.click();
                 })
                 .then(()=>
-                    notifySuccess("Proposal Export Complete", "proposal exported and downloaded")
+                    notifySuccess(
+                        "Proposal Export Complete", "proposal exported" +
+                        " and downloaded")
                 )
                 .catch((error:Error) =>
-                    notifyError("Proposal Export Failed", getErrorMessage(error))
+                    notifyError(
+                        "Proposal Export Failed", getErrorMessage(error))
                 )
         }
     )
