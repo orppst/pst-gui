@@ -10,32 +10,48 @@ import {useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ReactElement} from "react";
+import {ReactElement, useEffect} from "react";
 
-export default function ValidationOverview(props: {
-    cycle: number,
-    smallScreen?: boolean
-}): ReactElement {
+// interface to support destructuring to avoid infinite loop.
+interface ValidationOverviewProps {
+    cycle: number;
+    smallScreen?: boolean;
+    onValidationError: (error: string | undefined) => void;
+}
+
+export default function ValidationOverview(
+        {cycle, smallScreen, onValidationError,}: ValidationOverviewProps):
+        ReactElement {
 
     const { selectedProposalCode } = useParams();
 
     const validateProposal = useProposalResourceValidateObservingProposal({
             pathParams: {proposalCode: Number(selectedProposalCode)},
-            queryParams: {cycleId: props.cycle}}
+            queryParams: {cycleId: cycle}}
         );
 
     const cycleTitle = useProposalCyclesResourceGetProposalCycleTitle({
-        pathParams: {cycleCode: props.cycle}
+        pathParams: {cycleCode: cycle}
     })
 
     const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
-        {pathParams: {cycleCode: props.cycle}});
+        {pathParams: {cycleCode: cycle}});
 
     const observatory = useProposalCyclesResourceGetProposalCycleObservatory({
-            pathParams: {cycleCode: props.cycle}
+            pathParams: {cycleCode: cycle}
         })
 
-    if (validateProposal.isLoading || cycleTitle.isLoading || cycleDates.isLoading || observatory.isLoading) {
+    //update the validation state when result comes in.
+    useEffect(() => {
+        if (validateProposal.data?.errors !== undefined) {
+            onValidationError(validateProposal.data.errors);
+        } else {
+            onValidationError(undefined); // Clear error
+        }
+    }, [validateProposal.data?.errors, onValidationError, cycle]);
+
+    if (validateProposal.isLoading || cycleTitle.isLoading ||
+            cycleDates.isLoading || observatory.isLoading) {
         return(
             <Box mx={"50%"}>
                 <Loader/>
@@ -72,8 +88,8 @@ export default function ValidationOverview(props: {
 
     return (
         <PanelFrame
-            maw={props.smallScreen ? "100%": "75%"}
-            ml={props.smallScreen ? "" : "10%"}
+            maw={smallScreen ? "100%": "75%"}
+            ml={smallScreen ? "" : "10%"}
         >
             <Stack>
                 <Text>
