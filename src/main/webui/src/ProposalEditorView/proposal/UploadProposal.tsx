@@ -364,8 +364,8 @@ function sendToImportAPI(
             fetchProposalResourceImportProposal({
                 body: observingProposal,
                 headers: {authorization: `Bearer ${authToken}`}
-            })
-                .then((uploadedProposal: ObservingProposal) => {
+            }).then(
+                (uploadedProposal: ObservingProposal) => {
                     // handles documents to upload to new proposal version.
                     processDocument(zip, authToken, uploadedProposal);
 
@@ -374,15 +374,17 @@ function sendToImportAPI(
                     processOptical(
                         zip, opticalValidStates, observingProposal,
                         uploadedProposal);
-                })
-                .then(() => {
-                    queryClient.invalidateQueries({
-                        queryKey: ['pst', 'api', 'proposals']
-                    }).then(() => {
-                        notifySuccess(
-                            "Upload successful",
-                            "The proposal has been uploaded")
-                    })
+
+                    // force ui update.
+                    queryClient.invalidateQueries(
+                        {queryKey: ['pst', 'api', 'proposals']})
+                    .then(
+                        () => {
+                            notifySuccess(
+                                "Upload successful",
+                                "The proposal has been uploaded");
+                        }
+                    )
                 })
                 .catch((error) => {
                     notifyError("Upload failed", getErrorMessage(error));
