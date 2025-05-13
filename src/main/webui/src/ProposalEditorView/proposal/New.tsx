@@ -38,8 +38,8 @@ const kindData = [
      const createObservingProposal =
          useProposalResourceCreateObservingProposal();
 
-    //single white space as work around to issue of changing format of default justification
-    const emptyJustification : Justification = {text: " ", format: "asciidoc"};
+    //single white space as work around to the issue of changing the format of an empty justification
+    const emptyJustification : Justification = {text: " ", format: "latex"};
 
     const form = useForm({
         initialValues: {

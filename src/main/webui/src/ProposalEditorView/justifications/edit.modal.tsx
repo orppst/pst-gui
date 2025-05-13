@@ -3,7 +3,7 @@ import ViewEditButton from "src/commonButtons/viewEdit.tsx";
 import {Modal} from "@mantine/core";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {JustificationProps} from "./justifications.table.tsx";
-import JustificationsTabs from "./justifications.tabs.tsx";
+import JustificationLatex from "./justifications.latex.tsx";
 
 
 function capitalizeFirstChar(string : string) : string {
@@ -18,7 +18,7 @@ export default function JustificationsEditModal(justificationProps : Justificati
     const EditButton = () : ReactElement => {
         return (
             <ViewEditButton
-                toolTipLabel={"view/edit " + justificationProps.which + " justification"}
+                toolTipLabel={"edit " + justificationProps.which + " justification"}
                 onClick={open}
             />
         )
@@ -29,12 +29,12 @@ export default function JustificationsEditModal(justificationProps : Justificati
             <Modal
                 opened={opened}
                 onClose={props.closeModal}
-                title={"View/Edit " + capitalizeFirstChar(props.which) + " Justification"}
+                title={"Edit " + capitalizeFirstChar(props.which) + " Justification"}
                 fullScreen={isMobile}
-                size="60%"
+                size="75%"
                 closeOnClickOutside={false}
             >
-                <JustificationsTabs {...props} />
+                <JustificationLatex {...props} />
             </Modal>
         )
     }
