@@ -15,6 +15,9 @@ export type TelescopeNameError = Fetcher.ErrorWrapper<undefined>;
 // the error format for telescope error response for data.
 export type TelescopeDataError = Fetcher.ErrorWrapper<undefined>;
 
+// the error format for telescope error response for data.
+export type TelescopeTimingError = Fetcher.ErrorWrapper<undefined>;
+
 // the error format for telescope error response for load data.
 export type TelescopeLoadError = Fetcher.ErrorWrapper<undefined>;
 
@@ -119,13 +122,32 @@ export type SavedTelescopeData = {
  * @return {Promise<ReceivedTelescopeNames>} the resulting data when received.
  */
 export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
-    proposalToolFetch<ReceivedTelescopeNames,
+    proposalToolFetch<
+        ReceivedTelescopeNames,
         TelescopeNameError,
         undefined,
         NonNullable<unknown>,
         NonNullable<unknown>,
         NonNullable<unknown>>({
         url: "/pst/api/opticalTelescopes/names",
+        method: "get", signal: signal
+    });
+
+/**
+ * bring about a call to get telescope night relationships.
+ *
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<ReceivedTelescopeNames>} the resulting data when received.
+ */
+export const fetchOpticalTelescopeResourceGetTiming = (signal?: AbortSignal) =>
+    proposalToolFetch<
+        Map<string, number>,
+        TelescopeTimingError,
+        undefined,
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        NonNullable<unknown>>({
+        url: "/pst/api/opticalTelescopes/nightRelationships",
         method: "get", signal: signal
     });
 

@@ -102,13 +102,13 @@ const populateSupportingDocuments = (
  * @param {string} selectedProposalCode the selected proposal code.
  * @param authToken the authorization token required for 'fetch' type calls
  */
-function downloadProposal(
-        element: HTMLInputElement,
-        proposalData:  ObservingProposal,
-        supportingDocumentData: ObjectIdentifier[],
-        selectedProposalCode: string,
-        authToken: string
-): void {
+async function downloadProposal(
+    element: HTMLInputElement,
+    proposalData: ObservingProposal,
+    supportingDocumentData: ObjectIdentifier[],
+    selectedProposalCode: string,
+    authToken: string
+): Promise<void> {
 
     notifyInfo("Proposal Export Started",
         "An export has started and the download will begin shortly");
@@ -133,18 +133,18 @@ function downloadProposal(
                 proposalCode: Number(selectedProposalCode)
             }
         })
-            .then((blob)=> {
+            .then((blob) => {
                 zip.file(JSON_FILE_NAME, blob!)
             })
-            .catch((error)=>
+            .catch((error) =>
                 notifyError("Export Error", getErrorMessage(error))
             )
     );
 
     // process optical data.
-    promises.push(
-        fetchOpticalTelescopeResourceGetProposalObservationIds({
-            proposalID: selectedProposalCode})
+    await fetchOpticalTelescopeResourceGetProposalObservationIds({
+        proposalID: selectedProposalCode
+    })
         .then((observationIds: number []) => {
             observationIds.map((observationId: number) => {
                 promises.push(
@@ -152,15 +152,14 @@ function downloadProposal(
                         proposalID: selectedProposalCode,
                         observationID: observationId.toString()
                     })
-                    .then((data: SaveTelescopeState) => {
-                        zip.file(
-                            `${OPTICAL_FOLDER_NAME}/obs_${observationId}.json`,
-                            JSON.stringify(data))
-                    })
+                        .then((data: SaveTelescopeState) => {
+                            zip.file(
+                                `${OPTICAL_FOLDER_NAME}/obs_${observationId}.json`,
+                                JSON.stringify(data))
+                        })
                 )
             })
         })
-    )
 
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(
@@ -171,16 +170,16 @@ function downloadProposal(
                     // Create a download link for the zip file
                     const link = document.createElement("a");
                     link.href = window.URL.createObjectURL(zipData);
-                    link.download=proposalData.title?.replace(
-                        /\s/g,"").substring(0,31)+".zip";
+                    link.download = proposalData.title?.replace(
+                        /\s/g, "").substring(0, 31) + ".zip";
                     link.click();
                 })
-                .then(()=>
+                .then(() =>
                     notifySuccess(
                         "Proposal Export Complete", "proposal exported" +
                         " and downloaded")
                 )
-                .catch((error:Error) =>
+                .catch((error: Error) =>
                     notifyError(
                         "Proposal Export Failed", getErrorMessage(error))
                 )

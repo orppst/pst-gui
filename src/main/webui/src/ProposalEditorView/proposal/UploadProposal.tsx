@@ -1,5 +1,10 @@
 import JSZip from 'jszip';
-import {Observation, ObservingProposal} from 'src/generated/proposalToolSchemas.ts';
+import {
+    Investigator,
+    Observation,
+    ObservingProposal,
+    Person
+} from 'src/generated/proposalToolSchemas.ts';
 import {
     JSON_FILE_NAME, OVERVIEW_PDF_FILENAME, MAX_SUPPORTING_DOCUMENT_SIZE,
     OPTICAL_FOLDER_NAME
@@ -7,6 +12,7 @@ import {
 import {
     fetchProposalResourceImportProposal,
     fetchSupportingDocumentResourceUploadSupportingDocument,
+    PersonResourceGetPeopleResponse,
 } from 'src/generated/proposalToolComponents.ts';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -16,6 +22,7 @@ import {
     fetchOpticalTelescopeResourceSaveTelescopeData, Field, Instrument,
     SavedTelescopeData, Telescope, Type,
 } from "../../util/telescopeComms";
+import * as Schemas from "../../generated/proposalToolSchemas";
 
 //Files to skip
 const SKIP_FILES_PAR_DOCUMENT = new RegExp(
@@ -344,19 +351,91 @@ const processOptical = (zip: JSZip, opticalValidStates: SavedTelescopeData[],
 }
 
 /**
+ * Given this is a import, the users ids may not match, as this version of
+ * polaris may not have the users, or the same ids for the same user.
+ *
+ * @param {ObservingProposal} observingProposal the importable proposal.
+ * @param {Person} user the current user.
+ * @param {Schemas.ObjectIdentifier[]} allPeople all people in the database.
+ */
+function processInvestigators(
+        observingProposal: ObservingProposal, user: Person,
+        allPeople: Schemas.ObjectIdentifier[]) {
+    // check if the user exists in the list.
+    const userExists = observingProposal.investigators?.some(
+        investigator => {
+            const person = investigator.person;
+            return person &&
+                person._id === user._id &&
+                person.fullName === user.fullName &&
+                person.eMail === user.eMail &&
+                person.orcidId?.value === user.orcidId?.value;
+        }
+    );
+
+    // if user doesn't exist. force it into th pi position.
+    if(!userExists) {
+        // warn user we're wiping the investigator list due to inconsistency.
+        notifyError(
+            "Missing User ",
+            "Could not find the user in the investigators list, so wiping" +
+            " list due to risk of other investigators also likely missing" +
+            ". Will replace with current user.");
+
+        // clear investigators and leave just the user as PI. as if it is a new
+        // proposal.
+        observingProposal.investigators = [];
+        observingProposal.investigators?.push({
+            type: "PI",
+            person: user
+        });
+    }
+
+    //check rest of the people.
+    const peopleToSave: Investigator[] = [];
+    observingProposal.investigators?.forEach(
+       (possibleInvestigator: Investigator) => {
+          const databasePerson: Schemas.ObjectIdentifier  | undefined =
+              allPeople.find(
+                  (dbPerson) =>
+                      possibleInvestigator.person?._id === dbPerson.dbid
+              );
+          if (databasePerson !== undefined &&
+               databasePerson.name === possibleInvestigator.person?.fullName) {
+                  peopleToSave.push(possibleInvestigator)
+          } else {
+              notifyError(
+                  "Missing User ",
+                  `Could not find the user 
+                  ${possibleInvestigator.person?.fullName} in the database,
+                   so deleting ${possibleInvestigator.person?.fullName} from
+                    the investigators list.`);
+          }
+    });
+    observingProposal.investigators = peopleToSave;
+}
+
+/**
  * sends the proposal json to API, then uploads all other documents in the zip.
  *
  * @param {ObservingProposal} observingProposal the observing proposal to be imported
  * @param {JSZip} zip zip file containing any supporting documents
  * @param {string} authToken authorization token from caller
  * @param {QueryClient} queryClient the query client from caller
+ * @param {Person} user the current user.
+ * @param {Schemas.ObjectIdentifier[]} allPeople the set of people in the database
  */
 function sendToImportAPI(
     observingProposal: ObservingProposal,
     zip: JSZip,
     authToken: string,
-    queryClient: QueryClient
+    queryClient: QueryClient,
+    user: Person,
+    allPeople: Schemas.ObjectIdentifier[]
 ) {
+    // process investigators.
+    processInvestigators(observingProposal, user, allPeople);
+
     // process optical for issues.
     processOpticalErrors(zip, observingProposal).then(
         (opticalValidStates: SavedTelescopeData[]) => {
@@ -398,10 +477,13 @@ function sendToImportAPI(
  * @param {File | null} chosenFileRaw the zip file or null.
  * @param {string} authToken the authentication token.
  * @param {QueryClient} queryClient the query client.
+ * @param {Person} user the current user.
+ * @param {PersonResourceGetPeopleResponse} allPeople all people in database.
  */
 export const handleZip = (
         chosenFileRaw: File | null, authToken: string,
-        queryClient: QueryClient): void => {
+        queryClient: QueryClient, user: Person,
+        allPeople: PersonResourceGetPeopleResponse): void => {
     // check for no file.
     if (chosenFileRaw === null) {
         notifyError("Upload failed", "There was no file to upload")
@@ -423,7 +505,9 @@ export const handleZip = (
                 const jsonObject: ObservingProposal = JSON.parse(fileData)
                 // ensure not undefined
                 if (jsonObject) {
-                    sendToImportAPI(jsonObject, zip, authToken, queryClient);
+                    sendToImportAPI(
+                        jsonObject, zip, authToken, queryClient, user,
+                        allPeople);
                 } else {
                     notifyError(
                         "Upload failed",

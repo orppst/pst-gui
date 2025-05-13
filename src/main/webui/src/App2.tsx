@@ -74,6 +74,7 @@ import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx
 import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
+import {usePersonResourceGetPeople} from "./generated/proposalToolComponents";
 
 /**
  * defines the user context type.
@@ -204,6 +205,16 @@ function App2(): ReactElement {
         const [investigatorNameFilter, setInvestigatorNameFilter] = useHistoryState(
             "investigatorName", "");
 
+        //Get all people in the database
+        const allPeople = usePersonResourceGetPeople(
+            {
+                queryParams: { name: '%' },
+            },
+            {
+                enabled: true,
+            }
+        );
+
         //active state for the NavLink sections
 
         /**
@@ -232,7 +243,9 @@ function App2(): ReactElement {
          * of the proposal and any supporting documents.
          */
         const handleUploadZip = async (chosenFile: File | null) => {
-            handleZip(chosenFile, authToken, queryClient);
+            handleZip(
+                chosenFile, authToken, queryClient, proposalContext.user,
+                allPeople.data!);
         }
 
         /*
