@@ -13458,4 +13458,9 @@ export type QueryOperation =
       path: "/pst/api/opticalTelescopes/copyProposal";
       operationId: "opticalCopyProposal";
       variables: {}
+    }
+  | {
+      path: "/pst/api/opticalTelescopes/nightRelationships";
+      operationId: "nightRelationships";
+      variables: {}
 }

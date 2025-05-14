@@ -34,7 +34,7 @@ import CloneButton from "../../commonButtons/clone.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {
     TelescopeOverviewTableState, useMutationOpticalCopyProposal,
-    useOpticalOverviewTelescopeTableData,
+    useOpticalOverviewTelescopeTableData, useOpticalOverviewTelescopeTimingData,
     useOpticalTelescopeResourceDeleteProposalTelescopeData,
     useOpticalTelescopeTableData
 } from "../../util/telescopeComms";
@@ -826,6 +826,12 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             proposalID: selectedProposalCode
         });
 
+        const {
+            data: telescopeTiming,
+            error: telescopeTimingError,
+            isLoading: telescopeTimingLoading,
+        } = useOpticalOverviewTelescopeTimingData();
+
         // handle any errors
         if(opticalError) {
             return (
@@ -835,9 +841,28 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 </Container>
             )
         }
+        if(telescopeTimingError) {
+            return (
+                <Container>
+                    Unable to load telescope timing data:
+                    {getErrorMessage(telescopeTimingError)}
+                </Container>
+            )
+        }
 
         // handle any loading issues.
         if(opticalLoading) {
+            return (
+                <PanelFrame>
+                    <Space h={"xs"}/>
+                    <Group justify={'flex-end'}>
+                        `Loading...`
+                    </Group>
+                </PanelFrame>
+            )
+        }
+
+        if(telescopeTimingLoading) {
             return (
                 <PanelFrame>
                     <Space h={"xs"}/>
@@ -863,19 +888,30 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Telescopes</h3>
                 {buildSummaryAccordion(
-                    buildSummaryData(opticalData!, proposalsData!))}
+                    buildSummaryData(opticalData!, proposalsData!),
+                    telescopeTiming!)}
             </>
         );
     }
 
+    /**
+     * builds the accordion label for the telescope.
+     *
+     * @param {string} title the telescope title.
+     * @param {TelescopeSummaryState[]} arrayData the observations for the telescope.
+     * @param {Map<string, number>} telescopeTiming the map between telescope and hours to nights.
+     * @constructor
+     */
     function TelescopeSummaryAccordionLabel(
-            title: string, arrayData: TelescopeSummaryState[]): ReactElement {
+            title: string, arrayData: TelescopeSummaryState[],
+            telescopeTiming: Map<string, number>): ReactElement {
         // determine total time.
         let time = 0;
         const conditions: string[] = [];
         for (const item of arrayData) {
             if (item.telescopeTimeUnit !== "Hours") {
-                time += Number(item.telescopeTimeValue) * 8;
+                time += Number(item.telescopeTimeValue) *
+                    telescopeTiming.get(title)!;
             } else {
                 time += Number(item.telescopeTimeValue);
             }
@@ -908,7 +944,15 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         )
     }
 
-    function buildSummaryAccordion(data: Map<string, TelescopeSummaryState[]>):
+    /**
+     * builds the telescope sumamry accordion.
+     *
+     * @param {Map<string, TelescopeSummaryState[]>} data the telescope data.
+     * @param {Map<string, number>} telescopeTiming the timing between night and hour.
+     */
+    function buildSummaryAccordion(
+            data: Map<string, TelescopeSummaryState[]>,
+            telescopeTiming: Map<string, number>):
             ReactElement {
         return (
             <Accordion>
@@ -917,7 +961,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                         <Accordion.Item key={key} value={index.toString()}>
                             <Accordion.Control>
                                 {TelescopeSummaryAccordionLabel(
-                                    key, arrayData)}
+                                    key, arrayData, telescopeTiming)}
                             </Accordion.Control>
                             <Accordion.Panel>
                                 <Group>
@@ -926,7 +970,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                                         <Table.Tbody>
                                             {arrayData.map((summaryItem, itemIndex) => (
                                                 OpticalBasicSummaryRow(summaryItem, itemIndex.toString())
-                                                ))}
+                                             ))}
                                         </Table.Tbody>
                                     </Table>
                                 </Group>

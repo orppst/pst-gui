@@ -15,6 +15,9 @@ export type TelescopeNameError = Fetcher.ErrorWrapper<undefined>;
 // the error format for telescope error response for data.
 export type TelescopeDataError = Fetcher.ErrorWrapper<undefined>;
 
+// the error format for telescope error response for data.
+export type TelescopeTimingError = Fetcher.ErrorWrapper<undefined>;
+
 // the error format for telescope error response for load data.
 export type TelescopeLoadError = Fetcher.ErrorWrapper<undefined>;
 
@@ -119,7 +122,8 @@ export type SavedTelescopeData = {
  * @return {Promise<ReceivedTelescopeNames>} the resulting data when received.
  */
 export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
-    proposalToolFetch<ReceivedTelescopeNames,
+    proposalToolFetch<
+        ReceivedTelescopeNames,
         TelescopeNameError,
         undefined,
         NonNullable<unknown>,
@@ -641,5 +645,70 @@ export const useMutationOpticalCopyProposal = (
                 ...variables,
             }),
         ...options,
+    });
+};
+
+/**
+ * bring about a call to get observation optical table data.
+ *
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<TelescopeTableState[]>} the resulting data when received.
+ */
+export const fetchOpticalOverviewTelescopeTimingData = (
+    signal?: AbortSignal) =>
+    proposalToolFetch<
+        Map<string, number>,
+        TelescopeTimingError,
+        undefined,
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        NonNullable<unknown>>({
+        url: "/pst/api/opticalTelescopes/nightRelationships",
+        method: "get", signal: signal
+    });
+
+/**
+ * mutation function wrapping around data extraction for optical overview table.
+ * @param options the saved data.
+ * @return mutation promise holding onSuccess, OnError.
+ */
+export const useOpticalOverviewTelescopeTimingData = (
+    options?: Omit<
+        reactQuery.UseQueryOptions<
+            Map<string, number>,
+            TelescopeTimingError,
+            undefined,
+            reactQuery.QueryKey
+        >,
+        "queryKey" | "queryFn" | "select" // Add "select" to the Omit
+    >
+) => {
+    const {queryOptions, queryKeyFn } = useProposalToolContext(options);
+
+    const queryKey = queryKeyFn({
+        path: "/pst/api/opticalTelescopes/nightRelationships",
+        operationId: "nightRelationships",
+        variables: {},
+    });
+
+    const queryFn = ({ signal }: { signal?: AbortSignal }) =>
+        fetchOpticalOverviewTelescopeTimingData(
+            signal
+        );
+
+    return reactQuery.useQuery<
+        Map<string, number>, // Raw data from fetch
+        TelescopeTimingError,
+        Map<string, number> // Transformed data for the component
+    >({
+        queryKey,
+        queryFn,
+        select: (backendResponse) => {
+            // converts weird object into real map for easier processing later
+            // on.
+            return new Map(Object.entries(backendResponse));
+        },
+        ...options,
+        ...queryOptions,
     });
 };
