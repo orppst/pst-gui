@@ -1,8 +1,9 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useContext, useEffect, useState} from "react";
 import {Alert, Box, Button, Group, Loader, Select, Space, Stepper, Tooltip} from "@mantine/core";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
-    SubmittedProposalResourceSubmitProposalVariables, SubmittedProposalResponse,
+    SubmittedProposalResourceSubmitProposalVariables,
+    SubmittedProposalResponse,
     useObservationResourceGetObservations,
     useProposalCyclesResourceGetProposalCycles,
     useProposalResourceGetObservingProposalTitle,
@@ -12,12 +13,10 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useForm, UseFormReturnType} from "@mantine/form";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {
-    ObservationConfigMapping
-} from "../../generated/proposalToolSchemas.ts";
+import {ObservationConfigMapping} from "../../generated/proposalToolSchemas.ts";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import ObservationModeSelect from "./observationMode.select.tsx";
-import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
+import {CLOSE_DELAY, OPEN_DELAY, POLARIS_MODES} from "../../constants.tsx";
 import {useMediaQuery} from "@mantine/hooks";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import ValidationOverview from "./ValidationOverview.tsx";
@@ -25,12 +24,21 @@ import DisplaySubmissionDetails from "./displaySubmissionDetails.tsx";
 import {IconCheck} from "@tabler/icons-react";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {useMutationOpticalCopyProposal} from "../../util/telescopeComms";
+import {ProposalContext} from "../../App2";
 
 export default
 function SubmissionForm() :
     ReactElement {
 
-    const maxSteps = 4;
+    const polarisMode = useContext(ProposalContext).mode;
+
+    // ensure the right number of steps based off polaris mode.
+    let maxSteps = 4;
+    let submitStep = 3;
+    if (polarisMode === POLARIS_MODES.OPTICAL) {
+        maxSteps = 3;
+        submitStep = 2;
+    }
 
     const {selectedProposalCode} = useParams();
 
@@ -83,15 +91,17 @@ function SubmissionForm() :
         validate: (values) => {
             if (activeStep === 0) {
                 return {
-                    selectedCycle: values.selectedCycle === null || values.selectedCycle === 0 ?
+                    selectedCycle: values.selectedCycle === null ||
+                                   values.selectedCycle === 0 ?
                         'Please select a cycle' : null
                 }
             }
 
-            if (activeStep === 2) {
+            if (activeStep === 2 && polarisMode !== POLARIS_MODES.OPTICAL) {
                 return {
-                    selectedModes: values.selectedModes.some(e => e.modeId === 0) ?
-                        'All observations required a mode' : null
+                    selectedModes: values.selectedModes.some(
+                        e => e.modeId === 0) ?
+                            'All observations required a mode' : null
                 }
             }
 
@@ -217,28 +227,29 @@ function SubmissionForm() :
 
             //I feel like there might be a better way to do this using the 'filter' method
             //of an array, but it escapes me at the moment ----------------------
-
-            const allModeIds : number[] =
-                values.selectedModes.map((modeTuple) => {
-                    return modeTuple.modeId;
-                })
-
-            const distinctModeIds = [...new Set(allModeIds)];
-
             const observationConfigMap: ObservationConfigMapping[]  = []
 
-            distinctModeIds.forEach((distinctModeId) => {
-                // as 'distinctModeId' has come from 'selectedModes' this will
-                // always give an array 'obsIds' of at least length 1
-                const obsIds : number [] = values.selectedModes.map((modeTuple) => {
-                    if (distinctModeId === modeTuple.modeId)
-                        return modeTuple.observationId;
-                    return undefined;
-                }).filter((id): id is number => id !== undefined);
+            if(polarisMode !== POLARIS_MODES.OPTICAL) {
+                const allModeIds: number[] =
+                    values.selectedModes.map((modeTuple) => {
+                        return modeTuple.modeId;
+                    })
 
-                observationConfigMap.push(
-                    {observationIds: obsIds, modeId: distinctModeId})
-            })
+                const distinctModeIds = [...new Set(allModeIds)];
+
+                distinctModeIds.forEach((distinctModeId) => {
+                    // as 'distinctModeId' has come from 'selectedModes' this will
+                    // always give an array 'obsIds' of at least length 1
+                    const obsIds: number [] = values.selectedModes.map((modeTuple) => {
+                        if (distinctModeId === modeTuple.modeId)
+                            return modeTuple.observationId;
+                        return undefined;
+                    }).filter((id): id is number => id !== undefined);
+
+                    observationConfigMap.push(
+                        {observationIds: obsIds, modeId: distinctModeId})
+                })
+            }
 
             //------------------------------------------------------------------------
 
@@ -334,12 +345,16 @@ function SubmissionForm() :
                     />
                 </Stepper.Step>
 
-                <Stepper.Step
-                    label={"Observing Modes"}
-                    description={"Select modes for your observations"}
-                >
-                    <ObservationModeSelect form={form} smallScreen={smallScreen}/>
-                </Stepper.Step>
+                {polarisMode !== POLARIS_MODES.OPTICAL && (
+                    <Stepper.Step
+                        label={"Observing Modes"}
+                        description={"Select modes for your observations"}
+                    >
+                        <ObservationModeSelect
+                            form={form}
+                            smallScreen={smallScreen}/>
+                    </Stepper.Step>
+                )}
 
                 <Stepper.Step
                     label={"Submit Proposal"}
@@ -393,7 +408,7 @@ function SubmissionForm() :
                         </Button>
                 }
                 {
-                    activeStep === 3 ?
+                    activeStep === submitStep ?
                         <SubmitButton
                             variant={"filled"}
                             disabled={!form.isValid()}
