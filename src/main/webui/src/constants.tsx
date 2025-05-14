@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /* the maximum number of characters supported by the Postgres database for
 any column which is set to type "VARCHAR". See
 https://github.com/orppst/pst-gui/issues/21#issuecomment-1786943901 for
@@ -107,6 +108,10 @@ export const err_green_str = "green.6"
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export const JSON_FILE_NAME = 'proposal.json';
+
+/* this constant holds the optical data stores for a downloaded proposals
+ zip file*/
+export const OPTICAL_FOLDER_NAME = 'opticalData';
 
 /* the filename of the overview pdf to be exported, but not imported. */
 // eslint-disable-next-line react-refresh/only-export-components

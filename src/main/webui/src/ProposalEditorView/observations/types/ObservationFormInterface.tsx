@@ -20,5 +20,6 @@ export interface ObservationFormValues {
         value: string,
     },
     userType: string,
+    condition: string,
     elements: Map<string, string>,
 }

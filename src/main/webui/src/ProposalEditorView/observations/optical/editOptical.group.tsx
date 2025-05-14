@@ -101,6 +101,7 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                     unit: DEFAULT_STRING
                 },
                 userType: DEFAULT_STRING,
+                condition: DEFAULT_STRING,
                 elements: new Map<string, string>(),
             },
 
@@ -266,6 +267,7 @@ function ObservationOpticalEditGroup(props: ObservationProps): ReactElement {
                 telescopeTimeUnit: form.getValues().telescopeTime.unit,
                 telescopeTimeValue: form.getValues().telescopeTime.value,
                 userType: form.getValues().userType,
+                condition: form.getValues().condition,
                 choices: Object.fromEntries(form.getValues().elements.entries())
             }, {
                 onSuccess: () => {
