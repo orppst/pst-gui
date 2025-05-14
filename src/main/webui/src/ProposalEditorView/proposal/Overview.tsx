@@ -85,7 +85,7 @@ interface InvestigatorLabelProps {
 // the type for the extracting data of observations for overview telescope table.
 export type  TelescopeSummaryState = {
     telescopeTimeValue: string, telescopeTimeUnit: string,
-    condition: string, targetName: string,
+    condition: string, targetName: string, telescopeName: string
 }
 
 
@@ -346,8 +346,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
 
-
-
     const { data: proposalsData ,
             error: proposalsError,
             isLoading: proposalsIsLoading } =
@@ -356,7 +354,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 proposalCode: Number(selectedProposalCode)
             }
         });
-
 
     if (proposalsError) {
         return (
@@ -797,14 +794,17 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     {telescopeTimeValue: observationData.telescopeTimeValue,
                      telescopeTimeUnit: observationData.telescopeTimeUnit,
                      condition: observationData.condition,
-                     targetName: getTargetName(obs)}
+                     targetName: getTargetName(obs),
+                     telescopeName: observationData.telescopeName}
                 )
             } else {
                 const array = [{
                     telescopeTimeValue: observationData.telescopeTimeValue,
                     telescopeTimeUnit: observationData.telescopeTimeUnit,
                     condition: observationData.condition,
-                    targetName: getTargetName(obs)}]
+                    targetName: getTargetName(obs),
+                    telescopeName: observationData.telescopeName
+                }]
                 summaryData.set(key, array);
             }
         }
@@ -911,7 +911,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         for (const item of arrayData) {
             if (item.telescopeTimeUnit !== "Hours") {
                 time += Number(item.telescopeTimeValue) *
-                    telescopeTiming.get(title)!;
+                    telescopeTiming.get(item.telescopeName)!;
             } else {
                 time += Number(item.telescopeTimeValue);
             }
