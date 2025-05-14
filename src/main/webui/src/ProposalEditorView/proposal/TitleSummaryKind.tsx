@@ -101,7 +101,7 @@ function TitleSummaryKind() : ReactElement {
         },
         validate: {
             title: (value) =>
-                value.length < 1 ? 'The title cannot be empty' : null
+                value && value.length < 1 ? 'The title cannot be empty' : null
         }
     })
 
