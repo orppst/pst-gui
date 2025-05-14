@@ -11,11 +11,19 @@ export type ProposalToolContext = {
      */
     headers?: {
       authorization ?: string;
+      // Explicitly add Content-Type to resolve linter.
+      "Content-Type"?: string;
+      // Allow other headers
+      [key: string]: string | undefined;
     };
     /**
      * Query params to inject in the fetcher
      */
     queryParams?: {};
+    /**
+     * body
+     */
+    body?: any
   };
   queryOptions: {
     /**
@@ -33,7 +41,7 @@ export type ProposalToolContext = {
 /**
  * Context injected into every react-query hook wrappers
  *
- * @param queryOptions options from the useQuery wrapper
+ * @param _queryOptions options from the useQuery wrapper
  */
 export function useProposalToolContext<
   TQueryFnData = unknown,

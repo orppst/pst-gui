@@ -6,25 +6,27 @@ import {
 import {
     Text,
     Space,
-    Badge,
     Group,
     Table,
     useMantineTheme
 } from '@mantine/core';
 import {modals} from "@mantine/modals";
 import {
-    CalibrationObservation,
-    PerformanceParameters,
+    CalibrationObservation, Observation,
     TargetObservation,
 } from "src/generated/proposalToolSchemas.ts";
-import ObservationEditModal from "./edit.modal.tsx";
 import {useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import CloneButton from "src/commonButtons/clone.tsx";
 import DeleteButton from "src/commonButtons/delete.tsx";
 import {ReactElement} from 'react';
-import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../../commonPanel/notifications.tsx";
+import {
+    useOpticalTelescopeResourceDeleteObservationTelescopeData,
+    useOpticalTelescopeTableData,
+} from "../../../util/telescopeComms";
+import ObservationEditModal from "./editOptical.modal";
 
 export type ObservationId = {id: number}
 
@@ -34,7 +36,8 @@ export type ObservationId = {id: number}
  * @return {ReactElement} the react html for the observation row.
  * @constructor
  */
-export default function ObservationRow(observationId: ObservationId): ReactElement {
+function ObservationRow(observationId: ObservationId):
+        ReactElement {
 
     const queryClient = useQueryClient();
 
@@ -43,6 +46,8 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         useObservationResourceAddNewObservation();
     const removeObservation =
         useObservationResourceRemoveObservation();
+    const deleteOpticalTelescope =
+        useOpticalTelescopeResourceDeleteObservationTelescopeData();
     const removeField =
         useProposalResourceRemoveField();
 
@@ -50,10 +55,13 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
     const theme = useMantineTheme();
     const GRAY = theme.colors.gray[6];
 
-    const {selectedProposalCode} = useParams();
-    let targetName: string = "Unknown";
+    let {selectedProposalCode} = useParams();
+    selectedProposalCode = selectedProposalCode!;
+
+    let targetName = "Unknown";
     let additionTargets = 0;
 
+    // get observation data.
     const {
         data: observation,
         error: observationError,
@@ -65,15 +73,54 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         },
     });
 
+    const {
+        data: opticalData,
+        error: opticalError,
+        isLoading: opticalLoading,
+    } = useOpticalTelescopeTableData({
+        proposalID: selectedProposalCode
+    });
+
     if (observationError) {
         return <pre>{getErrorMessage(observationError)}</pre>
+    }
+    if (opticalError) {
+        return <pre>{getErrorMessage(opticalError)}</pre>
+    }
+
+    /**
+     * function for handling deletion of telescope data.
+     */
+    const handleDeletionOfOpticalTelescopeData = async () => {
+        // really this needs to be done from backend to backend, to
+        // ensure transactional integrity. but oh well.
+        if (selectedProposalCode !== undefined) {
+            deleteOpticalTelescope.mutate({
+                proposalID: selectedProposalCode,
+                observationID: observationId.id.toString()
+            }, {
+                onSuccess: () => {
+                    notifySuccess(
+                        "Observation removed",
+                        "Selected observation and optical " +
+                        "telescope data has been deleted.")
+                },
+                onError: (error) => {
+                    notifyError(
+                        "Deletion of Observing Field optical " +
+                        "telescope data failed",
+                        getErrorMessage(error));
+                }
+            })
+        }
     }
 
     /**
      * handles the deletion of an observation.
      */
     const handleDelete = async () => {
-        let fieldId = observation?.field?._id!
+        const fieldIdRaw = observation?.field?._id
+        const fieldId = fieldIdRaw!
 
         await removeObservation.mutateAsync({
             pathParams: {
@@ -81,11 +128,12 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 observationId: observationId.id
             }
         }, {
-            onSuccess: () =>  notifySuccess("Observation removed",
-                "Selected observation has been deleted.")
-            ,
+            onSuccess: () => {
+                handleDeletionOfOpticalTelescopeData();
+            },
             onError: (error) =>
-                notifyError("Deletion of Observing Field failed", getErrorMessage(error)),
+                notifyError("Deletion of Observing Field failed",
+                            getErrorMessage(error)),
         })
 
         removeField.mutate({
@@ -111,7 +159,6 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
                     Deletes the observation only.
-                    Preserves everything except the timing windows.
                 </Text>
             </>
         ),
@@ -144,8 +191,8 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
      * provided everything is defined
      */
     if(observation?.target !== undefined
-        && observation.target[0] !== undefined
-        && observation.target[0].sourceName !== undefined) {
+            && observation.target[0] !== undefined
+            && observation.target[0].sourceName !== undefined) {
         targetName = observation.target[0].sourceName;
         additionTargets = observation.target.length - 1;
     }
@@ -161,12 +208,13 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Text c={"yellow"} size={"sm"}>
                     {(observation?.["@type"] === 'proposal:TargetObservation')
                         ? 'Target' : 'Calibration'}
-                    {` : ` + targetName + (additionTargets > 0? ` (plus ` + additionTargets + ` more)`:``)}
+                    {` : ` + targetName + (additionTargets > 0?
+                        ` (plus ` + additionTargets + ` more)`:``)}
                 </Text>
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
                     Creates a new observation with a deep copy of this
-                    observation's properties. You should edit the copied
+                    observation`s properties. You should edit the copied
                     observation for your needs.
                 </Text>
             </>
@@ -177,31 +225,20 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
         onCancel:() => console.log('Cancel clone'),
     })
 
-    let performance : PerformanceParameters =
-        observation?.technicalGoal?.performance!;
-
-    let performanceFull = observationLoading ? false :
-        performance.desiredAngularResolution?.value !== undefined &&
-        performance.representativeSpectralPoint?.value !== undefined &&
-        performance.desiredDynamicRange?.value !== undefined &&
-        performance.desiredSensitivity?.value !== undefined &&
-        performance.desiredLargestScale?.value !== undefined;
-
-    let performanceEmpty = observationLoading ? true :
-        performance.desiredAngularResolution?.value === undefined &&
-        performance.representativeSpectralPoint?.value === undefined &&
-        performance.desiredDynamicRange?.value === undefined &&
-        performance.desiredSensitivity?.value === undefined &&
-        performance.desiredLargestScale?.value === undefined;
-
-
     // if loading, present a loading.
-    if (observationLoading) {
+    if (observationLoading || opticalLoading) {
         return (
             <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
         );
     }
 
+    // get the row data
+    const opticalDataRow = opticalData!.get(observation!._id!.toString())!;
+
+    //handle error row.
+    if(opticalDataRow == undefined) {
+        return <></>
+    }
     // generate the correct row.
     return (
         <Table.Tr>
@@ -219,64 +256,10 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 {observation?.field?.name}
             </Table.Td>
             <Table.Td>
-                {
-                    performanceFull ?
-                        <Badge
-                            color={"green"}
-                            radius={0}
-                        >
-                            Set
-                        </Badge>:
-                        performanceEmpty ?
-                            <Badge
-                                color={"orange"}
-                                radius={0}
-                            >
-                                Not Set
-                            </Badge> :
-                            <Badge
-                                color={"yellow"}
-                                radius={0}
-                            >
-                                Partial
-                            </Badge>
-                }
+                {opticalDataRow.telescopeName}
             </Table.Td>
             <Table.Td>
-                {
-                    observation?.technicalGoal?.spectrum?.length! > 0 ?
-                        <Badge
-                            color={"green"}
-                            radius={0}
-                        >
-                            {observation?.technicalGoal?.spectrum?.length!}
-                        </Badge>:
-                        <Badge
-                            color={"red"}
-                            radius={0}
-                        >
-                            None
-                        </Badge>
-                }
-            </Table.Td>
-            <Table.Td>
-                <Group>
-                {
-                    observation?.constraints?.length! > 0 ?
-                        <Badge
-                            color={"green"}
-                            radius={0}
-                        >
-                            {observation?.constraints?.length!}
-                        </Badge> :
-                        <Badge
-                            color={"red"}
-                            radius={0}
-                        >
-                            None
-                        </Badge>
-                }
-                </Group>
+                {opticalDataRow.instrumentName}
             </Table.Td>
             <Table.Td>
                 <Group align={"right"}>
@@ -295,11 +278,43 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
 }
 
 /**
- * returns the header for the observation table.
- *
+ * generates the observation table html.
+ * @param observations: the observations array.
+ * @param showButtons: boolean flag for showing buttons.
+ * @return {React.ReactElement} the dynamic html for the observation table.
+ * @constructor
+ */
+export const OpticalTableGenerator = (
+        observations:  Observation[], showButtons: boolean):
+        ReactElement => {
+    return (
+        <>
+            <Table>
+                { observationOpticalTableHeader(showButtons) }
+                <Table.Tbody>
+                    {
+                        observations?.map((observation) => {
+                            return (
+                                <ObservationRow
+                                    id={observation._id!}
+                                    key={observation._id!}
+                                />
+                            )
+                        })
+                    }
+                </Table.Tbody>
+            </Table>
+        </>
+    )
+}
+
+/**
+ * returns the header for the observation optical table.
+ * @param showButtons: boolean flag for showing the buttons.
  * @return {React.ReactElement} the html for the table header.
  */
-export function observationTableHeader(): ReactElement {
+// eslint-disable-next-line react-refresh/only-export-components
+export function observationOpticalTableHeader(showButtons: boolean): ReactElement {
     return (
         <Table.Thead>
             <Table.Tr>
@@ -307,10 +322,9 @@ export function observationTableHeader(): ReactElement {
                 <Table.Th>Additional Targets</Table.Th>
                 <Table.Th>Type</Table.Th>
                 <Table.Th>Field</Table.Th>
-                <Table.Th>Performance params</Table.Th>
-                <Table.Th>Spectral windows</Table.Th>
-                <Table.Th>Timing windows</Table.Th>
-                <Table.Th></Table.Th>
+                <Table.Th>Telescope Name</Table.Th>
+                <Table.Th>Telescope Instrument</Table.Th>
+                { showButtons ? <Table.Th></Table.Th>: null }
             </Table.Tr>
         </Table.Thead>
     );

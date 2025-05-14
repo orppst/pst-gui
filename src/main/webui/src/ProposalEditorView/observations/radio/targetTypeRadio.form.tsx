@@ -14,19 +14,18 @@ import {
 import {useParams} from "react-router-dom";
 import {Dispatch, ReactElement, SetStateAction} from 'react';
 import { UseFormReturnType } from '@mantine/form';
-import { ObservationFormValues } from './edit.group.tsx';
 import {
     OPEN_DELAY,
     NO_ROW_SELECTED, TABLE_MIN_WIDTH,
-    TABLE_SCROLL_HEIGHT, err_red_str, err_yellow_str, err_green_str
+    TABLE_SCROLL_HEIGHT, err_red_str, err_yellow_str, err_green_str,
 } from 'src/constants.tsx';
-import { TargetTable } from '../targets/TargetTable.tsx';
-import { TechnicalGoalsTable } from '../technicalGoals/technicalGoalTable.tsx';
-import {notifyError} from "../../commonPanel/notifications.tsx";
-import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import { TargetTable } from '../../targets/TargetTable.tsx';
+import { TechnicalGoalsTable } from '../../technicalGoals/technicalGoalTable.tsx';
+import {notifyError} from "../../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../../errorHandling/getErrorMessage.tsx";
+import {ObservationFormValues} from "../types/ObservationFormInterface";
 
-
-export default function TargetTypeForm (p: {
+export default function TargetTypeRadioForm (p: {
     form: UseFormReturnType<ObservationFormValues>,
     setFieldName: Dispatch<SetStateAction<string>>
 }): ReactElement {
@@ -83,7 +82,8 @@ export default function TargetTypeForm (p: {
      */
     function SelectCalibrationUse(): ReactElement
     {
-        let calibrationSelected = p.form.getValues().observationType === "Calibration";
+        const calibrationSelected =
+            p.form.getValues().observationType === "Calibration";
         return (
             <Select
                 label={"Calibration intended use: "}

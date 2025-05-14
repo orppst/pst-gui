@@ -1,7 +1,6 @@
-import TargetTypeForm from "./targetType.form.tsx";
 import TimingWindowsForm from "./timingWindows.form.tsx";
-import {ObservationProps} from "./observationPanel.tsx";
-import {Fieldset, Text, Group, Stack} from '@mantine/core';
+import {ObservationProps} from "../observationPanel.tsx";
+import { Fieldset, Text, Stack, Group, Space } from '@mantine/core';
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse, Observation, Target, TargetObservation,
@@ -14,37 +13,23 @@ import {
     useObservationResourceReplaceIntendedUse,
     useObservationResourceReplaceTargets,
     useObservationResourceReplaceTechnicalGoal,
-    useObservationResourceReplaceTimingWindow, useProposalResourceAddNewField
+    useObservationResourceReplaceTimingWindow,
+    useProposalResourceAddNewField
 } from 'src/generated/proposalToolComponents.ts';
 import {FormSubmitButton} from 'src/commonButtons/save.tsx';
 import CancelButton from "src/commonButtons/cancel.tsx";
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {ReactElement, SyntheticEvent, useState} from 'react';
-import { TimingWindowGui } from './timingWindowGui.tsx';
-import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
-import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {queryKeyProposals} from "../../queryKeyProposals.tsx";
-import {err_red_str, NO_ROW_SELECTED} from "../../constants.tsx";
-import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
-
-/**
- * the different types of observation.
- */
-type ObservationType = 'Target' | 'Calibration' | '';
-
-/**
- * the interface for the entire observation form.
- */
-export interface ObservationFormValues {
-    observationId: number | undefined,
-    observationType: ObservationType,
-    calibrationUse: CalibrationTargetIntendedUse | undefined,
-    targetDBIds: number[],
-    techGoalId: number,
-    timingWindows: TimingWindowGui[],
-}
-
+import { TimingWindowGui } from '../types/timingWindowGui.tsx';
+import {notifyError, notifySuccess} from "../../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../../errorHandling/getErrorMessage.tsx";
+import {queryKeyProposals} from "../../../queryKeyProposals.tsx";
+import {DEFAULT_STRING, err_red_str, NO_ROW_SELECTED, ObservationType} from '../../../constants.tsx';
+import {ContextualHelpButton} from "../../../commonButtons/contextualHelp.tsx";
+import {ObservationFormValues} from "../types/ObservationFormInterface";
+import TargetTypeRadioForm from "./targetTypeRadio.form";
+import {handleTargets, handleTechnicalGoals} from "../commonObservationCode";
 
 /**
  * Convert the TimingWindow type from the database to a type appropriate for
@@ -99,9 +84,9 @@ function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
  * @constructor
  */
 export default
-function ObservationEditGroup(props: ObservationProps): ReactElement {
+function ObservationRadioEditGroup(props: ObservationProps): ReactElement {
 
-    const { selectedProposalCode} = useParams();
+    const { selectedProposalCode } = useParams();
     const queryClient = useQueryClient();
 
     const [fieldName, setFieldName] = useState<string>("");
@@ -120,20 +105,20 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
     const replaceTimingWindow =
         useObservationResourceReplaceTimingWindow();
     const replaceCalibrationUse =
-        useObservationResourceReplaceIntendedUse()
+        useObservationResourceReplaceIntendedUse();
 
     // figures out if we have an observation.
     const newObservation = props.observation === undefined;
 
     // figure out the current observation type.
-    let observationType : ObservationType = newObservation ? '' :
+    const observationType: ObservationType = newObservation ? '' :
         props.observation!["@type"]
         === 'proposal:TargetObservation' ? 'Target': 'Calibration';
 
     // figure out the current calibration use.
-    let calibrationUse : CalibrationTargetIntendedUse | undefined =
+    const calibrationUse: CalibrationTargetIntendedUse | undefined =
         observationType === 'Calibration' ?
-        (props.observation as CalibrationObservation).intent! : undefined;
+            (props.observation as CalibrationObservation).intent! : undefined;
 
     // figure out the current timing windows, ensures that the array is
     // not undefined.
@@ -145,10 +130,11 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
         // constraint i.e., the 'timingWindow' may not be a 'TimingWindow' type.
         initialTimingWindows =
             props.observation?.constraints?.map<TimingWindowGui>(
-                (timingWindow: TimingWindow) => ConvertToTimingWindowGui(timingWindow));
+                (timingWindow: TimingWindow) =>
+                    ConvertToTimingWindowGui(timingWindow));
     }
 
-    let initialTargetIds : number [] = [];
+    const initialTargetIds: number [] = [];
     if (!newObservation) {
         props.observation?.target?.map(t => {
             initialTargetIds.push(t._id!)
@@ -169,7 +155,16 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 calibrationUse: calibrationUse,
                 targetDBIds: initialTargetIds,
                 techGoalId: props.observation?.technicalGoal?._id ?? NO_ROW_SELECTED,
-                timingWindows: initialTimingWindows
+                timingWindows: initialTimingWindows,
+                telescopeName: DEFAULT_STRING,
+                instrument: DEFAULT_STRING,
+                telescopeTime: {
+                    value: DEFAULT_STRING,
+                    unit: DEFAULT_STRING
+                },
+                userType: DEFAULT_STRING,
+                condition: DEFAULT_STRING,
+                elements: new Map<string, string>(),
             },
 
             validate: {
@@ -182,21 +177,21 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                 calibrationUse: (value, values) =>
                     ((values.observationType === "Calibration" && value === undefined) ?
                         'Please select the calibration use' : null),
-                timingWindows : {
+                timingWindows: {
                     startTime: (value) => (
                         value === null ? 'No start time selected' : null),
                     endTime: (value) => (
                         value === null ? 'No end time selected' : null)
-                }
+                },
             },
-    });
+        });
 
 
     const handleSubmit =
-        form.onSubmit((values) => {
+        form.onSubmit((values: ObservationFormValues) => {
             if (newObservation) {
                 //Creating new observation
-                let targetList: Target[] = [];
+                const targetList: Target[] = [];
 
                 values.targetDBIds.map((thisTarget) => {
                     targetList.push({
@@ -205,7 +200,8 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     })
                 })
 
-                //we need to persist an observation field which the new observation then references
+                //we need to persist an observation field which the new
+                // observation then references
                 addNewField.mutateAsync({
                     pathParams: {
                         proposalCode: Number(selectedProposalCode)
@@ -215,7 +211,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         "@type": "proposal:TargetField"
                     }
                 }) .then( data => {
-                    let baseObservation : Observation = {
+                    const baseObservation : Observation = {
                         target: targetList,
                         technicalGoal: {
                             "_id": values.techGoalId
@@ -257,19 +253,27 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     }, {
                         onSuccess: () => {
                             queryClient.invalidateQueries().then();
-                            notifySuccess("Observation Added", "new observation added to proposal")
+                            notifySuccess("Observation Added",
+                                "new observation added to proposal")
                             props.closeModal!();
                         },
                         onError: (error) =>
-                            notifyError("Failed to add Observation", getErrorMessage(error)),
+                            notifyError(
+                                "Failed to add Observation",
+                                getErrorMessage(error)),
                     })
                 })
                     .catch(error => {
-                        notifyError("Cannot create Observation: Failed to add Observation Field",
+                        notifyError(
+                            "Cannot create Observation: Failed to add" +
+                            " Observation Field",
                             getErrorMessage(error));
                     })
             }
             else {
+                const id = props.observation?._id;
+                const obsID = id!;
+
                 //Editing an existing observation
                 values.timingWindows.map((tw, index) => {
                     if (tw.id === 0) {
@@ -277,7 +281,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         addNewConstraint.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observation?._id!
+                                observationId: obsID
                             },
                             body: ConvertToTimingWindowApi(tw)
                         }, {
@@ -294,7 +298,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                                 );
                             } ,
                             onError: (error) =>
-                                notifyError("Failed to add timing window", getErrorMessage(error)),
+                                notifyError(
+                                    "Failed to add timing window",
+                                    getErrorMessage(error)),
                         })
 
                     } else if (form.isDirty(`timingWindows.${index}`)){
@@ -306,7 +312,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         replaceTimingWindow.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),
-                                observationId: props.observation?._id!,
+                                observationId: obsID,
                                 timingWindowId: tw.id
                             },
                             // @ts-ignore
@@ -325,76 +331,31 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                                 );
                             },
                             onError: (error) =>
-                                notifyError("Failed to update timing window", getErrorMessage(error)),
+                                notifyError(
+                                    "Failed to update timing window",
+                                    getErrorMessage(error)),
                         })
                     } //else do nothing
                 })
 
+                // handles targets and technical goals.
                 if (form.isDirty('targetDBIds')) {
-                    let body: Target[] = [];
-
-                    values.targetDBIds?.map((thisTarget) =>{
-                        body.push({
-                            "@type": "proposal:CelestialTarget",
-                            "_id": thisTarget
-                        })
-                    })
-
-                    replaceTargets.mutate({
-                        pathParams: {
-                            proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id!
-                        },
-                        body: body
-                    }, {
-                        onSuccess: () => {
-                            queryClient.invalidateQueries({
-                                queryKey: queryKeyProposals({
-                                    proposalId: Number(selectedProposalCode),
-                                    childName: "observations",
-                                    childId: form.getValues().observationId!
-                                }),
-                            }).then(() =>
-                                notifySuccess("Targets updated", "new targets saved")
-                            );
-                        },
-                        onError: (error) =>
-                            notifyError("Failed to update targets", getErrorMessage(error)),
-                    })
+                    handleTargets(
+                        values, replaceTargets, selectedProposalCode,
+                        obsID, queryClient);
                 }
 
                 if (form.isDirty('techGoalId')) {
-                    replaceTechnicalGoal.mutate({
-                        pathParams: {
-                            proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id!,
-                        },
-                        body: {
-                            "_id": form.values.techGoalId
-                        }
-                    }, {
-                        onSuccess: () => {
-                            queryClient.invalidateQueries({
-                                queryKey: queryKeyProposals({
-                                    proposalId: Number(selectedProposalCode),
-                                    childName: "observations",
-                                    childId: form.getValues().observationId!
-                                }),
-                            }).then(() =>
-                                notifySuccess("Technical Goal Updated",
-                                    "technical goal updates saved")
-                            );
-                        },
-                        onError: (error) =>
-                            notifyError("Failed to update technical goal", getErrorMessage(error)),
-                    })
+                    handleTechnicalGoals(
+                        values, selectedProposalCode,
+                        obsID, queryClient, replaceTechnicalGoal);
                 }
 
                 if (form.isDirty('calibrationUse')) {
                     replaceCalibrationUse.mutate({
                         pathParams: {
                             proposalCode: Number(selectedProposalCode),
-                            observationId: props.observation?._id!
+                            observationId: obsID
                         },
                         body: values.calibrationUse
                     }, {
@@ -411,7 +372,9 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                             );
                         },
                         onError: (error) =>
-                            notifyError("Failed to update calibration use", getErrorMessage(error)),
+                            notifyError(
+                                "Failed to update calibration use",
+                                getErrorMessage(error)),
                     })
                 }
             }
@@ -431,7 +394,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
     <form onSubmit={handleSubmit}>
         <Stack>
             <ContextualHelpButton messageId={"MaintObs"} />
-            <TargetTypeForm form={form} setFieldName={setFieldName}/>
+            <TargetTypeRadioForm form={form} setFieldName={setFieldName}/>
             <Fieldset legend={"Timing windows"}>
                 <Text ta={"center"} size={"xs"} c={"gray.6"}>
                     Timezone set to UTC
@@ -442,11 +405,13 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         Please define at least one Timing Window
                     </Text>
                 }
-
                 <TimingWindowsForm form={form}/>
             </Fieldset>
+            <Space h={"md"} />
             <Group justify={"flex-end"}>
-                <FormSubmitButton form={form} disabled={form.getValues().timingWindows.length === 0}/>
+                <FormSubmitButton
+                    form={form}
+                    disabled={form.getValues().timingWindows.length === 0}/>
                 <CancelButton
                     onClickEvent={handleCancel}
                     toolTipLabel={"Go back without saving"}

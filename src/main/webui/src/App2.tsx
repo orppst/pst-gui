@@ -1,59 +1,58 @@
 import {
     createContext,
-    useContext,
     ReactElement,
+    StrictMode,
     SyntheticEvent,
-    Context, StrictMode, useReducer
+    useContext,
+    useReducer,
 } from 'react';
-import {
-    QueryClient,
-    QueryClientProvider, useQueryClient,
-} from '@tanstack/react-query';
-import {ObservingProposal, Person} from "./generated/proposalToolSchemas.ts";
+import {QueryClient, QueryClientProvider, useQueryClient,} from '@tanstack/react-query';
+import {Person} from "./generated/proposalToolSchemas.ts";
 import OverviewPanel from "./ProposalEditorView/proposal/Overview.tsx";
 import NewProposalPanel from './ProposalEditorView/proposal/New.tsx';
 import InvestigatorsPanel from "./ProposalEditorView/investigators/List.tsx";
 import AddInvestigatorPanel from "./ProposalEditorView/investigators/New.tsx";
-import {
-    createBrowserRouter,
-    Outlet,
-    RouterProvider,
-    useNavigate
-} from 'react-router-dom';
-import { useHistoryState } from "./useHistoryState";
+import {createBrowserRouter, Outlet, RouterProvider, useNavigate} from 'react-router-dom';
+import {useHistoryState} from "./useHistoryState";
 import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGoalsPanel.tsx";
-import { TargetPanel } from "./ProposalEditorView/targets/targetPanel.tsx";
+import {TargetPanel} from "./ProposalEditorView/targets/targetPanel.tsx";
 import ObservationsPanel from "./ProposalEditorView/observations/observationPanel.tsx";
 import DocumentsPanel from "./ProposalEditorView/proposal/Documents.tsx";
 import SubmitPanel from "./ProposalEditorView/submitProposal/submitPanel.tsx";
 
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 import {AuthProvider} from "./auth/Auth.tsx";
 import {
+    ActionIcon,
     AppShell,
+    Burger,
+    Container,
+    FileButton,
+    Grid,
+    Group,
+    ScrollArea,
     Text,
     TextInput,
-    Grid,
-    Burger,
-    ScrollArea,
-    Group,
-    ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container,
+    Tooltip,
+    useMantineColorScheme,
+    useMantineTheme,
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
-import {
-    IconLogout, IconUniverse
-} from '@tabler/icons-react';
+import {IconLogout, IconUniverse} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
 import DatabaseSearchButton from './commonButtons/databaseSearch';
-//import {ContextualHelpButton} from "./commonButtons/contextualHelp.tsx"
 import {
-    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE, JSON_FILE_NAME,
-    NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
-    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
+    APP_HEADER_HEIGHT,
+    CLOSE_DELAY,
+    ICON_SIZE,
+    NAV_BAR_DEFAULT_WIDTH,
+    NAV_BAR_LARGE_WIDTH,
+    NAV_BAR_MEDIUM_WIDTH,
+    OPEN_DELAY,
+    POLARIS_MODES,
 } from './constants';
-import {SendToImportAPI} from './ProposalEditorView/proposal/UploadProposal';
+import {handleZip} from './ProposalEditorView/proposal/UploadProposal';
 import UploadButton from './commonButtons/upload';
 import AdminPanel from "./admin/adminPanel";
 import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
@@ -72,11 +71,10 @@ import {PanelFrame} from "./commonPanel/appearance.tsx";
 import TacCycles from "./ProposalManagerView/landingPage/tacCycles.tsx";
 import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPage.tsx";
 import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
-import {notifyError} from "./commonPanel/notifications.tsx";
-import JSZip from "jszip";
 import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
+import {usePersonResourceGetPeople} from "./generated/proposalToolComponents";
 
 /**
  * defines the user context type.
@@ -85,6 +83,19 @@ export type UserContextType = {
     user: Person;
     getToken: () => string;
     authenticated: boolean;
+}
+
+export type ProposalListWrapperProps = {
+    proposalTitle: string,
+    investigatorName:string,
+    auth:boolean
+}
+
+/**
+ * defines the polaris config data.
+ */
+export type PolarisConfigType = {
+    mode: POLARIS_MODES;
 }
 
 /**
@@ -96,30 +107,39 @@ export type ProposalContextType = {
 }
 
 /**
+ * defines the type of the context value.
+ */
+export type ContextType = (
+    UserContextType & ProposalContextType & PolarisConfigType);
+
+/**
  * generates a proposal context.
  *
- * @type {React.Context<UserContextType & ProposalContextType>} the context.
+ * @type {React.Context<UserContextType & ProposalContext>} the context.
  */
-export const ProposalContext:
-    Context<UserContextType & ProposalContextType> =
-    createContext<UserContextType & ProposalContextType>({
-        user: {},
-        getToken: ()=>{return ""},
-        authenticated: false,
-        selectedProposalCode: 0,
-        apiUrl:"http://api" // obviously false as a placeholder
-    })
+export const ProposalContext = createContext<ContextType>({
+    user: {},
+    getToken: ()=>{return "-111"},
+    authenticated: false,
+    selectedProposalCode: -1,
+    mode: POLARIS_MODES.BOTH,
+    apiUrl:"http://api",
+})
 
 /**
  * provides an interface for getting the proposal context token.
+ *
  * @return {string} the token.
  */
 export const useToken = (): string => {
     return useContext(ProposalContext).getToken();
 };
 
+//export const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
+
 /**
  * generates the html for the main app.
+ *
  * @return {ReactElement} dynamic html for the main app.
  * @constructor
  */
@@ -144,147 +164,25 @@ function App2(): ReactElement {
                 path: "/manager",
                 element: <PSTManager />,
                 errorElement: <ErrorPage />,
-                children: [
-                    {index: true, element: <PSTManagerStart />},
-                    {
-                        path: "cycle/:selectedCycleCode",
-                        element: <CycleOverviewPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/title",
-                        element: <CycleTitlePanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/tac",
-                        element: <CycleTACPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/tac/new",
-                        element: <CycleTACAddMemberPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/dates",
-                        element: <CycleDatesPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/assignReviewers",
-                        element: <AssignReviewersPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/reviews",
-                        element: <ReviewsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/passFail",
-                        element: <PassFailPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/allocations",
-                        element: <AllocationsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-
-                ]
+                children: generateManagerChildren()
             },
             {
                 path: "/",
                 element: <PSTEditor/>,
                 errorElement: <ErrorPage />,
-                children: [
-                    {index: true, element: <PSTStart/>} ,
-                    {
-                        path: "admin",
-                        element: <AdminPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/new",
-                        element: <NewProposalPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode",
-                        element: <OverviewPanel forceUpdate={forceUpdate}/>,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/titleSummaryKind",
-                        element: <TitleSummaryKind />
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/investigators",
-                        element:<InvestigatorsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path:
-                            "proposal/:selectedProposalCode/investigators/new",
-                        element:<AddInvestigatorPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/justifications",
-                        element: <JustificationsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/targets",
-                        element:<TargetPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/targets/new",
-                        element: <AddTargetPanel />,
-                        errorElement: <ErrorPage />
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/goals",
-                        element:<TechnicalGoalsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        /*
-                        path: "proposal/:selectedProposalCode/observationFields",
-                        element: <ObservationFieldsPanel />,
-                        errorElement: <ErrorPage />,
-                         */
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/observations",
-                        element:<ObservationsPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "proposal/:selectedProposalCode/documents",
-                        element:<DocumentsPanel />,
-                        errorElement: <ErrorPage />,
-                    } ,
-                    {
-                        path: "proposal/:selectedProposalCode/submit",
-                        element:<SubmitPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-
-                ]}], {
+                children: generateDefaultChildren(
+                    useContext(ProposalContext).mode)
+            }], {
             basename: "/pst/gui/tool/"
         }
-
     )
 
     return (
         <AuthProvider>
             <StrictMode>
                 <QueryClientProvider client={queryClient}>
-                    <RouterProvider router={router}/>
-                    <ReactQueryDevtools initialIsOpen={false} />
+                        <RouterProvider router={router}/>
+                        <ReactQueryDevtools initialIsOpen={false} />
                 </QueryClientProvider>
             </StrictMode>
         </AuthProvider>
@@ -306,6 +204,16 @@ function App2(): ReactElement {
             "proposalTitle", "");
         const [investigatorNameFilter, setInvestigatorNameFilter] = useHistoryState(
             "investigatorName", "");
+
+        //Get all people in the database
+        const allPeople = usePersonResourceGetPeople(
+            {
+                queryParams: { name: '%' },
+            },
+            {
+                enabled: true,
+            }
+        );
 
         //active state for the NavLink sections
 
@@ -334,43 +242,11 @@ function App2(): ReactElement {
          * @param {File} chosenFile the zip file containing a json representation
          * of the proposal and any supporting documents.
          */
-        const handleUploadZip =
-            async (chosenFile: File | null) => {
-                // check for no file.
-                if (chosenFile === null) {
-                    notifyError("Upload failed", "There was no file to upload")
-                }
-
-                // all simple checks done. Time to verify the internals of the zip.
-                if (chosenFile !== null) {
-                    JSZip.loadAsync(chosenFile).then(function (zip) {
-                        // check the json file exists.
-                        if (!Object.keys(zip.files).includes(JSON_FILE_NAME)) {
-                            notifyError("Upload failed",
-                                "There was no file called '"+JSON_FILE_NAME+"' within the zip")
-                        }
-
-                        // extract json data to import proposal definition.
-                        zip.files[JSON_FILE_NAME].async('text').then(function (fileData) {
-                            const jsonObject: ObservingProposal = JSON.parse(fileData)
-                            // ensure not undefined
-                            if (jsonObject) {
-                                SendToImportAPI(jsonObject, zip, authToken, queryClient);
-                            } else {
-                                notifyError("Upload failed", "The JSON file failed to load correctly")
-                            }
-                        })
-                            .catch(() => {
-                                console.log("Unable to extract " + JSON_FILE_NAME + " from zip file");
-                                notifyError("Upload failed",
-                                    "Unable to extract " + JSON_FILE_NAME + " from zip file");
-                            })
-                    })
-                }
-            }
-
-
-
+        const handleUploadZip = async (chosenFile: File | null) => {
+            handleZip(
+                chosenFile, authToken, queryClient, proposalContext.user,
+                allPeople.data!);
+        }
 
         /*
         DJW:
@@ -475,7 +351,7 @@ function App2(): ReactElement {
                                 onChange={handleUploadZip}
                                 accept={".zip"}
                             >
-                                {(props) =>
+                                {(props: {onClick: () => void}) =>
                                     <UploadButton
                                         toolTipLabel="select a file from disk to upload"
                                         label={"Import existing proposal"}
@@ -500,17 +376,27 @@ function App2(): ReactElement {
         )
     }
 
-    function ProposalListWrapper(props:{proposalTitle: string, investigatorName:string, auth:boolean}) : ReactElement {
+    /**
+     * builds the proposal list.
+     *
+     * @param {ProposalListWrapperProps} props the input data.
+     * @constructor
+     */
+    function ProposalListWrapper(props:ProposalListWrapperProps):
+            ReactElement {
         //console.log(props);
         if (props.auth) {
-            return <ProposalList proposalTitle={props.proposalTitle} investigatorName={props.investigatorName} />
+            return <ProposalList proposalTitle={props.proposalTitle}
+                                 investigatorName={props.investigatorName}/>
         }
         else {
             return <></>
         }
     }
+
     /**
      * html to show in the main page when "proposals for username" is selected.
+     *
      * @return {ReactElement} the html to display when
      * "proposals for username" is selected.
      * @constructor
@@ -537,6 +423,154 @@ function App2(): ReactElement {
         )
     }
 
+    /**
+     * generates manager children.
+     */
+    function generateManagerChildren() {
+        const elements = [];
+        elements.push({index: true, element: <PSTManagerStart />});
+        elements.push(
+            {
+                path: "cycle/:selectedCycleCode",
+                element: <CycleOverviewPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/title",
+                element: <CycleTitlePanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/tac",
+                element: <CycleTACPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/tac/new",
+                element: <CycleTACAddMemberPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/dates",
+                element: <CycleDatesPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/assignReviewers",
+                element: <AssignReviewersPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/reviews",
+                element: <ReviewsPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/passFail",
+                element: <PassFailPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "cycle/:selectedCycleCode/allocations",
+                element: <AllocationsPanel />,
+                errorElement: <ErrorPage />,
+            },);
+        return elements;
+    }
+
+    /**
+     * generates user children routes for a given mode.
+     *
+     * @param {POLARIS_MODES} polarisMode the polaris mode.
+     */
+    function generateDefaultChildren(polarisMode: POLARIS_MODES) {
+        const elements = [];
+        elements.push({index: true, element: <PSTStart/>})
+        elements.push({
+                path: "admin",
+                element: <AdminPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/new",
+                element: <NewProposalPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode",
+                element: <OverviewPanel forceUpdate={forceUpdate}/>,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/titleSummaryKind",
+                element: <TitleSummaryKind />
+            },
+            {
+                path: "proposal/:selectedProposalCode/investigators",
+                element:<InvestigatorsPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path:
+                    "proposal/:selectedProposalCode/investigators/new",
+                element:<AddInvestigatorPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/justifications",
+                element: <JustificationsPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/targets",
+                element:<TargetPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/targets/new",
+                element: <AddTargetPanel />,
+                errorElement: <ErrorPage />
+            })
+
+        // handle technical goals if not in optical.
+        if (polarisMode == POLARIS_MODES.RADIO ||
+                polarisMode == POLARIS_MODES.BOTH) {
+            elements.push(
+                {
+                    path: "proposal/:selectedProposalCode/goals",
+                    element:<TechnicalGoalsPanel />,
+                    errorElement: <ErrorPage />,
+                },
+            )
+        }
+
+        // add rest
+        elements.push(
+            {
+                /*
+                path: "proposal/:selectedProposalCode/observationFields",
+                element: <ObservationFieldsPanel />,
+                errorElement: <ErrorPage />,
+                 */
+            },
+            {
+                path: "proposal/:selectedProposalCode/observations",
+                element:<ObservationsPanel />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "proposal/:selectedProposalCode/documents",
+                element:<DocumentsPanel />,
+                errorElement: <ErrorPage />,
+            } ,
+            {
+                path: "proposal/:selectedProposalCode/submit",
+                element:<SubmitPanel />,
+                errorElement: <ErrorPage />,
+            },
+        )
+        return elements;
+    }
 }
 
 // export the main app.

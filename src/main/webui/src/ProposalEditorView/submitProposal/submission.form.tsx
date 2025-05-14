@@ -1,8 +1,9 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useContext, useEffect, useState} from "react";
 import {Alert, Box, Button, Group, Loader, Select, Space, Stepper, Tooltip} from "@mantine/core";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {
     SubmittedProposalResourceSubmitProposalVariables,
+    SubmittedProposalResponse,
     useObservationResourceGetObservations,
     useProposalCyclesResourceGetProposalCycles,
     useProposalResourceGetObservingProposalTitle,
@@ -12,23 +13,32 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useForm, UseFormReturnType} from "@mantine/form";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {
-    ObservationConfigMapping
-} from "../../generated/proposalToolSchemas.ts";
+import {ObservationConfigMapping} from "../../generated/proposalToolSchemas.ts";
 import {ObservationModeTuple, SubmissionFormValues} from "./submitPanel.tsx";
 import ObservationModeSelect from "./observationMode.select.tsx";
-import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
+import {CLOSE_DELAY, OPEN_DELAY, POLARIS_MODES} from "../../constants.tsx";
 import {useMediaQuery} from "@mantine/hooks";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import ValidationOverview from "./ValidationOverview.tsx";
 import DisplaySubmissionDetails from "./displaySubmissionDetails.tsx";
 import {IconCheck} from "@tabler/icons-react";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import {useMutationOpticalCopyProposal} from "../../util/telescopeComms";
+import {ProposalContext} from "../../App2";
 
 export default
 function SubmissionForm() :
     ReactElement {
 
-    const maxSteps = 4;
+    const polarisMode = useContext(ProposalContext).mode;
+
+    // ensure the right number of steps based off polaris mode.
+    let maxSteps = 4;
+    let submitStep = 3;
+    if (polarisMode === POLARIS_MODES.OPTICAL) {
+        maxSteps = 3;
+        submitStep = 2;
+    }
 
     const {selectedProposalCode} = useParams();
 
@@ -38,7 +48,13 @@ function SubmissionForm() :
 
     const smallScreen = useMediaQuery("(max-width: 1350px)");
 
-    const [cyclesData, setCyclesData] = useState<{value: string, label: string}[]>([]);
+    const [cyclesData, setCyclesData] =
+        useState<{value: string, label: string}[]>([]);
+
+    // container for the validation error if any exists.
+    const [validationError, setValidationError] =
+        useState<string | undefined>(undefined);
+
 
     const [submissionFail, setSubmissionFail] = useState("");
 
@@ -46,6 +62,8 @@ function SubmissionForm() :
     const [activeStep, setActiveStep] = useState(0);
 
     const [initialObservationModeTuple, setInitialObservationModeTuple] = useState<ObservationModeTuple[]>([]);
+
+    const {fetcherOptions} = useProposalToolContext();
 
     const proposalTitle = useProposalResourceGetObservingProposalTitle({
         pathParams: {proposalCode: Number(selectedProposalCode)}
@@ -73,15 +91,17 @@ function SubmissionForm() :
         validate: (values) => {
             if (activeStep === 0) {
                 return {
-                    selectedCycle: values.selectedCycle === null || values.selectedCycle === 0 ?
+                    selectedCycle: values.selectedCycle === null ||
+                                   values.selectedCycle === 0 ?
                         'Please select a cycle' : null
                 }
             }
 
-            if (activeStep === 2) {
+            if (activeStep === 2 && polarisMode !== POLARIS_MODES.OPTICAL) {
                 return {
-                    selectedModes: values.selectedModes.some(e => e.modeId === 0) ?
-                        'All observations required a mode' : null
+                    selectedModes: values.selectedModes.some(
+                        e => e.modeId === 0) ?
+                            'All observations required a mode' : null
                 }
             }
 
@@ -89,7 +109,9 @@ function SubmissionForm() :
         }
     });
 
-    const submitProposalMutation = useSubmittedProposalResourceSubmitProposal({
+    // mutation for the optical side. this allows us to bypass the 2 database
+    // transaction issue.
+    const opticalCloneProposalMutation = useMutationOpticalCopyProposal({
         onSuccess: () => {
             setSubmissionFail("");
             queryClient.invalidateQueries().finally();
@@ -97,12 +119,41 @@ function SubmissionForm() :
         },
         onError: (error) => {
             setSubmissionFail(getErrorMessage(error))},
+    })
+
+    /**
+     * mutation to handle submitting a proposal.
+     */
+    const submitProposalMutation = useSubmittedProposalResourceSubmitProposal({
+        onSuccess: (submittedProposalObs: SubmittedProposalResponse) => {
+            // send a clone request to optical.
+            const proposalObsIDs: number [] =
+                targetObservations.data!.map<number>((obs) => obs.dbid!);
+            const submittedProposalObsIDs: number [] =
+                submittedProposalObs.obs.map<number>((obs) => obs._id!);
+
+            if (proposalObsIDs !== undefined &&
+                    submittedProposalObsIDs !== undefined) {
+                opticalCloneProposalMutation.mutate({
+                    proposalID: selectedProposalCode!,
+                    obsIds: proposalObsIDs,
+                    cloneID: submittedProposalObs.id,
+                    cloneObsIDs: submittedProposalObsIDs
+                });
+            }
+        },
+        onError: (error) => {
+            setSubmissionFail(getErrorMessage(error))},
         })
 
+    /**
+     * use effect hook.
+     */
     useEffect(() => {
-        if (targetObservations.status === 'success' && calibrationObservations.status === 'success') {
+        if (targetObservations.status === 'success' &&
+            calibrationObservations.status === 'success') {
 
-            let targetTuples = targetObservations.data.map((obs) => (
+            const targetTuples = targetObservations.data.map((obs) => (
                 {
                     observationId: obs.dbid!,
                     observationName: obs.name!,
@@ -112,7 +163,7 @@ function SubmissionForm() :
                 }
             ))
 
-            let calibrationTuples = calibrationObservations.data.map((obs) => (
+            const calibrationTuples = calibrationObservations.data.map((obs) => (
                 {
                     observationId: obs.dbid!,
                     observationName: obs.name!,
@@ -123,25 +174,30 @@ function SubmissionForm() :
             ))
 
             setInitialObservationModeTuple(targetTuples.concat(calibrationTuples))
-
             form.setFieldValue('selectedModes', initialObservationModeTuple)
         }
-    }, [targetObservations.status, calibrationObservations.status]);
+    },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [targetObservations.status, calibrationObservations.status]);
 
-    useEffect(() => {
-        if(proposalCycles.status === 'success')
-            setCyclesData(
-                proposalCycles.data?.map((cycle) =>(
-                    {value: String(cycle.dbid), label: cycle.name!}
-                ))
-            )
-    }, [proposalCycles.status]);
+    useEffect(
+        () => {
+            if(proposalCycles.status === 'success')
+                setCyclesData(
+                    proposalCycles.data?.map((cycle) =>(
+                        {value: String(cycle.dbid), label: cycle.name!}
+                    ))
+                )
+            },
+        [proposalCycles.status, proposalCycles.data]);
 
-    useEffect(() => {
-        //on cycle change reset the selectedModes to initial state
-        form.setFieldValue('selectedModes', initialObservationModeTuple)
-
-    }, [form.getValues().selectedCycle]);
+    useEffect(
+        () => {
+            //on cycle change reset the selectedModes to initial state
+            form.setFieldValue('selectedModes', initialObservationModeTuple)
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [form.getValues().selectedCycle]);
 
 
     //for the Stepper
@@ -171,39 +227,43 @@ function SubmissionForm() :
 
             //I feel like there might be a better way to do this using the 'filter' method
             //of an array, but it escapes me at the moment ----------------------
+            const observationConfigMap: ObservationConfigMapping[]  = []
 
-            let allModeIds : number[] =
-                values.selectedModes.map((modeTuple) => {
-                    return modeTuple.modeId;
+            if(polarisMode !== POLARIS_MODES.OPTICAL) {
+                const allModeIds: number[] =
+                    values.selectedModes.map((modeTuple) => {
+                        return modeTuple.modeId;
+                    })
+
+                const distinctModeIds = [...new Set(allModeIds)];
+
+                distinctModeIds.forEach((distinctModeId) => {
+                    // as 'distinctModeId' has come from 'selectedModes' this will
+                    // always give an array 'obsIds' of at least length 1
+                    const obsIds: number [] = values.selectedModes.map((modeTuple) => {
+                        if (distinctModeId === modeTuple.modeId)
+                            return modeTuple.observationId;
+                        return undefined;
+                    }).filter((id): id is number => id !== undefined);
+
+                    observationConfigMap.push(
+                        {observationIds: obsIds, modeId: distinctModeId})
                 })
-
-            let distinctModeIds = [...new Set(allModeIds)];
-
-            let observationConfigMap: ObservationConfigMapping[]  = []
-
-            distinctModeIds.forEach((distinctModeId) => {
-                // as 'distinctModeId' has come from 'selectedModes' this will always give an array 'obsIds'
-                // of at least length 1
-                //@ts-ignore
-                let obsIds : number [] = values.selectedModes.map((modeTuple) => {
-                    if (distinctModeId === modeTuple.modeId)
-                        return modeTuple.observationId;
-                })
-
-                observationConfigMap.push({observationIds: obsIds, modeId: distinctModeId})
-            })
+            }
 
             //------------------------------------------------------------------------
 
-            const submissionVariables: SubmittedProposalResourceSubmitProposalVariables = {
-                pathParams: {cycleCode: values.selectedCycle},
-                body: {
-                    proposalId: Number(selectedProposalCode),
-                    config: observationConfigMap
-                },
-                // @ts-ignore
-                headers: {"Content-Type": "application/json"}
-            };
+            const submissionVariables:
+                SubmittedProposalResourceSubmitProposalVariables = {
+                    pathParams: {cycleCode: values.selectedCycle},
+                    body: {
+                        proposalId: Number(selectedProposalCode),
+                        config: observationConfigMap
+                    },
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...fetcherOptions.headers}
+                };
 
             submitProposalMutation.mutate(submissionVariables);
 
@@ -281,15 +341,20 @@ function SubmissionForm() :
                     <ValidationOverview
                         cycle={form.getValues().selectedCycle}
                         smallScreen={smallScreen}
+                        onValidationError={setValidationError}
                     />
                 </Stepper.Step>
 
-                <Stepper.Step
-                    label={"Observing Modes"}
-                    description={"Select modes for your observations"}
-                >
-                    <ObservationModeSelect form={form} smallScreen={smallScreen}/>
-                </Stepper.Step>
+                {polarisMode !== POLARIS_MODES.OPTICAL && (
+                    <Stepper.Step
+                        label={"Observing Modes"}
+                        description={"Select modes for your observations"}
+                    >
+                        <ObservationModeSelect
+                            form={form}
+                            smallScreen={smallScreen}/>
+                    </Stepper.Step>
+                )}
 
                 <Stepper.Step
                     label={"Submit Proposal"}
@@ -317,8 +382,8 @@ function SubmissionForm() :
                         color={"green"}
                         mx={"20%"}
                     >
-                        You have successfully submitted '{proposalTitle.data}' to
-                        '{proposalCycleName(form.getValues().selectedCycle)}'
+                        You have successfully submitted `{proposalTitle.data}` to
+                        `{proposalCycleName(form.getValues().selectedCycle)}`
                     </Alert>
                 </Stepper.Completed>
             </Stepper>
@@ -343,7 +408,7 @@ function SubmissionForm() :
                         </Button>
                 }
                 {
-                    activeStep === 3 ?
+                    activeStep === submitStep ?
                         <SubmitButton
                             variant={"filled"}
                             disabled={!form.isValid()}
@@ -354,6 +419,9 @@ function SubmissionForm() :
                         activeStep !== maxSteps &&
                         <Button
                             onClick={nextStep}
+                            disabled={
+                                !form.isValid() ||
+                                validationError !== undefined}
                         >
                             Next step
                         </Button>

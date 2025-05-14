@@ -1,4 +1,4 @@
-import {ReactElement, useState} from "react";
+import {ReactElement, useContext, useState} from "react";
 import {Accordion, NavLink, useMantineColorScheme, useMantineTheme} from "@mantine/core";
 import {
     IconChartLine,
@@ -12,9 +12,15 @@ import {
 import {Link, useParams} from "react-router-dom";
 import {useProposalResourceGetProposals} from "./generated/proposalToolComponents.ts";
 import {ProposalSynopsis} from "./generated/proposalToolSchemas.ts";
+import {POLARIS_MODES} from "./constants";
+import {ProposalContext} from "./App2";
 
 
-export function ProposalList(props:{proposalTitle: string, investigatorName:string}): ReactElement { //IMPL added user as a prop even though not explicitly used to make update happen.
+export function ProposalList(
+        props:{proposalTitle: string, investigatorName:string}):
+        ReactElement {
+    //IMPL added user as a prop even though not explicitly used to make
+    // update happen.
 
     const [accordionValue, setAccordionValue]
         = useState<string | null>(null);
@@ -22,6 +28,7 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
     const [active, setActive] = useState("");
 
     const {selectedProposalCode} = useParams();
+    const polarisMode = useContext(ProposalContext).mode;
 
     const theme = useMantineTheme();
     const {colorScheme} = useMantineColorScheme();
@@ -55,7 +62,8 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                     />
                 </Accordion.Control>
                 <Accordion.Panel
-                    bg={colorScheme === 'dark' ? theme.colors.gray[9] : theme.colors.gray[1]}
+                    bg={colorScheme === 'dark' ?
+                        theme.colors.gray[9] : theme.colors.gray[1]}
                 >
                     <NavLink to={"proposal/" + proposal.code}
                              component={Link}
@@ -97,14 +105,16 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                              active={"Targets" + proposal.code === active}
                              onClick={()=>setActive("Targets" + proposal.code)}
                     />
-                    <NavLink to={"proposal/" + proposal.code + "/goals"}
-                             component={Link}
-                             leftSection={<IconChartLine/>}
-                             label="Technical Goals"
-                             key="Technical Goals"
-                             active={"Technical Goals" + proposal.code === active}
-                             onClick={()=>setActive("Technical Goals" + proposal.code)}
-                    />
+                    {(polarisMode === POLARIS_MODES.BOTH ||
+                        polarisMode === POLARIS_MODES.RADIO) && (
+                            <NavLink to={"proposal/" + proposal.code + "/goals"}
+                                     component={Link}
+                                     leftSection={<IconChartLine/>}
+                                     label="Technical Goals"
+                                     key="Technical Goals"
+                                     active={"Technical Goals" + proposal.code === active}
+                                     onClick={()=>setActive("Technical Goals" + proposal.code)}
+                            />)}
                     {
                         /*
                         <NavLink to={"proposal/" + proposal.code + "/observationFields"}
