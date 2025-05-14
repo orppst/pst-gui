@@ -45,7 +45,8 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
         that consist of a member called "centre" with a Java Type of "Coordinate", but I am unsure
         how this differs from the "TargetField" type.3
      */
-    let fieldTypeData: {value: string, label: string, description?: string} [] = [
+    const fieldTypeData: {
+            value: string, label: string, description?: string} [] = [
         {value: 'proposal:TargetField', label: "Target",
             description: "The astronomical target is the field"},
         {value: 'proposal:Polygon', label: "Polygon",
@@ -127,7 +128,6 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                     fieldId: props.observationField._id!
                 },
                 body: values.fieldName,
-                //@ts-ignore
                 headers: {"Content-Type": "text/plain"}
             }, {
                 onSuccess: () => {
@@ -148,27 +148,27 @@ export default function ObservationFieldsForm(props: ObservationFieldsProps) : R
                 theField: TargetField | Polygon | Ellipse
             }
 
-            let baseField : Field = {
+            const baseField : Field = {
                 name: values.fieldName,
                 "@type": values.fieldType
             }
 
             //This code may need some refactoring
-            let targetField = baseField as TargetField;
+            const targetField = baseField as TargetField;
 
-            let fieldToPass : FieldToPass = {
+            const fieldToPass : FieldToPass = {
                 theField: targetField
             }
 
             switch (values.fieldType) {
                 case 'proposal:Polygon': {
-                    let polygonField = baseField as Polygon;
+                    const polygonField = baseField as Polygon;
                     polygonField.points = values.polygonPoints;
                     fieldToPass.theField = polygonField;
                     break;
                 }
                 case 'proposal:Ellipse': {
-                    let ellipseField = baseField as Ellipse;
+                    const ellipseField = baseField as Ellipse;
                     ellipseField.semiMajor = values.ellipseSemiMajor;
                     ellipseField.semiMinor = values.ellipseSemiMinor;
                     ellipseField.pAMajor = values.ellipsePAMajor;

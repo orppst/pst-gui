@@ -20,6 +20,10 @@ export type ProposalToolContext = {
      * Query params to inject in the fetcher
      */
     queryParams?: {};
+    /**
+     * body
+     */
+    body?: any
   };
   queryOptions: {
     /**
