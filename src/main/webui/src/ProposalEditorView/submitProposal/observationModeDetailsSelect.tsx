@@ -58,59 +58,60 @@ function ObservationModeDetailsSelect(p: {
     const [siftedModes, setSiftedModes] = useState<ObservingMode[]>([])
 
 
-    const siftModes = (sifterObject: SifterObject) => {
-        if (!modes.data) {
-            return []
-        }
-        // when a list of objects is returned the first distinct object of the list
-        // is returned as that object. Subsequent objects that
-        // are the same DB entity as the first are returned as references,
-        // specifically their DB id. Notice this applies recursively to sub-objects
-        // of objects, though in this case Instruments and Backends, which are sub-objects of
-        // ObservingModes, only contain fundamental types.
-        return (
-            modes.data.filter(mode => {
-                return (
-                    sifterObject.instrumentTerm > 0 ?
-                        mode.instrument === sifterObject.instrumentTerm ||
-                        mode.instrument?._id === sifterObject.instrumentTerm
-                        : true
-                )
-            }).filter(mode => {
-                return(
-                    sifterObject.backendTerm > 0 ?
-                        mode.backend === sifterObject.backendTerm ||
-                        mode.backend?._id === sifterObject.backendTerm
-                        : true
-                )
-            }).filter(mode => {
-                return(
-                    sifterObject.filterTerm.length > 0 ?
-                        mode.filter?.name?.toLowerCase().includes(sifterObject.filterTerm.toLowerCase())
-                        : true
-                )
-            })
-        )
-
-    }
-
     useEffect(()=>{
         if (modes.status === 'success') {
             setSiftedModes(modes.data)
         }
-    }, [modes.status])
+    }, [modes.data, modes.status])
 
     //set sifted modes depending on changes to the 'sifters'
     useEffect(() => {
+        const siftModes = (sifterObject: SifterObject) => {
+            if (!modes.data) {
+                return []
+            }
+            // when a list of objects is returned the first distinct object of the list
+            // is returned as that object. Subsequent objects that
+            // are the same DB entity as the first are returned as references,
+            // specifically their DB id. Notice this applies recursively to sub-objects
+            // of objects, though in this case Instruments and Backends, which are sub-objects of
+            // ObservingModes, only contain fundamental types.
+            return (
+                modes.data.filter(mode => {
+                    return (
+                        sifterObject.instrumentTerm > 0 ?
+                            mode.instrument === sifterObject.instrumentTerm ||
+                            mode.instrument?._id === sifterObject.instrumentTerm
+                            : true
+                    )
+                }).filter(mode => {
+                    return(
+                        sifterObject.backendTerm > 0 ?
+                            mode.backend === sifterObject.backendTerm ||
+                            mode.backend?._id === sifterObject.backendTerm
+                            : true
+                    )
+                }).filter(mode => {
+                    return(
+                        sifterObject.filterTerm.length > 0 ?
+                            mode.filter?.name?.toLowerCase().includes(sifterObject.filterTerm.toLowerCase())
+                            : true
+                    )
+                })
+            )
+
+        }
+
+
         setSiftedModes(siftModes(sifters))
-    }, [sifters])
+    }, [modes.data, sifters])
 
     //this sets the observing modes available for individual select inputs of the observation table
     useEffect(() => {
         p.setObservingModes(siftedModes.map(mode =>(
             {value: String(mode._id), label: mode.name!}
         )))
-    }, [siftedModes]);
+    }, [p, siftedModes]);
 
     if (modes.isLoading) {
         return (

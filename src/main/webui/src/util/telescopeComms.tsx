@@ -15,6 +15,9 @@ export type TelescopeNameError = Fetcher.ErrorWrapper<undefined>;
 // the error format for telescope error response for data.
 export type TelescopeDataError = Fetcher.ErrorWrapper<undefined>;
 
+// the error format for telescope error response for data.
+export type TelescopeTimingError = Fetcher.ErrorWrapper<undefined>;
+
 // the error format for telescope error response for load data.
 export type TelescopeLoadError = Fetcher.ErrorWrapper<undefined>;
 
@@ -23,6 +26,9 @@ export type TelescopeSaveError = Fetcher.ErrorWrapper<undefined>;
 
 // the error format for telescope error response for verify data.
 export type TelescopeVerifyError = Fetcher.ErrorWrapper<undefined>;
+
+// the error format for telescope copy response for verify data.
+export type TelescopeCopyError = Fetcher.ErrorWrapper<undefined>;
 
 // the enum type of the forms of input.
 export enum Type {LIST = "LIST", TEXT = "TEXT", BOOLEAN = "BOOLEAN" }
@@ -86,6 +92,14 @@ export type OpticalTelescopeProposal = {
     proposalID: string
 }
 
+// the type for cloning
+export type OpticalTelescopeCopyData = {
+    proposalID: string,
+    cloneID: string,
+    obsIds: number[],
+    cloneObsIDs: number[],
+}
+
 // the type of data returned from a load request
 export type SavedTelescopeData = {
     primaryKey: {
@@ -104,11 +118,12 @@ export type SavedTelescopeData = {
 /**
  * bring about a call to get telescope names.
  *
- * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<ReceivedTelescopeNames>} the resulting data when received.
  */
 export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
-    proposalToolFetch<ReceivedTelescopeNames,
+    proposalToolFetch<
+        ReceivedTelescopeNames,
         TelescopeNameError,
         undefined,
         NonNullable<unknown>,
@@ -121,8 +136,8 @@ export const fetchOpticalTelescopeResourceGetNames = (signal?: AbortSignal) =>
 /**
  * bring about a call to get telescope data.
  *
- * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<ReceivedTelescopeNames>} the resulting data when received.
  */
 export const fetchOpticalTelescopeResourceGetTelescopeData =
         (signal?: AbortSignal) =>
@@ -141,9 +156,9 @@ export const fetchOpticalTelescopeResourceGetTelescopeData =
  * bring about a call to verify if there's telescope data for a given
  * observation.
  *
- * @param data: the proposal and observation id to verify.
- * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<boolean>}: the resulting verification. true stating a
+ * @param {LoadTelescopeState} data the proposal and observation id to verify.
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<boolean>} the resulting verification. true stating a
  * telescope data exists for the given observation.
  */
 export const fetchOpticalTelescopeResourceGetVerification =
@@ -163,8 +178,8 @@ export const fetchOpticalTelescopeResourceGetVerification =
  * bring about a call to verify if there's telescope data for a given
  * observation.
  *
- * @param variables: the proposal and observation id to verify.
- * @param  options: things that shouldn't be changed.
+ * @param {LoadTelescopeState} variables the proposal and observation id to verify.
+ * @param  options things that shouldn't be changed.
  * @return the resulting verification. true stating a
  * telescope data exists for the given observation.
  */
@@ -206,10 +221,10 @@ export const useOpticalTelescopeResourceGetVerification = (
  * bring about a call to verify if there's telescope data for a given
  * observation.
  *
- * @param data: the proposal and observation id to verify.
- * @param {AbortSignal} signal: the signal for failure.
- * @return the resulting verification. true stating a
- * telescope data exists for the given observation.
+ * @param {OpticalTelescopeProposal} data the proposal and observation id to
+ * verify.
+ * @param {AbortSignal} signal the signal for failure.
+ * @return the resulting observation ids that contain optical data.
  */
 export const fetchOpticalTelescopeResourceGetProposalObservationIds =
     (data: OpticalTelescopeProposal, signal?: AbortSignal) =>
@@ -228,10 +243,9 @@ export const fetchOpticalTelescopeResourceGetProposalObservationIds =
  * bring about a call to verify if there's telescope data for a given
  * observation.
  *
- * @param variables: the proposal and observation id to verify.
- * @param  options: things that shouldn't be changed.
- * @return the resulting verification. true stating a
- * telescope data exists for the given observation.
+ * @param {OpticalTelescopeProposal} variables the proposal and observation id to verify.
+ * @param  options things that shouldn't be changed.
+ * @return the resulting observation ids that contain optical data.
  */
 export const useOpticalTelescopeResourceGetProposalObservationIds = (
     variables: OpticalTelescopeProposal,
@@ -271,9 +285,9 @@ export const useOpticalTelescopeResourceGetProposalObservationIds = (
 /**
  * bring about a call to get observation telescope data.
  *
- * @param {LoadTelescopeState} data: the data to load telescope data from.
- * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<ReceivedTelescopeNames>}: the resulting data when received.
+ * @param {LoadTelescopeState} data the data to load telescope data from.
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<ReceivedTelescopeNames>} the resulting data when received.
  */
 export const fetchOpticalTelescopeResourceLoadTelescopeData = (
     data: LoadTelescopeState, signal?: AbortSignal) =>
@@ -289,8 +303,10 @@ export const fetchOpticalTelescopeResourceLoadTelescopeData = (
     });
 
 /**
- * mutation function wrapping around the sending of new state to the backend for telescopes.
- * @param options: the saved data.
+ * mutation function wrapping around the sending of new state to the backend
+ * for telescopes.
+ *
+ * @param options the saved data.
  * @return mutation promise holding onSuccess, OnError.
  */
 export const useOpticalTelescopeResourceSaveTelescopeData = (
@@ -319,8 +335,8 @@ export const useOpticalTelescopeResourceSaveTelescopeData = (
 /**
  * bring about a call to save observation telescope data.
  *
- * @param {SavedTelescopeData} data: the data to save.
- * @param {AbortSignal} signal: the signal for failure.
+ * @param {SavedTelescopeData} data the data to save.
+ * @param {AbortSignal} signal the signal for failure.
  */
 export const fetchOpticalTelescopeResourceSaveTelescopeData = (
     data: SavedTelescopeData, signal?: AbortSignal) =>
@@ -339,7 +355,8 @@ export const fetchOpticalTelescopeResourceSaveTelescopeData = (
 /**
  * mutation function wrapping around the sending of delete request
  * to the backend for a given observation.
- * @param options: the proposal id and observation id for deletion.
+ *
+ * @param options the proposal id and observation id for deletion.
  * @return mutation promise holding onSuccess, OnError.
  */
 export const useOpticalTelescopeResourceDeleteObservationTelescopeData = (
@@ -368,8 +385,8 @@ export const useOpticalTelescopeResourceDeleteObservationTelescopeData = (
 /**
  * bring about a call to delete observation telescope data.
  *
- * @param {LoadTelescopeState} data: the proposal and observation id for deletion.
- * @param {AbortSignal} signal: the signal for failure.
+ * @param {LoadTelescopeState} data the proposal and observation id for deletion.
+ * @param {AbortSignal} signal the signal for failure.
  */
 export const fetchOpticalTelescopeResourceDeleteObservationTelescopeData = (
     data: LoadTelescopeState, signal?: AbortSignal) =>
@@ -388,7 +405,8 @@ export const fetchOpticalTelescopeResourceDeleteObservationTelescopeData = (
 /**
  * mutation function wrapping around the sending of delete request
  * to the backend for a given proposal.
- * @param options: the proposal id.
+ *
+ * @param options the proposal id.
  * @return mutation promise holding onSuccess, OnError.
  */
 export const useOpticalTelescopeResourceDeleteProposalTelescopeData = (
@@ -417,8 +435,8 @@ export const useOpticalTelescopeResourceDeleteProposalTelescopeData = (
 /**
  * bring about a call to save observation telescope data.
  *
- * @param {LoadTelescopeState} data: the proposal id for deletion.
- * @param {AbortSignal} signal: the signal for failure.
+ * @param {LoadTelescopeState} data the proposal id for deletion.
+ * @param {AbortSignal} signal the signal for failure.
  */
 export const fetchOpticalTelescopeResourceDeleteProposalTelescopeData = (
     data: OpticalTelescopeProposal, signal?: AbortSignal) =>
@@ -437,9 +455,9 @@ export const fetchOpticalTelescopeResourceDeleteProposalTelescopeData = (
 /**
  * bring about a call to get observation optical table data.
  *
- * @param {OpticalTelescopeProposal} data: the data to get the optical table.
- * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<TelescopeTableState[]>}: the resulting data when received.
+ * @param {OpticalTelescopeProposal} data the data to get the optical table.
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<TelescopeTableState[]>} the resulting data when received.
  */
 export const fetchOpticalTelescopeTableData = (
     data: OpticalTelescopeProposal, signal?: AbortSignal) =>
@@ -456,8 +474,8 @@ export const fetchOpticalTelescopeTableData = (
 
 /**
  * mutation function wrapping around data extraction for optical table.
- * @param proposalData: the proposal id.
- * @param options: the saved data.
+ * @param {OpticalTelescopeProposal} proposalData the proposal id.
+ * @param options the saved data.
  * @return mutation promise holding onSuccess, OnError.
  */
 export const useOpticalTelescopeTableData = (
@@ -507,9 +525,9 @@ export const useOpticalTelescopeTableData = (
 /**
  * bring about a call to get observation optical table data.
  *
- * @param {OpticalTelescopeProposal} data: the data to get the optical table.
- * @param {AbortSignal} signal: the signal for failure.
- * @return {Promise<TelescopeTableState[]>}: the resulting data when received.
+ * @param {OpticalTelescopeProposal} data the data to get the optical table.
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<TelescopeTableState[]>} the resulting data when received.
  */
 export const fetchOpticalOverviewTelescopeTableData = (
     data: OpticalTelescopeProposal, signal?: AbortSignal) =>
@@ -526,8 +544,8 @@ export const fetchOpticalOverviewTelescopeTableData = (
 
 /**
  * mutation function wrapping around data extraction for optical overview table.
- * @param proposalData: the proposal id.
- * @param options: the saved data.
+ * @param {OpticalTelescopeProposal} proposalData the proposal id.
+ * @param options the saved data.
  * @return mutation promise holding onSuccess, OnError.
  */
 export const useOpticalOverviewTelescopeTableData = (
@@ -561,6 +579,127 @@ export const useOpticalOverviewTelescopeTableData = (
         OpticalOverviewTableDataBackendResponse, // Raw data from fetch
         TelescopeLoadError,
         Map<string, TelescopeOverviewTableState> // Transformed data for the component
+    >({
+        queryKey,
+        queryFn,
+        select: (backendResponse) => {
+            // converts weird object into real map for easier processing later
+            // on.
+            return new Map(Object.entries(backendResponse));
+        },
+        ...options,
+        ...queryOptions,
+    });
+};
+
+
+/**
+ * bring about a call to get observation optical table data.
+ *
+ * @param {OpticalTelescopeProposal} data the data to get the optical table.
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<TelescopeTableState[]>} the resulting data when received.
+ */
+export const fetchOpticalCopyProposal = (
+    data: OpticalTelescopeCopyData,
+    signal?: AbortSignal
+): Promise<boolean> => // Explicitly return Promise<boolean>
+    proposalToolFetch<
+        boolean,
+        TelescopeCopyError,
+        OpticalTelescopeCopyData,
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        NonNullable<unknown>
+    >({
+        url: "/pst/api/opticalTelescopes/copyProposal",
+        method: "post",
+        body: data,
+        signal: signal,
+    });
+
+/**
+ * mutation function wrapping around data extraction for optical overview table.
+ * @param options the saved data.
+ * @return mutation promise holding onSuccess, OnError.
+ */
+export const useMutationOpticalCopyProposal = (
+    options?: Omit<
+        reactQuery.UseMutationOptions<
+            boolean,
+            TelescopeCopyError,
+            OpticalTelescopeCopyData
+        >,
+        "mutationFn"
+    >,
+) => {
+    const { fetcherOptions } = useProposalToolContext();
+    return reactQuery.useMutation<
+        boolean,
+        TelescopeCopyError,
+        OpticalTelescopeCopyData
+    >({
+        mutationFn: (variables: OpticalTelescopeCopyData) =>
+            fetchOpticalCopyProposal({
+                ...fetcherOptions,
+                ...variables,
+            }),
+        ...options,
+    });
+};
+
+/**
+ * bring about a call to get observation optical table data.
+ *
+ * @param {AbortSignal} signal the signal for failure.
+ * @return {Promise<TelescopeTableState[]>} the resulting data when received.
+ */
+export const fetchOpticalOverviewTelescopeTimingData = (
+    signal?: AbortSignal) =>
+    proposalToolFetch<
+        Map<string, number>,
+        TelescopeTimingError,
+        undefined,
+        NonNullable<unknown>,
+        NonNullable<unknown>,
+        NonNullable<unknown>>({
+        url: "/pst/api/opticalTelescopes/nightRelationships",
+        method: "get", signal: signal
+    });
+
+/**
+ * mutation function wrapping around data extraction for optical overview table.
+ * @param options the saved data.
+ * @return mutation promise holding onSuccess, OnError.
+ */
+export const useOpticalOverviewTelescopeTimingData = (
+    options?: Omit<
+        reactQuery.UseQueryOptions<
+            Map<string, number>,
+            TelescopeTimingError,
+            undefined,
+            reactQuery.QueryKey
+        >,
+        "queryKey" | "queryFn" | "select" // Add "select" to the Omit
+    >
+) => {
+    const {queryOptions, queryKeyFn } = useProposalToolContext(options);
+
+    const queryKey = queryKeyFn({
+        path: "/pst/api/opticalTelescopes/nightRelationships",
+        operationId: "nightRelationships",
+        variables: {},
+    });
+
+    const queryFn = ({ signal }: { signal?: AbortSignal }) =>
+        fetchOpticalOverviewTelescopeTimingData(
+            signal
+        );
+
+    return reactQuery.useQuery<
+        Map<string, number>, // Raw data from fetch
+        TelescopeTimingError,
+        Map<string, number> // Transformed data for the component
     >({
         queryKey,
         queryFn,

@@ -33,8 +33,8 @@ import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {
-    TelescopeOverviewTableState,
-    useOpticalOverviewTelescopeTableData,
+    TelescopeOverviewTableState, useMutationOpticalCopyProposal,
+    useOpticalOverviewTelescopeTableData, useOpticalOverviewTelescopeTimingData,
     useOpticalTelescopeResourceDeleteProposalTelescopeData,
     useOpticalTelescopeTableData
 } from "../../util/telescopeComms";
@@ -322,6 +322,10 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const deleteProposalOpticalTelescopeMutation =
         useOpticalTelescopeResourceDeleteProposalTelescopeData();
+
+    // mutation for the optical side. this allows us to bypass the 2 database
+    // transaction issue.
+    const submitOpticalProposalMutation = useMutationOpticalCopyProposal()
 
     const {data: supportingDocs} =
         useSupportingDocumentResourceGetSupportingDocuments({
@@ -638,20 +642,23 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         });
 
         // create a string of the first target names
-        let targetNames = targetObjs[0].sourceName!;
-        let targetIndex = 0;
+        if (targetObjs.length != 0) {
+            let targetNames = targetObjs[0].sourceName!;
+            let targetIndex = 0;
 
-        while(++targetIndex < 3
-        && targetIndex < targetObjs.length) {
-            targetNames += ", " + targetObjs[targetIndex].sourceName;
+            while (++targetIndex < 3
+            && targetIndex < targetObjs.length) {
+                targetNames += ", " + targetObjs[targetIndex].sourceName;
+            }
+
+            const remaining = targetObjs.length - targetIndex;
+
+            if (remaining > 0) {
+                targetNames += ", and " + remaining + " more";
+            }
+            return targetNames;
         }
-
-        const remaining =  targetObjs.length - targetIndex;
-
-        if(remaining > 0) {
-            targetNames += ", and " + remaining + " more";
-        }
-        return targetNames;
+        return "";
     }
 
     /**
@@ -819,12 +826,26 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             proposalID: selectedProposalCode
         });
 
+        const {
+            data: telescopeTiming,
+            error: telescopeTimingError,
+            isLoading: telescopeTimingLoading,
+        } = useOpticalOverviewTelescopeTimingData();
+
         // handle any errors
         if(opticalError) {
             return (
                 <Container>
                     Unable to load optical data:
                     {getErrorMessage(opticalError)}
+                </Container>
+            )
+        }
+        if(telescopeTimingError) {
+            return (
+                <Container>
+                    Unable to load telescope timing data:
+                    {getErrorMessage(telescopeTimingError)}
                 </Container>
             )
         }
@@ -841,23 +862,56 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             )
         }
 
+        if(telescopeTimingLoading) {
+            return (
+                <PanelFrame>
+                    <Space h={"xs"}/>
+                    <Group justify={'flex-end'}>
+                        `Loading...`
+                    </Group>
+                </PanelFrame>
+            )
+        }
+
+        if(proposalsIsLoading) {
+            return (
+                <PanelFrame>
+                    <Space h={"xs"}/>
+                    <Group justify={'flex-end'}>
+                        `Loading...`
+                    </Group>
+                </PanelFrame>
+            )
+        }
+
         return (
             <>
                 <h3>Telescopes</h3>
                 {buildSummaryAccordion(
-                    buildSummaryData(opticalData!, proposalsData!))}
+                    buildSummaryData(opticalData!, proposalsData!),
+                    telescopeTiming!)}
             </>
         );
     }
 
+    /**
+     * builds the accordion label for the telescope.
+     *
+     * @param {string} title the telescope title.
+     * @param {TelescopeSummaryState[]} arrayData the observations for the telescope.
+     * @param {Map<string, number>} telescopeTiming the map between telescope and hours to nights.
+     * @constructor
+     */
     function TelescopeSummaryAccordionLabel(
-            title: string, arrayData: TelescopeSummaryState[]): ReactElement {
+            title: string, arrayData: TelescopeSummaryState[],
+            telescopeTiming: Map<string, number>): ReactElement {
         // determine total time.
         let time = 0;
         const conditions: string[] = [];
         for (const item of arrayData) {
             if (item.telescopeTimeUnit !== "Hours") {
-                time += Number(item.telescopeTimeValue) * 8;
+                time += Number(item.telescopeTimeValue) *
+                    telescopeTiming.get(title)!;
             } else {
                 time += Number(item.telescopeTimeValue);
             }
@@ -890,7 +944,15 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         )
     }
 
-    function buildSummaryAccordion(data: Map<string, TelescopeSummaryState[]>):
+    /**
+     * builds the telescope sumamry accordion.
+     *
+     * @param {Map<string, TelescopeSummaryState[]>} data the telescope data.
+     * @param {Map<string, number>} telescopeTiming the timing between night and hour.
+     */
+    function buildSummaryAccordion(
+            data: Map<string, TelescopeSummaryState[]>,
+            telescopeTiming: Map<string, number>):
             ReactElement {
         return (
             <Accordion>
@@ -899,7 +961,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                         <Accordion.Item key={key} value={index.toString()}>
                             <Accordion.Control>
                                 {TelescopeSummaryAccordionLabel(
-                                    key, arrayData)}
+                                    key, arrayData, telescopeTiming)}
                             </Accordion.Control>
                             <Accordion.Panel>
                                 <Group>
@@ -908,7 +970,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                                         <Table.Tbody>
                                             {arrayData.map((summaryItem, itemIndex) => (
                                                 OpticalBasicSummaryRow(summaryItem, itemIndex.toString())
-                                                ))}
+                                             ))}
                                         </Table.Tbody>
                                     </Table>
                                 </Group>
@@ -977,13 +1039,32 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         cloneProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         }, {
-            onSuccess: (data) => {
-                queryClient.invalidateQueries({
-                    queryKey: ['pst', 'api', 'proposals']
-                }).then(() =>
-                    notifySuccess("Clone Proposal Successful",
-                        proposalsData?.title + " copied to " + data.title)
-                );
+            onSuccess: (data: Schemas.ObservingProposal) => {
+                const proposalObsIDs: number [] =
+                    proposalsData!.observations!.map<number>((obs) => obs._id!);
+                const submittedProposalObsIDs = data.observations!.map<number>(
+                    (obs) => obs._id!);
+
+                if (proposalObsIDs !== undefined &&
+                        submittedProposalObsIDs !== undefined) {
+                    submitOpticalProposalMutation.mutate({
+                        proposalID: selectedProposalCode!,
+                        obsIds: proposalObsIDs,
+                        cloneID: data!._id!.toString(),
+                        cloneObsIDs: submittedProposalObsIDs
+                    }, {
+                    onSuccess: () => {
+                        queryClient.invalidateQueries({
+                            queryKey: ['pst', 'api', 'proposals']
+                        }).then(() =>
+                            notifySuccess("Clone Proposal Successful",
+                                proposalsData?.title + " copied to " + data.title)
+                        );
+                    },
+                    onError: (error) => {
+                        notifyError("Clone Proposal Failed", getErrorMessage(error))
+                    }});
+                }
             },
             onError: (error) =>
                 notifyError("Clone Proposal Failed", getErrorMessage(error))

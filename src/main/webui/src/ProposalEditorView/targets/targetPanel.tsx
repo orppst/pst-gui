@@ -4,7 +4,7 @@ import {
 } from 'src/generated/proposalToolComponents.ts';
 
 import {useNavigate, useParams} from "react-router-dom";
-import {Box, Group, Loader, Stack} from '@mantine/core';
+import {Box, Group, Loader, Stack, Text} from '@mantine/core';
 import { ReactElement } from 'react';
 import { TargetTable } from './TargetTable.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
@@ -12,6 +12,7 @@ import {ContextualHelpButton} from "src/commonButtons/contextualHelp.tsx";
 import AddButton from "../../commonButtons/add.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import AddListOfTargets from "./addListOfTargets.tsx";
 
 /**
  * Renders the target panel containing an add target button
@@ -65,20 +66,41 @@ export function TargetPanel(): ReactElement {
         <PanelFrame>
             <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Targets"} />
             <ContextualHelpButton  messageId="MaintTargList" />
+            {
+                targets.data?.length! > 10 &&
+                <Group justify={"center"}>
+                    <AddButton
+                        label={"Add One Target"}
+                        toolTipLabel={"Add a single target"}
+                        onClick={() => navigate("new")}
+                    />
+                    <AddListOfTargets
+                        proposalCode={Number(selectedProposalCode)}
+                    />
+                </Group>
+            }
             <Stack>
                 {targets.data?.length === 0?
-                    <div>Please add your targets</div> :
-                    <TargetTable isLoading={targets.isLoading}
-                                 data={targets.data}
-                                 selectedProposalCode={selectedProposalCode}
-                                 boundTargets={boundTargets}
-                                 showButtons={true}
-                                 selectedTargets={undefined}/>
+                    <Text>No targets have been added</Text> :
+                    <Stack>
+                        <Text>Total targets added: {targets.data?.length}</Text>
+                        <TargetTable isLoading={targets.isLoading}
+                                     data={targets.data}
+                                     selectedProposalCode={selectedProposalCode}
+                                     boundTargets={boundTargets}
+                                     showButtons={true}
+                                     selectedTargets={undefined}
+                        />
+                    </Stack>
                 }
-                <Group justify={"flex-end"}>
+                <Group justify={"center"}>
                     <AddButton
-                        toolTipLabel={"Add a target"}
+                        label={"Add One Target"}
+                        toolTipLabel={"Add a single target"}
                         onClick={() => navigate("new")}
+                    />
+                    <AddListOfTargets
+                        proposalCode={Number(selectedProposalCode)}
                     />
                 </Group>
             </Stack>

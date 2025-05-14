@@ -63,17 +63,31 @@ function AddInvestigatorPanel(): ReactElement {
 
     //Get all investigators tied to this proposal
     const currentInvestigators
-        = useInvestigatorResourceGetInvestigatorsAsObjects({pathParams: {proposalCode: Number(selectedProposalCode)}});
+        = useInvestigatorResourceGetInvestigatorsAsObjects(
+            {pathParams: {proposalCode: Number(selectedProposalCode)}});
+
+    const addInvestigatorMutation =
+        useInvestigatorResourceAddPersonAsInvestigator({
+            onSuccess: () => {
+                queryClient.invalidateQueries().finally(() =>
+                    navigate("../", {relative:"path"}));
+            },
+            onError: (error) => notifyError(
+                "Add investigator error", getErrorMessage(error))
+
+    });
 /*
     //Get details of the currently selected person
     let selectedPerson = usePersonResourceGetPerson(
         {pathParams:{id: form.values.selectedInvestigator}})
 */
     useEffect(() => {
-        if(allPeople.status === 'success' && currentInvestigators.status === 'success') {
+        if(allPeople.status === 'success' &&
+                currentInvestigators.status === 'success') {
             setSearchData([]);
             allPeople.data?.map((item) => {
-                if(!currentInvestigators.data.some(i => i.person?._id == item.dbid))
+                if(!currentInvestigators.data.some(
+                        i => i.person?._id == item.dbid))
                     setSearchData((current) => [...current, {
                         value: String(item.dbid), label: item.name}] as ComboboxData)
             })
@@ -91,19 +105,12 @@ function AddInvestigatorPanel(): ReactElement {
     if(currentInvestigators.error) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(currentInvestigators.error, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(
+                    currentInvestigators.error, null, JSON_SPACES)}
+                </pre>
             </PanelFrame>
         );
     }
-
-    const addInvestigatorMutation = useInvestigatorResourceAddPersonAsInvestigator({
-        onSuccess: () => {
-            queryClient.invalidateQueries().finally(() =>
-                navigate("../", {relative:"path"}));
-        },
-        onError: (error) => notifyError("Add investigator error", getErrorMessage(error))
-
-    });
 
     const handleAdd = form.onSubmit((val) => {
         fetchPersonResourceGetPerson(
@@ -112,7 +119,8 @@ function AddInvestigatorPanel(): ReactElement {
                 if (selectedPerson != undefined) {
                     addInvestigatorMutation.mutate(
                         {
-                            pathParams: {proposalCode: Number(selectedProposalCode)},
+                            pathParams: {
+                                proposalCode: Number(selectedProposalCode)},
                             body: {
                                 type: val.type,
                                 forPhD: val.forPhD,
@@ -120,10 +128,14 @@ function AddInvestigatorPanel(): ReactElement {
                             }
                         })
                 } else {
-                    notifyError("Add investigator error", "Selected person is empty??");
+                    notifyError(
+                        "Add investigator error",
+                        "Selected person is empty??");
                 }
             })
-            .catch((error) => notifyError("Add investigator error", getErrorMessage(error)))
+            .catch((error) => notifyError(
+                "Add investigator error",
+                getErrorMessage(error)))
     });
 
     function handleCancel(event: SyntheticEvent) {
@@ -133,7 +145,8 @@ function AddInvestigatorPanel(): ReactElement {
 
     return (
             <PanelFrame>
-                <EditorPanelHeader proposalCode={Number(selectedProposalCode)} panelHeading={"Add an investigator"} />
+                <EditorPanelHeader proposalCode={Number(selectedProposalCode)}
+                                   panelHeading={"Add an investigator"} />
                     <ContextualHelpButton  messageId="MaintInvestAdd" />
                 <form onSubmit={handleAdd}>
                     <Stack>
