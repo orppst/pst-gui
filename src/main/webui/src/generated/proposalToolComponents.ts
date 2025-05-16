@@ -7944,6 +7944,7 @@ export type ProposalResourceExportProposalPathParams = {
    * @format int64
    */
   proposalCode: number;
+  investigatorsIncluded: boolean;
 };
 
 export type ProposalResourceExportProposalError =
