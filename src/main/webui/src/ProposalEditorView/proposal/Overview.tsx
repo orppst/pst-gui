@@ -316,6 +316,19 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
     const polarisMode = useContext(ProposalContext).mode;
 
+    const cloneProposalMutation =
+        useProposalResourceCloneObservingProposal();
+
+    const deleteProposalMutation =
+        useProposalResourceDeleteObservingProposal()
+
+    const deleteProposalOpticalTelescopeMutation =
+        useOpticalTelescopeResourceDeleteProposalTelescopeData();
+
+    // mutation for the optical side. this allows us to bypass the 2 database
+    // transaction issue.
+    const submitOpticalProposalMutation = useMutationOpticalCopyProposal()
+
     return OverviewPanelInternal(
         {forceUpdate: props.forceUpdate,
          selectedProposalCode: selectedProposalCode,
@@ -325,7 +338,12 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
          authToken: authToken,
          navigate: navigate,
          queryClient: queryClient,
-         polarisMode: polarisMode });
+         polarisMode: polarisMode,
+         cloneProposalMutation: cloneProposalMutation,
+         deleteProposalMutation: deleteProposalMutation,
+         deleteProposalOpticalTelescopeMutation: deleteProposalOpticalTelescopeMutation,
+         submitOpticalProposalMutation:submitOpticalProposalMutation
+        });
 }
 
 /**
@@ -342,23 +360,17 @@ export function OverviewPanelInternal(props: {
         authToken: string,
         navigate: NavigateFunction,
         queryClient: QueryClient,
-        polarisMode: POLARIS_MODES}): ReactElement {
+        polarisMode: POLARIS_MODES,
+        cloneProposalMutation: any,
+        deleteProposalMutation: any,
+        deleteProposalOpticalTelescopeMutation: any,
+        submitOpticalProposalMutation: any}): ReactElement {
 
     const {forceUpdate, selectedProposalCode, printRef, showInvestigators,
-        expandAccordions, authToken, navigate, queryClient, polarisMode} = props;
-
-    const cloneProposalMutation =
-        useProposalResourceCloneObservingProposal();
-
-    const deleteProposalMutation =
-        useProposalResourceDeleteObservingProposal()
-
-    const deleteProposalOpticalTelescopeMutation =
-        useOpticalTelescopeResourceDeleteProposalTelescopeData();
-
-    // mutation for the optical side. this allows us to bypass the 2 database
-    // transaction issue.
-    const submitOpticalProposalMutation = useMutationOpticalCopyProposal()
+        expandAccordions, authToken, navigate, queryClient, polarisMode,
+        cloneProposalMutation, deleteProposalMutation,
+        deleteProposalOpticalTelescopeMutation,
+        submitOpticalProposalMutation} = props;
 
     const {data: supportingDocs} =
         useSupportingDocumentResourceGetSupportingDocuments({

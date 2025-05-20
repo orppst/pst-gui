@@ -98,15 +98,17 @@ export const populateSupportingDocuments = (
   * @param authToken the authentication token
  * @param selectedProposalCode the proposal code
  * @param zip the zip.
+ * @param includeInvestigators flag for adding investigators or not.
  */
 export function extractJSON(
-        authToken: string, selectedProposalCode: string, zip: JSZip):
+        authToken: string, selectedProposalCode: string, zip: JSZip,
+        includeInvestigators: boolean):
         Promise<void> {
     return fetchProposalResourceExportProposal({
         headers: {authorization: `Bearer ${authToken}`},
         pathParams: {
             proposalCode: Number(selectedProposalCode),
-            investigatorsIncluded: true
+            investigatorsIncluded: includeInvestigators
         }
     }).then((blob) => {
         zip.file(JSON_FILE_NAME, blob!)
@@ -180,7 +182,7 @@ async function downloadProposal(
     );
 
     // get proposal json.
-    promises.push(extractJSON(authToken, selectedProposalCode, zip));
+    promises.push(extractJSON(authToken, selectedProposalCode, zip, true));
 
     // process optical data.
     await extractTelescope(selectedProposalCode, promises, zip);

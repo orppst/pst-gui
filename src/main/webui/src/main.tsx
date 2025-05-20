@@ -13,7 +13,7 @@ import CustomModal from './util/Modal.tsx';
 // this 'theme' object is merged with the 'theme' property of MantineProvider
 // see https://mantine.dev/theming/theme-object/
 
-const theme = createTheme({
+export const theme = createTheme({
     respectReducedMotion: false,
     fontFamily: 'Open Sans, sans-serif',
     primaryColor: 'yellow',

@@ -169,7 +169,7 @@ export default function CycleOverviewPanel() : ReactElement {
                 if (cycleSynopsis.data?.title != null) {
                     downloadProposals(
                         data, forceUpdate, authToken, cycleSynopsis.data?.title,
-                        printRef, navigate, queryClient, polarisMode);
+                        navigate, queryClient, polarisMode);
                 }
             }
         )

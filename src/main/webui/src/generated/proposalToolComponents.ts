@@ -7944,6 +7944,9 @@ export type ProposalResourceExportProposalPathParams = {
    * @format int64
    */
   proposalCode: number;
+  /**
+   * @format boolean
+   */
   investigatorsIncluded: boolean;
 };
 
@@ -7966,7 +7969,7 @@ export const fetchProposalResourceExportProposal = (
     {},
     ProposalResourceExportProposalPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/export",
+    url: "/pst/api/proposals/{proposalCode}/{investigatorsIncluded}/export",
     method: "get",
     ...variables,
     signal,
