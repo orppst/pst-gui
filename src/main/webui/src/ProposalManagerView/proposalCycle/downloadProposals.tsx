@@ -58,7 +58,7 @@ const generateHTML = async (
                         user: {},
                         getToken: () => authToken,
                         authenticated: true,
-                        selectedProposalCode: 0,
+                        selectedProposalCode: Number(proposalData),
                         apiUrl: "",
                         mode: POLARIS_MODES.OPTICAL
                     }}>
