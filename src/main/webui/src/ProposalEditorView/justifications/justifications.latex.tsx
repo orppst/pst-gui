@@ -4,7 +4,7 @@ import {
     Fieldset,
     FileButton,
     Grid, Group, Loader,
-    ScrollArea,
+    ScrollArea, Space,
     Stack,
     Table,
     Text,
@@ -13,7 +13,9 @@ import {
 import UploadButton from "../../commonButtons/upload.tsx";
 import {
     fetchJustificationsResourceDownloadLatexPdf,
-    useJustificationsResourceAddLatexResourceFile, useJustificationsResourceCheckForPdf,
+    useJustificationsResourceAddLatexResourceFile, useJustificationsResourceAddMainTextFile,
+    useJustificationsResourceCheckForMainFile,
+    useJustificationsResourceCheckForPdf,
     useJustificationsResourceCreatePDFLaTex,
     useJustificationsResourceGetLatexResourceFiles,
     useJustificationsResourceRemoveLatexResourceFile,
@@ -47,6 +49,9 @@ function JustificationLatex( p: JustificationProps ) : ReactElement {
     const [loading, setLoading] = useState(false)
 
 
+    const addMainFile =
+        useJustificationsResourceAddMainTextFile();
+
     const addResourceFile =
         useJustificationsResourceAddLatexResourceFile();
 
@@ -66,19 +71,23 @@ function JustificationLatex( p: JustificationProps ) : ReactElement {
         pathParams: {proposalCode: Number(selectedProposalCode), which: p.which}
     })
 
+    const mainFileExists = useJustificationsResourceCheckForMainFile({
+        pathParams: {proposalCode: Number(selectedProposalCode), which: p.which}
+    })
+
     // successful (re-)compilation OR the PDF already exists from a previous successful compilation
     useEffect(() => {
         if (pdfOutputExists.status === 'success') {
             if (latexStatus.includes('Latex compilation successful') ||
-                pdfOutputExists.data as unknown as Boolean) {
+                pdfOutputExists.data as unknown as boolean) {
                 fetchJustificationsResourceDownloadLatexPdf({
                     ...fetcherOptions,
                     pathParams: {proposalCode: Number(selectedProposalCode), which: p.which},
                 })
-                    .then((blob) =>
-                        setPdfDownload(window.URL.createObjectURL(blob as unknown as Blob)
-                        ))
-                    .then(() => setDownloadReady(true))
+                    .then((blob) => {
+                            setPdfDownload(window.URL.createObjectURL(blob as unknown as Blob));
+                            setDownloadReady(true);
+                    })
                     .catch((error) => {
                         notifyError("Failed to get latex output PDF", getErrorMessage(error))
                     })
@@ -116,8 +125,38 @@ function JustificationLatex( p: JustificationProps ) : ReactElement {
         </Table.Tbody>
     )
 
-    //argument expected to have type 'File | null'
-    const handleUpload = (fileToUpload: File | null) => {
+    const handleUploadMain = (fileToUpload: File | null) => {
+        if (fileToUpload) {
+            if (fileToUpload.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
+                notifyError("File upload failed", "The file " + fileToUpload.name
+                    + " is too large at " + fileToUpload.size/1024/1024
+                    + "MB. Maximum size is "
+                    + MAX_SUPPORTING_DOCUMENT_SIZE/1024/1024 + "MB")
+            } else {
+                const formData = new FormData();
+                formData.append("document", fileToUpload);
+
+                addMainFile.mutate({
+                    pathParams: {proposalCode: Number(selectedProposalCode), which: p.which},
+                    //@ts-ignore
+                    body: formData,
+                    //@ts-ignore
+                    headers: {"Content-Type": "multipart/form-data", ...fetcherOptions.headers}
+                }, {
+                    onSuccess: () => {
+                        notifySuccess("Upload successful", fileToUpload.name + " has been saved as main.tex")
+                        queryClient.invalidateQueries().then();
+                    },
+                    onError: (error) => {
+                        notifyError("Upload failed", getErrorMessage(error))
+                    }
+                }
+                )
+            }
+        }
+    }
+
+    const handleUploadResource = (fileToUpload: File | null) => {
         if (fileToUpload) {
             if (fileToUpload.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
                 notifyError("File upload failed", "The file " + fileToUpload.name
@@ -214,20 +253,79 @@ function JustificationLatex( p: JustificationProps ) : ReactElement {
 
     return (
         <Grid columns={10}>
+            <Grid.Col span={{base: 10, md: 4}}>
+                <Fieldset legend={"Upload Main Tex File"}>
+                    <Stack>
+                        {
+                            mainFileExists.data as unknown as Boolean &&
+                            <Text size={"sm"}>main.tex</Text>
+                        }
+                        <FileButton
+                            onChange={handleUploadMain}
+                        >
+                            {
+                                (props) =>
+                                    <UploadButton
+                                        toolTipLabel={"upload main tex file: .tex only"}
+                                        label={mainFileExists.data as unknown as Boolean ?
+                                            "Replace main.tex" : "Add main.tex"}
+                                        onClick={props.onClick}
+                                        variant={"filled"}
+                                    />
+                            }
+                        </FileButton>
+                    </Stack>
+                </Fieldset>
+                <Space h={"md"}/>
+                <Fieldset legend={"Upload Resource Files"}>
+                <Stack>
+                    <ScrollArea>
+                        <Table>
+                            {resourceFilesHeader()}
+                            {
+                                resourceFiles.isLoading ? <Loader/> :
+                                resourceFilesBody()
+                            }
+                        </Table>
+                    </ScrollArea>
+                    <FileButton
+                        onChange={handleUploadResource}
+                    >
+                        {
+                            (props) =>
+                                <UploadButton
+                                    toolTipLabel={"upload resource file: .bib, .png, .jpg, .eps only"}
+                                    label={"Add a Resource File"}
+                                    onClick={props.onClick}
+                                    variant={"filled"}
+                                />
+                        }
+                    </FileButton>
+                </Stack>
+                </Fieldset>
+            </Grid.Col>
             <Grid.Col span={{base: 10, md: 6}}>
-                <Fieldset legend={"Compile Sources"}>
+                <Fieldset legend={"Compile Document"}>
                     <Stack>
                         <Group grow>
-                            <Button
-                                rightSection={<IconArrowBigRightLines />}
-                                onClick={handleCompile}
-                                color={"green"}
+                            <Tooltip
+                                label={!mainFileExists.data as unknown as boolean ?
+                                    "No main.tex file uploaded" : "Compile to PDF"}
+                                openDelay={OPEN_DELAY}
+                                closeDelay={CLOSE_DELAY}
                             >
-                                {
-                                    loading ? <Loader size={"sm"}/> :
-                                        "Compile to PDF"
-                                }
-                            </Button>
+                                <Button
+                                    rightSection={<IconArrowBigRightLines />}
+                                    onClick={handleCompile}
+                                    color={"green"}
+                                    disabled={!mainFileExists.data as unknown as boolean}
+                                >
+                                    {
+                                        loading ? <Loader size={"sm"}/> :
+                                            "Compile to PDF"
+                                    }
+                                </Button>
+                            </Tooltip>
                             <Checkbox
                                 description={"Warnings as errors (recommended)"}
                                 checked={warningsAsErrors}
@@ -237,10 +335,14 @@ function JustificationLatex( p: JustificationProps ) : ReactElement {
                             />
                         </Group>
                         <Textarea
+                            label={"Latex compilation status"}
+                            placeholder={pdfOutputExists.data as unknown as Boolean ?
+                            "A previous compilation was successful. If you have made changes then please recompile, else the output is available for download"
+                                : "Compilation status will appear here"}
                             value={latexStatus}
                             autosize
-                            minRows={21}
-                            maxRows={21}
+                            minRows={20}
+                            maxRows={20}
                         />
                         <Tooltip
                             label={downloadReady ?
@@ -261,34 +363,6 @@ function JustificationLatex( p: JustificationProps ) : ReactElement {
                             </Button>
                         </Tooltip>
                     </Stack>
-                </Fieldset>
-            </Grid.Col>
-            <Grid.Col span={{base: 10, md: 4}}>
-                <Fieldset legend={"Upload Resource Files"}>
-                <Stack>
-                    <ScrollArea h={526}>
-                        <Table>
-                            {resourceFilesHeader()}
-                            {
-                                resourceFiles.isLoading ? <Loader/> :
-                                resourceFilesBody()
-                            }
-                        </Table>
-                    </ScrollArea>
-                    <FileButton
-                        onChange={handleUpload}
-                    >
-                        {
-                            (props) =>
-                                <UploadButton
-                                    toolTipLabel={"upload resource file: .bib, .png, .jpg, .eps only"}
-                                    label={"Choose a file"}
-                                    onClick={props.onClick}
-                                    variant={"filled"}
-                                />
-                        }
-                    </FileButton>
-                </Stack>
                 </Fieldset>
             </Grid.Col>
         </Grid>
