@@ -88,6 +88,24 @@ export type  TelescopeSummaryState = {
     condition: string, targetName: string, telescopeName: string
 }
 
+// the type for the overview entrance.
+
+export type OverviewEntranceProps = {
+    forceUpdate: () => void,
+    selectedProposalCode: string,
+    printRef: React.RefObject<HTMLInputElement>,
+    showInvestigators: boolean,
+    expandAccordions: boolean,
+    authToken: string,
+    navigate: NavigateFunction,
+    queryClient: QueryClient,
+    polarisMode: POLARIS_MODES,
+    doInvestigatorCheck: boolean,
+    cloneProposalMutation: any,
+    deleteProposalMutation: any,
+    deleteProposalOpticalTelescopeMutation: any,
+    submitOpticalProposalMutation: any
+}
 
 /**
  *
@@ -339,6 +357,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
          navigate: navigate,
          queryClient: queryClient,
          polarisMode: polarisMode,
+         doInvestigatorCheck: true,
          cloneProposalMutation: cloneProposalMutation,
          deleteProposalMutation: deleteProposalMutation,
          deleteProposalOpticalTelescopeMutation: deleteProposalOpticalTelescopeMutation,
@@ -351,24 +370,12 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
  * @return {ReactElement} the html of the overview panel.
  * @constructor
  */
-export function OverviewPanelInternal(props: {
-        forceUpdate: () => void,
-        selectedProposalCode: string,
-        printRef: React.RefObject<HTMLInputElement>,
-        showInvestigators: boolean,
-        expandAccordions: boolean,
-        authToken: string,
-        navigate: NavigateFunction,
-        queryClient: QueryClient,
-        polarisMode: POLARIS_MODES,
-        cloneProposalMutation: any,
-        deleteProposalMutation: any,
-        deleteProposalOpticalTelescopeMutation: any,
-        submitOpticalProposalMutation: any}): ReactElement {
+export function OverviewPanelInternal(
+        props: OverviewEntranceProps): ReactElement {
 
     const {forceUpdate, selectedProposalCode, printRef, showInvestigators,
         expandAccordions, authToken, navigate, queryClient, polarisMode,
-        cloneProposalMutation, deleteProposalMutation,
+        doInvestigatorCheck, cloneProposalMutation, deleteProposalMutation,
         deleteProposalOpticalTelescopeMutation,
         submitOpticalProposalMutation} = props;
 
@@ -393,7 +400,8 @@ export function OverviewPanelInternal(props: {
             isLoading: proposalsIsLoading } =
         useProposalResourceGetObservingProposal({
             pathParams: {
-                proposalCode: Number(selectedProposalCode)
+                proposalCode: Number(selectedProposalCode),
+                doInvestigatorCheck: doInvestigatorCheck,
             }
         });
 
@@ -461,15 +469,19 @@ export function OverviewPanelInternal(props: {
      * @constructor
      */
     const DisplayScientificJustification = (): ReactElement => {
-        return (
-            <>
-                <h3>Scientific Justification</h3>
-                {PreviewJustification(
-                    proposalsData?.scientificJustification?.format!,
-                    proposalsData?.scientificJustification?.text!)
-                }
-            </>
-        )
+        if(proposalsData !== undefined &&
+                proposalsData.scientificJustification !== undefined) {
+            return (
+                <>
+                    <h3>Scientific Justification</h3>
+                    {PreviewJustification(
+                        proposalsData.scientificJustification.format!,
+                        proposalsData.scientificJustification.text!)
+                    }
+                </>
+            )
+        }
+        return <>data not loaded</>
     }
 
     /**
@@ -478,15 +490,19 @@ export function OverviewPanelInternal(props: {
      * @constructor
      */
     const DisplayTechnicalJustification = (): ReactElement => {
-        return (
-            <>
-                <h3>Technical Justification</h3>
-                {PreviewJustification(
-                    proposalsData?.technicalJustification?.format!,
-                    proposalsData?.technicalJustification?.text!)
-                }
-            </>
-        )
+        if(proposalsData !== undefined &&
+            proposalsData.technicalJustification !== undefined) {
+            return (
+                <>
+                    <h3>Technical Justification</h3>
+                    {PreviewJustification(
+                        proposalsData.technicalJustification.format!,
+                        proposalsData.technicalJustification.text!)
+                    }
+                </>
+            )
+        }
+        return <>data not loaded</>
     }
 
     /**
@@ -1147,16 +1163,19 @@ export function OverviewPanelInternal(props: {
                         queryClient.invalidateQueries({
                             queryKey: ['pst', 'api', 'proposals']
                         }).then(() =>
-                            notifySuccess("Clone Proposal Successful",
-                                proposalsData?.title + " copied to " + data.title)
+                            notifySuccess(
+                                "Clone Proposal Successful",
+                                proposalsData?.title + " copied to " +
+                                data.title)
                         );
                     },
-                    onError: (error) => {
-                        notifyError("Clone Proposal Failed", getErrorMessage(error))
+                    onError: (error: unknown) => {
+                        notifyError(
+                            "Clone Proposal Failed", getErrorMessage(error))
                     }});
                 }
             },
-            onError: (error) =>
+            onError: (error: unknown) =>
                 notifyError("Clone Proposal Failed", getErrorMessage(error))
         })
     }

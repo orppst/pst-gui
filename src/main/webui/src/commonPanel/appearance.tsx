@@ -43,7 +43,8 @@ export function PanelHeader(props: headerInterfaceProps): ReactElement {
 export function EditorPanelHeader(props: editorPanelHeaderInterfaceProps) {
     const {data, error, isLoading} =
         useProposalResourceGetObservingProposalTitle(
-            {pathParams: {proposalCode: props.proposalCode}});
+            {pathParams: {proposalCode: props.proposalCode,
+                          doInvestigatorCheck: true}});
 
     if(error) {
         return (
