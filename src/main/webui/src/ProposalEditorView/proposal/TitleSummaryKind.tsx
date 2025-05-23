@@ -38,7 +38,8 @@ function TitleSummaryKind() : ReactElement {
     const queryClient = useQueryClient();
 
     const proposal = useProposalResourceGetObservingProposal({
-        pathParams: {proposalCode: Number(selectedProposalCode)}
+        pathParams: {proposalCode: Number(selectedProposalCode),
+                     doInvestigatorCheck: false}
     })
 
     const [summary, setSummary] = useState(proposal.data?.summary);
@@ -57,7 +58,6 @@ function TitleSummaryKind() : ReactElement {
                 {
                     pathParams: {proposalCode: Number(selectedProposalCode)},
                     body: summary,
-                    //@ts-ignore
                     headers: {"Content-Type": "text/plain"}
                 },
                 {
@@ -79,9 +79,9 @@ function TitleSummaryKind() : ReactElement {
         kindMutation
             .mutate(
                 {
-                    pathParams: {proposalCode: Number(selectedProposalCode)},
+                    pathParams: {proposalCode: Number(selectedProposalCode),
+                                 doInvestigatorCheck: true},
                     body: kind,
-                    //@ts-ignore
                     headers: {"Content-Type": "text/plain"}
                 },
                 {

@@ -45,7 +45,8 @@ function Observations() {
     selectedProposalCode = selectedProposalCode!;
 
     const proposal = useProposalResourceGetObservingProposal({
-        pathParams: {proposalCode: Number(selectedProposalCode)}
+        pathParams: {proposalCode: Number(selectedProposalCode),
+                     doInvestigatorCheck: true}
     })
     const opticalObservations =
         useOpticalTelescopeResourceGetProposalObservationIds(

@@ -27,7 +27,8 @@ export default function ValidationOverview(
     const { selectedProposalCode } = useParams();
 
     const validateProposal = useProposalResourceValidateObservingProposal({
-            pathParams: {proposalCode: Number(selectedProposalCode)},
+            pathParams: {proposalCode: Number(selectedProposalCode),
+                         doInvestigatorCheck: true},
             queryParams: {cycleId: cycle}}
         );
 

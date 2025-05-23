@@ -66,7 +66,8 @@ function SubmissionForm() :
     const {fetcherOptions} = useProposalToolContext();
 
     const proposalTitle = useProposalResourceGetObservingProposalTitle({
-        pathParams: {proposalCode: Number(selectedProposalCode)}
+        pathParams: {proposalCode: Number(selectedProposalCode),
+                     doInvestigatorCheck: true}
     })
 
     const targetObservations = useObservationResourceGetObservations({
