@@ -1,12 +1,13 @@
 import JSZip from 'jszip';
-import {ObjectIdentifier,} from 'src/generated/proposalToolSchemas';
+import {ObjectIdentifier, ObservingProposal,} from 'src/generated/proposalToolSchemas';
 import {
+    fetchSubmittedProposalResourceGetSubmittedProposal,
     fetchSupportingDocumentResourceGetSupportingDocuments,
     SubmittedProposalResourceGetSubmittedProposalsResponse,
+    SupportingDocumentResourceGetSupportingDocumentsResponse,
 } from 'src/generated/proposalToolComponents';
 import {notifyError, notifySuccess} from '../../commonPanel/notifications';
 import {
-    extractJSON,
     extractTelescope, generatePdf,
     populateSupportingDocuments
 } from '../../ProposalEditorView/proposal/downloadProposal';
@@ -14,12 +15,19 @@ import {OverviewPanelInternal} from '../../ProposalEditorView/proposal/Overview'
 import {createRef, RefObject, useCallback, useEffect, useState} from 'react';
 import {NavigateFunction} from "react-router-dom";
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import {OVERVIEW_PDF_FILENAME, POLARIS_MODES} from "../../constants";
+import {JSON_FILE_NAME, OVERVIEW_PDF_FILENAME, POLARIS_MODES} from "../../constants";
 import getErrorMessage from "../../errorHandling/getErrorMessage";
 import ReactDOM from 'react-dom/client';
 import {ProposalContext} from "../../App2";
 import {MantineProvider} from "@mantine/core";
 import {theme} from "../../main";
+import {
+    fetchOpticalOverviewTelescopeTableData,
+    fetchOpticalOverviewTelescopeTimingData,
+    fetchOpticalTelescopeTableData, TelescopeOverviewTableState,
+    TelescopeTableState
+} from "../../util/telescopeComms";
+import {fetchSubmittedProposalResourceGetSubmittedProposalExport} from "../../util/submittedProposalsComms";
 
 /**
  * generates the html.
@@ -34,20 +42,31 @@ import {theme} from "../../main";
  * @param navigate the navigate
  * @param queryClient the query client
  * @param polarisMode the polaris mode.
+ * @param docs the supporting docs.
+ * @param telescopeData the optical table data.
+ * @param telescopeOverviewData the data required for overview
+ * @param proposalDetails the proposal data
+ * @param telescopeTiming the telescope timing data.
  */
 const generateHTML = async (
-    resolvePdf: (value: (Blob | PromiseLike<Blob>)) => void,
-    rejectPdf: (reason?: unknown) => void,
-    root: ReactDOM.Root,
-    authToken: string,
-    forceUpdate: () => void,
-    proposalData: string,
-    container: HTMLDivElement,
-    navigate: NavigateFunction,
-    queryClient: QueryClient,
-    polarisMode: POLARIS_MODES): Promise<void> => {
+        resolvePdf: (value: (Blob | PromiseLike<Blob>)) => void,
+        rejectPdf: (reason?: unknown) => void,
+        root: ReactDOM.Root,
+        authToken: string,
+        forceUpdate: () => void,
+        proposalData: string,
+        container: HTMLDivElement,
+        navigate: NavigateFunction,
+        queryClient: QueryClient,
+        polarisMode: POLARIS_MODES,
+        docs: SupportingDocumentResourceGetSupportingDocumentsResponse,
+        telescopeData: Map<string, TelescopeTableState>,
+        telescopeOverviewData: Map<string, TelescopeOverviewTableState>,
+        proposalDetails: ObservingProposal,
+        telescopeTiming: Map<string, number>,
+    ): Promise<void> => {
     try {
-        const renderOverview = () => {
+        const renderOverview = async () => {
             //  Create a ref to access the rendered component's element
             const tempRef: RefObject<HTMLInputElement> = createRef();
 
@@ -77,27 +96,46 @@ const generateHTML = async (
                                 deleteProposalMutation={null}
                                 deleteProposalOpticalTelescopeMutation={null}
                                 submitOpticalProposalMutation={null}
+                                proposalData={proposalDetails}
+                                supportingDocs={docs}
+                                telescopeData={telescopeData}
+                                telescopeOverviewData={telescopeOverviewData}
+                                telescopeTimingResult={telescopeTiming}
                             />
                         </QueryClientProvider>
                     </ProposalContext.Provider>
                 </MantineProvider>
             );
+
+            // Wait for the component to update.
+            let complete = false;
+            let count = 0;
+            while(!complete && count < 5) {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                if(tempRef.current !== null) {
+                    complete = true;
+                }
+                count = count + 1;
+            }
+
             //  Return the ref.
-            return tempRef;
+            if(tempRef.current === null) {
+                rejectPdf(
+                    `Failed to render pdf for proposal ${proposalDetails.title} 
+                    by end of 25s.`);
+            } else {
+                notifySuccess(
+                    "pdf success",
+                    `pdf generated for proposal ${proposalDetails.title}`)
+                return tempRef;
+            }
         };
 
-        // Wait for the component to update.
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
         //  Get the ref to the rendered element.
-        const myRef = renderOverview();
-
-        // Wait for the component to update.
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        const myRef = await renderOverview();
 
         //  Use the ref to get the element.
-        const generatedPdfData = await generatePdf(myRef.current!);
-        root.unmount();
+        const generatedPdfData = await generatePdf(myRef!.current!);
         document.body.removeChild(container);
         resolvePdf(generatedPdfData);
 
@@ -105,6 +143,35 @@ const generateHTML = async (
         rejectPdf(error);
     }
 }
+
+/**
+ * fills a json file to the zip.
+ *
+ * @param authToken the authentication token
+ * @param selectedProposalCode the proposal code
+ * @param zip the zip.
+ * @param includeInvestigators flag for adding investigators or not.
+ * @param cycleCode number for the cycle code.
+ */
+export function extractJSON(
+    authToken: string, selectedProposalCode: string, zip: JSZip,
+    includeInvestigators: boolean, cycleCode: number):
+    Promise<void> {
+    return fetchSubmittedProposalResourceGetSubmittedProposalExport({
+        headers: {authorization: `Bearer ${authToken}`},
+        pathParams: {
+            submittedProposalId: Number(selectedProposalCode),
+            cycleCode: cycleCode,
+            investigatorsIncluded: includeInvestigators
+        }
+    }).then((blob) => {
+        zip.file(JSON_FILE_NAME, blob!)
+    })
+        .catch((error) =>
+            notifyError("Export Error", getErrorMessage(error))
+        )
+}
+
 
 /**
  * generates the html.
@@ -115,11 +182,13 @@ const generateHTML = async (
  * @param navigate the navigate
  * @param queryClient the query client
  * @param polarisMode the polaris mode.
+ * @param cycleTitle the cycle name
+ * @param cycleID the cycle id
  */
 // eslint-disable-next-line react-refresh/only-export-components
 const ProposalDownloader = (
     { data, forceUpdate, authToken, cycleTitle, navigate,
-      queryClient, polarisMode }: {
+      queryClient, polarisMode, cycleID }: {
     data: SubmittedProposalResourceGetSubmittedProposalsResponse;
     forceUpdate: () => void;
     authToken: string;
@@ -127,6 +196,7 @@ const ProposalDownloader = (
     navigate: NavigateFunction;
     queryClient: QueryClient;
     polarisMode: POLARIS_MODES;
+    cycleID: number;
 }) => {
     const [downloading, setDownloading] = useState(false);
 
@@ -139,6 +209,31 @@ const ProposalDownloader = (
             // eslint-disable-next-line no-async-promise-executor
             const proposalPromise = new Promise<void>(async (resolve, reject) => {
                 try {
+                    // PRE-FETCH ALL DATA FOR THE CURRENT PROPOSAL
+                    const docsPromise = fetchSupportingDocumentResourceGetSupportingDocuments(
+                        {   headers: {authorization: `Bearer ${authToken}`},
+                            pathParams: { proposalCode: Number(proposalData.dbid) } });
+                    const telescopeDataPromise = fetchOpticalTelescopeTableData(
+                        {
+                          proposalID: proposalData.dbid!.toString() });
+                    const telescopeOverviewDataPromise = fetchOpticalOverviewTelescopeTableData(
+                        {
+                          proposalID: proposalData.dbid!.toString() });
+                    const proposalDetailsPromise = fetchSubmittedProposalResourceGetSubmittedProposal(
+                        { headers: {authorization: `Bearer ${authToken}`},
+                          pathParams: { submittedProposalId: Number(proposalData.dbid),
+                                        cycleCode: cycleID} });
+                    const telescopeTimingPromise =
+                        fetchOpticalOverviewTelescopeTimingData();
+
+                    const [
+                        docs, telescopeData, telescopeOverviewData, proposalDetails,
+                        telescopeTiming
+                    ] = await Promise.all([
+                        docsPromise, telescopeDataPromise,
+                        telescopeOverviewDataPromise, proposalDetailsPromise,
+                        telescopeTimingPromise])
+
                     // Use a single container for the entire process
                     const container = document.createElement('div');
                     document.body.appendChild(container);
@@ -150,11 +245,22 @@ const ProposalDownloader = (
                         return new Promise<Blob>(
                             // eslint-disable-next-line no-async-promise-executor
                             async (resolvePdf, rejectPdf) => {
+                                const convertedTelescopeData:
+                                    Map<string, TelescopeTableState> =
+                                    new Map<string, TelescopeTableState>(
+                                        Object.entries(telescopeData));
+                                const convertedTelescopeOverviewData =
+                                    new Map(Object.entries(telescopeOverviewData));
+                                const convertedTelescopeTiming =
+                                    new Map(Object.entries(telescopeTiming));
                                 await generateHTML(
                                     resolvePdf, rejectPdf, root, authToken,
                                     forceUpdate, proposalData.dbid!.toString(),
                                     container, navigate, queryClient,
-                                    polarisMode)
+                                    polarisMode, docs,
+                                    convertedTelescopeData,
+                                    convertedTelescopeOverviewData,
+                                    proposalDetails, convertedTelescopeTiming)
                             });
                     };
 
@@ -183,7 +289,7 @@ const ProposalDownloader = (
 
                     promises.push(extractJSON(
                         authToken, proposalData.dbid!.toString(),
-                        proposalZip, false));
+                        proposalZip, false, cycleID));
                     await extractTelescope(
                         proposalData.dbid!.toString(), promises,
                         proposalZip);
@@ -220,7 +326,7 @@ const ProposalDownloader = (
             setDownloading(false);
         }
     }, [data, forceUpdate, authToken, cycleTitle, navigate, queryClient,
-        polarisMode]);
+        polarisMode, cycleID]);
 
     useEffect(() => {
         handleDownload().then();
@@ -240,7 +346,8 @@ export const downloadProposals = (
     cycleTitle: string,
     navigate: NavigateFunction,
     queryClient: QueryClient,
-    polarisMode: POLARIS_MODES
+    polarisMode: POLARIS_MODES,
+    cycleID: number,
 ): Promise<void> => {
     return new Promise<void>((resolve) => {
         const container = document.createElement('div');
@@ -254,6 +361,7 @@ export const downloadProposals = (
                 navigate={navigate}
                 queryClient={queryClient}
                 polarisMode={polarisMode}
+                cycleID={cycleID}
             />
         );
         resolve();

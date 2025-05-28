@@ -13484,4 +13484,9 @@ export type QueryOperation =
       path: "/pst/api/opticalTelescopes/nightRelationships";
       operationId: "nightRelationships";
       variables: {}
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/{investigatorsIncluded}/export"
+      operationId: "submittedProposalResourceGetSubmittedProposalExport";
+      variables:{}
 }

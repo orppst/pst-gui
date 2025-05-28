@@ -1,4 +1,4 @@
-import {ReactElement, useContext, useReducer, useRef} from "react";
+import {ReactElement, useContext, useReducer} from "react";
 import {Divider, Fieldset, Group, Space, Stack, Text} from "@mantine/core";
 import {
     fetchSubmittedProposalResourceGetSubmittedProposals,
@@ -43,8 +43,6 @@ export default function CycleOverviewPanel() : ReactElement {
     const navigate = useNavigate();
 
     const queryClient = useQueryClient();
-
-    const printRef = useRef<HTMLInputElement>(null);
 
     const polarisMode = useContext(ProposalContext).mode;
 
@@ -169,7 +167,8 @@ export default function CycleOverviewPanel() : ReactElement {
                 if (cycleSynopsis.data?.title != null) {
                     downloadProposals(
                         data, forceUpdate, authToken, cycleSynopsis.data?.title,
-                        navigate, queryClient, polarisMode);
+                        navigate, queryClient, polarisMode,
+                        cycleSynopsis.data._id!);
                 }
             }
         )
