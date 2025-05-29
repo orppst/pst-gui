@@ -1,5 +1,6 @@
-import {useNavigate, useParams} from 'react-router-dom'
+import {NavigateFunction, useNavigate, useParams} from 'react-router-dom'
 import {
+    SupportingDocumentResourceGetSupportingDocumentsResponse,
     useProposalResourceCloneObservingProposal,
     useProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
@@ -12,12 +13,11 @@ import {
     CalibrationTargetIntendedUse,
     Investigator,
     ObjectIdentifier,
-    Observation,
+    Observation, ObservingProposal,
     RealQuantity,
-    Target,
 } from 'src/generated/proposalToolSchemas.ts';
 import {IconEyeStar, IconNorthStar, IconTelescope} from '@tabler/icons-react';
-import {ReactElement, useContext, useRef} from 'react';
+import {ReactElement, RefObject, useContext, useRef} from 'react';
 import downloadProposal from './downloadProposal.tsx';
 import {DIMMED_FONT_WEIGHT, JSON_SPACES, POLARIS_MODES} from 'src/constants.tsx';
 import {TargetTable} from '../targets/TargetTable.tsx';
@@ -31,9 +31,9 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
-import {useQueryClient} from "@tanstack/react-query";
+import {QueryClient, useQueryClient} from "@tanstack/react-query";
 import {
-    TelescopeOverviewTableState, useMutationOpticalCopyProposal,
+    TelescopeOverviewTableState, TelescopeTableState, useMutationOpticalCopyProposal,
     useOpticalOverviewTelescopeTableData, useOpticalOverviewTelescopeTimingData,
     useOpticalTelescopeResourceDeleteProposalTelescopeData,
     useOpticalTelescopeTableData
@@ -41,6 +41,7 @@ import {
 import {ProposalContext, useToken} from "../../App2";
 import {OpticalTableGenerator} from "../observations/optical/observationOpticalTable";
 import * as Schemas from "../../generated/proposalToolSchemas";
+import {getTargetName} from "../observations/commonObservationCode";
 
 /*
       title    -- string
@@ -88,6 +89,28 @@ export type  TelescopeSummaryState = {
     condition: string, targetName: string, telescopeName: string
 }
 
+// the type for the overview entrance.
+
+export type OverviewEntranceProps = {
+    forceUpdate: () => void,
+    selectedProposalCode: string,
+    printRef: RefObject<HTMLInputElement>,
+    showInvestigators: boolean,
+    expandAccordions: boolean,
+    authToken: string,
+    navigate: NavigateFunction,
+    queryClient: QueryClient,
+    polarisMode: POLARIS_MODES,
+    cloneProposalMutation: any,
+    deleteProposalMutation: any,
+    deleteProposalOpticalTelescopeMutation: any,
+    submitOpticalProposalMutation: any,
+    supportingDocs: SupportingDocumentResourceGetSupportingDocumentsResponse,
+    telescopeData: Map<string, TelescopeTableState>,
+    telescopeOverviewData: Map<string, TelescopeOverviewTableState>,
+    proposalData: Schemas.ObservingProposal,
+    telescopeTimingResult: Map<string, number>,
+}
 
 /**
  *
@@ -200,7 +223,7 @@ function ObservationRadioAccordionLabel(
 }
 
 /**
- * creates the observation label for opticals.
+ * creates the observation label for optical.
  * @param ObservationLabelProps: the data for the method.
  * @return {ReactElement} the htm for the observation accordion label.
  * @constructor
@@ -278,7 +301,9 @@ function ObservationRadioAccordionContent(
  * @constructor
  */
 function ObservationOpticalAccordionContent(
-    proposalCode: number, targetIds: number[], observation: Observation):
+    proposalCode: number, targetIds: number[], observation: Observation,
+    telescopeData: Map<string, TelescopeTableState>,
+    proposalData: ObservingProposal):
     ReactElement {
 
     const listOfTargets = [] as ObjectIdentifier [];
@@ -291,7 +316,8 @@ function ObservationOpticalAccordionContent(
     return (
         //TODO: consider a Grid instead of Group
         <Group>
-            {OpticalTableGenerator(observations, false)}
+            {OpticalTableGenerator(
+                observations, telescopeData, false, proposalData)}
         </Group>
     )
 }
@@ -302,11 +328,13 @@ function ObservationOpticalAccordionContent(
  * @constructor
  */
 function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
-
-    const authToken = useToken();
-
     let { selectedProposalCode } = useParams();
     selectedProposalCode = selectedProposalCode!;
+
+    // holder for the reference needed for the pdf generator to work.
+    const printRef = useRef<HTMLInputElement>(null);
+
+    const authToken = useToken();
 
     const navigate = useNavigate();
 
@@ -327,7 +355,9 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     // transaction issue.
     const submitOpticalProposalMutation = useMutationOpticalCopyProposal()
 
-    const {data: supportingDocs} =
+    const { data: docs,
+        error: docErrors,
+        isLoading: docLoading } =
         useSupportingDocumentResourceGetSupportingDocuments({
             pathParams: {
                 proposalCode: Number(selectedProposalCode)
@@ -343,18 +373,38 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         proposalID: selectedProposalCode!
     });
 
-    // holder for the reference needed for the pdf generator to work.
-    const printRef = useRef<HTMLInputElement>(null);
+    const {
+        data: telescopeOverviewData,
+        error: telescopeOverviewError,
+        isLoading: telescopeOverviewLoading,
+    } = useOpticalOverviewTelescopeTableData({
+        proposalID: selectedProposalCode!
+    });
 
     const { data: proposalsData ,
-            error: proposalsError,
-            isLoading: proposalsIsLoading } =
+        error: proposalsError,
+        isLoading: proposalsIsLoading } =
         useProposalResourceGetObservingProposal({
             pathParams: {
-                proposalCode: Number(selectedProposalCode)
+                proposalCode: Number(selectedProposalCode),
+                doInvestigatorCheck: true,
             }
         });
 
+    const {
+        data: telescopeTiming,
+        error: telescopeTimingError,
+        isLoading: telescopeTimingLoading,
+    } = useOpticalOverviewTelescopeTimingData();
+
+    // check for errors and loadings.
+    if (docErrors) {
+        return (
+            <Box>
+                <pre>{JSON.stringify(docErrors, null, JSON_SPACES)}</pre>
+            </Box>
+        );
+    }
     if (proposalsError) {
         return (
             <Box>
@@ -369,6 +419,75 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             </Box>
         );
     }
+    if (telescopeOverviewError) {
+        return (
+            <Box>
+                <pre>{
+                    JSON.stringify(telescopeOverviewError, null, JSON_SPACES)}
+                </pre>
+            </Box>
+        );
+    }
+    if (telescopeTimingError) {
+        return (
+            <Box>
+                <pre>{
+                    JSON.stringify(telescopeTimingError, null, JSON_SPACES)}
+                </pre>
+            </Box>
+        );
+    }
+
+    // handle loading phases.
+    if(docLoading || opticalLoading || telescopeOverviewLoading ||
+            proposalsIsLoading || telescopeTimingLoading) {
+        return (
+            <PanelFrame>
+                <Space h={"xs"}/>
+                <Group justify={'flex-end'}>
+                    `Loading...`
+                </Group>
+            </PanelFrame>
+        )
+    }
+
+    // go to rendering code.
+    return OverviewPanelInternal(
+        {forceUpdate: props.forceUpdate,
+         selectedProposalCode: selectedProposalCode,
+         printRef: printRef,
+         showInvestigators: true,
+         expandAccordions: false,
+         authToken: authToken,
+         navigate: navigate,
+         queryClient: queryClient,
+         polarisMode: polarisMode,
+         cloneProposalMutation: cloneProposalMutation,
+         deleteProposalMutation: deleteProposalMutation,
+         deleteProposalOpticalTelescopeMutation: deleteProposalOpticalTelescopeMutation,
+         submitOpticalProposalMutation:submitOpticalProposalMutation,
+         supportingDocs: docs!,
+         telescopeData: opticalData!,
+         telescopeOverviewData: telescopeOverviewData!,
+         proposalData: proposalsData!,
+         telescopeTimingResult: telescopeTiming!,
+        });
+}
+
+/**
+ * creates the html for the overview panel.
+ * @return {ReactElement} the html of the overview panel.
+ * @constructor
+ */
+export function OverviewPanelInternal(
+        props: OverviewEntranceProps): ReactElement {
+
+    const {forceUpdate, selectedProposalCode, printRef, showInvestigators,
+        expandAccordions, authToken, navigate, queryClient, polarisMode,
+        cloneProposalMutation, deleteProposalMutation,
+        deleteProposalOpticalTelescopeMutation,
+        submitOpticalProposalMutation, supportingDocs, telescopeData,
+        telescopeOverviewData, proposalData, telescopeTimingResult} = props;
 
     /**
      * handles the title display panel.
@@ -377,7 +496,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const DisplayTitle = (): ReactElement => {
         return (
-            <h1>{proposalsData?.title}</h1>
+            <h1>{proposalData.title}</h1>
         )
     }
 
@@ -392,7 +511,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 <h3>Summary</h3>
                 <Text style={{ whiteSpace: 'pre-wrap',
                                overflowWrap: 'break-word'}}>
-                    {proposalsData?.summary}
+                    {proposalData.summary}
                 </Text>
             </>
         )
@@ -407,7 +526,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         return (
             <>
                 <h3>Kind</h3>
-                <Text>{proposalsData?.kind}</Text>
+                <Text>{proposalData.kind}</Text>
             </>
         )
     }
@@ -419,15 +538,19 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * @constructor
      */
     const DisplayScientificJustification = (): ReactElement => {
-        return (
-            <>
-                <h3>Scientific Justification</h3>
-                {PreviewJustification(
-                    proposalsData?.scientificJustification?.format!,
-                    proposalsData?.scientificJustification?.text!)
-                }
-            </>
-        )
+        if(proposalData !== undefined &&
+                proposalData.scientificJustification !== undefined) {
+            return (
+                <>
+                    <h3>Scientific Justification</h3>
+                    {PreviewJustification(
+                        proposalData.scientificJustification.format!,
+                        proposalData.scientificJustification.text!)
+                    }
+                </>
+            )
+        }
+        return <>data not loaded</>
     }
 
     /**
@@ -436,15 +559,19 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * @constructor
      */
     const DisplayTechnicalJustification = (): ReactElement => {
-        return (
-            <>
-                <h3>Technical Justification</h3>
-                {PreviewJustification(
-                    proposalsData?.technicalJustification?.format!,
-                    proposalsData?.technicalJustification?.text!)
-                }
-            </>
-        )
+        if(proposalData !== undefined &&
+            proposalData.technicalJustification !== undefined) {
+            return (
+                <>
+                    <h3>Technical Justification</h3>
+                    {PreviewJustification(
+                        proposalData.technicalJustification.format!,
+                        proposalData.technicalJustification.text!)
+                    }
+                </>
+            )
+        }
+        return <>data not loaded</>
     }
 
     /**
@@ -453,7 +580,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * @constructor
      */
     const DisplayInvestigators = (): ReactElement => {
-        const investigators = proposalsData?.investigators?.map(
+        const investigators = proposalData.investigators?.map(
             (investigator) => (
                 <Accordion.Item key={investigator.person?.orcidId?.value}
                                 value={investigator.person?.fullName!}>
@@ -474,8 +601,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Investigators</h3>
                 {
-                    proposalsData?.investigators &&
-                    proposalsData.investigators.length > 0 ?
+                    proposalData.investigators &&
+                    proposalData.investigators.length > 0 ?
                         <Accordion chevronPosition={"right"}>
                             {investigators}
                         </Accordion> :
@@ -494,7 +621,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const DisplaySupportingDocuments = (): ReactElement => {
 
-        const documents = proposalsData?.supportingDocuments?.map((document) =>(
+        const documents = proposalData.supportingDocuments?.map((document) =>(
             <List.Item key={document.location}>{document.title}</List.Item>
         ))
 
@@ -502,8 +629,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Supporting Documents</h3>
                 {
-                    proposalsData?.supportingDocuments &&
-                    proposalsData.supportingDocuments.length > 0 ?
+                    proposalData.supportingDocuments &&
+                    proposalData.supportingDocuments.length > 0 ?
                         <List
                             style={{
                                 whiteSpace: 'pre-wrap',
@@ -525,7 +652,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const DisplayRelatedProposals = (): ReactElement => {
 
-        const proposals = proposalsData?.relatedProposals?.map((related) =>(
+        const proposals = proposalData.relatedProposals?.map((related) =>(
             <List.Item key={related.proposal?.xmlId}>
                 {related.proposal?.title}
             </List.Item>
@@ -535,8 +662,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Related Proposals</h3>
                 {
-                    proposalsData?.relatedProposals &&
-                    proposalsData.relatedProposals.length > 0 ?
+                    proposalData.relatedProposals &&
+                    proposalData.relatedProposals.length > 0 ?
                         <List>
                             {proposals}
                         </List> :
@@ -558,7 +685,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             observation: Observation, targetNames: string,
             index: number, observationType: string): ReactElement => {
         const technicalGoalObj =
-            proposalsData?.technicalGoals?.find((techGoal) =>
+            proposalData.technicalGoals?.find((techGoal) =>
                 techGoal._id === observation.technicalGoal)!
         // Ideally we should use the observation id for the 'key' but
         // we don't have it at this point, so we use the map index
@@ -616,46 +743,13 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     {ObservationOpticalAccordionContent(
                         Number(selectedProposalCode),
                         observation.target as number [],
-                        observation)
+                        observation,
+                        telescopeData,
+                        proposalData)
                     }
                 </Accordion.Panel>
             </Accordion.Item>
         )
-    }
-
-    /**
-     * returns the target name
-     * @param observation
-     */
-    const getTargetName = (observation:  Observation): string => {
-        //get all the target objects
-        const targetObjs = [] as Target[];
-
-        observation.target?.map((obsTarget) => {
-            const targetObj = proposalsData?.targets?.find((target) =>
-                target._id === obsTarget)!
-
-            targetObjs.push(targetObj);
-        });
-
-        // create a string of the first target names
-        if (targetObjs.length != 0) {
-            let targetNames = targetObjs[0].sourceName!;
-            let targetIndex = 0;
-
-            while (++targetIndex < 3
-            && targetIndex < targetObjs.length) {
-                targetNames += ", " + targetObjs[targetIndex].sourceName;
-            }
-
-            const remaining = targetObjs.length - targetIndex;
-
-            if (remaining > 0) {
-                targetNames += ", and " + remaining + " more";
-            }
-            return targetNames;
-        }
-        return "";
     }
 
     /**
@@ -666,8 +760,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const DisplayObservations = (): ReactElement => {
         const observations =
-            proposalsData?.observations?.map((observation, index) => {
-                const targetNames = getTargetName(observation);
+            proposalData.observations?.map((observation, index) => {
+                const targetNames = getTargetName(observation, proposalData);
 
                 const observationType =
                     observation["@type"] === 'proposal:TargetObservation' ?
@@ -675,7 +769,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
                 switch(polarisMode) {
                     case POLARIS_MODES.OPTICAL:
-                        if (opticalData!.has(observation._id!.toString())) {
+                        if (telescopeData!.has(observation._id!.toString())) {
                             return opticalAccordion(
                                 observation, targetNames, index,
                                 observationType);
@@ -684,7 +778,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                                                    value={String(index)}/>
                         }
                     case POLARIS_MODES.BOTH:
-                        if (opticalData!.has(observation._id!.toString())) {
+                        if (telescopeData!.has(observation._id!.toString())) {
                             return opticalAccordion(
                                 observation, targetNames, index,
                                 observationType);
@@ -694,7 +788,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                                 observationType);
                         }
                     case POLARIS_MODES.RADIO:
-                        if (!opticalData!.has(observation._id!.toString())) {
+                        if (!telescopeData!.has(observation._id!.toString())) {
                             return radioAccordion(
                                 observation, targetNames, index,
                                 observationType);
@@ -703,23 +797,42 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                                                    value={String(index)}/>
                         }
                     default:
-                        notifyError("invalid polaris mode", polarisMode)
+                        notifyError("invalid polaris mode", polarisMode);
                 }
             })
 
-        return (
-            <>
-                <h3>Observations</h3>
-                {
-                    proposalsData?.observations &&
-                    proposalsData.observations.length > 0 ?
+        if (proposalData.observations &&
+                proposalData.observations.length > 0) {
+            if(expandAccordions) {
+                return (
+                    <>
+                        <h3>Observations</h3>
+                        <Accordion multiple={expandAccordions}
+                                   value={
+                                       proposalData.observations.map(
+                                           (_, index) => index.toString())}>
+                            {observations}
+                        </Accordion>
+                    </>
+                )
+            } else {
+                return (
+                    <>
+                        <h3>Observations</h3>
                         <Accordion>
                             {observations}
-                        </Accordion> :
-                        <Text c={"yellow"}>No observations added</Text>
-                }
-            </>
-        )
+                        </Accordion>
+                    </>
+                )
+            }
+        } else {
+            return (
+                <>
+                    <h3>Observations</h3>
+                    <Text c={"yellow"}>No observations added</Text>
+                </>
+            )
+        }
     }
 
     /**
@@ -794,7 +907,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     {telescopeTimeValue: observationData.telescopeTimeValue,
                      telescopeTimeUnit: observationData.telescopeTimeUnit,
                      condition: observationData.condition,
-                     targetName: getTargetName(obs),
+                     targetName: getTargetName(obs, proposalData),
                      telescopeName: observationData.telescopeName}
                 )
             } else {
@@ -802,7 +915,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     telescopeTimeValue: observationData.telescopeTimeValue,
                     telescopeTimeUnit: observationData.telescopeTimeUnit,
                     condition: observationData.condition,
-                    targetName: getTargetName(obs),
+                    targetName: getTargetName(obs, proposalData),
                     telescopeName: observationData.telescopeName
                 }]
                 summaryData.set(key, array);
@@ -817,79 +930,17 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * instrument.
      * @constructor
      */
-    function DisplayTelescopeSummary(selectedProposalCode: string): ReactElement {
-        const {
-            data: opticalData,
-            error: opticalError,
-            isLoading: opticalLoading,
-        } = useOpticalOverviewTelescopeTableData({
-            proposalID: selectedProposalCode
-        });
-
-        const {
-            data: telescopeTiming,
-            error: telescopeTimingError,
-            isLoading: telescopeTimingLoading,
-        } = useOpticalOverviewTelescopeTimingData();
-
-        // handle any errors
-        if(opticalError) {
-            return (
-                <Container>
-                    Unable to load optical data:
-                    {getErrorMessage(opticalError)}
-                </Container>
-            )
-        }
-        if(telescopeTimingError) {
-            return (
-                <Container>
-                    Unable to load telescope timing data:
-                    {getErrorMessage(telescopeTimingError)}
-                </Container>
-            )
-        }
-
-        // handle any loading issues.
-        if(opticalLoading) {
-            return (
-                <PanelFrame>
-                    <Space h={"xs"}/>
-                    <Group justify={'flex-end'}>
-                        `Loading...`
-                    </Group>
-                </PanelFrame>
-            )
-        }
-
-        if(telescopeTimingLoading) {
-            return (
-                <PanelFrame>
-                    <Space h={"xs"}/>
-                    <Group justify={'flex-end'}>
-                        `Loading...`
-                    </Group>
-                </PanelFrame>
-            )
-        }
-
-        if(proposalsIsLoading) {
-            return (
-                <PanelFrame>
-                    <Space h={"xs"}/>
-                    <Group justify={'flex-end'}>
-                        `Loading...`
-                    </Group>
-                </PanelFrame>
-            )
-        }
+    function DisplayTelescopeSummary(
+            telescopeOverviewTiming: Map<string, TelescopeOverviewTableState>,
+            telescopeTiming: Map<string, number>):
+            ReactElement {
 
         return (
             <>
                 <h3>Telescopes</h3>
                 {buildSummaryAccordion(
-                    buildSummaryData(opticalData!, proposalsData!),
-                    telescopeTiming!)}
+                    buildSummaryData(telescopeOverviewTiming, proposalData),
+                    telescopeTiming)}
             </>
         );
     }
@@ -899,7 +950,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      *
      * @param {string} title the telescope title.
      * @param {TelescopeSummaryState[]} arrayData the observations for the telescope.
-     * @param {Map<string, number>} telescopeTiming the map between telescope and hours to nights.
+     * @param {Map<string, number>} telescopeTiming the map between telescope hours and nights.
      * @constructor
      */
     function TelescopeSummaryAccordionLabel(
@@ -945,7 +996,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     /**
-     * builds the telescope sumamry accordion.
+     * builds the telescope summary accordion.
      *
      * @param {Map<string, TelescopeSummaryState[]>} data the telescope data.
      * @param {Map<string, number>} telescopeTiming the timing between night and hour.
@@ -954,30 +1005,62 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             data: Map<string, TelescopeSummaryState[]>,
             telescopeTiming: Map<string, number>):
             ReactElement {
-        return (
-            <Accordion>
-                {Array.from(data.entries()).map(
-                    ([key, arrayData], index) => (
-                        <Accordion.Item key={key} value={index.toString()}>
-                            <Accordion.Control>
-                                {TelescopeSummaryAccordionLabel(
-                                    key, arrayData, telescopeTiming)}
-                            </Accordion.Control>
-                            <Accordion.Panel>
-                                <Group>
-                                    <Table>
-                                        { observationOpticalSummaryTableHeader() }
-                                        <Table.Tbody>
-                                            {arrayData.map((summaryItem, itemIndex) => (
-                                                OpticalBasicSummaryRow(summaryItem, itemIndex.toString())
-                                             ))}
-                                        </Table.Tbody>
-                                    </Table>
-                                </Group>
-                            </Accordion.Panel>
-                        </Accordion.Item>
-                ))}
-            </Accordion>);
+        if(expandAccordions) {
+            return (
+                <Accordion multiple={expandAccordions}
+                           value={Array.from(data.entries()).map(
+                               (_, index) => ( index.toString()))}>
+                    {Array.from(data.entries()).map(
+                        ([key, arrayData], index) => (
+                            <Accordion.Item key={key} value={index.toString()}>
+                                <Accordion.Control>
+                                    {TelescopeSummaryAccordionLabel(
+                                        key, arrayData, telescopeTiming)}
+                                </Accordion.Control>
+                                <Accordion.Panel>
+                                    <Group>
+                                        <Table>
+                                            {observationOpticalSummaryTableHeader()}
+                                            <Table.Tbody>
+                                                {arrayData.map(
+                                                    (summaryItem, itemIndex) => (
+                                                        OpticalBasicSummaryRow(
+                                                            summaryItem,
+                                                            itemIndex.toString())
+                                                    ))}
+                                            </Table.Tbody>
+                                        </Table>
+                                    </Group>
+                                </Accordion.Panel>
+                            </Accordion.Item>
+                        ))}
+                </Accordion>);
+        } else {
+            return (
+                <Accordion>
+                    {Array.from(data.entries()).map(
+                        ([key, arrayData], index) => (
+                            <Accordion.Item key={key} value={index.toString()}>
+                                <Accordion.Control>
+                                    {TelescopeSummaryAccordionLabel(
+                                        key, arrayData, telescopeTiming)}
+                                </Accordion.Control>
+                                <Accordion.Panel>
+                                    <Group>
+                                        <Table>
+                                            {observationOpticalSummaryTableHeader()}
+                                            <Table.Tbody>
+                                                {arrayData.map((summaryItem, itemIndex) => (
+                                                    OpticalBasicSummaryRow(summaryItem, itemIndex.toString())
+                                                ))}
+                                            </Table.Tbody>
+                                        </Table>
+                                    </Group>
+                                </Accordion.Panel>
+                            </Accordion.Item>
+                        ))}
+                </Accordion>);
+        }
     }
 
     /**
@@ -1007,11 +1090,11 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const handleDownloadPdf = (): void => {
         downloadProposal(
             printRef.current!,
-            proposalsData!,
-            supportingDocs!,
+            proposalData,
+            supportingDocs,
             selectedProposalCode!,
             authToken
-        );
+        ).then();
     };
 
     /**
@@ -1041,7 +1124,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         }, {
             onSuccess: (data: Schemas.ObservingProposal) => {
                 const proposalObsIDs: number [] =
-                    proposalsData!.observations!.map<number>((obs) => obs._id!);
+                    proposalData.observations!.map<number>((obs) => obs._id!);
                 const submittedProposalObsIDs = data.observations!.map<number>(
                     (obs) => obs._id!);
 
@@ -1057,16 +1140,19 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                         queryClient.invalidateQueries({
                             queryKey: ['pst', 'api', 'proposals']
                         }).then(() =>
-                            notifySuccess("Clone Proposal Successful",
-                                proposalsData?.title + " copied to " + data.title)
+                            notifySuccess(
+                                "Clone Proposal Successful",
+                                proposalData.title + " copied to " +
+                                data.title)
                         );
                     },
-                    onError: (error) => {
-                        notifyError("Clone Proposal Failed", getErrorMessage(error))
+                    onError: (error: unknown) => {
+                        notifyError(
+                            "Clone Proposal Failed", getErrorMessage(error))
                     }});
                 }
             },
-            onError: (error) =>
+            onError: (error: unknown) =>
                 notifyError("Clone Proposal Failed", getErrorMessage(error))
         })
     }
@@ -1099,7 +1185,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 <Stack>
                     <Text size={"sm"}>
                         Are you sure you want to permanently remove the
-                        proposal `{proposalsData?.title!}`?
+                        proposal `{proposalData.title!}`?
                     </Text>
                     <Text size={"sm"} c={"yellow.7"}>
                         This action cannot be undone.
@@ -1124,7 +1210,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             }, {
                 onSuccess: () => {
                     notifySuccess("Deletion successful",
-                        "Proposal: '" + proposalsData?.title! +
+                        "Proposal: '" + proposalData.title! +
                         "' has been removed");
                     navigate("/");
 
@@ -1133,9 +1219,9 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     // now deleted 'selectedProposalCode'. The get proposal
                     //API call then fails and a 500 code shows up in the
                     // console.
-                    props.forceUpdate();
+                    forceUpdate();
                 },
-                onError: (error) => {
+                onError: (error: unknown) => {
                     notifyError(
                         "Deletion of proposals optical telescope" +
                         " data failed", getErrorMessage(error))
@@ -1154,7 +1240,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             onSuccess: () => {
                 handleDeletionOfOpticalComponents();
             },
-            onError: (error) =>
+            onError: (error: unknown) =>
                 notifyError("Deletion failed", getErrorMessage(error))
         })
     }
@@ -1165,9 +1251,9 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     return (
         <PanelFrame>
             <PanelHeader
-                itemName={proposalsData?.title!}
+                itemName={proposalData.title!}
                 panelHeading={"Overview"}
-                isLoading={proposalsIsLoading || opticalLoading}
+                isLoading={false}
             />
             <Container fluid>
                 <ContextualHelpButton messageId="Overview" />
@@ -1181,14 +1267,17 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 <Fieldset legend={"Proposal Overview"}>
                     <div ref={printRef}>
                         <DisplayTitle/>
-                        <DisplayInvestigators/>
+                        {showInvestigators &&
+                            <DisplayInvestigators/>
+                        }
                         <DisplaySummary/>
                         <DisplayKind/>
                         <DisplayScientificJustification/>
                         <DisplayTechnicalJustification/>
                         <DisplayObservations/>
                         {polarisMode === POLARIS_MODES.OPTICAL && (
-                            DisplayTelescopeSummary(selectedProposalCode)
+                            DisplayTelescopeSummary(
+                                telescopeOverviewData, telescopeTimingResult)
                         )}
                         <DisplaySupportingDocuments/>
                         <DisplayRelatedProposals/>

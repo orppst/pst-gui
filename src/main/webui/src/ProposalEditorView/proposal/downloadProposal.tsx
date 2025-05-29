@@ -23,7 +23,7 @@ import {
  * @param {HTMLInputElement} element the top page to turn into a pdf blob.
  * @return {Promise<Blob>} the blob of the pdf.
  */
-const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
+export const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
     // convert overview to png in a pdf.
     const canvas = await html2canvas(element);
     const pdfMargin = 2;
@@ -56,7 +56,7 @@ const generatePdf = async (element: HTMLInputElement): Promise<Blob> => {
  * @param selectedProposalCode the selected proposal code.
  * @param authToken the authorization token required for 'fetch' type calls
  */
-const populateSupportingDocuments = (
+export const populateSupportingDocuments = (
     zip: JSZip,
     supportingDocumentData: ObjectIdentifier[],
     selectedProposalCode: string,
@@ -92,6 +92,62 @@ const populateSupportingDocuments = (
         });
     }
 
+/**
+ * fills a json file to the zip.
+ *
+  * @param authToken the authentication token
+ * @param selectedProposalCode the proposal code
+ * @param zip the zip.
+ * @param includeInvestigators flag for adding investigators or not.
+ */
+export function extractJSON(
+        authToken: string, selectedProposalCode: string, zip: JSZip,
+        includeInvestigators: boolean):
+        Promise<void> {
+    return fetchProposalResourceExportProposal({
+        headers: {authorization: `Bearer ${authToken}`},
+        pathParams: {
+            proposalCode: Number(selectedProposalCode),
+            investigatorsIncluded: includeInvestigators
+        }
+    }).then((blob) => {
+        zip.file(JSON_FILE_NAME, blob!)
+    })
+    .catch((error) =>
+        notifyError("Export Error", getErrorMessage(error))
+    )
+}
+
+/**
+ * extracts telescope data.
+ *
+ * @param selectedProposalCode the proposal code
+ * @param promises the list of promises needed to be resolved before zipping.
+ * @param zip the zip.
+ */
+export function extractTelescope(
+        selectedProposalCode: string, promises:  Promise<void>[], zip: JSZip):
+        Promise<void> {
+    return fetchOpticalTelescopeResourceGetProposalObservationIds({
+        proposalID: selectedProposalCode
+    })
+        .then((observationIds: number []) => {
+            observationIds.map((observationId: number) => {
+                promises.push(
+                    fetchOpticalTelescopeResourceLoadTelescopeData({
+                        proposalID: selectedProposalCode,
+                        observationID: observationId.toString()
+                    })
+                        .then((data: SaveTelescopeState) => {
+                            zip.file(
+                                `${OPTICAL_FOLDER_NAME}/obs_${observationId}.json`,
+                                JSON.stringify(data))
+                        })
+                )
+            })
+        })
+}
+
 
 /**
  * handles all the processing for downloading a proposal into a tarball.
@@ -113,6 +169,8 @@ async function downloadProposal(
     notifyInfo("Proposal Export Started",
         "An export has started and the download will begin shortly");
 
+
+
     // get pdf data.
     const pdfData = generatePdf(element);
 
@@ -126,40 +184,10 @@ async function downloadProposal(
     );
 
     // get proposal json.
-    promises.push(
-        fetchProposalResourceExportProposal({
-            headers: {authorization: `Bearer ${authToken}`},
-            pathParams: {
-                proposalCode: Number(selectedProposalCode)
-            }
-        })
-            .then((blob) => {
-                zip.file(JSON_FILE_NAME, blob!)
-            })
-            .catch((error) =>
-                notifyError("Export Error", getErrorMessage(error))
-            )
-    );
+    promises.push(extractJSON(authToken, selectedProposalCode, zip, true));
 
     // process optical data.
-    await fetchOpticalTelescopeResourceGetProposalObservationIds({
-        proposalID: selectedProposalCode
-    })
-        .then((observationIds: number []) => {
-            observationIds.map((observationId: number) => {
-                promises.push(
-                    fetchOpticalTelescopeResourceLoadTelescopeData({
-                        proposalID: selectedProposalCode,
-                        observationID: observationId.toString()
-                    })
-                        .then((data: SaveTelescopeState) => {
-                            zip.file(
-                                `${OPTICAL_FOLDER_NAME}/obs_${observationId}.json`,
-                                JSON.stringify(data))
-                        })
-                )
-            })
-        })
+    await extractTelescope(selectedProposalCode, promises, zip);
 
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(

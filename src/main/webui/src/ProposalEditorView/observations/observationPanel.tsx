@@ -2,7 +2,7 @@ import {useProposalResourceGetObservingProposal,} from 'src/generated/proposalTo
 import {useParams} from "react-router-dom";
 import {RadioTableGenerator} from './radio/observationRadioTable.tsx';
 import {Container, Grid, Group, List, Space} from "@mantine/core";
-import {Observation} from "src/generated/proposalToolSchemas.ts";
+import {Observation, ObservingProposal} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import {ReactElement, useContext} from 'react';
 import ObservationEditModal from './radio/editRadio.modal.tsx';
@@ -12,7 +12,11 @@ import {IconChartLine, IconTarget} from '@tabler/icons-react';
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {OpticalTableGenerator} from "./optical/observationOpticalTable";
 import ObservationOpticalEditModal from "./optical/editOptical.modal";
-import {useOpticalTelescopeResourceGetProposalObservationIds} from "../../util/telescopeComms";
+import {
+    TelescopeTableState,
+    useOpticalTelescopeResourceGetProposalObservationIds,
+    useOpticalTelescopeTableData
+} from "../../util/telescopeComms";
 import {POLARIS_MODES} from "../../constants";
 import {ProposalContext} from "../../App2";
 
@@ -45,12 +49,18 @@ function Observations() {
     selectedProposalCode = selectedProposalCode!;
 
     const proposal = useProposalResourceGetObservingProposal({
-        pathParams: {proposalCode: Number(selectedProposalCode)}
+        pathParams: {proposalCode: Number(selectedProposalCode),
+                     doInvestigatorCheck: true}
     })
     const opticalObservations =
         useOpticalTelescopeResourceGetProposalObservationIds(
             {proposalID: selectedProposalCode}
         )
+
+    // the observation ids for the optical observations.
+    const telescopeTableData = useOpticalTelescopeTableData({
+        proposalID: selectedProposalCode!
+    });
 
     if (proposal.isError) {
         return (
@@ -68,6 +78,14 @@ function Observations() {
             </Container>
         )
     }
+    if(telescopeTableData.isError) {
+        return (
+            <Container>
+                Unable to load optical telescope data:
+                {getErrorMessage(opticalObservations.error)}
+            </Container>
+        )
+    }
 
     /**
      * generates the top header part of the panel.
@@ -80,7 +98,10 @@ function Observations() {
         const title = titleRaw!;
         return (
             <PanelHeader
-                isLoading={proposal.isLoading}
+                isLoading={
+                    proposal.isLoading ||
+                    opticalObservations.isLoading ||
+                    telescopeTableData.isLoading}
                 itemName={title}
                 panelHeading={"Observations"}
             />
@@ -149,19 +170,24 @@ function Observations() {
     /**
      * builds the optical observations.
      *
-     * @param observations: the array of observations for optical.
-     * @param mode: the polaris observing mode.
+     * @param { Observation[] }observations: the array of observations for optical.
+     * @param {POLARIS_MODES} mode: the polaris observing mode.
+     * @param {Map<string, TelescopeTableState>} telescopeTableData the telescope data for any observation in the proposal.
+     * @param {ObservingProposal} proposal the proposal.
      * @constructor
      */
     const OpticalObservations = (
-            observations:  Observation[], mode: POLARIS_MODES):
+            observations:  Observation[], mode: POLARIS_MODES,
+            telescopeTableData: Map<string, TelescopeTableState>,
+            proposal: ObservingProposal):
             ReactElement => {
         return (
             <>
                 {(mode === POLARIS_MODES.BOTH) && (
                   <h2>Optical Observations</h2>
                 )}
-                {OpticalTableGenerator(observations, true)}
+                {OpticalTableGenerator(
+                    observations, telescopeTableData, true, proposal)}
                 <Space h={"xl"}/>
                 <Grid>
                     <Grid.Col span={10}></Grid.Col>
@@ -172,7 +198,8 @@ function Observations() {
     }
 
     // if still loading. present a loading screen.
-    if (proposal.isLoading || opticalObservations.isLoading) {
+    if (proposal.isLoading || opticalObservations.isLoading ||
+            telescopeTableData.isLoading) {
         return (
             <PanelFrame>
                 <Header/>
@@ -213,7 +240,9 @@ function Observations() {
     } else {
         const opticalObservationsStore: Observation[] = [];
         const radioObservationsStore: Observation [] = [];
-        const backendIDs: number [] = opticalObservations.data!;
+        const telescopeData = telescopeTableData.data!;
+        const backendIDs: number[] = Array.from(
+            telescopeData.keys()).map(key => Number(key));
 
         if (proposal.data.observations) {
             for (const observation of proposal.data.observations!) {
@@ -242,7 +271,8 @@ function Observations() {
                 {(polarisMode === POLARIS_MODES.BOTH ||
                     polarisMode === POLARIS_MODES.OPTICAL) && (
                         OpticalObservations(
-                            opticalObservationsStore, polarisMode))}
+                            opticalObservationsStore, polarisMode,
+                            telescopeData, proposal.data))}
             </PanelFrame>
         )
     }

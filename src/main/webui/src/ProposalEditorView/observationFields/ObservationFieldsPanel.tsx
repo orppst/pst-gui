@@ -27,7 +27,8 @@ export default function ObservationFieldsPanel() : ReactElement {
     const {selectedProposalCode} = useParams();
 
     const proposal = useProposalResourceGetObservingProposal({
-        pathParams:{proposalCode: Number(selectedProposalCode)}
+        pathParams:{proposalCode: Number(selectedProposalCode),
+                    doInvestigatorCheck: true}
     })
 
 

@@ -512,7 +512,7 @@ export const useOpticalTelescopeTableData = (
     >({
         queryKey,
         queryFn,
-        select: (backendResponse) => {
+        select: (backendResponse: OpticalTableDataBackendResponse) => {
             // converts weird object into real map for easier processing later
             // on.
             return new Map(Object.entries(backendResponse));
@@ -582,7 +582,7 @@ export const useOpticalOverviewTelescopeTableData = (
     >({
         queryKey,
         queryFn,
-        select: (backendResponse) => {
+        select: (backendResponse: OpticalOverviewTableDataBackendResponse) => {
             // converts weird object into real map for easier processing later
             // on.
             return new Map(Object.entries(backendResponse));

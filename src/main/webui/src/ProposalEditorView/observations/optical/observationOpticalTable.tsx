@@ -1,6 +1,5 @@
 import {
     useObservationResourceAddNewObservation,
-    useObservationResourceGetObservation,
     useObservationResourceRemoveObservation, useProposalResourceRemoveField
 } from "src/generated/proposalToolComponents.ts";
 import {
@@ -12,7 +11,7 @@ import {
 } from '@mantine/core';
 import {modals} from "@mantine/modals";
 import {
-    CalibrationObservation, Observation,
+    CalibrationObservation, Observation, ObservingProposal,
     TargetObservation,
 } from "src/generated/proposalToolSchemas.ts";
 import {useParams} from "react-router-dom";
@@ -23,20 +22,36 @@ import DeleteButton from "src/commonButtons/delete.tsx";
 import {ReactElement} from 'react';
 import {notifyError, notifySuccess} from "../../../commonPanel/notifications.tsx";
 import {
+    TelescopeTableState,
     useOpticalTelescopeResourceDeleteObservationTelescopeData,
-    useOpticalTelescopeTableData,
 } from "../../../util/telescopeComms";
 import ObservationEditModal from "./editOptical.modal";
+import {getTargetName} from "../commonObservationCode";
 
 export type ObservationId = {id: number}
 
 /**
  * creates an Observation row.
  * @param {ObservationId} observationId the observation id.
+ * @param {Map<string, TelescopeTableState>} opticalData the telescope data
+ * @param {Observation} observation the given observation.
+ * @param {ObservingProposal} proposal the propoisla.
  * @return {ReactElement} the react html for the observation row.
  * @constructor
  */
-function ObservationRow(observationId: ObservationId):
+function ObservationRow(
+    {
+        id,
+        opticalData,
+        observation,
+        proposal,
+    }: { // This defines the type of the single props object
+        id: number,
+        opticalData: Map<string, TelescopeTableState>,
+        observation: Observation,
+        proposal: ObservingProposal,
+    }
+        ):
         ReactElement {
 
     const queryClient = useQueryClient();
@@ -61,33 +76,6 @@ function ObservationRow(observationId: ObservationId):
     let targetName = "Unknown";
     let additionTargets = 0;
 
-    // get observation data.
-    const {
-        data: observation,
-        error: observationError,
-        isLoading: observationLoading
-    } = useObservationResourceGetObservation({
-        pathParams: {
-            proposalCode: Number(selectedProposalCode),
-            observationId: observationId.id,
-        },
-    });
-
-    const {
-        data: opticalData,
-        error: opticalError,
-        isLoading: opticalLoading,
-    } = useOpticalTelescopeTableData({
-        proposalID: selectedProposalCode
-    });
-
-    if (observationError) {
-        return <pre>{getErrorMessage(observationError)}</pre>
-    }
-    if (opticalError) {
-        return <pre>{getErrorMessage(opticalError)}</pre>
-    }
-
     /**
      * function for handling deletion of telescope data.
      */
@@ -97,7 +85,7 @@ function ObservationRow(observationId: ObservationId):
         if (selectedProposalCode !== undefined) {
             deleteOpticalTelescope.mutate({
                 proposalID: selectedProposalCode,
-                observationID: observationId.id.toString()
+                observationID: id.toString()
             }, {
                 onSuccess: () => {
                     notifySuccess(
@@ -119,13 +107,13 @@ function ObservationRow(observationId: ObservationId):
      * handles the deletion of an observation.
      */
     const handleDelete = async () => {
-        const fieldIdRaw = observation?.field?._id
+        const fieldIdRaw = observation.field?._id
         const fieldId = fieldIdRaw!
 
         await removeObservation.mutateAsync({
             pathParams: {
                 proposalCode: Number(selectedProposalCode),
-                observationId: observationId.id
+                observationId: id
             }
         }, {
             onSuccess: () => {
@@ -152,9 +140,9 @@ function ObservationRow(observationId: ObservationId):
         children: (
             <>
                 <Text c={"yellow"} size={"sm"}>
-                    {(observation?.["@type"] === 'proposal:TargetObservation')
+                    {(observation["@type"] === 'proposal:TargetObservation')
                         ? 'Target' : 'Calibration'}
-                    Observation of {observation?.target?.length} target(s)
+                    Observation of {observation.target?.length} target(s)
                 </Text>
                 <Space h={"sm"}/>
                 <Text c={GRAY} size={"sm"}>
@@ -177,8 +165,8 @@ function ObservationRow(observationId: ObservationId):
                 proposalCode: Number(selectedProposalCode)
             },
             body: observation?.["@type"] === 'proposal:TargetObservation' ?
-                observation! as TargetObservation :
-                observation! as CalibrationObservation
+                observation as TargetObservation :
+                observation as CalibrationObservation
         }, {
             onSuccess: () => queryClient.invalidateQueries(),
             onError: (error) =>
@@ -190,12 +178,11 @@ function ObservationRow(observationId: ObservationId):
      * set main target name and number of additional targets
      * provided everything is defined
      */
-    if(observation?.target !== undefined
-            && observation.target[0] !== undefined
-            && observation.target[0].sourceName !== undefined) {
-        targetName = observation.target[0].sourceName;
+
+    if(observation?.target !== undefined) {
         additionTargets = observation.target.length - 1;
     }
+    targetName = getTargetName(observation, proposal);
 
     /**
      * handles the confirmation from the user that they intend to clone
@@ -225,15 +212,8 @@ function ObservationRow(observationId: ObservationId):
         onCancel:() => console.log('Cancel clone'),
     })
 
-    // if loading, present a loading.
-    if (observationLoading || opticalLoading) {
-        return (
-            <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
-        );
-    }
-
     // get the row data
-    const opticalDataRow = opticalData!.get(observation!._id!.toString())!;
+    const opticalDataRow = opticalData!.get(observation._id!.toString())!;
 
     //handle error row.
     if(opticalDataRow == undefined) {
@@ -253,7 +233,7 @@ function ObservationRow(observationId: ObservationId):
                     'target' : 'calibration'}
             </Table.Td>
             <Table.Td>
-                {observation?.field?.name}
+                {observation.field?.name}
             </Table.Td>
             <Table.Td>
                 {opticalDataRow.telescopeName}
@@ -264,7 +244,6 @@ function ObservationRow(observationId: ObservationId):
             <Table.Td>
                 <Group align={"right"}>
                     {
-                        observationLoading ? 'Loading...' :
                         <ObservationEditModal observation={observation}/>
                     }
                     <CloneButton toolTipLabel={"clone"}
@@ -279,13 +258,18 @@ function ObservationRow(observationId: ObservationId):
 
 /**
  * generates the observation table html.
- * @param observations: the observations array.
- * @param showButtons: boolean flag for showing buttons.
+ * @param observations the observations array.
+ * @param {Map<string, TelescopeTableState>} opticalData: the telescope data.
+ * @param {boolean} showButtons boolean flag for showing buttons.
+ * @param {ObservingProposal} proposal the proposal data.
  * @return {React.ReactElement} the dynamic html for the observation table.
  * @constructor
  */
 export const OpticalTableGenerator = (
-        observations:  Observation[], showButtons: boolean):
+        observations:  Observation[],
+        opticalData: Map<string, TelescopeTableState>,
+        showButtons: boolean,
+        proposal: ObservingProposal):
         ReactElement => {
     return (
         <>
@@ -298,6 +282,9 @@ export const OpticalTableGenerator = (
                                 <ObservationRow
                                     id={observation._id!}
                                     key={observation._id!}
+                                    opticalData={opticalData}
+                                    observation={observation}
+                                    proposal={proposal}
                                 />
                             )
                         })
@@ -310,7 +297,7 @@ export const OpticalTableGenerator = (
 
 /**
  * returns the header for the observation optical table.
- * @param showButtons: boolean flag for showing the buttons.
+ * @param {boolean} showButtons boolean flag for showing the buttons.
  * @return {React.ReactElement} the html for the table header.
  */
 // eslint-disable-next-line react-refresh/only-export-components

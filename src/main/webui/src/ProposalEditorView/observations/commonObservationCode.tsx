@@ -1,4 +1,4 @@
-import {Target} from "../../generated/proposalToolSchemas";
+import {Observation, ObservingProposal, Target} from "../../generated/proposalToolSchemas";
 import {queryKeyProposals} from "../../queryKeyProposals";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications";
 import getErrorMessage from "../../errorHandling/getErrorMessage";
@@ -112,4 +112,45 @@ export function handleTechnicalGoals(
             notifyError("Failed to update technical goal",
                 getErrorMessage(error)),
     })
+}
+
+/**
+ * returns the target name
+ * @param {Observation} observation the observation.
+ * @param {ObservingProposal} proposalData the proposal data.
+ */
+export const getTargetName = (
+        observation:  Observation,
+        proposalData:  ObservingProposal): string => {
+    //get all the target objects
+    const targetObjs = [] as Target[];
+
+    // safety check.
+    if (proposalData !== undefined) {
+        observation.target?.map((obsTarget) => {
+            const targetObj = proposalData.targets!.find((target) =>
+                target._id === obsTarget)!
+
+            targetObjs.push(targetObj);
+        });
+    }
+
+    // create a string of the first target names
+    if (targetObjs.length != 0) {
+        let targetNames = targetObjs[0].sourceName!;
+        let targetIndex = 0;
+
+        while (++targetIndex < 3
+        && targetIndex < targetObjs.length) {
+            targetNames += ", " + targetObjs[targetIndex].sourceName;
+        }
+
+        const remaining = targetObjs.length - targetIndex;
+
+        if (remaining > 0) {
+            targetNames += ", and " + remaining + " more";
+        }
+        return targetNames;
+    }
+    return "";
 }
