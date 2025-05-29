@@ -169,6 +169,8 @@ async function downloadProposal(
     notifyInfo("Proposal Export Started",
         "An export has started and the download will begin shortly");
 
+
+
     // get pdf data.
     const pdfData = generatePdf(element);
 
