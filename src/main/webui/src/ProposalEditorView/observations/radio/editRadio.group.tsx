@@ -309,6 +309,7 @@ function ObservationRadioEditGroup(props: ObservationProps): ReactElement {
                         //the ts-ignore is required due to the mutation expecting a TimingWindow type
                         //with start and end times as ISO-strings but the API excepting only the
                         //number of milliseconds since the posix epoch
+                        // @ts-ignore
                         replaceTimingWindow.mutate({
                             pathParams: {
                                 proposalCode: Number(selectedProposalCode),

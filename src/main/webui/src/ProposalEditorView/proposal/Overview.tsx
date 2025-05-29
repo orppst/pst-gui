@@ -13,9 +13,8 @@ import {
     CalibrationTargetIntendedUse,
     Investigator,
     ObjectIdentifier,
-    Observation,
+    Observation, ObservingProposal,
     RealQuantity,
-    Target,
 } from 'src/generated/proposalToolSchemas.ts';
 import {IconEyeStar, IconNorthStar, IconTelescope} from '@tabler/icons-react';
 import {ReactElement, RefObject, useContext, useRef} from 'react';
@@ -42,6 +41,7 @@ import {
 import {ProposalContext, useToken} from "../../App2";
 import {OpticalTableGenerator} from "../observations/optical/observationOpticalTable";
 import * as Schemas from "../../generated/proposalToolSchemas";
+import {getTargetName} from "../observations/commonObservationCode";
 
 /*
       title    -- string
@@ -301,7 +301,9 @@ function ObservationRadioAccordionContent(
  * @constructor
  */
 function ObservationOpticalAccordionContent(
-    proposalCode: number, targetIds: number[], observation: Observation):
+    proposalCode: number, targetIds: number[], observation: Observation,
+    telescopeData: Map<string, TelescopeTableState>,
+    proposalData: ObservingProposal):
     ReactElement {
 
     const listOfTargets = [] as ObjectIdentifier [];
@@ -314,7 +316,8 @@ function ObservationOpticalAccordionContent(
     return (
         //TODO: consider a Grid instead of Group
         <Group>
-            {OpticalTableGenerator(observations, false)}
+            {OpticalTableGenerator(
+                observations, telescopeData, false, proposalData)}
         </Group>
     )
 }
@@ -740,46 +743,13 @@ export function OverviewPanelInternal(
                     {ObservationOpticalAccordionContent(
                         Number(selectedProposalCode),
                         observation.target as number [],
-                        observation)
+                        observation,
+                        telescopeData,
+                        proposalData)
                     }
                 </Accordion.Panel>
             </Accordion.Item>
         )
-    }
-
-    /**
-     * returns the target name
-     * @param observation
-     */
-    const getTargetName = (observation:  Observation): string => {
-        //get all the target objects
-        const targetObjs = [] as Target[];
-
-        observation.target?.map((obsTarget) => {
-            const targetObj = proposalData.targets?.find((target) =>
-                target._id === obsTarget)!
-
-            targetObjs.push(targetObj);
-        });
-
-        // create a string of the first target names
-        if (targetObjs.length != 0) {
-            let targetNames = targetObjs[0].sourceName!;
-            let targetIndex = 0;
-
-            while (++targetIndex < 3
-            && targetIndex < targetObjs.length) {
-                targetNames += ", " + targetObjs[targetIndex].sourceName;
-            }
-
-            const remaining = targetObjs.length - targetIndex;
-
-            if (remaining > 0) {
-                targetNames += ", and " + remaining + " more";
-            }
-            return targetNames;
-        }
-        return "";
     }
 
     /**
@@ -791,7 +761,7 @@ export function OverviewPanelInternal(
     const DisplayObservations = (): ReactElement => {
         const observations =
             proposalData.observations?.map((observation, index) => {
-                const targetNames = getTargetName(observation);
+                const targetNames = getTargetName(observation, proposalData);
 
                 const observationType =
                     observation["@type"] === 'proposal:TargetObservation' ?
@@ -827,7 +797,7 @@ export function OverviewPanelInternal(
                                                    value={String(index)}/>
                         }
                     default:
-                        notifyError("invalid polaris mode", polarisMode)
+                        notifyError("invalid polaris mode", polarisMode);
                 }
             })
 
@@ -842,7 +812,7 @@ export function OverviewPanelInternal(
                                        proposalData.observations.map(
                                            (_, index) => index.toString())}>
                             {observations}
-                        </Accordion> :
+                        </Accordion>
                     </>
                 )
             } else {
@@ -851,7 +821,7 @@ export function OverviewPanelInternal(
                         <h3>Observations</h3>
                         <Accordion>
                             {observations}
-                        </Accordion> :
+                        </Accordion>
                     </>
                 )
             }
@@ -937,7 +907,7 @@ export function OverviewPanelInternal(
                     {telescopeTimeValue: observationData.telescopeTimeValue,
                      telescopeTimeUnit: observationData.telescopeTimeUnit,
                      condition: observationData.condition,
-                     targetName: getTargetName(obs),
+                     targetName: getTargetName(obs, proposalData),
                      telescopeName: observationData.telescopeName}
                 )
             } else {
@@ -945,7 +915,7 @@ export function OverviewPanelInternal(
                     telescopeTimeValue: observationData.telescopeTimeValue,
                     telescopeTimeUnit: observationData.telescopeTimeUnit,
                     condition: observationData.condition,
-                    targetName: getTargetName(obs),
+                    targetName: getTargetName(obs, proposalData),
                     telescopeName: observationData.telescopeName
                 }]
                 summaryData.set(key, array);
