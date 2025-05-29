@@ -3,10 +3,10 @@ import {useParams} from "react-router-dom";
 import {
     useJustificationsResourceGetJustification,
 } from "src/generated/proposalToolComponents.ts";
-import JustificationsTable from "./justifications.table.tsx";
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import {Loader} from "@mantine/core";
+import JustificationsTabs from "./justifications.tabs.tsx";
 
 export type WhichJustification = 'scientific' | 'technical';
 
@@ -28,9 +28,11 @@ export default function JustificationsPanel() : ReactElement {
             <ContextualHelpButton messageId="MaintJustList" />
             {
                 scientificJustification.isLoading || technicalJustification.isLoading ?
-                    <Loader /> : <JustificationsTable
+                    <Loader /> :
+                    <JustificationsTabs
                         scientific={scientificJustification.data!}
-                        technical={technicalJustification.data!} />
+                        technical={technicalJustification.data!}
+                    />
             }
         </PanelFrame>
     )
