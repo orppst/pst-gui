@@ -50,10 +50,10 @@ function JustificationsHelp() : ReactElement {
                         <Text size={"sm"}>
                             The text that you supply for both justifications will be inserted into a template
                             LaTex file saved as 'main.tex' in the backend. The text is inserted under a relevant
-                            LaTex 'section' heading. You may use any LaTeX commands that are available to use under
-                            a 'section' heading. Indeed, to cite references you should use the \cite command in
-                            your text and provide a (single) bibtex file (.bib) as a resource file. This will be
-                            renamed to "refs.bib" in the backend.
+                            LaTex 'section' heading. You may use any LaTeX commands in your text that are available
+                            to use under a 'section' heading. Indeed, to cite references you should use the \cite
+                            command in your text and provide a (single) bibtex file (.bib) as a resource file. This
+                            will be renamed to "refs.bib" in the backend.
                         </Text>
                         <Text size={"sm"}>
                             To make the insertion of figures into your document easier, we have provided custom
@@ -72,7 +72,7 @@ function JustificationsHelp() : ReactElement {
                             and 1, defining the width of the figure in terms of the text-width. It defaults to
                             0.5 for the single figure case, and is an even division of the total text-width for
                             the multiple figure cases. If supplied, the width parameter for the multiple figure
-                            cases applies to each of the images in the figure, rather than the whole figure.
+                            cases applies to each of the images in the figure, rather than the whole figure itself.
                             The 'filename' parameter should match the name of the image file that you wish to
                             insert, excluding the dot extension.
                         </Text>
@@ -120,8 +120,8 @@ function JustificationsHelp() : ReactElement {
                         </Text>
                         <Text size={"sm"}>
                             If successful, you will receive a message to that effect in the modal, and the
-                            "Download PDF" at the bottom of the modal button will be enabled.
-                            Pressing this button downloads the resulting PDF file of your Justifications.
+                            "Download PDF" button at the bottom of the modal will be enabled.
+                            Clicking this button downloads the resulting PDF file of your Justifications.
                         </Text>
                         <Text size={"sm"}>
                             If the LaTeX compilation fails then the text area will display a list of errors,
