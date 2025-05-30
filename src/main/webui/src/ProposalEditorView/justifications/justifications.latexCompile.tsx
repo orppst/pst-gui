@@ -49,6 +49,7 @@ function JustificationsLatexCompile() : ReactElement {
                 onClose={close}
                 title={"LaTeX Compilation Status"}
                 closeOnClickOutside={false}
+                size={"40%"}
             >
                 <JustificationsLatexStatus latexStatus={latexStatus}/>
             </Modal>

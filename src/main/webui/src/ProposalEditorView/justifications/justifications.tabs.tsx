@@ -1,18 +1,17 @@
 import {ReactElement} from "react";
 import {Grid, Space, Stack, Tabs} from "@mantine/core";
 import JustificationsHelp from "./justifications.help.tsx";
-import JustificationsScientific from "./justifications.scientific.tsx";
-import JustificationsTechnical from "./justifications.technical.tsx";
 import JustificationsResourceFiles from "./justifcations.resourceFiles.tsx";
 import {Justification} from "../../generated/proposalToolSchemas.ts";
 import JustificationsLatexCompile from "./justifications.latexCompile.tsx";
 import {useViewportSize} from "@mantine/hooks";
+import JustificationsText from "./justifications.text.tsx";
 
 /*
-Dev Note: The code for scientific and technical justifications is very similar, which breaks the
-guidelines for DRY. However, it is more convenient in terms of readability and maintenance to keep
-them separate. It is unlikely that there will be more than two justification "types", so this is not a
-problem.
+Dev Note: The code for scientific and technical justifications is very similar (by which we mean the
+same except for a name change), which breaks the guidelines for DRY. However, it is more convenient
+for the API implementation to keep them separate, hence the separation here. It is unlikely that there
+will be more than two justification "types", so this is not a problem.
  */
 
 export default
@@ -41,21 +40,23 @@ function JustificationsTabs(
                     </Tabs.List>
 
                     <Tabs.Panel value={'scientific'} mt={"sm"}>
-                        <JustificationsScientific
-                            scientific={scientific}
+                        <JustificationsText
+                            justification={scientific}
+                            which={"scientific"}
                             vpHeight={height}
                         />
                     </Tabs.Panel>
 
                     <Tabs.Panel value={'technical'} mt={"sm"}>
-                        <JustificationsTechnical
-                            technical={technical}
+                        <JustificationsText
+                            justification={technical}
+                            which={"technical"}
                             vpHeight={height}
                         />
                     </Tabs.Panel>
 
                     <Tabs.Panel value={'userHelp'} mt={"sm"}>
-                        <JustificationsHelp />
+                        <JustificationsHelp vpHeight={height}/>
                     </Tabs.Panel>
                 </Tabs>
             </Grid.Col>
@@ -67,7 +68,5 @@ function JustificationsTabs(
                 </Stack>
             </Grid.Col>
         </Grid>
-
-
     )
 }

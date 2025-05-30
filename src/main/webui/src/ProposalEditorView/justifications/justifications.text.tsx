@@ -1,29 +1,35 @@
 import {ReactElement} from "react";
-import {Fieldset, Group} from "@mantine/core";
-import {FormSubmitButton} from "../../commonButtons/save.tsx";
-import {useJustificationsResourceUpdateScientificJustification} from "../../generated/proposalToolComponents.ts";
+import {useParams} from "react-router-dom";
+import {useQueryClient} from "@tanstack/react-query";
+import {
+    useJustificationsResourceUpdateJustification,
+} from "../../generated/proposalToolComponents.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {useParams} from "react-router-dom";
-import {useQueryClient} from "@tanstack/react-query";
-import {Justification} from "../../generated/proposalToolSchemas.ts";
+import {Fieldset, Group, Text} from "@mantine/core";
 import {JustificationTextArea} from "./justifications.textArea.tsx";
+import {FormSubmitButton} from "../../commonButtons/save.tsx";
+import {Justification} from "../../generated/proposalToolSchemas.ts";
+
+function capitalizeFirstChar(string : string) : string {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 export default
-function JustificationsScientific(
-    {scientific, vpHeight} : {scientific: Justification, vpHeight: number})
-    : ReactElement {
+function JustificationsText(
+    {justification, which, vpHeight} : {justification: Justification, which: string, vpHeight: number}
+) : ReactElement {
 
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
 
     const scientificMutation =
-        useJustificationsResourceUpdateScientificJustification();
+        useJustificationsResourceUpdateJustification();
 
-    const scientificForm: UseFormReturnType<{ text: string }> =
+    const justificationForm: UseFormReturnType<{ text: string }> =
         useForm<{text: string}>({
-            initialValues: {text: scientific.text ?? "" },
+            initialValues: {text: justification.text ?? "" },
             validate: {
                 text: (value: string | undefined) =>
                     (value === "" || value === undefined ?
@@ -31,15 +37,17 @@ function JustificationsScientific(
             }
         });
 
-    const handleScientificSubmit = scientificForm.onSubmit((values) => {
+    const handleScientificSubmit = justificationForm.onSubmit((values) => {
         scientificMutation.mutate({
             pathParams: {
-                proposalCode: Number(selectedProposalCode)
+                proposalCode: Number(selectedProposalCode),
+                which: which
             },
             body: {text: values.text, format: 'latex'}
         }, {
             onSuccess: () => {
-                notifySuccess("Update successful", "scientific justification text updated");
+                notifySuccess("Update successful", which + " justification text updated");
+                justificationForm.resetDirty(); //needed to disable the save button after a successful update
                 queryClient.invalidateQueries().then();
             },
             onError: (error) =>
@@ -48,17 +56,22 @@ function JustificationsScientific(
     });
 
     return (
-        <Fieldset legend={"Scientific Justification"}>
+        <Fieldset legend={capitalizeFirstChar(which) + " Text"}>
+            {justificationForm.isDirty() &&
+                <Text size={"sm"} c={"red"}>
+                    *Unsaved changes to {which} justification text.
+                </Text>
+            }
             <form onSubmit={handleScientificSubmit}>
                 <JustificationTextArea
-                    form={scientificForm}
+                    form={justificationForm}
                     format={"latex"}
                     vpHeight={vpHeight}
                 />
                 <Group grow mt={"xs"}>
                     <FormSubmitButton
                         toolTipLabel={"save changes to text"}
-                        form={scientificForm}
+                        form={justificationForm}
                         variant={"filled"}
                         toolTipLabelPosition={"bottom"}
                         notValidToolTipLabel={"Justification text must not be blank"}
