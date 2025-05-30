@@ -1,7 +1,7 @@
 import {UseFormReturnType} from "@mantine/form";
 import {TextFormats} from "../../generated/proposalToolSchemas.ts";
 import {ReactElement} from "react";
-import {Paper, ScrollArea} from "@mantine/core";
+import {Group, Paper, ScrollArea, Text} from "@mantine/core";
 import Editor from "react-simple-code-editor";
 import {highlight, languages} from "prismjs";
 import "prismjs/themes/prism.css";
@@ -13,8 +13,14 @@ import {MAX_CHARS_FOR_JUSTIFICATION} from "../../constants.tsx";
 export
 const JustificationTextArea =
     ({form, format, vpHeight} : {form: UseFormReturnType<{text: string}>, format: TextFormats, vpHeight: number})
-        : ReactElement => {
+        : ReactElement =>
+    {
+        const remaining = MAX_CHARS_FOR_JUSTIFICATION - form.getValues().text?.length;
+
+        const remainingColour = remaining == 0 ? "red" : remaining < 300 ? "yellow" : "green";
+
         return (
+            <>
             <ScrollArea.Autosize mah={vpHeight * 0.62} scrollbars={"y"} type={"auto"}>
                 <Paper withBorder={true} bg={"gray.1"} c={"black"} p={"xs"} my={"xs"} mr={"xs"}>
                     <Editor
@@ -37,5 +43,14 @@ const JustificationTextArea =
                     />
                 </Paper>
             </ScrollArea.Autosize>
+                {
+                    remaining < 600 &&
+                    <Group justify={'flex-end'}>
+                        <Text size={"xs"} c={remainingColour}>
+                            characters used: {form.getValues().text?.length ?? 0} / {MAX_CHARS_FOR_JUSTIFICATION}
+                        </Text>
+                    </Group>
+                }
+            </>
         )
     }
