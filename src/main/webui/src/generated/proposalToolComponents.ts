@@ -8774,6 +8774,455 @@ export const useInvestigatorResourceChangeInvestigatorKind = (
   });
 };
 
+export type JustificationsResourceCheckForPdfPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceCheckForPdfError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceCheckForPdfVariables = {
+  pathParams: JustificationsResourceCheckForPdfPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceCheckForPdf = (
+  variables: JustificationsResourceCheckForPdfVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceCheckForPdfError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceCheckForPdfPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/checkForPdf",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceCheckForPdf = <TData = undefined,>(
+  variables: JustificationsResourceCheckForPdfVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      JustificationsResourceCheckForPdfError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    JustificationsResourceCheckForPdfError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/checkForPdf",
+      operationId: "justificationsResourceCheckForPdf",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchJustificationsResourceCheckForPdf(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type JustificationsResourceCreatePDFLaTexPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceCreatePDFLaTexQueryParams = {
+  warningsAsErrors?: boolean;
+};
+
+export type JustificationsResourceCreatePDFLaTexError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceCreatePDFLaTexVariables = {
+  pathParams: JustificationsResourceCreatePDFLaTexPathParams;
+  queryParams?: JustificationsResourceCreatePDFLaTexQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceCreatePDFLaTex = (
+  variables: JustificationsResourceCreatePDFLaTexVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceCreatePDFLaTexError,
+    undefined,
+    {},
+    JustificationsResourceCreatePDFLaTexQueryParams,
+    JustificationsResourceCreatePDFLaTexPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/latexPdf",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceCreatePDFLaTex = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceCreatePDFLaTexError,
+      JustificationsResourceCreatePDFLaTexVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceCreatePDFLaTexError,
+    JustificationsResourceCreatePDFLaTexVariables
+  >({
+    mutationFn: (variables: JustificationsResourceCreatePDFLaTexVariables) =>
+      fetchJustificationsResourceCreatePDFLaTex({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type JustificationsResourceDownloadLatexPdfPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceDownloadLatexPdfError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceDownloadLatexPdfVariables = {
+  pathParams: JustificationsResourceDownloadLatexPdfPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceDownloadLatexPdf = (
+  variables: JustificationsResourceDownloadLatexPdfVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceDownloadLatexPdfError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceDownloadLatexPdfPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/download",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceDownloadLatexPdf = <TData = undefined,>(
+  variables: JustificationsResourceDownloadLatexPdfVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      JustificationsResourceDownloadLatexPdfError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    JustificationsResourceDownloadLatexPdfError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/download",
+      operationId: "justificationsResourceDownloadLatexPdf",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchJustificationsResourceDownloadLatexPdf(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type JustificationsResourceGetLatexPdfPagesPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceGetLatexPdfPagesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceGetLatexPdfPagesVariables = {
+  pathParams: JustificationsResourceGetLatexPdfPagesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceGetLatexPdfPages = (
+  variables: JustificationsResourceGetLatexPdfPagesVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceGetLatexPdfPagesError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceGetLatexPdfPagesPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/pages",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceGetLatexPdfPages = <TData = undefined,>(
+  variables: JustificationsResourceGetLatexPdfPagesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      JustificationsResourceGetLatexPdfPagesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    JustificationsResourceGetLatexPdfPagesError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/pages",
+      operationId: "justificationsResourceGetLatexPdfPages",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchJustificationsResourceGetLatexPdfPages(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type JustificationsResourceGetLatexResourceFilesPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceGetLatexResourceFilesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceGetLatexResourceFilesResponse = string[];
+
+export type JustificationsResourceGetLatexResourceFilesVariables = {
+  pathParams: JustificationsResourceGetLatexResourceFilesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceGetLatexResourceFiles = (
+  variables: JustificationsResourceGetLatexResourceFilesVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    JustificationsResourceGetLatexResourceFilesResponse,
+    JustificationsResourceGetLatexResourceFilesError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceGetLatexResourceFilesPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/resourceFile",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceGetLatexResourceFiles = <
+  TData = JustificationsResourceGetLatexResourceFilesResponse,
+>(
+  variables: JustificationsResourceGetLatexResourceFilesVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      JustificationsResourceGetLatexResourceFilesResponse,
+      JustificationsResourceGetLatexResourceFilesError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    JustificationsResourceGetLatexResourceFilesResponse,
+    JustificationsResourceGetLatexResourceFilesError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/justifications/resourceFile",
+      operationId: "justificationsResourceGetLatexResourceFiles",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchJustificationsResourceGetLatexResourceFiles(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type JustificationsResourceAddLatexResourceFilePathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceAddLatexResourceFileError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceAddLatexResourceFileRequestBody = {
+  document?: Schemas.UploadLatexResourceSchema;
+};
+
+export type JustificationsResourceAddLatexResourceFileVariables = {
+  body?: JustificationsResourceAddLatexResourceFileRequestBody;
+  pathParams: JustificationsResourceAddLatexResourceFilePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceAddLatexResourceFile = (
+  variables: JustificationsResourceAddLatexResourceFileVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceAddLatexResourceFileError,
+    JustificationsResourceAddLatexResourceFileRequestBody,
+    {},
+    {},
+    JustificationsResourceAddLatexResourceFilePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/resourceFile",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceAddLatexResourceFile = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceAddLatexResourceFileError,
+      JustificationsResourceAddLatexResourceFileVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceAddLatexResourceFileError,
+    JustificationsResourceAddLatexResourceFileVariables
+  >({
+    mutationFn: (
+      variables: JustificationsResourceAddLatexResourceFileVariables,
+    ) =>
+      fetchJustificationsResourceAddLatexResourceFile({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type JustificationsResourceRemoveLatexResourceFilePathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceRemoveLatexResourceFileError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceRemoveLatexResourceFileVariables = {
+  pathParams: JustificationsResourceRemoveLatexResourceFilePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceRemoveLatexResourceFile = (
+  variables: JustificationsResourceRemoveLatexResourceFileVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceRemoveLatexResourceFileError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceRemoveLatexResourceFilePathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/resourceFile",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceRemoveLatexResourceFile = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceRemoveLatexResourceFileError,
+      JustificationsResourceRemoveLatexResourceFileVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceRemoveLatexResourceFileError,
+    JustificationsResourceRemoveLatexResourceFileVariables
+  >({
+    mutationFn: (
+      variables: JustificationsResourceRemoveLatexResourceFileVariables,
+    ) =>
+      fetchJustificationsResourceRemoveLatexResourceFile({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type JustificationsResourceGetJustificationPathParams = {
   /**
    * @format int64
@@ -8955,404 +9404,6 @@ export const useJustificationsResourceAddJustification = (
   >({
     mutationFn: (variables: JustificationsResourceAddJustificationVariables) =>
       fetchJustificationsResourceAddJustification({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
-export type JustificationsResourceCheckForPdfPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type JustificationsResourceCheckForPdfError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceCheckForPdfVariables = {
-  pathParams: JustificationsResourceCheckForPdfPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceCheckForPdf = (
-  variables: JustificationsResourceCheckForPdfVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    JustificationsResourceCheckForPdfError,
-    undefined,
-    {},
-    {},
-    JustificationsResourceCheckForPdfPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/checkForPdf",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceCheckForPdf = <TData = undefined,>(
-  variables: JustificationsResourceCheckForPdfVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      undefined,
-      JustificationsResourceCheckForPdfError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    undefined,
-    JustificationsResourceCheckForPdfError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/checkForPdf",
-      operationId: "justificationsResourceCheckForPdf",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchJustificationsResourceCheckForPdf(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type JustificationsResourceCreatePDFLaTexPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type JustificationsResourceCreatePDFLaTexQueryParams = {
-  warningsAsErrors?: boolean;
-};
-
-export type JustificationsResourceCreatePDFLaTexError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceCreatePDFLaTexVariables = {
-  pathParams: JustificationsResourceCreatePDFLaTexPathParams;
-  queryParams?: JustificationsResourceCreatePDFLaTexQueryParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceCreatePDFLaTex = (
-  variables: JustificationsResourceCreatePDFLaTexVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    JustificationsResourceCreatePDFLaTexError,
-    undefined,
-    {},
-    JustificationsResourceCreatePDFLaTexQueryParams,
-    JustificationsResourceCreatePDFLaTexPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceCreatePDFLaTex = <TData = undefined,>(
-  variables: JustificationsResourceCreatePDFLaTexVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      undefined,
-      JustificationsResourceCreatePDFLaTexError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    undefined,
-    JustificationsResourceCreatePDFLaTexError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf",
-      operationId: "justificationsResourceCreatePDFLaTex",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchJustificationsResourceCreatePDFLaTex(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type JustificationsResourceDownloadLatexPdfPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type JustificationsResourceDownloadLatexPdfError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceDownloadLatexPdfVariables = {
-  pathParams: JustificationsResourceDownloadLatexPdfPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceDownloadLatexPdf = (
-  variables: JustificationsResourceDownloadLatexPdfVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    JustificationsResourceDownloadLatexPdfError,
-    undefined,
-    {},
-    {},
-    JustificationsResourceDownloadLatexPdfPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf/download",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceDownloadLatexPdf = <TData = undefined,>(
-  variables: JustificationsResourceDownloadLatexPdfVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      undefined,
-      JustificationsResourceDownloadLatexPdfError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    undefined,
-    JustificationsResourceDownloadLatexPdfError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf/download",
-      operationId: "justificationsResourceDownloadLatexPdf",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchJustificationsResourceDownloadLatexPdf(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type JustificationsResourceGetLatexResourceFilesPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type JustificationsResourceGetLatexResourceFilesError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceGetLatexResourceFilesResponse = string[];
-
-export type JustificationsResourceGetLatexResourceFilesVariables = {
-  pathParams: JustificationsResourceGetLatexResourceFilesPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceGetLatexResourceFiles = (
-  variables: JustificationsResourceGetLatexResourceFilesVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    JustificationsResourceGetLatexResourceFilesResponse,
-    JustificationsResourceGetLatexResourceFilesError,
-    undefined,
-    {},
-    {},
-    JustificationsResourceGetLatexResourceFilesPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceGetLatexResourceFiles = <
-  TData = JustificationsResourceGetLatexResourceFilesResponse,
->(
-  variables: JustificationsResourceGetLatexResourceFilesVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      JustificationsResourceGetLatexResourceFilesResponse,
-      JustificationsResourceGetLatexResourceFilesError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    JustificationsResourceGetLatexResourceFilesResponse,
-    JustificationsResourceGetLatexResourceFilesError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
-      operationId: "justificationsResourceGetLatexResourceFiles",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchJustificationsResourceGetLatexResourceFiles(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type JustificationsResourceAddLatexResourceFilePathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type JustificationsResourceAddLatexResourceFileError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceAddLatexResourceFileRequestBody = {
-  document?: Schemas.UploadLatexResourceSchema;
-};
-
-export type JustificationsResourceAddLatexResourceFileVariables = {
-  body?: JustificationsResourceAddLatexResourceFileRequestBody;
-  pathParams: JustificationsResourceAddLatexResourceFilePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceAddLatexResourceFile = (
-  variables: JustificationsResourceAddLatexResourceFileVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    JustificationsResourceAddLatexResourceFileError,
-    JustificationsResourceAddLatexResourceFileRequestBody,
-    {},
-    {},
-    JustificationsResourceAddLatexResourceFilePathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceAddLatexResourceFile = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      JustificationsResourceAddLatexResourceFileError,
-      JustificationsResourceAddLatexResourceFileVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    JustificationsResourceAddLatexResourceFileError,
-    JustificationsResourceAddLatexResourceFileVariables
-  >({
-    mutationFn: (
-      variables: JustificationsResourceAddLatexResourceFileVariables,
-    ) =>
-      fetchJustificationsResourceAddLatexResourceFile({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
-export type JustificationsResourceRemoveLatexResourceFilePathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-  which: string;
-};
-
-export type JustificationsResourceRemoveLatexResourceFileError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceRemoveLatexResourceFileVariables = {
-  pathParams: JustificationsResourceRemoveLatexResourceFilePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceRemoveLatexResourceFile = (
-  variables: JustificationsResourceRemoveLatexResourceFileVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    JustificationsResourceRemoveLatexResourceFileError,
-    undefined,
-    {},
-    {},
-    JustificationsResourceRemoveLatexResourceFilePathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceRemoveLatexResourceFile = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      JustificationsResourceRemoveLatexResourceFileError,
-      JustificationsResourceRemoveLatexResourceFileVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    undefined,
-    JustificationsResourceRemoveLatexResourceFileError,
-    JustificationsResourceRemoveLatexResourceFileVariables
-  >({
-    mutationFn: (
-      variables: JustificationsResourceRemoveLatexResourceFileVariables,
-    ) =>
-      fetchJustificationsResourceRemoveLatexResourceFile({
         ...fetcherOptions,
         ...variables,
       }),
@@ -13280,29 +13331,29 @@ export type QueryOperation =
       variables: InvestigatorResourceGetInvestigatorVariables;
     }
   | {
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}";
-      operationId: "justificationsResourceGetJustification";
-      variables: JustificationsResourceGetJustificationVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/checkForPdf";
+      path: "/pst/api/proposals/{proposalCode}/justifications/checkForPdf";
       operationId: "justificationsResourceCheckForPdf";
       variables: JustificationsResourceCheckForPdfVariables;
     }
   | {
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf";
-      operationId: "justificationsResourceCreatePDFLaTex";
-      variables: JustificationsResourceCreatePDFLaTexVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexPdf/download";
+      path: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/download";
       operationId: "justificationsResourceDownloadLatexPdf";
       variables: JustificationsResourceDownloadLatexPdfVariables;
     }
   | {
-      path: "/pst/api/proposals/{proposalCode}/justifications/{which}/latexResource";
+      path: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/pages";
+      operationId: "justificationsResourceGetLatexPdfPages";
+      variables: JustificationsResourceGetLatexPdfPagesVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/justifications/resourceFile";
       operationId: "justificationsResourceGetLatexResourceFiles";
       variables: JustificationsResourceGetLatexResourceFilesVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/justifications/{which}";
+      operationId: "justificationsResourceGetJustification";
+      variables: JustificationsResourceGetJustificationVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/kind";

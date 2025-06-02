@@ -48,7 +48,9 @@ export const contextualHelpMessages = [
   }, {
     id: "MaintJustList-eng",
     message: " "
-         + " Click the Edit button next to the scientific or technical justification summary in order to edit it."
+         + " Here you input the texts for your scientific and technical justifications, as well as uploading any resource files (images and a single bibtex - renamed to \"refs.bib\" in the backend)."
+    + " The texts will be inserted into a LaTex file in the backend, under a corresponding section header, ready to be compiled to a PDF."
+    + " For more detailed help see the 'Help' tab below."
 
   }, {
     id: "MaintSciJust-eng",
