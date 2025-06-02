@@ -69,7 +69,10 @@ export default function CycleOverviewPanel() : ReactElement {
             <Fieldset legend={"Observatory"}>
                 <Group grow>
                     <Text>{cycleSynopsis.data?.observatory?.name}</Text>
-                    <Text c={"orange"}>{cycleSynopsis.data?.observatory?.telescopes?.length} telescopes</Text>
+                    <Text c={"orange"}>
+                        {cycleSynopsis.data?.observatory?.telescopes?.length}
+                        telescopes
+                    </Text>
                 </Group>
             </Fieldset>
         )
@@ -83,7 +86,9 @@ export default function CycleOverviewPanel() : ReactElement {
                         <Text>Submission deadline:</Text>
                         {
                             cycleSynopsis.data?.submissionDeadline &&
-                            <Text c={"orange"}> {prettyDateTime(cycleSynopsis.data.submissionDeadline)}</Text>
+                            <Text c={"orange"}> {prettyDateTime(
+                                cycleSynopsis.data.submissionDeadline)}
+                            </Text>
                         }
                     </Group>
                     <Divider />
@@ -91,7 +96,9 @@ export default function CycleOverviewPanel() : ReactElement {
                         <Text>Observation session start:</Text>
                         {
                             cycleSynopsis.data?.observationSessionStart &&
-                            <Text c={"orange"}>{prettyDateTime(cycleSynopsis.data.observationSessionStart)}</Text>
+                            <Text c={"orange"}>{prettyDateTime(
+                                cycleSynopsis.data.observationSessionStart)}
+                            </Text>
                         }
                     </Group>
                     <Divider />
@@ -99,7 +106,9 @@ export default function CycleOverviewPanel() : ReactElement {
                         <Text>Observation session end:</Text>
                         {
                             cycleSynopsis.data?.observationSessionEnd &&
-                            <Text c={"orange"}>{prettyDateTime(cycleSynopsis.data.observationSessionEnd)}</Text>
+                            <Text c={"orange"}>{prettyDateTime(
+                                cycleSynopsis.data.observationSessionEnd)}
+                            </Text>
                         }
                     </Group>
                 </Stack>

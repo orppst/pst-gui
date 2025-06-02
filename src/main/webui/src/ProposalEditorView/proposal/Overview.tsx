@@ -577,41 +577,32 @@ export function OverviewPanelInternal(
                 </Accordion.Item>
         ))
 
-        if (expandAccordions) {
-            return (
-                <>
-                    <h3>Investigators</h3>
-                    {
-                        proposalData.investigators &&
-                        proposalData.investigators.length > 0 ?
-                            <Accordion
-                                chevronPosition={"right"}
-                                multiple={expandAccordions}
-                                value={
-                                    proposalData.investigators.map(
+        return (
+            <>
+                <h3>Investigators</h3>
+                {
+                    proposalData.investigators &&
+                    proposalData.investigators.length > 0 ? (
+                        <Accordion
+                            chevronPosition={"right"}
+                            multiple={expandAccordions}
+                            value={
+                                expandAccordions
+                                    ? proposalData.investigators.map(
                                         (investigator) =>
-                                            investigator.person!.fullName!)}>
-                                {investigators}
-                            </Accordion> :
-                            <Text c={"yellow"}>No investigators added</Text>
-                    }
-                </>
-            )
-        } else {
-            return (
-                <>
-                    <h3>Investigators</h3>
-                    {
-                        proposalData.investigators &&
-                        proposalData.investigators.length > 0 ?
-                            <Accordion chevronPosition={"right"}>
-                                {investigators}
-                            </Accordion> :
-                            <Text c={"yellow"}>No investigators added</Text>
-                    }
-                </>
-            )
-        }
+                                            investigator.person!.fullName!
+                                    )
+                                    : undefined
+                            }
+                        >
+                            {investigators}
+                        </Accordion>
+                    ) : (
+                        <Text c={"yellow"}>No investigators added</Text>
+                    )
+                }
+            </>
+        );
     }
 
     /**
@@ -802,38 +793,30 @@ export function OverviewPanelInternal(
                 }
             })
 
-        if (proposalData.observations &&
-                proposalData.observations.length > 0) {
-            if(expandAccordions) {
-                return (
-                    <>
-                        <h3>Observations</h3>
-                        <Accordion multiple={expandAccordions}
-                                   value={
-                                       proposalData.observations.map(
-                                           (_, index) => index.toString())}>
+        return (
+            <>
+                <h3>Observations</h3>
+                {
+                    proposalData.observations &&
+                    proposalData.observations.length > 0 ? (
+                        <Accordion
+                            multiple={expandAccordions}
+                            value={
+                                expandAccordions
+                                    ? proposalData.observations.map(
+                                        (_, index) => index.toString()
+                                    )
+                                    : undefined
+                            }
+                        >
                             {observations}
                         </Accordion>
-                    </>
-                )
-            } else {
-                return (
-                    <>
-                        <h3>Observations</h3>
-                        <Accordion>
-                            {observations}
-                        </Accordion>
-                    </>
-                )
-            }
-        } else {
-            return (
-                <>
-                    <h3>Observations</h3>
-                    <Text c={"yellow"}>No observations added</Text>
-                </>
-            )
-        }
+                    ) : (
+                        <Text c={"yellow"}>No observations added</Text>
+                    )
+                }
+            </>
+        );
     }
 
     /**
@@ -878,7 +861,8 @@ export function OverviewPanelInternal(
      * @param obsId: the observation id to find the observation of.
      * @param observations: the list of observations.
      */
-    const findObs = (obsId: string, observations: Observation[]): Observation => {
+    const findObs = (obsId: string, observations: Observation[]):
+            Observation => {
         for (const obs of observations) {
             if (obs._id!.toString() == obsId) {
                 return obs;
@@ -1005,65 +989,46 @@ export function OverviewPanelInternal(
      * @param {Map<string, number>} telescopeTiming the timing between night and hour.
      */
     function buildSummaryAccordion(
-            data: Map<string, TelescopeSummaryState[]>,
-            telescopeTiming: Map<string, number>):
-            ReactElement {
-        if(expandAccordions) {
-            return (
-                <Accordion multiple={expandAccordions}
-                           value={Array.from(data.entries()).map(
-                               (_, index) => ( index.toString()))}>
-                    {Array.from(data.entries()).map(
-                        ([key, arrayData], index) => (
-                            <Accordion.Item key={key} value={index.toString()}>
-                                <Accordion.Control>
-                                    {TelescopeSummaryAccordionLabel(
-                                        key, arrayData, telescopeTiming)}
-                                </Accordion.Control>
-                                <Accordion.Panel>
-                                    <Group>
-                                        <Table>
-                                            {observationOpticalSummaryTableHeader()}
-                                            <Table.Tbody>
-                                                {arrayData.map(
-                                                    (summaryItem, itemIndex) => (
-                                                        OpticalBasicSummaryRow(
-                                                            summaryItem,
-                                                            itemIndex.toString())
-                                                    ))}
-                                            </Table.Tbody>
-                                        </Table>
-                                    </Group>
-                                </Accordion.Panel>
-                            </Accordion.Item>
-                        ))}
-                </Accordion>);
-        } else {
-            return (
-                <Accordion>
-                    {Array.from(data.entries()).map(
-                        ([key, arrayData], index) => (
-                            <Accordion.Item key={key} value={index.toString()}>
-                                <Accordion.Control>
-                                    {TelescopeSummaryAccordionLabel(
-                                        key, arrayData, telescopeTiming)}
-                                </Accordion.Control>
-                                <Accordion.Panel>
-                                    <Group>
-                                        <Table>
-                                            {observationOpticalSummaryTableHeader()}
-                                            <Table.Tbody>
-                                                {arrayData.map((summaryItem, itemIndex) => (
-                                                    OpticalBasicSummaryRow(summaryItem, itemIndex.toString())
-                                                ))}
-                                            </Table.Tbody>
-                                        </Table>
-                                    </Group>
-                                </Accordion.Panel>
-                            </Accordion.Item>
-                        ))}
-                </Accordion>);
-        }
+        data: Map<string, TelescopeSummaryState[]>,
+        telescopeTiming: Map<string, number>,
+    ): ReactElement {
+
+        // Extract the mapping logic into a variable
+        const accordionItems = Array.from(data.entries()).map(
+            ([key, arrayData], index) => (
+                <Accordion.Item key={key} value={index.toString()}>
+                    <Accordion.Control>
+                        {TelescopeSummaryAccordionLabel(
+                            key, arrayData, telescopeTiming)}
+                    </Accordion.Control>
+                    <Accordion.Panel>
+                        <Group>
+                            <Table>
+                                {observationOpticalSummaryTableHeader()}
+                                <Table.Tbody>
+                                    {arrayData.map(
+                                        (summaryItem, itemIndex) => (
+                                            OpticalBasicSummaryRow(
+                                                summaryItem,
+                                                itemIndex.toString())
+                                        ))}
+                                </Table.Tbody>
+                            </Table>
+                        </Group>
+                    </Accordion.Panel>
+                </Accordion.Item>
+            )
+        );
+
+        // return the built accordion.
+        return (
+            <Accordion
+                    multiple={expandAccordions}
+                    value={expandAccordions ? Array.from(data.entries()).map(
+                        (_, index) => ( index.toString())) : undefined}>
+                {accordionItems}
+            </Accordion>
+        )
     }
 
     /**
