@@ -9,7 +9,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocationGradesTable from "./allocationGradesTable.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifyInfo} from "../../commonPanel/notifications.tsx";
 import TACMembersTable from "./TACMembersTable.tsx";
 import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
 import AvailableResourcesTable from "./availableResourcesTable.tsx";
@@ -159,6 +159,9 @@ export default function CycleOverviewPanel() : ReactElement {
      * @return {Promise<void>} promise that the pdf will be saved at some point.
      */
     async function handleDownloadPdf(): Promise<void> {
+        notifyInfo("Cycle Export Started",
+            "An export has started and the download will begin shortly");
+
         await fetchSubmittedProposalResourceGetSubmittedProposals(
             {...fetcherOptions,
              pathParams: {cycleCode: Number(selectedCycleCode)}}
