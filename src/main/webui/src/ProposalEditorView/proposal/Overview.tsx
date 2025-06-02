@@ -1,5 +1,8 @@
 import {NavigateFunction, useNavigate, useParams} from 'react-router-dom'
 import {
+    ProposalResourceCloneObservingProposalError,
+    ProposalResourceCloneObservingProposalVariables,
+    ProposalResourceDeleteObservingProposalError, ProposalResourceDeleteObservingProposalVariables,
     useProposalResourceCloneObservingProposal,
     useProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
@@ -29,8 +32,11 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {modals} from "@mantine/modals";
 import CloneButton from "../../commonButtons/clone.tsx";
-import {QueryClient, useQueryClient} from "@tanstack/react-query";
+import {QueryClient, UseMutationResult, useQueryClient} from "@tanstack/react-query";
 import {
+    OpticalTelescopeCopyData,
+    OpticalTelescopeProposal,
+    SavedTelescopeDataError, TelescopeCopyError,
     TelescopeOverviewTableState, TelescopeTableState, useMutationOpticalCopyProposal,
     useOpticalOverviewTelescopeTableData, useOpticalOverviewTelescopeTimingData,
     useOpticalTelescopeResourceDeleteProposalTelescopeData,
@@ -99,10 +105,26 @@ export type OverviewEntranceProps = {
     navigate: NavigateFunction,
     queryClient: QueryClient,
     polarisMode: POLARIS_MODES,
-    cloneProposalMutation: any,
-    deleteProposalMutation: any,
-    deleteProposalOpticalTelescopeMutation: any,
-    submitOpticalProposalMutation: any,
+    cloneProposalMutation: UseMutationResult<
+        Schemas.ObservingProposal,
+        ProposalResourceCloneObservingProposalError,
+        ProposalResourceCloneObservingProposalVariables,
+        unknown> | null,
+    deleteProposalMutation: UseMutationResult<
+        undefined,
+        ProposalResourceDeleteObservingProposalError,
+        ProposalResourceDeleteObservingProposalVariables,
+        unknown> | null,
+    deleteProposalOpticalTelescopeMutation: UseMutationResult<
+        boolean,
+        SavedTelescopeDataError,
+        OpticalTelescopeProposal,
+        unknown> | null,
+    submitOpticalProposalMutation: UseMutationResult<
+        boolean,
+        TelescopeCopyError,
+        OpticalTelescopeCopyData,
+        unknown> | null,
     telescopeData: Map<string, TelescopeTableState>,
     telescopeOverviewData: Map<string, TelescopeOverviewTableState>,
     proposalData: Schemas.ObservingProposal,
@@ -1114,6 +1136,12 @@ export function OverviewPanelInternal(
      * logic for handling a clone.
      */
     const handleCloneProposal = (): void => {
+        if (cloneProposalMutation === null) {
+            notifyError(
+                "unexpected state", "mutation was not handed correctly.")
+            return;
+        }
+
         cloneProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         }, {
@@ -1122,6 +1150,14 @@ export function OverviewPanelInternal(
                     proposalData.observations!.map<number>((obs) => obs._id!);
                 const submittedProposalObsIDs = data.observations!.map<number>(
                     (obs) => obs._id!);
+
+                // handle error state.
+                if(submitOpticalProposalMutation === null) {
+                    notifyError(
+                        "unexpected state",
+                        "submit telescope mutation was not handed correctly.")
+                    return;
+                }
 
                 if (proposalObsIDs !== undefined &&
                         submittedProposalObsIDs !== undefined) {
@@ -1199,36 +1235,53 @@ export function OverviewPanelInternal(
      * handles the deletion of optical telescope data bits for this proposal.
      */
     const handleDeletionOfOpticalComponents = () => {
-        if (selectedProposalCode !== undefined) {
-            deleteProposalOpticalTelescopeMutation.mutate({
-                proposalID: selectedProposalCode,
-            }, {
-                onSuccess: () => {
-                    notifySuccess("Deletion successful",
-                        "Proposal: '" + proposalData.title! +
-                        "' has been removed");
-                    navigate("/");
-
-                    //workaround: usually you would invalidate queries
-                    // however this causes this page to rerender with the
-                    // now deleted 'selectedProposalCode'. The get proposal
-                    //API call then fails and a 500 code shows up in the
-                    // console.
-                    forceUpdate();
-                },
-                onError: (error: unknown) => {
-                    notifyError(
-                        "Deletion of proposals optical telescope" +
-                        " data failed", getErrorMessage(error))
-                }
-            })
+        // handle error states.
+        if(deleteProposalOpticalTelescopeMutation === null) {
+            notifyError(
+                "unexpected state",
+                "delete telescope was not handed correctly.")
+            return;
         }
+        if (selectedProposalCode !== undefined) {
+            notifyError(
+                "unexpected state",
+                "selected proposal code was not set.")
+            return;
+        }
+
+        deleteProposalOpticalTelescopeMutation.mutate({
+            proposalID: selectedProposalCode,
+        }, {
+            onSuccess: () => {
+                notifySuccess("Deletion successful",
+                    "Proposal: '" + proposalData.title! +
+                    "' has been removed");
+                navigate("/");
+
+                //workaround: usually you would invalidate queries
+                // however this causes this page to rerender with the
+                // now deleted 'selectedProposalCode'. The get proposal
+                //API call then fails and a 500 code shows up in the
+                // console.
+                forceUpdate();
+            },
+            onError: (error: unknown) => {
+                notifyError(
+                    "Deletion of proposals optical telescope" +
+                    " data failed", getErrorMessage(error))
+            }
+        })
     }
 
     /**
      * handles deletion of proposal
      */
     const handleDeleteProposal = () => {
+        if(deleteProposalMutation === null) {
+            notifyError(
+                "unexpected state", "delete mutation was not handed correctly.")
+            return;
+        }
         deleteProposalMutation.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         },{
