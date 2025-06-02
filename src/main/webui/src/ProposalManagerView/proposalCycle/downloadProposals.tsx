@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import {ObjectIdentifier, ObservingProposal,} from 'src/generated/proposalToolSchemas';
+import {ObjectIdentifier, ObservingProposal, SubmittedProposal,} from 'src/generated/proposalToolSchemas';
 import {
     fetchSubmittedProposalResourceGetSubmittedProposal,
     fetchSupportingDocumentResourceGetSupportingDocuments,
@@ -50,8 +50,11 @@ export type downloadSingleProposalsProps = {
     navigate: NavigateFunction;
     queryClient: QueryClient;
     polarisMode: POLARIS_MODES;
-    cycleID: number;
-    proposalData: ObjectIdentifier,
+    proposalDataPromise: Promise<SubmittedProposal>;
+    proposalJSONPromise: Promise<undefined>;
+    proposalID: string;
+    proposalTitle: string;
+    showInvestigators: boolean;
 }
 
 // interface of the types of data needed to be bootstrapped to get it to
@@ -78,6 +81,7 @@ export type PreFetchedOverviewData = {
  * @param queryClient the query client
  * @param polarisMode the polaris mode.
  * @param preFetchedData all data required by OverviewPanelInternal
+ * @param showInvestigators flag to show investigators or not.
  */
 const generateHTML = async (
     resolvePdf: (value: (Blob | PromiseLike<Blob>)) => void,
@@ -91,6 +95,7 @@ const generateHTML = async (
     queryClient: QueryClient,
     polarisMode: POLARIS_MODES,
     preFetchedData: PreFetchedOverviewData,
+    showInvestigators: boolean,
 ): Promise<void> => {
     try {
         // Create a ref to access the rendered component's element.
@@ -112,7 +117,7 @@ const generateHTML = async (
                             forceUpdate={forceUpdate}
                             selectedProposalCode={proposalCode}
                             printRef={tempRef}
-                            showInvestigators={false}
+                            showInvestigators={showInvestigators}
                             expandAccordions={true}
                             authToken={authToken}
                             navigate={navigate}
@@ -123,12 +128,11 @@ const generateHTML = async (
                             deleteProposalOpticalTelescopeMutation={null}
                             submitOpticalProposalMutation={null}
                             proposalData={preFetchedData.proposalDetails}
-                            supportingDocs={preFetchedData.docs}
                             telescopeData={preFetchedData.telescopeData}
                             telescopeOverviewData={
-                            preFetchedData.telescopeOverviewData}
+                                preFetchedData.telescopeOverviewData}
                             telescopeTimingResult={
-                            preFetchedData.telescopeTiming}
+                                preFetchedData.telescopeTiming}
                         />
                     </QueryClientProvider>
                 </ProposalContext.Provider>
@@ -201,7 +205,8 @@ export function extractJSON(
 export const handleSingleProposal = async (props: downloadSingleProposalsProps):
         Promise<JSZip | null> => {
     const { forceUpdate, authToken, navigate, queryClient, polarisMode,
-            cycleID, proposalData} = props;
+            proposalDataPromise, proposalJSONPromise, proposalID,
+            proposalTitle, showInvestigators} = props;
 
     const proposalZip = new JSZip();
 
@@ -213,40 +218,43 @@ export const handleSingleProposal = async (props: downloadSingleProposalsProps):
         const docsPromise = fetchSupportingDocumentResourceGetSupportingDocuments(
             {
                 headers: {authorization: `Bearer ${authToken}`},
-                pathParams: {proposalCode: Number(proposalData.dbid)}
+                pathParams: {proposalCode: Number(proposalID)}
             });
         const telescopeDataPromise = fetchOpticalTelescopeTableData(
             {
-                proposalID: proposalData.dbid!.toString()
+                proposalID: proposalID
             });
         const telescopeOverviewDataPromise = fetchOpticalOverviewTelescopeTableData(
             {
-                proposalID: proposalData.dbid!.toString()
-            });
-        const proposalDetailsPromise = fetchSubmittedProposalResourceGetSubmittedProposal(
-            {
-                headers: {authorization: `Bearer ${authToken}`},
-                pathParams: {
-                    submittedProposalId: Number(proposalData.dbid),
-                    cycleCode: cycleID
-                }
+                proposalID: proposalID
             });
         const telescopeTimingPromise =
             fetchOpticalOverviewTelescopeTimingData();
 
         const [
             docs, telescopeData, telescopeOverviewData, proposalDetails,
-            telescopeTiming
+            telescopeTiming, proposalJSON
         ] = await Promise.all([
             docsPromise, telescopeDataPromise,
-            telescopeOverviewDataPromise, proposalDetailsPromise,
-            telescopeTimingPromise])
+            telescopeOverviewDataPromise, proposalDataPromise,
+            telescopeTimingPromise, proposalJSONPromise])
+
+
+        // process json file.
+        if (proposalJSON) {
+            proposalZip.file(JSON_FILE_NAME, proposalJSON)
+        } else {
+            notifyError(
+                "Export Error",
+                `No JSON blob received for proposal${proposalID}.`);
+        }
 
         // Ensure proper conversion to Map from plain objects.
         const convertedTelescopeData: Map<string, TelescopeTableState> =
             new Map<string, TelescopeTableState>(Object.entries(telescopeData));
-        const convertedTelescopeOverviewData: Map<string, TelescopeOverviewTableState> =
-            new Map(Object.entries(telescopeOverviewData));
+        const convertedTelescopeOverviewData:
+            Map<string, TelescopeOverviewTableState> =
+                new Map(Object.entries(telescopeOverviewData));
         const convertedTelescopeTiming: Map<string, number> =
             new Map(Object.entries(telescopeTiming));
 
@@ -260,7 +268,7 @@ export const handleSingleProposal = async (props: downloadSingleProposalsProps):
             (resolvePdf, rejectPdf) => {
                 generateHTML(
                     resolvePdf, rejectPdf, root!, authToken,
-                    forceUpdate, proposalData.dbid!.toString(),
+                    forceUpdate, proposalID,
                     container!, navigate, queryClient,
                     polarisMode,
                     {
@@ -269,7 +277,8 @@ export const handleSingleProposal = async (props: downloadSingleProposalsProps):
                         telescopeOverviewData: convertedTelescopeOverviewData,
                         proposalDetails,
                         telescopeTiming: convertedTelescopeTiming
-                    }
+                    },
+                    showInvestigators
                 );
             }
         );
@@ -283,29 +292,23 @@ export const handleSingleProposal = async (props: downloadSingleProposalsProps):
         const supportingDocumentData: ObjectIdentifier[] =
             await fetchSupportingDocumentResourceGetSupportingDocuments({
                 headers: {authorization: `Bearer ${authToken}`},
-                pathParams: {proposalCode: proposalData.dbid!},
+                pathParams: {proposalCode: Number(proposalID)},
             });
 
         const promises: Promise<void>[] =
             populateSupportingDocuments(
                 proposalZip, supportingDocumentData,
-                proposalData.dbid!.toString(),
-                authToken
+                proposalID, authToken
             );
 
-        promises.push(extractJSON(
-            authToken, proposalData.dbid!.toString(),
-            proposalZip, false, cycleID));
-
         await extractTelescope(
-            proposalData.dbid!.toString(), promises,
-            proposalZip);
+            proposalID, promises, proposalZip);
         await Promise.all(promises);
         return proposalZip;
 
     } catch (error: unknown) {
         notifyError(
-            `Proposal Export Failed for ${proposalData.name}`,
+            `Proposal Export Failed for ${proposalTitle}`,
             getErrorMessage(error));
         return null; // Return null on error
     } finally {
@@ -341,12 +344,39 @@ const ProposalDownloader = (
         const proposalPromises: Promise<void>[] = []; // Ensure type consistency
 
         for (const proposalData of data) {
+            const proposalID: number = proposalData.dbid!;
+            const proposalIDString: string = proposalID.toString();
+            const proposalName = proposalData.name!;
+
             // Push the promise that wraps the single proposal handling and
             // adds to topZip
+            const proposalDetailsPromise =
+                fetchSubmittedProposalResourceGetSubmittedProposal(
+                    {
+                        headers: {authorization: `Bearer ${authToken}`},
+                        pathParams: {
+                            submittedProposalId: proposalID,
+                            cycleCode: cycleID
+                        }
+                    });
+
+            const proposalJSONPromise =
+                fetchSubmittedProposalResourceGetSubmittedProposalExport({
+                headers: {authorization: `Bearer ${authToken}`},
+                pathParams: {
+                    submittedProposalId: proposalID,
+                    cycleCode: cycleID,
+                    investigatorsIncluded: false
+                }
+            })
+
             proposalPromises.push(
                 handleSingleProposal({
                     forceUpdate, authToken, navigate,
-                    queryClient, polarisMode, cycleID, proposalData
+                    queryClient, polarisMode,
+                    proposalDataPromise:proposalDetailsPromise,
+                    proposalJSONPromise, proposalID:proposalIDString,
+                    proposalTitle:proposalName, showInvestigators:false,
                 }).then(innerZip => {
                     if (innerZip) {
                         return innerZip.generateAsync({type: 'blob'})
@@ -359,7 +389,7 @@ const ProposalDownloader = (
                     return Promise.resolve();
                 }).catch(error => {
                     console.error(
-                        `[ProposalDownloader] Failed to process single proposal
+                        `Failed to process single proposal
                          ${proposalData.name} during zip creation:`, error);
                 })
             );
@@ -385,7 +415,8 @@ const ProposalDownloader = (
             } else {
                 notifyError(
                     'Proposal Export Failed',
-                    'No proposals were successfully processed to generate a zip file.'
+                    'No proposals were successfully processed to generate a ' +
+                    'zip file.'
                 );
             }
 

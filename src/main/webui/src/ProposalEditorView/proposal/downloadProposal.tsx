@@ -8,13 +8,16 @@ import {
     fetchProposalResourceExportProposal,
     fetchSupportingDocumentResourceDownloadSupportingDocument
 } from 'src/generated/proposalToolComponents.ts';
-import {JSON_FILE_NAME, OPTICAL_FOLDER_NAME, OVERVIEW_PDF_FILENAME} from 'src/constants.tsx';
+import {OPTICAL_FOLDER_NAME, POLARIS_MODES} from 'src/constants.tsx';
 import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {
     fetchOpticalTelescopeResourceGetProposalObservationIds,
     fetchOpticalTelescopeResourceLoadTelescopeData, SaveTelescopeState
 } from "../../util/telescopeComms";
+import {handleSingleProposal} from "../../ProposalManagerView/proposalCycle/downloadProposals";
+import {NavigateFunction} from "react-router-dom";
+import {QueryClient} from "@tanstack/react-query";
 
 
 /**
@@ -93,32 +96,6 @@ export const populateSupportingDocuments = (
     }
 
 /**
- * fills a json file to the zip.
- *
-  * @param authToken the authentication token
- * @param selectedProposalCode the proposal code
- * @param zip the zip.
- * @param includeInvestigators flag for adding investigators or not.
- */
-export function extractJSON(
-        authToken: string, selectedProposalCode: string, zip: JSZip,
-        includeInvestigators: boolean):
-        Promise<void> {
-    return fetchProposalResourceExportProposal({
-        headers: {authorization: `Bearer ${authToken}`},
-        pathParams: {
-            proposalCode: Number(selectedProposalCode),
-            investigatorsIncluded: includeInvestigators
-        }
-    }).then((blob) => {
-        zip.file(JSON_FILE_NAME, blob!)
-    })
-    .catch((error) =>
-        notifyError("Export Error", getErrorMessage(error))
-    )
-}
-
-/**
  * extracts telescope data.
  *
  * @param selectedProposalCode the proposal code
@@ -152,48 +129,44 @@ export function extractTelescope(
 /**
  * handles all the processing for downloading a proposal into a tarball.
  *
- * @param {HTMLInputElement} element the overview page to print as a pdf.
- * @param {ObservingProposal} proposalData the proposal data.
- * @param {SupportingDocumentResourceGetSupportingDocumentsResponse} supportingDocumentData the data for supporting documents.
- * @param {string} selectedProposalCode the selected proposal code.
+ * @param proposalData the proposal data.
  * @param authToken the authorization token required for 'fetch' type calls
+ * @param forceUpdate the force update function.
+ * @param navigate the navigate function.
+ * @param queryClient the query client function.
+ * @param polarisMode the mode polaris is operating in right now.
  */
 async function downloadProposal(
-    element: HTMLInputElement,
     proposalData: ObservingProposal,
-    supportingDocumentData: ObjectIdentifier[],
-    selectedProposalCode: string,
-    authToken: string
+    authToken: string,
+    forceUpdate: () => void,
+    navigate: NavigateFunction,
+    queryClient: QueryClient,
+    polarisMode: POLARIS_MODES,
 ): Promise<void> {
 
     notifyInfo("Proposal Export Started",
         "An export has started and the download will begin shortly");
 
+    const proposalJSONPromise = fetchProposalResourceExportProposal({
+        headers: {authorization: `Bearer ${authToken}`},
+        pathParams: {
+            proposalCode: Number(proposalData._id),
+            investigatorsIncluded: true
+        }
+    });
 
-
-    // get pdf data.
-    const pdfData = generatePdf(element);
-
-    // build the zip object and populate with the corresponding documents.
-    let zip = new JSZip();
-    zip = zip.file(OVERVIEW_PDF_FILENAME, pdfData);
-
-    // add supporting documents to the zip.
-    const promises = populateSupportingDocuments(
-        zip, supportingDocumentData, selectedProposalCode, authToken
-    );
-
-    // get proposal json.
-    promises.push(extractJSON(authToken, selectedProposalCode, zip, true));
-
-    // process optical data.
-    await extractTelescope(selectedProposalCode, promises, zip);
-
-    // ensure all supporting docs populated before making zip.
-    Promise.all(promises).then(
-        () => {
+    handleSingleProposal({
+        forceUpdate, authToken, navigate, queryClient, polarisMode,
+        proposalDataPromise:Promise.resolve(proposalData),
+        proposalJSONPromise: proposalJSONPromise,
+        proposalID:proposalData._id!.toString(),
+        proposalTitle:proposalData.title!,
+        showInvestigators: true,
+    }).then(innerZip => {
+        if (innerZip) {
             // generate the zip file.
-            zip.generateAsync({type: "blob"})
+            innerZip.generateAsync({type: "blob"})
                 .then((zipData: Blob | MediaSource) => {
                     // Create a download link for the zip file
                     const link = document.createElement("a");
@@ -211,8 +184,9 @@ async function downloadProposal(
                     notifyError(
                         "Proposal Export Failed", getErrorMessage(error))
                 )
+            }
         }
-    )
+    );
 }
 
 // main entrance function is the download proposal function.

@@ -1,10 +1,8 @@
 import {NavigateFunction, useNavigate, useParams} from 'react-router-dom'
 import {
-    SupportingDocumentResourceGetSupportingDocumentsResponse,
     useProposalResourceCloneObservingProposal,
     useProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
-    useSupportingDocumentResourceGetSupportingDocuments,
 } from 'src/generated/proposalToolComponents';
 import {Accordion, Avatar, Box, Container, Fieldset, Group,
         List, Space, Stack, Table, Text,} from '@mantine/core';
@@ -105,7 +103,6 @@ export type OverviewEntranceProps = {
     deleteProposalMutation: any,
     deleteProposalOpticalTelescopeMutation: any,
     submitOpticalProposalMutation: any,
-    supportingDocs: SupportingDocumentResourceGetSupportingDocumentsResponse,
     telescopeData: Map<string, TelescopeTableState>,
     telescopeOverviewData: Map<string, TelescopeOverviewTableState>,
     proposalData: Schemas.ObservingProposal,
@@ -355,15 +352,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     // transaction issue.
     const submitOpticalProposalMutation = useMutationOpticalCopyProposal()
 
-    const { data: docs,
-        error: docErrors,
-        isLoading: docLoading } =
-        useSupportingDocumentResourceGetSupportingDocuments({
-            pathParams: {
-                proposalCode: Number(selectedProposalCode)
-            }
-        });
-
     // the observation ids for the optical observations.
     const {
         data: opticalData,
@@ -398,13 +386,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     } = useOpticalOverviewTelescopeTimingData();
 
     // check for errors and loadings.
-    if (docErrors) {
-        return (
-            <Box>
-                <pre>{JSON.stringify(docErrors, null, JSON_SPACES)}</pre>
-            </Box>
-        );
-    }
     if (proposalsError) {
         return (
             <Box>
@@ -439,8 +420,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     }
 
     // handle loading phases.
-    if(docLoading || opticalLoading || telescopeOverviewLoading ||
-            proposalsIsLoading || telescopeTimingLoading) {
+    if(opticalLoading || telescopeOverviewLoading || proposalsIsLoading ||
+            telescopeTimingLoading) {
         return (
             <PanelFrame>
                 <Space h={"xs"}/>
@@ -466,7 +447,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
          deleteProposalMutation: deleteProposalMutation,
          deleteProposalOpticalTelescopeMutation: deleteProposalOpticalTelescopeMutation,
          submitOpticalProposalMutation:submitOpticalProposalMutation,
-         supportingDocs: docs!,
          telescopeData: opticalData!,
          telescopeOverviewData: telescopeOverviewData!,
          proposalData: proposalsData!,
@@ -486,7 +466,7 @@ export function OverviewPanelInternal(
         expandAccordions, authToken, navigate, queryClient, polarisMode,
         cloneProposalMutation, deleteProposalMutation,
         deleteProposalOpticalTelescopeMutation,
-        submitOpticalProposalMutation, supportingDocs, telescopeData,
+        submitOpticalProposalMutation, telescopeData,
         telescopeOverviewData, proposalData, telescopeTimingResult} = props;
 
     /**
@@ -597,20 +577,41 @@ export function OverviewPanelInternal(
                 </Accordion.Item>
         ))
 
-        return (
-            <>
-                <h3>Investigators</h3>
-                {
-                    proposalData.investigators &&
-                    proposalData.investigators.length > 0 ?
-                        <Accordion chevronPosition={"right"}>
-                            {investigators}
-                        </Accordion> :
-                        <Text c={"yellow"}>No investigators added</Text>
-                }
-
-            </>
-        )
+        if (expandAccordions) {
+            return (
+                <>
+                    <h3>Investigators</h3>
+                    {
+                        proposalData.investigators &&
+                        proposalData.investigators.length > 0 ?
+                            <Accordion
+                                chevronPosition={"right"}
+                                multiple={expandAccordions}
+                                value={
+                                    proposalData.investigators.map(
+                                        (investigator) =>
+                                            investigator.person!.fullName!)}>
+                                {investigators}
+                            </Accordion> :
+                            <Text c={"yellow"}>No investigators added</Text>
+                    }
+                </>
+            )
+        } else {
+            return (
+                <>
+                    <h3>Investigators</h3>
+                    {
+                        proposalData.investigators &&
+                        proposalData.investigators.length > 0 ?
+                            <Accordion chevronPosition={"right"}>
+                                {investigators}
+                            </Accordion> :
+                            <Text c={"yellow"}>No investigators added</Text>
+                    }
+                </>
+            )
+        }
     }
 
     /**
@@ -863,7 +864,9 @@ export function OverviewPanelInternal(
             return (
                 <Table.Tr key={"observation:" + key}>
                     <Table.Td>{row.targetName}</Table.Td>
-                    <Table.Td>{row.telescopeTimeValue}  {row.telescopeTimeUnit}</Table.Td>
+                    <Table.Td>
+                        {row.telescopeTimeValue}  {row.telescopeTimeUnit}
+                    </Table.Td>
                     <Table.Td>{row.condition}</Table.Td>
                 </Table.Tr>
             )
@@ -1089,11 +1092,8 @@ export function OverviewPanelInternal(
      */
     const handleDownloadPdf = (): void => {
         downloadProposal(
-            printRef.current!,
-            proposalData,
-            supportingDocs,
-            selectedProposalCode!,
-            authToken
+            proposalData, authToken, forceUpdate, navigate, queryClient,
+            polarisMode
         ).then();
     };
 
