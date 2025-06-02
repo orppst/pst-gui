@@ -1,4 +1,5 @@
 import {
+    useProposalResourceGetObservingProposal,
     useProposalResourceGetTargets,
     useTechnicalGoalResourceGetTechnicalGoals,
 } from "src/generated/proposalToolComponents.ts";
@@ -47,6 +48,16 @@ export default function TargetTypeRadioForm (p: {
             useTechnicalGoalResourceGetTechnicalGoals( {
                 pathParams: {proposalCode: Number(selectedProposalCode)}
             });
+
+    const { data: proposalsData,
+        error: proposalsError,
+        isLoading: proposalsIsLoading } =
+        useProposalResourceGetObservingProposal({
+            pathParams: {
+                proposalCode: Number(selectedProposalCode),
+                doInvestigatorCheck: true,
+            }
+        });
 
     /**
      * generates the html for the observation type. Notice, disabled if editing
@@ -105,7 +116,7 @@ export default function TargetTypeRadioForm (p: {
         )
     }
 
-    if (targetsLoading || technicalGoalsLoading) {
+    if (targetsLoading || technicalGoalsLoading || proposalsIsLoading) {
         return (
             <Box m={"20%"}>
                 <Loader />
@@ -120,6 +131,10 @@ export default function TargetTypeRadioForm (p: {
     if (technicalGoalsError) {
         notifyError("Error loading technical goals",
             getErrorMessage(technicalGoalsError));
+    }
+    if (proposalsError) {
+        notifyError("Error loading proposal data",
+            getErrorMessage(proposalsError));
     }
 
     return (
@@ -203,6 +218,7 @@ export default function TargetTypeRadioForm (p: {
                             }}
                             borderColor={p.form.getValues().techGoalId === NO_ROW_SELECTED ?
                                 err_yellow_str : undefined}
+                            proposalData={proposalsData!}
                         />
                     </Table.ScrollContainer>
                 }

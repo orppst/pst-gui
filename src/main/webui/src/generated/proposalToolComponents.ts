@@ -7763,6 +7763,11 @@ export type ProposalResourceGetObservingProposalPathParams = {
    * @format int64
    */
   proposalCode: number;
+
+  /**
+   * @format boolean
+   */
+  doInvestigatorCheck: boolean;
 };
 
 export type ProposalResourceGetObservingProposalError =
@@ -7784,7 +7789,7 @@ export const fetchProposalResourceGetObservingProposal = (
     {},
     ProposalResourceGetObservingProposalPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}",
+    url: "/pst/api/proposals/{proposalCode}/{doInvestigatorCheck}",
     method: "get",
     ...variables,
     signal,
@@ -7944,6 +7949,10 @@ export type ProposalResourceExportProposalPathParams = {
    * @format int64
    */
   proposalCode: number;
+  /**
+   * @format boolean
+   */
+  investigatorsIncluded: boolean;
 };
 
 export type ProposalResourceExportProposalError =
@@ -7965,7 +7974,7 @@ export const fetchProposalResourceExportProposal = (
     {},
     ProposalResourceExportProposalPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/export",
+    url: "/pst/api/proposals/{proposalCode}/{investigatorsIncluded}/export",
     method: "get",
     ...variables,
     signal,
@@ -9437,6 +9446,10 @@ export type ProposalResourceChangeKindPathParams = {
    * @format int64
    */
   proposalCode: number;
+  /**
+   * @format boolean
+   */
+  doInvestigatorCheck: boolean;
 };
 
 export type ProposalResourceChangeKindError = Fetcher.ErrorWrapper<undefined>;
@@ -9457,7 +9470,7 @@ export const fetchProposalResourceChangeKind = (
     {},
     ProposalResourceChangeKindPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/kind",
+    url: "/pst/api/proposals/{proposalCode}/{doInvestigatorCheck}/kind",
     method: "put",
     ...variables,
     signal,
@@ -11834,6 +11847,10 @@ export type ProposalResourceGetObservingProposalTitlePathParams = {
    * @format int64
    */
   proposalCode: number;
+  /**
+   * @format boolean
+   */
+  doInvestigatorCheck: boolean;
 };
 
 export type ProposalResourceGetObservingProposalTitleError =
@@ -11855,7 +11872,7 @@ export const fetchProposalResourceGetObservingProposalTitle = (
     {},
     ProposalResourceGetObservingProposalTitlePathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/title",
+    url: "/pst/api/proposals/{proposalCode}/{doInvestigatorCheck}/title",
     method: "get",
     ...variables,
     signal,
@@ -11954,6 +11971,10 @@ export type ProposalResourceValidateObservingProposalPathParams = {
    * @format int64
    */
   proposalCode: number;
+  /**
+   * @format boolean
+   */
+  doInvestigatorCheck: boolean;
 };
 
 export type ProposalResourceValidateObservingProposalQueryParams = {
@@ -11983,7 +12004,7 @@ export const fetchProposalResourceValidateObservingProposal = (
     ProposalResourceValidateObservingProposalQueryParams,
     ProposalResourceValidateObservingProposalPathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/validate",
+    url: "/pst/api/proposals/{proposalCode}/{doInvestigatorCheck}/validate",
     method: "get",
     ...variables,
     signal,
@@ -13463,4 +13484,9 @@ export type QueryOperation =
       path: "/pst/api/opticalTelescopes/nightRelationships";
       operationId: "nightRelationships";
       variables: {}
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/{investigatorsIncluded}/export"
+      operationId: "submittedProposalResourceGetSubmittedProposalExport";
+      variables:{}
 }

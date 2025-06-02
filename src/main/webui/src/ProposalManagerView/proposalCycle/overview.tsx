@@ -1,16 +1,24 @@
-import {ReactElement} from "react";
+import {ReactElement, useContext, useReducer} from "react";
 import {Divider, Fieldset, Group, Space, Stack, Text} from "@mantine/core";
 import {
+    fetchSubmittedProposalResourceGetSubmittedProposals,
+    SubmittedProposalResourceGetSubmittedProposalsResponse,
     useProposalCyclesResourceGetProposalCycle
 } from "../../generated/proposalToolComponents.ts";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocationGradesTable from "./allocationGradesTable.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifyInfo} from "../../commonPanel/notifications.tsx";
 import TACMembersTable from "./TACMembersTable.tsx";
 import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
 import AvailableResourcesTable from "./availableResourcesTable.tsx";
+import {ProposalContext, useToken} from "../../App2";
+import {ExportButton} from "../../commonButtons/export";
+import {POLARIS_MODES} from "../../constants";
+import {downloadProposals} from "./downloadProposals";
+import {useProposalToolContext} from "../../generated/proposalToolContext";
+import {useQueryClient} from "@tanstack/react-query";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -28,10 +36,22 @@ export default function CycleOverviewPanel() : ReactElement {
 
     const {selectedCycleCode} = useParams();
 
+    const {fetcherOptions} = useProposalToolContext();
+
+    const authToken = useToken();
+
+    const navigate = useNavigate();
+
+    const queryClient = useQueryClient();
+
+    const polarisMode = useContext(ProposalContext).mode;
+
+    //this work around is used when deleting a proposal
+    const [,forceUpdate] = useReducer(x => x + 1, 0);
+
     const cycleSynopsis = useProposalCyclesResourceGetProposalCycle(
         {pathParams: {cycleCode: Number(selectedCycleCode)}}
     )
-
     if (cycleSynopsis.error) {
         notifyError("Failed to load proposal cycle synopsis",
             "cause " + getErrorMessage(cycleSynopsis.error))
@@ -49,7 +69,10 @@ export default function CycleOverviewPanel() : ReactElement {
             <Fieldset legend={"Observatory"}>
                 <Group grow>
                     <Text>{cycleSynopsis.data?.observatory?.name}</Text>
-                    <Text c={"orange"}>{cycleSynopsis.data?.observatory?.telescopes?.length} telescopes</Text>
+                    <Text c={"orange"}>
+                        {cycleSynopsis.data?.observatory?.telescopes?.length}
+                        telescopes
+                    </Text>
                 </Group>
             </Fieldset>
         )
@@ -63,7 +86,9 @@ export default function CycleOverviewPanel() : ReactElement {
                         <Text>Submission deadline:</Text>
                         {
                             cycleSynopsis.data?.submissionDeadline &&
-                            <Text c={"orange"}> {prettyDateTime(cycleSynopsis.data.submissionDeadline)}</Text>
+                            <Text c={"orange"}> {prettyDateTime(
+                                cycleSynopsis.data.submissionDeadline)}
+                            </Text>
                         }
                     </Group>
                     <Divider />
@@ -71,7 +96,9 @@ export default function CycleOverviewPanel() : ReactElement {
                         <Text>Observation session start:</Text>
                         {
                             cycleSynopsis.data?.observationSessionStart &&
-                            <Text c={"orange"}>{prettyDateTime(cycleSynopsis.data.observationSessionStart)}</Text>
+                            <Text c={"orange"}>{prettyDateTime(
+                                cycleSynopsis.data.observationSessionStart)}
+                            </Text>
                         }
                     </Group>
                     <Divider />
@@ -79,7 +106,9 @@ export default function CycleOverviewPanel() : ReactElement {
                         <Text>Observation session end:</Text>
                         {
                             cycleSynopsis.data?.observationSessionEnd &&
-                            <Text c={"orange"}>{prettyDateTime(cycleSynopsis.data.observationSessionEnd)}</Text>
+                            <Text c={"orange"}>{prettyDateTime(
+                                cycleSynopsis.data.observationSessionEnd)}
+                            </Text>
                         }
                     </Group>
                 </Stack>
@@ -120,10 +149,56 @@ export default function CycleOverviewPanel() : ReactElement {
         )
     }
 
+    const DownloadAllProposals = (): ReactElement => {
+        return ExportButton(
+            {
+                toolTipLabel: `Export all proposals to a file for download`,
+                disabled: false,
+                onClick: handleDownloadPdf,
+                label: "Export cycle Proposals",
+                variant: "filled",
+                toolTipLabelPosition: "top"
+            });
+    }
 
+    /**
+     * generates the overview pdf and saves it to the users' disk.
+     *
+     * code extracted from: https://www.robinwieruch.de/react-component-to-pdf/
+     * @return {Promise<void>} promise that the pdf will be saved at some point.
+     */
+    async function handleDownloadPdf(): Promise<void> {
+        notifyInfo("Cycle Export Started",
+            "An export has started and the download will begin shortly");
+
+        await fetchSubmittedProposalResourceGetSubmittedProposals(
+            {...fetcherOptions,
+             pathParams: {cycleCode: Number(selectedCycleCode)}}
+        ).then(
+            (data: SubmittedProposalResourceGetSubmittedProposalsResponse) => {
+                if (cycleSynopsis.data?.title != null) {
+                    downloadProposals(
+                        data, forceUpdate, authToken, cycleSynopsis.data?.title,
+                        navigate, queryClient, polarisMode,
+                        cycleSynopsis.data._id!);
+                }
+            }
+        )
+    }
+
+    /**
+     * generates the html.
+     */
     return (
         <PanelFrame>
             <DisplayTitle />
+            { polarisMode === POLARIS_MODES.OPTICAL &&
+                <>
+                    <Space h={"xl"}/>
+                    <DownloadAllProposals/>
+                    <Space h={"xl"}/>
+                </>
+            }
             <DisplayObservatory />
             <Space h={"xl"}/>
             <DisplayDates />

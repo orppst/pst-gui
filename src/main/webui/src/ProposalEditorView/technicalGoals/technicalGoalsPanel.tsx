@@ -37,7 +37,9 @@ function TechnicalGoalsPanel(): ReactElement {
     // needed to track which targets are locked into observations.
     const { data: proposalsData } =
         useProposalResourceGetObservingProposal({
-                pathParams: {proposalCode: Number(selectedProposalCode)},},
+                pathParams: {proposalCode: Number(selectedProposalCode),
+                             doInvestigatorCheck: true},
+            },
             {enabled: true}
         );
 
@@ -76,7 +78,8 @@ function TechnicalGoalsPanel(): ReactElement {
                     goals={goals}
                     boundTechnicalGoalIds={boundTechnicalGoalIds}
                     showButtons={true}
-                    selectedTechnicalGoal={undefined}/>
+                    selectedTechnicalGoal={undefined}
+                    proposalData={proposalsData!}/>
             }
             <Space h={"xl"}/>
             <Grid>

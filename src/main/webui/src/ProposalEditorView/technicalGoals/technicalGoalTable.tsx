@@ -1,5 +1,5 @@
 import {useParams} from 'react-router-dom';
-import {Badge, DefaultMantineColor, Group, Loader, Space, Table, Text} from '@mantine/core';
+import {Badge, DefaultMantineColor, Group, Space, Table, Text} from '@mantine/core';
 import {modals} from '@mantine/modals';
 import TechnicalGoalEditModal from './edit.modal.tsx';
 import getErrorMessage from 'src/errorHandling/getErrorMessage.tsx';
@@ -13,10 +13,9 @@ import {
     frequencyUnits,
     locateLabel
 } from 'src/physicalUnits/PhysicalUnits.tsx';
-import {ObjectIdentifier, TechnicalGoal} from 'src/generated/proposalToolSchemas.ts';
+import {ObjectIdentifier, ObservingProposal, TechnicalGoal} from 'src/generated/proposalToolSchemas.ts';
 import {
     useTechnicalGoalResourceAddTechnicalGoal,
-    useTechnicalGoalResourceGetTechnicalGoal,
     useTechnicalGoalResourceRemoveTechnicalGoal
 } from 'src/generated/proposalToolComponents.ts';
 import {notSet} from './edit.group.tsx';
@@ -45,6 +44,7 @@ export type TechnicalGoalRowProps = {
     showButtons: boolean,
     selectedTechnicalGoal: number | undefined,
     setSelectedTechnicalGoal?: (value: number) => void,
+    proposalData: ObservingProposal,
 };
 
 /**
@@ -66,7 +66,8 @@ export type TechnicalGoalsTableProps = {
     showButtons: boolean,
     selectedTechnicalGoal: number | undefined,
     setSelectedTechnicalGoal?: (value: number) => void,
-    borderColor?: DefaultMantineColor
+    borderColor?: DefaultMantineColor,
+    proposalData: ObservingProposal,
 }
 
 /**
@@ -89,18 +90,15 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
     const removeMutation =
         useTechnicalGoalResourceRemoveTechnicalGoal();
 
-    const theGoal =
-        useTechnicalGoalResourceGetTechnicalGoal({
-            pathParams: {
-                proposalCode: Number(selectedProposalCode),
-                technicalGoalId: technicalGoalRowProps.id
-            },
+    const theGoal = technicalGoalRowProps.proposalData.technicalGoals?.find(
+        (technicalGoal: TechnicalGoal) => {
+            return technicalGoal._id = technicalGoalRowProps.id
         });
 
     const polarisMode = useContext(ProposalContext).mode;
 
-    if (theGoal.error) {
-        return <pre>{getErrorMessage(theGoal.error)}</pre>
+    if (theGoal == undefined) {
+        return <pre>{getErrorMessage("no technical goal")}</pre>
     }
 
     /**
@@ -160,7 +158,7 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
         children: (
             <>
                 <Text c={"yellow"} size={"sm"}>
-                    Technical goal #{theGoal.data?._id}
+                    Technical goal #{theGoal._id}
                 </Text>
             </>
         ),
@@ -177,8 +175,8 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
         // create a new technicalGoal, which does not have its id set, but
         // contains the spectral and performance of the selected goal.
         const clonedGoal: TechnicalGoal = {
-            performance: theGoal.data?.performance,
-            spectrum: theGoal.data?.spectrum
+            performance: theGoal.performance,
+            spectrum: theGoal.spectrum
         }
 
         //store the technical goal to the DB
@@ -210,7 +208,7 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
         children: (
             <>
                 <Text c={"yellow"} size={"sm"}>
-                    Technical goal #{theGoal.data?._id}
+                    Technical goal #{theGoal._id}
                 </Text>
                 <Space h={"xs"}/>
                 <Text c={"gray.6"} size={"sm"}>
@@ -247,81 +245,70 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
         }
     }
 
-    // if still loading the goal, present a row with a Loader component
-    if (theGoal.isLoading) {
-        return (
-            <Table.Tr>
-                <Table.Td>
-                    <Loader />
-                </Table.Td>
-            </Table.Tr>
-        )
-    }
-
     if ((polarisMode == POLARIS_MODES.BOTH ||
-            polarisMode == POLARIS_MODES.RADIO) && checkForFake(theGoal.data!)) {
+            polarisMode == POLARIS_MODES.RADIO) && checkForFake(theGoal)) {
         return <></>
     }
 
     // return the full row.
     return (
-        <Table.Tr onClick={() => {RowSelector(theGoal.data?._id);}}
-                  bg={technicalGoalRowProps.selectedTechnicalGoal === theGoal.data?._id ?
+        <Table.Tr onClick={() => {RowSelector(theGoal._id);}}
+                  bg={technicalGoalRowProps.selectedTechnicalGoal === theGoal._id ?
                       TABLE_HIGH_LIGHT_COLOR:
                       undefined}>
             {
-                theGoal.data?.performance?.desiredAngularResolution?.value ?
+                theGoal.performance?.desiredAngularResolution?.value ?
                     <Table.Td>
-                        {theGoal.data?.performance?.desiredAngularResolution?.value}
+                        {theGoal.performance?.desiredAngularResolution?.value}
                         {` ${ locateLabel(
                             angularUnits,
-                            theGoal.data?.performance?.desiredAngularResolution?.unit?.value)?.label }`}
+                            theGoal.performance?.desiredAngularResolution?.unit?.value)?.label }`}
                     </Table.Td> :
                     <Table.Td c={"yellow"}>
                         {notSet}
                     </Table.Td>
             }
             {
-                theGoal.data?.performance?.desiredLargestScale?.value ?
+                theGoal.performance?.desiredLargestScale?.value ?
                     <Table.Td>
-                        {theGoal.data?.performance?.desiredLargestScale?.value}
+                        {theGoal.performance?.desiredLargestScale?.value}
                         {` ${ locateLabel(
                             angularUnits,
-                            theGoal.data?.performance?.desiredLargestScale?.unit?.value)?.label }`}
+                            theGoal.performance?.desiredLargestScale?.unit?.value)?.label }`}
                     </Table.Td> :
                     <Table.Td c={"yellow"}>
                         {notSet}
                     </Table.Td>
             }
             {
-                theGoal.data?.performance?.desiredSensitivity?.value ?
+                theGoal.performance?.desiredSensitivity?.value ?
                     <Table.Td>
-                        {theGoal.data?.performance?.desiredSensitivity?.value}
+                        {theGoal.performance?.desiredSensitivity?.value}
                         {` ${ locateLabel(
                             fluxUnits,
-                            theGoal.data?.performance?.desiredSensitivity?.unit?.value)?.label}`}
+                            theGoal.performance?.desiredSensitivity?.unit?.value)?.label}`}
                     </Table.Td> :
                     <Table.Td c={"yellow"}>
                         {notSet}
                     </Table.Td>
             }
             {
-                theGoal.data?.performance?.desiredDynamicRange?.value ?
+                theGoal.performance?.desiredDynamicRange?.value ?
                     <Table.Td>
-                        {theGoal.data?.performance?.desiredDynamicRange?.value}
+                        {theGoal.performance?.desiredDynamicRange?.value}
                         {` ${ locateLabel(dynamicRangeUnits,
-                            theGoal.data?.performance?.desiredDynamicRange?.unit?.value)?.label}`}
+                            theGoal.performance?.desiredDynamicRange?.unit?.value)?.label}`}
                     </Table.Td> :
                     <Table.Td c={"yellow"}>
                         {notSet}
                     </Table.Td>
             }
             {
-                theGoal.data?.performance?.representativeSpectralPoint?.value ?
+                theGoal.performance?.representativeSpectralPoint?.value ?
                     <Table.Td>
-                        {theGoal.data?.performance?.representativeSpectralPoint?.value}
+                        {theGoal.performance?.representativeSpectralPoint?.value}
                         {` ${ locateLabel(frequencyUnits,
-                            theGoal.data?.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
+                            theGoal.performance?.representativeSpectralPoint?.unit?.value)?.label}`}
                     </Table.Td> :
                     <Table.Td c={"yellow"}>
                         {notSet}
@@ -329,12 +316,12 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
             }
             <Table.Td>
                 {
-                    (theGoal.data?.spectrum?.length ?? 0) > 0 ?
+                    (theGoal.spectrum?.length ?? 0) > 0 ?
                         <Badge
                             color={"green"}
                             radius={0}
                         >
-                            {theGoal.data?.spectrum?.length}
+                            {theGoal.spectrum?.length}
                         </Badge>:
                         <Badge
                             color={"red"}
@@ -350,17 +337,16 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                 <Table.Td>
                     <Group align={"right"}>
                         {
-                            theGoal.isLoading ? 'Loading...' :
-                                <TechnicalGoalEditModal technicalGoal={theGoal.data} />
+                            <TechnicalGoalEditModal technicalGoal={theGoal} />
                         }
                         <CloneButton
                             toolTipLabel={"clone"}
                             onClick={confirmClone}
                         />
                         <DeleteButton
-                            toolTipLabel={DeleteToolTip(theGoal.data)}
+                            toolTipLabel={DeleteToolTip(theGoal)}
                             onClick={confirmDelete}
-                            disabled={IsBound(theGoal.data)}
+                            disabled={IsBound(theGoal)}
                         />
                     </Group>
                 </Table.Td>: null
@@ -420,6 +406,7 @@ export function TechnicalGoalsTable(props: TechnicalGoalsTableProps): ReactEleme
                                 showButtons={props.showButtons}
                                 selectedTechnicalGoal={props.selectedTechnicalGoal}
                                 setSelectedTechnicalGoal={props.setSelectedTechnicalGoal}
+                                proposalData={props.proposalData}
                             />
                         )
                     })
