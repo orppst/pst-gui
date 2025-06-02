@@ -107,4 +107,4 @@ export const SIMBAD_TIMEOUT = 5000; //milliseconds
 export const DEBOUNCE_500_ms = 500; //milliseconds
 export const DEBOUNCE_1000_ms = 1000; //milliseconds
 
-export const EMERLIN_JUSTIFICATION_PAGE_LIMIT = 1;
+export const EMERLIN_JUSTIFICATION_PAGE_LIMIT = 4;
