@@ -561,21 +561,30 @@ export function OverviewPanelInternal(
      */
     const DisplayInvestigators = (): ReactElement => {
         const investigators = proposalData.investigators?.map(
-            (investigator) => (
-                <Accordion.Item key={investigator.person?.orcidId?.value}
-                                value={investigator.person?.fullName!}>
-                    <Accordion.Control>
-                        <InvestigatorAccordionLabel
-                            fullName={investigator.person?.fullName!}
-                            role={investigator.type!}
-                            home={investigator.person?.homeInstitute?.name!}
-                        />
-                    </Accordion.Control>
-                    <Accordion.Panel>
-                        <InvestigatorAccordionContent {...investigator} />
-                    </Accordion.Panel>
-                </Accordion.Item>
-        ))
+            (investigator, index) => {
+                const person = investigator.person ?? {};
+                const key = person.orcidId?.value ?? person.fullName ?? (
+                    person._id ? String(person._id) : `investigator-${index}`);
+                const fullName = person.fullName ?? '';
+                const role = investigator.type ?? '';
+                const home = person.homeInstitute?.name ?? '';
+
+                return (
+                    <Accordion.Item key={key} value={fullName}>
+                        <Accordion.Control>
+                            <InvestigatorAccordionLabel
+                                fullName={fullName}
+                                role={role}
+                                home={home}
+                            />
+                        </Accordion.Control>
+                        <Accordion.Panel>
+                            <InvestigatorAccordionContent {...investigator} />
+                        </Accordion.Panel>
+                    </Accordion.Item>
+                );
+            }
+        );
 
         return (
             <>
@@ -590,7 +599,7 @@ export function OverviewPanelInternal(
                                 expandAccordions
                                     ? proposalData.investigators.map(
                                         (investigator) =>
-                                            investigator.person!.fullName!
+                                            investigator.person?.fullName ?? ''
                                     )
                                     : undefined
                             }
@@ -598,12 +607,13 @@ export function OverviewPanelInternal(
                             {investigators}
                         </Accordion>
                     ) : (
+                        // Display fallback text if no investigators
                         <Text c={"yellow"}>No investigators added</Text>
                     )
                 }
             </>
         );
-    }
+    };
 
     /**
      * generates the html for the supporting documents for the overview page.
@@ -678,7 +688,19 @@ export function OverviewPanelInternal(
             index: number, observationType: string): ReactElement => {
         const technicalGoalObj =
             proposalData.technicalGoals?.find((techGoal) =>
-                techGoal._id === observation.technicalGoal)!
+                techGoal._id === observation.technicalGoal)
+
+        // verify we have a technical goal. which should always happen.
+        if(technicalGoalObj === undefined) {
+            return <></>
+        }
+
+        // verify we have a performance params.
+        const performanceParams = technicalGoalObj.performance;
+        if (performanceParams === undefined) {
+            return <></>
+        }
+
         // Ideally we should use the observation id for the 'key' but
         // we don't have it at this point, so we use the map index
         // instead
@@ -693,7 +715,7 @@ export function OverviewPanelInternal(
                             (observation as CalibrationObservation).intent :
                             undefined}
                         spectralPoint={
-                            technicalGoalObj.performance?.representativeSpectralPoint!}
+                            performanceParams.representativeSpectralPoint!}
                     />
                 </Accordion.Control>
                 <Accordion.Panel>
