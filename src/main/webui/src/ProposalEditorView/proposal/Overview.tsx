@@ -252,11 +252,13 @@ function ObservationOpticalAccordionLabel(
  * @param {number} proposalCode: the proposal code.
  * @param {number} targetID the target id in the database.
  * @param {number} technicalGoalId the technical goal id in the database.
+ * @param {ObservingProposal} proposalData the proposal data
  */
 interface ObservationRadioContentProps {
     proposalCode: number;
     targetIds: number[];
     technicalGoalId: number;
+    proposalData: ObservingProposal;
 }
 
 /**
@@ -266,7 +268,8 @@ interface ObservationRadioContentProps {
  * @constructor
  */
 function ObservationRadioAccordionContent(
-    {proposalCode, targetIds, technicalGoalId} : ObservationRadioContentProps) :
+    {proposalCode, targetIds, technicalGoalId, proposalData}:
+        ObservationRadioContentProps) :
     ReactElement {
 
     const listOfTargets = [] as ObjectIdentifier [];
@@ -287,7 +290,8 @@ function ObservationRadioAccordionContent(
                                           code: proposalCode.toString()}]}
                                  boundTechnicalGoalIds={[]}
                                  selectedTechnicalGoal={undefined}
-                                 showButtons={false}/>
+                                 showButtons={false}
+                                 proposalData={proposalData}/>
         </Group>
     )
 }
@@ -369,7 +373,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         proposalID: selectedProposalCode!
     });
 
-    const { data: proposalsData ,
+    const { data: proposalsData,
         error: proposalsError,
         isLoading: proposalsIsLoading } =
         useProposalResourceGetObservingProposal({
@@ -681,11 +685,14 @@ export function OverviewPanelInternal(
      * @param observation: the radio observation
      * @param targetNames: the target names
      * @param index: the index
-     * @param observationType: the type of observation (target, or calibration)
+     * @param {ObservingProposal} proposalData the proposal data.
+     * @param {string} observationType: the type of observation
+     *                                  (target, or calibration)
      */
     const radioAccordion = (
             observation: Observation, targetNames: string,
-            index: number, observationType: string): ReactElement => {
+            index: number, observationType: string,
+            proposalData: ObservingProposal): ReactElement => {
         const technicalGoalObj =
             proposalData.technicalGoals?.find((techGoal) =>
                 techGoal._id === observation.technicalGoal)
@@ -723,6 +730,7 @@ export function OverviewPanelInternal(
                         proposalCode={Number(selectedProposalCode)}
                         targetIds={observation.target as number []}
                         technicalGoalId={technicalGoalObj._id!}
+                        proposalData={proposalData}
                     />
                 </Accordion.Panel>
             </Accordion.Item>
@@ -799,13 +807,13 @@ export function OverviewPanelInternal(
                         } else {
                             return radioAccordion(
                                 observation, targetNames, index,
-                                observationType);
+                                observationType, proposalData);
                         }
                     case POLARIS_MODES.RADIO:
                         if (!telescopeData!.has(observation._id!.toString())) {
                             return radioAccordion(
                                 observation, targetNames, index,
-                                observationType);
+                                observationType, proposalData);
                         } else {
                             return <Accordion.Item key={observation._id}
                                                    value={String(index)}/>

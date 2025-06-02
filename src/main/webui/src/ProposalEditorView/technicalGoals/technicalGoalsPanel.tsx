@@ -78,7 +78,8 @@ function TechnicalGoalsPanel(): ReactElement {
                     goals={goals}
                     boundTechnicalGoalIds={boundTechnicalGoalIds}
                     showButtons={true}
-                    selectedTechnicalGoal={undefined}/>
+                    selectedTechnicalGoal={undefined}
+                    proposalData={proposalsData!}/>
             }
             <Space h={"xl"}/>
             <Grid>
