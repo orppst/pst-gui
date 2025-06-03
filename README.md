@@ -8,6 +8,12 @@ This project uses Quarkus - If you want to learn more about Quarkus, please visi
 Note that there is a separate [README](src/main/webui/README.md) for the client side browser application that makes up the 
 majority of this component.
 
+## Optional third party software
+
+You will need to install `latexmk` on your local environment should you wish to test the Justifications LaTeX 
+functionality when developing i.e., producing a PDF output of the Justifications. `latexmk` will be installed
+on the server for production.
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
