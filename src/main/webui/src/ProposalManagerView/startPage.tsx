@@ -8,13 +8,13 @@ import {
     Tooltip, useMantineTheme
 } from "@mantine/core";
 import {
-    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE,
+    APP_HEADER_HEIGHT,
     NAV_BAR_DEFAULT_WIDTH,
     NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH,
     OPEN_DELAY
 } from "../constants.tsx";
-import {IconLicense, IconLogout} from "@tabler/icons-react";
+import {IconLicense} from "@tabler/icons-react";
 import {Outlet, useNavigate} from "react-router-dom";
 import {ColourSchemeToggle} from "../ColourSchemeToggle.tsx";
 import {useDisclosure} from "@mantine/hooks";
@@ -23,6 +23,7 @@ import AddButton from "../commonButtons/add.tsx";
 import NewCycleForm from "./proposalCycle.new.form.tsx";
 import {HaveRole} from "../auth/Roles.tsx";
 import {useObservatoryResourceGetObservatories}  from "../generated/proposalToolComponents.ts";
+import UserMenu from "../userMenu.tsx";
 
 //import {selectedObservatory, setSelectedObservatory} from "../App2.tsx";
 
@@ -121,19 +122,8 @@ export default function ProposalManagerStartPage() : ReactElement {
                     </Grid.Col>
                     <Grid.Col span={1}>
                         <Group justify={"flex-end"}>
+                            <UserMenu />
                             {ColourSchemeToggle()}
-                            <Tooltip label={"logout"}
-                                     openDelay={OPEN_DELAY}
-                                     closeDelay={CLOSE_DELAY}
-                            >
-                                <ActionIcon color={"orange.8"}
-                                            variant={"subtle"}
-                                            component={"a"}
-                                            href={"/pst/gui/logout"}
-                                >
-                                    <IconLogout size={ICON_SIZE}/>
-                                </ActionIcon>
-                            </Tooltip>
                         </Group>
                     </Grid.Col>
                 </Grid>

@@ -1,28 +1,22 @@
-import {useMantineColorScheme, Switch, useMantineTheme} from '@mantine/core';
+import {useMantineColorScheme, ActionIcon, Tooltip} from '@mantine/core';
 import {IconSun, IconMoonStars} from '@tabler/icons-react';
-import { STROKE } from './constants';
+import {CLOSE_DELAY, OPEN_DELAY} from './constants';
 
 export function ColourSchemeToggle() {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-    // the colour gray used by the tools.
-    const theme = useMantineTheme();
-    const GRAY = theme.colors.gray[6];
-
     return (
-        <>
-            <Switch
-                checked={colorScheme === 'dark'}
-                onChange={() => toggleColorScheme()}
-                size="md"
-                onLabel={<IconSun
-                    color={theme.white}
-                    size="1.25em"
-                    stroke={STROKE} />}
-                offLabel={<IconMoonStars
-                    color={GRAY}
-                    size="1.25em"
-                    stroke={STROKE}/>}
-            />
-        </>
+        <Tooltip
+            label={colorScheme === 'dark' ? 'light mode' : 'dark mode'}
+            openDelay={OPEN_DELAY}
+            closeDelay={CLOSE_DELAY}
+        >
+            <ActionIcon
+                variant={"subtle"}
+                onClick={toggleColorScheme}
+            >
+                {colorScheme === 'dark' ? <IconSun /> : <IconMoonStars/>}
+            </ActionIcon>
+
+        </Tooltip>
     );
 }
