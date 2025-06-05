@@ -3277,6 +3277,64 @@ export const usePersonResourceUpdateFullName = (
   });
 };
 
+export type PersonResourceUpdateHomeInstitutePathParams = {
+  /**
+   * @format int64
+   */
+  id: number;
+};
+
+export type PersonResourceUpdateHomeInstituteError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceUpdateHomeInstituteVariables = {
+  body?: Schemas.Organization;
+  pathParams: PersonResourceUpdateHomeInstitutePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceUpdateHomeInstitute = (
+  variables: PersonResourceUpdateHomeInstituteVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    PersonResourceUpdateHomeInstituteError,
+    Schemas.Organization,
+    {},
+    {},
+    PersonResourceUpdateHomeInstitutePathParams
+  >({
+    url: "/pst/api/people/{id}/homeInstitute",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const usePersonResourceUpdateHomeInstitute = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      PersonResourceUpdateHomeInstituteError,
+      PersonResourceUpdateHomeInstituteVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    PersonResourceUpdateHomeInstituteError,
+    PersonResourceUpdateHomeInstituteVariables
+  >({
+    mutationFn: (variables: PersonResourceUpdateHomeInstituteVariables) =>
+      fetchPersonResourceUpdateHomeInstitute({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type PersonResourceUpdateOrcidIdPathParams = {
   /**
    * @format int64
