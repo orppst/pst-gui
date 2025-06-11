@@ -1,13 +1,18 @@
 import {ReactElement} from "react";
-import {Accordion, Fieldset, Loader, Text} from "@mantine/core";
+import {Accordion, Button, Fieldset, Flex, Loader, Text} from "@mantine/core";
 import {
     useAllocatedProposalResourceGetAllocatedProposal,
+    useAllocatedProposalResourceWithdrawAllocatedProposal,
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import AllocatedBlocksObservingMode from "./allocatedBlocks.observingMode.tsx";
+import {HaveRole} from "../../auth/Roles.tsx";
+import {modals} from "@mantine/modals";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 
 function AllocatedAccordionItem(p: {
@@ -17,6 +22,9 @@ function AllocatedAccordionItem(p: {
     timeUnit: string,
     totalTimeAvailable: number
 }) : ReactElement {
+    const queryClient = useQueryClient();
+
+    const withdrawAllocatedProposalMutation = useAllocatedProposalResourceWithdrawAllocatedProposal();
 
     const allocatedProposal =
         useAllocatedProposalResourceGetAllocatedProposal({
@@ -54,6 +62,37 @@ function AllocatedAccordionItem(p: {
 
     let timeAllocatedPercent : string = ((totalTimeAllocated / p.totalTimeAvailable) * 100).toFixed(1)
 
+    const handleWithdraw = () => {
+        withdrawAllocatedProposalMutation.mutate({
+            pathParams: {
+                    cycleCode: p.cycleCode,
+                    allocatedId: p.allocatedProposalId
+                }}, {
+            onSuccess: () => {
+                queryClient.invalidateQueries().then(() =>
+                    notifySuccess("Success","Proposal withdrawn")
+                )
+            },
+            onError: (error) =>
+                notifyError("Withdraw failed", getErrorMessage(error))
+        })
+    }
+
+    const confirmWithdrawAllocatedProposal = () => {
+        modals.openConfirmModal({
+            title: "Withdraw allocated proposal",
+            centered: true,
+            children: (
+                <Text size="sm">
+                    Are you sure you want to withdraw this proposal?
+                </Text>
+            ),
+            labels: { confirm: "Withdraw", cancel: "Cancel" },
+            confirmProps: { color: "red" },
+            onConfirm: () => handleWithdraw(),
+        });
+    }
+
     return (
         <Accordion.Item value={String(allocatedProposal.data?._id)}>
             <Accordion.Control>
@@ -79,6 +118,19 @@ function AllocatedAccordionItem(p: {
                             </Fieldset>
                         )
                     })
+                }
+                {HaveRole(["tac_admin"]) &&
+                    <Flex
+                        justify="flex-end"
+                        align="flex-end"
+                        mih={50}>
+                        <Button
+                            onClick={confirmWithdrawAllocatedProposal}
+                            variant={"outline"}
+                            size={"xs"}>
+                            Withdraw
+                        </Button>
+                    </Flex>
                 }
             </Accordion.Panel>
         </Accordion.Item>
