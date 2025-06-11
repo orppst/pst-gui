@@ -80,14 +80,14 @@ function AllocatedAccordionItem(p: {
 
     const confirmWithdrawAllocatedProposal = () => {
         modals.openConfirmModal({
-            title: "Withdraw allocated proposal",
+            title: "Deallocate allocated proposal",
             centered: true,
             children: (
                 <Text size="sm">
-                    Are you sure you want to withdraw this proposal?
+                    Are you sure you want to withdraw this proposal and remove it's allocations?
                 </Text>
             ),
-            labels: { confirm: "Withdraw", cancel: "Cancel" },
+            labels: { confirm: "Deallocate", cancel: "Cancel" },
             confirmProps: { color: "red" },
             onConfirm: () => handleWithdraw(),
         });
@@ -121,14 +121,15 @@ function AllocatedAccordionItem(p: {
                 }
                 {HaveRole(["tac_admin"]) &&
                     <Flex
-                        justify="flex-end"
+                        justify="flex-start"
                         align="flex-end"
                         mih={50}>
                         <Button
                             onClick={confirmWithdrawAllocatedProposal}
                             variant={"outline"}
-                            size={"xs"}>
-                            Withdraw
+                            size={"xs"}
+                            color={"red"}>
+                            Deallocate
                         </Button>
                     </Flex>
                 }
