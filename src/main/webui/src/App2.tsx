@@ -118,8 +118,6 @@ export const useToken = (): string => {
     return useContext(ProposalContext).getToken();
 };
 
-//export const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
-
 /**
  * generates the html for the main app.
  * @return {ReactElement} dynamic html for the main app.

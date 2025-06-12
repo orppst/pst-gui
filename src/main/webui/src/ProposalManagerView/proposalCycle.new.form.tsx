@@ -6,7 +6,7 @@ import {Group, Select, Stack, Text, TextInput} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {
-    useObservatoryResourceGetObservatory,
+    useObservatoryResourceGetObservatories,
     useProposalCyclesResourceCreateProposalCycle
 } from "../generated/proposalToolComponents.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
@@ -14,25 +14,24 @@ import {notifyError, notifySuccess} from "../commonPanel/notifications.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 
 interface NewCycleFormProps {
-    closeModal?: () => void,
-    selectedObservatory: number
+    closeModal?: () => void
 }
 
-export default function NewCycleForm({closeModal, selectedObservatory}: NewCycleFormProps): ReactElement {
+export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElement {
 
     interface NewCycleFormType {
         title: string,
         submissionDeadline: Date | null,
         sessionStart: Date | null,
         sessionEnd: Date | null,
-        observatoryId: number
+        observatoryId: number | null
     }
     const queryClient = useQueryClient();
 
     const [observatories, setObservatories]
         = useState<{ value: string, label: string }[]>([]);
 
-    const {data, status, error} = useObservatoryResourceGetObservatory({pathParams:{id: selectedObservatory}});
+    const {data, status, error} = useObservatoryResourceGetObservatories({queryParams: {}});
 
     const createProposalCycleMutation = useProposalCyclesResourceCreateProposalCycle({
         onSuccess: (newCycle) => {
@@ -54,9 +53,10 @@ export default function NewCycleForm({closeModal, selectedObservatory}: NewCycle
         else {
               if(data != undefined)
                   setObservatories(
-                        [{value: String(data._id), label: data.name!}]
+                      data?.map((obs) => (
+                          {value: String(obs.dbid), label: obs.name!}
+                      ))
                 );
-              form.values.observatoryId=selectedObservatory;
         }
     }, [data, status]);
 
@@ -69,7 +69,7 @@ export default function NewCycleForm({closeModal, selectedObservatory}: NewCycle
                 submissionDeadline: null,
                 sessionStart: null,
                 sessionEnd: null,
-                observatoryId: selectedObservatory
+                observatoryId: null
             },
 
             validate: {
@@ -136,7 +136,6 @@ export default function NewCycleForm({closeModal, selectedObservatory}: NewCycle
                         label={"Observatory"}
                         placeholder={"pick one"}
                         data={observatories}
-                        defaultValue={selectedObservatory}
                         {...form.getInputProps('observatoryId')}
                     />
                     <Group justify={"center"}>

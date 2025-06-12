@@ -1,10 +1,10 @@
-import {ReactElement, useState} from "react";
+import {ReactElement} from "react";
 import {
     ActionIcon,
     AppShell,
     Burger,
     Grid,
-    Group, Modal, ScrollArea, Select,
+    Group, Modal, ScrollArea,
     Tooltip, useMantineTheme
 } from "@mantine/core";
 import {
@@ -22,10 +22,6 @@ import CycleList from "./cycleList.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import NewCycleForm from "./proposalCycle.new.form.tsx";
 import {HaveRole} from "../auth/Roles.tsx";
-import {useObservatoryResourceGetObservatories}  from "../generated/proposalToolComponents.ts";
-
-//import {selectedObservatory, setSelectedObservatory} from "../App2.tsx";
-
 
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
@@ -33,21 +29,6 @@ export default function ProposalManagerStartPage() : ReactElement {
     const theme = useMantineTheme();
 
     const [modalOpened, {close, open}] = useDisclosure();
-
-    const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
-
-    const obsList = useObservatoryResourceGetObservatories(
-        {queryParams: {}}
-    );
-
-    const observatoryList = obsList.data?.map(obs => {
-        if(obs.dbid) {
-            if (selectedObservatory == 0)
-                setSelectedObservatory(obs.dbid)
-            if (obs.name)
-                return {value: obs.dbid.toString(), label: obs.name};
-        }
-    })
 
     return (
         <AppShell
@@ -88,21 +69,6 @@ export default function ProposalManagerStartPage() : ReactElement {
                                     <IconLicense />
                                 </ActionIcon>
                             </Tooltip>
-                            Observatory
-                            <Select
-                                width={500}
-                                defaultValue={selectedObservatory.toString()}
-                                allowDeselect={false}
-                                comboboxProps={{ width: 200, position: 'bottom-start' }}
-                                aria-label="Select an observatory"
-                                //@ts-ignore
-                                data={observatoryList}
-                                onChange={(_value) => {
-                                        if(_value)
-                                            setSelectedObservatory(+_value)
-                                    }
-                                }
-                            />
                             {HaveRole(["obs_administration"]) &&
                             <AddButton toolTipLabel={"new proposal cycle"}
                                        label={"Create a new Proposal Cycle"}
@@ -115,7 +81,7 @@ export default function ProposalManagerStartPage() : ReactElement {
                                 size={"40%"}
                                 closeOnClickOutside={false}
                             >
-                                <NewCycleForm closeModal={close} selectedObservatory={selectedObservatory}/>
+                                <NewCycleForm closeModal={close} />
                             </Modal>
                         </Group>
                     </Grid.Col>
@@ -140,7 +106,7 @@ export default function ProposalManagerStartPage() : ReactElement {
             </AppShell.Header>
             <AppShell.Navbar>
                 <AppShell.Section component={ScrollArea}>
-                    <CycleList observatory={+selectedObservatory}/>
+                    <CycleList observatory={0}/>
                 </AppShell.Section>
             </AppShell.Navbar>
             <AppShell.Main pr={"sm"}>
