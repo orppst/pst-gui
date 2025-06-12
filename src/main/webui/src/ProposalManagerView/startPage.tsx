@@ -106,7 +106,7 @@ export default function ProposalManagerStartPage() : ReactElement {
             </AppShell.Header>
             <AppShell.Navbar>
                 <AppShell.Section component={ScrollArea}>
-                    <CycleList observatory={0}/>
+                    <CycleList/>
                 </AppShell.Section>
             </AppShell.Navbar>
             <AppShell.Main pr={"sm"}>
