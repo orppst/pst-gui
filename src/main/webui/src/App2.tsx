@@ -38,7 +38,7 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container,
+    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container, Button,
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
 import {IconUniverse} from '@tabler/icons-react';
@@ -442,6 +442,9 @@ function App2(): ReactElement {
                             </Grid.Col>
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
+                                    <Button onClick={() => navigate("admin")}>
+                                        Admin
+                                    </Button>
                                     {ColourSchemeToggle()}
                                     <UserMenu />
                                 </Group>

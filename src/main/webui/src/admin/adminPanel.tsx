@@ -1,28 +1,33 @@
 import {ReactElement} from "react";
-import {ActionIcon, Box, Group, Table, Text, Tooltip} from "@mantine/core";
-import {CLOSE_DELAY, ICON_SIZE, JSON_SPACES, OPEN_DELAY} from "../constants.tsx";
+import {ActionIcon, Group, Loader, Table, Text, Tooltip} from "@mantine/core";
+import {CLOSE_DELAY, ICON_SIZE, OPEN_DELAY} from "../constants.tsx";
 import {IconKey} from "@tabler/icons-react";
 import {
     useSubjectMapResourceSubjectMapList
 } from "../generated/proposalToolComponents.ts";
 import {SubjectMap} from "../generated/proposalToolSchemas.ts";
 import {SubjectMapsTableRow, SubjectMapsTableHeader} from './subjectMapsTable.tsx';
+import AlertErrorMessage from "../errorHandling/alertErrorMessage.tsx";
+import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 
 function AdminPanel(): ReactElement {
 
-    const {
-        data: subjectMaps,
-        error: subjectMapsError,
-        isLoading: subjectMapsIsLoading
-    } = useSubjectMapResourceSubjectMapList({});
+    const subjectMap  = useSubjectMapResourceSubjectMapList({});
 
-    if (subjectMapsError) {
+    if (subjectMap.isError) {
         return (
-            <Box>
-                <pre>{JSON.stringify(subjectMapsError, null, JSON_SPACES)}</pre>
-            </Box>
+            <AlertErrorMessage
+                title={"Failed to fetch subject map list"}
+                error={getErrorMessage(subjectMap.error)}
+            />
         )
     }
+
+
+    if (subjectMap.isLoading) {
+        return (<Loader/>)
+    }
+
 
     /**
      * function to return the ReactElement for a Table displaying the People stored in
@@ -35,7 +40,7 @@ function AdminPanel(): ReactElement {
                 <SubjectMapsTableHeader />
                 <Table.Tbody>
                     {
-                        subjectMaps?.map((subjectMap : SubjectMap) => {
+                        subjectMap.data?.map((subjectMap : SubjectMap) => {
                             return (
                                 <SubjectMapsTableRow key={subjectMap.uid} {...subjectMap}/>
                             )
@@ -77,16 +82,11 @@ function AdminPanel(): ReactElement {
         )
     }
 
+
     return(
         <>
             <DisplayKeycloakAdminConsoleButton />
-
-            {
-                subjectMapsIsLoading ? "Loading ..." :
-                    <SubjectMapsTable />
-            }
-
-
+            <SubjectMapsTable />
         </>
     )
 }

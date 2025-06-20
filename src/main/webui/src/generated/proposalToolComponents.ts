@@ -13112,6 +13112,361 @@ export const useSubjectMapResourceSubjectMap = <TData = Schemas.SubjectMap,>(
   });
 };
 
+export type SubjectMapResourceChangeEmailAddressPathParams = {
+  /**
+   * @format int64
+   */
+  personId: number;
+};
+
+export type SubjectMapResourceChangeEmailAddressError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceChangeEmailAddressVariables = {
+  pathParams: SubjectMapResourceChangeEmailAddressPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceChangeEmailAddress = (
+  variables: SubjectMapResourceChangeEmailAddressVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubjectMapResourceChangeEmailAddressError,
+    undefined,
+    {},
+    {},
+    SubjectMapResourceChangeEmailAddressPathParams
+  >({
+    url: "/pst/api/subjectMap/{personId}/email",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceChangeEmailAddress = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      SubjectMapResourceChangeEmailAddressError,
+      SubjectMapResourceChangeEmailAddressVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    SubjectMapResourceChangeEmailAddressError,
+    SubjectMapResourceChangeEmailAddressVariables
+  >({
+    mutationFn: (variables: SubjectMapResourceChangeEmailAddressVariables) =>
+      fetchSubjectMapResourceChangeEmailAddress({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type SubjectMapResourceChangeFirstNamePathParams = {
+  /**
+   * @format int64
+   */
+  personId: number;
+};
+
+export type SubjectMapResourceChangeFirstNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceChangeFirstNameVariables = {
+  pathParams: SubjectMapResourceChangeFirstNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceChangeFirstName = (
+  variables: SubjectMapResourceChangeFirstNameVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubjectMapResourceChangeFirstNameError,
+    undefined,
+    {},
+    {},
+    SubjectMapResourceChangeFirstNamePathParams
+  >({
+    url: "/pst/api/subjectMap/{personId}/firstName",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceChangeFirstName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      SubjectMapResourceChangeFirstNameError,
+      SubjectMapResourceChangeFirstNameVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    SubjectMapResourceChangeFirstNameError,
+    SubjectMapResourceChangeFirstNameVariables
+  >({
+    mutationFn: (variables: SubjectMapResourceChangeFirstNameVariables) =>
+      fetchSubjectMapResourceChangeFirstName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type SubjectMapResourceChangeLastNamePathParams = {
+  /**
+   * @format int64
+   */
+  personId: number;
+};
+
+export type SubjectMapResourceChangeLastNameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceChangeLastNameVariables = {
+  pathParams: SubjectMapResourceChangeLastNamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceChangeLastName = (
+  variables: SubjectMapResourceChangeLastNameVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubjectMapResourceChangeLastNameError,
+    undefined,
+    {},
+    {},
+    SubjectMapResourceChangeLastNamePathParams
+  >({
+    url: "/pst/api/subjectMap/{personId}/lastName",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceChangeLastName = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      SubjectMapResourceChangeLastNameError,
+      SubjectMapResourceChangeLastNameVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    SubjectMapResourceChangeLastNameError,
+    SubjectMapResourceChangeLastNameVariables
+  >({
+    mutationFn: (variables: SubjectMapResourceChangeLastNameVariables) =>
+      fetchSubjectMapResourceChangeLastName({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type SubjectMapResourceResetPasswordPathParams = {
+  /**
+   * @format int64
+   */
+  personId: number;
+};
+
+export type SubjectMapResourceResetPasswordError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceResetPasswordVariables = {
+  pathParams: SubjectMapResourceResetPasswordPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceResetPassword = (
+  variables: SubjectMapResourceResetPasswordVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubjectMapResourceResetPasswordError,
+    undefined,
+    {},
+    {},
+    SubjectMapResourceResetPasswordPathParams
+  >({
+    url: "/pst/api/subjectMap/{personId}/password",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceResetPassword = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      SubjectMapResourceResetPasswordError,
+      SubjectMapResourceResetPasswordVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    SubjectMapResourceResetPasswordError,
+    SubjectMapResourceResetPasswordVariables
+  >({
+    mutationFn: (variables: SubjectMapResourceResetPasswordVariables) =>
+      fetchSubjectMapResourceResetPassword({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type SubjectMapResourceGetSubjectMapUidPathParams = {
+  /**
+   * @format int64
+   */
+  personId: number;
+};
+
+export type SubjectMapResourceGetSubjectMapUidError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceGetSubjectMapUidVariables = {
+  pathParams: SubjectMapResourceGetSubjectMapUidPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceGetSubjectMapUid = (
+  variables: SubjectMapResourceGetSubjectMapUidVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubjectMapResourceGetSubjectMapUidError,
+    undefined,
+    {},
+    {},
+    SubjectMapResourceGetSubjectMapUidPathParams
+  >({
+    url: "/pst/api/subjectMap/{personId}/uid",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceGetSubjectMapUid = <TData = undefined,>(
+  variables: SubjectMapResourceGetSubjectMapUidVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      SubjectMapResourceGetSubjectMapUidError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    SubjectMapResourceGetSubjectMapUidError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/subjectMap/{personId}/uid",
+      operationId: "subjectMapResourceGetSubjectMapUid",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchSubjectMapResourceGetSubjectMapUid(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type SubjectMapResourceGetKeycloakUsernamePathParams = {
+  /**
+   * @format int64
+   */
+  personId: number;
+};
+
+export type SubjectMapResourceGetKeycloakUsernameError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubjectMapResourceGetKeycloakUsernameVariables = {
+  pathParams: SubjectMapResourceGetKeycloakUsernamePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubjectMapResourceGetKeycloakUsername = (
+  variables: SubjectMapResourceGetKeycloakUsernameVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubjectMapResourceGetKeycloakUsernameError,
+    undefined,
+    {},
+    {},
+    SubjectMapResourceGetKeycloakUsernamePathParams
+  >({
+    url: "/pst/api/subjectMap/{personId}/username",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubjectMapResourceGetKeycloakUsername = <TData = undefined,>(
+  variables: SubjectMapResourceGetKeycloakUsernameVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      SubjectMapResourceGetKeycloakUsernameError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    SubjectMapResourceGetKeycloakUsernameError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/subjectMap/{personId}/username",
+      operationId: "subjectMapResourceGetKeycloakUsername",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchSubjectMapResourceGetKeycloakUsername(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type QueryOperation =
   | {
       path: "/pst/api/admin/roles";
@@ -13537,4 +13892,14 @@ export type QueryOperation =
       path: "/pst/api/subjectMap/{id}";
       operationId: "subjectMapResourceSubjectMap";
       variables: SubjectMapResourceSubjectMapVariables;
+    }
+  | {
+      path: "/pst/api/subjectMap/{personId}/uid";
+      operationId: "subjectMapResourceGetSubjectMapUid";
+      variables: SubjectMapResourceGetSubjectMapUidVariables;
+    }
+  | {
+      path: "/pst/api/subjectMap/{personId}/username";
+      operationId: "subjectMapResourceGetKeycloakUsername";
+      variables: SubjectMapResourceGetKeycloakUsernameVariables;
     };
