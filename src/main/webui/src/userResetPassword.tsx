@@ -83,7 +83,7 @@ function UserResetPassword() : ReactElement {
                     >
                         <PasswordInput
                             withAsterisk
-                            label="Your password"
+                            label="New password"
                             visible={visible}
                             onVisibilityChange={toggle}
                             placeholder="choose new password"
@@ -100,7 +100,7 @@ function UserResetPassword() : ReactElement {
                 </Popover.Dropdown>
             </Popover>
             <PasswordInput
-                label="Confirm password"
+                label="Confirm new password"
                 visible={visible}
                 onVisibilityChange={toggle}
                 value={confirmPassword}
@@ -108,12 +108,13 @@ function UserResetPassword() : ReactElement {
                     setConfirmPassword(event.currentTarget.value)}
             />
             <Tooltip
-                label={confirmPassword !== newPassword ? "Passwords do not match" : "Reset your password"}
+                label={ getStrength(newPassword) < 100 ? "Weak password" :
+                    confirmPassword !== newPassword ? "Passwords do not match" : "Reset your password"}
             >
                 <Button
                     variant={"filled"}
                     onClick={handleUpdatePassword}
-                    disabled={confirmPassword !== newPassword}
+                    disabled={getStrength(newPassword) < 100 || confirmPassword !== newPassword}
                 >
                     Reset Password
                 </Button>

@@ -3,19 +3,28 @@ import {ProposalContext} from "./App2.tsx";
 import {
     useOrganizationResourceGetOrganization,
     useOrganizationResourceGetOrganizations,
-    usePersonResourceUpdateEMail,
-    usePersonResourceUpdateFullName,
     usePersonResourceUpdateHomeInstitute,
-    usePersonResourceUpdateOrcidId
+    usePersonResourceUpdateOrcidId,
+    useSubjectMapResourceChangeEmailAddress,
+    useSubjectMapResourceChangeFirstName,
+    useSubjectMapResourceChangeLastName
 } from "./generated/proposalToolComponents.ts";
 import {PanelFrame, PanelHeader} from "./commonPanel/appearance.tsx";
-import {Fieldset, Grid, Group, Loader, Select, Space, Stack, Text, TextInput} from "@mantine/core";
+import {Button, Fieldset, Grid, Group, Loader, Modal, Select, Space, Stack, Text, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "./commonPanel/notifications.tsx";
 import getErrorMessage from "./errorHandling/getErrorMessage.tsx";
 import {FormSubmitButton} from "./commonButtons/save.tsx";
 import AlertErrorMessage from "./errorHandling/alertErrorMessage.tsx";
+import {useDisclosure} from "@mantine/hooks";
+import UserResetPassword from "./userResetPassword.tsx";
+
+interface UserDetailsFormValues {
+    firstName: string;
+    lastName: string;
+    email: string;
+}
 
 function DisplayOrganisationDetails ({organisationId} : {organisationId: number}) : ReactElement {
 
@@ -62,21 +71,30 @@ function UserManagement() : ReactElement {
 
     const {user} = useContext(ProposalContext);
     const queryClient = useQueryClient();
+
+    const [opened, {open, close}] = useDisclosure(false);
+
     const [selectOrganisation, setSelectOrganisation] = useState<{value: string, label: string}[]>([]);
 
     const organisations = useOrganizationResourceGetOrganizations({})
 
-    const fullNameMutate = usePersonResourceUpdateFullName();
-    const emailMutate = usePersonResourceUpdateEMail();
+    //keycloak related, i.e., via 'SubjectMap'
+    const firstNameMutate = useSubjectMapResourceChangeFirstName();
+    const lastNameMutate = useSubjectMapResourceChangeLastName();
+    const emailMutate = useSubjectMapResourceChangeEmailAddress();
+
+    //'Person' related
     const orchidIdMutate = usePersonResourceUpdateOrcidId();
     const homeInstituteMutate = usePersonResourceUpdateHomeInstitute();
 
-    const fullNameForm = useForm<{fullName: string}>({
-        initialValues: {fullName: user.fullName!}
-    })
-
-    const emailForm = useForm<{email: string}>({
-        initialValues: {email: user.eMail!}
+    const userDetailsForm = useForm<UserDetailsFormValues>({
+        initialValues: {
+            firstName: user.fullName ?
+                user.fullName.substring(0, user.fullName.indexOf(" ")): "",
+            lastName: user.fullName ?
+                user.fullName.substring(user.fullName.indexOf(" ") + 1) : "",
+            email: user.eMail ?? ""
+        }
     })
 
     const orchidIdForm = useForm<{orchidId: string}>({
@@ -84,7 +102,7 @@ function UserManagement() : ReactElement {
     })
 
     const homeInstituteForm = useForm<{homeInstitute: string}>({
-        initialValues: {homeInstitute: String(user.homeInstitute?._id!)}
+        initialValues: {homeInstitute: user.homeInstitute ? String(user.homeInstitute._id) : ""}
     })
 
     useEffect(() => {
@@ -97,47 +115,73 @@ function UserManagement() : ReactElement {
         }
     }, [organisations]);
 
+    const handelUserDetailsUpdate = userDetailsForm.onSubmit((values) => {
+        if (userDetailsForm.isDirty('firstName')) {
+            firstNameMutate.mutate({
+                pathParams: {personId: user._id!},
+                body: values.firstName,
+                //@ts-ignore
+                headers: {"Content-Type": "text/plain"}
+            }, {
+                onSuccess: () => {
+                    notifySuccess("First name update successful",
+                        "First name changed to " + values.firstName)
+                },
+                onError: (error) => {
+                    notifyError("Failed to update first name", getErrorMessage(error))
+                }
+            })
+        }
 
-    const handleFullNameUpdate = fullNameForm.onSubmit((values) => {
-        fullNameMutate.mutate({
-            pathParams: {id: user._id!},
-            //@ts-ignore
-            body: values.fullName
-        }, {
-            onSuccess: () => {
-                queryClient.invalidateQueries().then()
-                notifySuccess("Full name update successful", "Full name changed to " + values.fullName)
-            },
-            onError: (error) =>
-                notifyError("Failed to update full name", getErrorMessage(error))
-        })
-    })
+        if (userDetailsForm.isDirty('lastName')) {
+            lastNameMutate.mutate({
+                pathParams: {personId: user._id!},
+                body: values.lastName,
+                //@ts-ignore
+                headers: {"Content-Type": "text/plain"}
+            }, {
+                onSuccess: () => {
+                    notifySuccess("Last name update successful",
+                        "Last name changed to " + values.lastName)
+                },
+                onError: (error) => {
+                    notifyError("Failed to update last name", getErrorMessage(error))
+                }
+            })
+        }
 
-    const handleEmailUpdate = emailForm.onSubmit((values) => {
-        emailMutate.mutate({
-            pathParams: {id: user._id!},
-            //@ts-ignore
-            body: values.email
+        if (userDetailsForm.isDirty('email')) {
+            emailMutate.mutate({
+                pathParams: {personId: user._id!},
+                body: values.email,
+                //@ts-ignore
+                headers: {"Content-Type": "text/plain"}
+            }, {
+                onSuccess: () => {
+                    notifySuccess("Email address update successful",
+                        "Email address changed to " + values.email)
+                },
+                onError: (error) => {
+                    notifyError("Failed to update email address", getErrorMessage(error))
+                }
+            })
+        }
 
-        }, {
-            onSuccess: () => {
-                queryClient.invalidateQueries().then()
-                notifySuccess("Email update successful", "Email changed to " + values.email)
-            },
-            onError: (error) =>
-                notifyError("Failed to update email", getErrorMessage(error))
-        })
     })
 
     const handleOrchidIdUpdate = orchidIdForm.onSubmit((values) => {
         orchidIdMutate.mutate({
             pathParams: {id: user._id!},
+            body: values.orchidId,
             //@ts-ignore
-            body: values.orchidId
+            headers: {"Content-Type": "text/plain"}
         }, {
             onSuccess: () => {
                 queryClient.invalidateQueries().then()
                 notifySuccess("Orchid ID update successful", "Orchid ID set to " + values.orchidId)
+            },
+            onError: (error) => {
+                notifyError("Failed to update your Orchid ID", getErrorMessage(error))
             }
         })
     })
@@ -155,12 +199,12 @@ function UserManagement() : ReactElement {
                     "Home Institute changed to "
                     + selectOrganisation.find((org)=>
                         (org.value === values.homeInstitute))?.label)
+            },
+            onError: (error) => {
+                notifyError("Failed to update your home institute", getErrorMessage(error))
             }
         })
     })
-
-
-
 
 
     if (organisations.isLoading) {
@@ -180,40 +224,46 @@ function UserManagement() : ReactElement {
         <PanelFrame>
             <PanelHeader itemName={"User Settings"} panelHeading={user.fullName}/>
             <Fieldset legend={"User Settings"}>
-
                 <Grid columns={12}>
                     <Grid.Col span={6}>
                         <Stack>
-                            <form onSubmit={handleFullNameUpdate}>
-                                <Group grow>
-                                    <TextInput
-                                        label={"Full Name"}
-                                        placeholder={"e.g. Jane Doe"}
-                                        {...fullNameForm.getInputProps('fullName')}
-                                    />
-                                    <FormSubmitButton
-                                        form={fullNameForm}
-                                        label={"Update"}
-                                        mt={"1.75em"}
-                                        variant={"filled"}
-                                    />
-                                </Group>
+                            <form onSubmit={handelUserDetailsUpdate}>
+                                <TextInput
+                                    label={"First Name"}
+                                    placeholder={"e.g. Jango"}
+                                    {...userDetailsForm.getInputProps('firstName')}
+                                />
+                                <TextInput
+                                    label={"Last Name"}
+                                    placeholder={"e.g. Fett"}
+                                    {...userDetailsForm.getInputProps('lastName')}
+                                />
+                                <TextInput
+                                    label={"email"}
+                                    placeholder={"e.g. jango.fett@tatooine.sw"}
+                                    {...userDetailsForm.getInputProps('email')}
+                                />
+                                <FormSubmitButton
+                                    form={userDetailsForm}
+                                    label={"Update"}
+                                    mt={"1.75em"}
+                                    variant={"filled"}
+                                />
                             </form>
-                            <form onSubmit={handleEmailUpdate}>
-                                <Group grow>
-                                    <TextInput
-                                        label={"email"}
-                                        placeholder={"e.g. jane.doe@notReal.com"}
-                                        {...emailForm.getInputProps('email')}
-                                    />
-                                    <FormSubmitButton
-                                        form={emailForm}
-                                        label={"Update"}
-                                        mt={"1.75em"}
-                                        variant={"filled"}
-                                    />
-                                </Group>
-                            </form>
+                            <Button onClick={open}>
+                                Reset Password
+                            </Button>
+                            <Modal
+                                opened={opened}
+                                onClose={close}
+                                title={"Choose a new password"}
+                            >
+                                <UserResetPassword/>
+                            </Modal>
+                        </Stack>
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                        <Stack>
                             <form onSubmit={handleOrchidIdUpdate}>
                                 <Group grow>
                                     <TextInput
@@ -229,10 +279,6 @@ function UserManagement() : ReactElement {
                                     />
                                 </Group>
                             </form>
-                        </Stack>
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                        <Stack>
                             <form onSubmit={handleHomeInstituteUpdate}>
                                 <Group grow>
                                     <Select

@@ -13402,71 +13402,6 @@ export const useSubjectMapResourceGetSubjectMapUid = <TData = undefined,>(
   });
 };
 
-export type SubjectMapResourceGetKeycloakUsernamePathParams = {
-  /**
-   * @format int64
-   */
-  personId: number;
-};
-
-export type SubjectMapResourceGetKeycloakUsernameError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type SubjectMapResourceGetKeycloakUsernameVariables = {
-  pathParams: SubjectMapResourceGetKeycloakUsernamePathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchSubjectMapResourceGetKeycloakUsername = (
-  variables: SubjectMapResourceGetKeycloakUsernameVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    SubjectMapResourceGetKeycloakUsernameError,
-    undefined,
-    {},
-    {},
-    SubjectMapResourceGetKeycloakUsernamePathParams
-  >({
-    url: "/pst/api/subjectMap/{personId}/username",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useSubjectMapResourceGetKeycloakUsername = <TData = undefined,>(
-  variables: SubjectMapResourceGetKeycloakUsernameVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      undefined,
-      SubjectMapResourceGetKeycloakUsernameError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    undefined,
-    SubjectMapResourceGetKeycloakUsernameError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/subjectMap/{personId}/username",
-      operationId: "subjectMapResourceGetKeycloakUsername",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchSubjectMapResourceGetKeycloakUsername(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
 export type QueryOperation =
   | {
       path: "/pst/api/admin/roles";
@@ -13897,9 +13832,4 @@ export type QueryOperation =
       path: "/pst/api/subjectMap/{personId}/uid";
       operationId: "subjectMapResourceGetSubjectMapUid";
       variables: SubjectMapResourceGetSubjectMapUidVariables;
-    }
-  | {
-      path: "/pst/api/subjectMap/{personId}/username";
-      operationId: "subjectMapResourceGetKeycloakUsername";
-      variables: SubjectMapResourceGetKeycloakUsernameVariables;
     };
