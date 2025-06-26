@@ -7,7 +7,7 @@ import {
     usePersonResourceUpdateOrcidId,
     useSubjectMapResourceChangeEmailAddress,
     useSubjectMapResourceChangeFirstName,
-    useSubjectMapResourceChangeLastName
+    useSubjectMapResourceChangeLastName, useSubjectMapResourceGetSubjectMapUid
 } from "./generated/proposalToolComponents.ts";
 import {PanelFrame, PanelHeader} from "./commonPanel/appearance.tsx";
 import {Button, Fieldset, Grid, Group, Loader, Modal, Select, Space, Stack, Text, TextInput} from "@mantine/core";
@@ -78,6 +78,10 @@ function UserManagement() : ReactElement {
 
     const organisations = useOrganizationResourceGetOrganizations({})
 
+    const keycloakId = useSubjectMapResourceGetSubjectMapUid({
+        pathParams: {personId: user._id!}
+    })
+
     //keycloak related, i.e., via 'SubjectMap'
     const firstNameMutate = useSubjectMapResourceChangeFirstName();
     const lastNameMutate = useSubjectMapResourceChangeLastName();
@@ -114,6 +118,22 @@ function UserManagement() : ReactElement {
             )
         }
     }, [organisations]);
+
+    const handleUserDetailsUpdateWithFetch = () => {
+
+        fetch('http://localhost:53536/admin/realms/orppst/users/' + keycloakId.data,
+            {
+                method: 'PUT',
+                body: {
+                    // @ts-ignore
+                    "firstName": userDetailsForm.getValues().firstName,
+                    "lastName": userDetailsForm.getValues().lastName,
+                    "email": userDetailsForm.getValues().email
+                }
+            })
+            .then(() => notifySuccess("Update to user details successful", ""))
+            .catch((error) => notifyError("Failed to update user details", getErrorMessage(error)))
+    }
 
     const handelUserDetailsUpdate = userDetailsForm.onSubmit((values) => {
         if (userDetailsForm.isDirty('firstName')) {
@@ -207,7 +227,7 @@ function UserManagement() : ReactElement {
     })
 
 
-    if (organisations.isLoading) {
+    if (organisations.isLoading || keycloakId.isLoading) {
         return (<Loader/>)
     }
 
@@ -216,6 +236,15 @@ function UserManagement() : ReactElement {
             <AlertErrorMessage
                 title={"Failed to get Organisations"}
                 error={getErrorMessage(organisations.error)}
+            />
+        )
+    }
+
+    if (keycloakId.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to get Keycloak ID"}
+                error={getErrorMessage(keycloakId.error)}
             />
         )
     }
@@ -245,11 +274,14 @@ function UserManagement() : ReactElement {
                                 />
                                 <FormSubmitButton
                                     form={userDetailsForm}
-                                    label={"Update"}
+                                    label={"Save"}
                                     mt={"1.75em"}
                                     variant={"filled"}
                                 />
                             </form>
+                            <Button onClick={handleUserDetailsUpdateWithFetch}>
+                                Save via fetch
+                            </Button>
                             <Button onClick={open}>
                                 Reset Password
                             </Button>
