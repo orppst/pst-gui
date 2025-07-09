@@ -41,12 +41,11 @@ import {
     Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container, Button,
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
-import {IconUniverse} from '@tabler/icons-react';
+import {IconHome, IconUniverse} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
-import DatabaseSearchButton from './commonButtons/databaseSearch';
 import {
-    APP_HEADER_HEIGHT, JSON_FILE_NAME,
+    APP_HEADER_HEIGHT, CLOSE_DELAY, JSON_FILE_NAME,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
 } from './constants';
@@ -335,7 +334,7 @@ function App2(): ReactElement {
          *
          * @param {React.SyntheticEvent} event the event.
          */
-        function handleSearch(event: SyntheticEvent): void {
+        function handleNavigateHome(event: SyntheticEvent): void {
             event.preventDefault();
             navigate("/");
         }
@@ -425,26 +424,31 @@ function App2(): ReactElement {
                                         <ActionIcon
                                             color={"pink"}
                                             variant={"subtle"}
-                                            onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
+                                            onClick={(e: SyntheticEvent)=>{
+                                                e.preventDefault();
+                                                navigate("/manager")}}
                                         >
                                             <IconUniverse />
                                         </ActionIcon>
                                     </Tooltip>)}
-                                    <DatabaseSearchButton
-                                        toolTipLabel={
-                                            "Locate proposals by " +
-                                            proposalContext.user.fullName + "."}
-                                        label={"Proposals for " + proposalContext.user.fullName}
-                                        onClickEvent={handleSearch}
-                                    />
-
+                                    <Tooltip
+                                        label={"Go to your home page"}
+                                        openDelay={OPEN_DELAY}
+                                        closeDelay={CLOSE_DELAY}
+                                    >
+                                        <Button
+                                            rightSection={<IconHome/>}
+                                            onClick={handleNavigateHome}
+                                            variant={"subtle"}
+                                            color={"green.5"}
+                                        >
+                                            {proposalContext.user.fullName}'s Home Page
+                                        </Button>
+                                    </Tooltip>
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
-                                    <Button onClick={() => navigate("admin")}>
-                                        Admin
-                                    </Button>
                                     {ColourSchemeToggle()}
                                     <UserMenu />
                                 </Group>

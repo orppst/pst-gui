@@ -6,7 +6,7 @@ export function ColourSchemeToggle() {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     return (
         <Tooltip
-            label={colorScheme === 'dark' ? 'light mode' : 'dark mode'}
+            label={colorScheme === 'dark' ? 'enable light mode' : 'enable dark mode'}
             openDelay={OPEN_DELAY}
             closeDelay={CLOSE_DELAY}
         >

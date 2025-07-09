@@ -1,16 +1,31 @@
 import {ReactElement, useContext, useEffect, useState} from "react";
 import {ProposalContext} from "./App2.tsx";
 import {
+    fetchSubjectMapResourceChangeEmailAddress,
+    fetchSubjectMapResourceChangeFirstName, fetchSubjectMapResourceChangeLastName,
     useOrganizationResourceGetOrganization,
     useOrganizationResourceGetOrganizations,
     usePersonResourceUpdateHomeInstitute,
     usePersonResourceUpdateOrcidId,
-    useSubjectMapResourceChangeEmailAddress,
-    useSubjectMapResourceChangeFirstName,
-    useSubjectMapResourceChangeLastName, useSubjectMapResourceGetSubjectMapUid
+    useSubjectMapResourceGetSubjectMapUid
 } from "./generated/proposalToolComponents.ts";
 import {PanelFrame, PanelHeader} from "./commonPanel/appearance.tsx";
-import {Button, Fieldset, Grid, Group, Loader, Modal, Select, Space, Stack, Text, TextInput} from "@mantine/core";
+import {
+    ActionIcon,
+    Box,
+    Button, Collapse, Divider,
+    Fieldset,
+    Grid,
+    Group,
+    Loader,
+    Modal,
+    Select,
+    Space,
+    Stack,
+    Text,
+    TextInput,
+    Tooltip
+} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "./commonPanel/notifications.tsx";
@@ -19,6 +34,9 @@ import {FormSubmitButton} from "./commonButtons/save.tsx";
 import AlertErrorMessage from "./errorHandling/alertErrorMessage.tsx";
 import {useDisclosure} from "@mantine/hooks";
 import UserResetPassword from "./userResetPassword.tsx";
+import UndoButton from "./commonButtons/undo.tsx";
+import {CLOSE_DELAY, OPEN_DELAY} from "./constants.tsx";
+import {IconEye, IconEyeClosed} from "@tabler/icons-react";
 
 interface UserDetailsFormValues {
     firstName: string;
@@ -47,21 +65,24 @@ function DisplayOrganisationDetails ({organisationId} : {organisationId: number}
 
     return (
         <Fieldset legend={"Institute Details"}>
-            <Text size={"xl"} fw={700}>
-                {organisation.data?.name}
-            </Text>
-            <Space h={"md"}/>
-            <Stack gap={"xs"}>
-                <Text>
-                    <b>Address:</b> {organisation.data?.address}
+            <Box bg={'gray'} p={"sm"}>
+                <Text size={"xl"} fw={700}>
+                    {organisation.data?.name}
                 </Text>
-                <Text>
-                    <b>IVO id:</b> {organisation.data?.ivoid?.value}
-                </Text>
-                <Text>
-                    <b>Wiki id:</b> {organisation.data?.wikiId?.value}
-                </Text>
-            </Stack>
+                <Space h={"md"}/>
+                <Stack gap={"xs"}>
+                    <Text>
+                        <b>Address:</b> {organisation.data?.address}
+                    </Text>
+                    <Text>
+                        <b>IVO id:</b> {organisation.data?.ivoid?.value}
+                    </Text>
+                    <Text>
+                        <b>Wiki id:</b> {organisation.data?.wikiId?.value}
+                    </Text>
+                </Stack>
+            </Box>
+
         </Fieldset>
     )
 }
@@ -69,10 +90,12 @@ function DisplayOrganisationDetails ({organisationId} : {organisationId: number}
 export default
 function UserManagement() : ReactElement {
 
-    const {user} = useContext(ProposalContext);
+    const {user, getToken} = useContext(ProposalContext);
     const queryClient = useQueryClient();
 
     const [opened, {open, close}] = useDisclosure(false);
+
+    const [showInstitute, {toggle}] = useDisclosure(false)
 
     const [selectOrganisation, setSelectOrganisation] = useState<{value: string, label: string}[]>([]);
 
@@ -81,11 +104,6 @@ function UserManagement() : ReactElement {
     const keycloakId = useSubjectMapResourceGetSubjectMapUid({
         pathParams: {personId: user._id!}
     })
-
-    //keycloak related, i.e., via 'SubjectMap'
-    const firstNameMutate = useSubjectMapResourceChangeFirstName();
-    const lastNameMutate = useSubjectMapResourceChangeLastName();
-    const emailMutate = useSubjectMapResourceChangeEmailAddress();
 
     //'Person' related
     const orchidIdMutate = usePersonResourceUpdateOrcidId();
@@ -119,86 +137,80 @@ function UserManagement() : ReactElement {
         }
     }, [organisations]);
 
-    const handleUserDetailsUpdateWithFetch = () => {
 
-        fetch('http://localhost:53536/admin/realms/orppst/users/' + keycloakId.data,
-            {
-                method: 'PUT',
-                body: {
-                    // @ts-ignore
-                    "firstName": userDetailsForm.getValues().firstName,
-                    "lastName": userDetailsForm.getValues().lastName,
-                    "email": userDetailsForm.getValues().email
-                }
-            })
-            .then(() => notifySuccess("Update to user details successful", ""))
-            .catch((error) => notifyError("Failed to update user details", getErrorMessage(error)))
-    }
-
-    const handelUserDetailsUpdate = userDetailsForm.onSubmit((values) => {
+    async function handleUserDetailsUpdate(values: typeof userDetailsForm.values) {
         if (userDetailsForm.isDirty('firstName')) {
-            firstNameMutate.mutate({
+            await fetchSubjectMapResourceChangeFirstName({
                 pathParams: {personId: user._id!},
                 body: values.firstName,
-                //@ts-ignore
-                headers: {"Content-Type": "text/plain"}
-            }, {
-                onSuccess: () => {
-                    notifySuccess("First name update successful",
-                        "First name changed to " + values.firstName)
-                },
-                onError: (error) => {
-                    notifyError("Failed to update first name", getErrorMessage(error))
+                headers: {
+                    //authorization: `Bearer ${authToken}`,
+                    //@ts-ignore
+                    "Content-Type": "text/plain"
                 }
-            })
+            }) .then(() =>
+                notifySuccess("First name update successful", "First name changed to " + values.firstName)
+            ) .catch(error =>
+                notifyError("Failed to update first name", getErrorMessage(error))
+            )
         }
 
         if (userDetailsForm.isDirty('lastName')) {
-            lastNameMutate.mutate({
+            await fetchSubjectMapResourceChangeLastName({
                 pathParams: {personId: user._id!},
                 body: values.lastName,
-                //@ts-ignore
-                headers: {"Content-Type": "text/plain"}
-            }, {
-                onSuccess: () => {
-                    notifySuccess("Last name update successful",
-                        "Last name changed to " + values.lastName)
-                },
-                onError: (error) => {
-                    notifyError("Failed to update last name", getErrorMessage(error))
+                headers: {
+                    //authorization: `Bearer ${authToken}`,
+                    //@ts-ignore
+                    "Content-Type": "text/plain"
                 }
-            })
+            }) .then(() =>
+                notifySuccess("Last name update successful", "Last name changed to " + values.lastName)
+            ) .catch(error =>
+                notifyError("Failed to update last name", getErrorMessage(error))
+            )
         }
 
         if (userDetailsForm.isDirty('email')) {
-            emailMutate.mutate({
+            await fetchSubjectMapResourceChangeEmailAddress({
                 pathParams: {personId: user._id!},
                 body: values.email,
-                //@ts-ignore
-                headers: {"Content-Type": "text/plain"}
-            }, {
-                onSuccess: () => {
-                    notifySuccess("Email address update successful",
-                        "Email address changed to " + values.email)
-                },
-                onError: (error) => {
-                    notifyError("Failed to update email address", getErrorMessage(error))
+                headers: {
+                    //authorization: `Bearer ${authToken}`,
+                    //@ts-ignore
+                    "Content-Type": "text/plain"
                 }
-            })
+            }) .then(() =>
+                notifySuccess("Email address update successful",
+                    "Email address changed to " + values.email)
+            ) .catch(error =>
+                notifyError("Failed to update email address", getErrorMessage(error))
+            )
         }
 
-    })
+        userDetailsForm.resetDirty();
+
+        user.fullName = values.firstName + " " + values.lastName;
+    }
 
     const handleOrchidIdUpdate = orchidIdForm.onSubmit((values) => {
         orchidIdMutate.mutate({
             pathParams: {id: user._id!},
             body: values.orchidId,
-            //@ts-ignore
-            headers: {"Content-Type": "text/plain"}
+            headers: {
+                authorization: 'Bearer ' + getToken(),
+                //@ts-ignore
+                "Content-Type": "text/plain"
+            }
         }, {
             onSuccess: () => {
-                queryClient.invalidateQueries().then()
-                notifySuccess("Orchid ID update successful", "Orchid ID set to " + values.orchidId)
+                queryClient.invalidateQueries()
+                    .then(()=> {
+                        notifySuccess("Orchid ID update successful",
+                            "Orchid ID set to " + values.orchidId);
+                        orchidIdForm.resetDirty();//disables the buttons after a successful update
+                    }
+                )
             },
             onError: (error) => {
                 notifyError("Failed to update your Orchid ID", getErrorMessage(error))
@@ -210,7 +222,11 @@ function UserManagement() : ReactElement {
         homeInstituteMutate.mutate({
             pathParams: {id: user._id!},
             body: {
+                "@type": "proposal:Organization",
                 "_id": Number(values.homeInstitute)
+            },
+            headers: {
+                authorization: 'Bearer ' + getToken()
             }
         }, {
             onSuccess: () => {
@@ -252,11 +268,11 @@ function UserManagement() : ReactElement {
     return (
         <PanelFrame>
             <PanelHeader itemName={"User Settings"} panelHeading={user.fullName}/>
-            <Fieldset legend={"User Settings"}>
-                <Grid columns={12}>
-                    <Grid.Col span={6}>
-                        <Stack>
-                            <form onSubmit={handelUserDetailsUpdate}>
+            <Grid columns={12}>
+                <Grid.Col span={5}>
+                    <Fieldset legend={"Personal Details"}>
+                        <form onSubmit={userDetailsForm.onSubmit(handleUserDetailsUpdate)}>
+                            <Stack>
                                 <TextInput
                                     label={"First Name"}
                                     placeholder={"e.g. Jango"}
@@ -272,68 +288,111 @@ function UserManagement() : ReactElement {
                                     placeholder={"e.g. jango.fett@tatooine.sw"}
                                     {...userDetailsForm.getInputProps('email')}
                                 />
+                            </Stack>
+                            <Group justify={'flex-end'}>
                                 <FormSubmitButton
                                     form={userDetailsForm}
                                     label={"Save"}
-                                    mt={"1.75em"}
                                     variant={"filled"}
+                                    mt={"lg"}
                                 />
-                            </form>
-                            <Button onClick={handleUserDetailsUpdateWithFetch}>
-                                Save via fetch
-                            </Button>
-                            <Button onClick={open}>
-                                Reset Password
-                            </Button>
-                            <Modal
-                                opened={opened}
-                                onClose={close}
-                                title={"Choose a new password"}
+                                <UndoButton
+                                    form={userDetailsForm}
+                                    mt={"lg"}
+                                />
+                            </Group>
+                        </form>
+                        <Divider my={"lg"}/>
+                        <Group justify={'center'}>
+                            <Tooltip
+                                label={"Opens a modal"}
+                                openDelay={OPEN_DELAY}
+                                closeDelay={CLOSE_DELAY}
                             >
-                                <UserResetPassword/>
-                            </Modal>
-                        </Stack>
-                    </Grid.Col>
-                    <Grid.Col span={6}>
+                                <Button onClick={open} color={'pink'}>
+                                    Reset Password
+                                </Button>
+                            </Tooltip>
+                        </Group>
+                        <Modal
+                            opened={opened}
+                            onClose={close}
+                            title={"Choose a new password"}
+                            closeOnClickOutside={false}
+                        >
+                            <UserResetPassword/>
+                        </Modal>
+                    </Fieldset>
+                </Grid.Col>
+                <Grid.Col span={7}>
+                    <Fieldset legend={"Home Organization"}>
                         <Stack>
-                            <form onSubmit={handleOrchidIdUpdate}>
-                                <Group grow>
-                                    <TextInput
-                                        label={"ORCID id"}
-                                        placeholder={"copy your orchid id here"}
-                                        {...orchidIdForm.getInputProps('orchidId')}
-                                    />
-                                    <FormSubmitButton
-                                        form={orchidIdForm}
-                                        label={"Update"}
-                                        mt={"1.75em"}
-                                        variant={"filled"}
-                                    />
-                                </Group>
-                            </form>
                             <form onSubmit={handleHomeInstituteUpdate}>
-                                <Group grow>
-                                    <Select
-                                        label={"Home Institute"}
-                                        placeholder={"select your primary institute"}
-                                        data={selectOrganisation}
-                                        {...homeInstituteForm.getInputProps('homeInstitute')}
+                                <Grid columns={10}>
+                                    <Grid.Col span={9}>
+                                        <Select
+                                            label={"Institute"}
+                                            placeholder={"select your primary institute"}
+                                            data={selectOrganisation}
+                                            {...homeInstituteForm.getInputProps('homeInstitute')}
+                                        />
+                                    </Grid.Col>
+                                    <Grid.Col span={1}>
+                                        <Tooltip
+                                            label={showInstitute ? "Close institute details" : "Show institute details"}
+                                            openDelay={OPEN_DELAY}
+                                            closeDelay={CLOSE_DELAY}
+                                        >
+                                            <ActionIcon
+                                                onClick={toggle}
+                                                mt={"1.75em"}
+                                            >
+                                                {showInstitute ? <IconEyeClosed /> : <IconEye />}
+                                            </ActionIcon>
+                                        </Tooltip>
+                                    </Grid.Col>
+                                </Grid>
+                                <Collapse in={showInstitute}>
+                                    <DisplayOrganisationDetails
+                                        organisationId={Number(homeInstituteForm.getValues().homeInstitute)}
                                     />
+                                </Collapse>
+                                <Group justify={"flex-end"}>
                                     <FormSubmitButton
                                         form={homeInstituteForm}
-                                        label={"Update"}
-                                        mt={"1.75em"}
+                                        label={"Save"}
+                                        mt={"lg"}
                                         variant={"filled"}
                                     />
+                                    <UndoButton form={homeInstituteForm} mt={"lg"}/>
                                 </Group>
                             </form>
-                            <DisplayOrganisationDetails
-                                organisationId={Number(homeInstituteForm.getValues().homeInstitute)}
-                            />
                         </Stack>
-                    </Grid.Col>
-                </Grid>
-            </Fieldset>
+                    </Fieldset>
+                    <Space h={"xs"}/>
+                    <Fieldset legend={"ORCID"}>
+                        <form onSubmit={handleOrchidIdUpdate}>
+                            <TextInput
+                                label={"Orchid id"}
+                                placeholder={"copy your orchid id here"}
+                                {...orchidIdForm.getInputProps('orchidId')}
+                            />
+                            <Group justify={"flex-end"}>
+                                <FormSubmitButton
+                                    form={orchidIdForm}
+                                    label={"Save"}
+                                    mt={"lg"}
+                                    variant={"filled"}
+                                />
+                                <UndoButton
+                                    form={orchidIdForm}
+                                    mt={"lg"}
+                                />
+                            </Group>
+                        </form>
+                    </Fieldset>
+                </Grid.Col>
+            </Grid>
         </PanelFrame>
     )
 }

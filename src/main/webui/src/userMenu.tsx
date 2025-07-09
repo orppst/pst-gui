@@ -1,11 +1,12 @@
 import {ReactElement, useContext} from "react";
-import {ActionIcon, Menu} from "@mantine/core";
+import {ActionIcon, Menu, Tooltip} from "@mantine/core";
 import {
     IconLogout,
     IconUser, IconUserCog
 } from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
 import {ProposalContext} from "./App2.tsx";
+import {CLOSE_DELAY, OPEN_DELAY} from "./constants.tsx";
 
 export default
 function UserMenu() : ReactElement {
@@ -19,9 +20,16 @@ function UserMenu() : ReactElement {
             width={200}
         >
             <Menu.Target>
-                <ActionIcon variant={"subtle"}>
-                    <IconUser />
-                </ActionIcon>
+                <Tooltip
+                    label={"open user menu"}
+                    openDelay={OPEN_DELAY}
+                    closeDelay={CLOSE_DELAY}
+                >
+                    <ActionIcon variant={"subtle"}>
+                        <IconUser />
+                    </ActionIcon>
+                </Tooltip>
+
             </Menu.Target>
 
             <Menu.Dropdown>

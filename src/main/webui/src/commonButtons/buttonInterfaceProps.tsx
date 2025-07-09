@@ -30,6 +30,7 @@ export interface BasicButtonInterfaceProps {
 /**
  * form submit button interface props. Used by FormSubmit button.
  *
+ * @param {UseFormReturnType<any>} form the form that is being "submitted"
  * @param {string} toolTipLabel the label shown when hovered.
  * @param {FloatingPosition} toolTipLabelPosition one of 'left', 'right', 'top', 'bottom', +
  * '-start' and '-end' variants - defaults to 'top'
