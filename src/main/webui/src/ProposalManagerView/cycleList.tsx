@@ -1,5 +1,14 @@
 import {ReactElement, useState} from "react";
-import {Accordion, Checkbox, Container, Group, NavLink, useMantineColorScheme, useMantineTheme} from "@mantine/core";
+import {
+    Accordion,
+    Checkbox,
+    Container, Flex,
+    Group,
+    NavLink,
+    Select,
+    useMantineColorScheme,
+    useMantineTheme
+} from "@mantine/core";
 import {
     IconBike,
     IconCalendar, IconEdit,
@@ -8,17 +17,33 @@ import {
     IconUsersGroup
 } from "@tabler/icons-react";
 import {
+    useObservatoryResourceGetObservatories,
     useProposalCyclesResourceGetMyTACMemberProposalCycles, useProposalCyclesResourceGetProposalCycles,
 } from "src/generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
 import {Link} from "react-router-dom";
 import {HaveRole} from "../auth/Roles.tsx";
 
-export default function CycleList(props:{observatory: number}) : ReactElement {
+export default function CycleList() : ReactElement {
     const {colorScheme} = useMantineColorScheme();
     const theme = useMantineTheme();
-    const [includeClosed, setIncludeClosed] = useState<boolean>(false);
-    const [includeAll, setIncludeAll] = useState<boolean>(false);
+    const [onlyOpen, setOnlyOpen] = useState<boolean>(false);
+    const [observatoryFilter, setObservatoryFilter] = useState<boolean>(false);
+    const [selectedObservatory, setSelectedObservatory] = useState<number>(0);
+
+    const obsList = useObservatoryResourceGetObservatories(
+        {queryParams: {}}
+    );
+
+    const observatoryList = obsList.data?.map(obs => {
+        if(obs.dbid) {
+            if (selectedObservatory == 0)
+                setSelectedObservatory(obs.dbid)
+            if (obs.name)
+                return {value: obs.dbid.toString(), label: obs.name};
+        }
+    })
+
 
     if(!HaveRole(["tac_admin", "tac_member", "obs_administration"])) {
         return <>Not authorised</>
@@ -26,12 +51,12 @@ export default function CycleList(props:{observatory: number}) : ReactElement {
 
     //FIXME: use an actual query
 
-    const cycles = includeAll
-        ? useProposalCyclesResourceGetProposalCycles(
-        {queryParams: {includeClosed: includeClosed, observatoryId: props.observatory}}
-    ) : useProposalCyclesResourceGetMyTACMemberProposalCycles(
-        {queryParams: {includeClosed: includeClosed, observatoryId: props.observatory}}
-    )
+    const cycles = observatoryFilter
+        ? useProposalCyclesResourceGetMyTACMemberProposalCycles(
+            {queryParams: {includeClosed: !onlyOpen, observatoryId: selectedObservatory}}
+        ) : useProposalCyclesResourceGetProposalCycles(
+            {queryParams: {includeClosed: !onlyOpen}}
+        )
 
     const [accordionValue, setAccordionValue]
         = useState<string | null>(null);
@@ -50,22 +75,43 @@ export default function CycleList(props:{observatory: number}) : ReactElement {
         >
             <Checkbox.Group
                 defaultValue={['active']}
-                label={"Proposal Cycle Status"}
+                label={"Proposal Cycle Filter"}
             >
                 <Group mt={"md"}>
                     <Checkbox
                         value={"closed"}
-                        label={"Include closed"}
-                        onChange={(event) => setIncludeClosed(event.currentTarget.checked)}
+                        label={"Only open cycles"}
+                        onChange={(event) => setOnlyOpen(event.currentTarget.checked)}
                     />
                     {HaveRole(["obs_administration"]) &&
                     <Checkbox
                         value={"allcycles"}
-                        label={"Include all"}
-                        onChange={(event) => setIncludeAll(event.currentTarget.checked)}
+                        label={"By observatory"}
+                        onChange={(event) => setObservatoryFilter(event.currentTarget.checked)}
                     />}
                 </Group>
             </Checkbox.Group>
+            {observatoryFilter &&
+                <Flex
+                    mih={50}
+                    justify="Flex-start"
+                    align="Flex-end">
+                    <Select
+                        miw={'100%'}
+                        defaultValue={selectedObservatory.toString()}
+                        allowDeselect={false}
+                        comboboxProps={{ width: 200, position: 'bottom-start' }}
+                        aria-label="Select an observatory"
+                        //@ts-ignore
+                        data={observatoryList}
+                        onChange={(_value) => {
+                        if(_value)
+                            setSelectedObservatory(+_value)
+                            }
+                        }
+                    />
+                </Flex>
+            }
         </Container>
 
         <Accordion value={accordionValue}
