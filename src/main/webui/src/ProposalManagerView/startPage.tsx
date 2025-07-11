@@ -22,11 +22,7 @@ import CycleList from "./cycleList.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import NewCycleForm from "./proposalCycle.new.form.tsx";
 import {HaveRole} from "../auth/Roles.tsx";
-import {useObservatoryResourceGetObservatories}  from "../generated/proposalToolComponents.ts";
 import UserMenu from "../userMenu.tsx";
-
-//import {selectedObservatory, setSelectedObservatory} from "../App2.tsx";
-
 
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
