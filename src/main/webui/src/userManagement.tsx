@@ -26,7 +26,7 @@ import {
     TextInput,
     Tooltip
 } from "@mantine/core";
-import {useForm} from "@mantine/form";
+import {isEmail, isNotEmpty, useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {notifyError, notifySuccess} from "./commonPanel/notifications.tsx";
 import getErrorMessage from "./errorHandling/getErrorMessage.tsx";
@@ -116,6 +116,11 @@ function UserManagement() : ReactElement {
             lastName: user.fullName ?
                 user.fullName.substring(user.fullName.indexOf(" ") + 1) : "",
             email: user.eMail ?? ""
+        },
+        validate: {
+            firstName: isNotEmpty('Must contain at least one character'),
+            lastName: isNotEmpty('Must contain at least one character'),
+            email: isEmail('Invalid email format'),
         }
     })
 
@@ -144,15 +149,21 @@ function UserManagement() : ReactElement {
                 pathParams: {personId: user._id!},
                 body: values.firstName,
                 headers: {
-                    //authorization: `Bearer ${authToken}`,
+                    authorization: 'Bearer ' + getToken(),
                     //@ts-ignore
                     "Content-Type": "text/plain"
                 }
             }) .then(() =>
                 notifySuccess("First name update successful", "First name changed to " + values.firstName)
-            ) .catch(error =>
-                notifyError("Failed to update first name", getErrorMessage(error))
-            )
+            ) .catch(error => {
+                notifyError("Failed to update first name", getErrorMessage(error));
+                //reset field to initial value
+                //Mantine 7.x has no 'resetField', Mantine 8.x does
+                //userDetailsForm.resetField('firstName');
+                userDetailsForm.setFieldValue('firstName', user.fullName ?
+                    user.fullName.substring(0, user.fullName.indexOf(" ")): "");
+
+            })
         }
 
         if (userDetailsForm.isDirty('lastName')) {
@@ -160,15 +171,17 @@ function UserManagement() : ReactElement {
                 pathParams: {personId: user._id!},
                 body: values.lastName,
                 headers: {
-                    //authorization: `Bearer ${authToken}`,
+                    authorization: 'Bearer ' + getToken(),
                     //@ts-ignore
                     "Content-Type": "text/plain"
                 }
             }) .then(() =>
                 notifySuccess("Last name update successful", "Last name changed to " + values.lastName)
-            ) .catch(error =>
-                notifyError("Failed to update last name", getErrorMessage(error))
-            )
+            ) .catch(error => {
+                notifyError("Failed to update last name", getErrorMessage(error));
+                userDetailsForm.setFieldValue('lastName', user.fullName ?
+                    user.fullName.substring(user.fullName.indexOf(" ") + 1) : "");
+            })
         }
 
         if (userDetailsForm.isDirty('email')) {
@@ -176,16 +189,16 @@ function UserManagement() : ReactElement {
                 pathParams: {personId: user._id!},
                 body: values.email,
                 headers: {
-                    //authorization: `Bearer ${authToken}`,
+                    authorization: 'Bearer ' + getToken(),
                     //@ts-ignore
                     "Content-Type": "text/plain"
                 }
             }) .then(() =>
-                notifySuccess("Email address update successful",
-                    "Email address changed to " + values.email)
-            ) .catch(error =>
-                notifyError("Failed to update email address", getErrorMessage(error))
-            )
+                notifySuccess("Email address update successful", "Email address changed to " + values.email)
+            ) .catch(error => {
+                notifyError("Failed to update email", getErrorMessage(error));
+                userDetailsForm.setFieldValue('email', user.eMail ?? "");
+            })
         }
 
         userDetailsForm.resetDirty();
@@ -208,7 +221,7 @@ function UserManagement() : ReactElement {
                     .then(()=> {
                         notifySuccess("Orchid ID update successful",
                             "Orchid ID set to " + values.orchidId);
-                        orchidIdForm.resetDirty();//disables the buttons after a successful update
+                        orchidIdForm.resetDirty(); //disables the buttons after a successful update
                     }
                 )
             },
@@ -230,11 +243,13 @@ function UserManagement() : ReactElement {
             }
         }, {
             onSuccess: () => {
-                queryClient.invalidateQueries().then()
-                notifySuccess("Home Institute update successful",
-                    "Home Institute changed to "
-                    + selectOrganisation.find((org)=>
-                        (org.value === values.homeInstitute))?.label)
+                queryClient.invalidateQueries().then(() => {
+                    notifySuccess("Home Institute update successful",
+                        "Home Institute changed to "
+                        + selectOrganisation.find((org)=>
+                            (org.value === values.homeInstitute))?.label);
+                    homeInstituteForm.resetDirty(); //disables the buttons after a successful update
+                })
             },
             onError: (error) => {
                 notifyError("Failed to update your home institute", getErrorMessage(error))

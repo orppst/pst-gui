@@ -43,12 +43,13 @@ function getStrength(password: string) {
 export default
 function UserResetPassword() : ReactElement {
 
-    const {user} = useContext(ProposalContext);
+    const {user, getToken} = useContext(ProposalContext);
 
     const passwordMutate = useSubjectMapResourceResetPassword();
 
     const [visible, { toggle }] = useDisclosure(false);
     const [popoverOpened, setPopoverOpened] = useState(false);
+    const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const checks = requirements.map((requirement, index) => (
@@ -59,11 +60,16 @@ function UserResetPassword() : ReactElement {
         passwordMutate.mutate({
             pathParams: {personId: user._id!},
             body: newPassword,
-            //@ts-ignore
-            headers: {"Content-Type": "text/plain"}
+
+            headers: {
+                authorization: 'Bearer ' + getToken(),
+                //@ts-ignore
+                "Content-Type": "text/plain"
+            }
         }, {
             onSuccess: () => {
                 notifySuccess("Password updated", "new password set")
+                setPasswordResetSuccess(true);
             },
             onError: (error) => {
                 notifyError("Password update failed", getErrorMessage(error))
@@ -114,11 +120,23 @@ function UserResetPassword() : ReactElement {
                 <Button
                     variant={"filled"}
                     onClick={handleUpdatePassword}
-                    disabled={getStrength(newPassword) < 100 || confirmPassword !== newPassword}
+                    disabled={getStrength(newPassword) < 100 || confirmPassword !== newPassword
+                        || passwordResetSuccess}
                 >
                     Reset Password
                 </Button>
             </Tooltip>
+            {
+                passwordResetSuccess &&
+                <Stack align={'center'}>
+                    <Text c={'green'}>
+                        You have successfully changed your password.
+                    </Text>
+                    <Text c={'yellow'}>
+                        Please now close this modal.
+                    </Text>
+                </Stack>
+            }
         </Stack>
     );
 }
