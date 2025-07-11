@@ -284,7 +284,7 @@ function UserManagement() : ReactElement {
         <PanelFrame>
             <PanelHeader itemName={"User Settings"} panelHeading={user.fullName}/>
             <Grid columns={12}>
-                <Grid.Col span={5}>
+                <Grid.Col span={{base: 12, xl: 5}}>
                     <Fieldset legend={"Personal Details"}>
                         <form onSubmit={userDetailsForm.onSubmit(handleUserDetailsUpdate)}>
                             <Stack>
@@ -339,7 +339,7 @@ function UserManagement() : ReactElement {
                         </Modal>
                     </Fieldset>
                 </Grid.Col>
-                <Grid.Col span={7}>
+                <Grid.Col span={{base: 12, xl:7}}>
                     <Fieldset legend={"Home Organization"}>
                         <Stack>
                             <form onSubmit={handleHomeInstituteUpdate}>
