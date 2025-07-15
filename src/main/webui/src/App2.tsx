@@ -38,18 +38,14 @@ import {
     ScrollArea,
     Group,
     ActionIcon,
-    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container,
+    Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container, Button,
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
-import {
-    IconLogout, IconUniverse
-} from '@tabler/icons-react';
+import {IconHome, IconUniverse} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
-import DatabaseSearchButton from './commonButtons/databaseSearch';
-//import {ContextualHelpButton} from "./commonButtons/contextualHelp.tsx"
 import {
-    APP_HEADER_HEIGHT, CLOSE_DELAY, ICON_SIZE, JSON_FILE_NAME,
+    APP_HEADER_HEIGHT, CLOSE_DELAY, JSON_FILE_NAME,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
     NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
 } from './constants';
@@ -77,6 +73,8 @@ import JSZip from "jszip";
 import {HaveRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
+import UserMenu from "./userMenu.tsx";
+import UserManagement from "./userManagement.tsx";
 
 /**
  * defines the user context type.
@@ -147,6 +145,11 @@ function App2(): ReactElement {
                 children: [
                     {index: true, element: <PSTManagerStart />},
                     {
+                        path: "user/:userId/management",
+                        element: <UserManagement />,
+                        errorElement: <ErrorPage />
+                    },
+                    {
                         path: "cycle/:selectedCycleCode",
                         element: <CycleOverviewPanel />,
                         errorElement: <ErrorPage />,
@@ -204,6 +207,11 @@ function App2(): ReactElement {
                         path: "admin",
                         element: <AdminPanel />,
                         errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "user/:userId/management",
+                        element: <UserManagement />,
+                        errorElement: <ErrorPage />
                     },
                     {
                         path: "proposal/new",
@@ -324,7 +332,7 @@ function App2(): ReactElement {
          *
          * @param {React.SyntheticEvent} event the event.
          */
-        function handleSearch(event: SyntheticEvent): void {
+        function handleNavigateHome(event: SyntheticEvent): void {
             event.preventDefault();
             navigate("/");
         }
@@ -374,7 +382,7 @@ function App2(): ReactElement {
 
         /*
         DJW:
-        I'd like to move the 'AppShell' stuff to its own file, however in doing so the
+        I'd like to move the 'AppShell' stuff to its own file, however, in doing so the
         Accordion used to navigate the proposal in the left-hand navbar seems not to
         remember state; the accordion item does not get highlighted and, more fundamentally,
         the accordion collapses, and I can't figure out why.
@@ -414,36 +422,33 @@ function App2(): ReactElement {
                                         <ActionIcon
                                             color={"pink"}
                                             variant={"subtle"}
-                                            onClick={(e: SyntheticEvent)=>{e.preventDefault(); navigate("/manager")}}
+                                            onClick={(e: SyntheticEvent)=>{
+                                                e.preventDefault();
+                                                navigate("/manager")}}
                                         >
                                             <IconUniverse />
                                         </ActionIcon>
                                     </Tooltip>)}
-                                    <DatabaseSearchButton
-                                        toolTipLabel={
-                                            "Locate proposals by " +
-                                            proposalContext.user.fullName + "."}
-                                        label={"Proposals for " + proposalContext.user.fullName}
-                                        onClickEvent={handleSearch}
-                                    />
-
+                                    <Tooltip
+                                        label={"Go to your home page"}
+                                        openDelay={OPEN_DELAY}
+                                        closeDelay={CLOSE_DELAY}
+                                    >
+                                        <Button
+                                            rightSection={<IconHome/>}
+                                            onClick={handleNavigateHome}
+                                            variant={"subtle"}
+                                            color={"green.5"}
+                                        >
+                                            {proposalContext.user.fullName}'s Home Page
+                                        </Button>
+                                    </Tooltip>
                                 </Group>
                             </Grid.Col>
                             <Grid.Col span={1}>
                                 <Group justify={"flex-end"}>
                                     {ColourSchemeToggle()}
-                                    <Tooltip label={"logout"}
-                                             openDelay={OPEN_DELAY}
-                                             closeDelay={CLOSE_DELAY}
-                                    >
-                                        <ActionIcon color={"orange.8"}
-                                                    variant={"subtle"}
-                                                    component={"a"}
-                                                    href={"/pst/gui/logout"}
-                                        >
-                                            <IconLogout size={ICON_SIZE}/>
-                                        </ActionIcon>
-                                    </Tooltip>
+                                    <UserMenu />
                                 </Group>
                             </Grid.Col>
                         </Grid>

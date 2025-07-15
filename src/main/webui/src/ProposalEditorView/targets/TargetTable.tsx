@@ -153,19 +153,19 @@ function TargetTableRow(props: TargetProps): ReactElement {
         //console.log(JSON.stringify(data, null, 2));
         const celestialTarget: CelestialTarget = data as CelestialTarget;
         //console.log(data);
-        if(celestialTarget.sourceCoordinates?.lat?.unit?.value === "degrees")
-            //DJW: Astrolib DegToHms prepend sign issue
-            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lat.value ?? 0,3).slice(1);
-        else
-            ra = celestialTarget.sourceCoordinates?.lat?.value + " " +
-                celestialTarget.sourceCoordinates?.lat?.unit?.value;
-
         if(celestialTarget.sourceCoordinates?.lon?.unit?.value === "degrees")
-            //dec = celestialTarget.sourceCoordinates?.lon?.value+"°";
-            dec =AstroLib.DegToDms( celestialTarget.sourceCoordinates?.lon.value ??0,3);
+            //DJW: Astrolib DegToHms prepend sign issue
+            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lon?.value ?? 0,3).slice(1);
         else
-            dec = celestialTarget.sourceCoordinates?.lon?.value + " " +
+            ra = celestialTarget.sourceCoordinates?.lon?.value + " " +
                 celestialTarget.sourceCoordinates?.lon?.unit?.value;
+
+        if(celestialTarget.sourceCoordinates?.lat?.unit?.value === "degrees")
+            //dec = celestialTarget.sourceCoordinates?.lon?.value+"°";
+            dec =AstroLib.DegToDms( celestialTarget.sourceCoordinates?.lat?.value ??0,3);
+        else
+            dec = celestialTarget.sourceCoordinates?.lat?.value + " " +
+                celestialTarget.sourceCoordinates?.lat?.unit?.value;
 
         if(celestialTarget.sourceCoordinates?.coordSys?.["@type"] ===
             "coords:SpaceSys") {
