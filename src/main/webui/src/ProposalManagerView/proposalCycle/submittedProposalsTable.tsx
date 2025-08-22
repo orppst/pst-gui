@@ -1,24 +1,17 @@
 import {ReactElement} from "react";
 import {Table} from "@mantine/core";
-import {useSubmittedProposalResourceGetSubmittedProposals} from "../../generated/proposalToolComponents.ts";
-import {notifyError} from "../../commonPanel/notifications.tsx";
-import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 
 /*
     We will likely want to add metadata about submitted proposals, the most useful of this being the
     submitted proposals current "status" e.g., under-review, reviewed - success/fail, allocated
  */
 
-export default function SubmittedProposalsTable(selectedCycleCode: number) : ReactElement {
+export default function
+    SubmittedProposalsTable(submittedProposals: ObjectIdentifier[]) :
+    ReactElement {
 
-    const submittedProposals = useSubmittedProposalResourceGetSubmittedProposals(
-        {pathParams:{cycleCode: selectedCycleCode}}
-    )
 
-    if (submittedProposals.error) {
-        notifyError("Failed to load submitted proposals list",
-            "cause: " + getErrorMessage(submittedProposals.error))
-    }
 
     const SubmittedProposalsTableHeader = () : ReactElement => {
         return (
@@ -34,7 +27,7 @@ export default function SubmittedProposalsTable(selectedCycleCode: number) : Rea
     const SubmittedProposalsTableBody = () : ReactElement => {
         return (
             <Table.Tbody>
-                {submittedProposals.data?.map((sp) => (
+                {submittedProposals.map((sp) => (
                     <Table.Tr key={String(sp.dbid)}>
                         <Table.Td>{sp.name}</Table.Td>
                         <Table.Td c={"blue"}>{"not yet implemented"}</Table.Td>
@@ -45,7 +38,9 @@ export default function SubmittedProposalsTable(selectedCycleCode: number) : Rea
     }
 
     return (
-        <Table>
+        <Table
+            stickyHeader
+        >
             <SubmittedProposalsTableHeader />
             <SubmittedProposalsTableBody />
         </Table>
