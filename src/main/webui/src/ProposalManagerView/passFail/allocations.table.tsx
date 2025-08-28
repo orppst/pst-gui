@@ -52,29 +52,30 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
 
 
     useEffect(() => {
-        let numReviewsComplete : number = 0
-        let totalScore : number = 0
-        submittedProposal.data?.reviews?.forEach(review => {
-            if(new Date(review.reviewDate!).getTime() > 0) {
-                numReviewsComplete += 1
-                totalScore += review.score!
-            }
-        })
+        if (submittedProposal.status === 'success') {
+            let numReviewsComplete : number = 0
+            let totalScore : number = 0
+            submittedProposal.data?.reviews?.forEach(review => {
+                if(new Date(review.reviewDate!).getTime() > 0) {
+                    numReviewsComplete += 1
+                    totalScore += review.score!
+                }
+            })
 
-        setCompletedReviews(numReviewsComplete)
-        setAccumulatedScore(totalScore)
+            setCompletedReviews(numReviewsComplete)
+            setAccumulatedScore(totalScore)
 
-        setReviewersAssigned(submittedProposal.data?.reviews?.length !== undefined &&
-            submittedProposal.data?.reviews?.length > 0)
+            setReviewersAssigned(submittedProposal.data?.reviews?.length !== undefined &&
+                submittedProposal.data?.reviews?.length > 0)
 
-        setReviewsComplete( reviewersAssigned &&
-            completedReviews === submittedProposal.data?.reviews?.length!)
+            setReviewsComplete( reviewersAssigned &&
+                completedReviews === submittedProposal.data?.reviews?.length!)
 
-        //reviews are "locked" if the complete date is any date later than the posix epoch
-        setReviewsLocked(new Date(submittedProposal.data?.reviewsCompleteDate!).getTime() > 0)
+            //reviews are "locked" if the complete date is any date later than the posix epoch
+            setReviewsLocked(new Date(submittedProposal.data?.reviewsCompleteDate!).getTime() > 0)
 
-        setProposalAccepted(submittedProposal.data?.successful!)
-
+            setProposalAccepted(submittedProposal.data?.successful!)
+        }
     }, [submittedProposal]);
 
     if (submittedProposal.isLoading) {

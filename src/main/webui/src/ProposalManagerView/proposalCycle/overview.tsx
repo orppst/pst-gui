@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import {
     fetchSubmittedProposalResourceSendTACReviewResults,
-    useProposalCyclesResourceGetProposalCycle,
+    useProposalCyclesResourceGetProposalCycle, useSubmittedProposalResourceCheckAllReviewsLocked,
     useSubmittedProposalResourceGetSubmittedProposals,
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
@@ -26,6 +26,7 @@ import TACMembersTable from "./TACMembersTable.tsx";
 import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
 import AvailableResourcesTable from "./availableResourcesTable.tsx";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -53,6 +54,10 @@ export default function CycleOverviewPanel() : ReactElement {
         {pathParams:{cycleCode: Number(selectedCycleCode)}}
     )
 
+    const checkReviewsLocked = useSubmittedProposalResourceCheckAllReviewsLocked({
+        pathParams: {cycleCode: Number(selectedCycleCode)}
+    })
+
 
     if (cycleSynopsis.error) {
         notifyError("Failed to load proposal cycle synopsis",
@@ -64,7 +69,7 @@ export default function CycleOverviewPanel() : ReactElement {
             "cause: " + getErrorMessage(submittedProposals.error))
     }
 
-    if (cycleSynopsis.isLoading || submittedProposals.isLoading) {
+    if (cycleSynopsis.isLoading || submittedProposals.isLoading || checkReviewsLocked.isLoading) {
         return <Loader />
     }
 
@@ -158,9 +163,14 @@ export default function CycleOverviewPanel() : ReactElement {
                 <Space h={'xl'}/>
                 <Group justify={"center"}>
                     <Tooltip
-                        label={"email TAC results to investigators"}
+                        label={checkReviewsLocked.data ?
+                            "All proposals' reviews must be completed to email results" :
+                            "email TAC results to investigators"}
+                        openDelay={OPEN_DELAY}
+                        closeDelay={CLOSE_DELAY}
                     >
                         <Button
+                            disabled={checkReviewsLocked.data}
                             onClick={handleSendTacResults}
                         >
                             Send TAC results

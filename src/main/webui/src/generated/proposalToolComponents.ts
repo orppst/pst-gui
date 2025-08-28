@@ -6487,6 +6487,73 @@ export const useSubmittedProposalResourceSubmitProposal = (
   });
 };
 
+export type SubmittedProposalResourceCheckAllReviewsLockedPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type SubmittedProposalResourceCheckAllReviewsLockedError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubmittedProposalResourceCheckAllReviewsLockedVariables = {
+  pathParams: SubmittedProposalResourceCheckAllReviewsLockedPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubmittedProposalResourceCheckAllReviewsLocked = (
+  variables: SubmittedProposalResourceCheckAllReviewsLockedVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    boolean,
+    SubmittedProposalResourceCheckAllReviewsLockedError,
+    undefined,
+    {},
+    {},
+    SubmittedProposalResourceCheckAllReviewsLockedPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/allReviewsLocked",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubmittedProposalResourceCheckAllReviewsLocked = <
+  TData = boolean,
+>(
+  variables: SubmittedProposalResourceCheckAllReviewsLockedVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      boolean,
+      SubmittedProposalResourceCheckAllReviewsLockedError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    boolean,
+    SubmittedProposalResourceCheckAllReviewsLockedError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/allReviewsLocked",
+      operationId: "submittedProposalResourceCheckAllReviewsLocked",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchSubmittedProposalResourceCheckAllReviewsLocked(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type SubmittedProposalResourceGetSubmittedNotYetAllocatedPathParams = {
   /**
    * @format int64
@@ -13768,6 +13835,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals";
       operationId: "submittedProposalResourceGetSubmittedProposals";
       variables: SubmittedProposalResourceGetSubmittedProposalsVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/allReviewsLocked";
+      operationId: "submittedProposalResourceCheckAllReviewsLocked";
+      variables: SubmittedProposalResourceCheckAllReviewsLockedVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/notYetAllocated";
