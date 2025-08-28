@@ -6762,6 +6762,69 @@ export const useSubmittedProposalResourceSendTACReviewResults = <
   });
 };
 
+export type SubmittedProposalResourceResetReviewsCompleteDatePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  submittedProposalId: number;
+};
+
+export type SubmittedProposalResourceResetReviewsCompleteDateError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubmittedProposalResourceResetReviewsCompleteDateVariables = {
+  pathParams: SubmittedProposalResourceResetReviewsCompleteDatePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubmittedProposalResourceResetReviewsCompleteDate = (
+  variables: SubmittedProposalResourceResetReviewsCompleteDateVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubmittedProposalResourceResetReviewsCompleteDateError,
+    undefined,
+    {},
+    {},
+    SubmittedProposalResourceResetReviewsCompleteDatePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/resetCompleteDate",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useSubmittedProposalResourceResetReviewsCompleteDate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      SubmittedProposalResourceResetReviewsCompleteDateError,
+      SubmittedProposalResourceResetReviewsCompleteDateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    SubmittedProposalResourceResetReviewsCompleteDateError,
+    SubmittedProposalResourceResetReviewsCompleteDateVariables
+  >({
+    mutationFn: (
+      variables: SubmittedProposalResourceResetReviewsCompleteDateVariables,
+    ) =>
+      fetchSubmittedProposalResourceResetReviewsCompleteDate({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type ProposalReviewResourceGetReviewsPathParams = {
   /**
    * @format int64

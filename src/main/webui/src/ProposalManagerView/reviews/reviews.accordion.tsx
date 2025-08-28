@@ -76,15 +76,15 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                         yourReview ?
                             isReviewComplete ?
                                 <Text size={"xs"} c={"green"}>
-                                    You have completed this review on {reviewCompleteDate.toDateString()}
+                                    You submitted this review on {reviewCompleteDate.toDateString()}
                                 </Text>
                                 :
                                 <Text size={"xs"} c={"red"}>
-                                    You have yet to complete the review for this proposal
+                                    You have yet to submit a review for this proposal
                                 </Text>
                             :
                             <Text size={"xs"} c={"blue"}>
-                                You are not assigned to this proposal
+                                You are not assigned to review this proposal
                             </Text>
                     }
                 </>

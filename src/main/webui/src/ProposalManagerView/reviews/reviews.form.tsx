@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Badge, Button, Grid, Group, NumberInput, Stack, Switch, Text, Textarea, Tooltip} from "@mantine/core";
+import { Button, Grid, Group, NumberInput, Stack, Switch, Text, Textarea, Tooltip} from "@mantine/core";
 import AddButton from "../../commonButtons/add.tsx";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
@@ -64,7 +64,6 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const commentInput = () => (
         <Textarea
-            disabled={isReviewComplete}
             label={"Please provide your comments:"}
             rows={TEXTAREA_MAX_ROWS}
             maxLength={MAX_CHARS_FOR_INPUTS}
@@ -79,7 +78,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const scoreInput = () => (
         <NumberInput
-            disabled={isReviewComplete}
+
             label={"Review Score: "}
             {...form.getInputProps('score')}
         />
@@ -87,7 +86,6 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
 
     const technicalFeasibilityInput = () => (
         <Switch
-            disabled={isReviewComplete}
             label={"technically feasible?"}
             size={"md"}
             onLabel={"YES"}
@@ -227,32 +225,31 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
             onSuccess: () => {
                 queryClient.invalidateQueries()
                     .then(() =>
-                        notifySuccess("Success", "This review is now complete"))
+                        notifySuccess("Success", "This review has been submitted"))
             },
             onError: (error) =>
-                notifyError("Failed to Complete", getErrorMessage(error))
+                notifyError("Failed to Submit Review", getErrorMessage(error))
         })
     }
 
     const confirmCompletion = () => {
         modals.openConfirmModal({
-            title: "Confirm completion of this review",
+            title: "Confirm submission of this review",
             centered: true,
             children: (
                 <Text size={"sm"} c={"orange"}>
-                    This will finalise the review. It's completion date will be set
-                    to today's date, and no further edits to the review are allowed.
-                    Are you sure you want to complete this review?
+                    This notifies the TAC admin that you have "finished" this review.
+                    Notice that you may make edits to this review and re-submit at
+                    any time, up to the TAC admin locking the review process.
+
+                    Are you sure you want to submit this review?
                 </Text>
             ),
-            labels: {confirm: "Complete", cancel: "No, do not complete"},
+            labels: {confirm: "Submit", cancel: "No, do not submit"},
             confirmProps: {color: "orange"},
             onConfirm: () => handleCompletion()
         })
     }
-
-    let reviewCompleteDate = new Date(theReview?.reviewDate!);
-    let isReviewComplete: boolean = reviewCompleteDate.getTime() > 0;
 
     return (
         <>
@@ -270,39 +267,31 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                             </Stack>
                         </Grid.Col>
                     </Grid>
-                        {isReviewComplete ?
-                            <Group justify={"center"}>
-                                <Badge color={"green"} radius={"sm"}>
-                                    Review Completed on {reviewCompleteDate.toDateString()}
-                                </Badge>
-                            </Group>
-                            :
-                            <Group justify={"flex-end"} >
-                                <SubmitButton
-                                    toolTipLabel={"Save changes"}
-                                    label={"Update"}
-                                    disabled={!form.isDirty() || !form.isValid()}
-                                />
-                                <Tooltip
-                                    label={theReview.comment?.length != 0 ? "Finalises this review" :
-                                        "You must update this review with at least a comment before you can complete"}
-                                    openDelay={OPEN_DELAY}
-                                    closeDelay={CLOSE_DELAY}
-                                    multiline
-                                    w={150}
+                        <Group justify={"flex-end"} >
+                            <SubmitButton
+                                toolTipLabel={"Save changes"}
+                                label={"Update"}
+                                disabled={!form.isDirty() || !form.isValid()}
+                            />
+                            <Tooltip
+                                label={theReview.comment?.length != 0 ? "Notifies TAC admin you have finished this review" :
+                                    "You must update this review with at least a comment before you can submit"}
+                                openDelay={OPEN_DELAY}
+                                closeDelay={CLOSE_DELAY}
+                                multiline
+                                w={150}
+                            >
+                                <Button
+                                    rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
+                                    color={"orange"}
+                                    variant={"outline"}
+                                    onClick={confirmCompletion}
+                                    disabled={theReview.comment?.length == 0}
                                 >
-                                    <Button
-                                        rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
-                                        color={"orange"}
-                                        variant={"outline"}
-                                        onClick={confirmCompletion}
-                                        disabled={theReview.comment?.length == 0}
-                                    >
-                                        Complete Review
-                                    </Button>
-                                </Tooltip>
-                            </Group>
-                        }
+                                    Submit
+                                </Button>
+                            </Tooltip>
+                        </Group>
                 </form>
                 :
                 <Stack align={"center"}>

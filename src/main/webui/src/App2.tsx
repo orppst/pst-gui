@@ -185,7 +185,7 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/passFail",
+                        path: "cycle/:selectedCycleCode/acceptProposals",
                         element: <PassFailPanel />,
                         errorElement: <ErrorPage />,
                     },
