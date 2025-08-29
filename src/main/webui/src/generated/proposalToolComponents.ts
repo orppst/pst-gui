@@ -129,43 +129,6 @@ export const useKeycloakResourceGetUserRepresentation = <
   });
 };
 
-export type MailerResourceSendError = Fetcher.ErrorWrapper<undefined>;
-
-export type MailerResourceSendVariables = ProposalToolContext["fetcherOptions"];
-
-export const fetchMailerResourceSend = (
-  variables: MailerResourceSendVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<undefined, MailerResourceSendError, undefined, {}, {}, {}>({
-    url: "/pst/api/mailer",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useMailerResourceSend = <TData = undefined,>(
-  variables: MailerResourceSendVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<undefined, MailerResourceSendError, TData>,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<undefined, MailerResourceSendError, TData>({
-    queryKey: queryKeyFn({
-      path: "/pst/api/mailer",
-      operationId: "mailerResourceSend",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchMailerResourceSend({ ...fetcherOptions, ...variables }, signal),
-    ...options,
-    ...queryOptions,
-  });
-};
-
 export type ObservatoryResourceGetObservatoriesQueryParams = {
   name?: string;
 };
@@ -13650,11 +13613,6 @@ export type QueryOperation =
       path: "/pst/api/admin/userRepresentations";
       operationId: "keycloakResourceGetUserRepresentation";
       variables: KeycloakResourceGetUserRepresentationVariables;
-    }
-  | {
-      path: "/pst/api/mailer";
-      operationId: "mailerResourceSend";
-      variables: MailerResourceSendVariables;
     }
   | {
       path: "/pst/api/observatories";
