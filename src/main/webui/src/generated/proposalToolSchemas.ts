@@ -349,6 +349,7 @@ export type CoordSpace = {
 export type CoordSys = {
   "@type"?: string;
   xmlId?: string;
+  frame?: CoordFrame;
 };
 
 /**
