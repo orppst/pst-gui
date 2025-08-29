@@ -88,8 +88,8 @@ export default function ProposalManagerStartPage() : ReactElement {
                     </Grid.Col>
                     <Grid.Col span={1}>
                         <Group justify={"flex-end"}>
-                            <UserMenu />
                             {ColourSchemeToggle()}
+                            <UserMenu />
                         </Group>
                     </Grid.Col>
                 </Grid>
