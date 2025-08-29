@@ -1,4 +1,4 @@
-import {ReactElement} from "react";
+import {ReactElement, useState} from "react";
 import {
     Button,
     Divider,
@@ -21,12 +21,13 @@ import {useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocationGradesTable from "./allocationGradesTable.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import TACMembersTable from "./TACMembersTable.tsx";
 import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
 import AvailableResourcesTable from "./availableResourcesTable.tsx";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
-import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
+import {CLOSE_DELAY, ICON_SIZE, OPEN_DELAY} from "../../constants.tsx";
+import {IconMail} from "@tabler/icons-react";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -41,6 +42,8 @@ function prettyDateTime(input : string ) : string {
 }
 
 export default function CycleOverviewPanel() : ReactElement {
+
+    const [sendingEmails, setSendingEmails] = useState(false);
 
     const {selectedCycleCode} = useParams();
 
@@ -75,15 +78,18 @@ export default function CycleOverviewPanel() : ReactElement {
 
     const handleSendTacResults = async () => {
         try {
+            setSendingEmails(true);
             const promises = submittedProposals.data?.map(
                 sp => fetchSubmittedProposalResourceSendTACReviewResults({
                     ...fetcherOptions,
                     pathParams: {cycleCode: Number(selectedCycleCode), submittedProposalId: sp.dbid!}
                 })
             )
-            await Promise.all(promises!); //might be bad practice using '!' here
+            await Promise.all(promises!);
+            await new Promise(resolve => setTimeout(resolve, 2000));
         } catch (error) {
             notifyError("Failed to send emails", getErrorMessage(error))
+            setSendingEmails(false);
         }
     }
 
@@ -164,16 +170,24 @@ export default function CycleOverviewPanel() : ReactElement {
                 <Group justify={"center"}>
                     <Tooltip
                         label={checkReviewsLocked.data ?
-                            "All proposals' reviews must be completed to email results" :
-                            "email TAC results to investigators"}
+                            "email TAC results to investigators" :
+                            "All proposals' reviews must be completed to email results"
+                            }
                         openDelay={OPEN_DELAY}
                         closeDelay={CLOSE_DELAY}
                     >
                         <Button
-                            disabled={checkReviewsLocked.data}
-                            onClick={handleSendTacResults}
+                            disabled={!checkReviewsLocked.data}
+                            rightSection={sendingEmails?
+                                <Loader size={"sm"} color={"gray.1"}/> :
+                                <IconMail size={ICON_SIZE}/>}
+                            onClick={() => handleSendTacResults()
+                                .then(() => {
+                                    setSendingEmails(false)
+                                    notifySuccess("Success", "emails sent to investigators")
+                                })}
                         >
-                            Send TAC results
+                            Send TAC Results
                         </Button>
                     </Tooltip>
                 </Group>
