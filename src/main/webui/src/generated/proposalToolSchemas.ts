@@ -347,6 +347,7 @@ export type CoordSpace = {
  * Abstract head of the coordinate system object tree.
  */
 export type CoordSys = {
+  "@type"?: string;
   xmlId?: string;
 };
 

@@ -167,8 +167,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
             dec = celestialTarget.sourceCoordinates?.lat?.value + " " +
                 celestialTarget.sourceCoordinates?.lat?.unit?.value;
 
-        if(celestialTarget.sourceCoordinates?.coordSys?.["@type"] ===
-            "coords:SpaceSys") {
+        if(celestialTarget.sourceCoordinates?.coordSys?.["@type"] === "coords:SpaceSys") {
             spaceFrame = celestialTarget.sourceCoordinates?.coordSys?.frame?.spaceRefFrame;
         }
         epoch = celestialTarget.positionEpoch?.value;
