@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import { Button, Grid, Group, NumberInput, Stack, Switch, Text, Textarea, Tooltip} from "@mantine/core";
+import {Button, Grid, Group, NumberInput, Space, Stack, Switch, Text, Textarea, Tooltip} from "@mantine/core";
 import AddButton from "../../commonButtons/add.tsx";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
@@ -14,18 +14,33 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {useForm} from "@mantine/form";
-import {CLOSE_DELAY, ICON_SIZE, MAX_CHARS_FOR_INPUTS, OPEN_DELAY, TEXTAREA_MAX_ROWS} from "../../constants.tsx";
+import {
+    CLOSE_DELAY,
+    ICON_SIZE,
+    MAX_CHARS_FOR_REVIEW,
+    OPEN_DELAY,
+} from "../../constants.tsx";
 import {SubmitButton} from "../../commonButtons/save.tsx";
 import {IconSquareRoundedCheck} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
 import {useToken} from "../../App2.tsx";
+import {useMediaQuery} from "@mantine/hooks";
 
 export default
 function ReviewsForm(props: ReviewsProps) : ReactElement {
 
+    const commentLengthZeroMsg =
+        "You must update this review with at least a comment before you can submit"
+
+    const saveChangesSubmit = "Changes must be saved before you can submit this review"
+
+    const alreadySubmitted = "this review is submitted"
+
     const authToken = useToken();
 
     const queryClient = useQueryClient();
+
+    const smallScreen = useMediaQuery("(max-width: 1350px)");
 
     const addReview =
         useProposalReviewResourceAddReview();
@@ -65,21 +80,23 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
     const commentInput = () => (
         <Textarea
             label={"Please provide your comments:"}
-            rows={TEXTAREA_MAX_ROWS}
-            maxLength={MAX_CHARS_FOR_INPUTS}
+            rows={10}
+            maxLength={MAX_CHARS_FOR_REVIEW}
             description={
-                MAX_CHARS_FOR_INPUTS -
+                MAX_CHARS_FOR_REVIEW -
                 form.values.comment.length +
-                "/" + String(MAX_CHARS_FOR_INPUTS)}
+                "/" + String(MAX_CHARS_FOR_REVIEW)}
             inputWrapperOrder={['label', 'error', 'input', 'description']}
+            disabled={props.reviewsLocked}
             {...form.getInputProps('comment')}
         />
     )
 
     const scoreInput = () => (
         <NumberInput
-
             label={"Review Score: "}
+            hideControls
+            disabled={props.reviewsLocked}
             {...form.getInputProps('score')}
         />
     )
@@ -90,9 +107,39 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
             size={"md"}
             onLabel={"YES"}
             offLabel={"NO"}
+            disabled={props.reviewsLocked}
+            mt={"lg"}
             {...form.getInputProps('technicalFeasibility',
                 {type: 'checkbox'})}
         />
+    )
+
+    const reviewSubmitButton = () => (
+        <Tooltip
+            label={props.reviewsLocked ? "Reviews locked" :
+                theReview?.comment?.length === 0 ? commentLengthZeroMsg :
+                    form.isDirty() ? saveChangesSubmit :
+                        new Date(theReview?.reviewDate!).getTime() > 0 ? alreadySubmitted :
+                            "Notifies TAC admin you have completed this review"
+            }
+            openDelay={OPEN_DELAY}
+            closeDelay={CLOSE_DELAY}
+            multiline
+            w={150}
+        >
+            <Button
+                rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
+                color={"orange"}
+                variant={"outline"}
+                onClick={confirmCompletion}
+                disabled={form.isDirty() ||
+                    theReview?.comment?.length == 0 ||
+                    new Date(theReview?.reviewDate!).getTime() > 0 ||
+                    props.reviewsLocked}
+            >
+                Submit
+            </Button>
+        </Tooltip>
     )
 
     type AssignButtonData = {
@@ -102,7 +149,6 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
     }
 
     const handleAssign = (buttonProps: AssignButtonData) =>  {
-
         addReview.mutate({
             pathParams: {
                 cycleCode: Number(props.cycleCode),
@@ -141,7 +187,6 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
         // we are only ever updating fields rather than creating objects
 
         //if here, at least one of the following conditions must be true
-
         if (form.isDirty('comment')) {
             //update comment
            await fetchProposalReviewResourceUpdateReviewComment({
@@ -255,64 +300,54 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
         <>
             {theReview ?
                 <form onSubmit={form.onSubmit(handleSubmit)}>
-                    You are reviewing as {theReviewer.data?.person?.fullName}
                     <Grid columns={10} gutter={"xl"}>
-                        <Grid.Col span={7}>
+                        <Grid.Col span={{base: 10, lg: 6}}>
                             {commentInput()}
                         </Grid.Col>
-                        <Grid.Col span={3}>
+                        <Grid.Col span={{base: 10, lg: 4}}>
                             <Stack>
-                                {scoreInput()}
-                                {technicalFeasibilityInput()}
+                                <Group mt={smallScreen? "xs" : "xl"}>
+                                    {scoreInput()}
+                                    {technicalFeasibilityInput()}
+                                </Group>
+                                <Space h={smallScreen ? "50px" : "100px"}/>
+                                <Group justify={"flex-end"} >
+                                    <SubmitButton
+                                        toolTipLabel={!form.isValid() ? "Ensure all fields are filled in" :
+                                            props.reviewsLocked ? "Reviews locked" : "Save changes"}
+                                        label={"Update"}
+                                        disabled={!form.isDirty() || !form.isValid() || props.reviewsLocked}
+                                    />
+                                    {reviewSubmitButton()}
+                                </Group>
                             </Stack>
                         </Grid.Col>
                     </Grid>
-                        <Group justify={"flex-end"} >
-                            <SubmitButton
-                                toolTipLabel={"Save changes"}
-                                label={"Update"}
-                                disabled={!form.isDirty() || !form.isValid()}
-                            />
-                            <Tooltip
-                                label={theReview.comment?.length != 0 ? "Notifies TAC admin you have finished this review" :
-                                    "You must update this review with at least a comment before you can submit"}
-                                openDelay={OPEN_DELAY}
-                                closeDelay={CLOSE_DELAY}
-                                multiline
-                                w={150}
-                            >
-                                <Button
-                                    rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
-                                    color={"orange"}
-                                    variant={"outline"}
-                                    onClick={confirmCompletion}
-                                    disabled={theReview.comment?.length == 0}
-                                >
-                                    Submit
-                                </Button>
-                            </Tooltip>
-                        </Group>
                 </form>
                 :
-                <Stack align={"center"}>
-                    <Text size={"sm"} c={"gray.5"}>
-                        You are currently not assigned to review '{props.proposal?.title}'.
-                        If you wish to review this proposal please click on the "Self-Assign" button.
+                props.reviewsLocked ?
+                    <Text size={"sm"} c={"orange"}>
+                        You cannot provide a review for this proposal as the reviews have been locked.
                     </Text>
-                    <AddButton
-                        toolTipLabel={"Assign yourself as a Reviewer"}
-                        label={"Self-Assign"}
-                        onClick={()=>handleAssign(
-                            {
-                                reviewerId: props.reviewerId,
-                                proposalId: props.proposal?._id!,
-                                proposalTitle: props?.proposal?.title!
-                            }
-                        )}
-                    />
-                </Stack>
+                    :
+                    <Stack align={"center"}>
+                        <Text size={"sm"} c={"gray.5"}>
+                            You are currently not assigned to review '{props.proposal?.title}'.
+                            If you wish to review this proposal please click on the "Self-Assign" button.
+                        </Text>
+                        <AddButton
+                            toolTipLabel={"Assign yourself as a Reviewer"}
+                            label={"Self-Assign"}
+                            onClick={()=>handleAssign(
+                                {
+                                    reviewerId: props.reviewerId,
+                                    proposalId: props.proposal?._id!,
+                                    proposalTitle: props?.proposal?.title!
+                                }
+                            )}
+                        />
+                    </Stack>
             }
         </>
-
     )
 }

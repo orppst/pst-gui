@@ -30,20 +30,30 @@ function SubmittedProposalItem(props: SubmittedProposalItemProp) : ReactElement 
             getErrorMessage(proposal.error))
     }
 
+    let noReviewsAssigned = proposal.data?.reviews?.length === undefined ||
+        proposal.data?.reviews?.length === 0
+
+    let reviewsLocked = new Date(proposal.data?.reviewsCompleteDate!).getTime() > 0
+
     return (
         <Accordion.Item value={String(props.proposalId)}>
             <Accordion.Control>
-                <Text size={"lg"}>{proposal.data?.title}</Text>
+                <Group>
+                    <Text size={"lg"}>{proposal.data?.title}</Text>
+                    {
+                        reviewsLocked &&
+                        <Badge size={"sm"} radius={"sm"} color={"blue"}>
+                            Reviews Locked
+                        </Badge>
+                    }
+                </Group>
+
                 <Space h={"sm"}/>
                 <Group>
                     <Text size={"sm"} c={"gray.6"}> Assigned Reviewers: </Text>
                     {
-                        proposal.data?.reviews?.length == 0 ?
-                            <Badge
-                                size={"sm"}
-                                bg={"red.5"}
-                                radius={"sm"}
-                            >
+                        noReviewsAssigned ?
+                            <Badge size={"sm"} radius={"sm"} color={"red"}>
                                 None assigned
                             </Badge>
                             :
@@ -65,7 +75,14 @@ function SubmittedProposalItem(props: SubmittedProposalItemProp) : ReactElement 
                 {
                     proposal.isLoading ?
                         'loading...' :
-                        <AssignReviewersForm {...proposal.data}/>
+                        reviewsLocked ?
+                            <Group justify={"center"}>
+                                <Text size={"sm"} c={"orange"}>
+                                    Cannot assign or remove reviewers as the reviews are now locked for this proposal
+                                </Text>
+                            </Group>
+                            :
+                            <AssignReviewersForm {...proposal.data}/>
                 }
             </Accordion.Panel>
         </Accordion.Item>

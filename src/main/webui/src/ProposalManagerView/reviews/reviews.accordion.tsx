@@ -43,6 +43,7 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
 
     function SubmittedProposalReviewItem(itemProps: {proposalId: number}) : ReactElement {
 
+
         const proposal =
             useSubmittedProposalResourceGetSubmittedProposal({
                 pathParams: {
@@ -60,6 +61,11 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
             return (<Loader/>)
         }
 
+        let noReviewsAssigned = proposal.data?.reviews?.length === undefined ||
+            proposal.data?.reviews?.length === 0
+
+        let reviewsLocked = new Date(proposal.data?.reviewsCompleteDate!).getTime() > 0
+
         const hasUserCompletedReview = () => {
 
             let yourReview =
@@ -71,12 +77,12 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
 
             let isReviewComplete = reviewCompleteDate.getTime() > 0
             return (
-                <>
+                <Group>
                     {
                         yourReview ?
                             isReviewComplete ?
                                 <Text size={"xs"} c={"green"}>
-                                    You submitted this review on {reviewCompleteDate.toDateString()}
+                                    You submitted on {reviewCompleteDate.toDateString()}
                                 </Text>
                                 :
                                 <Text size={"xs"} c={"red"}>
@@ -87,7 +93,13 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                                 You are not assigned to review this proposal
                             </Text>
                     }
-                </>
+                    {
+                        reviewsLocked &&
+                        <Text size={"xs"} c={"orange"}>
+                            Reviews locked, no further edits allowed
+                        </Text>
+                    }
+                </Group>
             )
         }
 
@@ -102,12 +114,8 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                     <Group>
                         <Text size={"sm"} c={"gray.6"}> Assigned Reviewers: </Text>
                         {
-                            proposal.data?.reviews?.length == 0 ?
-                                <Badge
-                                    size={"sm"}
-                                    bg={"red.5"}
-                                    radius={"sm"}
-                                >
+                            noReviewsAssigned ?
+                                <Badge size={"sm"} bg={"red"} radius={"sm"}>
                                     None assigned
                                 </Badge>
                                 :
@@ -135,6 +143,7 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                         reviewerId={props.reviewerId}
                         cycleCode={props.cycleCode}
                         proposal={proposal.data}
+                        reviewsLocked={reviewsLocked}
                     />
                 </Accordion.Panel>
             </Accordion.Item>
