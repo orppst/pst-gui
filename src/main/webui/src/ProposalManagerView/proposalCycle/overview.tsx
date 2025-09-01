@@ -1,5 +1,5 @@
-import {ReactElement} from "react";
-import {Divider, Fieldset, Group, Space, Stack, Text} from "@mantine/core";
+import {ReactElement, useState} from "react";
+import {Divider, Fieldset, Group, Modal, Space, Stack, Text} from "@mantine/core";
 import {
     useProposalCyclesResourceGetProposalCycle
 } from "../../generated/proposalToolComponents.ts";
@@ -11,6 +11,10 @@ import {notifyError} from "../../commonPanel/notifications.tsx";
 import TACMembersTable from "./TACMembersTable.tsx";
 import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
 import AvailableResourcesTable from "./availableResourcesTable.tsx";
+import {ExportButton} from "../../commonButtons/export.tsx";
+import {HaveRole} from "../../auth/Roles.tsx";
+import {useDisclosure} from "@mantine/hooks";
+import DownloadCompiledPDFTable from "./compiledPDFTable.tsx";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -24,7 +28,7 @@ function prettyDateTime(input : string ) : string {
     return date + " " + time + " GMT";
 }
 
-export default function CycleOverviewPanel() : ReactElement {
+export default function CycleOverviewPanel() : JSX.Element {
 
     const {selectedCycleCode} = useParams();
 
@@ -104,10 +108,41 @@ export default function CycleOverviewPanel() : ReactElement {
         )
     }
 
+    const [opened, {close, open}] = useDisclosure();
+
+    const DownloadButton = () : void => {
+        open();
+    }
+
+
+        /** open a model and list the submitted proposals */
+    const DownloadModal = () : ReactElement => {
+        return (
+            <Modal
+                opened={opened}
+                onClose={close}
+                title={"Download proposals"}
+                closeOnClickOutside={false}
+                size={"40%"}
+            >
+                {DownloadCompiledPDFTable(Number(selectedCycleCode))}
+            </Modal>
+        )
+    }
+
     const DisplaySubmittedProposals = () : ReactElement => {
         return (
             <Fieldset legend={"Submitted Proposals"}>
+                {HaveRole(["tac_admin"]) &&
+                    <ExportButton
+                        label={"Download all proposals"}
+                        toolTipLabel={"Admin only option"}
+                        variant={"filled"}
+                        onClick={DownloadButton}
+                    />
+                }
                 {SubmittedProposalsTable(Number(selectedCycleCode))}
+                <DownloadModal/>
             </Fieldset>
         )
     }
