@@ -16,6 +16,7 @@ export type ReviewsProps = {
     reviewerId: number,
     cycleCode: number,
     proposal?: SubmittedProposal
+    reviewsLocked?: boolean
 }
 
 export default
