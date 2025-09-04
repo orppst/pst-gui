@@ -6412,7 +6412,7 @@ export const fetchSubmittedProposalResourceSubmitProposal = (
   signal?: AbortSignal,
 ) =>
   proposalToolFetch<
-    Schemas.ProposalSynopsis,
+    undefined,
     SubmittedProposalResourceSubmitProposalError,
     Schemas.SubmissionConfiguration,
     {},
@@ -6428,7 +6428,7 @@ export const fetchSubmittedProposalResourceSubmitProposal = (
 export const useSubmittedProposalResourceSubmitProposal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.ProposalSynopsis,
+      undefined,
       SubmittedProposalResourceSubmitProposalError,
       SubmittedProposalResourceSubmitProposalVariables
     >,
@@ -6437,7 +6437,7 @@ export const useSubmittedProposalResourceSubmitProposal = (
 ) => {
   const { fetcherOptions } = useProposalToolContext();
   return reactQuery.useMutation<
-    Schemas.ProposalSynopsis,
+    undefined,
     SubmittedProposalResourceSubmitProposalError,
     SubmittedProposalResourceSubmitProposalVariables
   >({
