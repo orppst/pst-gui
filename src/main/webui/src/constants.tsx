@@ -20,6 +20,8 @@ export const MAX_CHARS_FOR_INPUTS = 255;
 
 export const MAX_CHARS_FOR_JUSTIFICATION = 3072;
 
+export const MAX_CHARS_FOR_REVIEW = 2048;
+
 /* the app header height*/
 export const APP_HEADER_HEIGHT = 60;
 

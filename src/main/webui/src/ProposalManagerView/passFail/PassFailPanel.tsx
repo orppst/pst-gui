@@ -2,19 +2,19 @@ import {ReactElement} from "react";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import AllocationsTable from "./allocations.table.tsx";
-import {useSubmittedProposalResourceGetSubmittedNotYetAllocated} from "../../generated/proposalToolComponents.ts";
 import {Loader} from "@mantine/core";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
+import {useSubmittedProposalResourceGetSubmittedProposals} from "../../generated/proposalToolComponents.ts";
 
 export default
 function PassFailPanel(): ReactElement {
 
     const {selectedCycleCode} = useParams();
 
-    const notYetAllocated =
-        useSubmittedProposalResourceGetSubmittedNotYetAllocated({
+    const submittedProposals =
+        useSubmittedProposalResourceGetSubmittedProposals({
             pathParams: {cycleCode: Number(selectedCycleCode)}
         })
 
@@ -22,22 +22,22 @@ function PassFailPanel(): ReactElement {
         return <>Not authorised</>
     }
 
-    if (notYetAllocated.isLoading) {
+    if (submittedProposals.isLoading) {
         return(<Loader />)
     }
 
-    if (notYetAllocated.error) {
+    if (submittedProposals.error) {
         notifyError("Failed to load not yet allocated submitted proposals",
-            getErrorMessage(notYetAllocated.error))
+            getErrorMessage(submittedProposals.error))
     }
     
     return (
         <PanelFrame>
             <ManagerPanelHeader
                 proposalCycleCode={Number(selectedCycleCode)}
-                panelHeading={"Pass/Fail"}
+                panelHeading={"Accept Proposals"}
             />
-            <AllocationsTable submittedIds={notYetAllocated.data!} />
+            <AllocationsTable submittedIds={submittedProposals.data!} />
         </PanelFrame>
     )
 }

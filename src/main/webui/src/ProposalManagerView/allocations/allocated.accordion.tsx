@@ -128,8 +128,9 @@ function AllocatedAccordionItem(p: {
                             onClick={confirmWithdrawAllocatedProposal}
                             variant={"outline"}
                             size={"xs"}
-                            color={"red"}>
-                            Deallocate
+                            color={"red"}
+                        >
+                            Withdraw
                         </Button>
                     </Flex>
                 }
