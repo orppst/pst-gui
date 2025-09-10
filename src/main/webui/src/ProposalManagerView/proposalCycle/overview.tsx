@@ -1,20 +1,33 @@
 import {ReactElement, useState} from "react";
-import {Divider, Fieldset, Group, Modal, Space, Stack, Text} from "@mantine/core";
 import {
-    useProposalCyclesResourceGetProposalCycle
+    Button,
+    Divider,
+    Fieldset,
+    Grid,
+    Group,
+    Loader,
+    ScrollArea,
+    Space,
+    Stack,
+    Text,
+    Tooltip
+} from "@mantine/core";
+import {
+    fetchSubmittedProposalResourceSendTACReviewResults,
+    useProposalCyclesResourceGetProposalCycle, useSubmittedProposalResourceCheckAllReviewsLocked,
+    useSubmittedProposalResourceGetSubmittedProposals,
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AllocationGradesTable from "./allocationGradesTable.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import TACMembersTable from "./TACMembersTable.tsx";
 import SubmittedProposalsTable from "./submittedProposalsTable.tsx";
 import AvailableResourcesTable from "./availableResourcesTable.tsx";
-import {ExportButton} from "../../commonButtons/export.tsx";
-import {HaveRole} from "../../auth/Roles.tsx";
-import {useDisclosure} from "@mantine/hooks";
-import DownloadCompiledPDFTable from "./compiledPDFTable.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import {CLOSE_DELAY, ICON_SIZE, OPEN_DELAY} from "../../constants.tsx";
+import {IconMail} from "@tabler/icons-react";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -28,17 +41,56 @@ function prettyDateTime(input : string ) : string {
     return date + " " + time + " GMT";
 }
 
-export default function CycleOverviewPanel() : JSX.Element {
+export default function CycleOverviewPanel() : ReactElement {
+
+    const [sendingEmails, setSendingEmails] = useState(false);
 
     const {selectedCycleCode} = useParams();
+
+    const {fetcherOptions} = useProposalToolContext();
 
     const cycleSynopsis = useProposalCyclesResourceGetProposalCycle(
         {pathParams: {cycleCode: Number(selectedCycleCode)}}
     )
 
+    const submittedProposals = useSubmittedProposalResourceGetSubmittedProposals(
+        {pathParams:{cycleCode: Number(selectedCycleCode)}}
+    )
+
+    const checkReviewsLocked = useSubmittedProposalResourceCheckAllReviewsLocked({
+        pathParams: {cycleCode: Number(selectedCycleCode)}
+    })
+
+
     if (cycleSynopsis.error) {
         notifyError("Failed to load proposal cycle synopsis",
             "cause " + getErrorMessage(cycleSynopsis.error))
+    }
+
+    if (submittedProposals.error) {
+        notifyError("Failed to load submitted proposals list",
+            "cause: " + getErrorMessage(submittedProposals.error))
+    }
+
+    if (cycleSynopsis.isLoading || submittedProposals.isLoading || checkReviewsLocked.isLoading) {
+        return <Loader />
+    }
+
+    const handleSendTacResults = async () => {
+        try {
+            setSendingEmails(true);
+            const promises = submittedProposals.data?.map(
+                sp => fetchSubmittedProposalResourceSendTACReviewResults({
+                    ...fetcherOptions,
+                    pathParams: {cycleCode: Number(selectedCycleCode), submittedProposalId: sp.dbid!}
+                })
+            )
+            await Promise.all(promises!);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        } catch (error) {
+            notifyError("Failed to send emails", getErrorMessage(error))
+            setSendingEmails(false);
+        }
     }
 
 
@@ -108,41 +160,37 @@ export default function CycleOverviewPanel() : JSX.Element {
         )
     }
 
-    const [opened, {close, open}] = useDisclosure();
-
-    const DownloadButton = () : void => {
-        open();
-    }
-
-
-        /** open a model and list the submitted proposals */
-    const DownloadModal = () : ReactElement => {
-        return (
-            <Modal
-                opened={opened}
-                onClose={close}
-                title={"Download proposals"}
-                closeOnClickOutside={false}
-                size={"40%"}
-            >
-                {DownloadCompiledPDFTable(Number(selectedCycleCode))}
-            </Modal>
-        )
-    }
-
     const DisplaySubmittedProposals = () : ReactElement => {
         return (
             <Fieldset legend={"Submitted Proposals"}>
-                {HaveRole(["tac_admin"]) &&
-                    <ExportButton
-                        label={"Download all proposals"}
-                        toolTipLabel={"Admin only option"}
-                        variant={"filled"}
-                        onClick={DownloadButton}
-                    />
-                }
-                {SubmittedProposalsTable(Number(selectedCycleCode))}
-                <DownloadModal/>
+                <ScrollArea.Autosize mah={250}>
+                    {SubmittedProposalsTable(submittedProposals.data ?? [])}
+                </ScrollArea.Autosize>
+                <Space h={'xl'}/>
+                <Group justify={"center"}>
+                    <Tooltip
+                        label={checkReviewsLocked.data ?
+                            "email TAC results to investigators" :
+                            "All proposals' reviews must be completed to email results"
+                        }
+                        openDelay={OPEN_DELAY}
+                        closeDelay={CLOSE_DELAY}
+                    >
+                        <Button
+                            disabled={!checkReviewsLocked.data}
+                            rightSection={sendingEmails?
+                                <Loader size={"sm"} color={"gray.1"}/> :
+                                <IconMail size={ICON_SIZE}/>}
+                            onClick={() => handleSendTacResults()
+                                .then(() => {
+                                    setSendingEmails(false)
+                                    notifySuccess("Success", "emails sent to investigators")
+                                })}
+                        >
+                            Send TAC Results
+                        </Button>
+                    </Tooltip>
+                </Group>
             </Fieldset>
         )
     }
@@ -155,20 +203,22 @@ export default function CycleOverviewPanel() : JSX.Element {
         )
     }
 
-
     return (
         <PanelFrame>
             <DisplayTitle />
-            <DisplayObservatory />
-            <Space h={"xl"}/>
-            <DisplayDates />
-            <Space h={"xl"}/>
-            <DisplayAllocationGrades />
-            <Space h={"xl"}/>
-            <DisplayTACMembers />
-            <Space h={"xl"}/>
-            <DisplaySubmittedProposals />
-            <Space h={"xl"}/>
+            <Grid columns={12}>
+                <Grid.Col span={6}>
+                    <Stack>
+                        <DisplayObservatory />
+                        <DisplayDates />
+                        <DisplayAllocationGrades />
+                        <DisplayTACMembers />
+                    </Stack>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                    <DisplaySubmittedProposals />
+                </Grid.Col>
+            </Grid>
             <DisplayAvailableResources />
         </PanelFrame>
     )
