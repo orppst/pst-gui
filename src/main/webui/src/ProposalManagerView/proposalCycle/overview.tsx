@@ -172,7 +172,7 @@ export default function CycleOverviewPanel() : ReactElement {
                         label={checkReviewsLocked.data ?
                             "email TAC results to investigators" :
                             "All proposals' reviews must be completed to email results"
-                        }
+                            }
                         openDelay={OPEN_DELAY}
                         closeDelay={CLOSE_DELAY}
                     >

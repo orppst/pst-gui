@@ -190,13 +190,13 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          onClick={()=>setActive("Reviews" + cycle.code)}
                 />
                 {HaveRole(["tac_admin"]) &&
-                <NavLink to={"cycle/" + cycle.dbid + "/passFail"}
+                <NavLink to={"cycle/" + cycle.dbid + "/acceptProposals"}
                          component={Link}
-                         key={"PassFail"}
-                         label={"Pass/Fail"}
+                         key={"AcceptProposals"}
+                         label={"Accept Proposals"}
                          leftSection={<IconThumbUp/>}
-                         active={"PassFail" + cycle.code === active}
-                         onClick={()=>setActive("PassFail" + cycle.code)}
+                         active={"AcceptProposals" + cycle.code === active}
+                         onClick={()=>setActive("AcceptProposals" + cycle.code)}
                 />}
                 {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/allocations"}
