@@ -6,7 +6,7 @@ import {
     useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
-import {getArrowPositionStyles} from "@mantine/core/lib/components/Floating/FloatingArrow/get-arrow-position-styles";
+import {IconPdf} from "@tabler/icons-react";
 
 /*
     We will likely want to add metadata about submitted proposals, the most useful of this being the
@@ -36,6 +36,7 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
     const [reviewsCompleteAndLocked, setReviewsCompleteAndLocked] = useState(false)
     const [proposalAccepted, setProposalAccepted] = useState(false)
     const [downloadReady, setDownloadReady] = useState(false)
+    let pdfURL = "";
 
     useEffect(() => {
         if (submittedProposal.status === 'success') {
@@ -59,6 +60,8 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
 
     useEffect(() => {
         if (compiledPDF.status === 'success') {
+            pdfURL = window.URL.createObjectURL(compiledPDF.data as unknown as Blob)
+            //console.log("pdfURL: " + pdfURL + " CompiledPDF: ", compiledPDF.data)
             setDownloadReady(true)
         }
     }, [compiledPDF]);
@@ -89,7 +92,17 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
                             "under review"
                 }
             </Table.Td>
-            <Table.Td><Button disabled={!downloadReady}>Download</Button></Table.Td>
+            <Table.Td>
+                <Button
+                    disabled={!downloadReady}
+                    rightSection={<IconPdf />}
+                    component={"a"}
+                    download={rowProps.submittedProposalId + ".justification.pdf"}
+                    href={pdfURL}
+                    color={"blue"}
+                >
+                    Download
+                </Button></Table.Td>
         </Table.Tr>
     )
 }
@@ -106,7 +119,7 @@ function SubmittedProposalsTable(submittedProposals: ObjectIdentifier[]) : React
                 <Table.Tr>
                     <Table.Th>Proposal Title</Table.Th>
                     <Table.Th>Current Status</Table.Th>
-                    <Table.Th>PDF</Table.Th>
+                    <Table.Th>Documents</Table.Th>
                 </Table.Tr>
             </Table.Thead>
         )
