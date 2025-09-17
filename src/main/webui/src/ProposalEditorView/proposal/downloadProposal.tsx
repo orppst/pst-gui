@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 // renamed to bypass ESlint issues about constructors needing to be capital letters.
 import { jsPDF as JSPDF } from 'jspdf';
 // used the import * as it bypasses a fault with how this is meant to be imported.
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import {
     fetchProposalResourceExportProposal,
     fetchSupportingDocumentResourceDownloadSupportingDocument

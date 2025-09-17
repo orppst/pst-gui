@@ -59,8 +59,8 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
     }, [submittedProposal]);
 
     useEffect(() => {
-        if (compiledPDF.status === 'success') {
-            pdfURL = window.URL.createObjectURL(compiledPDF.data as unknown as Blob)
+        if (compiledPDF.status === 'success' && compiledPDF.data !== undefined) {
+            pdfURL = window.URL.createObjectURL(compiledPDF.data as Blob)
             //console.log("pdfURL: " + pdfURL + " CompiledPDF: ", compiledPDF.data)
             setDownloadReady(true)
         }
