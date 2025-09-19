@@ -18,7 +18,7 @@ export const TABLE_HIGH_LIGHT_COLOR = 'var(--mantine-color-blue-light)';
 
 export const MAX_CHARS_FOR_INPUTS = 255;
 
-export const MAX_CHARS_FOR_JUSTIFICATION = 3072;
+export const MAX_CHARS_FOR_JUSTIFICATION = 4096;
 
 export const MAX_CHARS_FOR_REVIEW = 2048;
 
