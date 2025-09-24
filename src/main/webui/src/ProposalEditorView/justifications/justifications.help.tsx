@@ -10,6 +10,7 @@ function JustificationsHelp(
     const twoFigures = "\n\\twofigures[width]{filename1}{filename2}{caption}";
     const threeFigures = "\n\\threefigures[width]{filename1}{filename2}{filename3}{caption}";
     const fourFigures = "\n\\fourfigures[width]{filename1}{filename2}{filename3}{filename4}{caption}";
+    const textWrapFigures = "\n\\textwrapfigure[width]{filename}{caption}{position}";
     const reference = "\n~\\ref{fig:filename}";
 
     return (
@@ -42,6 +43,12 @@ function JustificationsHelp(
                         command in your text and provide a (single) bibtex file (.bib) as a resource file. This
                         will be renamed to "refs.bib" in the backend.
                     </Text>
+                    <Text size={"sm"} c={'yellow'}>
+                        Any image files (.png,.jpg,.eps,.pdf) that you reference must be
+                        uploaded to our service as a "Resource File". You must also supply a single
+                        bibtex file (.bib) containing your references as a resource file (as mentioned,
+                        renamed to "refs.bib" on our server).
+                    </Text>
                     <Text size={"sm"}>
                         To make the insertion of figures into your document easier, we have provided custom
                         functions in the template file. These are namely:
@@ -52,14 +59,17 @@ function JustificationsHelp(
                         <List.Item>{twoFigures}</List.Item>
                         <List.Item>{threeFigures}</List.Item>
                         <List.Item>{fourFigures}</List.Item>
+                        <List.Item>{textWrapFigures}</List.Item>
                     </List>
 
                     <Text size={"sm"}>
                         The 'width' parameter is optional but if provided should a decimal number between 0
                         and 1, defining the width of the figure in terms of the text-width. It defaults to
-                        0.5 for the single figure case, and is an even division of the total text-width for
+                        0.5 for the single figure cases, and is an even division of the total text-width for
                         the multiple figure cases. If supplied, the width parameter for the multiple figure
                         cases applies to each of the images in the figure, rather than the whole figure itself.
+                        The astute among you will have deduced then that the product of the width value with the
+                        number of figures must not exceed 1, else problems.
                         The 'filename' parameter should match the name of the image file that you wish to
                         insert, excluding the dot extension.
                     </Text>
@@ -68,6 +78,13 @@ function JustificationsHelp(
                         single row, whereas the four figure function will place the images in a two-by-two
                         arrangement. For the multiple figure functions, each image will be labelled
                         '(a)' through to '(d)' where appropriate.
+                    </Text>
+                    <Text size={"sm"}>
+                        For the 'textwrapfigure' command an additional parameter specifies the position of
+                        figure you want to text-wrap. Either 'l' or 'L' for the image on the left,
+                        or 'r' or 'R' for the image on the right. The uppercase version allows the image to
+                        float, whereas the lowercase version means exactly here. (Our command uses the
+                        'wrapfigure' environment from the 'wrapfig' package).
                     </Text>
 
                     <Text size={"sm"}>
@@ -86,18 +103,12 @@ function JustificationsHelp(
                     </Text>
 
                     <Text size={"sm"}>
-                        Please note that image formats are restricted to '.jpg', '.png',
-                        and '.eps'.
-                    </Text>
-
-                    <Text size={"sm"} c={'yellow'}>
-                        Any image files (.png,.jpg,.eps) that you reference must be
-                        uploaded to our service as a "Resource File". You must also supply a single
-                        bibtex file (.bib) containing your references as a resource file.
+                        Please note that image formats are restricted to '.jpg', '.png', '.eps', and '.pdf'.
                     </Text>
                     <Text size={"sm"}>
                         Be aware that uploading an image file with the same filename as an existing file
-                        will overwrite that file. You cannot have multiple bibtex files.
+                        will overwrite that file, and there will be no warning. You cannot have multiple
+                        bibtex files.
                     </Text>
                     <Text size={"sm"}>
                         Once you are satisfied that all resource files have been uploaded, you may
@@ -106,15 +117,24 @@ function JustificationsHelp(
                         a modal will open displaying the status of the compilation.
                     </Text>
                     <Text size={"sm"}>
+                        Please note that during compilation LaTex must convert any '.eps' images to '.pdf' images.
+                        LaTex generates the '.pdf' from the '.eps' file, leaving the original as is.
+                        The generated '.pdf' image will show as 'filename-eps-converted-to.pdf' in the
+                        'Resource File' list.
+                    </Text>
+                    <Text size={"sm"}>
                         If successful, you will receive a message to that effect in the modal, and the
                         "Download PDF" button at the bottom of the modal will be enabled.
                         Clicking this button downloads the resulting PDF file of your Justifications.
+                        In the header of the document there is a "CYCLE-ID-HERE" placeholder. This is for
+                        the time allocation committee (TAC) use only, and is replaced upon proposal submission
+                        to a particular observing cycle.
                     </Text>
                     <Text size={"sm"}>
                         If the LaTeX compilation fails then the text area will display a list of errors,
                         and optionally warnings, that you will have to fix. These are usually caused by typos
                         in the LaTeX commands used, and/or missing resource files. We recommend you treat warnings
-                        as errors.
+                        as errors. Notice that in this case the "Download PDF" button will be disabled (greyed-out).
                     </Text>
                 </Stack>
             </ScrollArea>
