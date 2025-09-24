@@ -10,9 +10,10 @@ import {
     IconUsersGroup
 } from "@tabler/icons-react";
 import {Link, useParams} from "react-router-dom";
-import {useProposalResourceGetProposals} from "./generated/proposalToolComponents.ts";
+import {
+    useProposalResourceGetProposals
+} from "./generated/proposalToolComponents.ts";
 import {ProposalSynopsis} from "./generated/proposalToolSchemas.ts";
-
 
 export function ProposalList(props:{proposalTitle: string, investigatorName:string}): ReactElement { //IMPL added user as a prop even though not explicitly used to make update happen.
 
@@ -38,6 +39,7 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
 
     function ProposalItem(props:{proposal:ProposalSynopsis}): ReactElement {
         const proposal = props.proposal
+
         return (
             <Accordion.Item
                 value={String(proposal.code)}
@@ -105,19 +107,6 @@ export function ProposalList(props:{proposalTitle: string, investigatorName:stri
                              active={"Technical Goals" + proposal.code === active}
                              onClick={()=>setActive("Technical Goals" + proposal.code)}
                     />
-                    {
-                        /*
-                        <NavLink to={"proposal/" + proposal.code + "/observationFields"}
-                                 component={Link}
-                                 leftSection={<IconGeometry/>}
-                                 label="Observation Fields"
-                                 key="Observation Fields"
-                                 active={"Observation Fields" + proposal.code === active}
-                                 onClick={()=>setActive("Observation Fields" + proposal.code)}
-                        />
-                         */
-                    }
-
                     <NavLink to={"proposal/" + proposal.code + "/observations"}
                              component={Link}
                              leftSection={<IconTelescope/>}
