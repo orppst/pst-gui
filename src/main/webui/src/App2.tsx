@@ -37,11 +37,10 @@ import {
     Burger,
     ScrollArea,
     Group,
-    ActionIcon,
     Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container, Button,
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
-import {IconHome, IconUniverse} from '@tabler/icons-react';
+import {IconClock2, IconHome} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
 import {
@@ -416,18 +415,19 @@ function App2(): ReactElement {
                                          alt="Polaris"
                                          width={60}/>
                                     {HaveRole(["tac_admin","tac_member"]) &&  (<Tooltip
-                                        label={"go to proposal management view"}
+                                        label={"go to proposal TAC management view"}
                                         openDelay={OPEN_DELAY}
                                     >
-                                        <ActionIcon
+                                        <Button
                                             color={"pink"}
                                             variant={"subtle"}
+                                            rightSection={<IconClock2 />}
                                             onClick={(e: SyntheticEvent)=>{
                                                 e.preventDefault();
                                                 navigate("/manager")}}
                                         >
-                                            <IconUniverse />
-                                        </ActionIcon>
+                                            TAC Management
+                                        </Button>
                                     </Tooltip>)}
                                     <Tooltip
                                         label={"Go to your home page"}
