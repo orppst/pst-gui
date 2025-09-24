@@ -3,6 +3,7 @@ import {Table, Loader} from "@mantine/core";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {useSubmittedProposalResourceGetSubmittedProposal} from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
+import EditButton from "../../commonButtons/edit.tsx";
 
 /*
     We will likely want to add metadata about submitted proposals, the most useful of this being the
@@ -66,6 +67,12 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
 
     return (
         <Table.Tr>
+            <Table.Td>
+                <EditButton
+                    toolTipLabel={'Change proposal code'}
+                    label={submittedProposal.data?.proposalCode}
+                />
+            </Table.Td>
             <Table.Td>{submittedProposal.data?.title}</Table.Td>
             <Table.Td c={proposalAccepted ? "green" : reviewsCompleteAndLocked ? "red" : "blue"}>
                 {
@@ -88,6 +95,7 @@ function SubmittedProposalsTable(submittedProposals: ObjectIdentifier[]) : React
         return (
             <Table.Thead>
                 <Table.Tr>
+                    <Table.Th>Code</Table.Th>
                     <Table.Th>Proposal Title</Table.Th>
                     <Table.Th>Current Status</Table.Th>
                 </Table.Tr>
