@@ -6792,6 +6792,72 @@ export const useSubmittedProposalResourceSendTACReviewResults = <
   });
 };
 
+export type SubmittedProposalResourceReplaceCodePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  submittedProposalId: number;
+};
+
+export type SubmittedProposalResourceReplaceCodeQueryParams = {
+  proposalCode?: string;
+};
+
+export type SubmittedProposalResourceReplaceCodeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubmittedProposalResourceReplaceCodeVariables = {
+  pathParams: SubmittedProposalResourceReplaceCodePathParams;
+  queryParams?: SubmittedProposalResourceReplaceCodeQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubmittedProposalResourceReplaceCode = (
+  variables: SubmittedProposalResourceReplaceCodeVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubmittedProposalResourceReplaceCodeError,
+    undefined,
+    {},
+    SubmittedProposalResourceReplaceCodeQueryParams,
+    SubmittedProposalResourceReplaceCodePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/replaceCode",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useSubmittedProposalResourceReplaceCode = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      SubmittedProposalResourceReplaceCodeError,
+      SubmittedProposalResourceReplaceCodeVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    SubmittedProposalResourceReplaceCodeError,
+    SubmittedProposalResourceReplaceCodeVariables
+  >({
+    mutationFn: (variables: SubmittedProposalResourceReplaceCodeVariables) =>
+      fetchSubmittedProposalResourceReplaceCode({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type SubmittedProposalResourceResetReviewsCompleteDatePathParams = {
   /**
    * @format int64
