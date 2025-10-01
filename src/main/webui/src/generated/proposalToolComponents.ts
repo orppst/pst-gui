@@ -5476,6 +5476,130 @@ export const useAvailableResourcesResourceGetCycleResourceTotal = <
   });
 };
 
+export type ProposalCyclesResourceGetProposalCycleCodePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetProposalCycleCodeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetProposalCycleCodeVariables = {
+  pathParams: ProposalCyclesResourceGetProposalCycleCodePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetProposalCycleCode = (
+  variables: ProposalCyclesResourceGetProposalCycleCodeVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceGetProposalCycleCodeError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceGetProposalCycleCodePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/code",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetProposalCycleCode = <
+  TData = undefined,
+>(
+  variables: ProposalCyclesResourceGetProposalCycleCodeVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      ProposalCyclesResourceGetProposalCycleCodeError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    ProposalCyclesResourceGetProposalCycleCodeError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/code",
+      operationId: "proposalCyclesResourceGetProposalCycleCode",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalCyclesResourceGetProposalCycleCode(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ProposalCyclesResourceReplaceCycleCodePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceReplaceCycleCodeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceReplaceCycleCodeVariables = {
+  pathParams: ProposalCyclesResourceReplaceCycleCodePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceReplaceCycleCode = (
+  variables: ProposalCyclesResourceReplaceCycleCodeVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceReplaceCycleCodeError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceReplaceCycleCodePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/code",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceReplaceCycleCode = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ProposalCyclesResourceReplaceCycleCodeError,
+      ProposalCyclesResourceReplaceCycleCodeVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ProposalCyclesResourceReplaceCycleCodeError,
+    ProposalCyclesResourceReplaceCycleCodeVariables
+  >({
+    mutationFn: (variables: ProposalCyclesResourceReplaceCycleCodeVariables) =>
+      fetchProposalCyclesResourceReplaceCycleCode({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type ProposalCyclesResourceGetProposalCycleDatesPathParams = {
   /**
    * @format int64
@@ -13829,6 +13953,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/availableResources/{resourceName}/total";
       operationId: "availableResourcesResourceGetCycleResourceTotal";
       variables: AvailableResourcesResourceGetCycleResourceTotalVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/code";
+      operationId: "proposalCyclesResourceGetProposalCycleCode";
+      variables: ProposalCyclesResourceGetProposalCycleCodeVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/dates";
