@@ -1,8 +1,7 @@
 import {ReactElement} from "react";
 import {
-    ActionIcon,
     AppShell,
-    Burger,
+    Burger, Button,
     Grid,
     Group, Modal, ScrollArea,
     Tooltip, useMantineTheme
@@ -62,13 +61,14 @@ export default function ProposalManagerStartPage() : ReactElement {
                                 label={"go to proposal editor view"}
                                 openDelay={OPEN_DELAY}
                             >
-                                <ActionIcon
+                                <Button
                                     onClick={() => {navigate("/")}}
                                     color={"pink"}
                                     variant={"subtle"}
+                                    rightSection={<IconLicense />}
                                 >
-                                    <IconLicense />
-                                </ActionIcon>
+                                    Proposal Editor
+                                </Button>
                             </Tooltip>
                             {HaveRole(["obs_administration"]) &&
                             <AddButton toolTipLabel={"new proposal cycle"}

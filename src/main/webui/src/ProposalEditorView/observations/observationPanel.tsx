@@ -3,7 +3,7 @@ import {
 } from 'src/generated/proposalToolComponents';
 import {useParams} from "react-router-dom";
 import ObservationRow, { observationTableHeader } from './observationTable.tsx';
-import {Container, Grid, Group, List, Space, Table} from "@mantine/core";
+import {Container, Group, List, Space, Table} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import { ReactElement } from 'react';
@@ -167,17 +167,12 @@ function Observations() {
         return (
             <PanelFrame>
                 <Header/>
-                <Grid>
-                   <Grid.Col span={10}></Grid.Col>
-                   <ContextualHelpButton messageId="MaintObsList" />
-                </Grid>
-
+                <ContextualHelpButton messageId="MaintObsList" />
                 <TableGenerator/>
                 <Space h={"xl"}/>
-                <Grid>
-                   <Grid.Col span={10}></Grid.Col>
+                <Group justify={'flex-end'}>
                     <ObservationEditModal/>
-                </Grid>
+                </Group>
             </PanelFrame>
         )
     }
