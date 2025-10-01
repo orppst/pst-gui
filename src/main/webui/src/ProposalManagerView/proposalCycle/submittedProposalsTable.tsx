@@ -25,9 +25,8 @@ type SubmittedTableRowProps = {
     index: number
 }
 
-const codeMutation = useSubmittedProposalResourceReplaceCode();
-
 function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElement {
+    const codeMutation = useSubmittedProposalResourceReplaceCode();
 
     const submittedProposal =
         useSubmittedProposalResourceGetSubmittedProposal({
@@ -42,65 +41,42 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
     const [editModalOpen, setEditModalOpen] = useState(false)
     const queryClient = useQueryClient();
 
-    const EditCodeModal = () => {
-        interface SubmittedProposalCode {
-            code: string
+    interface SubmittedProposalCode {
+        code: string
+    }
+    const form = useForm<SubmittedProposalCode>({
+        initialValues: {
+            code: 'Loading...'
+        },
+        validate: {
+            code: (value) =>
+                value && value.length < 1 ? 'The code cannot be empty' : null
         }
-        const form = useForm<SubmittedProposalCode>({
-            mode: "controlled",
-            initialValues: {
-                code: submittedProposal.data?.proposalCode!
-            },
-            validate: {
-                code: (value) =>
-                    value && value.length < 1 ? 'The code cannot be empty' : null
-            }
-        })
+    })
 
-        const handleSubmit
-            = form.onSubmit((values) => {
-                codeMutation.mutate({
-                    pathParams: {cycleCode: rowProps.cycleCode,
-                        submittedProposalId: rowProps.submittedProposalId
-                    },
-                    queryParams: {proposalCode: values.code}
+    const handleSubmit
+        = form.onSubmit((val) => {
+            codeMutation.mutate({
+                pathParams: {cycleCode: rowProps.cycleCode,
+                    submittedProposalId: rowProps.submittedProposalId
                 },
-                {
-                    onSuccess: () => {
-                        notifySuccess("Proposal Code Update", "success");
-                        queryClient.invalidateQueries({}).then();
-                        setReviewsCompleteAndLocked(false)
-                    },
-                    onError: (error) => {
-                        notifyError("Failed to change code", getErrorMessage(error))
-                        setReviewsCompleteAndLocked(false)
-                    }
-                })
+                queryParams: {proposalCode: val.code}
+            },
+            {
+                onSuccess: () => {
+                    notifySuccess("Proposal Code Update", "Code updated");
+                    queryClient.invalidateQueries({}).then();
+                    setEditModalOpen(false);
+                },
+                onError: (error) => {
+                    notifyError("Failed to change code", getErrorMessage(error))
+                }
             })
-
-        return (
-            <Modal
-                opened={editModalOpen}
-                onClose={() => setEditModalOpen(false)}
-                title={"Change Proposal Code"}
-            >
-                <form onSubmit={handleSubmit}>
-                    <Stack>
-                        <TextInput
-                            label={"Proposal code"}
-                            name="Proposal code"
-                            maxLength={MAX_CHARS_FOR_INPUTS}
-                            {...form.getInputProps('proposalCode')}
-                            />
-                        <FormSubmitButton form={form}></FormSubmitButton>
-                    </Stack>
-                </form>
-            </Modal>
-        )
-    };
+        })
 
     useEffect(() => {
         if (submittedProposal.status === 'success') {
+            form.values.code = submittedProposal.data?.proposalCode!;
             let numReviewsComplete : number = 0
             submittedProposal.data?.reviews?.forEach(review => {
                 if(new Date(review.reviewDate!).getTime() > 0) {
@@ -117,7 +93,7 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
 
             setProposalAccepted(submittedProposal.data?.successful!)
         }
-    }, [submittedProposal]);
+    }, [submittedProposal.status]);
 
     if (submittedProposal.isError) {
         return (
@@ -137,7 +113,22 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
 
     return (
         <Table.Tr>
-            <EditCodeModal/>
+            <Modal
+                opened={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                title={"Change Proposal Code"}
+            >
+                <form onSubmit={handleSubmit}>
+                    <Stack>
+                        <TextInput
+                            label={"Proposal code"}
+                            maxLength={MAX_CHARS_FOR_INPUTS}
+                            {...form.getInputProps('code')}
+                        />
+                        <FormSubmitButton form={form} />
+                    </Stack>
+                </form>
+            </Modal>
             <Table.Td>
                 <EditButton
                     toolTipLabel={'Change proposal code'}
