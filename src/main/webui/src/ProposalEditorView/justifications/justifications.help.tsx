@@ -68,16 +68,17 @@ function JustificationsHelp(
                         0.5 for the single figure cases, and is an even division of the total text-width for
                         the multiple figure cases. If supplied, the width parameter for the multiple figure
                         cases applies to each of the images in the figure, rather than the whole figure itself.
-                        The astute among you will have deduced then that the product of the width value with the
-                        number of figures must not exceed 1, else problems.
                         The 'filename' parameter should match the name of the image file that you wish to
                         insert, excluding the dot extension.
                     </Text>
                     <Text size={"sm"}>
                         Notice that the two figure and three figure functions will place the images in a
                         single row, whereas the four figure function will place the images in a two-by-two
-                        arrangement. For the multiple figure functions, each image will be labelled
-                        '(a)' through to '(d)' where appropriate.
+                        arrangement.The astute among you will have deduced then that the product of the width
+                        value with the number of figures must not exceed one, else problems. Except in the case
+                        of the four-figure command due to the two-by-two arrangement i.e., two times the width
+                        parameter must not exceed one. For the multiple figure functions, each image will be
+                        labelled '(a)' through to '(d)' where appropriate.
                     </Text>
                     <Text size={"sm"}>
                         For the 'textwrapfigure' command an additional parameter specifies the position of
