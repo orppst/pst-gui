@@ -10,12 +10,13 @@ import {Link, useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ReactElement} from "react";
+import {ReactElement, useEffect} from "react";
 import React from 'react';
 
 export default function ValidationOverview(props: {
     cycle: number,
-    smallScreen?: boolean
+    smallScreen?: boolean,
+    setProposalCheck: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
 
     const { selectedProposalCode } = useParams();
@@ -35,6 +36,12 @@ export default function ValidationOverview(props: {
     const observatory = useProposalCyclesResourceGetProposalCycleObservatory({
             pathParams: {cycleCode: props.cycle}
         })
+
+    useEffect(() => {
+        if (validateProposal.status === 'success') {
+            props.setProposalCheck(validateProposal.data.isValid!)
+        }
+    }, [validateProposal]);
 
     if (validateProposal.isLoading || cycleTitle.isLoading || cycleDates.isLoading || observatory.isLoading) {
         return(
