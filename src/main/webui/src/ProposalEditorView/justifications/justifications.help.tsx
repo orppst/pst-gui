@@ -1,5 +1,6 @@
 import {ReactElement} from "react";
 import {Container, List, ScrollArea, Stack, Text} from "@mantine/core";
+import {MAX_CHARS_FOR_JUSTIFICATION} from "../../constants.tsx";
 
 export default
 function JustificationsHelp(
@@ -17,6 +18,12 @@ function JustificationsHelp(
         <Container>
             <ScrollArea h={vpHeight * 0.75} offsetScrollbars scrollbars={"y"}>
                 <Stack>
+                    {MAX_CHARS_FOR_JUSTIFICATION < 8000 &&
+                        <Text size={"sm"} c={'red'}>
+                            There is currently a limit of {MAX_CHARS_FOR_JUSTIFICATION} characters set for both
+                            the scientific and technical justifications.
+                        </Text>
+                    }
                     <Text size={"lg"} c={"orange"} fw={700}>
                         Justification Flavours
                     </Text>
@@ -32,6 +39,7 @@ function JustificationsHelp(
                         justification to tailor it to each observatory. Cloning the proposal maybe the
                         most convenient way to do this.)
                     </Text>
+
                     <Text size={"lg"} c={"orange"} fw={700}>
                         LaTeX
                     </Text>
@@ -82,7 +90,7 @@ function JustificationsHelp(
                     </Text>
                     <Text size={"sm"}>
                         For the 'textwrapfigure' command an additional parameter specifies the position of
-                        figure you want to text-wrap. Either 'l' or 'L' for the image on the left,
+                        the figure you want to text-wrap. Either 'l' or 'L' for the image on the left,
                         or 'r' or 'R' for the image on the right. The uppercase version allows the image to
                         float, whereas the lowercase version means exactly here. (Our command uses the
                         'wrapfigure' environment from the 'wrapfig' package).
