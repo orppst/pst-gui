@@ -1,23 +1,27 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Group, Stack, Text} from "@mantine/core";
+import {Group, Stack, Text, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useParams} from "react-router-dom";
 import {
-    useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceGetProposalCycleDates, 
     useProposalCyclesResourceReplaceCycleDeadline,
     useProposalCyclesResourceReplaceCycleSessionEnd,
-    useProposalCyclesResourceReplaceCycleSessionStart
+    useProposalCyclesResourceReplaceCycleSessionStart, useProposalCyclesResourceReplaceCycleTitle
 } from "../../generated/proposalToolComponents.ts";
-import {JSON_SPACES} from "../../constants.tsx";
+import {JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import {useQueryClient} from "@tanstack/react-query";
+import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
+        title: string,
         submissionDeadline: Date | null,
         sessionStart: Date | null,
         sessionEnd: Date | null
@@ -28,22 +32,28 @@ export default function CycleDatesPanel() : ReactElement {
     }
 
     const {selectedCycleCode} = useParams();
-    const [proposalCycleTitle, setCycleTitle] = useState("Loading...")
-    const {data, error, isLoading, status} =
+    const [cycleTitle, setCycleTitle] = useState("Loading...")
+    const [submitting, setSubmitting] = useState(false);
+    const dates =
         useProposalCyclesResourceGetProposalCycleDates(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
         );
+
+    const {fetcherOptions} = useProposalToolContext();
 
     const form = useForm<updateDatesForm>(
         {
             validateInputOnChange: true,
             initialValues: {
+                title: cycleTitle,
                 submissionDeadline: null,
                 sessionStart: null,
                 sessionEnd: null
             },
 
             validate: {
+                title: (value : string) => (
+                    value.length < 1 ? 'Title cannot be blank' : null),
                 submissionDeadline:
                     value => (value === null ? 'Loading...' : null),
                 sessionStart:
@@ -54,19 +64,39 @@ export default function CycleDatesPanel() : ReactElement {
         }
     );
 
-    useEffect(() => {
-        if (status === 'success') {
-            setCycleTitle(data?.title as string);
-            form.values.submissionDeadline = new Date(data?.submissionDeadline as string);
-            form.values.sessionStart = new Date(data?.observationSessionStart as string);
-            form.values.sessionEnd = new Date(data?.observationSessionEnd as string);
-        }
-    }, [status,data]);
+    const queryClient = useQueryClient()
 
-    if (error) {
+    const replaceTitleMutation = useProposalCyclesResourceReplaceCycleTitle({
+        onMutate: () => {
+            setSubmitting(true);
+        },
+        onError: (error) => {
+            console.error("An error occurred trying to update the title");
+            notifyError("Update failed", getErrorMessage(error));
+            setSubmitting(false);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries()
+                .then(()=> setSubmitting(false));
+            notifySuccess("Update title", "Update successful");
+            form.resetDirty();
+        }
+    });
+
+    useEffect(() => {
+        if (dates.status === 'success') {
+            setCycleTitle(dates.data?.title as string);
+            form.values.title = dates.data.title as string;
+            form.values.submissionDeadline = new Date(dates.data?.submissionDeadline as string);
+            form.values.sessionStart = new Date(dates.data?.observationSessionStart as string);
+            form.values.sessionEnd = new Date(dates.data?.observationSessionEnd as string);
+        }
+    }, [dates.status,dates.data]);
+
+    if (dates.error) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(dates.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
@@ -99,7 +129,6 @@ export default function CycleDatesPanel() : ReactElement {
                 pathParams: {cycleCode: Number(selectedCycleCode)},
                 body: form.values.sessionEnd?.getTime().toString()
             });
-            form.resetDirty();
         },
         onError: (error) => {
             notifyError("Update session start error", getErrorMessage(error));
@@ -115,11 +144,15 @@ export default function CycleDatesPanel() : ReactElement {
 
     return (
         <PanelFrame>
-            <PanelHeader isLoading={isLoading} itemName={proposalCycleTitle} panelHeading={"Dates"}/>
+            <PanelHeader isLoading={dates.isLoading} itemName={cycleTitle} panelHeading={"Dates"}/>
 
             <form onSubmit={handleSave}>
                 <DatesProvider settings={{timezone: 'UTC'}}>
                     <Stack>
+                        <TextInput name="title"
+                                   maxLength={MAX_CHARS_FOR_INPUTS}
+                                   {...form.getInputProps('title')}/>
+                        <MaxCharsForInputRemaining length={form.values.title.length} />
                         <Group justify={"center"}>
                             <Text size={"sm"} c={"teal"}> Dates and times are treated as UTC</Text>
                         </Group>

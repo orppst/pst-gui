@@ -155,13 +155,13 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          onClick={()=>setActive("Title" + cycle.code)}
                 />}
                 {HaveRole(["tac_admin"]) &&
-                <NavLink to={"cycle/" + cycle.dbid + "/dates"}
+                <NavLink to={"cycle/" + cycle.dbid + "/details"}
                          component={Link}
-                         key={"Dates"}
-                         label={"Dates"}
+                         key={"Details"}
+                         label={"Details"}
                          leftSection={<IconCalendar/>}
-                         active={"Dates" + cycle.code === active}
-                         onClick={()=>setActive("Dates" + cycle.code)}
+                         active={"Details" + cycle.code === active}
+                         onClick={()=>setActive("Details" + cycle.code)}
                 />}
                 {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/tac"}
