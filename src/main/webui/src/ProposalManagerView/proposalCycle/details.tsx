@@ -5,7 +5,8 @@ import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useParams} from "react-router-dom";
 import {
-    useProposalCyclesResourceGetProposalCycleDates, 
+    useProposalCyclesResourceGetProposalCycleCode,
+    useProposalCyclesResourceGetProposalCycleDates,
     useProposalCyclesResourceReplaceCycleDeadline,
     useProposalCyclesResourceReplaceCycleSessionEnd,
     useProposalCyclesResourceReplaceCycleSessionStart, useProposalCyclesResourceReplaceCycleTitle
@@ -15,13 +16,14 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
-import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+//import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 
 export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
         title: string,
+        code: string,
         submissionDeadline: Date | null,
         sessionStart: Date | null,
         sessionEnd: Date | null
@@ -33,19 +35,25 @@ export default function CycleDatesPanel() : ReactElement {
 
     const {selectedCycleCode} = useParams();
     const [cycleTitle, setCycleTitle] = useState("Loading...")
+    const [code, setCode] = useState("Loading...")
     const [submitting, setSubmitting] = useState(false);
     const dates =
         useProposalCyclesResourceGetProposalCycleDates(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
         );
+    const proposalCycleCode =
+        useProposalCyclesResourceGetProposalCycleCode(
+            {pathParams: {cycleCode: Number(selectedCycleCode)}}
+        );
 
-    const {fetcherOptions} = useProposalToolContext();
+    //const {fetcherOptions} = useProposalToolContext();
 
     const form = useForm<updateDatesForm>(
         {
             validateInputOnChange: true,
             initialValues: {
-                title: cycleTitle,
+                title: 'Loading...',
+                code: 'Loading...',
                 submissionDeadline: null,
                 sessionStart: null,
                 sessionEnd: null
@@ -54,6 +62,8 @@ export default function CycleDatesPanel() : ReactElement {
             validate: {
                 title: (value : string) => (
                     value.length < 1 ? 'Title cannot be blank' : null),
+                code: (value : string) => (
+                    value.length < 1 ? 'Code cannot be blank' : null),
                 submissionDeadline:
                     value => (value === null ? 'Loading...' : null),
                 sessionStart:
@@ -97,6 +107,22 @@ export default function CycleDatesPanel() : ReactElement {
         return (
             <PanelFrame>
                 <pre>{JSON.stringify(dates.error, null, JSON_SPACES)}</pre>
+            </PanelFrame>
+        );
+    }
+
+    useEffect(() => {
+        if(proposalCycleCode.status === 'success'
+            && proposalCycleCode.data !== undefined) {
+            setCode(proposalCycleCode.data as string);
+            form.values.code = code;
+        }
+    }, [proposalCycleCode.status, proposalCycleCode.data]);
+
+    if (proposalCycleCode.error) {
+        return (
+            <PanelFrame>
+                <pre>{JSON.stringify(proposalCycleCode.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
@@ -150,9 +176,14 @@ export default function CycleDatesPanel() : ReactElement {
                 <DatesProvider settings={{timezone: 'UTC'}}>
                     <Stack>
                         <TextInput name="title"
+                                   label={'Title'}
                                    maxLength={MAX_CHARS_FOR_INPUTS}
                                    {...form.getInputProps('title')}/>
                         <MaxCharsForInputRemaining length={form.values.title.length} />
+                        <TextInput name="code"
+                                   label={'Unique code'}
+                                   maxLength={32}
+                                   {...form.getInputProps('code')}/>
                         <Group justify={"center"}>
                             <Text size={"sm"} c={"teal"}> Dates and times are treated as UTC</Text>
                         </Group>

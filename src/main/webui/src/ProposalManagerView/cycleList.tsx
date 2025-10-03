@@ -12,7 +12,7 @@ import {
 import {
     IconBike,
     IconCalendar, IconEdit,
-    IconLetterT, IconSquareChevronsRight, IconThumbUp,
+    IconSquareChevronsRight, IconThumbUp,
     IconUfo, IconUserPin,
     IconUsersGroup
 } from "@tabler/icons-react";
@@ -145,15 +145,6 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"Overview" + cycle.code === active}
                          onClick={()=>setActive("Overview" + cycle.code)}
                 />
-                {HaveRole(["tac_admin"]) &&
-                <NavLink to={"cycle/" + cycle.dbid + "/title"}
-                         component={Link}
-                         key={"Title"}
-                         label={"Title"}
-                         leftSection={<IconLetterT/>}
-                         active={"Title" + cycle.code === active}
-                         onClick={()=>setActive("Title" + cycle.code)}
-                />}
                 {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/details"}
                          component={Link}
