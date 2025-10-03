@@ -46,7 +46,9 @@ function SubmissionForm() :
     //for the Stepper
     const [activeStep, setActiveStep] = useState(0);
 
-    const [initialObservationModeTuple, setInitialObservationModeTuple] = useState<ObservationModeTuple[]>([]);
+    const [initialModeTuple, setInitialModeTuple] = useState<ObservationModeTuple[]>([]);
+
+    const [proposalCheck, setProposalCheck] = useState<boolean>(false);
 
     const {fetcherOptions} = useProposalToolContext();
 
@@ -71,7 +73,7 @@ function SubmissionForm() :
     const form : UseFormReturnType<SubmissionFormValues> = useForm({
         initialValues: {
             selectedCycle: 0,
-            selectedModes: initialObservationModeTuple
+            selectedModes: initialModeTuple
         },
         validate: (values) => {
             if (activeStep === 0) {
@@ -125,10 +127,12 @@ function SubmissionForm() :
                 }
             ))
 
-            setInitialObservationModeTuple(targetTuples.concat(calibrationTuples))
+            setInitialModeTuple(targetTuples.concat(calibrationTuples))
 
-            form.setFieldValue('selectedModes', initialObservationModeTuple)
+            form.setFieldValue('selectedModes', initialModeTuple)
         }
+        //on initial load this does not seem to trigger on the 'status's alone,
+        //use 'activeStep' as a dependency to get it to work
     }, [targetObservations.status, calibrationObservations.status]);
 
     useEffect(() => {
@@ -142,17 +146,25 @@ function SubmissionForm() :
 
     useEffect(() => {
         //on cycle change reset the selectedModes to initial state
-        form.setFieldValue('selectedModes', initialObservationModeTuple)
+        form.setFieldValue('selectedModes', initialModeTuple)
 
     }, [form.getValues().selectedCycle]);
-
 
     //for the Stepper
     const nextStep = () =>
         setActiveStep((current: number) => {
+
+            //prevents advancement to the next step on invalid proposal
+            if (current == 1 && !proposalCheck) {
+
+                return current;
+            }
+
+            //prevents advancement to the next step on invalid form fields
             if (form.validate().hasErrors) {
                 return current;
             }
+
             return current < maxSteps ? current + 1 : current;
         });
 
@@ -273,6 +285,7 @@ function SubmissionForm() :
                     <Select
                         label={"Please select a proposal cycle"}
                         data={cyclesData}
+                        allowDeselect={false}
                         {...form.getInputProps('selectedCycle')}
                     />
                 </Stepper.Step>
@@ -284,6 +297,7 @@ function SubmissionForm() :
                     <ValidationOverview
                         cycle={form.getValues().selectedCycle}
                         smallScreen={smallScreen}
+                        setProposalCheck={setProposalCheck}
                     />
                 </Stepper.Step>
 
@@ -355,11 +369,28 @@ function SubmissionForm() :
                         />
                         :
                         activeStep !== maxSteps &&
-                        <Button
-                            onClick={nextStep}
+                        <Tooltip
+                            label={form.getValues().selectedCycle === 0 ? 'Please select a cycle' :
+                                (activeStep === 1 && !proposalCheck) ?
+                                    'Your proposal is not ready, please check the errors' :
+                                    (activeStep == 2 && form.getValues().selectedModes.some(
+                                        e => e.modeId === 0)) ?
+                                        'All observations require a mode' :
+                                        'Go to next step'}
+                            openDelay={OPEN_DELAY}
+                            closeDelay={CLOSE_DELAY}
                         >
-                            Next step
-                        </Button>
+                            <Button
+                                onClick={nextStep}
+                                disabled={form.getValues().selectedCycle === 0 ||
+                                    (activeStep === 1 && !proposalCheck) ||
+                                    (activeStep == 2 && form.getValues().selectedModes.some(
+                                            e => e.modeId === 0)
+                                    )}
+                            >
+                                Next step
+                            </Button>
+                        </Tooltip>
 
                 }
             </Group>

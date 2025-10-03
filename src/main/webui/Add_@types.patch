@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2025-08-22 10:19:52
-+++ proposalToolSchemas.ts	2025-09-04 10:36:20
+--- proposalToolSchemas.ts.orig	2025-10-01 13:36:14
++++ proposalToolSchemas.ts	2025-10-01 13:41:42
 @@ -56,6 +56,8 @@
   * A block of resources that have been allocated
   */
