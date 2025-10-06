@@ -60,7 +60,6 @@ import ReviewsPanel from "./ProposalManagerView/reviews/ReviewsPanel.tsx";
 import AllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
-import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 import ErrorPage from "./errorHandling/error-page.jsx"
 import {PanelFrame} from "./commonPanel/appearance.tsx";
@@ -151,11 +150,6 @@ function App2(): ReactElement {
                     {
                         path: "cycle/:selectedCycleCode",
                         element: <CycleOverviewPanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
-                        path: "cycle/:selectedCycleCode/title",
-                        element: <CycleTitlePanel />,
                         errorElement: <ErrorPage />,
                     },
                     {

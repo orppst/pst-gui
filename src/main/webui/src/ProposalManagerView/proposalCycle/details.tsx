@@ -97,6 +97,7 @@ export default function CycleDatesPanel() : ReactElement {
     useEffect(() => {
         if(proposalCycleCode.status === 'success') {
             setCode(proposalCycleCode.data!);
+            console.log(code);
             form.values.code = proposalCycleCode.data!;
         }
     }, [proposalCycleCode.status, proposalCycleCode.data]);
