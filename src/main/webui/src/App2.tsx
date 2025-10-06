@@ -55,12 +55,11 @@ import JustificationsPanel from "./ProposalEditorView/justifications/Justificati
 import {ProposalList} from "./ProposalList";
 import ProposalManagerStartPage from "./ProposalManagerView/startPage.tsx";
 import CycleOverviewPanel from "./ProposalManagerView/proposalCycle/overview.tsx";
-import CycleDatesPanel from "./ProposalManagerView/proposalCycle/dates.tsx";
+import CycleDatesPanel from "./ProposalManagerView/proposalCycle/details.tsx";
 import ReviewsPanel from "./ProposalManagerView/reviews/ReviewsPanel.tsx";
 import AllocationsPanel from "./ProposalManagerView/allocations/allocationsPanel.tsx";
 import CycleTACPanel from "./ProposalManagerView/TAC/tacPanel.tsx";
 import CycleTACAddMemberPanel from "./ProposalManagerView/TAC/tacNewMember.tsx"
-import CycleTitlePanel from "./ProposalManagerView/proposalCycle/title.tsx";
 import AssignReviewersPanel from "./ProposalManagerView/assignReviewers/AssignReviewersPanel.tsx";
 import ErrorPage from "./errorHandling/error-page.jsx"
 import {PanelFrame} from "./commonPanel/appearance.tsx";
@@ -154,11 +153,6 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/title",
-                        element: <CycleTitlePanel />,
-                        errorElement: <ErrorPage />,
-                    },
-                    {
                         path: "cycle/:selectedCycleCode/tac",
                         element: <CycleTACPanel />,
                         errorElement: <ErrorPage />,
@@ -169,7 +163,7 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/dates",
+                        path: "cycle/:selectedCycleCode/details",
                         element: <CycleDatesPanel />,
                         errorElement: <ErrorPage />,
                     },
