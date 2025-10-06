@@ -18,7 +18,7 @@ export const TABLE_HIGH_LIGHT_COLOR = 'var(--mantine-color-blue-light)';
 
 export const MAX_CHARS_FOR_INPUTS = 255;
 
-export const MAX_CHARS_FOR_JUSTIFICATION = 4096;
+export const MAX_CHARS_FOR_JUSTIFICATION = 10000;
 
 export const MAX_CHARS_FOR_REVIEW = 2048;
 
@@ -109,4 +109,8 @@ export const SIMBAD_TIMEOUT = 5000; //milliseconds
 export const DEBOUNCE_500_ms = 500; //milliseconds
 export const DEBOUNCE_1000_ms = 1000; //milliseconds
 
-export const EMERLIN_JUSTIFICATION_PAGE_LIMIT = 4;
+// Ultimately the length of the Justifications is restricted by the character limits
+// set in the database, here we set a value that should avoid the page limit warning
+// message from displaying (perhaps caused by having several large figures, or a
+// long bibliography as these don't count towards the character limit).
+export const EMERLIN_JUSTIFICATION_PAGE_LIMIT = 10;

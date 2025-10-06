@@ -152,7 +152,7 @@ function JustificationsResourceFiles(
                     {
                         (props) =>
                             <UploadButton
-                                toolTipLabel={"upload resource file: .bib, .png, .jpg, .eps only"}
+                                toolTipLabel={"upload resource file: .bib, .png, .jpg, .eps, .pdf only"}
                                 label={"Add a Resource File"}
                                 onClick={props.onClick}
                                 variant={"filled"}
