@@ -6,7 +6,7 @@ import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useParams} from "react-router-dom";
 import {
     useProposalCyclesResourceGetProposalCycleCode,
-    useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceReplaceCycleCode,
     useProposalCyclesResourceReplaceCycleDeadline,
     useProposalCyclesResourceReplaceCycleSessionEnd,
     useProposalCyclesResourceReplaceCycleSessionStart, useProposalCyclesResourceReplaceCycleTitle
@@ -16,7 +16,7 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
-//import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 
@@ -46,7 +46,7 @@ export default function CycleDatesPanel() : ReactElement {
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
         );
 
-    //const {fetcherOptions} = useProposalToolContext();
+    const {fetcherOptions} = useProposalToolContext();
 
     const form = useForm<updateDatesForm>(
         {
@@ -76,23 +76,6 @@ export default function CycleDatesPanel() : ReactElement {
 
     const queryClient = useQueryClient()
 
-    const replaceTitleMutation = useProposalCyclesResourceReplaceCycleTitle({
-        onMutate: () => {
-            setSubmitting(true);
-        },
-        onError: (error) => {
-            console.error("An error occurred trying to update the title");
-            notifyError("Update failed", getErrorMessage(error));
-            setSubmitting(false);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries()
-                .then(()=> setSubmitting(false));
-            notifySuccess("Update title", "Update successful");
-            form.resetDirty();
-        }
-    });
-
     useEffect(() => {
         if (dates.status === 'success') {
             setCycleTitle(dates.data?.title as string);
@@ -112,10 +95,9 @@ export default function CycleDatesPanel() : ReactElement {
     }
 
     useEffect(() => {
-        if(proposalCycleCode.status === 'success'
-            && proposalCycleCode.data !== undefined) {
-            setCode(proposalCycleCode.data as string);
-            form.values.code = code;
+        if(proposalCycleCode.status === 'success') {
+            setCode(proposalCycleCode.data!);
+            form.values.code = proposalCycleCode.data!;
         }
     }, [proposalCycleCode.status, proposalCycleCode.data]);
 
@@ -127,10 +109,46 @@ export default function CycleDatesPanel() : ReactElement {
         );
     }
 
+    const replaceCycleCode = useProposalCyclesResourceReplaceCycleCode({
+        onSuccess: () => {
+            queryClient.invalidateQueries()
+                .then(()=> setSubmitting(false));
+            notifySuccess("Update details", "Update successful");
+            form.resetDirty();
+        },
+        onError: (error) => {
+            console.error("An error occurred trying to update the code");
+            notifyError("Update failed", getErrorMessage(error));
+            setSubmitting(false);
+        }
+    })
+
+    const replaceTitleMutation = useProposalCyclesResourceReplaceCycleTitle({
+        onError: (error) => {
+            console.error("An error occurred trying to update the title");
+            notifyError("Update failed", getErrorMessage(error));
+            setSubmitting(false);
+        },
+        onSuccess: () => {
+            replaceCycleCode.mutate({
+                pathParams: {cycleCode: Number(selectedCycleCode)},
+                // @ts-ignore
+                body: form.values.code,
+                // @ts-ignore
+                headers: {"Content-Type": "text/plain", ...fetcherOptions.headers}
+            })
+        }
+    });
+
     const replaceDeadlineMutation = useProposalCyclesResourceReplaceCycleDeadline({
         onSuccess: () => {
-            notifySuccess("Update dates", "Changes saved");
-            form.resetDirty();
+            replaceTitleMutation.mutate({
+                pathParams: {cycleCode: Number(selectedCycleCode)},
+                // @ts-ignore
+                body: form.values.title,
+                // @ts-ignore
+                headers: {"Content-Type": "text/plain", ...fetcherOptions.headers}
+            })
         },
         onError: (error) => {
             notifyError("Update session deadline error", getErrorMessage(error));
@@ -150,6 +168,9 @@ export default function CycleDatesPanel() : ReactElement {
     });
 
     const replaceCycleStartMutation = useProposalCyclesResourceReplaceCycleSessionStart({
+        onMutate: () => {
+            setSubmitting(true);
+        },
         onSuccess: () => {
             replaceCycleEndMutation.mutate({
                 pathParams: {cycleCode: Number(selectedCycleCode)},
@@ -208,7 +229,7 @@ export default function CycleDatesPanel() : ReactElement {
                             minDate={new Date()}
                             {...form.getInputProps('sessionEnd')}
                         />
-                        <FormSubmitButton form={form} />
+                        <FormSubmitButton form={form} disabled={!submitting && !form.isDirty()}/>
                     </Stack>
                 </DatesProvider>
 
