@@ -2,7 +2,7 @@ import {ReactElement} from "react";
 import {Box, List, Table, Tooltip} from "@mantine/core";
 import {
     useProposalCyclesResourceGetMyTACMemberProposalCycles,
-    useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceGetProposalCycleDetails,
     useSubmittedProposalResourceGetSubmittedProposals,
     useTACResourceGetCommitteeMembers,
 } from "../../generated/proposalToolComponents.ts";
@@ -50,7 +50,7 @@ function GetReviewers(props:CycleRowProps) {
 }
 
 function TacCycleTableRow(props:CycleRowProps) {
-    const {data, error, isLoading} = useProposalCyclesResourceGetProposalCycleDates(
+    const {data, error, isLoading} = useProposalCyclesResourceGetProposalCycleDetails(
         {pathParams: {cycleCode: props.cycleId}});
 
     const tooltip = data?.observatory?.telescopes?.length + " telescopes";
@@ -72,8 +72,11 @@ function TacCycleTableRow(props:CycleRowProps) {
         const endDate = new Date(data!.observationSessionEnd!.substring(0,10));
         //Open cycles
         if(!props.inReview && deadlineDate > today){
-            return <Table.Tr><Tooltip label={tooltip}><Table.Td>{data?.observatory?.name}</Table.Td></Tooltip>
-                <Table.Td>{data?.title}</Table.Td>
+            return <Table.Tr>
+                <Tooltip label={tooltip}>
+                    <Table.Td>{data?.observatory?.name}</Table.Td>
+                </Tooltip>
+                <Table.Td>{data?.title} [{data?.code}]</Table.Td>
                 {<Table.Td>{data?.submissionDeadline?.substring(0, 10)}</Table.Td>}
                 <Table.Td>{data?.observationSessionStart?.substring(0, 10)}</Table.Td>
                 <Table.Td>{data?.observationSessionEnd?.substring(0, 10)}</Table.Td>
@@ -85,8 +88,11 @@ function TacCycleTableRow(props:CycleRowProps) {
         if(props.inReview
             && deadlineDate < today
             && endDate > today){
-            return <Table.Tr><Tooltip label={tooltip}><Table.Td>{data?.observatory?.name}</Table.Td></Tooltip>
-                <Table.Td>{data?.title}</Table.Td>
+            return <Table.Tr>
+                <Tooltip label={tooltip}>
+                    <Table.Td>{data?.observatory?.name}</Table.Td>
+                </Tooltip>
+                <Table.Td>{data?.title} [{data?.code}]</Table.Td>
                 <Table.Td>{data?.observationSessionStart?.substring(0, 10)}</Table.Td>
                 <Table.Td>{data?.observationSessionEnd?.substring(0, 10)}</Table.Td>
                 <Table.Td><GetCountSubmittedProposals cycleId={props.cycleId} /></Table.Td>
@@ -121,7 +127,7 @@ function TacCycles (): ReactElement {
             <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Observatory</Table.Th>
-                    <Table.Th>Name</Table.Th>
+                    <Table.Th>Name [code]</Table.Th>
                     <Table.Th>Deadline</Table.Th>
                     <Table.Th>Observing start</Table.Th>
                     <Table.Th>Observing end</Table.Th>
@@ -144,7 +150,7 @@ function TacCycles (): ReactElement {
             <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Observatory</Table.Th>
-                    <Table.Th>Name</Table.Th>
+                    <Table.Th>Name[code]</Table.Th>
                     <Table.Th>Observing start</Table.Th>
                     <Table.Th>Observing end</Table.Th>
                     <Table.Th>Submitted proposals</Table.Th>
