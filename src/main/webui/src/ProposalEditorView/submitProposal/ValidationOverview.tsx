@@ -87,12 +87,19 @@ export default function ValidationOverview(props: {
                     s.length > 0 &&
                     <React.Fragment key={index}>
                         {s.includes("No observations defined")||s.includes("A timing window for")?
-                            <NavLink to={"/proposal/"+selectedProposalCode+"/observations"} component={Link} label={s} c={p.color} />
+                            <NavLink to={"/proposal/"+selectedProposalCode+"/observations"}
+                                     component={Link} label={s} c={p.color} />
                             :s.includes("No targets defined")?
-                                <NavLink to={"/proposal/"+selectedProposalCode+"/targets"} component={Link} label={s} c={p.color}/>
+                                <NavLink to={"/proposal/"+selectedProposalCode+"/targets"}
+                                         component={Link} label={s} c={p.color}/>
                                 :s.includes("No technical goals defined")?
-                                    <NavLink to={"/proposal/"+selectedProposalCode+"/goals"} component={Link} label={s} c={p.color}/>
-                                    :<Text size={"sm"} c={p.color}>{s}</Text>}
+                                    <NavLink to={"/proposal/"+selectedProposalCode+"/goals"}
+                                             component={Link} label={s} c={p.color}/>
+                                        :s.includes("Justification PDF")?
+                                            <NavLink to={"/proposal/"+selectedProposalCode+"/justifications"}
+                                                component={Link} label={s} c={p.color}/>
+                                        :<Text size={"sm"} c={p.color}>{s}</Text>
+                        }
                     </React.Fragment>
                 ))}
             </Table.Td>)
