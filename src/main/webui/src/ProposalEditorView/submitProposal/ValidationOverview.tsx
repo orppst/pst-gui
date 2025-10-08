@@ -2,7 +2,7 @@ import {IconAlertCircle, IconCircleCheck, IconCircleX, IconInfoCircle} from '@ta
 import {Box, Divider, Loader, NavLink, Stack, Table, Text} from "@mantine/core";
 import {ICON_SIZE} from "src/constants.tsx";
 import {
-    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycleObservatory,
+    useProposalCyclesResourceGetProposalCycleDetails, useProposalCyclesResourceGetProposalCycleObservatory,
     useProposalCyclesResourceGetProposalCycleTitle,
     useProposalResourceValidateObservingProposal
 } from "src/generated/proposalToolComponents.ts";
@@ -30,7 +30,7 @@ export default function ValidationOverview(props: {
         pathParams: {cycleCode: props.cycle}
     })
 
-    const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
+    const cycleDates = useProposalCyclesResourceGetProposalCycleDetails(
         {pathParams: {cycleCode: props.cycle}});
 
     const observatory = useProposalCyclesResourceGetProposalCycleObservatory({

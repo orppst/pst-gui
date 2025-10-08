@@ -5,18 +5,14 @@ import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useParams} from "react-router-dom";
 import {
-    useProposalCyclesResourceGetProposalCycleCode,
-    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceReplaceCycleCode,
-    useProposalCyclesResourceReplaceCycleDeadline,
-    useProposalCyclesResourceReplaceCycleSessionEnd,
-    useProposalCyclesResourceReplaceCycleSessionStart, useProposalCyclesResourceReplaceCycleTitle
+    useProposalCyclesResourceGetProposalCycleDetails,
+    useProposalCyclesResourceUpdateProposalCycleDetails
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
-import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 
@@ -35,18 +31,11 @@ export default function CycleDatesPanel() : ReactElement {
 
     const {selectedCycleCode} = useParams();
     const [cycleTitle, setCycleTitle] = useState("Loading...")
-    const [code, setCode] = useState("Loading...")
     const [submitting, setSubmitting] = useState(false);
-    const dates =
-        useProposalCyclesResourceGetProposalCycleDates(
+    const details =
+        useProposalCyclesResourceGetProposalCycleDetails(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
         );
-    const proposalCycleCode =
-        useProposalCyclesResourceGetProposalCycleCode(
-            {pathParams: {cycleCode: Number(selectedCycleCode)}}
-        );
-
-    const {fetcherOptions} = useProposalToolContext();
 
     const form = useForm<updateDatesForm>(
         {
@@ -77,122 +66,59 @@ export default function CycleDatesPanel() : ReactElement {
     const queryClient = useQueryClient()
 
     useEffect(() => {
-        if (dates.status === 'success') {
-            setCycleTitle(dates.data?.title as string);
-            form.values.title = dates.data.title as string;
-            form.values.submissionDeadline = new Date(dates.data?.submissionDeadline as string);
-            form.values.sessionStart = new Date(dates.data?.observationSessionStart as string);
-            form.values.sessionEnd = new Date(dates.data?.observationSessionEnd as string);
+        if (details.status === 'success') {
+            setCycleTitle(details.data?.title as string);
+            form.values.title = details.data.title as string;
+            form.values.code = details.data?.code as string;
+            form.values.submissionDeadline = new Date(details.data?.submissionDeadline as string);
+            form.values.sessionStart = new Date(details.data?.observationSessionStart as string);
+            form.values.sessionEnd = new Date(details.data?.observationSessionEnd as string);
         }
-    }, [dates.status,dates.data]);
+    }, [details.status,details.data]);
 
-    if (dates.error) {
+    if (details.error) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(dates.error, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(details.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
 
-    useEffect(() => {
-        if(proposalCycleCode.status === 'success') {
-            setCode(proposalCycleCode.data!);
-            console.log(code);
-            form.values.code = proposalCycleCode.data!;
-        }
-    }, [proposalCycleCode.status, proposalCycleCode.data]);
-
-    if (proposalCycleCode.error) {
-        return (
-            <PanelFrame>
-                <pre>{JSON.stringify(proposalCycleCode.error, null, JSON_SPACES)}</pre>
-            </PanelFrame>
-        );
-    }
-
-    const replaceCycleCode = useProposalCyclesResourceReplaceCycleCode({
-        onSuccess: () => {
-            queryClient.invalidateQueries()
-                .then(()=> setSubmitting(false));
-            notifySuccess("Update details", "Update successful");
-            form.resetDirty();
-        },
-        onError: (error) => {
-            console.error("An error occurred trying to update the code");
-            notifyError("Update failed", getErrorMessage(error));
-            setSubmitting(false);
-        }
-    })
-
-    const replaceTitleMutation = useProposalCyclesResourceReplaceCycleTitle({
-        onError: (error) => {
-            console.error("An error occurred trying to update the title");
-            notifyError("Update failed", getErrorMessage(error));
-            setSubmitting(false);
-        },
-        onSuccess: () => {
-            replaceCycleCode.mutate({
-                pathParams: {cycleCode: Number(selectedCycleCode)},
-                // @ts-ignore
-                body: form.values.code,
-                // @ts-ignore
-                headers: {"Content-Type": "text/plain", ...fetcherOptions.headers}
-            })
-        }
-    });
-
-    const replaceDeadlineMutation = useProposalCyclesResourceReplaceCycleDeadline({
-        onSuccess: () => {
-            replaceTitleMutation.mutate({
-                pathParams: {cycleCode: Number(selectedCycleCode)},
-                // @ts-ignore
-                body: form.values.title,
-                // @ts-ignore
-                headers: {"Content-Type": "text/plain", ...fetcherOptions.headers}
-            })
-        },
-        onError: (error) => {
-            notifyError("Update session deadline error", getErrorMessage(error));
-        }
-    });
-
-    const replaceCycleEndMutation = useProposalCyclesResourceReplaceCycleSessionEnd({
-        onSuccess: () => {
-            replaceDeadlineMutation.mutate({
-                pathParams: {cycleCode: Number(selectedCycleCode)},
-                body: form.values.submissionDeadline?.getTime().toString()
-            });
-        },
-        onError: (error) => {
-            notifyError("Update session end error", getErrorMessage(error));
-        }
-    });
-
-    const replaceCycleStartMutation = useProposalCyclesResourceReplaceCycleSessionStart({
+    const updateCycleDetailsMutation = useProposalCyclesResourceUpdateProposalCycleDetails({
         onMutate: () => {
             setSubmitting(true);
         },
         onSuccess: () => {
-            replaceCycleEndMutation.mutate({
-                pathParams: {cycleCode: Number(selectedCycleCode)},
-                body: form.values.sessionEnd?.getTime().toString()
-            });
+            queryClient.invalidateQueries()
+                .then(()=> setSubmitting(false));
+            notifySuccess("Update details", "Update successful");
+            setSubmitting(false);
+            form.resetDirty();
         },
-        onError: (error) => {
-            notifyError("Update session start error", getErrorMessage(error));
+        onError: (error: unknown) => {
+            console.error("An error occurred trying to update the code");
+            notifyError("Update failed", getErrorMessage(error));
+            setSubmitting(false);
         }
     });
 
-    const handleSave = form.onSubmit((val) => {
-        replaceCycleStartMutation.mutate({
+    const handleSave = form.onSubmit(() => {
+        updateCycleDetailsMutation.mutate({
             pathParams: {cycleCode: Number(selectedCycleCode)},
-            body: val.sessionStart?.getTime().toString()
+            body: {
+                title: form.values.title,
+                code: form.values.code,
+                submissionDeadline: form.values.submissionDeadline?.getTime().toString(),
+                observationSessionStart: form.values.sessionStart?.getTime().toString(),
+                observationSessionEnd: form.values.sessionEnd?.getTime().toString(),
+                observatory: details.data?.observatory
+            }
         })
     });
 
     return (
         <PanelFrame>
-            <PanelHeader isLoading={dates.isLoading} itemName={cycleTitle} panelHeading={"Dates"}/>
+            <PanelHeader isLoading={details.isLoading} itemName={cycleTitle} panelHeading={"Dates"}/>
 
             <form onSubmit={handleSave}>
                 <DatesProvider settings={{timezone: 'UTC'}}>

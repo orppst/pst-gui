@@ -1264,8 +1264,9 @@ export type ProposalCycle = {
   allocatedProposals?: AllocatedProposal[];
 };
 
-export type ProposalCycleDates = {
+export type ProposalCycleSynopsis = {
   title?: string;
+  code?: string;
   submissionDeadline?: Date;
   observationSessionStart?: Date;
   observationSessionEnd?: Date;
