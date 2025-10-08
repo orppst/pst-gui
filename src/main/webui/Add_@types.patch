@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2025-10-01 13:36:14
-+++ proposalToolSchemas.ts	2025-10-01 15:14:09
+--- proposalToolSchemas.ts.orig	2025-10-07 16:01:57
++++ proposalToolSchemas.ts	2025-10-07 16:02:06
 @@ -56,6 +56,8 @@
   * A block of resources that have been allocated
   */
@@ -194,7 +194,7 @@
    /**
     * a human readable description of the cycle
     */
-@@ -1248,6 +1278,7 @@
+@@ -1249,6 +1279,7 @@
   * A review of a proposal
   */
  export type ProposalReview = {
@@ -202,7 +202,7 @@
    /**
     * assigned to review the proposal
     */
-@@ -1311,6 +1342,7 @@
+@@ -1312,6 +1343,7 @@
   * A real value with a unit.
   */
  export type RealQuantity = {
@@ -210,7 +210,7 @@
    /**
     * Must conform to definition of unit in VOUnit spec.
     */
-@@ -1342,6 +1374,7 @@
+@@ -1343,6 +1375,7 @@
   * A resource that will be consumed by allocating an observation from a proposal
   */
  export type Resource = {
@@ -218,7 +218,7 @@
    /**
     * a type of resource
     */
-@@ -1372,6 +1405,7 @@
+@@ -1373,6 +1406,7 @@
   * a type of resource
   */
  export type ResourceType = {
@@ -226,7 +226,7 @@
    /**
     * the name of the resource type
     */
-@@ -1384,6 +1418,7 @@
+@@ -1385,6 +1419,7 @@
   * assigned to review the proposal
   */
  export type Reviewer = {
@@ -234,7 +234,7 @@
    /**
     * person connected with the proposal
     */
-@@ -1415,6 +1450,8 @@
+@@ -1416,6 +1451,8 @@
    /**
     * Science oriented definition of a spectral window.
     */
@@ -243,7 +243,7 @@
    spectralWindowSetup?: SpectralWindowSetup;
    expectedSpectralLine?: ExpectedSpectralLine[];
  };
-@@ -1445,9 +1482,10 @@
+@@ -1446,9 +1483,10 @@
   * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
   */
  export type SpaceFrame = {
@@ -256,7 +256,7 @@
    refPosition?: RefLocation;
    /**
     * The spatial reference frame. Values MUST be selected from the controlled vocabulary at the given URL.
-@@ -1467,6 +1505,7 @@
+@@ -1468,6 +1506,7 @@
   * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
   */
  export type SpaceSys = {
@@ -264,7 +264,7 @@
    xmlId?: string;
    /**
     * Abstract head of coordinate spaces related to physical properties.
-@@ -1550,7 +1589,7 @@
+@@ -1551,7 +1590,7 @@
    /**
     * person connected with the proposal
     */
@@ -273,7 +273,7 @@
    uid?: string;
    inKeycloakRealm?: boolean;
  };
-@@ -1570,6 +1609,8 @@
+@@ -1571,6 +1610,8 @@
   * an instance of a proposal that has been submitted
   */
  export type SubmittedProposal = {
@@ -282,7 +282,7 @@
    xmlId?: string;
    /**
     * the proposal title
-@@ -1695,17 +1736,20 @@
+@@ -1696,17 +1737,20 @@
   * A target source
   */
  export type Target = {
@@ -303,7 +303,7 @@
    xmlId?: string;
    name?: string;
  };
-@@ -1714,6 +1758,7 @@
+@@ -1715,6 +1759,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -311,7 +311,7 @@
    xmlId?: string;
    /**
     * A reference to - The actual target of the observation
-@@ -1742,10 +1787,13 @@
+@@ -1743,10 +1788,13 @@
     */
    performance?: PerformanceParameters;
    spectrum?: ScienceSpectralWindow[];
@@ -325,7 +325,7 @@
    xmlId?: string;
    /**
     * telescope name
-@@ -1765,6 +1813,7 @@
+@@ -1766,6 +1814,7 @@
   * a set of telescopes that are operated together for an observation
   */
  export type TelescopeArray = {
@@ -333,7 +333,7 @@
    xmlId?: string;
    /**
     * the array name
-@@ -1832,6 +1881,10 @@
+@@ -1833,6 +1882,10 @@
   * particular time range
   */
  export type TimingWindow = {

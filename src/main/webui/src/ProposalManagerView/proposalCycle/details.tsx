@@ -5,11 +5,12 @@ import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useParams} from "react-router-dom";
 import {
-    useProposalCyclesResourceGetProposalCycleCode,
-    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceReplaceCycleCode,
+    useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceReplaceCycleCode,
     useProposalCyclesResourceReplaceCycleDeadline,
     useProposalCyclesResourceReplaceCycleSessionEnd,
-    useProposalCyclesResourceReplaceCycleSessionStart, useProposalCyclesResourceReplaceCycleTitle
+    useProposalCyclesResourceReplaceCycleSessionStart,
+    useProposalCyclesResourceReplaceCycleTitle
 } from "../../generated/proposalToolComponents.ts";
 import {JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
@@ -39,10 +40,6 @@ export default function CycleDatesPanel() : ReactElement {
     const [submitting, setSubmitting] = useState(false);
     const dates =
         useProposalCyclesResourceGetProposalCycleDates(
-            {pathParams: {cycleCode: Number(selectedCycleCode)}}
-        );
-    const proposalCycleCode =
-        useProposalCyclesResourceGetProposalCycleCode(
             {pathParams: {cycleCode: Number(selectedCycleCode)}}
         );
 
@@ -80,6 +77,9 @@ export default function CycleDatesPanel() : ReactElement {
         if (dates.status === 'success') {
             setCycleTitle(dates.data?.title as string);
             form.values.title = dates.data.title as string;
+            setCode(dates.data?.code as string);
+            console.log(code);
+            form.values.code = dates.data?.code as string;
             form.values.submissionDeadline = new Date(dates.data?.submissionDeadline as string);
             form.values.sessionStart = new Date(dates.data?.observationSessionStart as string);
             form.values.sessionEnd = new Date(dates.data?.observationSessionEnd as string);
@@ -90,22 +90,6 @@ export default function CycleDatesPanel() : ReactElement {
         return (
             <PanelFrame>
                 <pre>{JSON.stringify(dates.error, null, JSON_SPACES)}</pre>
-            </PanelFrame>
-        );
-    }
-
-    useEffect(() => {
-        if(proposalCycleCode.status === 'success') {
-            setCode(proposalCycleCode.data!);
-            console.log(code);
-            form.values.code = proposalCycleCode.data!;
-        }
-    }, [proposalCycleCode.status, proposalCycleCode.data]);
-
-    if (proposalCycleCode.error) {
-        return (
-            <PanelFrame>
-                <pre>{JSON.stringify(proposalCycleCode.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }

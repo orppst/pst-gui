@@ -1266,6 +1266,7 @@ export type ProposalCycle = {
 
 export type ProposalCycleDates = {
   title?: string;
+  code?: string;
   submissionDeadline?: Date;
   observationSessionStart?: Date;
   observationSessionEnd?: Date;
