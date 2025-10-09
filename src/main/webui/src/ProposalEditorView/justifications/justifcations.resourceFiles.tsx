@@ -98,11 +98,7 @@ function JustificationsResourceFiles(
 
     const handleRemoveFile = (fileName: string) => {
         removeResourceFile.mutate({
-            pathParams: {proposalCode: Number(selectedProposalCode)},
-            //@ts-ignore
-            body: fileName,
-            //@ts-ignore
-            headers: {"Content-Type": "text/plain", ...fetcherOptions.headers}
+            pathParams: {proposalCode: Number(selectedProposalCode), fileName: fileName},
         }, {
             onSuccess: () => {
                 notifySuccess("Removed file", "File: " + fileName + " deleted")
