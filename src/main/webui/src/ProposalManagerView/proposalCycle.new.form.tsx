@@ -21,6 +21,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
 
     interface NewCycleFormType {
         title: string,
+        cycleCode: string,
         submissionDeadline: Date | null,
         sessionStart: Date | null,
         sessionEnd: Date | null,
@@ -66,6 +67,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
             validateInputOnChange: true,
             initialValues: {
                 title: "",
+                cycleCode: "",
                 submissionDeadline: null,
                 sessionStart: null,
                 sessionEnd: null,
@@ -75,6 +77,8 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
             validate: {
                 title:
                     value => (value.length < 3 ? 'Title must have at least 3 characters' : null),
+                cycleCode:
+                    value => (value.length < 3 ? 'Cycle code cannot be empty' : null),
                 submissionDeadline:
                     value => (value === null ? 'Please select a submission deadline date' : null),
                 sessionStart:
@@ -90,6 +94,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     function createCycle(values: NewCycleFormType) {
         if(values.observatoryId != undefined) {
             const newCycle: ProposalCycle = {
+                code: values.cycleCode,
                 title: values.title,
                 observatory: {
                     "@type": "proposalManagement:Observatory",
@@ -132,6 +137,13 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                         placeholder={"Give the proposal cycle a title"}
                         {...form.getInputProps('title')}
                     />
+                    <TextInput
+                        name={"code"}
+                        label={"Cycle code"}
+                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        placeholder={"Give the proposal cycle a useful code"}
+                        {...form.getInputProps('cycleCode')}
+                        />
                     <Select
                         label={"Observatory"}
                         placeholder={"pick one"}

@@ -96,7 +96,7 @@ export default function CycleOverviewPanel() : ReactElement {
 
     const DisplayTitle = () : ReactElement => {
         return(
-            <h1>{cycleSynopsis.data?.title}</h1>
+            <h1>{cycleSynopsis.data?.title} [{cycleSynopsis.data?.code}]</h1>
         )
     }
 

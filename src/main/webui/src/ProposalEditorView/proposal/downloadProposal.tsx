@@ -3,8 +3,9 @@ import html2canvas from 'html2canvas';
 // renamed to bypass ESlint issues about constructors needing to be capital letters.
 import { jsPDF as JSPDF } from 'jspdf';
 // used the import * as it bypasses a fault with how this is meant to be imported.
-import JSZip from 'jszip';
+import * as JSZip from 'jszip';
 import {
+    fetchJustificationsResourceDownloadLatexPdf,
     fetchProposalResourceExportProposal,
     fetchSupportingDocumentResourceDownloadSupportingDocument
 } from 'src/generated/proposalToolComponents.ts';
@@ -58,35 +59,35 @@ const populateSupportingDocuments = (
     selectedProposalCode: String,
     authToken: string
 ): Array<Promise<void>> => {
-        return supportingDocumentData.map(async (item: ObjectIdentifier) => {
-            if (item.dbid !== undefined && item.name !== undefined) {
-                // have to destructure this, as otherwise risk of being undefined
-                // detected later.
-                let docTitle = item.name;
+    return supportingDocumentData.map(async (item: ObjectIdentifier) => {
+        if (item.dbid !== undefined && item.name !== undefined) {
+            // have to destructure this, as otherwise risk of being undefined
+            // detected later.
+            let docTitle = item.name;
 
-                // ensure that if the file exists already, that it's renamed to
-                // avoid issues of overwriting itself in the zip.
-                while (zip.files[docTitle]) {
-                    docTitle = docTitle + "1"
+            // ensure that if the file exists already, that it's renamed to
+            // avoid issues of overwriting itself in the zip.
+            while (zip.files[docTitle]) {
+                docTitle = docTitle + "1"
+            }
+
+            // extract the document and save into the zip.
+            await fetchSupportingDocumentResourceDownloadSupportingDocument({
+                headers: {authorization: `Bearer ${authToken}`},
+                pathParams: {
+                    proposalCode: Number(selectedProposalCode),
+                    id: item.dbid
                 }
-
-                // extract the document and save into the zip.
-                await fetchSupportingDocumentResourceDownloadSupportingDocument({
-                    headers: {authorization: `Bearer ${authToken}`},
-                    pathParams: {
-                        proposalCode: Number(selectedProposalCode),
-                        id: item.dbid
+            })
+                .then((blob) => {
+                    // ensure we got some data back.
+                    if (blob !== undefined) {
+                        zip.file(docTitle, blob)
                     }
                 })
-                    .then((blob) => {
-                        // ensure we got some data back.
-                        if (blob !== undefined) {
-                            zip.file(docTitle, blob)
-                        }
-                    })
-            }
-        });
-    }
+        }
+    });
+}
 
 
 /**
@@ -99,11 +100,11 @@ const populateSupportingDocuments = (
  * @param authToken the authorization token required for 'fetch' type calls
  */
 function downloadProposal(
-        element: HTMLInputElement,
-        proposalData:  ObservingProposal,
-        supportingDocumentData: ObjectIdentifier[],
-        selectedProposalCode: String,
-        authToken: string
+    element: HTMLInputElement,
+    proposalData:  ObservingProposal,
+    supportingDocumentData: ObjectIdentifier[],
+    selectedProposalCode: String,
+    authToken: string
 ): void {
 
     notifyInfo("Proposal Export Started",
@@ -135,6 +136,20 @@ function downloadProposal(
                 notifyError("Export Error", getErrorMessage(error))
             )
     );
+
+    promises.push(
+        fetchJustificationsResourceDownloadLatexPdf({
+            headers: {authorization: `Bearer ${authToken}`},
+            pathParams:{proposalCode:Number(selectedProposalCode)}
+        })
+            .then((blob)=> {
+                if(blob !== undefined)
+                    zip.file("Justifications." + selectedProposalCode + ".pdf", blob);
+            })
+            .catch((error)=>
+                console.log("The justification pdf could not be downloaded "
+                    + getErrorMessage(error)))
+    )
 
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(

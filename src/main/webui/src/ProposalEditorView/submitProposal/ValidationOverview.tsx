@@ -2,7 +2,8 @@ import {IconAlertCircle, IconCircleCheck, IconCircleX, IconInfoCircle} from '@ta
 import {Box, Divider, Loader, NavLink, Stack, Table, Text} from "@mantine/core";
 import {ICON_SIZE} from "src/constants.tsx";
 import {
-    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycleObservatory,
+    useProposalCyclesResourceGetProposalCycleDetails,
+    useProposalCyclesResourceGetProposalCycleObservatory,
     useProposalCyclesResourceGetProposalCycleTitle,
     useProposalResourceValidateObservingProposal
 } from "src/generated/proposalToolComponents.ts";
@@ -10,12 +11,13 @@ import {Link, useParams} from "react-router-dom";
 import {PanelFrame} from "../../commonPanel/appearance.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {ReactElement} from "react";
+import {ReactElement, useEffect} from "react";
 import React from 'react';
 
 export default function ValidationOverview(props: {
     cycle: number,
-    smallScreen?: boolean
+    smallScreen?: boolean,
+    setProposalCheck: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
 
     const { selectedProposalCode } = useParams();
@@ -29,12 +31,18 @@ export default function ValidationOverview(props: {
         pathParams: {cycleCode: props.cycle}
     })
 
-    const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
+    const cycleDates = useProposalCyclesResourceGetProposalCycleDetails(
         {pathParams: {cycleCode: props.cycle}});
 
     const observatory = useProposalCyclesResourceGetProposalCycleObservatory({
             pathParams: {cycleCode: props.cycle}
         })
+
+    useEffect(() => {
+        if (validateProposal.status === 'success') {
+            props.setProposalCheck(validateProposal.data.isValid!)
+        }
+    }, [validateProposal]);
 
     if (validateProposal.isLoading || cycleTitle.isLoading || cycleDates.isLoading || observatory.isLoading) {
         return(
@@ -71,35 +79,28 @@ export default function ValidationOverview(props: {
         );
     }
 
-    const formatTextWithLinks = (text: string) : ReactElement => {
+    const formatTextWithLinks = (p : {text: string, color: string}) : ReactElement => {
         return (
             <Table.Td>
-                {text.replace('<br/>$', 'g')
+                {p.text.replace('<br/>$', 'g')
                 .split("<br/>")
                 .map((s, index) => (
                     s.length > 0 &&
                     <React.Fragment key={index}>
                         {s.includes("No observations defined")||s.includes("A timing window for")?
-                            <NavLink
-                                to={"/proposal/"+selectedProposalCode+"/observations"}
-                                component={Link}
-                                label={s} />
+                            <NavLink to={"/proposal/"+selectedProposalCode+"/observations"}
+                                     component={Link} label={s} c={p.color} />
                             :s.includes("No targets defined")?
-                                <NavLink
-                                    to={"/proposal/"+selectedProposalCode+"/targets"}
-                                    component={Link}
-                                    label={s} />
+                                <NavLink to={"/proposal/"+selectedProposalCode+"/targets"}
+                                         component={Link} label={s} c={p.color}/>
                                 :s.includes("No technical goals defined")?
-                                    <NavLink
-                                        to={"/proposal/"+selectedProposalCode+"/goals"}
-                                        component={Link}
-                                        label={s} />
-                                    :s.includes("Justifications pdf has not been compiled")?
-                                        <NavLink
-                                            to={"/proposal/"+selectedProposalCode+"/justifications"}
-                                            component={Link}
-                                            label={s} />
-                                    :<Text size={"sm"}>{s}</Text>}
+                                    <NavLink to={"/proposal/"+selectedProposalCode+"/goals"}
+                                             component={Link} label={s} c={p.color}/>
+                                        :s.includes("Justification PDF")?
+                                            <NavLink to={"/proposal/"+selectedProposalCode+"/justifications"}
+                                                component={Link} label={s} c={p.color}/>
+                                        :<Text size={"sm"} c={p.color}>{s}</Text>
+                        }
                     </React.Fragment>
                 ))}
             </Table.Td>)
@@ -128,27 +129,30 @@ export default function ValidationOverview(props: {
                         <Table.Tr>
                             <Table.Td>
                                 {validateProposal.data?.isValid?
-                                    (<IconCircleCheck size={ICON_SIZE} />):
-                                    (<IconInfoCircle size={ICON_SIZE} />)
+                                    (<IconCircleCheck size={ICON_SIZE} color={'green'}/>):
+                                    (<IconInfoCircle size={ICON_SIZE} color={'orange'}/>)
                                 }
                             </Table.Td>
                             <Table.Td>
-                                {validateProposal.data?.info && formatTextWithLinks(validateProposal.data?.info)}
+                                {validateProposal.data?.info &&
+                                    formatTextWithLinks({text: validateProposal.data?.info,
+                                        color: validateProposal.data?.isValid ? 'green' : 'orange'})
+                                }
                             </Table.Td>
                         </Table.Tr>
                         {validateProposal.data?.warnings !== undefined &&
                             (<Table.Tr>
                                 <Table.Td>
-                                    <IconAlertCircle size={ICON_SIZE} />
+                                    <IconAlertCircle size={ICON_SIZE} color={'orange'}/>
                                 </Table.Td>
-                                {formatTextWithLinks(validateProposal.data.warnings)}
+                                {formatTextWithLinks({text: validateProposal.data.warnings, color: 'orange'})}
                             </Table.Tr>)}
                         {validateProposal.data?.errors !== undefined &&
                             (<Table.Tr>
                                 <Table.Td>
-                                    <IconCircleX size={ICON_SIZE} />
+                                    <IconCircleX size={ICON_SIZE} color={'red'}/>
                                 </Table.Td>
-                                {formatTextWithLinks(validateProposal.data.errors)}
+                                {formatTextWithLinks({text: validateProposal.data.errors, color: 'red'})}
                             </Table.Tr>)}
                     </Table.Tbody>
                 </Table>

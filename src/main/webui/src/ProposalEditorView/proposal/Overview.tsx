@@ -1,5 +1,6 @@
 import {useNavigate, useParams} from 'react-router-dom'
 import {
+    useJustificationsResourceDownloadLatexPdf,
     useProposalResourceCloneObservingProposal,
     useProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
@@ -22,7 +23,7 @@ import {
     RealQuantity, Target,
 } from 'src/generated/proposalToolSchemas.ts';
 import { IconNorthStar } from '@tabler/icons-react';
-import {ReactElement, useRef} from 'react';
+import {ReactElement, useEffect, useRef} from 'react';
 import downloadProposal from './downloadProposal.tsx';
 import {DIMMED_FONT_WEIGHT, JSON_SPACES} from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
@@ -242,17 +243,34 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const deleteProposalMutation =
         useProposalResourceDeleteObservingProposal()
 
-    const {data: supportingDocs} =
+    const supportingDocs =
         useSupportingDocumentResourceGetSupportingDocuments({
                 pathParams: {
                     proposalCode: Number(selectedProposalCode)
                 }
         });
 
+    const compiledPdf = useJustificationsResourceDownloadLatexPdf({
+            pathParams: {proposalCode: Number(selectedProposalCode)}
+        }
+    )
+
+    useEffect(() => {
+        if(compiledPdf.status === 'success') {
+            console.log("We got the pdf stream?");
+            //console.log(compiledPdf);
+        } else {
+
+            console.log("We got " + compiledPdf.status);
+        }
+    }, [compiledPdf.data, compiledPdf.status]);
+
+
+
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
 
-    const { data: proposalsData , error: proposalsError, isLoading: proposalsIsLoading } =
+    const proposals =
         useProposalResourceGetObservingProposal({
                 pathParams: {
                     proposalCode: Number(selectedProposalCode)
@@ -260,10 +278,10 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         });
 
 
-    if (proposalsError) {
+    if (proposals.error) {
         return (
             <Box>
-                <pre>{JSON.stringify(proposalsError, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(proposals.error, null, JSON_SPACES)}</pre>
             </Box>
         );
     }
@@ -275,7 +293,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const DisplayTitle = (): ReactElement => {
         return (
-            <h1>{proposalsData?.title}</h1>
+            <h1>{proposals.data?.title}</h1>
         )
     }
 
@@ -290,7 +308,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 <h3>Summary</h3>
                 <Text style={{ whiteSpace: 'pre-wrap',
                                overflowWrap: 'break-word'}}>
-                    {proposalsData?.summary}
+                    {proposals.data?.summary}
                 </Text>
             </>
         )
@@ -305,7 +323,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         return (
             <>
                 <h3>Kind</h3>
-                <Text>{proposalsData?.kind}</Text>
+                <Text>{proposals.data?.kind}</Text>
             </>
         )
     }
@@ -320,8 +338,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Scientific Justification</h3>
                 {PreviewJustification(
-                    proposalsData?.scientificJustification?.format!,
-                    proposalsData?.scientificJustification?.text!)
+                    proposals.data?.scientificJustification?.format!,
+                    proposals.data?.scientificJustification?.text!)
                 }
             </>
         )
@@ -337,8 +355,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Technical Justification</h3>
                 {PreviewJustification(
-                    proposalsData?.technicalJustification?.format!,
-                    proposalsData?.technicalJustification?.text!)
+                    proposals.data?.technicalJustification?.format!,
+                    proposals.data?.technicalJustification?.text!)
                 }
             </>
         )
@@ -351,7 +369,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const DisplayInvestigators = (): ReactElement => {
 
-        const investigators = proposalsData?.investigators?.map(
+        const investigators = proposals.data?.investigators?.map(
             (investigator) => (
                 <Accordion.Item key={investigator.person?.orcidId?.value}
                                 value={investigator.person?.fullName!}>
@@ -372,8 +390,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Investigators</h3>
                 {
-                    proposalsData?.investigators &&
-                    proposalsData.investigators.length > 0 ?
+                    proposals.data?.investigators &&
+                    proposals.data.investigators.length > 0 ?
                         <Accordion chevronPosition={"right"}>
                             {investigators}
                         </Accordion> :
@@ -392,7 +410,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const DisplaySupportingDocuments = (): ReactElement => {
 
-        const documents = proposalsData?.supportingDocuments?.map((document) =>(
+        const documents = proposals.data?.supportingDocuments?.map((document) =>(
             <List.Item key={document.location}>{document.title}</List.Item>
         ))
 
@@ -400,8 +418,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Supporting Documents</h3>
                 {
-                    proposalsData?.supportingDocuments &&
-                    proposalsData.supportingDocuments.length > 0 ?
+                    proposals.data?.supportingDocuments &&
+                    proposals.data.supportingDocuments.length > 0 ?
                         <List
                             style={{
                                 whiteSpace: 'pre-wrap',
@@ -423,7 +441,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const DisplayRelatedProposals = (): ReactElement => {
 
-        const proposals = proposalsData?.relatedProposals?.map((related) =>(
+        const proposalList = proposals.data?.relatedProposals?.map((related) =>(
             <List.Item key={related.proposal?.xmlId}>
                 {related.proposal?.title}
             </List.Item>
@@ -433,10 +451,10 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Related Proposals</h3>
                 {
-                    proposalsData?.relatedProposals &&
-                    proposalsData.relatedProposals.length > 0 ?
+                    proposals.data?.relatedProposals &&
+                    proposals.data.relatedProposals.length > 0 ?
                         <List>
-                            {proposals}
+                            {proposalList}
                         </List> :
                         <Text c={"yellow"}>No related proposals added</Text>
                 }
@@ -454,7 +472,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
 
 
         const observations =
-            proposalsData?.observations?.map((observation, index) => {
+            proposals.data?.observations?.map((observation, index) => {
 
                 //observation.target and observation.technicalGoal are NOT objects
                 // but numbers here, specifically their DB id
@@ -463,7 +481,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                 let targetObjs = [] as Target[];
 
                 observation.target?.map((obsTarget) => {
-                    let targetObj = proposalsData?.targets?.find((target) =>
+                    let targetObj = proposals.data?.targets?.find((target) =>
                         target._id === obsTarget)!
 
                     targetObjs.push(targetObj);
@@ -484,7 +502,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     targetNames += ", and " + remaining + " more";
                 }
 
-                let technicalGoalObj  = proposalsData?.technicalGoals?.find((techGoal) =>
+                let technicalGoalObj  = proposals.data?.technicalGoals?.find((techGoal) =>
                     techGoal._id === observation.technicalGoal)!
 
                 let observationType = observation["@type"] === 'proposal:TargetObservation' ?
@@ -518,8 +536,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             <>
                 <h3>Observations</h3>
                 {
-                    proposalsData?.observations &&
-                    proposalsData.observations.length > 0 ?
+                    proposals.data?.observations &&
+                    proposals.data.observations.length > 0 ?
                         <Accordion>
                             {observations}
                         </Accordion> :
@@ -560,8 +578,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const handleDownloadPdf = (): void => {
         downloadProposal(
             printRef.current!,
-            proposalsData!,
-            supportingDocs!,
+            proposals.data!,
+            supportingDocs.data!,
             selectedProposalCode!,
             authToken
         );
@@ -589,7 +607,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     queryKey: ['pst', 'api', 'proposals']
                 }).then(() =>
                     notifySuccess("Clone Proposal Successful",
-                        proposalsData?.title + " copied to " + data.title)
+                        proposals.data?.title + " copied to " + data.title)
                 );
             },
             onError: (error) =>
@@ -618,7 +636,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
             children: (
                 <Stack>
                     <Text size={"sm"}>
-                        Are you sure you want to permanently remove the proposal '{proposalsData?.title!}'?
+                        Are you sure you want to permanently remove the proposal '{proposals.data?.title!}'?
                     </Text>
                     <Text size={"sm"} c={"yellow.7"}>
                         This action cannot be undone.
@@ -640,7 +658,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         },{
             onSuccess: () => {
                 notifySuccess("Deletion successful",
-                    "Proposal: '" + proposalsData?.title! + "' has been removed");
+                    "Proposal: '" + proposals.data?.title! + "' has been removed");
                 navigate("/");
 
                 //workaround: usually you would invalidate queries however this causes this
@@ -660,9 +678,9 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     return (
         <PanelFrame>
             <PanelHeader
-                itemName={proposalsData?.title!}
+                itemName={proposals.data?.title!}
                 panelHeading={"Overview"}
-                isLoading={proposalsIsLoading}
+                isLoading={proposals.isLoading}
             />
             <Container fluid>
                 <ContextualHelpButton messageId="Overview" />
@@ -681,6 +699,13 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                         <DisplayKind/>
                         <DisplayScientificJustification/>
                         <DisplayTechnicalJustification/>
+                        {!compiledPdf.isLoading && compiledPdf.data &&
+                            //ts-@ignore
+                        <object data={window.URL.createObjectURL(compiledPdf.data)}
+                                width="100%"
+                                height="100%">
+                            <p>Here it is</p>
+                        </object>}
                         <DisplayObservations/>
                         <DisplaySupportingDocuments/>
                         <DisplayRelatedProposals/>

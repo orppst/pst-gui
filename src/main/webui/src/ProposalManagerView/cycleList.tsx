@@ -12,7 +12,7 @@ import {
 import {
     IconBike,
     IconCalendar, IconEdit,
-    IconLetterT, IconSquareChevronsRight, IconThumbUp,
+    IconSquareChevronsRight, IconThumbUp,
     IconUfo, IconUserPin,
     IconUsersGroup
 } from "@tabler/icons-react";
@@ -146,22 +146,13 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          onClick={()=>setActive("Overview" + cycle.code)}
                 />
                 {HaveRole(["tac_admin"]) &&
-                <NavLink to={"cycle/" + cycle.dbid + "/title"}
+                <NavLink to={"cycle/" + cycle.dbid + "/details"}
                          component={Link}
-                         key={"Title"}
-                         label={"Title"}
-                         leftSection={<IconLetterT/>}
-                         active={"Title" + cycle.code === active}
-                         onClick={()=>setActive("Title" + cycle.code)}
-                />}
-                {HaveRole(["tac_admin"]) &&
-                <NavLink to={"cycle/" + cycle.dbid + "/dates"}
-                         component={Link}
-                         key={"Dates"}
-                         label={"Dates"}
+                         key={"Details"}
+                         label={"Details"}
                          leftSection={<IconCalendar/>}
-                         active={"Dates" + cycle.code === active}
-                         onClick={()=>setActive("Dates" + cycle.code)}
+                         active={"Details" + cycle.code === active}
+                         onClick={()=>setActive("Details" + cycle.code)}
                 />}
                 {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/tac"}

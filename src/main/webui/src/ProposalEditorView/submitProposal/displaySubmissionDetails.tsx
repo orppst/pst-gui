@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import {
-    useProposalCyclesResourceGetProposalCycleDates, useProposalCyclesResourceGetProposalCycleObservatory,
+    useProposalCyclesResourceGetProposalCycleDetails, useProposalCyclesResourceGetProposalCycleObservatory,
     useProposalCyclesResourceGetProposalCycleTitle
 } from "../../generated/proposalToolComponents.ts";
 import {Box, Divider, Fieldset, Loader, ScrollArea, Stack, Table, Text} from "@mantine/core";
@@ -24,7 +24,7 @@ function DisplaySubmissionDetails(props: {
         }
     })
 
-    const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
+    const cycleDates = useProposalCyclesResourceGetProposalCycleDetails(
         {pathParams: {cycleCode: props.formData.selectedCycle} });
 
     const observatory = useProposalCyclesResourceGetProposalCycleObservatory({

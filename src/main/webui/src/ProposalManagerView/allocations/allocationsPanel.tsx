@@ -7,7 +7,7 @@ import {
     useAllocatedProposalResourceGetAllocatedProposals,
     useAvailableResourcesResourceGetCycleResourceTotal,
     useAvailableResourcesResourceGetCycleResourceTypes,
-    useProposalCyclesResourceGetProposalCycleDates
+    useProposalCyclesResourceGetProposalCycleDetails
 } from "../../generated/proposalToolComponents.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import ResourceStatsTable from "./resourceStats.table.tsx";
@@ -26,7 +26,7 @@ function AllocationsPanel() : ReactElement {
         })
 
     const cycleDates =
-        useProposalCyclesResourceGetProposalCycleDates({
+        useProposalCyclesResourceGetProposalCycleDetails({
         pathParams: {cycleCode: Number(selectedCycleCode)}
     })
 

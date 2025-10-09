@@ -1,11 +1,19 @@
 import {ReactElement, useEffect, useState} from "react";
-import {Table, Loader, Button} from "@mantine/core";
+import {Table, Loader, Modal, TextInput, Stack, Button} from "@mantine/core";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {
     useJustificationsResourceDownloadLatexPdf,
-    useSubmittedProposalResourceGetSubmittedProposal
+    useSubmittedProposalResourceGetSubmittedProposal,
+    useSubmittedProposalResourceReplaceCode
 } from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
+import EditButton from "../../commonButtons/edit.tsx";
+import {useForm} from "@mantine/form";
+import {FormSubmitButton} from "../../commonButtons/save.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {useQueryClient} from "@tanstack/react-query";
+import {MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import {IconPdf} from "@tabler/icons-react";
 
 /*
@@ -20,6 +28,7 @@ type SubmittedTableRowProps = {
 }
 
 function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElement {
+    const codeMutation = useSubmittedProposalResourceReplaceCode();
 
     const submittedProposal =
         useSubmittedProposalResourceGetSubmittedProposal({
@@ -37,6 +46,41 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
     const [proposalAccepted, setProposalAccepted] = useState(false)
     const [downloadReady, setDownloadReady] = useState(false)
     let pdfURL = "";
+    const [editModalOpen, setEditModalOpen] = useState(false)
+    const queryClient = useQueryClient();
+
+    interface SubmittedProposalCode {
+        code: string
+    }
+    const form = useForm<SubmittedProposalCode>({
+        initialValues: {
+            code: 'Loading...'
+        },
+        validate: {
+            code: (value) =>
+                value && value.length < 1 ? 'The code cannot be empty' : null
+        }
+    })
+
+    const handleSubmit
+        = form.onSubmit((val) => {
+            codeMutation.mutate({
+                pathParams: {cycleCode: rowProps.cycleCode,
+                    submittedProposalId: rowProps.submittedProposalId
+                },
+                queryParams: {proposalCode: val.code}
+            },
+            {
+                onSuccess: () => {
+                    notifySuccess("Proposal Code Update", "Code updated");
+                    queryClient.invalidateQueries({}).then();
+                    setEditModalOpen(false);
+                },
+                onError: (error) => {
+                    notifyError("Failed to change code", getErrorMessage(error))
+                }
+            })
+        })
 
     useEffect(() => {
         if (submittedProposal.status === 'success') {
@@ -56,7 +100,7 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
 
             setProposalAccepted(submittedProposal.data?.successful!)
         }
-    }, [submittedProposal]);
+    }, [submittedProposal.status]);
 
     useEffect(() => {
         if (compiledPDF.status === 'success' && compiledPDF.data !== undefined) {
@@ -84,6 +128,29 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
 
     return (
         <Table.Tr>
+            <Modal
+                opened={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                title={"Change Proposal Code"}
+            >
+                <form onSubmit={handleSubmit}>
+                    <Stack>
+                        <TextInput
+                            label={"Proposal code"}
+                            maxLength={MAX_CHARS_FOR_INPUTS}
+                            {...form.getInputProps('code')}
+                        />
+                        <FormSubmitButton form={form} />
+                    </Stack>
+                </form>
+            </Modal>
+            <Table.Td>
+                <EditButton
+                    toolTipLabel={'Change proposal code'}
+                    label={submittedProposal.data?.proposalCode}
+                    onClick={() => setEditModalOpen(true)}
+                />
+            </Table.Td>
             <Table.Td>{submittedProposal.data?.title}</Table.Td>
             <Table.Td c={proposalAccepted ? "green" : reviewsCompleteAndLocked ? "red" : "blue"}>
                 {
@@ -117,6 +184,7 @@ function SubmittedProposalsTable(submittedProposals: ObjectIdentifier[]) : React
         return (
             <Table.Thead>
                 <Table.Tr>
+                    <Table.Th>Code</Table.Th>
                     <Table.Th>Proposal Title</Table.Th>
                     <Table.Th>Current Status</Table.Th>
                     <Table.Th>Documents</Table.Th>

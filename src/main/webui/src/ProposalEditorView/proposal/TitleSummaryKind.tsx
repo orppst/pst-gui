@@ -3,7 +3,7 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import {ProposalKind} from "../../generated/proposalToolSchemas.ts";
 import {useForm} from "@mantine/form";
-import {Fieldset, Grid, Select, Space, Stack, Textarea, TextInput} from "@mantine/core";
+import {Fieldset, Grid, Loader, Select, Space, Stack, Textarea, TextInput} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS} from "../../constants.tsx";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 import {
@@ -18,6 +18,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {useDebouncedCallback} from "@mantine/hooks";
 import * as React from "react";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 
 interface TitleSummaryKind {
     title: string
@@ -41,9 +42,9 @@ function TitleSummaryKind() : ReactElement {
         pathParams: {proposalCode: Number(selectedProposalCode)}
     })
 
-    const [summary, setSummary] = useState(proposal.data?.summary);
+    const [summary, setSummary] = useState("");
 
-    const [kind, setKind] = useState<ProposalKind>(proposal.data?.kind!);
+    const [kind, setKind] = useState<ProposalKind>('Standard');
 
     const titleMutation = useProposalResourceReplaceTitle();
 
@@ -111,9 +112,25 @@ function TitleSummaryKind() : ReactElement {
                 title: proposal.data.title!,
             })
             form.resetDirty()
+            setSummary(proposal.data.summary!)
+            setKind(proposal.data.kind!)
         }
     }, [proposal.status, proposal.data]);
 
+    if (proposal.isLoading) {
+        return (
+            <Loader />
+        )
+    }
+
+    if (proposal.isError) {
+        return (
+            <AlertErrorMessage
+                title={"Failed to load proposal"}
+                error={getErrorMessage(proposal.error)}
+            />
+        )
+    }
 
     const TitleInput = () : ReactElement => {
         return (

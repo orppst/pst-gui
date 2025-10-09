@@ -339,7 +339,7 @@ function ObservationModeDetailsShow(p: {
                             <ActionIcon
                                 onClick={toggle}
                             >
-                                {opened ? <IconEye /> : <IconEyeClosed />}
+                                {opened ? <IconEyeClosed /> : <IconEye />}
                             </ActionIcon>
                         </Tooltip>
                         <Button

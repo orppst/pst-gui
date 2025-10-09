@@ -1,7 +1,7 @@
 import {ReactElement} from "react";
 import {List, Loader, Table, Tooltip} from "@mantine/core";
 import {
-    useProposalCyclesResourceGetProposalCycleDates,
+    useProposalCyclesResourceGetProposalCycleDetails,
 } from "../../generated/proposalToolComponents.ts";
 import {randomId} from "@mantine/hooks";
 import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
@@ -12,7 +12,7 @@ type CycleRowProps = {
 }
 
 function ProposalCycleTableRow(props:CycleRowProps) {
-    const cycleDates = useProposalCyclesResourceGetProposalCycleDates(
+    const cycleDates = useProposalCyclesResourceGetProposalCycleDetails(
         {pathParams: {cycleCode: props.cycleId}});
 
     const tooltip = cycleDates.data?.observatory?.telescopes?.length + " telescopes";
