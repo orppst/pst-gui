@@ -9674,6 +9674,7 @@ export const useJustificationsResourceAddLatexResourceFile = (
 };
 
 export type JustificationsResourceRemoveLatexResourceFilePathParams = {
+  fileName: string;
   /**
    * @format int64
    */
@@ -9699,7 +9700,7 @@ export const fetchJustificationsResourceRemoveLatexResourceFile = (
     {},
     JustificationsResourceRemoveLatexResourceFilePathParams
   >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/resourceFile",
+    url: "/pst/api/proposals/{proposalCode}/justifications/resourceFile/{fileName}",
     method: "delete",
     ...variables,
     signal,
