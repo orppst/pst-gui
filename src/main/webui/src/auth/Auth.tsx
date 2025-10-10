@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function getUser() {
         const apiResponse = await window.fetch("/pst/gui/api-info", {mode:"no-cors"}) //FIXME reintroduce CORS when keycloak is implementing it properly
         const localbaseUrl = await apiResponse.text()
-        setFetcherApiURL(localbaseUrl)
+        setFetcherApiURL(localbaseUrl.replace(/\/$/, "")) // remove the trailing / from the api location if it is there.
         apiURL.current=localbaseUrl
 
         const response = await window.fetch("/pst/gui/aai/", {mode:"no-cors", redirect:"manual"}); //FIXME reintroduce CORS when keycloak is implementing it properly
