@@ -158,11 +158,11 @@ function AddTargetPanel(): ReactElement {
             coordSys: spaceSystem.data!,
             lat: {
                 "@type": "ivoa:RealQuantity",
-                value: AstroLib.HmsToDeg(val.ra), unit: { value: "degrees" }
+                value: AstroLib.DmsToDeg(val.dec), unit: { value: "degrees" }
             },
             lon: {
                 "@type": "ivoa:RealQuantity",
-                value: AstroLib.DmsToDeg(val.dec), unit: { value: "degrees" }
+                value: AstroLib.HmsToDeg(val.ra), unit: { value: "degrees" }
             }
         }
         const Target: CelestialTarget = {
