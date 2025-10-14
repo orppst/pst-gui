@@ -50,17 +50,19 @@ function JustificationsResourceFiles(
     const resourceFilesBody = () : ReactElement => (
         <Table.Tbody>
             {resourceFiles.data?.map((uploadedFile) => {
-                return (
-                    <Table.Tr key={uploadedFile.dbid}>
-                        <Table.Td>{uploadedFile.name}</Table.Td>
-                        <Table.Td align={"right"}>
-                            <RemoveButton
-                                toolTipLabel={"remove this file"}
-                                onClick={() => openRemoveFileConfirmModal(uploadedFile)}
-                            />
-                        </Table.Td>
-                    </Table.Tr>
-                )
+                if (uploadedFile.name !== 'compiledJustification.pdf') {
+                    return (
+                        <Table.Tr key={uploadedFile.dbid}>
+                            <Table.Td>{uploadedFile.name}</Table.Td>
+                            <Table.Td align={"right"}>
+                                <RemoveButton
+                                    toolTipLabel={"remove this file"}
+                                    onClick={() => openRemoveFileConfirmModal(uploadedFile)}
+                                />
+                            </Table.Td>
+                        </Table.Tr>
+                    )
+                }
             } )}
         </Table.Tbody>
     )
@@ -137,7 +139,7 @@ function JustificationsResourceFiles(
     return (
         <Fieldset legend={"Upload Resource Files"}>
             <Stack>
-                <ScrollArea h={vpHeight * 0.52}>
+                <ScrollArea h={vpHeight * 0.42}>
                     <Table>
                         {resourceFilesHeader()}
                         {resourceFiles.isLoading ? <Loader/> : resourceFilesBody()}
@@ -149,7 +151,7 @@ function JustificationsResourceFiles(
                     {
                         (props) =>
                             <UploadButton
-                                toolTipLabel={"upload resource file: .bib, .png, .jpg, .eps, .pdf only"}
+                                toolTipLabel={"upload resource file: images and .bib files"}
                                 label={"Add a Resource File"}
                                 onClick={props.onClick}
                                 variant={"filled"}

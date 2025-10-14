@@ -76,7 +76,7 @@ function JustificationsLatexStatus({latexStatus} : {latexStatus: string}) : Reac
                     disabled={!downloadReady}
                     rightSection={<IconPdf />}
                     component={"a"}
-                    download={"justification.pdf"}
+                    download={"compiledJustification.pdf"}
                     href={pdfDownLoad}
                     color={"blue"}
                 >

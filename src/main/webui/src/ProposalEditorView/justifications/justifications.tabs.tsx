@@ -6,6 +6,7 @@ import {Justification} from "../../generated/proposalToolSchemas.ts";
 import JustificationsLatexCompile from "./justifications.latexCompile.tsx";
 import {useViewportSize} from "@mantine/hooks";
 import JustificationsText from "./justifications.text.tsx";
+import JustificationsPDFDownload from "./justifications.pdfDownload.tsx";
 
 /*
 Dev Note: The code for scientific and technical justifications is very similar (by which we mean the
@@ -65,6 +66,7 @@ function JustificationsTabs(
                 <Stack>
                     <JustificationsResourceFiles vpHeight={height}/>
                     <JustificationsLatexCompile/>
+                    <JustificationsPDFDownload />
                 </Stack>
             </Grid.Col>
         </Grid>
