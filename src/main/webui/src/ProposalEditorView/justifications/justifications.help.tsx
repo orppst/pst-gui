@@ -36,8 +36,7 @@ function JustificationsHelp(
                         and their capabilities to achieve the technical goals you've set. (Choice of
                         observatory is made when submitting the proposal. If you wish to submit this
                         proposal to multiple observatories, you will likely need to edit the 'technical'
-                        justification to tailor it to each observatory. Cloning the proposal maybe the
-                        most convenient way to do this.)
+                        justification to tailor it to each observatory.)
                     </Text>
 
                     <Text size={"lg"} c={"orange"} fw={700}>
@@ -48,14 +47,12 @@ function JustificationsHelp(
                         LaTex file saved as 'main.tex' in the backend. The text is inserted under a relevant
                         LaTex 'section' heading. You may use any LaTeX commands in your text that are available
                         to use under a 'section' heading. Indeed, to cite references you should use the '~\cite'
-                        command in your text and provide a (single) bibtex file (.bib) as a resource file. This
-                        will be renamed to "refs.bib" in the backend.
+                        command in your text and provide a (single) bibtex file (.bib) as a resource file.
                     </Text>
                     <Text size={"sm"} c={'yellow'}>
                         Any image files (.png,.jpg,.eps,.pdf) that you reference must be
                         uploaded to our service as a "Resource File". You must also supply a single
-                        bibtex file (.bib) containing your references as a resource file (as mentioned,
-                        renamed to "refs.bib" on our server).
+                        bibtex file (.bib) containing your references as a resource file.
                     </Text>
                     <Text size={"sm"}>
                         To make the insertion of figures into your document easier, we have provided custom

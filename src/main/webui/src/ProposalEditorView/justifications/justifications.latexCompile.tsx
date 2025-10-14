@@ -28,7 +28,7 @@ function JustificationsLatexCompile() : ReactElement {
 
         compileLaTeXOutput.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)},
-            queryParams: {warningsAsErrors: warningsAsErrors}
+            queryParams: {warningsAsErrors: warningsAsErrors, submittedProposal: false}
         }, {
             onSuccess: (data) => {
                 setLoading(false);

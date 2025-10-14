@@ -1915,11 +1915,6 @@ export type UploadItemSchema = Blob;
 /**
  * @format binary
  */
-export type UploadLatexResourceSchema = Blob;
-
-/**
- * @format binary
- */
 export type UploadTargetList = Blob;
 
 export type UserConsentRepresentation = {
