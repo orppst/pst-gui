@@ -23,7 +23,7 @@ import {
     RealQuantity, Target,
 } from 'src/generated/proposalToolSchemas.ts';
 import { IconNorthStar } from '@tabler/icons-react';
-import {ReactElement, useEffect, useRef} from 'react';
+import {ReactElement, useEffect, useRef, useState} from 'react';
 import downloadProposal from './downloadProposal.tsx';
 import {DIMMED_FONT_WEIGHT, JSON_SPACES} from 'src/constants.tsx';
 import { TargetTable } from '../targets/TargetTable.tsx';
@@ -255,13 +255,15 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
         }
     )
 
+    const [abReady, setAbReady] = useState(false);
+    const [abPDF, setAbPDF] = useState("");
+
     useEffect(() => {
         if(compiledPdf.status === 'success') {
-            console.log("We got the pdf stream?");
-            //console.log(compiledPdf);
-        } else {
-
-            console.log("We got " + compiledPdf.status);
+            new Response(compiledPdf.data).arrayBuffer().then((arrayBuffer) => {
+                setAbPDF(btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(arrayBuffer)))));
+                setAbReady(true);
+            });
         }
     }, [compiledPdf.data, compiledPdf.status]);
 
@@ -675,6 +677,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     /**
      * returns the HTML structure for the overview page.
      */
+
     return (
         <PanelFrame>
             <PanelHeader
@@ -699,11 +702,11 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                         <DisplayKind/>
                         <DisplayScientificJustification/>
                         <DisplayTechnicalJustification/>
-                        {!compiledPdf.isLoading && compiledPdf.data &&
-                            //ts-@ignore
-                        <object data={window.URL.createObjectURL(compiledPdf.data)}
+                        {abReady &&
+                        <object data={`data:application/pdf;base64,${abPDF}`}
+                                type={'application/pdf'}
                                 width="100%"
-                                height="100%">
+                                height="400px">
                             <p>Here it is</p>
                         </object>}
                         <DisplayObservations/>
