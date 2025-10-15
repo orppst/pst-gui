@@ -1,10 +1,6 @@
 import {ReactElement} from "react";
 import {Fieldset, FileButton, Loader, ScrollArea, Stack, Table, Text} from "@mantine/core";
 import UploadButton from "../../commonButtons/upload.tsx";
-import {
-    useJustificationsResourceAddLatexResourceFile,
-    useJustificationsResourceGetLatexResourceFiles, useJustificationsResourceRemoveLatexResourceFile
-} from "../../generated/proposalToolComponents.ts";
 import {useParams} from "react-router-dom";
 import RemoveButton from "../../commonButtons/remove.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -14,6 +10,11 @@ import {useQueryClient} from "@tanstack/react-query";
 import {MAX_SUPPORTING_DOCUMENT_SIZE} from "../../constants.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import {
+    useSupportingDocumentResourceGetSupportingDocuments, useSupportingDocumentResourceRemoveSupportingDocument,
+    useSupportingDocumentResourceUploadSupportingDocument
+} from "../../generated/proposalToolComponents.ts";
+import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 
 export default
 function JustificationsResourceFiles(
@@ -26,15 +27,15 @@ function JustificationsResourceFiles(
     const queryClient = useQueryClient();
 
     const resourceFiles =
-        useJustificationsResourceGetLatexResourceFiles({
+        useSupportingDocumentResourceGetSupportingDocuments({
             pathParams: {proposalCode: Number(selectedProposalCode)}
         })
 
     const addResourceFile =
-        useJustificationsResourceAddLatexResourceFile();
+        useSupportingDocumentResourceUploadSupportingDocument();
 
     const removeResourceFile =
-        useJustificationsResourceRemoveLatexResourceFile();
+        useSupportingDocumentResourceRemoveSupportingDocument();
 
     const resourceFilesHeader = () : ReactElement => (
         <Table.Thead>
@@ -49,17 +50,19 @@ function JustificationsResourceFiles(
     const resourceFilesBody = () : ReactElement => (
         <Table.Tbody>
             {resourceFiles.data?.map((uploadedFile) => {
-                return (
-                    <Table.Tr key={uploadedFile}>
-                        <Table.Td>{uploadedFile}</Table.Td>
-                        <Table.Td align={"right"}>
-                            <RemoveButton
-                                toolTipLabel={"remove this file"}
-                                onClick={() => openRemoveFileConfirmModal(uploadedFile)}
-                            />
-                        </Table.Td>
-                    </Table.Tr>
-                )
+                if (uploadedFile.name !== 'compiledJustification.pdf') {
+                    return (
+                        <Table.Tr key={uploadedFile.dbid}>
+                            <Table.Td>{uploadedFile.name}</Table.Td>
+                            <Table.Td align={"right"}>
+                                <RemoveButton
+                                    toolTipLabel={"remove this file"}
+                                    onClick={() => openRemoveFileConfirmModal(uploadedFile)}
+                                />
+                            </Table.Td>
+                        </Table.Tr>
+                    )
+                }
             } )}
         </Table.Tbody>
     )
@@ -96,12 +99,12 @@ function JustificationsResourceFiles(
         }
     }
 
-    const handleRemoveFile = (fileName: string) => {
+    const handleRemoveFile = (file: ObjectIdentifier) => {
         removeResourceFile.mutate({
-            pathParams: {proposalCode: Number(selectedProposalCode), fileName: fileName},
+            pathParams: {proposalCode: Number(selectedProposalCode), id: file.dbid!},
         }, {
             onSuccess: () => {
-                notifySuccess("Removed file", "File: " + fileName + " deleted")
+                notifySuccess("Removed file", "File: " + file.name + " deleted")
                 queryClient.invalidateQueries().then();
             },
             onError: (error) => {
@@ -110,9 +113,9 @@ function JustificationsResourceFiles(
         })
     }
 
-    const openRemoveFileConfirmModal = (fileName: string) =>
+    const openRemoveFileConfirmModal = (file: ObjectIdentifier) =>
         modals.openConfirmModal({
-            title: "Are you sure you want to remove " + fileName + "?",
+            title: "Are you sure you want to remove " + file.name + "?",
             centered: true,
             children: (
                 <Text size={"sm"}>
@@ -121,7 +124,7 @@ function JustificationsResourceFiles(
             ),
             labels: {confirm: "Delete", cancel: "No, don't remove"},
             confirmProps: {color: "red"},
-            onConfirm: () => handleRemoveFile(fileName)
+            onConfirm: () => handleRemoveFile(file)
         })
 
     if (resourceFiles.isError) {
@@ -136,7 +139,7 @@ function JustificationsResourceFiles(
     return (
         <Fieldset legend={"Upload Resource Files"}>
             <Stack>
-                <ScrollArea h={vpHeight * 0.52}>
+                <ScrollArea h={vpHeight * 0.42}>
                     <Table>
                         {resourceFilesHeader()}
                         {resourceFiles.isLoading ? <Loader/> : resourceFilesBody()}
@@ -148,7 +151,7 @@ function JustificationsResourceFiles(
                     {
                         (props) =>
                             <UploadButton
-                                toolTipLabel={"upload resource file: .bib, .png, .jpg, .eps, .pdf only"}
+                                toolTipLabel={"upload resource file: images and .bib files"}
                                 label={"Add a Resource File"}
                                 onClick={props.onClick}
                                 variant={"filled"}

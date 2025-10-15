@@ -8,11 +8,14 @@ import {useJustificationsResourceCreatePDFLaTex} from "../../generated/proposalT
 import {useParams} from "react-router-dom";
 import {useDisclosure} from "@mantine/hooks";
 import JustificationsLatexStatus from "./justifications.latexStatus.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 export default
 function JustificationsLatexCompile() : ReactElement {
 
     const { selectedProposalCode } = useParams();
+
+    const queryClient = useQueryClient();
 
     const [warningsAsErrors, setWarningsAsErrors] = useState(true)
     const [loading, setLoading] = useState(false)
@@ -28,11 +31,12 @@ function JustificationsLatexCompile() : ReactElement {
 
         compileLaTeXOutput.mutate({
             pathParams: {proposalCode: Number(selectedProposalCode)},
-            queryParams: {warningsAsErrors: warningsAsErrors}
+            queryParams: {warningsAsErrors: warningsAsErrors, submittedProposal: false}
         }, {
             onSuccess: (data) => {
                 setLoading(false);
                 setLatexStatus(data as unknown as string);
+                queryClient.invalidateQueries().then()
                 open();
             },
             onError: (error) => {

@@ -36,8 +36,7 @@ function JustificationsHelp(
                         and their capabilities to achieve the technical goals you've set. (Choice of
                         observatory is made when submitting the proposal. If you wish to submit this
                         proposal to multiple observatories, you will likely need to edit the 'technical'
-                        justification to tailor it to each observatory. Cloning the proposal maybe the
-                        most convenient way to do this.)
+                        justification to tailor it to each observatory.)
                     </Text>
 
                     <Text size={"lg"} c={"orange"} fw={700}>
@@ -48,14 +47,14 @@ function JustificationsHelp(
                         LaTex file saved as 'main.tex' in the backend. The text is inserted under a relevant
                         LaTex 'section' heading. You may use any LaTeX commands in your text that are available
                         to use under a 'section' heading. Indeed, to cite references you should use the '~\cite'
-                        command in your text and provide a (single) bibtex file (.bib) as a resource file. This
-                        will be renamed to "refs.bib" in the backend.
+                        command in your text and provide a (single) bibtex file (.bib) as a "Resource File".
                     </Text>
                     <Text size={"sm"} c={'yellow'}>
-                        Any image files (.png,.jpg,.eps,.pdf) that you reference must be
-                        uploaded to our service as a "Resource File". You must also supply a single
-                        bibtex file (.bib) containing your references as a resource file (as mentioned,
-                        renamed to "refs.bib" on our server).
+                        Any image files (.png,.jpg,.eps,.pdf) that you reference must be uploaded to our service
+                        as a "Resource File". You must also supply a single bibtex file (.bib) containing your
+                        references as a resource file. Please note that "Resource Files" are also "Supporting Documents"
+                        so will show up in the Documents list, where you may
+                        download them, should you so wish.
                     </Text>
                     <Text size={"sm"}>
                         To make the insertion of figures into your document easier, we have provided custom
@@ -83,10 +82,10 @@ function JustificationsHelp(
                         Notice that the two figure and three figure functions will place the images in a
                         single row, whereas the four figure function will place the images in a two-by-two
                         arrangement.The astute among you will have deduced then that the product of the width
-                        value with the number of figures must not exceed one, else problems. Except in the case
-                        of the four-figure command due to the two-by-two arrangement i.e., two times the width
-                        parameter must not exceed one. For the multiple figure functions, each image will be
-                        labelled '(a)' through to '(d)' where appropriate.
+                        value with the number of figures must not exceed one, else the figures will overflow
+                        the text. In the case of the four-figure command due to the two-by-two arrangement,
+                        two times the width parameter must not exceed one. For the multiple figure functions,
+                        each image will be labelled '(a)' through to '(d)' where appropriate.
                     </Text>
                     <Text size={"sm"}>
                         For the 'textwrapfigure' command an additional parameter specifies the position of
@@ -126,15 +125,10 @@ function JustificationsHelp(
                         a modal will open displaying the status of the compilation.
                     </Text>
                     <Text size={"sm"}>
-                        Please note that during compilation LaTex must convert any '.eps' images to '.pdf' images.
-                        LaTex generates the '.pdf' from the '.eps' file, leaving the original as is.
-                        The generated '.pdf' image will show as 'filename-eps-converted-to.pdf' in the
-                        'Resource File' list.
-                    </Text>
-                    <Text size={"sm"}>
                         If successful, you will receive a message to that effect in the modal, and the
                         "Download PDF" button at the bottom of the modal will be enabled.
                         Clicking this button downloads the resulting PDF file of your Justifications.
+                        A "Download PDF" button will also become available on the panel page.
                         In the header of the document there is a "CYCLE-ID-HERE" placeholder. This is for
                         the time allocation committee (TAC) use only, and is replaced upon proposal submission
                         to a particular observing cycle.
@@ -143,7 +137,14 @@ function JustificationsHelp(
                         If the LaTeX compilation fails then the text area will display a list of errors,
                         and optionally warnings, that you will have to fix. These are usually caused by typos
                         in the LaTeX commands used, and/or missing resource files. We recommend you treat warnings
-                        as errors. Notice that in this case the "Download PDF" button will be disabled (greyed-out).
+                        as errors. Notice that in this case the "Download PDF" button in the modal will be disabled
+                        (greyed-out).
+                    </Text>
+                    <Text size={"sm"}>
+                        Be aware that the "Download PDF" button on the page will be available if a
+                        "compiledJustification.pdf" exists in the backend, and that will be the
+                        latest <Text span c="blue" inherit>successful</Text> compilation only. If in
+                        doubt recompile the Justification, and check the resulting document.
                     </Text>
                 </Stack>
             </ScrollArea>
