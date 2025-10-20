@@ -8,14 +8,14 @@ import "prismjs/themes/prism.css";
 import "prismjs/components/prism-latex.js";
 import "prismjs/components/prism-rest.js";
 import "prismjs/components/prism-asciidoc.js";
-import {MAX_CHARS_FOR_JUSTIFICATION} from "../../constants.tsx";
 
 export
 const JustificationTextArea =
-    ({form, format, vpHeight} : {form: UseFormReturnType<{text: string}>, format: TextFormats, vpHeight: number})
+    ({form, format, vpHeight, charLimit} :
+     {form: UseFormReturnType<{text: string}>, format: TextFormats, vpHeight: number, charLimit: number})
         : ReactElement =>
     {
-        const remaining = MAX_CHARS_FOR_JUSTIFICATION - form.getValues().text?.length;
+        const remaining = charLimit - form.getValues().text?.length;
 
         const remainingColour = remaining == 0 ? "red" : remaining < 300 ? "yellow" : "green";
 
@@ -39,7 +39,7 @@ const JustificationTextArea =
                                         return highlight(code ?? "", languages.rest, 'rest')}
                             }
                         }
-                        maxLength={MAX_CHARS_FOR_JUSTIFICATION}
+                        maxLength={charLimit}
                     />
                 </Paper>
             </ScrollArea.Autosize>
@@ -47,7 +47,7 @@ const JustificationTextArea =
                     remaining < 600 &&
                     <Group justify={'flex-end'}>
                         <Text size={"xs"} c={remainingColour}>
-                            characters used: {form.getValues().text?.length ?? 0} / {MAX_CHARS_FOR_JUSTIFICATION}
+                            characters used: {form.getValues().text?.length ?? 0} / {charLimit}
                         </Text>
                     </Group>
                 }

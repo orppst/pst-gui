@@ -11,6 +11,7 @@ import {Fieldset, Group, Text} from "@mantine/core";
 import {JustificationTextArea} from "./justifications.textArea.tsx";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {Justification} from "../../generated/proposalToolSchemas.ts";
+import {MAX_CHARS_FOR_SCIENTIFIC, MAX_CHARS_FOR_TECHNICAL} from "../../constants.tsx";
 
 function capitalizeFirstChar(string : string) : string {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -67,6 +68,7 @@ function JustificationsText(
                     form={justificationForm}
                     format={"latex"}
                     vpHeight={vpHeight}
+                    charLimit={which === "scientific" ? MAX_CHARS_FOR_SCIENTIFIC : MAX_CHARS_FOR_TECHNICAL}
                 />
                 <Group grow mt={"xs"}>
                     <FormSubmitButton

@@ -1,6 +1,5 @@
 import {ReactElement} from "react";
 import {Container, List, ScrollArea, Stack, Text} from "@mantine/core";
-import {MAX_CHARS_FOR_JUSTIFICATION} from "../../constants.tsx";
 
 export default
 function JustificationsHelp(
@@ -18,12 +17,6 @@ function JustificationsHelp(
         <Container>
             <ScrollArea h={vpHeight * 0.75} offsetScrollbars scrollbars={"y"}>
                 <Stack>
-                    {MAX_CHARS_FOR_JUSTIFICATION < 8000 &&
-                        <Text size={"sm"} c={'red'}>
-                            There is currently a limit of {MAX_CHARS_FOR_JUSTIFICATION} characters set for both
-                            the scientific and technical justifications.
-                        </Text>
-                    }
                     <Text size={"lg"} c={"orange"} fw={700}>
                         Justification Flavours
                     </Text>
