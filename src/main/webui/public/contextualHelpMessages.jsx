@@ -41,7 +41,8 @@ export const contextualHelpMessages = [
   }, {
     id: "MaintInvestAdd-eng",
     message: " "
-         + " Select a new investigator from the drop-down list."
+         + " Find a new investigator by entering their email address."
+         + " If not found, please contact them to ensure they are registered on Polaris with that email."
          + " They will automatically be assigned as a co-investigator."
          + " Tick the PhD box if this work forms part of their PhD."
          + " Save your changes with the Save button at bottom right, or cancel and return without saving by clicking the Cancel button."
