@@ -3,12 +3,12 @@ import {
     fetchPersonResourceGetPerson,
     useInvestigatorResourceAddPersonAsInvestigator,
     useInvestigatorResourceGetInvestigatorsAsObjects,
-    usePersonResourceGetPeople,
+    usePersonResourceGetPersonByEmail,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {InvestigatorKind} from "src/generated/proposalToolSchemas.ts";
-import {Checkbox, ComboboxData, Grid, Select, Stack} from "@mantine/core";
+import {Checkbox, Grid, Select, Stack, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import CancelButton from "src/commonButtons/cancel.tsx";
@@ -29,32 +29,34 @@ function AddInvestigatorPanel(): ReactElement {
     interface newInvestigatorForm {
       type: InvestigatorKind,
       forPhD: boolean,
-      selectedInvestigator: number
+      foundInvestigator: String
     }
     const {fetcherOptions} = useProposalToolContext();
 
+    const [investigatorEmail, setInvestigatorEmail] = useState("")
+
+    const [investigatorName, setInvestigatorName] = useState("Not found");
 
     const form = useForm<newInvestigatorForm>({
         initialValues: {
             type: "COI" as InvestigatorKind,
             forPhD: false,
-            selectedInvestigator: 0},
+            foundInvestigator: "Not found",
+        },
         validate: {
             type: (value) => (value != null ? null
                 : 'Please select an investigator type'),
-            selectedInvestigator: (value) => (
-                value === 0 || value === null ? 'Please select an investigator' : null)
         }
     });
     const typeData = [{value: "COI", label: "CO-I"}, {value: "PI", label: "PI"}];
-    const [searchData, setSearchData] = useState<ComboboxData>([]);
+
     const navigate = useNavigate();
     const { selectedProposalCode } = useParams();
     const queryClient = useQueryClient();
     //Get all people in the database
-    const allPeople = usePersonResourceGetPeople(
+    const foundPeople = usePersonResourceGetPersonByEmail(
         {
-            queryParams: { name: '%' },
+            queryParams: { email: investigatorEmail },
         },
         {
             enabled: true,
@@ -64,26 +66,21 @@ function AddInvestigatorPanel(): ReactElement {
     //Get all investigators tied to this proposal
     const currentInvestigators
         = useInvestigatorResourceGetInvestigatorsAsObjects({pathParams: {proposalCode: Number(selectedProposalCode)}});
-/*
-    //Get details of the currently selected person
-    let selectedPerson = usePersonResourceGetPerson(
-        {pathParams:{id: form.values.selectedInvestigator}})
-*/
-    useEffect(() => {
-        if(allPeople.status === 'success' && currentInvestigators.status === 'success') {
-            setSearchData([]);
-            allPeople.data?.map((item) => {
-                if(!currentInvestigators.data.some(i => i.person?._id == item.dbid))
-                    setSearchData((current) => [...current, {
-                        value: String(item.dbid), label: item.name}] as ComboboxData)
-            })
-        }
-    },[allPeople.status, allPeople.data, currentInvestigators.status, currentInvestigators.data]);
 
-    if (allPeople.error) {
+    useEffect(() => {
+        if(foundPeople.status === 'success' && currentInvestigators.status === 'success') {
+            setInvestigatorName(foundPeople.data.name!);
+            form.setFieldValue("foundInvestigator", foundPeople.data.name!);
+            if(currentInvestigators.data.some(i => i.person?._id == foundPeople.data.dbid)) {
+                console.log("Already an investigator!");
+            }
+        }
+    },[foundPeople.status, foundPeople.data, currentInvestigators.status, currentInvestigators.data]);
+
+    if (foundPeople.error) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(allPeople.error, null, JSON_SPACES)}</pre>
+                <pre>{JSON.stringify(foundPeople.error, null, JSON_SPACES)}</pre>
             </PanelFrame>
         );
     }
@@ -107,7 +104,7 @@ function AddInvestigatorPanel(): ReactElement {
 
     const handleAdd = form.onSubmit((val) => {
         fetchPersonResourceGetPerson(
-            {...fetcherOptions, pathParams:{id: val.selectedInvestigator}})
+            {...fetcherOptions, pathParams:{id: foundPeople.data?.dbid!}})
             .then((selectedPerson) => {
                 if (selectedPerson != undefined) {
                     addInvestigatorMutation.mutate(
@@ -145,22 +142,34 @@ function AddInvestigatorPanel(): ReactElement {
                             label={"Is this for a PHD?"}
                             {...form.getInputProps("forPhD")}
                         />
-                        <Select
-                            label="Select an investigator"
-                            searchable
-                            data={searchData}
-                            {...form.getInputProps("selectedInvestigator")}
+
+                        <Grid>
+                            <Grid.Col span={5}>
+                        <TextInput
+                                   label={'email'}
+                                   value={investigatorEmail}
+                                   placeholder={'Search by email address'}
+                                   onChange={(e: { target: { value: string; }; }) =>
+                                       setInvestigatorEmail(e.target.value)}
                         />
+                            </Grid.Col>
+                            <Grid.Col span={7} c={investigatorName=='Not found'?'red':'green'}>
+                                <TextInput
+                                    label={'Investigator name'}
+                                    readOnly={true}
+                                    {...form.getInputProps('foundInvestigator')} />
+                            </Grid.Col>
+                        </Grid>
+
+
+                        <Grid >
+                           <Grid.Col span={9}></Grid.Col>
+                              <FormSubmitButton form={form} />
+                              <CancelButton
+                                 onClickEvent={handleCancel}
+                                 toolTipLabel={"Go back without saving"}/>
+                         </Grid>
                     </Stack>
-                    <p> </p>
-                    <Grid >
-                       <Grid.Col span={9}></Grid.Col>
-                          <FormSubmitButton form={form} />
-                          <CancelButton
-                             onClickEvent={handleCancel}
-                             toolTipLabel={"Go back without saving"}/>
-                     </Grid>
-                     <p> </p>
                 </form>
             </PanelFrame>
     )

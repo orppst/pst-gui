@@ -3072,6 +3072,70 @@ export const usePersonResourceCreatePerson = (
   });
 };
 
+export type PersonResourceGetPersonByEmailQueryParams = {
+  email?: string;
+};
+
+export type PersonResourceGetPersonByEmailError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceGetPersonByEmailVariables = {
+  queryParams?: PersonResourceGetPersonByEmailQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceGetPersonByEmail = (
+  variables: PersonResourceGetPersonByEmailVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.ObjectIdentifier,
+    PersonResourceGetPersonByEmailError,
+    undefined,
+    {},
+    PersonResourceGetPersonByEmailQueryParams,
+    {}
+  >({
+    url: "/pst/api/people/email/{email}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const usePersonResourceGetPersonByEmail = <
+  TData = Schemas.ObjectIdentifier,
+>(
+  variables: PersonResourceGetPersonByEmailVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ObjectIdentifier,
+      PersonResourceGetPersonByEmailError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.ObjectIdentifier,
+    PersonResourceGetPersonByEmailError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/people/email/{email}",
+      operationId: "personResourceGetPersonByEmail",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchPersonResourceGetPersonByEmail(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type PersonResourceGetPersonPathParams = {
   /**
    * @format int64
@@ -9476,71 +9540,6 @@ export const useJustificationsResourceDownloadLatexPdf = <TData = undefined,>(
   });
 };
 
-export type JustificationsResourceGetLatexPdfPagesPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type JustificationsResourceGetLatexPdfPagesError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceGetLatexPdfPagesVariables = {
-  pathParams: JustificationsResourceGetLatexPdfPagesPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceGetLatexPdfPages = (
-  variables: JustificationsResourceGetLatexPdfPagesVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    JustificationsResourceGetLatexPdfPagesError,
-    undefined,
-    {},
-    {},
-    JustificationsResourceGetLatexPdfPagesPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/pages",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceGetLatexPdfPages = <TData = undefined,>(
-  variables: JustificationsResourceGetLatexPdfPagesVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      undefined,
-      JustificationsResourceGetLatexPdfPagesError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    undefined,
-    JustificationsResourceGetLatexPdfPagesError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/pages",
-      operationId: "justificationsResourceGetLatexPdfPages",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchJustificationsResourceGetLatexPdfPages(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
 export type JustificationsResourceGetJustificationPathParams = {
   /**
    * @format int64
@@ -13734,6 +13733,11 @@ export type QueryOperation =
       variables: PersonResourceGetPeopleVariables;
     }
   | {
+      path: "/pst/api/people/email/{email}";
+      operationId: "personResourceGetPersonByEmail";
+      variables: PersonResourceGetPersonByEmailVariables;
+    }
+  | {
       path: "/pst/api/people/{id}";
       operationId: "personResourceGetPerson";
       variables: PersonResourceGetPersonVariables;
@@ -13962,11 +13966,6 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/download";
       operationId: "justificationsResourceDownloadLatexPdf";
       variables: JustificationsResourceDownloadLatexPdfVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/pages";
-      operationId: "justificationsResourceGetLatexPdfPages";
-      variables: JustificationsResourceGetLatexPdfPagesVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/justifications/{which}";
