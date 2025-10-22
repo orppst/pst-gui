@@ -15,7 +15,7 @@ import {useForm} from "@mantine/form";
 import {useQueryClient} from "@tanstack/react-query";
 import {FormSubmitButton} from 'src/commonButtons/save';
 import CancelButton from "src/commonButtons/cancel.tsx";
-import { MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS } from "src/constants";
+import {MAX_CHARS_FOR_INPUTS, MAX_CHARS_FOR_SUMMARY, ROWS_SUMMARY} from "src/constants";
 import MaxCharsForInputRemaining from "src/commonInputs/remainingCharacterCount.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
@@ -115,14 +115,15 @@ const kindData = [
                         </Grid.Col>
                     </Grid>
                     <Textarea name="summary"
-                        rows={TEXTAREA_MAX_ROWS}
-                        maxLength={MAX_CHARS_FOR_INPUTS}
+                        rows={ROWS_SUMMARY}
+                        maxLength={MAX_CHARS_FOR_SUMMARY}
                         placeholder="A brief summary"
                         label={"Summary"}
                         {...form.getInputProps("summary")}
                     />
                     <MaxCharsForInputRemaining
                         length={form.values.summary.length}
+                        limit={MAX_CHARS_FOR_SUMMARY}
                     />
                      <FormSubmitButton form={form} />
                      <CancelButton

@@ -18,6 +18,8 @@ export const TABLE_HIGH_LIGHT_COLOR = 'var(--mantine-color-blue-light)';
 
 export const MAX_CHARS_FOR_INPUTS = 255;
 
+export const MAX_CHARS_FOR_SUMMARY = 1000;
+
 export const MAX_CHARS_FOR_SCIENTIFIC = 15000;
 export const MAX_CHARS_FOR_TECHNICAL = 10000;
 
@@ -49,8 +51,7 @@ export const MAX_COLUMNS = 12;
 // the number of decimal places to display numbers
 export const DEFAULT_DECIMAL_PLACE = 3;
 
-// the number of rows a text area should use.
-export const TEXTAREA_MAX_ROWS = 3;
+export const ROWS_SUMMARY = 9;
 
 // the default font weight for headers
 export const HEADER_FONT_WEIGHT = 700;
