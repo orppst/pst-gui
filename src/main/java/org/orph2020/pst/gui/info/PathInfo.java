@@ -4,6 +4,7 @@ package org.orph2020.pst.gui.info;
  */
 
 import io.quarkus.runtime.LaunchMode;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -15,6 +16,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 @Path("/api-info")
+@RolesAllowed("default-roles-orppst")
 public class PathInfo {
    @GET
   @Produces(MediaType.TEXT_PLAIN)

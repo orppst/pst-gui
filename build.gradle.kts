@@ -7,7 +7,7 @@ version = "0.7"
 dependencies {
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
     implementation("io.quarkus:quarkus-rest-client-reactive-jackson")
-    implementation("io.quarkiverse.quinoa:quarkus-quinoa:2.2.5")
+    implementation("io.quarkiverse.quinoa:quarkus-quinoa:2.3.10")
     implementation("io.quarkus:quarkus-reactive-routes")
     implementation("io.quarkus:quarkus-websockets")
     implementation("io.quarkus:quarkus-smallrye-jwt")

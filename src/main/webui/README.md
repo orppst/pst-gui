@@ -43,6 +43,5 @@ follows  https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-ap
 * see https://github.com/quarkiverse/quarkus-quinoa/issues/299 for issues regarding serving 
 off non-root deployment url
 
-* https://github.com/brillout/awesome-react-components 
-
-
+* https://github.com/brillout/awesome-react-components
+* https://overreacted.io/a-complete-guide-to-useeffect/
