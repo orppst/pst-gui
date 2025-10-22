@@ -16,7 +16,7 @@ import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
-import {Investigator, InvestigatorKind} from 'src/generated/proposalToolSchemas.ts';
+import {Investigator, InvestigatorKind, Organization, Person} from 'src/generated/proposalToolSchemas.ts';
 import { ProposalContext } from 'src/App2.tsx';
 import { useModals } from "@mantine/modals";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -42,6 +42,10 @@ let PiCount = 0;
  */
 function InvestigatorsPanel(): ReactElement {
     const { selectedProposalCode } = useParams();
+    //Cache the people and institutes
+    let allPeople: Person[] = new Array();
+    let allOrganizations: Organization[] = new Array();
+    
     const { data , status, error, isLoading } =
         useInvestigatorResourceGetInvestigatorsAsObjects(
             {pathParams: { proposalCode: Number(selectedProposalCode)},},
@@ -97,8 +101,20 @@ function InvestigatorsPanel(): ReactElement {
                         <Table.Tbody>
                             {data?.map((item) => {
                                 if(item.person !== undefined) {
-                                    return (<InvestigatorsRow investigator={item}
-                                                              key={item.person._id}/>)
+                                    let thisInvestigator = item;
+                                    if(item.person._id !== undefined)
+                                        allPeople.push(item.person);
+                                    else
+                                        thisInvestigator.person = allPeople.find(p => item.person === p._id);
+
+                                    if(thisInvestigator.person?.homeInstitute?._id !== undefined)
+                                        allOrganizations.push(thisInvestigator.person.homeInstitute)
+                                    else
+                                        thisInvestigator.person!.homeInstitute =
+                                            allOrganizations.find(i => thisInvestigator.person?.homeInstitute === i._id)
+
+                                    return (<InvestigatorsRow investigator={thisInvestigator!}
+                                                              key={item._id}/>)
                                 } else {
                                     return (
                                         <Box key={randomId()}>

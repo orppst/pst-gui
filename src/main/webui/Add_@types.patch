@@ -1,5 +1,5 @@
 --- proposalToolSchemas.ts.orig	2025-10-08 10:03:18
-+++ proposalToolSchemas.ts	2025-10-08 10:08:13
++++ proposalToolSchemas.ts	2025-10-21 16:30:20
 @@ -56,6 +56,8 @@
   * A block of resources that have been allocated
   */
@@ -183,10 +183,11 @@
   * Defines collection of resources and proposals for a particular observing season
   */
  export type ProposalCycle = {
-+  _id?: number
-   /**
+-  /**
 -   * An organisation that can perform astronomical observations
 -   */
++  _id?: number
++  /**
 +  * An organisation that can perform astronomical observations
 +  */
    observatory?: Observatory;
@@ -344,3 +345,15 @@
    note?: string;
    isAvoidConstraint?: boolean;
    /**
+@@ -1862,11 +1915,6 @@
+ /**
+  * @format binary
+  */
+-export type UploadLatexResourceSchema = Blob;
+-
+-/**
+- * @format binary
+- */
+ export type UploadTargetList = Blob;
+ 
+ export type UserConsentRepresentation = {

@@ -18,7 +18,7 @@ import {
 import {
     CalibrationObservation,
     CalibrationTargetIntendedUse,
-    Investigator, ObjectIdentifier,
+    Investigator, ObjectIdentifier, Organization, Person,
     RealQuantity, Target,
 } from 'src/generated/proposalToolSchemas.ts';
 import { IconNorthStar } from '@tabler/icons-react';
@@ -350,10 +350,27 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      * @constructor
      */
     const DisplayInvestigators = (): ReactElement => {
+        //Cache the people and institutes
+        let allPeople: Person[] = new Array();
+        let allOrganizations: Organization[] = new Array();
 
         const investigators = proposalsData?.investigators?.map(
-            (investigator) => (
-                <Accordion.Item key={investigator.person?.orcidId?.value}
+            (item) => {
+                let investigator = item;
+                if (item.person !== undefined)
+                {
+                    if (item.person._id !== undefined)
+                        allPeople.push(item.person);
+                    else
+                        investigator.person = allPeople.find(p => item.person === p._id);
+
+                    if (investigator.person?.homeInstitute?._id !== undefined)
+                        allOrganizations.push(investigator.person.homeInstitute)
+                    else
+                        investigator.person!.homeInstitute =
+                            allOrganizations.find(i => investigator.person?.homeInstitute === i._id)
+                };
+                return (<Accordion.Item key={investigator._id}
                                 value={investigator.person?.fullName!}>
                     <Accordion.Control>
                         <InvestigatorAccordionLabel
@@ -365,8 +382,8 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     <Accordion.Panel>
                         <InvestigatorAccordionContent {...investigator} />
                     </Accordion.Panel>
-                </Accordion.Item>
-        ))
+                </Accordion.Item>);
+            })
 
         return (
             <>
