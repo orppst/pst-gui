@@ -4,7 +4,7 @@ import {useParams} from "react-router-dom";
 import {ProposalKind} from "../../generated/proposalToolSchemas.ts";
 import {useForm} from "@mantine/form";
 import {Fieldset, Grid, Loader, Select, Space, Stack, Textarea, TextInput} from "@mantine/core";
-import {MAX_CHARS_FOR_INPUTS, TEXTAREA_MAX_ROWS} from "../../constants.tsx";
+import {MAX_CHARS_FOR_INPUTS, MAX_CHARS_FOR_SUMMARY, ROWS_SUMMARY} from "../../constants.tsx";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 import {
     useProposalResourceChangeKind,
@@ -152,14 +152,17 @@ function TitleSummaryKind() : ReactElement {
             <Stack>
                 <Textarea
                     label={"Summary"}
-                    rows={TEXTAREA_MAX_ROWS}
-                    maxLength={MAX_CHARS_FOR_INPUTS}
+                    rows={ROWS_SUMMARY}
+                    maxLength={MAX_CHARS_FOR_SUMMARY}
                     description={"saves after a pause in typing"}
                     name="summary"
                     value={summary}
                     onChange={handleSummaryChange}
                 />
-                <MaxCharsForInputRemaining length={summary?.length ?? 0} />
+                <MaxCharsForInputRemaining
+                    length={summary?.length ?? 0}
+                    limit={MAX_CHARS_FOR_SUMMARY}
+                />
             </Stack>
         )
     }

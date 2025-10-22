@@ -99,7 +99,7 @@ function JustificationsHelp(
                     <Text size={"sm"}>
                         The 'filename' parameter should be the name of the image file that you wish to
                         reference. For multiple figure cases, the 'filename' should be the name of the
-                        of the first filename parameter. Of course, you can choose not to use these functions
+                        first filename parameter. Of course, you can choose not to use these functions
                         and instead use the standard LaTeX commands for inserting figures.
                     </Text>
 
