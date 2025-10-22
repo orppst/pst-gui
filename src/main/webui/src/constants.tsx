@@ -21,7 +21,7 @@ export const MAX_CHARS_FOR_INPUTS = 255;
 export const MAX_CHARS_FOR_SUMMARY = 1000;
 
 export const MAX_CHARS_FOR_SCIENTIFIC = 15000;
-export const MAX_CHARS_FOR_TECHNICAL = 10000;
+export const MAX_CHARS_FOR_TECHNICAL = 5000;
 
 export const MAX_CHARS_FOR_REVIEW = 2048;
 
