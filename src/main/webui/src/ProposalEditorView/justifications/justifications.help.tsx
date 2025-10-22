@@ -69,7 +69,9 @@ function JustificationsHelp(
                         the multiple figure cases. If supplied, the width parameter for the multiple figure
                         cases applies to each of the images in the figure, rather than the whole figure itself.
                         The 'filename' parameter should match the name of the image file that you wish to
-                        insert, excluding the dot extension.
+                        insert. You may exclude the dot extension should you so wish, just remember to also
+                        exclude it when referencing the figure (the filename parameter is used as part of the
+                        figure label).
                     </Text>
                     <Text size={"sm"}>
                         Notice that the two figure and three figure functions will place the images in a
