@@ -122,8 +122,8 @@ export const contextualHelpMessages = [
     message: " "
         + " Select the 'type' observation, either 'Target' or 'Calibration'. "
         + " A 'Calibration Observation' requires you pick an intended use e.g., Pointing, Bandpass, etc."
-        + " You must select at least one Target, and one Technical Goal. "
-        + " At least one 'Timing Window' is required. Here you must provide start and end dates-times for the window. "
+        + " You must select at least one Target, and exactly one Technical Goal. "
+        + " 'Timing Windows' are optional. If you must provide one then you have to define both start and end dates-times for the window. "
         + " Notice that the end date-time must be after the start date-time. "
         + " The semantics of the avoid flag is to communicate a timing window that must be avoided for this observation. You may also add a brief optional note."
   }, {
