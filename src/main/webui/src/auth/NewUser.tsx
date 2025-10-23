@@ -74,7 +74,7 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
         validate: {
             email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
             termsOfService: (value) => value ?
-                null : 'Please agree to the terms-of-service (I\'m pretty certain we removed the clause about selling your soul)',
+                null : 'Please agree to the private data storage',
             organizationId: (value) =>
                 value === undefined ? 'Please select an Organization': null
         },
@@ -131,7 +131,7 @@ export function NewUser(props: {proposed:Person, uuid:string, userConfirmed:(p:P
 
                 <Checkbox
                     mt="md"
-                    label="I agree to the terms"
+                    label="I agree to private data being stored in system"
                     {...form.getInputProps('termsOfService', { type: 'checkbox' })}
                 />
 
