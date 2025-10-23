@@ -39,9 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loggedOn, setLoggedOn] = useState(false)
     const [expiringSoon, setExpiring] = useState(false)
     const [isNewUser, setIsNewUser] = useState(false);
-    const [token, setToken] = useState<string>("")//TODO what to do if token bad....
     const [user, setUser ] = useState({fullName:"Unknown"} as Person)
 
+    const token  = useRef<string>("")//TODO what to do if token bad....
     const expiry = useRef(new Date(Date.now())) //seems to be overwritten regardless
     const apiURL = useRef("")
     const expiryTimer = useRef<NodeJS.Timeout>()
@@ -51,10 +51,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const onPresenceChange = (presence:PresenceType) =>{
         const f = async () => {
             console.log("activity change = " + presence.type + " at " + new Date().toISOString())
-            clearTimeout(expiryTimer.current)
             if (presence.type === "idle") {
                 const s = await updateToken()
                 updateAuth(s) // make sure that there will be an up to date token if the user decides to carry on
+                console.log("clear expiryTimer during timeout", expiryTimer.current)
                 clearTimeout(expiryTimer.current) // but do not auto update it.
                 setExpiring(true)
             }
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         f().catch(console.log);
     }
 
-    const getToken = () => {return token}
+    const getToken = ():string => {return token.current}
 
     const idleTimer = useIdleTimer({
         onPresenceChange,
@@ -134,21 +134,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     function updateAuth(s: AuthMapping) {
-        setToken(s.token)
+        token.current = s.token
         setLoggedOn(true)
     }
 
     async function updateToken() {
 
         console.log("trying authentication");
+        console.log("clear expiryTimer", expiryTimer.current)
+        clearTimeout(expiryTimer.current)
         //request the authentication mapping object
         const s = await getUser();
         //handle the auth mapping object
         expiry.current = new Date(s.expiry)
         console.log("token: " + s.token)
         console.log("access token will expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
-            console.log("clear expiryTimer", expiryTimer.current)
-            clearTimeout(expiryTimer.current)
             const expDelay =  expiry.current.getTime()-Date.now() - secondsBeforeExpiryToReauthenticate*1000
             console.log("expiry delay =" + expDelay)
             expiryTimer.current = setTimeout(() =>{
@@ -173,10 +173,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     }
 
+    async function renewAfterSessionWarning()
+    {
+        const s = await updateToken();
+        token.current=s.token
+        setExpiring(false)
+    }
 
     const doUpdateToken = useCallback( async () =>{
        const s = await updateToken();
-        setToken(s.token)
+        token.current=s.token
     }, [])
 
     if (!loggedOn) {
@@ -185,7 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
     useEffect(() => {
-        if(loggedOn && token === "") {
+        if(loggedOn && token.current == "") {
             doUpdateToken()
         }
     },[loggedOn]);
@@ -226,7 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             {
                 <>
                     <div>Session about to time out in {count} seconds</div>
-                    <Button onClick={()=> {updateToken().then(updateAuth).catch(console.log); setExpiring(false)}}>Click to continue</Button>
+                    <Button onClick={()=> {renewAfterSessionWarning().catch(console.log)}}>Click to continue</Button>
                 </>
             }
         </Modal>
