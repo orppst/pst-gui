@@ -95,7 +95,7 @@ export default function ValidationOverview(props: {
                                 :s.includes("No technical goals defined")?
                                     <NavLink to={"/proposal/"+selectedProposalCode+"/goals"}
                                              component={Link} label={s} c={p.color}/>
-                                        :s.includes("Justification PDF")?
+                                        :s.includes("Justification PDF") || s.includes("justification")?
                                             <NavLink to={"/proposal/"+selectedProposalCode+"/justifications"}
                                                 component={Link} label={s} c={p.color}/>
                                         :<Text size={"sm"} c={p.color}>{s}</Text>
