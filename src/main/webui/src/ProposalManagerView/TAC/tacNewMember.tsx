@@ -1,13 +1,12 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
     fetchReviewerResourceAddReviewer,
-    fetchReviewerResourceGetReviewer, usePersonResourceGetPersonByEmail, useReviewerResourceAddReviewer,
-    useReviewerResourceGetReviewers,
+    usePersonResourceGetPersonByEmail,
     useTACResourceAddCommitteeMember,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {Person, Reviewer, TacRole} from "src/generated/proposalToolSchemas.ts";
+import {Reviewer, TacRole} from "src/generated/proposalToolSchemas.ts";
 import {Grid, Select, Stack, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
@@ -16,7 +15,6 @@ import { JSON_SPACES } from 'src/constants.tsx';
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {useToken} from "../../App2.tsx";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
