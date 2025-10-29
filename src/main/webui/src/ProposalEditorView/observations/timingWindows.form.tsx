@@ -150,7 +150,7 @@ export default function TimingWindowsForm(
                                 lg: MAX_COLUMNS_RANGE}}>
                                 <DateInput
                                     valueFormat={"YYYY/MM/DD HH:mm"}
-                                    placeholder={"start time"}
+                                    placeholder={"start time - YYYY/MM/DD HH:mm"}
                                     minDate={new Date()}
                                     maxDate={tw.endTime != null ?
                                         tw.endTime : undefined}
@@ -162,7 +162,7 @@ export default function TimingWindowsForm(
                                 <Space h={"xs"}/>
                                 <DateInput
                                     valueFormat={"YYYY/MM/DD HH:mm"}
-                                    placeholder={"end time"}
+                                    placeholder={"end time - YYYY/MM/DD HH:mm"}
                                     minDate={tw.startTime != null?
                                         new Date() > tw.startTime ?
                                             new Date() : tw.startTime
