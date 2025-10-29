@@ -1,5 +1,5 @@
 import {Accordion, Grid, Group, Space, Switch, Textarea, Text} from "@mantine/core";
-import {DatesProvider, DateTimePicker} from "@mantine/dates";
+import {DateInput, DatesProvider} from "@mantine/dates";
 import { UseFormReturnType } from '@mantine/form';
 import {randomId} from "@mantine/hooks";
 
@@ -148,7 +148,8 @@ export default function TimingWindowsForm(
                             <Grid.Col span={{
                                 base: MAX_COLUMNS_WINDOW_TABLE,
                                 lg: MAX_COLUMNS_RANGE}}>
-                                <DateTimePicker
+                                <DateInput
+                                    valueFormat={"YYYY/MM/DD HH:mm"}
                                     placeholder={"start time"}
                                     minDate={new Date()}
                                     maxDate={tw.endTime != null ?
@@ -159,7 +160,8 @@ export default function TimingWindowsForm(
                                     rightSectionWidth={50}
                                 />
                                 <Space h={"xs"}/>
-                                <DateTimePicker
+                                <DateInput
+                                    valueFormat={"YYYY/MM/DD HH:mm"}
                                     placeholder={"end time"}
                                     minDate={tw.startTime != null?
                                         new Date() > tw.startTime ?
