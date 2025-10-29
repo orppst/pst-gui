@@ -51,6 +51,15 @@ function JustificationsHelp(
                         download them, should you so wish.
                     </Text>
 
+                    <Text size={"sm"}>
+                        Please note that image formats are restricted to '.jpg', '.png', '.eps', and '.pdf'.
+                    </Text>
+                    <Text size={"sm"}>
+                        Be aware that uploading an image file with the same filename as an existing file
+                        will overwrite that file, and there will be no warning. You cannot have multiple
+                        bibtex files.
+                    </Text>
+
                     <Text size={"md"} c={"orange"} fw={500}>
                         Custom insert figure commands
                     </Text>
@@ -125,17 +134,12 @@ function JustificationsHelp(
                     <Text size={"sm"}>
                         The 'filename' parameter should be the name of the image file that you wish to
                         reference. For multiple figure cases, the 'filename' should be the name of the
-                        first filename parameter. Of course, you can choose not to use these functions
-                        and instead use the standard LaTeX commands for inserting figures.
+                        first filename parameter.
                     </Text>
 
                     <Text size={"sm"}>
-                        Please note that image formats are restricted to '.jpg', '.png', '.eps', and '.pdf'.
-                    </Text>
-                    <Text size={"sm"}>
-                        Be aware that uploading an image file with the same filename as an existing file
-                        will overwrite that file, and there will be no warning. You cannot have multiple
-                        bibtex files.
+                        Of course, you can choose not to use these functions
+                        and instead use the standard LaTeX commands for inserting figures.
                     </Text>
 
                     <Text size={"md"} c={"orange"} fw={500}>
@@ -143,8 +147,8 @@ function JustificationsHelp(
                     </Text>
 
                     <Text size={"sm"}>
-                        Once you are satisfied that all resource files have been uploaded, you may
-                        attempt to compile your LaTeX source into a PDF by clicking the "Compile to PDF"
+                        Once you are satisfied that your texts are complete and all resource files have been uploaded,
+                        you may attempt to compile your LaTeX source into a PDF by clicking the "Compile to PDF"
                         button. After a short delay waiting for the compilation to complete on the server,
                         a modal will open displaying the status of the compilation.
                     </Text>
