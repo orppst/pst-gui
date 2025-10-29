@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Container, List, ScrollArea, Stack, Text} from "@mantine/core";
+import {Alert, Container, List, ScrollArea, Stack, Text} from "@mantine/core";
 
 export default
 function JustificationsHelp(
@@ -35,6 +35,7 @@ function JustificationsHelp(
                     <Text size={"lg"} c={"orange"} fw={700}>
                         LaTeX
                     </Text>
+
                     <Text size={"sm"}>
                         The text that you supply for both justifications will be inserted into a template
                         LaTex file saved as 'main.tex' in the backend. The text is inserted under a relevant
@@ -49,6 +50,11 @@ function JustificationsHelp(
                         so will show up in the Documents list, where you may
                         download them, should you so wish.
                     </Text>
+
+                    <Text size={"md"} c={"orange"} fw={500}>
+                        Custom insert figure commands
+                    </Text>
+
                     <Text size={"sm"}>
                         To make the insertion of figures into your document easier, we have provided custom
                         functions in the template file. These are namely:
@@ -61,6 +67,13 @@ function JustificationsHelp(
                         <List.Item>{fourFigures}</List.Item>
                         <List.Item>{textWrapFigures}</List.Item>
                     </List>
+
+                    <Alert title={"Beta version warning: textwrapfigure command"} variant={'light'}>
+                        After some additional testing of the 'textwrapfigure' custom command it has become clear
+                        that in some situations it might do some strange things to your document. Our advice would
+                        be to use it with caution, and to check the compiled document to ensure you are getting
+                        what you expected. If not, do you really need to text wrap that figure?
+                    </Alert>
 
                     <Text size={"sm"}>
                         The 'width' parameter is optional but if provided should a decimal number between 0
@@ -83,11 +96,22 @@ function JustificationsHelp(
                         each image will be labelled '(a)' through to '(d)' where appropriate.
                     </Text>
                     <Text size={"sm"}>
+                        If the multiple figure-caption layout is not to your liking, or you have more than four
+                        images to place in a figure, then you can always create your own multiple figure as a single
+                        image file and use the "onefigure" command.
+                    </Text>
+                    <Text size={"sm"}>
                         For the 'textwrapfigure' command an additional parameter specifies the position of
                         the figure you want to text-wrap. Either 'l' or 'L' for the image on the left,
                         or 'r' or 'R' for the image on the right. The uppercase version allows the image to
                         float, whereas the lowercase version means exactly here. (Our command uses the
                         'wrapfigure' environment from the 'wrapfig' package).
+                    </Text>
+
+                    <Text size={"sm"} c={"yellow"}>
+                        If you are using citations in figure captions we would advise that you put the command
+                        '\protect' before the citation command e.g., '\protect\cite'. In some cases not having
+                        the '\protect' command can cause issues when compiling.
                     </Text>
 
                     <Text size={"sm"}>
@@ -113,6 +137,11 @@ function JustificationsHelp(
                         will overwrite that file, and there will be no warning. You cannot have multiple
                         bibtex files.
                     </Text>
+
+                    <Text size={"md"} c={"orange"} fw={500}>
+                        Compiling (or when the "fun" starts)
+                    </Text>
+
                     <Text size={"sm"}>
                         Once you are satisfied that all resource files have been uploaded, you may
                         attempt to compile your LaTeX source into a PDF by clicking the "Compile to PDF"
@@ -136,9 +165,9 @@ function JustificationsHelp(
                         (greyed-out).
                     </Text>
                     <Text size={"sm"}>
-                        Be aware that the "Download PDF" button on the page will be available if a
+                        Be aware that the "Download PDF" button on this page will be available if a
                         "compiledJustification.pdf" exists in the backend, and that will be the
-                        latest <Text span c="blue" inherit>successful</Text> compilation only. If in
+                        latest <Text span c="yellow" inherit>successfully</Text> compiled version only. If in
                         doubt recompile the Justification, and check the resulting document.
                     </Text>
                 </Stack>
