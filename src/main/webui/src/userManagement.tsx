@@ -385,7 +385,7 @@ function UserManagement() : ReactElement {
                         </Stack>
                     </Fieldset>
                     <Space h={"xs"}/>
-                    <Fieldset legend={"ORCID"}>
+                    <Fieldset legend={"ORCHID"}>
                         <form onSubmit={handleOrchidIdUpdate}>
                             <TextInput
                                 label={"Orchid id"}
