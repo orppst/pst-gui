@@ -86,8 +86,8 @@ export const JSON_FILE_NAME = 'proposal.json';
 /* the filename of the overview pdf to be exported, but not imported. */
 export const OVERVIEW_PDF_FILENAME = 'ProposalOverview.pdf';
 
-/* max size of a upload zip (20 MB)*/
-export const MAX_SUPPORTING_DOCUMENT_SIZE = 100*1024*1024;
+/* max size of a upload zip (10 MB)*/
+export const MAX_SUPPORTING_DOCUMENT_SIZE = 10*1024*1024;
 
 /* Simbad URL string for its TAP service */
 export const SIMBAD_URL_TAP_SERVICE =
