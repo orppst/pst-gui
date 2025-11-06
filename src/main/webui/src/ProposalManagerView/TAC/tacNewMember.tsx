@@ -1,13 +1,13 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchReviewerResourceGetReviewer,
-    useReviewerResourceGetReviewers,
+    fetchReviewerResourceAddReviewer,
+    usePersonResourceGetPersonByEmail,
     useTACResourceAddCommitteeMember,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {TacRole} from "src/generated/proposalToolSchemas.ts";
-import {Select, Stack} from "@mantine/core";
+import {Reviewer, TacRole} from "src/generated/proposalToolSchemas.ts";
+import {Grid, Select, Stack, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
@@ -15,7 +15,7 @@ import { JSON_SPACES } from 'src/constants.tsx';
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {useToken} from "../../App2.tsx";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 /**
  * Renders form panel to add a reviewer to the TAC of the current cycle.
@@ -26,34 +26,35 @@ import {useToken} from "../../App2.tsx";
 function CycleTACAddMemberPanel(): ReactElement {
     interface newMemberForm {
         role: TacRole,
-        selectedMember: number
+        selectedMember: String
     }
 
     const addCommitteeMember =
         useTACResourceAddCommitteeMember();
 
-    const authToken = useToken();
+    const {fetcherOptions} = useProposalToolContext();
 
     const form = useForm<newMemberForm>({
         initialValues: {
             role: "Chair" as TacRole,
-            selectedMember: 0},
+            selectedMember: 'Not found'},
         validate: {
             selectedMember: (value) => (
-                value === 0 ? 'Please select a member' : null)
+                value == 'Not found' ? 'Please select a member' : null)
         }
     });
     const typeData =
         [{value: "TechnicalReviewer", label: "Technical Reviewer"},
             {value: "ScienceReviewer", label: "Science Reviewer"},
             {value: "Chair", label: "Chair"}];
-    const [searchData, setSearchData] = useState([]);
+    const [foundPerson, setFoundPerson] = useState("Not found");
+    const [personEmail, setPersonEmail] = useState("");
     const navigate = useNavigate();
     const { selectedCycleCode } = useParams();
     const queryClient = useQueryClient();
-    const { data, error, status } = useReviewerResourceGetReviewers(
+    const { data, error, status } = usePersonResourceGetPersonByEmail(
         {
-            queryParams: { name: '%' },
+            queryParams: { email: personEmail },
         },
         {
             enabled: true,
@@ -61,13 +62,9 @@ function CycleTACAddMemberPanel(): ReactElement {
     );
 
     useEffect(() => {
-        if(status === 'success') {
-            setSearchData([]);
-            data?.map((item) => (
-                // @ts-ignore
-                setSearchData((current) => [...current, {
-                    value: String(item.dbid), label: item.name}])
-            ));
+        if(status === 'success' && data?.name != null) {
+            setFoundPerson(data.name)
+            form.setFieldValue("selectedMember", data.name)
         }
     },[status,data]);
 
@@ -84,27 +81,31 @@ function CycleTACAddMemberPanel(): ReactElement {
         Could this be redesigned to avoid this?
      */
     const handleAdd = form.onSubmit((val) => {
-        //need the reviewer to add as a TAC member
-        fetchReviewerResourceGetReviewer({
-            pathParams:{
-                reviewerId: form.values.selectedMember
-            },
-            headers: {authorization: `Bearer ${authToken}`}
-        })
-            .then((data) =>
+        //Are they already a reviewer?
+        //Try adding them
+        const reviewerToAdd: Reviewer = {
+            person: {
+                _id: data?.dbid,
+                fullName: data?.name
+            }
+        }
+        fetchReviewerResourceAddReviewer({
+            body: reviewerToAdd,
+            ...fetcherOptions
+        }).then((newReviewer) =>
                 addCommitteeMember.mutate({
                     pathParams: {
                         cycleCode: Number(selectedCycleCode)
                     },
                     body:{
                         role: val.role,
-                        member: data,
+                        member: newReviewer,
                     }
                 }, {
                     onSuccess: () => {
                         queryClient.invalidateQueries()
                             .then(() => notifySuccess("TAC member added",
-                                data.person?.fullName + " added as " + val.role)
+                                newReviewer.person?.fullName + " added as " + val.role)
                             )
                             .then(() => navigate("../", {relative: "path"}))
                     },
@@ -113,7 +114,7 @@ function CycleTACAddMemberPanel(): ReactElement {
                 })
             )
             .catch((error)=>
-                notifyError("Failed to get reviewer", getErrorMessage(error))
+                notifyError("Failed to add reviewer", getErrorMessage(error))
             );
     });
 
@@ -131,12 +132,24 @@ function CycleTACAddMemberPanel(): ReactElement {
                             data={typeData}
                             {...form.getInputProps("role")}
                     />
-                    <Select
-                        label="Select a person"
-                        searchable
-                        data={searchData}
-                        {...form.getInputProps("selectedMember")}
-                    />
+                    <Grid>
+                        <Grid.Col span={5}>
+                            <TextInput
+                                label={'email'}
+                                value={personEmail}
+                                placeholder={'Search by email address'}
+                                onChange={(e: { target: { value: string; }; }) =>
+                                    setPersonEmail(e.target.value)}
+                            />
+                        </Grid.Col>
+                        <Grid.Col span={7} c={foundPerson=='Not found'?'red':'green'}>
+                            <TextInput
+                                label="Name"
+                                readOnly={true}
+                                {...form.getInputProps("selectedMember")}
+                            />
+                        </Grid.Col>
+                    </Grid>
                     <FormSubmitButton
                         label={"Add"}
                         form={form}
