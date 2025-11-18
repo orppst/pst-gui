@@ -1,7 +1,14 @@
 import {ReactElement, useEffect, useState} from "react";
 import {Table, Loader, Modal, TextInput, Stack} from "@mantine/core";
-import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import {
+    ObjectIdentifier,
+    SubmittedProposal,
+} from "../../generated/proposalToolSchemas.ts";
+import {
+    fetchJustificationsResourceCreateTACAdminPDF,
+    fetchProposalResourceExportProposal,
+    fetchSupportingDocumentResourceDownloadSupportingDocument,
+    fetchSupportingDocumentResourceGetSupportingDocuments,
     useSubmittedProposalResourceGetSubmittedProposal,
     useSubmittedProposalResourceReplaceCode
 } from "../../generated/proposalToolComponents.ts";
@@ -9,15 +16,143 @@ import {useParams} from "react-router-dom";
 import EditButton from "../../commonButtons/edit.tsx";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
-import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import {MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
+import {JSON_FILE_NAME, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
+import * as JSZip from "jszip";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import {ExportButton} from "../../commonButtons/export.tsx";
 
 /*
     We will likely want to add metadata about submitted proposals, the most useful of this being the
     submitted proposals current "status" e.g., under-review, reviewed - success/fail, allocated
  */
+
+const populateSupportingDocuments = (
+    zip: JSZip,
+    supportingDocumentData: ObjectIdentifier[] | undefined,
+    proposalCode: number,
+    authToken: string | undefined
+): Array<Promise<void>> => {
+    if(supportingDocumentData === undefined) {
+        return [];
+    }
+    return supportingDocumentData.map(async (item: ObjectIdentifier) => {
+        if (item.dbid !== undefined && item.name !== undefined) {
+            // have to destructure this, as otherwise risk of being undefined
+            // detected later.
+            let docTitle = item.name;
+
+            // ensure that if the file exists already, that it's renamed to
+            // avoid issues of overwriting itself in the zip.
+            while (zip.files[docTitle]) {
+                docTitle = docTitle + "1"
+            }
+
+            // extract the document and save into the zip.
+            await fetchSupportingDocumentResourceDownloadSupportingDocument({
+                headers: {authorization: `Bearer ${authToken}`},
+                pathParams: {
+                    proposalCode: proposalCode,
+                    id: item.dbid
+                }
+            })
+                .then((blob) => {
+                    // ensure we got some data back.
+                    if (blob !== undefined) {
+                        zip.file(docTitle, blob)
+                    }
+                })
+        }
+    });
+}
+
+function prepareToDownloadProposal(
+    fullProposal: SubmittedProposal,
+    authToken: string | undefined,
+): void {
+    if (fullProposal !== undefined && fullProposal._id !== undefined) {
+        fetchJustificationsResourceCreateTACAdminPDF(
+            {
+                pathParams: {proposalCode: fullProposal._id},
+                headers: {authorization: `Bearer ${authToken}`},
+            })
+            .then(() => {
+                //Pdf should now be generated, next get the supporting documents
+                fetchSupportingDocumentResourceGetSupportingDocuments({
+                    pathParams: {proposalCode: fullProposal._id!},
+                    headers: {authorization: `Bearer ${authToken}`},
+                })
+                    .then(documentList => {
+                        // can go for a download of everything
+                        downloadProposal(fullProposal, documentList, authToken)
+                    })
+                    .catch(e => {notifyError("Download Error", getErrorMessage(e));});
+            })
+            .catch((e) => {notifyError("Unable to compile pdf", getErrorMessage(e))});
+    }
+    else {
+        notifyError("Download Error", "Submitted proposal is empty!");
+    }
+}
+
+function downloadProposal(
+    submittedProposal: SubmittedProposal,
+    supportingDocuments: ObjectIdentifier[] | undefined,
+    authToken: string | undefined,
+): void {
+
+    notifyInfo("Submitted Proposal Export Started",
+        "An export has started and the download will begin shortly");
+
+    // build the zip object and populate with the corresponding documents.
+    let zip = new JSZip();
+    // @ts-ignore
+    zip = zip.file(submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/\s/g,"").substring(0,21)+".zip");
+
+    // add supporting documents to the zip.
+    const promises = populateSupportingDocuments(
+        zip, supportingDocuments, submittedProposal._id!, authToken,
+    );
+
+    promises.push(
+        fetchProposalResourceExportProposal({
+            headers: {authorization: `Bearer ${authToken}`},
+            pathParams: {
+                proposalCode: submittedProposal._id!
+            }
+        })
+            .then((blob)=> {
+                zip.file(JSON_FILE_NAME, blob!)
+            })
+            .catch((error)=>
+                notifyError("Export Error", getErrorMessage(error))
+            )
+    );
+
+    // ensure all supporting docs populated before making zip.
+    Promise.all(promises).then(
+        () => {
+            // generate the zip file.
+            zip.generateAsync({type: "blob"})
+                .then((zipData: Blob | MediaSource) => {
+                    // Create a download link for the zip file
+                    const link = document.createElement("a");
+                    link.href = window.URL.createObjectURL(zipData);
+                    link.download=submittedProposal.title?.replace(/\s/g,"").substring(0,21)+".zip";
+                    link.click();
+                })
+                .then(()=>
+                    notifySuccess("Proposal Export Complete", "proposal exported and downloaded")
+                )
+                .catch((error:Error) =>
+                    notifyError("Proposal Export Failed", getErrorMessage(error))
+                )
+        }
+    )
+}
+
 
 type SubmittedTableRowProps = {
     cycleCode: number,
@@ -27,13 +162,15 @@ type SubmittedTableRowProps = {
 
 function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElement {
     const codeMutation = useSubmittedProposalResourceReplaceCode();
+    const {fetcherOptions} = useProposalToolContext();
 
     const submittedProposal =
         useSubmittedProposalResourceGetSubmittedProposal({
             pathParams: {
                 cycleCode: rowProps.cycleCode,
                 submittedProposalId: rowProps.submittedProposalId
-            }
+            },
+            headers: fetcherOptions.headers,
         })
 
     const [reviewsCompleteAndLocked, setReviewsCompleteAndLocked] = useState(false)
@@ -137,6 +274,14 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
                 />
             </Table.Td>
             <Table.Td>{submittedProposal.data?.title}</Table.Td>
+            <Table.Td>
+                <ExportButton
+                    onClick={() => prepareToDownloadProposal(submittedProposal.data!, fetcherOptions.headers?.authorization)}
+                    toolTipLabel={"Download a zip file of the PDF proposal and it's supporting documents"}
+                    label={"Zip"}
+                >
+                </ExportButton>
+            </Table.Td>
             <Table.Td c={proposalAccepted ? "green" : reviewsCompleteAndLocked ? "red" : "blue"}>
                 {
                     proposalAccepted ? "accepted" :
@@ -159,7 +304,8 @@ function SubmittedProposalsTable(submittedProposals: ObjectIdentifier[]) : React
             <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Code</Table.Th>
-                    <Table.Th>Proposal Title</Table.Th>
+                    <Table.Th>Title</Table.Th>
+                    <Table.Th>Download</Table.Th>
                     <Table.Th>Current Status</Table.Th>
                 </Table.Tr>
             </Table.Thead>
