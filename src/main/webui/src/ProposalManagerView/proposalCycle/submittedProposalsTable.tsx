@@ -5,7 +5,7 @@ import {
     SubmittedProposal,
 } from "../../generated/proposalToolSchemas.ts";
 import {
-    fetchJustificationsResourceCreateTACAdminPDF,
+    fetchJustificationsResourceCreateTACAdminPDF, fetchJustificationsResourceDownloadLatexPdf,
     fetchProposalResourceExportProposal,
     fetchSupportingDocumentResourceDownloadSupportingDocument,
     fetchSupportingDocumentResourceGetSupportingDocuments,
@@ -76,13 +76,13 @@ function prepareToDownloadProposal(
         fetchJustificationsResourceCreateTACAdminPDF(
             {
                 pathParams: {proposalCode: fullProposal._id},
-                headers: {authorization: `Bearer ${authToken}`},
+                headers: {authorization: `${authToken}`},
             })
             .then(() => {
                 //Pdf should now be generated, next get the supporting documents
                 fetchSupportingDocumentResourceGetSupportingDocuments({
                     pathParams: {proposalCode: fullProposal._id!},
-                    headers: {authorization: `Bearer ${authToken}`},
+                    headers: {authorization: `${authToken}`},
                 })
                     .then(documentList => {
                         // can go for a download of everything
@@ -115,7 +115,7 @@ function downloadProposal(
     const promises = populateSupportingDocuments(
         zip, supportingDocuments, submittedProposal._id!, authToken,
     );
-
+/*
     promises.push(
         fetchProposalResourceExportProposal({
             headers: {authorization: `Bearer ${authToken}`},
@@ -130,6 +130,19 @@ function downloadProposal(
                 notifyError("Export Error", getErrorMessage(error))
             )
     );
+*/
+    promises.push(
+        fetchJustificationsResourceDownloadLatexPdf({
+            pathParams: {proposalCode: submittedProposal._id!},
+            headers: {authorization: `${authToken}`},
+        }).then((blob) => {
+            if (blob !== undefined) {
+                zip.file(`${submittedProposal.proposalCode} ${submittedProposal.title?.replace(/\s/g, "").substring(0, 21)}.zip`, blob)
+            }
+        })
+    )
+
+
 
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(
