@@ -108,41 +108,22 @@ function downloadProposal(
 
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
-    // @ts-ignore
-    zip = zip.file(submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/\s/g,"").substring(0,21)+".zip");
 
     // add supporting documents to the zip.
     const promises = populateSupportingDocuments(
         zip, supportingDocuments, submittedProposal._id!, authToken,
     );
-/*
-    promises.push(
-        fetchProposalResourceExportProposal({
-            headers: {authorization: `Bearer ${authToken}`},
-            pathParams: {
-                proposalCode: submittedProposal._id!
-            }
-        })
-            .then((blob)=> {
-                zip.file(JSON_FILE_NAME, blob!)
-            })
-            .catch((error)=>
-                notifyError("Export Error", getErrorMessage(error))
-            )
-    );
-*/
+
     promises.push(
         fetchJustificationsResourceDownloadLatexPdf({
             pathParams: {proposalCode: submittedProposal._id!},
             headers: {authorization: `${authToken}`},
         }).then((blob) => {
             if (blob !== undefined) {
-                zip.file(`${submittedProposal.proposalCode} ${submittedProposal.title?.replace(/\s/g, "").substring(0, 21)}.zip`, blob)
+                zip.file(`${submittedProposal.proposalCode} ${submittedProposal.title?.replace(/\s/g, "").substring(0, 21)}.pdf`, blob)
             }
         })
     )
-
-
 
     // ensure all supporting docs populated before making zip.
     Promise.all(promises).then(
@@ -153,7 +134,7 @@ function downloadProposal(
                     // Create a download link for the zip file
                     const link = document.createElement("a");
                     link.href = window.URL.createObjectURL(zipData);
-                    link.download=submittedProposal.title?.replace(/\s/g,"").substring(0,21)+".zip";
+                    link.download=submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/\s/g,"").substring(0,21)+".zip";
                     link.click();
                 })
                 .then(()=>
