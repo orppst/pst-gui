@@ -53,7 +53,7 @@ const populateSupportingDocuments = (
 
             // extract the document and save into the zip.
             await fetchSupportingDocumentResourceDownloadSupportingDocument({
-                headers: {authorization: `Bearer ${authToken}`},
+                headers: {authorization: `${authToken}`},
                 pathParams: {
                     proposalCode: proposalCode,
                     id: item.dbid
@@ -76,8 +76,7 @@ function prepareToDownloadProposal(
     authToken: string | undefined,
 ): void {
     if (fullProposal !== undefined && fullProposal._id !== undefined) {
-        fetchJustificationsResourceCreateTACAdminPDF(
-            {
+        fetchJustificationsResourceCreateTACAdminPDF({
                 pathParams: {proposalCode: fullProposal._id},
                 headers: {authorization: `${authToken}`},
             })
