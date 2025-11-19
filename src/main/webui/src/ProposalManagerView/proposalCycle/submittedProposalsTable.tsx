@@ -5,8 +5,8 @@ import {
     SubmittedProposal,
 } from "../../generated/proposalToolSchemas.ts";
 import {
-    fetchJustificationsResourceCreateTACAdminPDF, fetchJustificationsResourceDownloadLatexPdf,
-    fetchProposalResourceExportProposal,
+    fetchJustificationsResourceCreateTACAdminPDF,
+    fetchJustificationsResourceDownloadLatexPdf,
     fetchSupportingDocumentResourceDownloadSupportingDocument,
     fetchSupportingDocumentResourceGetSupportingDocuments,
     useSubmittedProposalResourceGetSubmittedProposal,
@@ -23,6 +23,7 @@ import {JSON_FILE_NAME, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import * as JSZip from "jszip";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {ExportButton} from "../../commonButtons/export.tsx";
+import {HaveRole} from "../../auth/Roles.tsx";
 
 /*
     We will likely want to add metadata about submitted proposals, the most useful of this being the
@@ -64,6 +65,8 @@ const populateSupportingDocuments = (
                         zip.file(docTitle, blob)
                     }
                 })
+                .catch((err) => {
+                    notifyError("Download supporting documents", getErrorMessage(err));});
         }
     });
 }
@@ -109,6 +112,9 @@ function downloadProposal(
     // build the zip object and populate with the corresponding documents.
     let zip = new JSZip();
 
+    // Fudge in the .json file
+    zip = zip.file(JSON_FILE_NAME, JSON.stringify(submittedProposal,null, 2));
+
     // add supporting documents to the zip.
     const promises = populateSupportingDocuments(
         zip, supportingDocuments, submittedProposal._id!, authToken,
@@ -120,7 +126,7 @@ function downloadProposal(
             headers: {authorization: `${authToken}`},
         }).then((blob) => {
             if (blob !== undefined) {
-                zip.file(`${submittedProposal.proposalCode} ${submittedProposal.title?.replace(/\s/g, "").substring(0, 21)}.pdf`, blob)
+                zip.file(`${submittedProposal.proposalCode} ${submittedProposal.title?.replace(/\s/g, "").substring(0, 30)}.pdf`, blob)
             }
         })
     )
@@ -134,7 +140,7 @@ function downloadProposal(
                     // Create a download link for the zip file
                     const link = document.createElement("a");
                     link.href = window.URL.createObjectURL(zipData);
-                    link.download=submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/\s/g,"").substring(0,21)+".zip";
+                    link.download=submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/\s/g,"").substring(0,30)+".zip";
                     link.click();
                 })
                 .then(()=>
@@ -261,21 +267,21 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
                 </form>
             </Modal>
             <Table.Td>
-                <EditButton
+                {HaveRole(["tac_admin"]) ? (<EditButton
                     toolTipLabel={'Change proposal code'}
                     label={submittedProposal.data?.proposalCode}
                     onClick={() => setEditModalOpen(true)}
-                />
+                />) : (submittedProposal.data?.proposalCode) }
             </Table.Td>
             <Table.Td>{submittedProposal.data?.title}</Table.Td>
-            <Table.Td>
+            {HaveRole(["tac_admin"]) && (<Table.Td>
                 <ExportButton
                     onClick={() => prepareToDownloadProposal(submittedProposal.data!, fetcherOptions.headers?.authorization)}
                     toolTipLabel={"Download a zip file of the PDF proposal and it's supporting documents"}
                     label={"Zip"}
                 >
                 </ExportButton>
-            </Table.Td>
+            </Table.Td>)}
             <Table.Td c={proposalAccepted ? "green" : reviewsCompleteAndLocked ? "red" : "blue"}>
                 {
                     proposalAccepted ? "accepted" :
@@ -299,7 +305,7 @@ function SubmittedProposalsTable(submittedProposals: ObjectIdentifier[]) : React
                 <Table.Tr>
                     <Table.Th>Code</Table.Th>
                     <Table.Th>Title</Table.Th>
-                    <Table.Th>Download</Table.Th>
+                    {HaveRole(["tac_admin"]) && (<Table.Th>Download</Table.Th>)}
                     <Table.Th>Current Status</Table.Th>
                 </Table.Tr>
             </Table.Thead>

@@ -3,6 +3,8 @@ import {Button, Grid, Group, NumberInput, Space, Stack, Switch, Text, Textarea, 
 import AddButton from "../../commonButtons/add.tsx";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
+    fetchJustificationsResourceCreateReviewPDF,
+    fetchJustificationsResourceDownloadLatexPdf,
     fetchProposalReviewResourceUpdateReviewComment,
     fetchProposalReviewResourceUpdateReviewFeasibility,
     fetchProposalReviewResourceUpdateReviewScore,
@@ -10,7 +12,7 @@ import {
     useProposalReviewResourceConfirmReviewComplete,
     useReviewerResourceGetReviewer
 } from "../../generated/proposalToolComponents.ts";
-import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {useForm} from "@mantine/form";
@@ -25,6 +27,7 @@ import {IconSquareRoundedCheck} from "@tabler/icons-react";
 import {modals} from "@mantine/modals";
 import {useToken} from "../../App2.tsx";
 import {useMediaQuery} from "@mantine/hooks";
+import {ExportButton} from "../../commonButtons/export.tsx";
 
 export default
 function ReviewsForm(props: ReviewsProps) : ReactElement {
@@ -296,12 +299,56 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
         })
     }
 
+    function downloadReviewPDF() {
+        fetchJustificationsResourceDownloadLatexPdf({
+            pathParams: {proposalCode: props.proposal?._id!},
+            headers: {authorization: `Bearer ${authToken}`}
+        })
+            .then((reviewPDF) => {
+                if (reviewPDF) {
+                    const link = document.createElement("a");
+                    link.href = window.URL.createObjectURL(reviewPDF);
+                    link.download = props.proposal?.proposalCode + " "
+                        + props.proposal?.title?.replace(/\s/g, "")
+                            .substring(0,30)
+                        + ".pdf";
+                    link.click();
+                } else
+                    notifyError("Failed to download review", "The file is empty")
+            })
+            .then(() => notifySuccess("Download review", "The PDF has downloaded"))
+            .catch(error => notifyError("Failed to download review", getErrorMessage(error)))
+    }
+
+    function prepareToDownloadReview() {
+        if(props.proposal?._id !== undefined) {
+            notifyInfo("Download review", "PDF compile has begun, please wait");
+            fetchJustificationsResourceCreateReviewPDF(
+                {
+                    pathParams: {proposalCode: props.proposal._id},
+                    headers: {authorization: `Bearer ${authToken}`}
+                })
+                .then(() => downloadReviewPDF())
+            .catch(error =>
+                notifyError("Failed to compile justifications pdf",
+                    getErrorMessage(error)))
+        } else {
+            notifyError("Download review", "Unable to identify submitted proposal")
+        }
+
+    }
+
     return (
         <>
             {theReview ?
                 <form onSubmit={form.onSubmit(handleSubmit)}>
                     <Grid columns={10} gutter={"xl"}>
                         <Grid.Col span={{base: 10, lg: 6}}>
+                            <ExportButton
+                                onClick={() => prepareToDownloadReview()}
+                                toolTipLabel={"Download a PDF of this proposal"}
+                                label={"Download pdf"}
+                            />
                             {commentInput()}
                         </Grid.Col>
                         <Grid.Col span={{base: 10, lg: 4}}>
