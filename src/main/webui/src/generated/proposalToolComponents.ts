@@ -9347,6 +9347,120 @@ export const useInvestigatorResourceChangeInvestigatorKind = (
   });
 };
 
+export type JustificationsResourceCreateTACAdminPDFPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceCreateTACAdminPDFError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceCreateTACAdminPDFVariables = {
+  pathParams: JustificationsResourceCreateTACAdminPDFPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceCreateTACAdminPDF = (
+  variables: JustificationsResourceCreateTACAdminPDFVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceCreateTACAdminPDFError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceCreateTACAdminPDFPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/AdminPdf",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceCreateTACAdminPDF = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceCreateTACAdminPDFError,
+      JustificationsResourceCreateTACAdminPDFVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceCreateTACAdminPDFError,
+    JustificationsResourceCreateTACAdminPDFVariables
+  >({
+    mutationFn: (variables: JustificationsResourceCreateTACAdminPDFVariables) =>
+      fetchJustificationsResourceCreateTACAdminPDF({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type JustificationsResourceCreateReviewPDFPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceCreateReviewPDFError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceCreateReviewPDFVariables = {
+  pathParams: JustificationsResourceCreateReviewPDFPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceCreateReviewPDF = (
+  variables: JustificationsResourceCreateReviewPDFVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceCreateReviewPDFError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceCreateReviewPDFPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/ReviewPdf",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceCreateReviewPDF = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceCreateReviewPDFError,
+      JustificationsResourceCreateReviewPDFVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceCreateReviewPDFError,
+    JustificationsResourceCreateReviewPDFVariables
+  >({
+    mutationFn: (variables: JustificationsResourceCreateReviewPDFVariables) =>
+      fetchJustificationsResourceCreateReviewPDF({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type JustificationsResourceCheckForPdfPathParams = {
   /**
    * @format int64
