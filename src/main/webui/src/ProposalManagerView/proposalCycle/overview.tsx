@@ -28,6 +28,7 @@ import AvailableResourcesTable from "./availableResourcesTable.tsx";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {CLOSE_DELAY, ICON_SIZE, OPEN_DELAY} from "../../constants.tsx";
 import {IconMail} from "@tabler/icons-react";
+import {HaveRole} from "../../auth/Roles.tsx";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -167,6 +168,7 @@ export default function CycleOverviewPanel() : ReactElement {
                     {SubmittedProposalsTable(submittedProposals.data ?? [])}
                 </ScrollArea.Autosize>
                 <Space h={'xl'}/>
+                {HaveRole(["tac_admin"]) &&
                 <Group justify={"center"}>
                     <Tooltip
                         label={checkReviewsLocked.data ?
@@ -190,7 +192,7 @@ export default function CycleOverviewPanel() : ReactElement {
                             Send TAC Results
                         </Button>
                     </Tooltip>
-                </Group>
+                </Group>}
             </Fieldset>
         )
     }
