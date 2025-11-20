@@ -40,7 +40,7 @@ const populateSupportingDocuments = (
         return [];
     }
     return supportingDocumentData.map(async (item: ObjectIdentifier) => {
-        if (item.dbid !== undefined && item.name !== undefined) {
+        if (item.dbid !== undefined && item.name !== undefined && item.name !== "compiledJustification.pdf") {
             // have to destructure this, as otherwise risk of being undefined
             // detected later.
             let docTitle = item.name;
