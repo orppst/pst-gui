@@ -5,10 +5,7 @@ import {
     SubmittedProposal,
 } from "../../generated/proposalToolSchemas.ts";
 import {
-    fetchJustificationsResourceCreateTACAdminPDF,
-    fetchJustificationsResourceDownloadLatexPdf,
-    fetchSupportingDocumentResourceDownloadSupportingDocument,
-    fetchSupportingDocumentResourceGetSupportingDocuments,
+    fetchJustificationsResourceDownloadAdminZip,
     useSubmittedProposalResourceGetSubmittedProposal,
     useSubmittedProposalResourceReplaceCode
 } from "../../generated/proposalToolComponents.ts";
@@ -19,8 +16,7 @@ import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
-import {JSON_FILE_NAME, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
-import * as JSZip from "jszip";
+import {MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {HaveRole} from "../../auth/Roles.tsx";
@@ -30,126 +26,32 @@ import {HaveRole} from "../../auth/Roles.tsx";
     submitted proposals current "status" e.g., under-review, reviewed - success/fail, allocated
  */
 
-const populateSupportingDocuments = (
-    zip: JSZip,
-    supportingDocumentData: ObjectIdentifier[] | undefined,
-    proposalCode: number,
-    authToken: string | undefined
-): Array<Promise<void>> => {
-    if(supportingDocumentData === undefined) {
-        return [];
-    }
-    return supportingDocumentData.map(async (item: ObjectIdentifier) => {
-        if (item.dbid !== undefined && item.name !== undefined && item.name !== "compiledJustification.pdf") {
-            // have to destructure this, as otherwise risk of being undefined
-            // detected later.
-            let docTitle = item.name;
-
-            // ensure that if the file exists already, that it's renamed to
-            // avoid issues of overwriting itself in the zip.
-            while (zip.files[docTitle]) {
-                docTitle = docTitle + "1"
-            }
-
-            // extract the document and save into the zip.
-            await fetchSupportingDocumentResourceDownloadSupportingDocument({
-                headers: {authorization: `${authToken}`},
-                pathParams: {
-                    proposalCode: proposalCode,
-                    id: item.dbid
-                }
-            })
-                .then((blob) => {
-                    // ensure we got some data back.
-                    if (blob !== undefined) {
-                        zip.file(docTitle, blob)
-                    }
-                })
-                .catch((err) => {
-                    notifyError("Download supporting documents", getErrorMessage(err));});
-        }
-    });
-}
-
-function prepareToDownloadProposal(
-    fullProposal: SubmittedProposal,
-    authToken: string | undefined,
-): void {
-    if (fullProposal !== undefined && fullProposal._id !== undefined) {
-        fetchJustificationsResourceCreateTACAdminPDF({
-                pathParams: {proposalCode: fullProposal._id},
-                headers: {authorization: `${authToken}`},
-            })
-            .then(() => {
-                //Pdf should now be generated, next get the supporting documents
-                fetchSupportingDocumentResourceGetSupportingDocuments({
-                    pathParams: {proposalCode: fullProposal._id!},
-                    headers: {authorization: `${authToken}`},
-                })
-                    .then(documentList => {
-                        // can go for a download of everything
-                        downloadProposal(fullProposal, documentList, authToken)
-                    })
-                    .catch(e => {notifyError("Download Error", getErrorMessage(e));});
-            })
-            .catch((e) => {notifyError("Unable to compile pdf", getErrorMessage(e))});
-    }
-    else {
-        notifyError("Download Error", "Submitted proposal is empty!");
-    }
-}
 
 function downloadProposal(
     submittedProposal: SubmittedProposal,
-    supportingDocuments: ObjectIdentifier[] | undefined,
     authToken: string | undefined,
 ): void {
 
     notifyInfo("Submitted Proposal Export Started",
         "An export has started and the download will begin shortly");
 
-    // build the zip object and populate with the corresponding documents.
-    let zip = new JSZip();
-
-    // Fudge in the .json file
-    zip = zip.file(JSON_FILE_NAME, JSON.stringify(submittedProposal,null, 2));
-
-    // add supporting documents to the zip.
-    const promises = populateSupportingDocuments(
-        zip, supportingDocuments, submittedProposal._id!, authToken,
-    );
-
-    promises.push(
-        fetchJustificationsResourceDownloadLatexPdf({
-            pathParams: {proposalCode: submittedProposal._id!},
-            headers: {authorization: `${authToken}`},
-        }).then((blob) => {
-            if (blob !== undefined) {
-                zip.file(`${submittedProposal.proposalCode} ${submittedProposal.title?.replace(/\s/g, "").substring(0, 30)}.pdf`, blob)
-            }
+    // generate the zip file.
+    fetchJustificationsResourceDownloadAdminZip({
+        pathParams: {proposalCode: submittedProposal._id!},
+        headers: {authorization: `${authToken}`}})
+        .then((blob) => {
+            // Create a download link for the zip file
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob as unknown as Blob);
+            link.download=submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/\s/g,"").substring(0,30)+".zip";
+            link.click();
         })
-    )
-
-    // ensure all supporting docs populated before making zip.
-    Promise.all(promises).then(
-        () => {
-            // generate the zip file.
-            zip.generateAsync({type: "blob"})
-                .then((zipData: Blob | MediaSource) => {
-                    // Create a download link for the zip file
-                    const link = document.createElement("a");
-                    link.href = window.URL.createObjectURL(zipData);
-                    link.download=submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/\s/g,"").substring(0,30)+".zip";
-                    link.click();
-                })
-                .then(()=>
-                    notifySuccess("Proposal Export Complete", "proposal exported and downloaded")
-                )
-                .catch((error:Error) =>
-                    notifyError("Proposal Export Failed", getErrorMessage(error))
-                )
-        }
-    )
+        .then(()=>
+            notifySuccess("Proposal Export Complete", "proposal exported and downloaded")
+        )
+        .catch((error:Error) =>
+            notifyError("Proposal Export Failed", getErrorMessage(error))
+        )
 }
 
 
@@ -275,7 +177,7 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
             <Table.Td>{submittedProposal.data?.title}</Table.Td>
             {HaveRole(["tac_admin"]) && (<Table.Td>
                 <ExportButton
-                    onClick={() => prepareToDownloadProposal(submittedProposal.data!, fetcherOptions.headers?.authorization)}
+                    onClick={() => downloadProposal(submittedProposal.data!, fetcherOptions.headers?.authorization)}
                     toolTipLabel={"Download a zip file of the PDF proposal and it's supporting documents"}
                     label={"Zip"}
                 >
