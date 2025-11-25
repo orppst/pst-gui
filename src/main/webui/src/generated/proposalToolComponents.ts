@@ -6969,6 +6969,73 @@ export const useSubmittedProposalResourceUpdateReviewsCompleteDate = (
   });
 };
 
+export type SubmittedProposalResourceDownloadAdminZipPathParams = {
+  /**
+   * @format int64
+   */
+  submittedProposalId: number;
+};
+
+export type SubmittedProposalResourceDownloadAdminZipError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubmittedProposalResourceDownloadAdminZipVariables = {
+  pathParams: SubmittedProposalResourceDownloadAdminZipPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubmittedProposalResourceDownloadAdminZip = (
+  variables: SubmittedProposalResourceDownloadAdminZipVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubmittedProposalResourceDownloadAdminZipError,
+    undefined,
+    {},
+    {},
+    SubmittedProposalResourceDownloadAdminZipPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/getAdminZipFile",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubmittedProposalResourceDownloadAdminZip = <
+  TData = undefined,
+>(
+  variables: SubmittedProposalResourceDownloadAdminZipVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      SubmittedProposalResourceDownloadAdminZipError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    SubmittedProposalResourceDownloadAdminZipError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/getAdminZipFile",
+      operationId: "submittedProposalResourceDownloadAdminZip",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchSubmittedProposalResourceDownloadAdminZip(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type SubmittedProposalResourceSendTACReviewResultsPathParams = {
   /**
    * @format int64
@@ -9583,71 +9650,6 @@ export const useJustificationsResourceCheckForPdf = <TData = undefined,>(
     }),
     queryFn: ({ signal }) =>
       fetchJustificationsResourceCheckForPdf(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type JustificationsResourceDownloadAdminZipPathParams = {
-  /**
-   * @format int64
-   */
-  proposalCode: number;
-};
-
-export type JustificationsResourceDownloadAdminZipError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type JustificationsResourceDownloadAdminZipVariables = {
-  pathParams: JustificationsResourceDownloadAdminZipPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchJustificationsResourceDownloadAdminZip = (
-  variables: JustificationsResourceDownloadAdminZipVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    undefined,
-    JustificationsResourceDownloadAdminZipError,
-    undefined,
-    {},
-    {},
-    JustificationsResourceDownloadAdminZipPathParams
-  >({
-    url: "/pst/api/proposals/{proposalCode}/justifications/getAdminZipFile",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-export const useJustificationsResourceDownloadAdminZip = <TData = undefined,>(
-  variables: JustificationsResourceDownloadAdminZipVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      undefined,
-      JustificationsResourceDownloadAdminZipError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useProposalToolContext(options);
-  return reactQuery.useQuery<
-    undefined,
-    JustificationsResourceDownloadAdminZipError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/pst/api/proposals/{proposalCode}/justifications/getAdminZipFile",
-      operationId: "justificationsResourceDownloadAdminZip",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchJustificationsResourceDownloadAdminZip(
         { ...fetcherOptions, ...variables },
         signal,
       ),
@@ -14122,6 +14124,11 @@ export type QueryOperation =
       variables: SubmittedProposalResourceGetSubmittedProposalVariables;
     }
   | {
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/getAdminZipFile";
+      operationId: "submittedProposalResourceDownloadAdminZip";
+      variables: SubmittedProposalResourceDownloadAdminZipVariables;
+    }
+  | {
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/mailResults";
       operationId: "submittedProposalResourceSendTACReviewResults";
       variables: SubmittedProposalResourceSendTACReviewResultsVariables;
@@ -14210,11 +14217,6 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/justifications/checkForPdf";
       operationId: "justificationsResourceCheckForPdf";
       variables: JustificationsResourceCheckForPdfVariables;
-    }
-  | {
-      path: "/pst/api/proposals/{proposalCode}/justifications/getAdminZipFile";
-      operationId: "justificationsResourceDownloadAdminZip";
-      variables: JustificationsResourceDownloadAdminZipVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/justifications/latexPdf/download";

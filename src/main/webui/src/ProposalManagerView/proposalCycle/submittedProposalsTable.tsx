@@ -5,7 +5,7 @@ import {
     SubmittedProposal,
 } from "../../generated/proposalToolSchemas.ts";
 import {
-    fetchJustificationsResourceDownloadAdminZip,
+    fetchSubmittedProposalResourceDownloadAdminZip,
     useSubmittedProposalResourceGetSubmittedProposal,
     useSubmittedProposalResourceReplaceCode
 } from "../../generated/proposalToolComponents.ts";
@@ -36,8 +36,8 @@ function downloadProposal(
         "An export has started and the download will begin shortly");
 
     // generate the zip file.
-    fetchJustificationsResourceDownloadAdminZip({
-        pathParams: {proposalCode: submittedProposal._id!},
+    fetchSubmittedProposalResourceDownloadAdminZip({
+        pathParams: {submittedProposalId: submittedProposal._id!},
         headers: {authorization: `${authToken}`}})
         .then((blob) => {
             // Create a download link for the zip file
