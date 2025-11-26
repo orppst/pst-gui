@@ -33,8 +33,12 @@ function ReviewsPanel() : ReactElement {
     useEffect(() => {
         if (reviewers.status === 'success') {
             //although unlikely, names are potentially NOT unique
+            console.log("user.person_id: " + user._id);
             let reviewer =
-                reviewers.data.find(rev => rev.name == user.fullName);
+                reviewers.data.find(rev => {
+                    console.log("reviewer.person_id: " + rev.code);
+                    return Number(rev.code) == user._id;
+                });
             if (reviewer) {
                 setReviewerId(reviewer.dbid!)
             } //else do nothing
