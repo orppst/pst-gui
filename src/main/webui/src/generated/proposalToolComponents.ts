@@ -6969,6 +6969,73 @@ export const useSubmittedProposalResourceUpdateReviewsCompleteDate = (
   });
 };
 
+export type SubmittedProposalResourceDownloadAdminZipPathParams = {
+  /**
+   * @format int64
+   */
+  submittedProposalId: number;
+};
+
+export type SubmittedProposalResourceDownloadAdminZipError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubmittedProposalResourceDownloadAdminZipVariables = {
+  pathParams: SubmittedProposalResourceDownloadAdminZipPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubmittedProposalResourceDownloadAdminZip = (
+  variables: SubmittedProposalResourceDownloadAdminZipVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    SubmittedProposalResourceDownloadAdminZipError,
+    undefined,
+    {},
+    {},
+    SubmittedProposalResourceDownloadAdminZipPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/getAdminZipFile",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubmittedProposalResourceDownloadAdminZip = <
+  TData = undefined,
+>(
+  variables: SubmittedProposalResourceDownloadAdminZipVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      SubmittedProposalResourceDownloadAdminZipError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    SubmittedProposalResourceDownloadAdminZipError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/getAdminZipFile",
+      operationId: "submittedProposalResourceDownloadAdminZip",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchSubmittedProposalResourceDownloadAdminZip(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type SubmittedProposalResourceSendTACReviewResultsPathParams = {
   /**
    * @format int64
@@ -8564,6 +8631,71 @@ export const useProposalResourceExportProposal = <TData = undefined,>(
     }),
     queryFn: ({ signal }) =>
       fetchProposalResourceExportProposal(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ProposalResourceExportProposalZipPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceExportProposalZipError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceExportProposalZipVariables = {
+  pathParams: ProposalResourceExportProposalZipPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceExportProposalZip = (
+  variables: ProposalResourceExportProposalZipVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceExportProposalZipError,
+    undefined,
+    {},
+    {},
+    ProposalResourceExportProposalZipPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/exportZip",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceExportProposalZip = <TData = undefined,>(
+  variables: ProposalResourceExportProposalZipVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      ProposalResourceExportProposalZipError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    ProposalResourceExportProposalZipError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/exportZip",
+      operationId: "proposalResourceExportProposalZip",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalResourceExportProposalZip(
         { ...fetcherOptions, ...variables },
         signal,
       ),
@@ -13992,6 +14124,11 @@ export type QueryOperation =
       variables: SubmittedProposalResourceGetSubmittedProposalVariables;
     }
   | {
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/getAdminZipFile";
+      operationId: "submittedProposalResourceDownloadAdminZip";
+      variables: SubmittedProposalResourceDownloadAdminZipVariables;
+    }
+  | {
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/mailResults";
       operationId: "submittedProposalResourceSendTACReviewResults";
       variables: SubmittedProposalResourceSendTACReviewResultsVariables;
@@ -14045,6 +14182,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/export";
       operationId: "proposalResourceExportProposal";
       variables: ProposalResourceExportProposalVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/exportZip";
+      operationId: "proposalResourceExportProposalZip";
+      variables: ProposalResourceExportProposalZipVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/fields";
