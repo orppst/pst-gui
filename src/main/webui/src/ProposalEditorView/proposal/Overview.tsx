@@ -3,7 +3,6 @@ import {
     useProposalResourceCloneObservingProposal,
     useProposalResourceDeleteObservingProposal,
     useProposalResourceGetObservingProposal,
-    useSupportingDocumentResourceGetSupportingDocuments,
 } from 'src/generated/proposalToolComponents';
 import {
     Accordion,
@@ -242,13 +241,6 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
     const deleteProposalMutation =
         useProposalResourceDeleteObservingProposal()
 
-    const {data: supportingDocs} =
-        useSupportingDocumentResourceGetSupportingDocuments({
-                pathParams: {
-                    proposalCode: Number(selectedProposalCode)
-                }
-        });
-
     // holder for the reference needed for the pdf generator to work.
     const printRef = useRef<HTMLInputElement>(null);
 
@@ -369,7 +361,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
                     else
                         investigator.person!.homeInstitute =
                             allOrganizations.find(i => investigator.person?.homeInstitute === i._id)
-                };
+                }
                 return (<Accordion.Item key={investigator._id}
                                 value={investigator.person?.fullName!}>
                     <Accordion.Control>
@@ -576,10 +568,7 @@ function OverviewPanel(props: {forceUpdate: () => void}): ReactElement {
      */
     const handleDownloadPdf = (): void => {
         downloadProposal(
-            printRef.current!,
             proposalsData!,
-            supportingDocs!,
-            selectedProposalCode!,
             authToken
         );
     };

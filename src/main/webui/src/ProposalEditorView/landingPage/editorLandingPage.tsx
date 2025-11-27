@@ -18,8 +18,12 @@ function EditorLandingPage() : ReactElement {
 
     const context = useContext(ProposalContext);
 
-    const proposalCycles =
+    const openProposalCycles =
         useProposalCyclesResourceGetProposalCycles({})
+
+    const proposalCycles = useProposalCyclesResourceGetProposalCycles({
+        queryParams: {includeClosed: true},
+    })
 
     const proposals =
         useProposalResourceGetProposals({})
@@ -33,6 +37,15 @@ function EditorLandingPage() : ReactElement {
         )
     }
 
+    if (openProposalCycles.isError) {
+        return(
+            <AlertErrorMessage
+                title={"Failed to load open proposal cycles"}
+                error={openProposalCycles.error}
+            />
+        )
+    }
+
     if (proposalCycles.isError) {
         return(
             <AlertErrorMessage
@@ -42,7 +55,7 @@ function EditorLandingPage() : ReactElement {
         )
     }
 
-    if (proposals.isLoading || proposalCycles.isLoading) {
+    if (proposals.isLoading || openProposalCycles.isLoading || proposalCycles.isLoading) {
         return <Loader size={"xl"} />
     }
 
@@ -52,7 +65,7 @@ function EditorLandingPage() : ReactElement {
             <PanelHeader itemName={"Home Page"} panelHeading={context.user.fullName}/>
 
             <Fieldset legend={"Available Proposal Cycles"}>
-                <ObservatoriesCyclesPanel cycles={proposalCycles.data!}/>
+                <ObservatoriesCyclesPanel cycles={openProposalCycles.data!}/>
             </Fieldset>
 
             <Space h={"xl"}/>
@@ -60,7 +73,8 @@ function EditorLandingPage() : ReactElement {
             <PanelHeader itemName={"Your Proposals"}/>
             <ProposalsAccordion
                 proposals={proposals.data!}
-                cycles={proposalCycles.data!}
+                openCycles={openProposalCycles.data!}
+                allCycles={proposalCycles.data!}
                 investigatorName={context.user.fullName!}
             />
         </>

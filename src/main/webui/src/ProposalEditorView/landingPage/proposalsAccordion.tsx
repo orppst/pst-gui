@@ -15,6 +15,7 @@ function CycleSubmissionDetail(props: {
         investigatorName: string | undefined,
         proposalTitle: string | undefined,
         sourceProposalId: number | undefined,
+        isClosed: boolean,
     }):  ReactElement | ReactElement[] {
 
 
@@ -40,6 +41,7 @@ function CycleSubmissionDetail(props: {
                         submissionDate={submission.code}
                         proposalTitle={props.proposalTitle}
                         sourceProposalId={props.sourceProposalId}
+                        isClosed={props.isClosed}
                     />)})
     )
 
@@ -47,7 +49,10 @@ function CycleSubmissionDetail(props: {
 
 export default
 function ProposalsAccordion(
-    props: {proposals: ProposalSynopsis[], cycles: ObjectIdentifier[], investigatorName: string})
+    props: {proposals: ProposalSynopsis[],
+        openCycles: ObjectIdentifier[],
+        allCycles: ObjectIdentifier[],
+        investigatorName: string})
     : ReactElement {
 
     const proposalSummary = (summary: string) => {
@@ -92,7 +97,7 @@ function ProposalsAccordion(
                                 </Table.Thead>
                                 <Table.Tbody>
                                     {
-                                        props.cycles.map((cycle) => {
+                                        props.allCycles.map((cycle) => {
                                             return(
                                                 <CycleSubmissionDetail
                                                     key={cycle.dbid}
@@ -100,6 +105,7 @@ function ProposalsAccordion(
                                                     investigatorName={props.investigatorName}
                                                     proposalTitle={proposal.title}
                                                     sourceProposalId={proposal.code}
+                                                    isClosed={props.openCycles.find((os) => os.dbid === cycle.dbid) === undefined}
                                                 />
                                             )
                                         })
@@ -130,6 +136,7 @@ function CycleSubmissionRow(props: {
     investigatorName: string | undefined,
     proposalTitle: string | undefined,
     sourceProposalId: number | undefined,
+    isClosed: boolean | undefined,
 }):  ReactElement {
     const queryClient = useQueryClient();
 
@@ -181,10 +188,11 @@ function CycleSubmissionRow(props: {
                 <Table.Td>{props.submissionDate}</Table.Td>
                 <Table.Td>
                     <Tooltip
-                        label={"withdraw this proposal from " + props.cycle.name}
+                        label={props.isClosed?"Cycle closed":"Withdraw this proposal from " + props.cycle.name}
                     >
                         <Button
                             variant={"outline"}
+                            disabled={props.isClosed}
                             size={"xs"}
                             onClick={() => confirmWithdrawal()}
                         >
