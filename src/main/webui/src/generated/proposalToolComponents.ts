@@ -3136,6 +3136,67 @@ export const usePersonResourceGetPersonByEmail = <
   });
 };
 
+export type PersonResourceGetNotReviewersError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceGetNotReviewersResponse = Schemas.Person[];
+
+export type PersonResourceGetNotReviewersVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceGetNotReviewers = (
+  variables: PersonResourceGetNotReviewersVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    PersonResourceGetNotReviewersResponse,
+    PersonResourceGetNotReviewersError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/people/notReviewers",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const usePersonResourceGetNotReviewers = <
+  TData = PersonResourceGetNotReviewersResponse,
+>(
+  variables: PersonResourceGetNotReviewersVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      PersonResourceGetNotReviewersResponse,
+      PersonResourceGetNotReviewersError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    PersonResourceGetNotReviewersResponse,
+    PersonResourceGetNotReviewersError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/people/notReviewers",
+      operationId: "personResourceGetNotReviewers",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchPersonResourceGetNotReviewers(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type PersonResourceGetPersonPathParams = {
   /**
    * @format int64
@@ -13052,7 +13113,7 @@ export const useReviewerResourceGetReviewers = <
 export type ReviewerResourceAddReviewerError = Fetcher.ErrorWrapper<undefined>;
 
 export type ReviewerResourceAddReviewerVariables = {
-  body?: Schemas.Reviewer;
+  body?: Schemas.Person;
 } & ProposalToolContext["fetcherOptions"];
 
 export const fetchReviewerResourceAddReviewer = (
@@ -13062,7 +13123,7 @@ export const fetchReviewerResourceAddReviewer = (
   proposalToolFetch<
     Schemas.Reviewer,
     ReviewerResourceAddReviewerError,
-    Schemas.Reviewer,
+    Schemas.Person,
     {},
     {},
     {}
@@ -13982,6 +14043,11 @@ export type QueryOperation =
       path: "/pst/api/people/email/{email}";
       operationId: "personResourceGetPersonByEmail";
       variables: PersonResourceGetPersonByEmailVariables;
+    }
+  | {
+      path: "/pst/api/people/notReviewers";
+      operationId: "personResourceGetNotReviewers";
+      variables: PersonResourceGetNotReviewersVariables;
     }
   | {
       path: "/pst/api/people/{id}";

@@ -150,7 +150,7 @@ function TacCycles (): ReactElement {
             <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Observatory</Table.Th>
-                    <Table.Th>Name[code]</Table.Th>
+                    <Table.Th>Name [code]</Table.Th>
                     <Table.Th>Observing start</Table.Th>
                     <Table.Th>Observing end</Table.Th>
                     <Table.Th>Submitted proposals</Table.Th>
