@@ -9593,6 +9593,65 @@ export const useJustificationsResourceCreateReviewPDF = (
   });
 };
 
+export type JustificationsResourceDownloadReviewerZipPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type JustificationsResourceDownloadReviewerZipError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type JustificationsResourceDownloadReviewerZipVariables = {
+  pathParams: JustificationsResourceDownloadReviewerZipPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchJustificationsResourceDownloadReviewerZip = (
+  variables: JustificationsResourceDownloadReviewerZipVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    JustificationsResourceDownloadReviewerZipError,
+    undefined,
+    {},
+    {},
+    JustificationsResourceDownloadReviewerZipPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/justifications/ReviewZip",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useJustificationsResourceDownloadReviewerZip = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      JustificationsResourceDownloadReviewerZipError,
+      JustificationsResourceDownloadReviewerZipVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    JustificationsResourceDownloadReviewerZipError,
+    JustificationsResourceDownloadReviewerZipVariables
+  >({
+    mutationFn: (
+      variables: JustificationsResourceDownloadReviewerZipVariables,
+    ) =>
+      fetchJustificationsResourceDownloadReviewerZip({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type JustificationsResourceCheckForPdfPathParams = {
   /**
    * @format int64
