@@ -3,8 +3,7 @@ import {Button, Grid, Group, NumberInput, Space, Stack, Switch, Text, Textarea, 
 import AddButton from "../../commonButtons/add.tsx";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
-    fetchJustificationsResourceCreateReviewPDF,
-    fetchJustificationsResourceDownloadLatexPdf,
+    fetchJustificationsResourceDownloadReviewerZip,
     fetchProposalReviewResourceUpdateReviewComment,
     fetchProposalReviewResourceUpdateReviewFeasibility,
     fetchProposalReviewResourceUpdateReviewScore,
@@ -12,7 +11,7 @@ import {
     useProposalReviewResourceConfirmReviewComplete,
     useReviewerResourceGetReviewer
 } from "../../generated/proposalToolComponents.ts";
-import {notifyError, notifyInfo, notifySuccess} from "../../commonPanel/notifications.tsx";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {useForm} from "@mantine/form";
@@ -308,7 +307,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
     }
 
     function downloadReviewPDF() {
-        fetchJustificationsResourceDownloadLatexPdf({
+        fetchJustificationsResourceDownloadReviewerZip({
             pathParams: {proposalCode: props.proposal?._id!},
             headers: {authorization: `Bearer ${authToken}`}
         })
@@ -319,31 +318,13 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                     link.download = props.proposal?.proposalCode + " "
                         + props.proposal?.title?.replace(/\s/g, "")
                             .substring(0,30)
-                        + ".pdf";
+                        + ".zip";
                     link.click();
                 } else
                     notifyError("Failed to download review", "The file is empty")
             })
-            .then(() => notifySuccess("Download review", "The PDF has downloaded"))
+            .then(() => notifySuccess("Download review", "The ZIP has downloaded"))
             .catch(error => notifyError("Failed to download review", getErrorMessage(error)))
-    }
-
-    function prepareToDownloadReview() {
-        if(props.proposal?._id !== undefined) {
-            notifyInfo("Download review", "PDF compile has begun, please wait");
-            fetchJustificationsResourceCreateReviewPDF(
-                {
-                    pathParams: {proposalCode: props.proposal._id},
-                    headers: {authorization: `Bearer ${authToken}`}
-                })
-                .then(() => downloadReviewPDF())
-            .catch(error =>
-                notifyError("Failed to compile justifications pdf",
-                    getErrorMessage(error)))
-        } else {
-            notifyError("Download review", "Unable to identify submitted proposal")
-        }
-
     }
 
     return (
@@ -353,7 +334,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                     <Grid columns={10} gutter={"xl"}>
                         <Grid.Col span={{base: 10, lg: 6}}>
                             <ExportButton
-                                onClick={() => prepareToDownloadReview()}
+                                onClick={() => downloadReviewPDF()}
                                 toolTipLabel={"Download a PDF of this proposal"}
                                 label={"Download pdf"}
                             />
