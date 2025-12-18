@@ -5971,6 +5971,71 @@ export const useProposalCyclesResourceUpdateProposalCycleDetails = (
   });
 };
 
+export type ProposalCyclesResourceExcelReviewsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceExcelReviewsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceExcelReviewsVariables = {
+  pathParams: ProposalCyclesResourceExcelReviewsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceExcelReviews = (
+  variables: ProposalCyclesResourceExcelReviewsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalCyclesResourceExcelReviewsError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceExcelReviewsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/excelReviews",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceExcelReviews = <TData = undefined,>(
+  variables: ProposalCyclesResourceExcelReviewsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      ProposalCyclesResourceExcelReviewsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    ProposalCyclesResourceExcelReviewsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/excelReviews",
+      operationId: "proposalCyclesResourceExcelReviews",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalCyclesResourceExcelReviews(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type ProposalCyclesResourceGetCycleAllocationGradesPathParams = {
   /**
    * @format int64
@@ -14141,6 +14206,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/details";
       operationId: "proposalCyclesResourceGetProposalCycleDetails";
       variables: ProposalCyclesResourceGetProposalCycleDetailsVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/excelReviews";
+      operationId: "proposalCyclesResourceExcelReviews";
+      variables: ProposalCyclesResourceExcelReviewsVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/grades";
