@@ -4,7 +4,7 @@ import {useParams} from "react-router-dom";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {ProposalContext, useToken} from "../../App2.tsx";
 import {
-    fetchProposalCyclesResourceExcelReviews,
+    fetchProposalCyclesResourceExcelReviews, useProposalCyclesResourceGetProposalCycleDetails,
     useReviewerResourceGetReviewers
 } from "../../generated/proposalToolComponents.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
@@ -35,6 +35,9 @@ function ReviewsPanel() : ReactElement {
 
     const reviewers =
         useReviewerResourceGetReviewers({})
+
+    const cycleDetails =
+        useProposalCyclesResourceGetProposalCycleDetails({pathParams: {cycleCode: Number(selectedCycleCode)}})
 
     useEffect(() => {
         if (reviewers.status === 'success') {
@@ -80,7 +83,7 @@ function ReviewsPanel() : ReactElement {
             // Create a download link for the zip file
             const link = document.createElement("a");
             link.href = window.URL.createObjectURL(zipData as unknown as Blob);
-            link.download="Reviews." + selectedCycleCode + ".xlsx";
+            link.download="Reviews." + cycleDetails.data?.code + ".xlsx";
             link.click();
         })
             .then(()=>
