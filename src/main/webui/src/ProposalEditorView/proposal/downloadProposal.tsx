@@ -33,7 +33,7 @@ function downloadProposal(
         const link = document.createElement("a");
         link.href = window.URL.createObjectURL(zipData as unknown as Blob);
         link.download="Export."
-            +proposalData.title?.replace(/\s/g,"").substring(0,31)+".zip";
+            +proposalData.title?.replace(/([^a-z0-9\s.]+)/gi, '_').substring(0,30)+".zip";
         link.click();
     })
     .then(()=>
