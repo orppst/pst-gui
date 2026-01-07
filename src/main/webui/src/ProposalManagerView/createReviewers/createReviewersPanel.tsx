@@ -3,6 +3,8 @@ import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import {HaveRole} from "../../auth/Roles.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import ListCurrentReviewers from "./listCurrentReviewers.tsx";
+import {Fieldset} from "@mantine/core";
 
 export default
 function CreateReviewersPanel() : ReactElement {
@@ -20,7 +22,12 @@ function CreateReviewersPanel() : ReactElement {
                 proposalCycleCode={Number(selectedCycleCode)}
                 panelHeading={"Create Reviewers"}
             />
-            <>List of people on the system + button to promote them to "reviewer"</>
+            <Fieldset legend={"Current Reviewers"}>
+                <ListCurrentReviewers />
+            </Fieldset>
+            <Fieldset legend={"Other Users"}>
+
+            </Fieldset>
         </PanelFrame>
     )
 }
