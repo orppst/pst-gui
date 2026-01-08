@@ -3947,61 +3947,6 @@ export const useTACResourceGetCommitteeMembers = <
   });
 };
 
-export type TACResourceAddCommitteeMemberPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type TACResourceAddCommitteeMemberError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type TACResourceAddCommitteeMemberVariables = {
-  body?: Schemas.CommitteeMember;
-  pathParams: TACResourceAddCommitteeMemberPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchTACResourceAddCommitteeMember = (
-  variables: TACResourceAddCommitteeMemberVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    Schemas.CommitteeMember,
-    TACResourceAddCommitteeMemberError,
-    Schemas.CommitteeMember,
-    {},
-    {},
-    TACResourceAddCommitteeMemberPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/TAC/members",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useTACResourceAddCommitteeMember = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.CommitteeMember,
-      TACResourceAddCommitteeMemberError,
-      TACResourceAddCommitteeMemberVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.CommitteeMember,
-    TACResourceAddCommitteeMemberError,
-    TACResourceAddCommitteeMemberVariables
-  >({
-    mutationFn: (variables: TACResourceAddCommitteeMemberVariables) =>
-      fetchTACResourceAddCommitteeMember({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
 export type TACResourceGetCommitteeMemberPathParams = {
   /**
    * @format int64
@@ -4188,6 +4133,62 @@ export const useTACResourceReplaceRole = (
   >({
     mutationFn: (variables: TACResourceReplaceRoleVariables) =>
       fetchTACResourceReplaceRole({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type TACResourceAddCommitteeMemberPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  tacRole: string;
+};
+
+export type TACResourceAddCommitteeMemberError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TACResourceAddCommitteeMemberVariables = {
+  body?: Schemas.Person;
+  pathParams: TACResourceAddCommitteeMemberPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTACResourceAddCommitteeMember = (
+  variables: TACResourceAddCommitteeMemberVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.CommitteeMember,
+    TACResourceAddCommitteeMemberError,
+    Schemas.Person,
+    {},
+    {},
+    TACResourceAddCommitteeMemberPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/TAC/members/{tacRole}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useTACResourceAddCommitteeMember = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.CommitteeMember,
+      TACResourceAddCommitteeMemberError,
+      TACResourceAddCommitteeMemberVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.CommitteeMember,
+    TACResourceAddCommitteeMemberError,
+    TACResourceAddCommitteeMemberVariables
+  >({
+    mutationFn: (variables: TACResourceAddCommitteeMemberVariables) =>
+      fetchTACResourceAddCommitteeMember({ ...fetcherOptions, ...variables }),
     ...options,
   });
 };
