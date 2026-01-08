@@ -165,8 +165,8 @@ function InvestigatorsPanel(): ReactElement {
                 <p> </p>
                 <Grid >
                    <Grid.Col span={10}></Grid.Col>
-                       <AddButton toolTipLabel={"Add new"}
-                            onClick={handleAddNew} />
+                    {userIsPI && <AddButton toolTipLabel={"Add new"}
+                            onClick={handleAddNew} />}
                 </Grid>
                 <p> </p>
         </PanelFrame>
@@ -257,6 +257,10 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
      * handles the exchange of an investigator from PI to COI.
      */
     function SwitchInvestigatorKind() {
+        if(props.investigator._id == user._id) {
+            console.log("Investigator is current user");
+        }
+
         let investigatorTypeSetting:InvestigatorKind = "COI";
         if(props.investigator.type == 'COI')
             investigatorTypeSetting = "PI";
