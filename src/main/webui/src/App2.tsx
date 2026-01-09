@@ -73,6 +73,7 @@ import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
 import UserMenu from "./userMenu.tsx";
 import UserManagement from "./userManagement.tsx";
+import CreateReviewersPanel from "./ProposalManagerView/createReviewers/createReviewersPanel.tsx";
 
 /**
  * defines the user context type.
@@ -165,6 +166,11 @@ function App2(): ReactElement {
                     {
                         path: "cycle/:selectedCycleCode/details",
                         element: <CycleDatesPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/createReviewers",
+                        element: <CreateReviewersPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {
@@ -408,7 +414,7 @@ function App2(): ReactElement {
                                     <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
-                                    {HaveRole(["tac_admin","tac_member"]) &&  (<Tooltip
+                                    {HaveRole(["tac_member", "reviewer"]) &&  (<Tooltip
                                         label={"go to proposal TAC management view"}
                                         openDelay={OPEN_DELAY}
                                     >

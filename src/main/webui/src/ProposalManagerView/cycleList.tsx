@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import {
     IconBike,
-    IconCalendar, IconEdit,
+    IconCalendar, IconClipboardPlus, IconEdit,
     IconSquareChevronsRight, IconThumbUp,
     IconUfo, IconUserPin,
     IconUsersGroup
@@ -23,6 +23,14 @@ import {
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
 import {Link} from "react-router-dom";
 import {HaveRole} from "../auth/Roles.tsx";
+
+/*
+    FYI: We have made composite roles that are recursive e.g. a
+    "tac_admin" is composed of "tac_member" which in turn is composed
+    of "reviewer"; think of it like class inheritance, a "tac_admin"
+    is a "tac_member" and all "tac_members" are "reviewers", but not
+    all "reviewers" are "tac_members".
+ */
 
 export default function CycleList() : ReactElement {
     const {colorScheme} = useMantineColorScheme();
@@ -45,7 +53,8 @@ export default function CycleList() : ReactElement {
     })
 
 
-    if(!HaveRole(["tac_admin", "tac_member", "obs_administration"])) {
+    //this check may be redundant
+    if(!HaveRole(["obs_administration", "tac_member", "reviewer"])) {
         return <>Not authorised</>
     }
 
@@ -164,6 +173,16 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          onClick={()=>setActive("TAC" + cycle.code)}
                 />}
                 {HaveRole(["tac_admin"]) &&
+                <NavLink to={"cycle/" + cycle.dbid + "/createReviewers"}
+                         component={Link}
+                         key={"CreateReviewers"}
+                         label={"Create Reviewers"}
+                         leftSection={<IconClipboardPlus/>}
+                         active={"CreateReviewers" + cycle.code === active}
+                         onClick={()=>setActive("CreateReviewers" + cycle.code)}
+                />
+                }
+                {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
                          component={Link}
                          key={"AssignReviewers"}
@@ -172,6 +191,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"AssignReviewers" + cycle.code === active}
                          onClick={()=>setActive("AssignReviewers" + cycle.code)}
                 />}
+                {HaveRole(["reviewer"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/reviews"}
                          component={Link}
                          key={"Reviews"}
@@ -180,6 +200,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"Reviews" + cycle.code === active}
                          onClick={()=>setActive("Reviews" + cycle.code)}
                 />
+                }
                 {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/acceptProposals"}
                          component={Link}

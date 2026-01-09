@@ -180,8 +180,16 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
         })
     }
 
-    //As we are using async-await semantics to ensure multiple changes actually occur, we
-    //cannot change these fetch calls to mutations. Instead, we use the token from context.
+    /*
+        Dev idea: Make the review comment and review score save on change after a delay, and the
+        technical feasibility switch save on change, no delay - then we don't need to use
+        async-await semantics and mutations can be used.
+     */
+
+
+    // We cannot change these fetch calls to mutations as we are using async-await semantics to
+    // ensure multiple changes actually occur. To authenticate these fetches we must use the
+    // bearer token from context.
 
     //use async and await so that any multiple "fetch" commands are done in sequence
     async function handleSubmit (values: typeof form.values) {

@@ -31,8 +31,8 @@ function ReviewsPanel() : ReactElement {
 
     const {user} = useContext(ProposalContext);
 
-    const [reviewerId, setReviewerId] = useState(0)
-
+    const [reviewerId, setReviewerId] = useState(0);
+  
     const reviewers =
         useReviewerResourceGetReviewers({})
 

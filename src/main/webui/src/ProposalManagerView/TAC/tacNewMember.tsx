@@ -1,21 +1,19 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    fetchReviewerResourceAddReviewer,
-    usePersonResourceGetPersonByEmail,
+    usePersonResourceGetPersonByEmail, useReviewerResourceGetReviewers,
     useTACResourceAddCommitteeMember,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
-import {Reviewer, TacRole} from "src/generated/proposalToolSchemas.ts";
-import {Grid, Select, Stack, TextInput} from "@mantine/core";
+import {TacRole} from "src/generated/proposalToolSchemas.ts";
+import {Grid, Loader, Select, Stack, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
 import DeleteButton from "src/commonButtons/delete";
-import { JSON_SPACES } from 'src/constants.tsx';
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 
 /**
  * Renders form panel to add a reviewer to the TAC of the current cycle.
@@ -32,7 +30,8 @@ function CycleTACAddMemberPanel(): ReactElement {
     const addCommitteeMember =
         useTACResourceAddCommitteeMember();
 
-    const {fetcherOptions} = useProposalToolContext();
+    const currentReviewers =
+        useReviewerResourceGetReviewers({});
 
     const form = useForm<newMemberForm>({
         initialValues: {
@@ -44,78 +43,77 @@ function CycleTACAddMemberPanel(): ReactElement {
         }
     });
     const typeData =
-        [{value: "TechnicalReviewer", label: "Technical Reviewer"},
+        [
+            {value: "TechnicalReviewer", label: "Technical Reviewer"},
             {value: "ScienceReviewer", label: "Science Reviewer"},
-            {value: "Chair", label: "Chair"}];
+            {value: "Chair", label: "Chair"}
+        ];
     const [foundPerson, setFoundPerson] = useState("Not found");
     const [personEmail, setPersonEmail] = useState("");
     const navigate = useNavigate();
     const { selectedCycleCode } = useParams();
     const queryClient = useQueryClient();
-    const { data, error, status } = usePersonResourceGetPersonByEmail(
-        {
-            queryParams: { email: personEmail },
-        },
-        {
-            enabled: true,
-        }
+    const thePerson = usePersonResourceGetPersonByEmail(
+        {queryParams: { email: personEmail }},
+        {enabled: true}
     );
 
     useEffect(() => {
-        if(status === 'success' && data?.name != null) {
-            setFoundPerson(data.name)
-            form.setFieldValue("selectedMember", data.name)
+        if(thePerson.status === 'success' && thePerson.data?.name != null) {
+            setFoundPerson(thePerson.data.name)
+            form.setFieldValue("selectedMember", thePerson.data.name)
         }
-    },[status,data]);
+    },[thePerson.status,thePerson.data]);
 
-    if (error) {
+    if (currentReviewers.isLoading) {
         return (
             <PanelFrame>
-                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+                <Loader />
+            </PanelFrame>
+        )
+    }
+
+    if (thePerson.error) {
+        return (
+            <PanelFrame>
+                <AlertErrorMessage
+                    title={"Failed to get the Person"}
+                    error={getErrorMessage(thePerson.error)}
+                />
             </PanelFrame>
         );
     }
 
-    /*
-        We must use the 'fetch-get' here as the reviewerId comes from selectable user input.
-        Could this be redesigned to avoid this?
-     */
+    if (currentReviewers.error) {
+        return (
+            <PanelFrame>
+                <AlertErrorMessage
+                    title={"Failed to get current Reviewers"}
+                    error={getErrorMessage(currentReviewers.error)}
+                />
+            </PanelFrame>
+        );
+    }
+
     const handleAdd = form.onSubmit((val) => {
-        //Are they already a reviewer?
-        //Try adding them
-        const reviewerToAdd: Reviewer = {
-            person: {
-                _id: data?.dbid,
-                fullName: data?.name
-            }
-        }
-        fetchReviewerResourceAddReviewer({
-            body: reviewerToAdd,
-            ...fetcherOptions
-        }).then((newReviewer) =>
-                addCommitteeMember.mutate({
-                    pathParams: {
-                        cycleCode: Number(selectedCycleCode)
-                    },
-                    body:{
-                        role: val.role,
-                        member: newReviewer,
-                    }
-                }, {
-                    onSuccess: () => {
-                        queryClient.invalidateQueries()
-                            .then(() => notifySuccess("TAC member added",
-                                newReviewer.person?.fullName + " added as " + val.role)
-                            )
-                            .then(() => navigate("../", {relative: "path"}))
-                    },
-                    onError: () =>
-                        notifyError("TAC member NOT added", getErrorMessage(error))
-                })
-            )
-            .catch((error)=>
-                notifyError("Failed to add reviewer", getErrorMessage(error))
-            );
+        addCommitteeMember.mutate({
+            pathParams: {
+                cycleCode: Number(selectedCycleCode),
+                tacRole: val.role
+            },
+            body: {_id: thePerson.data?.dbid!},
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries()
+                    .then(() => notifySuccess("TAC member added",
+                        thePerson.data?.name + " added as " + val.role)
+                    )
+                    .then(() => navigate("../", {relative: "path"}))
+            },
+            onError: (error) =>
+                notifyError("Failed to add " + thePerson.data?.name + " as a TAC member",
+                    getErrorMessage(error))
+        })
     });
 
     function handleCancel(event: SyntheticEvent) {
@@ -125,7 +123,7 @@ function CycleTACAddMemberPanel(): ReactElement {
 
     return (
         <PanelFrame>
-            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Add a reviewer"} />
+            <ManagerPanelHeader proposalCycleCode={Number(selectedCycleCode)} panelHeading={"Add a TAC Member"} />
             <form onSubmit={handleAdd}>
                 <Stack>
                     <Select label={"Role"}
@@ -157,7 +155,7 @@ function CycleTACAddMemberPanel(): ReactElement {
                     <DeleteButton
                         label={"Cancel"}
                         onClickEvent={handleCancel}
-                        toolTipLabel={"Do not save the new committee member"}
+                        toolTipLabel={"Go back to the TAC list"}
                     />
                 </Stack>
             </form>
