@@ -316,7 +316,7 @@ function ReviewsForm(props: ReviewsProps) : ReactElement {
                     const link = document.createElement("a");
                     link.href = window.URL.createObjectURL(reviewPDF);
                     link.download = props.proposal?.proposalCode + " "
-                        + props.proposal?.title?.replace(/\s/g, "")
+                        + props.proposal?.title?.replace(/([^a-z0-9\s.]+)/gi, '_')
                             .substring(0,30)
                         + ".zip";
                     link.click();
