@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import {
     IconBike,
-    IconCalendar, IconClipboardPlus, IconEdit,
+    IconCalendar, IconEdit,
     IconSquareChevronsRight, IconThumbUp,
     IconUfo, IconUserPin,
     IconUsersGroup
@@ -167,21 +167,11 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                 <NavLink to={"cycle/" + cycle.dbid + "/tac"}
                          component={Link}
                          key={"TAC"}
-                         label={"TAC"}
+                         label={"TAC and Reviewers"}
                          leftSection={<IconUsersGroup/>}
                          active={"TAC" + cycle.code === active}
                          onClick={()=>setActive("TAC" + cycle.code)}
                 />}
-                {HaveRole(["tac_admin"]) &&
-                <NavLink to={"cycle/" + cycle.dbid + "/createReviewers"}
-                         component={Link}
-                         key={"CreateReviewers"}
-                         label={"Create Reviewers"}
-                         leftSection={<IconClipboardPlus/>}
-                         active={"CreateReviewers" + cycle.code === active}
-                         onClick={()=>setActive("CreateReviewers" + cycle.code)}
-                />
-                }
                 {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
                          component={Link}

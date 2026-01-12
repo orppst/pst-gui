@@ -73,7 +73,7 @@ import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
 import UserMenu from "./userMenu.tsx";
 import UserManagement from "./userManagement.tsx";
-import CreateReviewersPanel from "./ProposalManagerView/createReviewers/createReviewersPanel.tsx";
+import CycleTACAddReviewerPanel from "./ProposalManagerView/TAC/tacNewReviewer.tsx";
 
 /**
  * defines the user context type.
@@ -164,13 +164,13 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/details",
-                        element: <CycleDatesPanel />,
-                        errorElement: <ErrorPage />,
+                        path: "cycle/:selectedCycleCode/tac/newReviewer",
+                        element: <CycleTACAddReviewerPanel />,
+                        errorElement: <ErrorPage />
                     },
                     {
-                        path: "cycle/:selectedCycleCode/createReviewers",
-                        element: <CreateReviewersPanel />,
+                        path: "cycle/:selectedCycleCode/details",
+                        element: <CycleDatesPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {

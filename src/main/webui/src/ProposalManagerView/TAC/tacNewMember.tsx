@@ -1,19 +1,19 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import {
-    usePersonResourceGetPersonByEmail, useReviewerResourceGetReviewers,
+    usePersonResourceGetPersonByEmail,
     useTACResourceAddCommitteeMember,
 } from "src/generated/proposalToolComponents";
 import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {TacRole} from "src/generated/proposalToolSchemas.ts";
-import {Grid, Loader, Select, Stack, TextInput} from "@mantine/core";
+import {Grid, Group, Select, Stack, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {FormSubmitButton} from "src/commonButtons/save";
-import DeleteButton from "src/commonButtons/delete";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
+import CancelButton from "../../commonButtons/cancel.tsx";
 
 /**
  * Renders form panel to add a reviewer to the TAC of the current cycle.
@@ -29,9 +29,6 @@ function CycleTACAddMemberPanel(): ReactElement {
 
     const addCommitteeMember =
         useTACResourceAddCommitteeMember();
-
-    const currentReviewers =
-        useReviewerResourceGetReviewers({});
 
     const form = useForm<newMemberForm>({
         initialValues: {
@@ -65,31 +62,12 @@ function CycleTACAddMemberPanel(): ReactElement {
         }
     },[thePerson.status,thePerson.data]);
 
-    if (currentReviewers.isLoading) {
-        return (
-            <PanelFrame>
-                <Loader />
-            </PanelFrame>
-        )
-    }
-
     if (thePerson.error) {
         return (
             <PanelFrame>
                 <AlertErrorMessage
                     title={"Failed to get the Person"}
                     error={getErrorMessage(thePerson.error)}
-                />
-            </PanelFrame>
-        );
-    }
-
-    if (currentReviewers.error) {
-        return (
-            <PanelFrame>
-                <AlertErrorMessage
-                    title={"Failed to get current Reviewers"}
-                    error={getErrorMessage(currentReviewers.error)}
                 />
             </PanelFrame>
         );
@@ -148,15 +126,17 @@ function CycleTACAddMemberPanel(): ReactElement {
                             />
                         </Grid.Col>
                     </Grid>
-                    <FormSubmitButton
-                        label={"Add"}
-                        form={form}
-                    />
-                    <DeleteButton
-                        label={"Cancel"}
-                        onClickEvent={handleCancel}
-                        toolTipLabel={"Go back to the TAC list"}
-                    />
+                    <Group justify={'flex-end'}>
+                        <FormSubmitButton
+                            label={"Add"}
+                            form={form}
+                        />
+                        <CancelButton
+                            label={"Cancel"}
+                            onClickEvent={handleCancel}
+                            toolTipLabel={"Go back to the TAC list"}
+                        />
+                    </Group>
                 </Stack>
             </form>
         </PanelFrame>
