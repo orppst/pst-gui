@@ -1,5 +1,5 @@
-import {ReactElement, useContext, useEffect, useState} from "react";
-import {Alert, Container, Loader} from "@mantine/core";
+import {ReactElement, useContext} from "react";
+import {Loader} from "@mantine/core";
 import {useParams} from "react-router-dom";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {ProposalContext, useToken} from "../../App2.tsx";
@@ -8,7 +8,6 @@ import {
     useReviewerResourceGetReviewers
 } from "../../generated/proposalToolComponents.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {IconInfoCircle} from "@tabler/icons-react";
 import ReviewsAccordion from "./reviews.accordion.tsx";
 import {SubmittedProposal} from "../../generated/proposalToolSchemas.ts";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
@@ -23,45 +22,21 @@ export type ReviewsProps = {
     reviewsLocked?: boolean
 }
 
+//we assume this function has been called from a context that checks the "reviewer" status of the user
+
 export default
 function ReviewsPanel() : ReactElement {
+    const {user} = useContext(ProposalContext);
+
     const {selectedCycleCode} = useParams();
 
     const authToken = useToken();
 
-    const {user} = useContext(ProposalContext);
-
-    const [reviewerId, setReviewerId] = useState(0);
-  
     const reviewers =
         useReviewerResourceGetReviewers({})
 
     const cycleDetails =
         useProposalCyclesResourceGetProposalCycleDetails({pathParams: {cycleCode: Number(selectedCycleCode)}})
-
-    useEffect(() => {
-        if (reviewers.status === 'success') {
-            //although unlikely, names are potentially NOT unique
-            let reviewer =
-                reviewers.data.find(rev => rev.name == user.fullName);
-            if (reviewer) {
-                setReviewerId(reviewer.dbid!)
-            } //else do nothing
-        }
-    }, [reviewers.status]);
-
-    const alertNotReviewer = () => (
-        <Container size={"50%"} mt={"100"}>
-            <Alert
-                variant={"light"}
-                color={"blue"}
-                title={"Reviewers Only"}
-                icon={<IconInfoCircle/>}
-            >
-                You must be a TAC member to review proposals
-            </Alert>
-        </Container>
-    )
 
     if (reviewers.isLoading) {
         return (<Loader/>)
@@ -110,15 +85,10 @@ function ReviewsPanel() : ReactElement {
                         toolTipLabelPosition={"top"}
                     />)
             }
-            {
-                reviewerId != 0 ?
-                    <ReviewsAccordion
-                        reviewerId={reviewerId}
-                        cycleCode={Number(selectedCycleCode)}
-                    />
-                    :
-                    alertNotReviewer()
-            }
+            <ReviewsAccordion
+                reviewerId={user._id!}
+                cycleCode={Number(selectedCycleCode)}
+            />
         </PanelFrame>
     )
 }
