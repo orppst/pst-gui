@@ -108,12 +108,14 @@ function ListCurrentReviewers(props: {
         )
     }
 
+    // here we have stored the Person's DB id to the 'code' variable for both tacMember and reviewer
     const reviewersNotOnTAC = allReviewers.data?.filter(reviewer =>
         !props.tacMembers.find((tacMember) => tacMember.code === reviewer.code)
     )
 
+
     const reviewerRows =
-        [... new Set(reviewersNotOnTAC)].map((reviewer) => (
+        reviewersNotOnTAC && reviewersNotOnTAC.map((reviewer) => (
             <ReviewersRow
                 key={reviewer.dbid ?? randomId()}
                 reviewerID={reviewer.dbid!}

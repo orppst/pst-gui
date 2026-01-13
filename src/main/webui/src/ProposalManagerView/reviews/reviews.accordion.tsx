@@ -1,4 +1,4 @@
-import {ReactElement, useState} from "react";
+import {ReactElement} from "react";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
     useProposalReviewResourceAddReview,
@@ -24,8 +24,6 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
     })
 
     const addReview = useProposalReviewResourceAddReview();
-
-    const [formDirty, setFormDirty] = useState(false);
 
     if (notYetAllocated.isLoading) {
         return (<Loader />)
@@ -125,7 +123,7 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                 <Group>
                     {
                         yourReview ?
-                            isReviewComplete && !formDirty ?
+                            isReviewComplete?
                                 <Text size={"xs"} c={"green"}>
                                     You submitted on {reviewCompleteDate.toDateString()}
                                 </Text>
@@ -189,11 +187,7 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                             <ReviewsForm
                                 cycleCode={props.cycleCode}
                                 proposalId={proposal.data?._id!}
-                                reviewId={yourReview?._id!}
-                                proposalTitle={proposal.data?.title!}
-                                reviewerId={props.reviewerId}
-                                reviewsLocked={reviewsLocked}
-                                setFormDirty={setFormDirty}
+                                theReview={yourReview}
                             />
                             :
                             props.reviewsLocked ?

@@ -74,6 +74,7 @@ import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
 import UserMenu from "./userMenu.tsx";
 import UserManagement from "./userManagement.tsx";
 import CycleTACAddReviewerPanel from "./ProposalManagerView/TAC/tacNewReviewer.tsx";
+import ReviewsEditPanel from "./ProposalManagerView/reviews/reviews.edit.panel.tsx";
 
 /**
  * defines the user context type.
@@ -182,6 +183,11 @@ function App2(): ReactElement {
                         path: "cycle/:selectedCycleCode/reviews",
                         element: <ReviewsPanel />,
                         errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/reviews/:proposalId/:reviewerId/:reviewId",
+                        element: <ReviewsEditPanel />,
+                        errorElement: <ErrorPage />
                     },
                     {
                         path: "cycle/:selectedCycleCode/acceptProposals",
