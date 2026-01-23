@@ -3136,6 +3136,67 @@ export const usePersonResourceGetPersonByEmail = <
   });
 };
 
+export type PersonResourceGetNotReviewersError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type PersonResourceGetNotReviewersResponse = Schemas.Person[];
+
+export type PersonResourceGetNotReviewersVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchPersonResourceGetNotReviewers = (
+  variables: PersonResourceGetNotReviewersVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    PersonResourceGetNotReviewersResponse,
+    PersonResourceGetNotReviewersError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/people/notReviewers",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const usePersonResourceGetNotReviewers = <
+  TData = PersonResourceGetNotReviewersResponse,
+>(
+  variables: PersonResourceGetNotReviewersVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      PersonResourceGetNotReviewersResponse,
+      PersonResourceGetNotReviewersError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    PersonResourceGetNotReviewersResponse,
+    PersonResourceGetNotReviewersError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/people/notReviewers",
+      operationId: "personResourceGetNotReviewers",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchPersonResourceGetNotReviewers(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type PersonResourceGetPersonPathParams = {
   /**
    * @format int64
@@ -3886,61 +3947,6 @@ export const useTACResourceGetCommitteeMembers = <
   });
 };
 
-export type TACResourceAddCommitteeMemberPathParams = {
-  /**
-   * @format int64
-   */
-  cycleCode: number;
-};
-
-export type TACResourceAddCommitteeMemberError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type TACResourceAddCommitteeMemberVariables = {
-  body?: Schemas.CommitteeMember;
-  pathParams: TACResourceAddCommitteeMemberPathParams;
-} & ProposalToolContext["fetcherOptions"];
-
-export const fetchTACResourceAddCommitteeMember = (
-  variables: TACResourceAddCommitteeMemberVariables,
-  signal?: AbortSignal,
-) =>
-  proposalToolFetch<
-    Schemas.CommitteeMember,
-    TACResourceAddCommitteeMemberError,
-    Schemas.CommitteeMember,
-    {},
-    {},
-    TACResourceAddCommitteeMemberPathParams
-  >({
-    url: "/pst/api/proposalCycles/{cycleCode}/TAC/members",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-export const useTACResourceAddCommitteeMember = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.CommitteeMember,
-      TACResourceAddCommitteeMemberError,
-      TACResourceAddCommitteeMemberVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useProposalToolContext();
-  return reactQuery.useMutation<
-    Schemas.CommitteeMember,
-    TACResourceAddCommitteeMemberError,
-    TACResourceAddCommitteeMemberVariables
-  >({
-    mutationFn: (variables: TACResourceAddCommitteeMemberVariables) =>
-      fetchTACResourceAddCommitteeMember({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
 export type TACResourceGetCommitteeMemberPathParams = {
   /**
    * @format int64
@@ -4127,6 +4133,62 @@ export const useTACResourceReplaceRole = (
   >({
     mutationFn: (variables: TACResourceReplaceRoleVariables) =>
       fetchTACResourceReplaceRole({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type TACResourceAddCommitteeMemberPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  tacRole: string;
+};
+
+export type TACResourceAddCommitteeMemberError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type TACResourceAddCommitteeMemberVariables = {
+  body?: Schemas.Person;
+  pathParams: TACResourceAddCommitteeMemberPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchTACResourceAddCommitteeMember = (
+  variables: TACResourceAddCommitteeMemberVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.CommitteeMember,
+    TACResourceAddCommitteeMemberError,
+    Schemas.Person,
+    {},
+    {},
+    TACResourceAddCommitteeMemberPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/TAC/members/{tacRole}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useTACResourceAddCommitteeMember = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.CommitteeMember,
+      TACResourceAddCommitteeMemberError,
+      TACResourceAddCommitteeMemberVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.CommitteeMember,
+    TACResourceAddCommitteeMemberError,
+    TACResourceAddCommitteeMemberVariables
+  >({
+    mutationFn: (variables: TACResourceAddCommitteeMemberVariables) =>
+      fetchTACResourceAddCommitteeMember({ ...fetcherOptions, ...variables }),
     ...options,
   });
 };
@@ -13176,7 +13238,7 @@ export const useReviewerResourceGetReviewers = <
 export type ReviewerResourceAddReviewerError = Fetcher.ErrorWrapper<undefined>;
 
 export type ReviewerResourceAddReviewerVariables = {
-  body?: Schemas.Reviewer;
+  body?: Schemas.Person;
 } & ProposalToolContext["fetcherOptions"];
 
 export const fetchReviewerResourceAddReviewer = (
@@ -13186,7 +13248,7 @@ export const fetchReviewerResourceAddReviewer = (
   proposalToolFetch<
     Schemas.Reviewer,
     ReviewerResourceAddReviewerError,
-    Schemas.Reviewer,
+    Schemas.Person,
     {},
     {},
     {}
@@ -14106,6 +14168,11 @@ export type QueryOperation =
       path: "/pst/api/people/email/{email}";
       operationId: "personResourceGetPersonByEmail";
       variables: PersonResourceGetPersonByEmailVariables;
+    }
+  | {
+      path: "/pst/api/people/notReviewers";
+      operationId: "personResourceGetNotReviewers";
+      variables: PersonResourceGetNotReviewersVariables;
     }
   | {
       path: "/pst/api/people/{id}";

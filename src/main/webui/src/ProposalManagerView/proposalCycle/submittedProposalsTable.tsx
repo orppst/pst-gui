@@ -43,7 +43,7 @@ function downloadProposal(
             // Create a download link for the zip file
             const link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob as unknown as Blob);
-            link.download=submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/\s/g,"").substring(0,30)+".zip";
+            link.download=submittedProposal.proposalCode + " " + submittedProposal.title?.replace(/([^a-z0-9\s.]+)/gi, '_').substring(0,30)+".zip";
             link.click();
         })
         .then(()=>
