@@ -7107,6 +7107,73 @@ export const useSubmittedProposalResourceGetSubmittedProposal = <
   });
 };
 
+export type SubmittedProposalResourceGetReviewsCompleteDatePathParams = {
+  /**
+   * @format int64
+   */
+  submittedProposalId: number;
+};
+
+export type SubmittedProposalResourceGetReviewsCompleteDateError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type SubmittedProposalResourceGetReviewsCompleteDateVariables = {
+  pathParams: SubmittedProposalResourceGetReviewsCompleteDatePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchSubmittedProposalResourceGetReviewsCompleteDate = (
+  variables: SubmittedProposalResourceGetReviewsCompleteDateVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.Date,
+    SubmittedProposalResourceGetReviewsCompleteDateError,
+    undefined,
+    {},
+    {},
+    SubmittedProposalResourceGetReviewsCompleteDatePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/completeDate",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useSubmittedProposalResourceGetReviewsCompleteDate = <
+  TData = Schemas.Date,
+>(
+  variables: SubmittedProposalResourceGetReviewsCompleteDateVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.Date,
+      SubmittedProposalResourceGetReviewsCompleteDateError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    Schemas.Date,
+    SubmittedProposalResourceGetReviewsCompleteDateError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/completeDate",
+      operationId: "submittedProposalResourceGetReviewsCompleteDate",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchSubmittedProposalResourceGetReviewsCompleteDate(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type SubmittedProposalResourceUpdateReviewsCompleteDatePathParams = {
   /**
    * @format int64
@@ -7448,6 +7515,10 @@ export type ProposalReviewResourceGetReviewsPathParams = {
   submittedProposalId: number;
 };
 
+export type ProposalReviewResourceGetReviewsQueryParams = {
+  reviewerId?: string;
+};
+
 export type ProposalReviewResourceGetReviewsError =
   Fetcher.ErrorWrapper<undefined>;
 
@@ -7456,6 +7527,7 @@ export type ProposalReviewResourceGetReviewsResponse =
 
 export type ProposalReviewResourceGetReviewsVariables = {
   pathParams: ProposalReviewResourceGetReviewsPathParams;
+  queryParams?: ProposalReviewResourceGetReviewsQueryParams;
 } & ProposalToolContext["fetcherOptions"];
 
 export const fetchProposalReviewResourceGetReviews = (
@@ -7467,7 +7539,7 @@ export const fetchProposalReviewResourceGetReviews = (
     ProposalReviewResourceGetReviewsError,
     undefined,
     {},
-    {},
+    ProposalReviewResourceGetReviewsQueryParams,
     ProposalReviewResourceGetReviewsPathParams
   >({
     url: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/reviews",
@@ -14397,6 +14469,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}";
       operationId: "submittedProposalResourceGetSubmittedProposal";
       variables: SubmittedProposalResourceGetSubmittedProposalVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/completeDate";
+      operationId: "submittedProposalResourceGetReviewsCompleteDate";
+      variables: SubmittedProposalResourceGetReviewsCompleteDateVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/submittedProposals/{submittedProposalId}/getAdminZipFile";

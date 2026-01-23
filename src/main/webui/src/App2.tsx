@@ -185,7 +185,7 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/reviews/:proposalId/:reviewerId/:reviewId",
+                        path: "cycle/:selectedCycleCode/reviews/:proposalTitle/:proposalId/:reviewerId/:reviewId",
                         element: <ReviewsEditPanel />,
                         errorElement: <ErrorPage />
                     },

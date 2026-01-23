@@ -20,6 +20,7 @@ import {ProposalReview} from "../../generated/proposalToolSchemas.ts";
 import {useNavigate} from "react-router-dom";
 import {modals} from "@mantine/modals";
 import CancelButton from "../../commonButtons/cancel.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 export default
 function ReviewsForm(props: {
@@ -31,6 +32,8 @@ function ReviewsForm(props: {
     const smallScreen = useMediaQuery("(max-width: 1350px)");
 
     const navigate = useNavigate();
+
+    const queryClient = useQueryClient();
 
     const commentMutation = useProposalReviewResourceUpdateReviewComment();
     const scoreMutation = useProposalReviewResourceUpdateReviewScore();
@@ -165,11 +168,11 @@ function ReviewsForm(props: {
 
     const reviewCompletedButton = () => (
         <Tooltip
-            label={ !changes ? 'Make changes to enable': 'Notifies TAC admin you have "completed" this review'}
+            label={ new Date(props.theReview.reviewDate!).getTime() > 0 && !changes ?
+                'Make changes to enable':
+                'Notifies TAC admin you have "completed" this review'}
             openDelay={OPEN_DELAY}
             closeDelay={CLOSE_DELAY}
-            multiline
-            w={150}
         >
             <Button
                 rightSection={<IconSquareRoundedCheck size={ICON_SIZE}/>}
@@ -177,8 +180,7 @@ function ReviewsForm(props: {
                 variant={"outline"}
                 onClick={confirmCompletion}
                 disabled={
-                    !changes ||
-                    new Date(props.theReview.reviewDate!).getTime() > 0
+                    new Date(props.theReview.reviewDate!).getTime() > 0 && !changes
                 }
             >
                 Submit
@@ -197,7 +199,7 @@ function ReviewsForm(props: {
             onSuccess: () =>{
                 notifySuccess("Review Completed",
                     "You may make edits to this review at any time up to the TAC chair 'locking' reviews")
-                setChanges(false)
+                queryClient.invalidateQueries().then(() => setChanges(false))
             }
             ,
             onError: (error) =>
@@ -224,6 +226,12 @@ function ReviewsForm(props: {
         })
     }
 
+    const handleCancel = () => {
+        queryClient.invalidateQueries().then(
+            () => navigate("../../../../", {relative:"path"})
+        )
+    }
+
     return (
         <Grid columns={10} gutter={"xl"}>
             <Grid.Col span={{base: 10, lg: 6}}>
@@ -235,12 +243,16 @@ function ReviewsForm(props: {
                         {scoreInput()}
                         {technicalFeasibilityInput()}
                     </Group>
+                    <>{props.theReview.reviewDate}</>
                     <Space h={smallScreen ? "50px" : "100px"}/>
+
                     <Group justify={"flex-end"} >
                         {reviewCompletedButton()}
                         <CancelButton
                             toolTipLabel={"Go Back to Reviews page"}
-                            onClick={() => navigate("../", {relative:"path"})}
+                            label={"Return to Reviews"}
+
+                            onClick={handleCancel}
                         />
                     </Group>
                 </Stack>

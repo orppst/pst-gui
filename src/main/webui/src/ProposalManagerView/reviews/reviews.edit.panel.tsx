@@ -2,7 +2,6 @@ import {ReactElement} from "react";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import {
-    useProposalResourceGetObservingProposalTitle,
     useProposalReviewResourceGetReview
 } from "../../generated/proposalToolComponents.ts";
 import {Loader} from "@mantine/core";
@@ -13,7 +12,7 @@ import ReviewsForm from "./reviews.form.tsx";
 export default
 function ReviewsEditPanel(): ReactElement {
 
-    const {selectedCycleCode, proposalId, reviewerId, reviewId} = useParams();
+    const {selectedCycleCode, proposalTitle, proposalId, reviewerId, reviewId} = useParams();
 
     const theReview = useProposalReviewResourceGetReview({
         pathParams: {
@@ -23,22 +22,9 @@ function ReviewsEditPanel(): ReactElement {
         }
     })
 
-    const proposalTitle = useProposalResourceGetObservingProposalTitle({
-        pathParams: {proposalCode: Number(proposalId)}
-    })
-
-    if (theReview.isLoading || proposalTitle.isLoading) {
+    if (theReview.isLoading) {
         return (
             <Loader/>
-        )
-    }
-
-    if (proposalTitle.isError) {
-        return (
-            <AlertErrorMessage
-                title={"Failed to load proposal title"}
-                error={getErrorMessage(proposalTitle.error)}
-            />
         )
     }
 

@@ -28,6 +28,7 @@ export type ReviewsProps = {
 
 export default
 function ReviewsPanel() : ReactElement {
+
     const {user} = useContext(ProposalContext);
 
     const {selectedCycleCode} = useParams();
@@ -144,6 +145,7 @@ function ReviewsPanel() : ReactElement {
                         assigned.data && assigned.data?.length > 0 &&
                         <ReviewsAssignedTable
                             cycleCode={Number(selectedCycleCode)}
+                            reviewerId={reviewerId}
                             assigned={assigned.data}
                         />
                     }
