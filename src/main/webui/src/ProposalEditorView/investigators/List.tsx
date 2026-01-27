@@ -253,6 +253,32 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         }
     })
 
+
+    function CheckSwitchInvestigatorKind() {
+        if(props.investigator._id == user._id) {
+            modals.openConfirmModal({
+                title: "Confirm this action",
+                centered: true,
+                children: (
+                    <Text size="sm">
+                        You are a PI on this proposal.<br/>If you swap to a COI you will be unable to edit investigators after leaving this page
+                    </Text>
+                ),
+                labels: { confirm: "OK", cancel: "Cancel" },
+                confirmProps: { color: "green" },
+                onConfirm: () =>  {SwitchInvestigatorKind()},
+                onCancel: () => {
+                    setSubmitting(false);
+                    queryClient.invalidateQueries().finally();
+                }
+            });
+
+        } else {
+            SwitchInvestigatorKind();
+        }
+
+    }
+
     /**
      * handles the exchange of an investigator from PI to COI.
      */
@@ -290,7 +316,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         else{
             //if the user is a PI, ensure there is another PI on the proposal
             //if there is no other PI, prevent this
-            return CheckPiCount(SwitchInvestigatorKind);
+            return CheckPiCount(CheckSwitchInvestigatorKind);
         }
     }
 
