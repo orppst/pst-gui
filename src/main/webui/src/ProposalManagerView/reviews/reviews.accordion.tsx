@@ -1,21 +1,29 @@
 import {ReactElement} from "react";
 import {ReviewsProps} from "./ReviewsPanel.tsx";
 import {
+    useProposalReviewResourceAddReview,
     useSubmittedProposalResourceGetSubmittedNotYetAllocated,
     useSubmittedProposalResourceGetSubmittedProposal
 } from "../../generated/proposalToolComponents.ts";
-import {Accordion, Alert, Badge, Container, Group, Loader, Space, Text} from "@mantine/core";
-import {notifyError} from "../../commonPanel/notifications.tsx";
+import {Accordion, Alert, Badge, Container, Group, Loader, Space, Stack, Text} from "@mantine/core";
+import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import ReviewsForm from "./reviews.form.tsx";
+import AddButton from "../../commonButtons/add.tsx";
+import {useQueryClient} from "@tanstack/react-query";
+
 
 export default
 function ReviewsAccordion(props: ReviewsProps) : ReactElement {
+
+    const queryClient = useQueryClient();
 
     const notYetAllocated =
         useSubmittedProposalResourceGetSubmittedNotYetAllocated({
             pathParams: {cycleCode: props.cycleCode}
     })
+
+    const addReview = useProposalReviewResourceAddReview();
 
     if (notYetAllocated.isLoading) {
         return (<Loader />)
@@ -43,7 +51,6 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
 
     function SubmittedProposalReviewItem(itemProps: {proposalId: number}) : ReactElement {
 
-
         const proposal =
             useSubmittedProposalResourceGetSubmittedProposal({
                 pathParams: {
@@ -66,21 +73,57 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
 
         let reviewsLocked = new Date(proposal.data?.reviewsCompleteDate!).getTime() > 0
 
+        let yourReview =
+            proposal.data?.reviews?.find(review =>
+                review?.reviewer?._id == props.reviewerId)
+
+        type AssignButtonData = {
+            reviewerId: number,
+            proposalId: number,
+            proposalTitle?: string
+        }
+
+        const handleAssign = (buttonProps: AssignButtonData) =>  {
+            addReview.mutate({
+                pathParams: {
+                    cycleCode: props.cycleCode,
+                    submittedProposalId: itemProps.proposalId
+                },
+                // A "blank" review
+                body: {
+                    comment: "",
+                    score: 0,
+                    technicalFeasibility: false,
+                    reviewer: {
+                        _id: buttonProps.reviewerId
+                    }
+                }
+            }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries()
+                        .then(() =>
+                            notifySuccess("Assigment Successful",
+                                "You have self-assigned " + " to '" + buttonProps.proposalTitle + "'")
+                        )
+                },
+                onError: (error) =>
+                    notifyError("Failed to self-assign " + " to " +
+                        "'" + buttonProps.proposalTitle  + "'", getErrorMessage(error))
+
+            })
+        }
+
         const hasUserCompletedReview = () => {
 
-            let yourReview =
-                proposal.data?.reviews?.find(review =>
-                    review?.reviewer?._id == props.reviewerId)
-
-            let reviewCompleteDate = yourReview ? new Date(yourReview.reviewDate!) :
-                new Date(0)
+            let reviewCompleteDate =
+                yourReview ? new Date(yourReview.reviewDate!) : new Date(0)
 
             let isReviewComplete = reviewCompleteDate.getTime() > 0
             return (
                 <Group>
                     {
                         yourReview ?
-                            isReviewComplete ?
+                            isReviewComplete?
                                 <Text size={"xs"} c={"green"}>
                                     You submitted on {reviewCompleteDate.toDateString()}
                                 </Text>
@@ -139,12 +182,37 @@ function ReviewsAccordion(props: ReviewsProps) : ReactElement {
                     </Group>
                 </Accordion.Control>
                 <Accordion.Panel>
-                    <ReviewsForm
-                        reviewerId={props.reviewerId}
-                        cycleCode={props.cycleCode}
-                        proposal={proposal.data}
-                        reviewsLocked={reviewsLocked}
-                    />
+                    {
+                        yourReview ?
+                            <ReviewsForm
+                                cycleCode={props.cycleCode}
+                                proposalId={proposal.data?._id!}
+                                theReview={yourReview}
+                            />
+                            :
+                            props.reviewsLocked ?
+                                <Text size={"sm"} c={"orange"}>
+                                    You cannot provide a review for this proposal as the reviews have been locked.
+                                </Text>
+                                :
+                                <Stack align={"center"}>
+                                    <Text size={"sm"} c={"gray.5"}>
+                                        You are currently not assigned to review '{proposal.data?.title}'.
+                                        If you wish to review this proposal please click on the "Self-Assign" button.
+                                    </Text>
+                                    <AddButton
+                                        toolTipLabel={"Assign yourself as a Reviewer"}
+                                        label={"Self-Assign"}
+                                        onClick={()=>handleAssign(
+                                            {
+                                                reviewerId: props.reviewerId,
+                                                proposalId: proposal.data?._id!,
+                                                proposalTitle: proposal.data?.title
+                                            }
+                                        )}
+                                    />
+                                </Stack>
+                    }
                 </Accordion.Panel>
             </Accordion.Item>
         )

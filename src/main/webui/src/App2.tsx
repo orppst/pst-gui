@@ -73,7 +73,8 @@ import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
 import UserMenu from "./userMenu.tsx";
 import UserManagement from "./userManagement.tsx";
-import CreateReviewersPanel from "./ProposalManagerView/createReviewers/createReviewersPanel.tsx";
+import CycleTACAddReviewerPanel from "./ProposalManagerView/TAC/tacNewReviewer.tsx";
+import ReviewsEditPanel from "./ProposalManagerView/reviews/reviews.edit.panel.tsx";
 
 /**
  * defines the user context type.
@@ -164,13 +165,13 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        path: "cycle/:selectedCycleCode/details",
-                        element: <CycleDatesPanel />,
-                        errorElement: <ErrorPage />,
+                        path: "cycle/:selectedCycleCode/tac/newReviewer",
+                        element: <CycleTACAddReviewerPanel />,
+                        errorElement: <ErrorPage />
                     },
                     {
-                        path: "cycle/:selectedCycleCode/createReviewers",
-                        element: <CreateReviewersPanel />,
+                        path: "cycle/:selectedCycleCode/details",
+                        element: <CycleDatesPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {
@@ -182,6 +183,11 @@ function App2(): ReactElement {
                         path: "cycle/:selectedCycleCode/reviews",
                         element: <ReviewsPanel />,
                         errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/reviews/:proposalTitle/:proposalId/:reviewerId/:reviewId",
+                        element: <ReviewsEditPanel />,
+                        errorElement: <ErrorPage />
                     },
                     {
                         path: "cycle/:selectedCycleCode/acceptProposals",

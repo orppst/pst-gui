@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Box, Loader, Stack, Table, Text} from "@mantine/core";
+import {Box, Fieldset, Group, Loader, Stack, Table, Text} from "@mantine/core";
 import AddButton from "../../commonButtons/add.tsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {
@@ -14,6 +14,7 @@ import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
+import ListCurrentReviewers from "./listCurrentReviewers.tsx";
 
 /**
  * the data associated with a given member.
@@ -28,7 +29,8 @@ type MemberProps = {
  * Lists the time allocation committee members for this cycle with links to add and remove
  * @return ReactElement in a Container
  */
-export default function CycleTACPanel() : ReactElement {
+export default
+function CycleTACPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
     const tacMembers =
@@ -58,25 +60,43 @@ export default function CycleTACPanel() : ReactElement {
         <PanelFrame>
             <ManagerPanelHeader
                 proposalCycleCode={Number(selectedCycleCode)}
-                panelHeading={"Time Allocation Committee"}
+                panelHeading={"Time Allocation Committee and Reviewers"}
             />
             <Stack>
-                <AddButton
-                    toolTipLabel={"Add new"}
-                    onClick={()=> navigate("new")}
-                />
-                {tacMembers.data?.length === 0 ?
-                    <Box>Please add a committee member</Box>:
-                    tacMembers.isLoading ? (<Box>Loading...</Box>) :
-                        <Table>
-                            <MembersHeader/>
-                            <Table.Tbody>
-                                {tacMembers.data?.map((item) =>
-                                    (<TACMemberRow dbid={item.dbid!} key={item.dbid}/>)
-                                )}
-                            </Table.Tbody>
-                        </Table>}
+                <Fieldset legend={"TAC"}>
+                    {
+                        tacMembers.data?.length === 0 ?
+                            <Box>Please add a committee member</Box>:
+                            tacMembers.isLoading ? (<Box>Loading...</Box>) :
+                                <Table>
+                                    <MembersHeader/>
+                                    <Table.Tbody>
+                                        {tacMembers.data?.map((item) =>
+                                            (<TACMemberRow dbid={item.dbid!} key={item.dbid}/>)
+                                        )}
+                                    </Table.Tbody>
+                                </Table>
+                    }
+                    <Group justify={"center"}>
+                        <AddButton
+                            toolTipLabel={"Add a member to the TAC"}
+                            onClick={()=> navigate("new")}
+                            label={"Add TAC member"}
+                        />
+                    </Group>
+                </Fieldset>
+                <Fieldset legend={"Other Reviewers"}>
+                    <ListCurrentReviewers tacMembers={tacMembers.data!} />
+                    <Group justify={"center"}>
+                        <AddButton
+                            toolTipLabel={"Add new reviewer"}
+                            label={"Add Reviewer"}
+                            onClick={() => navigate("newReviewer")}
+                        />
+                    </Group>
+                </Fieldset>
             </Stack>
+
         </PanelFrame>
     )
 }
@@ -87,7 +107,7 @@ function MembersHeader(): ReactElement {
             <Table.Tr>
                 <Table.Th>Role</Table.Th>
                 <Table.Th>Name</Table.Th>
-                <Table.Th>eMail</Table.Th>
+                <Table.Th>email</Table.Th>
                 <Table.Th>Institute</Table.Th>
                 <Table.Th></Table.Th>
             </Table.Tr>
@@ -135,7 +155,7 @@ function TACMemberRow(props: MemberProps): ReactElement {
      */
     const confirmMemberRemoval = () =>
         modals.openConfirmModal({
-            title: "Remove committee member",
+            title: "Remove Committee Member",
             centered: true,
             children: (
                 <Text size="sm">
@@ -172,6 +192,8 @@ function TACMemberRow(props: MemberProps): ReactElement {
                 <DeleteButton
                     toolTipLabel={"delete"}
                     onClick={confirmMemberRemoval}
+                    label={"Remove Member"}
+                    variant={"outline"}
                 />
             </Table.Td>
         </Table.Tr>
