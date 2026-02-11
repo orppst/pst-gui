@@ -243,14 +243,13 @@ function ReviewsForm(props: {
                         {scoreInput()}
                         {technicalFeasibilityInput()}
                     </Group>
-                    <>{props.theReview.reviewDate}</>
                     <Space h={smallScreen ? "50px" : "100px"}/>
 
                     <Group justify={"flex-end"} >
                         {reviewCompletedButton()}
                         <CancelButton
                             toolTipLabel={"Go Back to Reviews page"}
-                            label={"Return to Reviews"}
+                            label={"Go Back"}
 
                             onClick={handleCancel}
                         />
