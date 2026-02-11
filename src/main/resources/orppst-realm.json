@@ -89,7 +89,7 @@
       "containerId" : "e428824d-d9db-4b13-bc45-1032572700f4",
       "attributes" : { }
     }, {
-      "id" : "19c1ee24-b9a2-4145-8fd9-294b86961e7b",
+      "id" : "4cde9120-24be-4385-883b-1857591fe17d",
       "name" : "reviewer",
       "description" : "allowed to review observing proposals",
       "composite" : false,
