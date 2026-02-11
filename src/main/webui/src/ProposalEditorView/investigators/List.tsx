@@ -29,6 +29,7 @@ import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
  */
 type PersonProps = {
     investigator: Investigator
+    amIaPI: Boolean
 }
 
 // count of the PIs.
@@ -43,9 +44,11 @@ let PiCount = 0;
 function InvestigatorsPanel(): ReactElement {
     const { selectedProposalCode } = useParams();
     //Cache the people and institutes
-    let allPeople: Person[] = new Array();
-    let allOrganizations: Organization[] = new Array();
-    
+    let allPeople: Person[] = [];
+    let allOrganizations: Organization[] = [];
+    const { user } = useContext(ProposalContext);
+    const [userIsPI, setUserIsPi] = useState(false);
+
     const { data , status, error, isLoading } =
         useInvestigatorResourceGetInvestigatorsAsObjects(
             {pathParams: { proposalCode: Number(selectedProposalCode)},},
@@ -68,8 +71,12 @@ function InvestigatorsPanel(): ReactElement {
             PiCount = 0;
             if(data !== undefined) {
                 data.map((investigator) => {
-                    if(investigator.type == 'PI')
+                    if(investigator.type == 'PI') {
                         PiCount++;
+                        //console.log("Checking " + investigator.person?._id + " type " + investigator.type + " against "+ user._id);
+                        if(investigator.person?._id == user._id)
+                            setUserIsPi(true);
+                    }
                 })
                 //console.log("PiCount = "+ PiCount);
             }
@@ -86,6 +93,33 @@ function InvestigatorsPanel(): ReactElement {
      */
     function handleAddNew() {
         navigate("new");
+    }
+
+    /**
+     * generates the table header for the investigators.
+     *
+     * @return {ReactElement} return the dynamic html for the investigator table
+     * header.
+     * @constructor
+     */
+    function InvestigatorsHeader(): ReactElement {
+        return (
+            <>
+
+                <Table.Thead>
+
+                    <Table.Tr>
+                        <Table.Th>Type</Table.Th>
+                        <Table.Th>Name</Table.Th>
+                        <Table.Th>eMail</Table.Th>
+                        <Table.Th>Institute</Table.Th>
+                        {userIsPI && <Table.Th>Actions</Table.Th>}
+                        <Table.Th></Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
+
+            </>
+        );
     }
 
     return (
@@ -114,6 +148,7 @@ function InvestigatorsPanel(): ReactElement {
                                             allOrganizations.find(i => thisInvestigator.person?.homeInstitute === i._id)
 
                                     return (<InvestigatorsRow investigator={thisInvestigator!}
+                                                              amIaPI={userIsPI}
                                                               key={item._id}/>)
                                 } else {
                                     return (
@@ -130,40 +165,14 @@ function InvestigatorsPanel(): ReactElement {
                 <p> </p>
                 <Grid >
                    <Grid.Col span={10}></Grid.Col>
-                       <AddButton toolTipLabel={"Add new"}
-                            onClick={handleAddNew} />
+                    {userIsPI && <AddButton toolTipLabel={"Add new"}
+                            onClick={handleAddNew} />}
                 </Grid>
                 <p> </p>
         </PanelFrame>
     );
 }
 
-/**
- * generates the table header for the investigators.
- *
- * @return {ReactElement} return the dynamic html for the investigator table
- * header.
- * @constructor
- */
-function InvestigatorsHeader(): ReactElement {
-    return (
-        <>
-
-        <Table.Thead>
-
-            <Table.Tr>
-                <Table.Th>Type</Table.Th>
-                <Table.Th>Name</Table.Th>
-                <Table.Th>eMail</Table.Th>
-                <Table.Th>Institute</Table.Th>
-                <Table.Th>Actions</Table.Th>
-                <Table.Th></Table.Th>
-            </Table.Tr>
-        </Table.Thead>
-
-        </>
-    );
-}
 
 /**
  * generates a row for a given investigator person.
@@ -244,10 +253,40 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         }
     })
 
+
+    function CheckSwitchInvestigatorKind() {
+        if(props.investigator._id == user._id) {
+            modals.openConfirmModal({
+                title: "Confirm this action",
+                centered: true,
+                children: (
+                    <Text size="sm">
+                        You are a PI on this proposal.<br/>If you swap to a COI you will be unable to edit investigators after leaving this page
+                    </Text>
+                ),
+                labels: { confirm: "OK", cancel: "Cancel" },
+                confirmProps: { color: "green" },
+                onConfirm: () =>  {SwitchInvestigatorKind()},
+                onCancel: () => {
+                    setSubmitting(false);
+                    queryClient.invalidateQueries().finally();
+                }
+            });
+
+        } else {
+            SwitchInvestigatorKind();
+        }
+
+    }
+
     /**
      * handles the exchange of an investigator from PI to COI.
      */
     function SwitchInvestigatorKind() {
+        if(props.investigator._id == user._id) {
+            console.log("Investigator is current user");
+        }
+
         let investigatorTypeSetting:InvestigatorKind = "COI";
         if(props.investigator.type == 'COI')
             investigatorTypeSetting = "PI";
@@ -277,7 +316,7 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
         else{
             //if the user is a PI, ensure there is another PI on the proposal
             //if there is no other PI, prevent this
-            return CheckPiCount(SwitchInvestigatorKind);
+            return CheckPiCount(CheckSwitchInvestigatorKind);
         }
     }
 
@@ -367,13 +406,13 @@ function InvestigatorsRow(props: PersonProps): ReactElement {
             <Table.Td>{props.investigator.person?.fullName}</Table.Td>
             <Table.Td>{props.investigator.person?.eMail}</Table.Td>
             <Table.Td>{props.investigator.person?.homeInstitute?.name}</Table.Td>
-            <Table.Td><SwapRoleButton toolTipLabel={"swap role"}
+            {props.amIaPI && <Table.Td><SwapRoleButton toolTipLabel={"swap role"}
                                     onClick={HandleSwap}
                                      />
-            </Table.Td>
-            <Table.Td><DeleteButton toolTipLabel={"delete"}
+            </Table.Td>}
+            {props.amIaPI && <Table.Td><DeleteButton toolTipLabel={"delete"}
                                     onClick={HandleDelete} />
-            </Table.Td>
+            </Table.Td>}
         </Table.Tr>
         
         </>

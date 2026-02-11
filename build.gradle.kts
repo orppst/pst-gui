@@ -2,7 +2,7 @@ plugins {
     id("org.orph2020.pst.common-plugin")
 }
 
-version = "0.7"
+version = "1.0"
 
 dependencies {
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
