@@ -74,7 +74,7 @@ function ReviewsAssignedTable(props: {
             <Table.Tr>
                 <Table.Td> {rowProps.proposalTitle} </Table.Td>
                 <Table.Td c={submittedReview? "green" : "red"}>
-                    <Group justify={"flex-end"}>
+                    <Group justify={"flex-start"}>
                         {
                             submittedReview ?
                                 "submitted" :
@@ -114,7 +114,7 @@ function ReviewsAssignedTable(props: {
         <Table.Thead>
             <Table.Tr>
                 <Table.Th>Proposal Title</Table.Th>
-                <Table.Th><Group justify={'flex-end'}>Status</Group></Table.Th>
+                <Table.Th><Group justify={'flex-start'}>Status</Group></Table.Th>
                 <Table.Th></Table.Th>
             </Table.Tr>
         </Table.Thead>
