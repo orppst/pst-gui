@@ -8,7 +8,7 @@ import {
     Loader,
     ScrollArea,
     Space,
-    Stack,
+    Stack, Tabs,
     Text,
     Tooltip
 } from "@mantine/core";
@@ -103,7 +103,7 @@ export default function CycleOverviewPanel() : ReactElement {
 
     const DisplayObservatory = () : ReactElement => {
         return (
-            <Fieldset legend={"Observatory"}>
+            <Fieldset legend={"Name & Telescopes"}>
                 <Group grow>
                     <Text>{cycleSynopsis.data?.observatory?.name}</Text>
                     <Text c={"orange"}>{cycleSynopsis.data?.observatory?.telescopes?.length} telescopes</Text>
@@ -163,7 +163,7 @@ export default function CycleOverviewPanel() : ReactElement {
 
     const DisplaySubmittedProposals = () : ReactElement => {
         return (
-            <Fieldset legend={"Submitted Proposals"}>
+            <Fieldset legend={"Proposals List"}>
                 <ScrollArea.Autosize mah={250}>
                     {SubmittedProposalsTable(submittedProposals.data ?? [])}
                 </ScrollArea.Autosize>
@@ -208,20 +208,37 @@ export default function CycleOverviewPanel() : ReactElement {
     return (
         <PanelFrame>
             <DisplayTitle />
-            <Grid columns={12}>
-                <Grid.Col span={6}>
-                    <Stack>
-                        <DisplayObservatory />
-                        <DisplayDates />
-                        <DisplayAllocationGrades />
-                        <DisplayTACMembers />
-                    </Stack>
-                </Grid.Col>
-                <Grid.Col span={6}>
+            <Tabs defaultValue={"observatory"}>
+                <Tabs.List>
+                    <Tabs.Tab value={"observatory"}>
+                        Observatory
+                    </Tabs.Tab>
+                    <Tabs.Tab value={"proposals"}>
+                        Submitted Proposals
+                    </Tabs.Tab>
+                </Tabs.List>
+
+                <Tabs.Panel value={"observatory"}>
+                    <Space h={40} />
+                    <Grid columns={12}>
+                        <Grid.Col span={6}>
+                            <DisplayObservatory />
+                            <DisplayDates />
+                            <DisplayAllocationGrades />
+                        </Grid.Col>
+                        <Grid.Col span={6}>
+                            <DisplayTACMembers />
+                            <DisplayAvailableResources />
+                        </Grid.Col>
+                    </Grid>
+
+                </Tabs.Panel>
+
+                <Tabs.Panel value={"proposals"}>
+                    <Space h={40} />
                     <DisplaySubmittedProposals />
-                </Grid.Col>
-            </Grid>
-            <DisplayAvailableResources />
+                </Tabs.Panel>
+            </Tabs>
         </PanelFrame>
     )
 }
