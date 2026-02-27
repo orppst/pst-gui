@@ -1,28 +1,59 @@
 import {ReactElement} from "react";
-import {Table} from "@mantine/core";
+import {Loader, Table} from "@mantine/core";
 import {
-    useAvailableResourcesResourceGetCycleAvailableResources
+    useAvailableResourcesResourceGetCycleAvailableResources, useAvailableResourcesResourceGetCycleResourceUsed
 } from "../../generated/proposalToolComponents.ts";
 import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
+import {Resource} from "../../generated/proposalToolSchemas.ts";
 
-/*
-    We will likely want to show the total amount of "available resource" against how much has been allocated
-    to date
- */
+
+function AvailableResourcesRow(p: {available: Resource, cycleCode: number}) : ReactElement {
+    const allocated = useAvailableResourcesResourceGetCycleResourceUsed(
+        {pathParams: {cycleCode: p.cycleCode , resourceName: p.available.type?.name!}}
+    )
+
+    if (allocated.isLoading) {
+        return (
+            <Table.Tr>
+                <Loader/>
+            </Table.Tr>
+        )
+    }
+    return (
+        <Table.Tr>
+            <Table.Td>{p.available.type?.name}</Table.Td>
+            <Table.Td>{p.available.type?.unit}</Table.Td>
+            <Table.Td>{p.available.amount}</Table.Td>
+            {
+                allocated.isError ?
+                    <Table.Td c={"red"}>{"Error fetching allocated value"}</Table.Td>
+                    :
+                    <>
+                        <Table.Td>{allocated.data}</Table.Td>
+                        <Table.Td>{p.available.amount! - allocated.data!}</Table.Td>
+                    </>
+            }
+        </Table.Tr>
+    )
+}
 
 export default function AvailableResourcesTable(selectedCycleCode: number) : ReactElement {
 
-   const availableResources = useAvailableResourcesResourceGetCycleAvailableResources(
+    const availableResources = useAvailableResourcesResourceGetCycleAvailableResources(
        {pathParams: {cycleCode: selectedCycleCode}}
-   )
+    )
 
-   if (availableResources.error) {
+    if (availableResources.isLoading) {
+        return (<Loader/>)
+    }
+
+    if (availableResources.error) {
        notifyError("Failed to load available resources list",
            "cause: " + getErrorMessage(availableResources.error))
-   }
+    }
 
-   const AvailableResourcesTableHeader = () : ReactElement => {
+    const AvailableResourcesTableHeader = () : ReactElement => {
        return (
            <Table.Thead>
                <Table.Tr>
@@ -31,27 +62,24 @@ export default function AvailableResourcesTable(selectedCycleCode: number) : Rea
                    <Table.Th>Total</Table.Th>
                    <Table.Th>Allocated</Table.Th>
                    <Table.Th>Remaining</Table.Th>
-
                </Table.Tr>
            </Table.Thead>
        )
-   }
+    }
 
-   const AvailableResourcesTableBody = () : ReactElement => {
+    const AvailableResourcesTableBody = () : ReactElement => {
        return (
            <Table.Tbody>
                {availableResources.data?.resources?.map((ar) =>(
-                   <Table.Tr key={String(ar._id)}>
-                       <Table.Td>{ar.type?.name}</Table.Td>
-                       <Table.Td>{ar.type?.unit}</Table.Td>
-                       <Table.Td>{ar.amount}</Table.Td>
-                       <Table.Td c={"blue"}>{"not yet implemented"}</Table.Td>
-                       <Table.Td c={"blue"}>{"not yet implemented"}</Table.Td>
-                   </Table.Tr>
+                   <AvailableResourcesRow
+                       key={String(ar._id)}
+                       available={ar}
+                       cycleCode={selectedCycleCode}
+                   />
                ))}
            </Table.Tbody>
        )
-   }
+    }
 
     return (
         <Table>
