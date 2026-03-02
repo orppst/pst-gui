@@ -71,7 +71,7 @@ function JustificationsResourceFiles(
         if (fileToUpload) {
             if (fileToUpload.size > MAX_SUPPORTING_DOCUMENT_SIZE) {
                 notifyError("File upload failed", "The file " + fileToUpload.name
-                    + " is too large at " + fileToUpload.size/1024/1024
+                    + " is too large at " + (fileToUpload.size/1024/1024).toFixed(2)
                     + "MB. Maximum size is "
                     + MAX_SUPPORTING_DOCUMENT_SIZE/1024/1024 + "MB")
             } else {
