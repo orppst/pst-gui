@@ -8,7 +8,7 @@ dependencies {
     implementation("org.orph2020.pst:pst-lib")
     implementation("io.quarkus:quarkus-rest-jackson")
     implementation("io.quarkus:quarkus-rest-client-jackson")
-    implementation("io.quarkiverse.quinoa:quarkus-quinoa:2.7.2")
+    implementation("io.quarkiverse.quinoa:quarkus-quinoa:2.8.1")
     implementation("io.quarkus:quarkus-reactive-routes")
     implementation("io.quarkus:quarkus-websockets")
     implementation("io.quarkus:quarkus-smallrye-jwt")
@@ -21,6 +21,6 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-rest")
     testImplementation("io.rest-assured:rest-assured")
-    testImplementation("io.quarkiverse.quinoa:quarkus-quinoa-testing:2.7.2")
+    testImplementation("io.quarkiverse.quinoa:quarkus-quinoa-testing:2.8.1")
 }
 
