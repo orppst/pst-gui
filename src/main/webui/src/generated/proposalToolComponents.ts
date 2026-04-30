@@ -3094,12 +3094,7 @@ export const fetchPersonResourceGetPersonByEmail = (
     {},
     PersonResourceGetPersonByEmailQueryParams,
     {}
-  >({
-    url: "/pst/api/people/email/{email}",
-    method: "get",
-    ...variables,
-    signal,
-  });
+  >({ url: "/pst/api/people/email", method: "get", ...variables, signal });
 
 export const usePersonResourceGetPersonByEmail = <
   TData = Schemas.ObjectIdentifier,
@@ -3122,7 +3117,7 @@ export const usePersonResourceGetPersonByEmail = <
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/pst/api/people/email/{email}",
+      path: "/pst/api/people/email",
       operationId: "personResourceGetPersonByEmail",
       variables,
     }),
@@ -7111,6 +7106,10 @@ export type SubmittedProposalResourceGetReviewsCompleteDatePathParams = {
   /**
    * @format int64
    */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
   submittedProposalId: number;
 };
 
@@ -7238,6 +7237,10 @@ export const useSubmittedProposalResourceUpdateReviewsCompleteDate = (
 };
 
 export type SubmittedProposalResourceDownloadAdminZipPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
   /**
    * @format int64
    */
@@ -8304,6 +8307,70 @@ export const useObservingModeResourceGetCycleObservingModes = <
       ),
     ...options,
     ...queryOptions,
+  });
+};
+
+export type ObservingModeResourceCopyObservingModesPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+  /**
+   * @format int64
+   */
+  sourceCycleId: number;
+};
+
+export type ObservingModeResourceCopyObservingModesError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceCopyObservingModesResponse =
+  Schemas.ObjectIdentifier[];
+
+export type ObservingModeResourceCopyObservingModesVariables = {
+  pathParams: ObservingModeResourceCopyObservingModesPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceCopyObservingModes = (
+  variables: ObservingModeResourceCopyObservingModesVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ObservingModeResourceCopyObservingModesResponse,
+    ObservingModeResourceCopyObservingModesError,
+    undefined,
+    {},
+    {},
+    ObservingModeResourceCopyObservingModesPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/copyFrom/{sourceCycleId}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceCopyObservingModes = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      ObservingModeResourceCopyObservingModesResponse,
+      ObservingModeResourceCopyObservingModesError,
+      ObservingModeResourceCopyObservingModesVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    ObservingModeResourceCopyObservingModesResponse,
+    ObservingModeResourceCopyObservingModesError,
+    ObservingModeResourceCopyObservingModesVariables
+  >({
+    mutationFn: (variables: ObservingModeResourceCopyObservingModesVariables) =>
+      fetchObservingModeResourceCopyObservingModes({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
   });
 };
 
@@ -10899,6 +10966,10 @@ export type ObservationResourceGetConstraintPathParams = {
    * @format int64
    */
   observationId: number;
+  /**
+   * @format int64
+   */
+  proposalCode: number;
 };
 
 export type ObservationResourceGetConstraintError =
@@ -14311,7 +14382,7 @@ export type QueryOperation =
       variables: PersonResourceGetPeopleVariables;
     }
   | {
-      path: "/pst/api/people/email/{email}";
+      path: "/pst/api/people/email";
       operationId: "personResourceGetPersonByEmail";
       variables: PersonResourceGetPersonByEmailVariables;
     }
