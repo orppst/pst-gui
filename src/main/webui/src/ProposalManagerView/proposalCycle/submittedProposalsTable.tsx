@@ -29,6 +29,7 @@ import {HaveRole} from "../../auth/Roles.tsx";
 
 function downloadProposal(
     submittedProposal: SubmittedProposal,
+    cycleCode: number,
     authToken: string | undefined,
 ): void {
 
@@ -37,7 +38,7 @@ function downloadProposal(
 
     // generate the zip file.
     fetchSubmittedProposalResourceDownloadAdminZip({
-        pathParams: {submittedProposalId: submittedProposal._id!},
+        pathParams: {submittedProposalId: submittedProposal._id!, cycleCode: cycleCode},
         headers: {authorization: `${authToken}`}})
         .then((blob) => {
             // Create a download link for the zip file
@@ -177,7 +178,7 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
             <Table.Td>{submittedProposal.data?.title}</Table.Td>
             {HaveRole(["tac_admin"]) && (<Table.Td>
                 <ExportButton
-                    onClick={() => downloadProposal(submittedProposal.data!, fetcherOptions.headers?.authorization)}
+                    onClick={() => downloadProposal(submittedProposal.data!, rowProps.cycleCode, fetcherOptions.headers?.authorization)}
                     toolTipLabel={"Download a zip file of the PDF proposal and it's supporting documents"}
                     label={"Zip"}
                 >
