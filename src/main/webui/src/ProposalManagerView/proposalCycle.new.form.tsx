@@ -1,4 +1,4 @@
-import {ReactElement, useEffect, useState} from "react";
+import {ReactElement, useEffect, useRef, useState} from "react";
 import {FormSubmitButton} from "../commonButtons/save.tsx";
 import {useForm} from "@mantine/form";
 import {ProposalCycle} from "../generated/proposalToolSchemas.ts";
@@ -7,7 +7,9 @@ import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {
     useObservatoryResourceGetObservatories,
-    useProposalCyclesResourceCreateProposalCycle
+    useObservingModeResourceCopyObservingModes,
+    useProposalCyclesResourceCreateProposalCycle,
+    useProposalCyclesResourceGetProposalCycles
 } from "../generated/proposalToolComponents.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import {notifyError, notifySuccess} from "../commonPanel/notifications.tsx";
@@ -25,19 +27,90 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         submissionDeadline: Date | null,
         sessionStart: Date | null,
         sessionEnd: Date | null,
-        observatoryId: number | null
+        observatoryId: number | null,
+        sourceCycleId: string | null
     }
     const queryClient = useQueryClient();
 
     const [observatories, setObservatories]
         = useState<{ value: string, label: string }[]>([]);
 
+    const [availableCycles, setAvailableCycles]
+        = useState<{ value: string, label: string }[]>([]);
+
+    const sourceCycleIdRef = useRef<string | null>(null);
+
     const {data, status, error} = useObservatoryResourceGetObservatories({queryParams: {}});
+
+    const form = useForm<NewCycleFormType>(
+        {
+            validateInputOnChange: true,
+            initialValues: {
+                title: "",
+                cycleCode: "",
+                submissionDeadline: null,
+                sessionStart: null,
+                sessionEnd: null,
+                observatoryId: null,
+                sourceCycleId: null
+            },
+
+            validate: {
+                title:
+                    value => (value.length < 3 ? 'Title must have at least 3 characters' : null),
+                cycleCode:
+                    value => (value.length < 3 ? 'Cycle code cannot be empty' : null),
+                submissionDeadline:
+                    value => (value === null ? 'Please select a submission deadline date' : null),
+                sessionStart:
+                    value => (value === null ? 'Please select an observation session start date' : null),
+                sessionEnd:
+                    value => (value === null ? 'Please select an observation session end date' : null),
+                observatoryId:
+                    value => (value === undefined ? 'Please select an observatory' : null)
+            }
+        }
+    );
+
+    const selectedObservatoryId = form.values.observatoryId;
+
+    const cyclesData = useProposalCyclesResourceGetProposalCycles(
+        {
+            queryParams: {
+                includeClosed: true,
+                ...(selectedObservatoryId ? {observatoryId: +selectedObservatoryId} : {})
+            }
+        },
+        {enabled: selectedObservatoryId != null}
+    );
+
+    const copyObservingModesMutation = useObservingModeResourceCopyObservingModes({
+        onSuccess: () => {
+            notifySuccess("Success", "Observing modes copied successfully");
+        },
+        onError: (error) => {
+            if(error != undefined) {
+                console.error(error.payload);
+                notifyError("Copy observing modes error", error.payload);
+            } else
+                notifyError("Copy observing modes error", "An unknown error occurred.");
+        }
+    });
 
     const createProposalCycleMutation = useProposalCyclesResourceCreateProposalCycle({
         onSuccess: (newCycle) => {
             queryClient.invalidateQueries()
-                .then(() => notifySuccess("Success", "Proposal Cycle \"" + newCycle.title + "\" created"))
+                .then(() => notifySuccess("Success", "Proposal Cycle \"" + newCycle.title + "\" created"));
+
+            const sourceCycleId = sourceCycleIdRef.current;
+            if (sourceCycleId != null && newCycle._id != undefined) {
+                copyObservingModesMutation.mutate({
+                    pathParams: {
+                        cycleId: newCycle._id,
+                        sourceCycleId: +sourceCycleId
+                    }
+                });
+            }
         },
         onError: (error) => {
             if(error != undefined) {
@@ -61,35 +134,22 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         }
     }, [data, status]);
 
-
-    const form = useForm<NewCycleFormType>(
-        {
-            validateInputOnChange: true,
-            initialValues: {
-                title: "",
-                cycleCode: "",
-                submissionDeadline: null,
-                sessionStart: null,
-                sessionEnd: null,
-                observatoryId: null
-            },
-
-            validate: {
-                title:
-                    value => (value.length < 3 ? 'Title must have at least 3 characters' : null),
-                cycleCode:
-                    value => (value.length < 3 ? 'Cycle code cannot be empty' : null),
-                submissionDeadline:
-                    value => (value === null ? 'Please select a submission deadline date' : null),
-                sessionStart:
-                    value => (value === null ? 'Please select an observation session start date' : null),
-                sessionEnd:
-                    value => (value === null ? 'Please select an observation session end date' : null),
-                observatoryId:
-                    value => (value === undefined ? 'Please select an observatory' : null)
-            }
+    useEffect(() => {
+        if (cyclesData.data != undefined) {
+            setAvailableCycles(
+                cyclesData.data.map((cycle) => (
+                    {value: String(cycle.dbid), label: cycle.name ?? cycle.code ?? String(cycle.dbid)}
+                ))
+            );
+        } else {
+            setAvailableCycles([]);
         }
-    );
+    }, [cyclesData.data]);
+
+    useEffect(() => {
+        form.setFieldValue('sourceCycleId', null);
+        setAvailableCycles([]);
+    }, [selectedObservatoryId]);
 
     function createCycle(values: NewCycleFormType) {
         if(values.observatoryId != undefined) {
@@ -111,6 +171,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                 observationSessionEnd: values.sessionEnd!.getTime().toString(),
             }
 
+            sourceCycleIdRef.current = values.sourceCycleId;
             createProposalCycleMutation.mutate({body: newCycle});
 
             closeModal && closeModal();
@@ -149,6 +210,14 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                         placeholder={"pick one"}
                         data={observatories}
                         {...form.getInputProps('observatoryId')}
+                    />
+                    <Select
+                        label={"Copy observing modes from"}
+                        placeholder={"select a cycle to copy observing modes from (optional)"}
+                        data={availableCycles}
+                        disabled={selectedObservatoryId == null || availableCycles.length === 0}
+                        clearable
+                        {...form.getInputProps('sourceCycleId')}
                     />
                     <Group justify={"center"}>
                         <Text size={"sm"} c={"teal"}> Dates and times are treated as UTC</Text>
