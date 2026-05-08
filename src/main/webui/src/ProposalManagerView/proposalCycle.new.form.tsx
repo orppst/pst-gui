@@ -2,18 +2,20 @@ import {ReactElement, useEffect, useRef, useState} from "react";
 import {FormSubmitButton} from "../commonButtons/save.tsx";
 import {useForm} from "@mantine/form";
 import {ProposalCycle} from "../generated/proposalToolSchemas.ts";
-import {Group, Select, Stack, Text, TextInput} from "@mantine/core";
+import {Group, Loader, Select, Stack, Text, TextInput} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {
     useObservatoryResourceGetObservatories,
     useObservingModeResourceCopyObservingModes,
     useProposalCyclesResourceCreateProposalCycle,
-    useProposalCyclesResourceGetProposalCycles
+    useProposalCyclesResourceGetProposalCycles,
+    useResourceTypeResourceGetAllResourceTypes,
 } from "../generated/proposalToolComponents.ts";
 import getErrorMessage from "../errorHandling/getErrorMessage.tsx";
 import {notifyError, notifySuccess} from "../commonPanel/notifications.tsx";
 import {useQueryClient} from "@tanstack/react-query";
+import AlertErrorMessage from "../errorHandling/alertErrorMessage.tsx";
 
 interface NewCycleFormProps {
     closeModal?: () => void
@@ -41,6 +43,12 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     const sourceCycleIdRef = useRef<string | null>(null);
 
     const {data, status, error} = useObservatoryResourceGetObservatories({queryParams: {}});
+
+    //hard coded name "observing time" used
+    const observingTimeResourceType =
+        useResourceTypeResourceGetAllResourceTypes({
+            queryParams: {resourceTypeName: "%observing time%"}
+        })
 
     const form = useForm<NewCycleFormType>(
         {
@@ -164,7 +172,12 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                     members: []
                 },
                 availableResources: {
-                    resources: []
+                    resources: [
+                        {
+                            type: {_id: observingTimeResourceType.data?.at(0)?.dbid!},
+                            amount: 1000, //TODO: get from form values
+                        }
+                    ]
                 },
                 submissionDeadline: values.submissionDeadline!.getTime().toString(),
                 observationSessionStart: values.sessionStart!.getTime().toString(),
@@ -178,6 +191,21 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         } else {
             notifyError("Create cycle error", "Unable to use that observatory");
         }
+    }
+
+    if (observingTimeResourceType.isLoading) {
+        return (
+            <Loader/>
+        )
+    }
+
+    if (observingTimeResourceType.isError || observingTimeResourceType.data?.length == 0) {
+        return (
+            <AlertErrorMessage
+                title={"Resource type 'observing time' not found"}
+                error={getErrorMessage(observingTimeResourceType.error)}
+            />
+        )
     }
 
     return (
