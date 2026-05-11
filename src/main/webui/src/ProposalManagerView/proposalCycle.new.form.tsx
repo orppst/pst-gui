@@ -2,7 +2,7 @@ import {ReactElement, useEffect, useRef, useState} from "react";
 import {FormSubmitButton} from "../commonButtons/save.tsx";
 import {useForm} from "@mantine/form";
 import {ProposalCycle} from "../generated/proposalToolSchemas.ts";
-import {Group, Loader, Select, Stack, Text, TextInput} from "@mantine/core";
+import {Group, Loader, NumberInput, Select, Stack, Text, TextInput} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
 import {DatesProvider, DateTimePicker} from "@mantine/dates";
 import {
@@ -23,6 +23,8 @@ interface NewCycleFormProps {
 
 export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElement {
 
+    const observingTime = "observing time"
+
     interface NewCycleFormType {
         title: string,
         cycleCode: string,
@@ -30,7 +32,8 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         sessionStart: Date | null,
         sessionEnd: Date | null,
         observatoryId: number | null,
-        sourceCycleId: string | null
+        sourceCycleId: string | null,
+        observingHours: number | null
     }
     const queryClient = useQueryClient();
 
@@ -42,12 +45,13 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
 
     const sourceCycleIdRef = useRef<string | null>(null);
 
-    const {data, status, error} = useObservatoryResourceGetObservatories({queryParams: {}});
+    const availableObservatories =
+        useObservatoryResourceGetObservatories({queryParams: {}});
 
     //hard coded name "observing time" used
     const observingTimeResourceType =
         useResourceTypeResourceGetAllResourceTypes({
-            queryParams: {resourceTypeName: "%observing time%"}
+            queryParams: {resourceTypeName: `%${observingTime}%`}
         })
 
     const form = useForm<NewCycleFormType>(
@@ -60,7 +64,8 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                 sessionStart: null,
                 sessionEnd: null,
                 observatoryId: null,
-                sourceCycleId: null
+                sourceCycleId: null,
+                observingHours: null
             },
 
             validate: {
@@ -75,7 +80,9 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                 sessionEnd:
                     value => (value === null ? 'Please select an observation session end date' : null),
                 observatoryId:
-                    value => (value === undefined ? 'Please select an observatory' : null)
+                    value => (value === undefined ? 'Please select an observatory' : null),
+                observingHours:
+                    value => (value === null ? 'Please specify the number of observing hours, can be zero' : null),
             }
         }
     );
@@ -130,20 +137,16 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     });
 
     useEffect(() => {
-        if(error)
-            notifyError("Loading Observatories failed", "Cannot load Observatories, caused by " + getErrorMessage(error));
-        else {
-              if(data != undefined)
-                  setObservatories(
-                      data?.map((obs) => (
-                          {value: String(obs.dbid), label: obs.name!}
-                      ))
-                );
-        }
-    }, [data, status]);
+        if(availableObservatories.status == 'success')
+            setObservatories(
+                availableObservatories.data?.map((obs) => (
+                  {value: String(obs.dbid), label: obs.name!}
+              ))
+        );
+    }, [availableObservatories.data, availableObservatories.status]);
 
     useEffect(() => {
-        if (cyclesData.data != undefined) {
+        if (cyclesData.status == 'success') {
             setAvailableCycles(
                 cyclesData.data.map((cycle) => (
                     {value: String(cycle.dbid), label: cycle.name ?? cycle.code ?? String(cycle.dbid)}
@@ -152,11 +155,10 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         } else {
             setAvailableCycles([]);
         }
-    }, [cyclesData.data]);
+    }, [cyclesData.data, cyclesData.status]);
 
     useEffect(() => {
         form.setFieldValue('sourceCycleId', null);
-        setAvailableCycles([]);
     }, [selectedObservatoryId]);
 
     function createCycle(values: NewCycleFormType) {
@@ -174,8 +176,9 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                 availableResources: {
                     resources: [
                         {
+                            //already checked and caught zero length array
                             type: {_id: observingTimeResourceType.data?.at(0)?.dbid!},
-                            amount: 1000, //TODO: get from form values
+                            amount: values.observingHours!
                         }
                     ]
                 },
@@ -193,7 +196,7 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         }
     }
 
-    if (observingTimeResourceType.isLoading) {
+    if (observingTimeResourceType.isLoading || availableObservatories.isLoading) {
         return (
             <Loader/>
         )
@@ -202,8 +205,17 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     if (observingTimeResourceType.isError || observingTimeResourceType.data?.length == 0) {
         return (
             <AlertErrorMessage
-                title={"Resource type 'observing time' not found"}
+                title={`Resource type '${observingTime}' not found`}
                 error={getErrorMessage(observingTimeResourceType.error)}
+            />
+        )
+    }
+
+    if (availableObservatories.isError || availableObservatories.data?.length == 0) {
+        return (
+            <AlertErrorMessage
+                title={"No 'Observatories' found"}
+                error={getErrorMessage(availableObservatories.error)}
             />
         )
     }
@@ -212,7 +224,6 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
         <form onSubmit={form.onSubmit((values) => createCycle(values))}>
             <DatesProvider settings={{timezone: 'UTC'}}>
                 <Stack>
-                    <Text size={"md"} c={"gray.6"}>Please complete all fields</Text>
                     <TextInput
                         name={"title"}
                         label={"Title"}
@@ -223,14 +234,14 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                             "/" + String(MAX_CHARS_FOR_INPUTS)}
                         inputWrapperOrder={[
                             'label', 'error', 'input', 'description']}
-                        placeholder={"Give the proposal cycle a title"}
+                        placeholder={"give the proposal cycle a title"}
                         {...form.getInputProps('title')}
                     />
                     <TextInput
                         name={"code"}
                         label={"Cycle code"}
                         maxLength={MAX_CHARS_FOR_INPUTS}
-                        placeholder={"Give the proposal cycle a useful code"}
+                        placeholder={"specify an alphanumeric code for this cycle"}
                         {...form.getInputProps('cycleCode')}
                         />
                     <Select
@@ -239,9 +250,17 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                         data={observatories}
                         {...form.getInputProps('observatoryId')}
                     />
+                    <NumberInput
+                        label={"Observing time (hours)"}
+                        hideControls
+                        min={0}
+                        clampBehavior={"strict"}
+                        placeholder={"total observing time in hours for this cycle"}
+                        {...form.getInputProps('observingHours')}
+                    />
                     <Select
-                        label={"Copy observing modes from"}
-                        placeholder={"select a cycle to copy observing modes from (optional)"}
+                        label={"Copy observing modes from (optional)"}
+                        placeholder={"select a previous cycle to copy observing modes from"}
                         data={availableCycles}
                         disabled={selectedObservatoryId == null || availableCycles.length === 0}
                         clearable
