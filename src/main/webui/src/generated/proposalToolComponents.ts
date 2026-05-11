@@ -13171,14 +13171,19 @@ export const useUserProposalsSubmittedWithdrawProposal = (
   });
 };
 
+export type ResourceTypeResourceGetAllResourceTypesQueryParams = {
+  resourceTypeName?: string;
+};
+
 export type ResourceTypeResourceGetAllResourceTypesError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ResourceTypeResourceGetAllResourceTypesResponse =
   Schemas.ObjectIdentifier[];
 
-export type ResourceTypeResourceGetAllResourceTypesVariables =
-  ProposalToolContext["fetcherOptions"];
+export type ResourceTypeResourceGetAllResourceTypesVariables = {
+  queryParams?: ResourceTypeResourceGetAllResourceTypesQueryParams;
+} & ProposalToolContext["fetcherOptions"];
 
 export const fetchResourceTypeResourceGetAllResourceTypes = (
   variables: ResourceTypeResourceGetAllResourceTypesVariables,
@@ -13189,7 +13194,7 @@ export const fetchResourceTypeResourceGetAllResourceTypes = (
     ResourceTypeResourceGetAllResourceTypesError,
     undefined,
     {},
-    {},
+    ResourceTypeResourceGetAllResourceTypesQueryParams,
     {}
   >({ url: "/pst/api/resourceTypes", method: "get", ...variables, signal });
 

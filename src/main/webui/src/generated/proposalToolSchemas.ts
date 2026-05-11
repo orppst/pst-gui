@@ -689,10 +689,10 @@ export type IntegerQuantity = {
 
 export type Investigator = {
   _id?: number;
-    /**
-     * person connected with the proposal
-     */
-    person?: Person;
+  /**
+   * person connected with the proposal
+   */
+  person?: Person;
   type?: InvestigatorKind;
   /**
    * is the investigator making proposal for their PhD
@@ -1201,10 +1201,9 @@ export type Polygon = {
 export type ProposalCycle = {
   _id?: number
   /**
-  * An organisation that can perform astronomical observations
-  */
+   * An organisation that can perform astronomical observations
+   */
   observatory?: Observatory;
-
   /**
    * a human readable description of the cycle
    */
@@ -1485,8 +1484,8 @@ export type SolarSystemTarget = {
 export type SpaceFrame = {
   "@type": string; // coords:SpaceFrame
   /**
-  * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
-  */
+   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
+   */
   refPosition?: RefLocation;
   /**
    * The spatial reference frame. Values MUST be selected from the controlled vocabulary at the given URL.
