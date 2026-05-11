@@ -8310,6 +8310,66 @@ export const useObservingModeResourceGetCycleObservingModes = <
   });
 };
 
+export type ObservingModeResourceAddNewObservingModePathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+};
+
+export type ObservingModeResourceAddNewObservingModeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceAddNewObservingModeVariables = {
+  body?: Schemas.ObservingMode;
+  pathParams: ObservingModeResourceAddNewObservingModePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceAddNewObservingMode = (
+  variables: ObservingModeResourceAddNewObservingModeVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.ObservingMode,
+    ObservingModeResourceAddNewObservingModeError,
+    Schemas.ObservingMode,
+    {},
+    {},
+    ObservingModeResourceAddNewObservingModePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceAddNewObservingMode = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ObservingMode,
+      ObservingModeResourceAddNewObservingModeError,
+      ObservingModeResourceAddNewObservingModeVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ObservingMode,
+    ObservingModeResourceAddNewObservingModeError,
+    ObservingModeResourceAddNewObservingModeVariables
+  >({
+    mutationFn: (
+      variables: ObservingModeResourceAddNewObservingModeVariables,
+    ) =>
+      fetchObservingModeResourceAddNewObservingMode({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type ObservingModeResourceCopyObservingModesPathParams = {
   /**
    * @format int64
@@ -8582,6 +8642,197 @@ export const useObservingModeResourceGetCycleObservingMode = <
       ),
     ...options,
     ...queryOptions,
+  });
+};
+
+export type ObservingModeResourceUpdateObservingModePathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+  /**
+   * @format int64
+   */
+  modeId: number;
+};
+
+export type ObservingModeResourceUpdateObservingModeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceUpdateObservingModeVariables = {
+  body?: Schemas.ObservingMode;
+  pathParams: ObservingModeResourceUpdateObservingModePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceUpdateObservingMode = (
+  variables: ObservingModeResourceUpdateObservingModeVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.ObservingMode,
+    ObservingModeResourceUpdateObservingModeError,
+    Schemas.ObservingMode,
+    {},
+    {},
+    ObservingModeResourceUpdateObservingModePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceUpdateObservingMode = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ObservingMode,
+      ObservingModeResourceUpdateObservingModeError,
+      ObservingModeResourceUpdateObservingModeVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ObservingMode,
+    ObservingModeResourceUpdateObservingModeError,
+    ObservingModeResourceUpdateObservingModeVariables
+  >({
+    mutationFn: (
+      variables: ObservingModeResourceUpdateObservingModeVariables,
+    ) =>
+      fetchObservingModeResourceUpdateObservingMode({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type ObservingModeResourceDeleteObservingModePathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+  /**
+   * @format int64
+   */
+  modeId: number;
+};
+
+export type ObservingModeResourceDeleteObservingModeError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceDeleteObservingModeVariables = {
+  pathParams: ObservingModeResourceDeleteObservingModePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceDeleteObservingMode = (
+  variables: ObservingModeResourceDeleteObservingModeVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ObservingModeResourceDeleteObservingModeError,
+    undefined,
+    {},
+    {},
+    ObservingModeResourceDeleteObservingModePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceDeleteObservingMode = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ObservingModeResourceDeleteObservingModeError,
+      ObservingModeResourceDeleteObservingModeVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    undefined,
+    ObservingModeResourceDeleteObservingModeError,
+    ObservingModeResourceDeleteObservingModeVariables
+  >({
+    mutationFn: (
+      variables: ObservingModeResourceDeleteObservingModeVariables,
+    ) =>
+      fetchObservingModeResourceDeleteObservingMode({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type ObservingModeResourceUpdateObservingModeFilterPathParams = {
+  /**
+   * @format int64
+   */
+  cycleId: number;
+  /**
+   * @format int64
+   */
+  modeId: number;
+};
+
+export type ObservingModeResourceUpdateObservingModeFilterError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ObservingModeResourceUpdateObservingModeFilterVariables = {
+  body?: Schemas.Filter;
+  pathParams: ObservingModeResourceUpdateObservingModeFilterPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchObservingModeResourceUpdateObservingModeFilter = (
+  variables: ObservingModeResourceUpdateObservingModeFilterVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.Filter,
+    ObservingModeResourceUpdateObservingModeFilterError,
+    Schemas.Filter,
+    {},
+    {},
+    ObservingModeResourceUpdateObservingModeFilterPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleId}/observingModes/{modeId}/filter",
+    method: "put",
+    ...variables,
+    signal,
+  });
+
+export const useObservingModeResourceUpdateObservingModeFilter = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.Filter,
+      ObservingModeResourceUpdateObservingModeFilterError,
+      ObservingModeResourceUpdateObservingModeFilterVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.Filter,
+    ObservingModeResourceUpdateObservingModeFilterError,
+    ObservingModeResourceUpdateObservingModeFilterVariables
+  >({
+    mutationFn: (
+      variables: ObservingModeResourceUpdateObservingModeFilterVariables,
+    ) =>
+      fetchObservingModeResourceUpdateObservingModeFilter({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
   });
 };
 
