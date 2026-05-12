@@ -160,7 +160,7 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
      * create a safety check with the user to ensure they want to delete a
      * given technical goal.
      */
-    const confirmDelete = (): void => modals.openConfirmModal({
+    const confirmDelete = () => modals.openConfirmModal({
         title: 'Delete Technical Goal?',
         children: (
             <>
@@ -208,7 +208,7 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
      * create a safety check with the user to ensure they want to clone a
      * given technical goal.
      */
-    const confirmClone = (): void => modals.openConfirmModal({
+    const confirmClone = () => modals.openConfirmModal({
         title: 'Clone Technical Goal?',
         children: (
             <>

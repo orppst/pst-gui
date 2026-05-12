@@ -129,7 +129,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
     /**
      * offers the end user a verification if they wish to remove a target.
      */
-    const openRemoveModal = (): void =>
+    const openRemoveModal = () =>
         modals.openConfirmModal({
             title: "Remove target",
             centered: true,
