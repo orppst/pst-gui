@@ -1,7 +1,7 @@
 import {ReactElement, useEffect, useState} from "react";
 import {Group, Stack, Text, TextInput} from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {DatesProvider, DateTimePicker} from "@mantine/dates";
+import {DateTimePicker} from "@mantine/dates";
 import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {useParams} from "react-router-dom";
 import {
@@ -121,45 +121,42 @@ export default function CycleDatesPanel() : ReactElement {
             <PanelHeader isLoading={details.isLoading} itemName={cycleTitle} panelHeading={"Dates"}/>
 
             <form onSubmit={handleSave}>
-                <DatesProvider settings={{timezone: 'UTC'}}>
-                    <Stack>
-                        <TextInput name="title"
-                                   label={'Title'}
-                                   maxLength={MAX_CHARS_FOR_INPUTS}
-                                   {...form.getInputProps('title')}/>
-                        <MaxCharsForInputRemaining length={form.values.title.length} />
-                        <TextInput name="code"
-                                   label={'Unique code'}
-                                   maxLength={32}
-                                   {...form.getInputProps('code')}/>
-                        <Group justify={"center"}>
-                            <Text size={"sm"} c={"teal"}> Dates and times are treated as UTC</Text>
-                        </Group>
-                        <DateTimePicker
-                            valueFormat={"YYYY/MM/DD HH:mm"}
-                            label={"Submission deadline"}
-                            placeholder={"select a proposal submission deadline"}
-                            //minDate={new Date()}
-                            {...form.getInputProps('submissionDeadline')}
-                        />
-                        <DateTimePicker
-                            valueFormat={"YYYY/MM/DD HH:mm"}
-                            label={"Observation session start"}
-                            placeholder={"select an observation session start"}
-                            minDate={new Date()}
-                            {...form.getInputProps('sessionStart')}
-                        />
-                        <DateTimePicker
-                            valueFormat={"YYYY/MM/DD HH:mm"}
-                            label={"Observation session end"}
-                            placeholder={"select an observation session end"}
-                            minDate={new Date()}
-                            {...form.getInputProps('sessionEnd')}
-                        />
-                        <FormSubmitButton form={form} disabled={!submitting && !form.isDirty()}/>
-                    </Stack>
-                </DatesProvider>
-
+                <Stack>
+                    <TextInput name="title"
+                               label={'Title'}
+                               maxLength={MAX_CHARS_FOR_INPUTS}
+                               {...form.getInputProps('title')}/>
+                    <MaxCharsForInputRemaining length={form.values.title.length} />
+                    <TextInput name="code"
+                               label={'Unique code'}
+                               maxLength={32}
+                               {...form.getInputProps('code')}/>
+                    <Group justify={"center"}>
+                        <Text size={"sm"} c={"teal"}> Dates and times are treated as UTC</Text>
+                    </Group>
+                    <DateTimePicker
+                        valueFormat={"YYYY/MM/DD HH:mm"}
+                        label={"Submission deadline"}
+                        placeholder={"select a proposal submission deadline"}
+                        //minDate={new Date()}
+                        {...form.getInputProps('submissionDeadline')}
+                    />
+                    <DateTimePicker
+                        valueFormat={"YYYY/MM/DD HH:mm"}
+                        label={"Observation session start"}
+                        placeholder={"select an observation session start"}
+                        minDate={new Date()}
+                        {...form.getInputProps('sessionStart')}
+                    />
+                    <DateTimePicker
+                        valueFormat={"YYYY/MM/DD HH:mm"}
+                        label={"Observation session end"}
+                        placeholder={"select an observation session end"}
+                        minDate={new Date()}
+                        {...form.getInputProps('sessionEnd')}
+                    />
+                    <FormSubmitButton form={form} disabled={!submitting && !form.isDirty()}/>
+                </Stack>
             </form>
         </PanelFrame>
     )
