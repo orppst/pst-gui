@@ -4,7 +4,7 @@ import {useForm} from "@mantine/form";
 import {ProposalCycle} from "../generated/proposalToolSchemas.ts";
 import {Group, Loader, NumberInput, Select, Stack, Text, TextInput} from "@mantine/core";
 import {MAX_CHARS_FOR_INPUTS} from "../constants.tsx";
-import {DatesProvider, DateTimePicker} from "@mantine/dates";
+import {DateTimePicker} from "@mantine/dates";
 import {
     useObservatoryResourceGetObservatories,
     useObservingModeResourceCopyObservingModes,
@@ -222,80 +222,78 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
 
     return (
         <form onSubmit={form.onSubmit((values) => createCycle(values))}>
-            <DatesProvider settings={{timezone: 'UTC'}}>
-                <Stack>
-                    <TextInput
-                        name={"title"}
-                        label={"Title"}
-                        maxLength={MAX_CHARS_FOR_INPUTS}
-                        description={
-                            MAX_CHARS_FOR_INPUTS -
-                            form.values.title.length +
-                            "/" + String(MAX_CHARS_FOR_INPUTS)}
-                        inputWrapperOrder={[
-                            'label', 'error', 'input', 'description']}
-                        placeholder={"give the proposal cycle a title"}
-                        {...form.getInputProps('title')}
+            <Stack>
+                <TextInput
+                    name={"title"}
+                    label={"Title"}
+                    maxLength={MAX_CHARS_FOR_INPUTS}
+                    description={
+                        MAX_CHARS_FOR_INPUTS -
+                        form.values.title.length +
+                        "/" + String(MAX_CHARS_FOR_INPUTS)}
+                    inputWrapperOrder={[
+                        'label', 'error', 'input', 'description']}
+                    placeholder={"give the proposal cycle a title"}
+                    {...form.getInputProps('title')}
+                />
+                <TextInput
+                    name={"code"}
+                    label={"Cycle code"}
+                    maxLength={MAX_CHARS_FOR_INPUTS}
+                    placeholder={"specify an alphanumeric code for this cycle"}
+                    {...form.getInputProps('cycleCode')}
                     />
-                    <TextInput
-                        name={"code"}
-                        label={"Cycle code"}
-                        maxLength={MAX_CHARS_FOR_INPUTS}
-                        placeholder={"specify an alphanumeric code for this cycle"}
-                        {...form.getInputProps('cycleCode')}
-                        />
-                    <Select
-                        label={"Observatory"}
-                        placeholder={"pick one"}
-                        data={observatories}
-                        {...form.getInputProps('observatoryId')}
-                    />
-                    <NumberInput
-                        label={"Observing time (hours)"}
-                        hideControls
-                        min={0}
-                        clampBehavior={"strict"}
-                        placeholder={"total observing time in hours for this cycle"}
-                        {...form.getInputProps('observingHours')}
-                    />
-                    <Select
-                        label={"Copy observing modes from (optional)"}
-                        placeholder={"select a previous cycle to copy observing modes from"}
-                        data={availableCycles}
-                        disabled={selectedObservatoryId == null || availableCycles.length === 0}
-                        clearable
-                        {...form.getInputProps('sourceCycleId')}
-                    />
-                    <Group justify={"center"}>
-                        <Text size={"sm"} c={"teal"}> Dates and times are treated as UTC</Text>
-                    </Group>
-                    <DateTimePicker
-                        valueFormat={"YYYY/MM/DD HH:mm"}
-                        label={"Submission deadline"}
-                        placeholder={"select a proposal submission deadline"}
-                        minDate={new Date()}
-                        {...form.getInputProps('submissionDeadline')}
-                    />
-                    <DateTimePicker
-                        valueFormat={"YYYY/MM/DD HH:mm"}
-                        label={"Observation session start"}
-                        placeholder={"select an observation session start"}
-                        minDate={new Date()}
-                        {...form.getInputProps('sessionStart')}
-                    />
-                    <DateTimePicker
-                        valueFormat={"YYYY/MM/DD HH:mm"}
-                        label={"Observation session end"}
-                        placeholder={"select an observation session end"}
-                        minDate={new Date()}
-                        {...form.getInputProps('sessionEnd')}
-                    />
-                    <FormSubmitButton
-                        label={"Create Proposal Cycle"}
-                        form={form}
-                    />
-                </Stack>
-            </DatesProvider>
+                <Select
+                    label={"Observatory"}
+                    placeholder={"pick one"}
+                    data={observatories}
+                    {...form.getInputProps('observatoryId')}
+                />
+                <NumberInput
+                    label={"Observing time (hours)"}
+                    hideControls
+                    min={0}
+                    clampBehavior={"strict"}
+                    placeholder={"total observing time in hours for this cycle"}
+                    {...form.getInputProps('observingHours')}
+                />
+                <Select
+                    label={"Copy observing modes from (optional)"}
+                    placeholder={"select a previous cycle to copy observing modes from"}
+                    data={availableCycles}
+                    disabled={selectedObservatoryId == null || availableCycles.length === 0}
+                    clearable
+                    {...form.getInputProps('sourceCycleId')}
+                />
+                <Group justify={"center"}>
+                    <Text size={"sm"} c={"teal"}> Dates and times are treated as UTC</Text>
+                </Group>
+                <DateTimePicker
+                    valueFormat={"YYYY/MM/DD HH:mm"}
+                    label={"Submission deadline"}
+                    placeholder={"select a proposal submission deadline"}
+                    minDate={new Date()}
+                    {...form.getInputProps('submissionDeadline')}
+                />
+                <DateTimePicker
+                    valueFormat={"YYYY/MM/DD HH:mm"}
+                    label={"Observation session start"}
+                    placeholder={"select an observation session start"}
+                    minDate={new Date()}
+                    {...form.getInputProps('sessionStart')}
+                />
+                <DateTimePicker
+                    valueFormat={"YYYY/MM/DD HH:mm"}
+                    label={"Observation session end"}
+                    placeholder={"select an observation session end"}
+                    minDate={new Date()}
+                    {...form.getInputProps('sessionEnd')}
+                />
+                <FormSubmitButton
+                    label={"Create Proposal Cycle"}
+                    form={form}
+                />
+            </Stack>
         </form>
     )
 }

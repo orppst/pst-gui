@@ -51,9 +51,9 @@ const kindData = [
             technicalJustification: emptyJustification
         },
         validate: {
-            title: (value) => (
+            title: (value : string) => (
                 value.length < 1 ? 'Title cannot be blank' : null),
-            summary: (value) => (
+            summary: (value : string) => (
                 value.length < 1 ? 'Your summary cannot be blank' : null)
         }
     });

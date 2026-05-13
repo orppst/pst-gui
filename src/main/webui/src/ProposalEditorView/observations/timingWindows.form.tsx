@@ -1,5 +1,5 @@
 import {Accordion, Grid, Group, Space, Switch, Textarea, Text} from "@mantine/core";
-import {DateInput, DatesProvider} from "@mantine/dates";
+import {DateInput} from "@mantine/dates";
 import { UseFormReturnType } from '@mantine/form';
 import {randomId} from "@mantine/hooks";
 
@@ -214,7 +214,7 @@ export default function TimingWindowsForm(
     });
 
     return (
-        <DatesProvider settings={{timezone: 'UTC'}}>
+        <>
             <Accordion defaultValue={"1"} chevronPosition={"left"}>
                 {windowsList}
             </Accordion>
@@ -227,6 +227,6 @@ export default function TimingWindowsForm(
                         {...EMPTY_TIMING_WINDOW, key: randomId()})}
                 />
             </Group>
-        </DatesProvider>
+        </>
     )
 }
