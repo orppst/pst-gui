@@ -60,8 +60,8 @@ export interface ObservationFormValues {
  */
 function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
     return ({
-        startTime: new Date(input.startTime!),
-        endTime: new Date(input.endTime!),
+        startTime: input.startTime!,
+        endTime: input.endTime!,
         note: input.note ?? "",
         isAvoidConstraint: input.isAvoidConstraint!,
         key: String(input._id!),
@@ -81,8 +81,8 @@ function ConvertToTimingWindowGui(input: TimingWindow) : TimingWindowGui {
 function ConvertToTimingWindowApi(input: TimingWindowGui) : TimingWindowApi {
     return ({
         "@type": "proposal:TimingWindow",
-        startTime: input.startTime!.getTime(),
-        endTime: input.endTime!.getTime(),
+        startTime: new Date(input.startTime!).getTime(),
+        endTime: new Date(input.endTime!).getTime(),
         note: input.note,
         isAvoidConstraint: input.isAvoidConstraint,
         _id: input.id
@@ -415,11 +415,6 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
       event.preventDefault();
       props.closeModal!();
   }
-
-  /*
-    Might be worth splitting this into two forms: one for the Target(s) and type for the Observation, the
-    other for the Timing Windows. Then we could split these across Tabs in the modal.
-   */
 
   return (
     <form onSubmit={handleSubmit}>
