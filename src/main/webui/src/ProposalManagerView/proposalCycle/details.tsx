@@ -20,9 +20,9 @@ export default function CycleDatesPanel() : ReactElement {
     interface updateDatesForm {
         title: string,
         code: string,
-        submissionDeadline: Date | null,
-        sessionStart: Date | null,
-        sessionEnd: Date | null
+        submissionDeadline: string | null,
+        sessionStart: string | null,
+        sessionEnd: string | null
     }
 
     if(!HaveRole(["tac_admin", "tac_member"])) {
@@ -67,12 +67,12 @@ export default function CycleDatesPanel() : ReactElement {
 
     useEffect(() => {
         if (details.status === 'success') {
-            setCycleTitle(details.data?.title as string);
-            form.values.title = details.data.title as string;
-            form.values.code = details.data?.code as string;
-            form.values.submissionDeadline = new Date(details.data?.submissionDeadline as string);
-            form.values.sessionStart = new Date(details.data?.observationSessionStart as string);
-            form.values.sessionEnd = new Date(details.data?.observationSessionEnd as string);
+            setCycleTitle(details.data?.title!);
+            form.values.title = details.data.title!;
+            form.values.code = details.data?.code!;
+            form.values.submissionDeadline = details.data?.submissionDeadline!;
+            form.values.sessionStart = details.data?.observationSessionStart!;
+            form.values.sessionEnd = details.data?.observationSessionEnd!;
         }
     }, [details.status,details.data]);
 
@@ -108,9 +108,9 @@ export default function CycleDatesPanel() : ReactElement {
             body: {
                 title: form.values.title,
                 code: form.values.code,
-                submissionDeadline: form.values.submissionDeadline?.getTime().toString(),
-                observationSessionStart: form.values.sessionStart?.getTime().toString(),
-                observationSessionEnd: form.values.sessionEnd?.getTime().toString(),
+                submissionDeadline: new Date(form.values.submissionDeadline!).getTime().toString(),
+                observationSessionStart: new Date(form.values.sessionStart!).getTime().toString(),
+                observationSessionEnd: new Date(form.values.sessionEnd!).getTime().toString(),
                 observatory: details.data?.observatory
             }
         })
