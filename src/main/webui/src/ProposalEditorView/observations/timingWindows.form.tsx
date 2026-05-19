@@ -164,7 +164,7 @@ export default function TimingWindowsForm(
                                     valueFormat={"YYYY/MM/DD HH:mm"}
                                     placeholder={"end time - YYYY/MM/DD HH:mm"}
                                     minDate={tw.startTime != null?
-                                        new Date() > tw.startTime ?
+                                        new Date() > new Date(tw.startTime) ?
                                             new Date() : tw.startTime
                                         : new Date()}
                                     {...form.getInputProps(
