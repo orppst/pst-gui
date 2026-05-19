@@ -28,9 +28,9 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
     interface NewCycleFormType {
         title: string,
         cycleCode: string,
-        submissionDeadline: Date | null,
-        sessionStart: Date | null,
-        sessionEnd: Date | null,
+        submissionDeadline: string | null,
+        sessionStart: string | null,
+        sessionEnd: string | null,
         observatoryId: number | null,
         sourceCycleId: string | null,
         observingHours: number | null
@@ -182,9 +182,11 @@ export default function NewCycleForm({closeModal}: NewCycleFormProps): ReactElem
                         }
                     ]
                 },
-                submissionDeadline: values.submissionDeadline!.getTime().toString(),
-                observationSessionStart: values.sessionStart!.getTime().toString(),
-                observationSessionEnd: values.sessionEnd!.getTime().toString(),
+                //API does not like date-time strings, we convert to no. of ms from posix epoch, then
+                // stringify that number to appease the TypeScript gods
+                submissionDeadline: new Date(values.submissionDeadline!).getTime().toString(),
+                observationSessionStart: new Date(values.sessionStart!).getTime().toString(),
+                observationSessionEnd: new Date(values.sessionEnd!).getTime().toString(),
             }
 
             sourceCycleIdRef.current = values.sourceCycleId;

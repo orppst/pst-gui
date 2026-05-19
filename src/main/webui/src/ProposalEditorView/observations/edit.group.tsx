@@ -416,11 +416,6 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
       props.closeModal!();
   }
 
-  /*
-    Might be worth splitting this into two forms: one for the Target(s) and type for the Observation, the
-    other for the Timing Windows. Then we could split these across Tabs in the modal.
-   */
-
   return (
     <form onSubmit={handleSubmit}>
         <ContextualHelpButton messageId={"MaintObs"} />
