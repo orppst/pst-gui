@@ -189,6 +189,9 @@ function SimbadSearch(props: {form: UseFormReturnType<NewTargetFormValues>}) {
      *  relevant details of the target. Notice that this is an internal function such that the
      *  input will be a valid 'oidref' number in SIMBAD.
      *
+     *  The following query will also get data on proper motions, parallax, and radial velocity in case it is needed:
+     *  select main_id,ra,dec,radec2sexa(ra, dec, 16),pmra,pmdec,plx_value,rvz_radvel,oid,description from basic join otypedef on basic.otype=otypedef.otype where oid=<oid>
+     *
      */
     function getTargetDetails(simbadIdent: SimbadIdent) {
 
@@ -242,6 +245,9 @@ function SimbadSearch(props: {form: UseFormReturnType<NewTargetFormValues>}) {
                                         props.form.setFieldValue('ra', AstroLib.DegToHms(arr[1]).slice(1));
                                         props.form.setFieldValue('dec', AstroLib.DegToDms(arr[2]));
                                         props.form.setFieldValue('sexagesimal', arr[3])
+
+                                        // possible future updates for proper motions, parallax, and radial velocity
+                                        // go here - note we'd need to check for null values i.e. do they exist?
 
                                         //arr[4] is the oid number - not needed by user
 
