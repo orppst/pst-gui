@@ -112,7 +112,7 @@ export default function SpectralWindowsSection(
                         px={5}
                         pt={5}
                         data={[
-                            "I","Q","U","V","RR","LL","RL","LR","XX","YY","XY","YX","PF","PP","PA"
+                            "LINEAR", "CIRCULAR"
                         ]}
                         {...form.getInputProps(
                             `spectralWindows.${index}.polarization`)}
