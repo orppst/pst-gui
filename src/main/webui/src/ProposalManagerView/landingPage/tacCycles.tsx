@@ -143,7 +143,7 @@ function ReviewerCycleTableRow(props: CycleRowProps): ReactElement {
     }
 
     if(cycleDetails.isLoading || assignedProposals.isLoading || detailedAssignedProposals.some(proposal => proposal.isLoading)) {
-        return <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
+        return <Table.Tr><Table.Td colSpan={5}>Loading...</Table.Td></Table.Tr>
     }
 
     if(cycleDetails.error || assignedProposals.error || detailedAssignedProposals.some(proposal => proposal.error)) {
@@ -156,14 +156,14 @@ function ReviewerCycleTableRow(props: CycleRowProps): ReactElement {
 
     const assignedCount = assignedProposals.data?.length ?? 0;
 
-    const outstandingCount = detailedAssignedProposals.filter((proposal) => {
+    const pendingReviewsCount = detailedAssignedProposals.filter((proposal) => {
         if(!proposal.data) {
             return false;
         }
         const yourReview = proposal.data.reviews?.find(
             review => review.reviewer?._id === reviewerId
         );
-        return !yourReview || new Date(yourReview.reviewDate ?? 0).getTime() <= 0;
+        return !yourReview || !yourReview.reviewDate;
     }).length;
 
     return (
@@ -171,7 +171,7 @@ function ReviewerCycleTableRow(props: CycleRowProps): ReactElement {
             <Table.Td>{cycleDetails.data?.observatory?.name}</Table.Td>
             <Table.Td>{cycleDetails.data?.title} [{cycleDetails.data?.code}]</Table.Td>
             <Table.Td>{assignedCount}</Table.Td>
-            <Table.Td>{outstandingCount}</Table.Td>
+            <Table.Td>{pendingReviewsCount}</Table.Td>
             <Table.Td>
                 <Link to={`/manager/cycle/${props.cycleId}/reviews`}>
                     Go to reviews
@@ -185,6 +185,7 @@ function ReviewerCycles() : ReactElement {
     const {data, error, isLoading} = useProposalCyclesResourceGetProposalCycles(
         {queryParams: {includeClosed: true}}
     );
+    const reviewerCycles = data?.filter(cycle => cycle.dbid !== undefined) ?? [];
 
     if (error) {
         return (
@@ -195,7 +196,7 @@ function ReviewerCycles() : ReactElement {
     }
 
     return <>
-        <PanelHeader itemName={"Your Assigned Reviews"} panelHeading={"Review Proposals"} />
+        <PanelHeader itemName={"Review Proposals"} panelHeading={"Your Assigned Reviews"} />
         {isLoading ? "Loading" :
             <Table>
                 <Table.Thead>
@@ -208,11 +209,9 @@ function ReviewerCycles() : ReactElement {
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    {data?.map(cycle => {
-                        if(cycle.dbid) {
-                            return <ReviewerCycleTableRow key={cycle.dbid} cycleId={cycle.dbid} />
-                        }
-                    })}
+                    {reviewerCycles.map(cycle => (
+                        <ReviewerCycleTableRow key={cycle.dbid} cycleId={Number(cycle.dbid)} />
+                    ))}
                 </Table.Tbody>
             </Table>
         }
