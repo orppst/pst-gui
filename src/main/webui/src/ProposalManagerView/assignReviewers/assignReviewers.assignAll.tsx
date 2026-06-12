@@ -37,7 +37,7 @@ export default function AssignReviewerToAll(props: AssignAllProps): ReactElement
         label: r.name ?? String(r.dbid)
     })) ?? [];
 
-    const handleAssignAll = () => {
+    const handleAssignAll = async () => {
         if (!selectedReviewerId) return;
 
         const reviewerId = Number(selectedReviewerId);
@@ -45,52 +45,42 @@ export default function AssignReviewerToAll(props: AssignAllProps): ReactElement
             r => r.dbid === reviewerId
         )?.name ?? "Reviewer";
 
-        let successCount = 0;
-        let errorCount = 0;
-        const total = props.proposalIds.length;
-
-        const finalize = () => {
-            if (successCount + errorCount === total) {
-                queryClient.invalidateQueries().then(() => {
-                    if (successCount > 0) {
-                        notifySuccess(
-                            "Assign to All Complete",
-                            `${reviewerName} assigned to ${successCount} proposal(s)` +
-                            (errorCount > 0 ? ` (${errorCount} skipped or failed)` : "")
-                        );
-                    } else {
-                        notifyError(
-                            "Assign to All Failed",
-                            `${reviewerName} could not be assigned to any proposals`
-                        );
+        const results = await Promise.allSettled(
+            props.proposalIds.map(proposalId =>
+                addReview.mutateAsync({
+                    pathParams: {
+                        cycleCode: Number(selectedCycleCode),
+                        submittedProposalId: proposalId
+                    },
+                    body: {
+                        comment: "",
+                        score: 0,
+                        technicalFeasibility: false,
+                        reviewer: {_id: reviewerId}
                     }
-                });
-            }
-        };
+                })
+            )
+        );
 
-        props.proposalIds.forEach(proposalId => {
-            addReview.mutate({
-                pathParams: {
-                    cycleCode: Number(selectedCycleCode),
-                    submittedProposalId: proposalId
-                },
-                body: {
-                    comment: "",
-                    score: 0,
-                    technicalFeasibility: false,
-                    reviewer: {_id: reviewerId}
-                }
-            }, {
-                onSuccess: () => {
-                    successCount++;
-                    finalize();
-                },
-                onError: () => {
-                    errorCount++;
-                    finalize();
-                }
-            });
-        });
+        const successCount = results.filter(
+            result => result.status === "fulfilled"
+        ).length;
+        const errorCount = results.length - successCount;
+
+        await queryClient.invalidateQueries();
+
+        if (successCount > 0) {
+            notifySuccess(
+                "Assign to All Complete",
+                `${reviewerName} assigned to ${successCount} proposal(s)` +
+                (errorCount > 0 ? ` (${errorCount} skipped or failed)` : "")
+            );
+        } else {
+            notifyError(
+                "Assign to All Failed",
+                `${reviewerName} could not be assigned to any proposals`
+            );
+        }
     };
 
     return (
