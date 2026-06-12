@@ -423,7 +423,7 @@ function App2(): ReactElement {
                                     {HaveRole(["reviewer"])
                                         && !HaveRole(["tac_member"])
                                         &&  (<Tooltip
-                                        label={"go to proposal review view"}
+                                        label={"Go to proposal reviews view"}
                                         openDelay={OPEN_DELAY}
                                     >
                                         <Button
