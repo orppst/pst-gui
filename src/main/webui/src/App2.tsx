@@ -40,7 +40,7 @@ import {
     Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container, Button,
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
-import {IconBookmarkEdit, IconClock2, IconHome, } from '@tabler/icons-react';
+import {IconBookmarkEdit, IconClock2, IconHome} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
 import {
