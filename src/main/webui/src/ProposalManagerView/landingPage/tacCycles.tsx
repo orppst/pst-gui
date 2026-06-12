@@ -1,8 +1,11 @@
-import {ReactElement} from "react";
+import {ReactElement, useContext} from "react";
 import {Box, List, Table, Tooltip} from "@mantine/core";
 import {
+    fetchSubmittedProposalResourceGetSubmittedProposal,
+    useProposalCyclesResourceGetProposalCycles,
     useProposalCyclesResourceGetMyTACMemberProposalCycles,
     useProposalCyclesResourceGetProposalCycleDetails,
+    useSubmittedProposalResourceGetAssignedSubmittedProposals,
     useSubmittedProposalResourceGetSubmittedProposals,
     useTACResourceGetCommitteeMembers,
 } from "../../generated/proposalToolComponents.ts";
@@ -10,6 +13,9 @@ import {JSON_SPACES} from "../../constants.tsx";
 import {PanelHeader} from "../../commonPanel/appearance.tsx";
 import {randomId} from "@mantine/hooks";
 import {HaveRole} from "../../auth/Roles.tsx";
+import {Link} from "react-router-dom";
+import {ProposalContext} from "../../App2.tsx";
+import {useQueries} from "@tanstack/react-query";
 
 type CycleRowProps = {
     cycleId: number
@@ -102,14 +108,121 @@ function TacCycleTableRow(props:CycleRowProps) {
     }
 }
 
-function TacCycles (): ReactElement {
-    const { data , error, isLoading } = useProposalCyclesResourceGetMyTACMemberProposalCycles(
+function ReviewerCycleTableRow(props: CycleRowProps): ReactElement {
+    const {user} = useContext(ProposalContext);
+    const reviewerId = user._id;
+
+    const cycleDetails = useProposalCyclesResourceGetProposalCycleDetails(
+        {pathParams: {cycleCode: props.cycleId}}
+    );
+
+    const assignedProposals = useSubmittedProposalResourceGetAssignedSubmittedProposals({
+        pathParams: {cycleCode: props.cycleId, personId: reviewerId ?? 0}
+    }, {enabled: reviewerId !== undefined});
+
+    const detailedAssignedProposals = useQueries({
+        queries: (assignedProposals.data ?? []).map((proposal) => ({
+            queryKey: ["reviewer-assigned-proposal", props.cycleId, proposal.dbid],
+            queryFn: () =>
+                fetchSubmittedProposalResourceGetSubmittedProposal({
+                    pathParams: {
+                        cycleCode: props.cycleId,
+                        submittedProposalId: proposal.dbid ?? 0
+                    }
+                }),
+            enabled: proposal.dbid !== undefined
+        }))
+    });
+
+    if(!reviewerId) {
+        return (
+            <Table.Tr>
+                <Table.Td colSpan={5}>Unable to load reviewer details</Table.Td>
+            </Table.Tr>
+        )
+    }
+
+    if(cycleDetails.isLoading || assignedProposals.isLoading || detailedAssignedProposals.some(proposal => proposal.isLoading)) {
+        return <Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>
+    }
+
+    if(cycleDetails.error || assignedProposals.error || detailedAssignedProposals.some(proposal => proposal.error)) {
+        return (
+            <Table.Tr>
+                <Table.Td colSpan={5}>Error loading review data</Table.Td>
+            </Table.Tr>
+        )
+    }
+
+    const assignedCount = assignedProposals.data?.length ?? 0;
+
+    const outstandingCount = detailedAssignedProposals.filter((proposal) => {
+        if(!proposal.data) {
+            return false;
+        }
+        const yourReview = proposal.data.reviews?.find(
+            review => review.reviewer?._id === reviewerId
+        );
+        return !yourReview || new Date(yourReview.reviewDate ?? 0).getTime() <= 0;
+    }).length;
+
+    return (
+        <Table.Tr>
+            <Table.Td>{cycleDetails.data?.observatory?.name}</Table.Td>
+            <Table.Td>{cycleDetails.data?.title} [{cycleDetails.data?.code}]</Table.Td>
+            <Table.Td>{assignedCount}</Table.Td>
+            <Table.Td>{outstandingCount}</Table.Td>
+            <Table.Td>
+                <Link to={`/manager/cycle/${props.cycleId}/reviews`}>
+                    Go to reviews
+                </Link>
+            </Table.Td>
+        </Table.Tr>
+    )
+}
+
+function ReviewerCycles() : ReactElement {
+    const {data, error, isLoading} = useProposalCyclesResourceGetProposalCycles(
         {queryParams: {includeClosed: true}}
     );
 
-    if(!HaveRole(["tac_admin", "tac_member"])) {
-        return <>Not authorised</>
+    if (error) {
+        return (
+            <Box>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+            </Box>
+        );
     }
+
+    return <>
+        <PanelHeader itemName={"Your Assigned Reviews"} panelHeading={"Review Proposals"} />
+        {isLoading ? "Loading" :
+            <Table>
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>Observatory</Table.Th>
+                        <Table.Th>Name [code]</Table.Th>
+                        <Table.Th>Assigned proposals</Table.Th>
+                        <Table.Th>Outstanding reviews</Table.Th>
+                        <Table.Th>Link</Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                    {data?.map(cycle => {
+                        if(cycle.dbid) {
+                            return <ReviewerCycleTableRow key={cycle.dbid} cycleId={cycle.dbid} />
+                        }
+                    })}
+                </Table.Tbody>
+            </Table>
+        }
+    </>
+}
+
+function TacMemberCycles (): ReactElement {
+    const { data , error, isLoading } = useProposalCyclesResourceGetMyTACMemberProposalCycles(
+        {queryParams: {includeClosed: true}}
+    );
 
     if (error) {
         return (
@@ -172,6 +285,18 @@ function TacCycles (): ReactElement {
         {isLoading? 'Loading' : listClosedCycles()}
     </>;
 
+}
+
+function TacCycles (): ReactElement {
+    if(HaveRole(["tac_admin", "tac_member"])) {
+        return <TacMemberCycles />
+    }
+
+    if(HaveRole(["reviewer"])) {
+        return <ReviewerCycles />
+    }
+
+    return <>Not authorised</>
 }
 
 export default TacCycles
