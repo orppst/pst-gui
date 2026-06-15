@@ -16,6 +16,7 @@ import {HaveRole} from "../../auth/Roles.tsx";
 import {Link} from "react-router-dom";
 import {ProposalContext} from "../../App2.tsx";
 import {useQueries} from "@tanstack/react-query";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 type CycleRowProps = {
     cycleId: number
@@ -111,6 +112,7 @@ function TacCycleTableRow(props:CycleRowProps) {
 function ReviewerCycleTableRow(props: CycleRowProps): ReactElement {
     const {user} = useContext(ProposalContext);
     const reviewerId = user._id;
+    const {fetcherOptions} = useProposalToolContext();
 
     const cycleDetails = useProposalCyclesResourceGetProposalCycleDetails(
         {pathParams: {cycleCode: props.cycleId}}
@@ -125,6 +127,7 @@ function ReviewerCycleTableRow(props: CycleRowProps): ReactElement {
             queryKey: ["reviewer-assigned-proposal", props.cycleId, proposal.dbid],
             queryFn: () =>
                 fetchSubmittedProposalResourceGetSubmittedProposal({
+                    ...fetcherOptions,
                     pathParams: {
                         cycleCode: props.cycleId,
                         submittedProposalId: proposal.dbid ?? 0
