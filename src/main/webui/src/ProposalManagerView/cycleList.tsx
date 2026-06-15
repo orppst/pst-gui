@@ -146,6 +146,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                 </Group>
             </Accordion.Control>
             <Accordion.Panel>
+                {HaveRole(["tac_member", "obs_administration"]) &&
                 <NavLink to={"cycle/" + cycle.dbid}
                          component={Link}
                          key={"Overview"}
@@ -153,7 +154,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconUfo/>}
                          active={"Overview" + cycle.code === active}
                          onClick={()=>setActive("Overview" + cycle.code)}
-                />
+                />}
                 {HaveRole(["tac_admin"]) &&
                 <NavLink to={"cycle/" + cycle.dbid + "/details"}
                          component={Link}
