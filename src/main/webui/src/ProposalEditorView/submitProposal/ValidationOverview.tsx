@@ -132,12 +132,10 @@ export default function ValidationOverview(props: {
                                     (<IconInfoCircle size={ICON_SIZE} color={'orange'}/>)
                                 }
                             </Table.Td>
-                            <Table.Td>
-                                {validateProposal.data?.info &&
-                                    formatTextWithLinks({text: validateProposal.data?.info,
-                                        color: validateProposal.data?.isValid ? 'green' : 'orange'})
-                                }
-                            </Table.Td>
+                            {validateProposal.data && validateProposal.data.info &&
+                                formatTextWithLinks({text: validateProposal.data.info,
+                                    color: validateProposal.data.isValid ? 'green' : 'orange'})
+                            }
                         </Table.Tr>
                         {validateProposal.data?.warnings !== undefined &&
                             (<Table.Tr>
