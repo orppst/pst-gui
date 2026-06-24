@@ -9,7 +9,7 @@ import {ObjectIdentifier} from "../../generated/proposalToolSchemas.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import AllocatedBlocksObservingMode from "./allocatedBlocks.observingMode.tsx";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 import {modals} from "@mantine/modals";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {useQueryClient} from "@tanstack/react-query";
@@ -22,6 +22,7 @@ function AllocatedAccordionItem(p: {
     timeUnit: string,
     totalTimeAvailable: number
 }) : ReactElement {
+    const isTacAdmin = useHasRole(["tac_admin"]);
     const queryClient = useQueryClient();
 
     const withdrawAllocatedProposalMutation = useAllocatedProposalResourceWithdrawAllocatedProposal();
@@ -119,7 +120,7 @@ function AllocatedAccordionItem(p: {
                         )
                     })
                 }
-                {HaveRole(["tac_admin"]) &&
+                {isTacAdmin &&
                     <Flex
                         justify="flex-start"
                         align="flex-end"

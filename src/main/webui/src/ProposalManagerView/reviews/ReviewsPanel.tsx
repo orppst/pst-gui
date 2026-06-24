@@ -10,7 +10,7 @@ import {
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {SubmittedProposal} from "../../generated/proposalToolSchemas.ts";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 import {ExportButton} from "../../commonButtons/export.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {Alert, Container, Fieldset, Flex, Loader, Stack} from "@mantine/core";
@@ -34,6 +34,8 @@ function ReviewsPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
 
     const authToken = useToken();
+
+    const isTacAdmin = useHasRole(["tac_admin"]);
 
     const reviewers =
         useReviewerResourceGetReviewers({})
@@ -127,7 +129,7 @@ function ReviewsPanel() : ReactElement {
                 proposalCycleCode={Number(selectedCycleCode)}
                 panelHeading={"Reviews"}
             />
-            {HaveRole(["tac_admin"]) &&
+            {isTacAdmin &&
                 <Flex justify={"center"}>
                     <ExportButton
                         toolTipLabel={"Export to a file for download"}

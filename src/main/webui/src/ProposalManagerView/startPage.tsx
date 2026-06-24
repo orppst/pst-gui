@@ -20,15 +20,15 @@ import {useDisclosure} from "@mantine/hooks";
 import CycleList from "./cycleList.tsx";
 import AddButton from "../commonButtons/add.tsx";
 import NewCycleForm from "./proposalCycle.new.form.tsx";
-import {HaveRole} from "../auth/Roles.tsx";
+import {useHasRole} from "../auth/Roles.tsx";
 import UserMenu from "../userMenu.tsx";
 
 export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
     const [opened, {toggle}] = useDisclosure();
     const theme = useMantineTheme();
-
     const [modalOpened, {close, open}] = useDisclosure();
+    const isObsAdmin = useHasRole(["obs_administration"]);
 
     return (
         <AppShell
@@ -70,7 +70,7 @@ export default function ProposalManagerStartPage() : ReactElement {
                                     Proposal Editor
                                 </Button>
                             </Tooltip>
-                            {HaveRole(["obs_administration"]) &&
+                            {isObsAdmin &&
                             <AddButton toolTipLabel={"new proposal cycle"}
                                        label={"Create a new Proposal Cycle"}
                                        onClick={open}
