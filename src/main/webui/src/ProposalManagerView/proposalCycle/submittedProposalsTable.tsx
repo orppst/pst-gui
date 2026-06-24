@@ -146,7 +146,9 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
 
     if (submittedProposal.isLoading) {
         return (
-            rowProps.index === 0 ? <Loader/> : <></>
+            rowProps.index === 0 ?
+                <Table.Tr><Table.Td><Loader/></Table.Td></Table.Tr> :
+                <Table.Tr><Table.Td>Unknown</Table.Td></Table.Tr>
         )
     }
 
