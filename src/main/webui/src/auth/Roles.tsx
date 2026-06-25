@@ -2,11 +2,12 @@ import {jwtDecode} from "jwt-decode";
 import {useToken} from "../App2.tsx";
 
 /**
- * Check current user's roles for any one in array
+ * Custom hook to check current user's roles for any one in array.
+ * Must be called at the top level of a component (React rules of hooks).
  * @param roles A string array of roles
  * @return boolean returns true if current user has ANY of the roles passed
  */
-export function HaveRole (roles: String[]) {
+export function useHasRole (roles: String[]) {
     const token = useToken();
     let roleFound: boolean = false;
 

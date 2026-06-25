@@ -28,7 +28,7 @@ import AvailableResourcesTable from "./availableResourcesTable.tsx";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {CLOSE_DELAY, ICON_SIZE, OPEN_DELAY} from "../../constants.tsx";
 import {IconMail} from "@tabler/icons-react";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 
 
 //ASSUMES input string is ISO date-time at GMT+0
@@ -162,13 +162,14 @@ export default function CycleOverviewPanel() : ReactElement {
     }
 
     const DisplaySubmittedProposals = () : ReactElement => {
+        const isTacAdmin = useHasRole(["tac_admin"]);
         return (
             <Fieldset legend={"Proposals List"}>
                 <ScrollArea.Autosize mah={250}>
                     {SubmittedProposalsTable(submittedProposals.data ?? [])}
                 </ScrollArea.Autosize>
                 <Space h={'xl'}/>
-                {HaveRole(["tac_admin"]) &&
+                {isTacAdmin &&
                 <Group justify={"center"}>
                     <Tooltip
                         label={checkReviewsLocked.data ?

@@ -2,13 +2,14 @@ import {ReactElement} from "react";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {useParams} from "react-router-dom";
 import AssignReviewersAccordion from "./assignReviewers.accordion.tsx";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 
 
 export default function AssignReviewersPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
+    const hasRole = useHasRole(["tac_admin"]);
 
-    if(!HaveRole(["tac_admin"])) {
+    if(!hasRole) {
         return <>Not authorised</>
     }
 

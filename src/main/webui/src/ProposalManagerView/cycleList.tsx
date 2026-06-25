@@ -22,7 +22,7 @@ import {
 } from "src/generated/proposalToolComponents.ts";
 import {ObjectIdentifier} from "src/generated/proposalToolSchemas.ts";
 import {Link} from "react-router-dom";
-import {HaveRole} from "../auth/Roles.tsx";
+import {useHasRole} from "../auth/Roles.tsx";
 
 /*
     FYI: We have made composite roles that are recursive e.g. a
@@ -43,6 +43,10 @@ export default function CycleList() : ReactElement {
         {queryParams: {}}
     );
 
+    //this check may be redundant
+    const hasRole = useHasRole(["obs_administration", "tac_member", "reviewer"]);
+    const isObsAdmin = useHasRole(["obs_administration"]);
+
     const observatoryList = obsList.data?.map(obs => {
         if(obs.dbid) {
             if (selectedObservatory == 0)
@@ -53,8 +57,7 @@ export default function CycleList() : ReactElement {
     })
 
 
-    //this check may be redundant
-    if(!HaveRole(["obs_administration", "tac_member", "reviewer"])) {
+    if(!hasRole) {
         return <>Not authorised</>
     }
 
@@ -92,7 +95,7 @@ export default function CycleList() : ReactElement {
                         label={"Only open cycles"}
                         onChange={(event) => setOnlyOpen(event.currentTarget.checked)}
                     />
-                    {HaveRole(["obs_administration"]) &&
+                    {isObsAdmin &&
                     <Checkbox
                         value={"allcycles"}
                         label={"By observatory"}
@@ -136,6 +139,9 @@ export default function CycleList() : ReactElement {
 function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
     const cycle = props.cycle;
     const [active, setActive] = useState("");
+    const isTacMemberOrAdmin = useHasRole(["tac_member", "obs_administration"]);
+    const isTacAdmin = useHasRole(["tac_admin"]);
+    const isReviewer = useHasRole(["reviewer"]);
 
     return (
         <Accordion.Item value={String(cycle.dbid)}>
@@ -146,7 +152,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                 </Group>
             </Accordion.Control>
             <Accordion.Panel>
-                {HaveRole(["tac_member", "obs_administration"]) &&
+                {isTacMemberOrAdmin &&
                 <NavLink to={"cycle/" + cycle.dbid}
                          component={Link}
                          key={"Overview"}
@@ -155,7 +161,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"Overview" + cycle.code === active}
                          onClick={()=>setActive("Overview" + cycle.code)}
                 />}
-                {HaveRole(["tac_admin"]) &&
+                {isTacAdmin &&
                 <NavLink to={"cycle/" + cycle.dbid + "/details"}
                          component={Link}
                          key={"Details"}
@@ -164,7 +170,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"Details" + cycle.code === active}
                          onClick={()=>setActive("Details" + cycle.code)}
                 />}
-                {HaveRole(["tac_admin"]) &&
+                {isTacAdmin &&
                 <NavLink to={"cycle/" + cycle.dbid + "/tac"}
                          component={Link}
                          key={"TAC"}
@@ -173,7 +179,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"TAC" + cycle.code === active}
                          onClick={()=>setActive("TAC" + cycle.code)}
                 />}
-                {HaveRole(["tac_admin"]) &&
+                {isTacAdmin &&
                 <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
                          component={Link}
                          key={"AssignReviewers"}
@@ -182,7 +188,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"AssignReviewers" + cycle.code === active}
                          onClick={()=>setActive("AssignReviewers" + cycle.code)}
                 />}
-                {HaveRole(["reviewer"]) &&
+                {isReviewer &&
                 <NavLink to={"cycle/" + cycle.dbid + "/reviews"}
                          component={Link}
                          key={"Reviews"}
@@ -192,7 +198,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          onClick={()=>setActive("Reviews" + cycle.code)}
                 />
                 }
-                {HaveRole(["tac_admin"]) &&
+                {isTacAdmin &&
                 <NavLink to={"cycle/" + cycle.dbid + "/acceptProposals"}
                          component={Link}
                          key={"AcceptProposals"}
@@ -201,7 +207,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          active={"AcceptProposals" + cycle.code === active}
                          onClick={()=>setActive("AcceptProposals" + cycle.code)}
                 />}
-                {HaveRole(["tac_admin"]) &&
+                {isTacAdmin &&
                 <NavLink to={"cycle/" + cycle.dbid + "/allocations"}
                          component={Link}
                          key={"Allocations"}
