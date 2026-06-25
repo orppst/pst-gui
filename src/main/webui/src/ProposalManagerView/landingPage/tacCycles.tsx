@@ -12,7 +12,7 @@ import {
 import {JSON_SPACES} from "../../constants.tsx";
 import {PanelHeader} from "../../commonPanel/appearance.tsx";
 import {randomId} from "@mantine/hooks";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 import {Link} from "react-router-dom";
 import {ProposalContext} from "../../App2.tsx";
 import {useQueries} from "@tanstack/react-query";
@@ -290,11 +290,14 @@ function TacMemberCycles (): ReactElement {
 }
 
 function TacCycles (): ReactElement {
-    if(HaveRole(["tac_admin", "tac_member"])) {
+    const isTacAdminOrMember = useHasRole(["tac_admin", "tac_member"]);
+    const isReviewer = useHasRole(["reviewer"]);
+
+    if(isTacAdminOrMember) {
         return <TacMemberCycles />
     }
 
-    if(HaveRole(["reviewer"])) {
+    if(isReviewer) {
         return <ReviewerCycles />
     }
 

@@ -11,7 +11,7 @@ import {
 } from "../../generated/proposalToolComponents.ts";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import ResourceStatsTable from "./resourceStats.table.tsx";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import ResourceModeGradeTotalsTable from "./resourceModeGradeTotals.table.tsx";
 
@@ -19,6 +19,8 @@ export default
 function AllocationsPanel() : ReactElement {
 
     const {selectedCycleCode} = useParams();
+
+    const hasRole = useHasRole(["tac_admin", "tac_member"]);
 
     const allocated =
         useAllocatedProposalResourceGetAllocatedProposals({
@@ -43,7 +45,7 @@ function AllocationsPanel() : ReactElement {
             pathParams: {cycleCode: Number(selectedCycleCode)}
         })
 
-    if(!HaveRole(["tac_admin", "tac_member"])) {
+    if(!hasRole) {
         return <>Not authorised</>
     }
 
