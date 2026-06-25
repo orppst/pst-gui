@@ -169,15 +169,23 @@ function TACMemberRow(props: MemberProps): ReactElement {
 
     // track error states
     if (tacMember.isLoading) {
-        return ( <Loader /> )
+        return ( <Table.Tr>
+                    <Table.Td>
+                        <Loader />
+                    </Table.Td>
+                </Table.Tr>)
     }
 
     if (tacMember.isError) {
         return (
-            <AlertErrorMessage
-                title={"Failed to get TAC member"}
-                error={getErrorMessage(tacMember.error)}
-            />
+            <Table.Tr>
+                <Table.Td>
+                    <AlertErrorMessage
+                        title={"Failed to get TAC member"}
+                        error={getErrorMessage(tacMember.error)}
+                    />
+                </Table.Td>
+            </Table.Tr>
         );
     }
 
