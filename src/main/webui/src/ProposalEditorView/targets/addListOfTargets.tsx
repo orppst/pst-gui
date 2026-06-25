@@ -40,12 +40,14 @@ export default function AddListOfTargets(p: {
         }
     }
 
+    //I want to have: accept={"application/xml,text/ecsv,text/csv,text/plain"} here but 'text/escv' is not a thing,
+    // and it then blocks the ability to upload *.ecsv files.
     return(
-        <FileButton onChange={handleUpload} accept={"application/xml,text/csv,text/plain"}>
+        <FileButton onChange={handleUpload}>
             {
                 (props) =>
                     <UploadButton
-                        toolTipLabel={"Upload a list of targets from a file (xml, csv, txt)"}
+                        toolTipLabel={"Upload a list of targets from a file (xml, (e)csv, txt)"}
                         label={"Upload List of Targets"}
                         onClick={props.onClick}
                     />
