@@ -27,7 +27,6 @@ export default function ProposalManagerStartPage() : ReactElement {
     const navigate = useNavigate();
     const [opened, {toggle}] = useDisclosure();
     const theme = useMantineTheme();
-
     const [modalOpened, {close, open}] = useDisclosure();
     const isObsAdmin = useHasRole(["obs_administration"]);
 

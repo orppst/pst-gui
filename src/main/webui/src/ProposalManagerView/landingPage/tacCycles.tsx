@@ -1,8 +1,11 @@
-import {ReactElement} from "react";
+import {ReactElement, useContext} from "react";
 import {Box, List, Table, Tooltip} from "@mantine/core";
 import {
+    fetchSubmittedProposalResourceGetSubmittedProposal,
+    useProposalCyclesResourceGetProposalCycles,
     useProposalCyclesResourceGetMyTACMemberProposalCycles,
     useProposalCyclesResourceGetProposalCycleDetails,
+    useSubmittedProposalResourceGetAssignedSubmittedProposals,
     useSubmittedProposalResourceGetSubmittedProposals,
     useTACResourceGetCommitteeMembers,
 } from "../../generated/proposalToolComponents.ts";
@@ -10,6 +13,10 @@ import {JSON_SPACES} from "../../constants.tsx";
 import {PanelHeader} from "../../commonPanel/appearance.tsx";
 import {randomId} from "@mantine/hooks";
 import {useHasRole} from "../../auth/Roles.tsx";
+import {Link} from "react-router-dom";
+import {ProposalContext} from "../../App2.tsx";
+import {useQueries} from "@tanstack/react-query";
+import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 
 type CycleRowProps = {
     cycleId: number
@@ -102,14 +109,122 @@ function TacCycleTableRow(props:CycleRowProps) {
     }
 }
 
-function TacCycles (): ReactElement {
+function ReviewerCycleTableRow(props: CycleRowProps): ReactElement {
+    const {user} = useContext(ProposalContext);
+    const reviewerId = user._id;
+    const {fetcherOptions} = useProposalToolContext();
+
+    const cycleDetails = useProposalCyclesResourceGetProposalCycleDetails(
+        {pathParams: {cycleCode: props.cycleId}}
+    );
+
+    const assignedProposals = useSubmittedProposalResourceGetAssignedSubmittedProposals({
+        pathParams: {cycleCode: props.cycleId, personId: reviewerId ?? 0}
+    }, {enabled: reviewerId !== undefined});
+
+    const detailedAssignedProposals = useQueries({
+        queries: (assignedProposals.data ?? []).map((proposal) => ({
+            queryKey: ["reviewer-assigned-proposal", props.cycleId, proposal.dbid],
+            queryFn: () =>
+                fetchSubmittedProposalResourceGetSubmittedProposal({
+                    ...fetcherOptions,
+                    pathParams: {
+                        cycleCode: props.cycleId,
+                        submittedProposalId: proposal.dbid ?? 0
+                    }
+                }),
+            enabled: proposal.dbid !== undefined
+        }))
+    });
+
+    if(!reviewerId) {
+        return (
+            <Table.Tr>
+                <Table.Td colSpan={5}>Unable to load reviewer details</Table.Td>
+            </Table.Tr>
+        )
+    }
+
+    if(cycleDetails.isLoading || assignedProposals.isLoading || detailedAssignedProposals.some(proposal => proposal.isLoading)) {
+        return <Table.Tr><Table.Td colSpan={5}>Loading...</Table.Td></Table.Tr>
+    }
+
+    if(cycleDetails.error || assignedProposals.error || detailedAssignedProposals.some(proposal => proposal.error)) {
+        return (
+            <Table.Tr>
+                <Table.Td colSpan={5}>Error loading review data</Table.Td>
+            </Table.Tr>
+        )
+    }
+
+    const assignedCount = assignedProposals.data?.length ?? 0;
+
+    const pendingReviewsCount = detailedAssignedProposals.filter((proposal) => {
+        if(!proposal.data) {
+            return false;
+        }
+        const yourReview = proposal.data.reviews?.find(
+            review => review.reviewer?._id === reviewerId
+        );
+        return !yourReview || !yourReview.reviewDate;
+    }).length;
+
+    return (
+        <Table.Tr>
+            <Table.Td>{cycleDetails.data?.observatory?.name}</Table.Td>
+            <Table.Td>{cycleDetails.data?.title} [{cycleDetails.data?.code}]</Table.Td>
+            <Table.Td>{assignedCount}</Table.Td>
+            <Table.Td>{pendingReviewsCount}</Table.Td>
+            <Table.Td>
+                <Link to={`/manager/cycle/${props.cycleId}/reviews`}>
+                    Go to reviews
+                </Link>
+            </Table.Td>
+        </Table.Tr>
+    )
+}
+
+function ReviewerCycles() : ReactElement {
+    const {data, error, isLoading} = useProposalCyclesResourceGetProposalCycles(
+        {queryParams: {includeClosed: true}}
+    );
+    const reviewerCycles = data?.filter(cycle => cycle.dbid !== undefined) ?? [];
+
+    if (error) {
+        return (
+            <Box>
+                <pre>{JSON.stringify(error, null, JSON_SPACES)}</pre>
+            </Box>
+        );
+    }
+
+    return <>
+        <PanelHeader itemName={"Review Proposals"} panelHeading={"Your Assigned Reviews"} />
+        {isLoading ? "Loading" :
+            <Table>
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>Observatory</Table.Th>
+                        <Table.Th>Name [code]</Table.Th>
+                        <Table.Th>Assigned proposals</Table.Th>
+                        <Table.Th>Outstanding reviews</Table.Th>
+                        <Table.Th>Link</Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                    {reviewerCycles.map(cycle => (
+                        <ReviewerCycleTableRow key={cycle.dbid} cycleId={Number(cycle.dbid)} />
+                    ))}
+                </Table.Tbody>
+            </Table>
+        }
+    </>
+}
+
+function TacMemberCycles (): ReactElement {
     const { data , error, isLoading } = useProposalCyclesResourceGetMyTACMemberProposalCycles(
         {queryParams: {includeClosed: true}}
     );
-
-    if(!useHasRole(["tac_admin", "tac_member"])) {
-        return <>Not authorised</>
-    }
 
     if (error) {
         return (
@@ -172,6 +287,21 @@ function TacCycles (): ReactElement {
         {isLoading? 'Loading' : listClosedCycles()}
     </>;
 
+}
+
+function TacCycles (): ReactElement {
+    const isTacAdminOrMember = useHasRole(["tac_admin", "tac_member"]);
+    const isReviewer = useHasRole(["reviewer"]);
+
+    if(isTacAdminOrMember) {
+        return <TacMemberCycles />
+    }
+
+    if(isReviewer) {
+        return <ReviewerCycles />
+    }
+
+    return <>Not authorised</>
 }
 
 export default TacCycles

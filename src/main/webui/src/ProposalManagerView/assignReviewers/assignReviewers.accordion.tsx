@@ -8,6 +8,7 @@ import {notifyError} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useParams} from "react-router-dom";
 import AssignReviewersForm from "./assignReviewers.form.tsx";
+import AssignReviewerToAll from "./assignReviewers.assignAll.tsx";
 
 
 type SubmittedProposalItemProp = {
@@ -125,18 +126,23 @@ export default function AssignReviewersAccordion() : ReactElement {
     }
 
     return (
-        <Accordion defaultValue={"1"}>
-            {
-                notYetAllocated.data?.map(sp => {
-                    return (
-                        <SubmittedProposalItem
-                            key={sp.dbid}
-                            cycleCode={Number(selectedCycleCode)}
-                            proposalId={sp.dbid!}
-                        />
-                    )
-                })
-            }
-        </Accordion>
+        <>
+            <AssignReviewerToAll
+                proposalIds={notYetAllocated.data?.map(sp => sp.dbid!) ?? []}
+            />
+            <Accordion defaultValue={"1"}>
+                {
+                    notYetAllocated.data?.map(sp => {
+                        return (
+                            <SubmittedProposalItem
+                                key={sp.dbid}
+                                cycleCode={Number(selectedCycleCode)}
+                                proposalId={sp.dbid!}
+                            />
+                        )
+                    })
+                }
+            </Accordion>
+        </>
     )
 }

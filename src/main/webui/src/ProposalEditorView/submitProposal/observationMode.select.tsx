@@ -144,7 +144,7 @@ function ObservationModeSelect(props: {
         >
             <Stack>
                 <Text>
-                    {observatory.data?.name}: {cycleTitle.data} - Observing Modes
+                    {observatory.data?.name}: {cycleTitle.data!} - Observing Modes
                 </Text>
                 <Divider/>
                 {

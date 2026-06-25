@@ -40,7 +40,7 @@ import {
     Tooltip, useMantineTheme, useMantineColorScheme, FileButton, Container, Button,
 } from '@mantine/core';
 import {ColourSchemeToggle} from "./ColourSchemeToggle";
-import {IconClock2, IconHome} from '@tabler/icons-react';
+import {IconBookmarkEdit, IconClock2, IconHome} from '@tabler/icons-react';
 import {useDisclosure} from "@mantine/hooks";
 import AddButton from './commonButtons/add';
 import {
@@ -314,7 +314,9 @@ function App2(): ReactElement {
         const queryClient = useQueryClient();
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
-        const isReviewerOrTacMember = useHasRole(["reviewer","tac_member"]);
+        const isReviewer = useHasRole(["reviewer"]);
+        const isTacMember = useHasRole(["tac_member"]);
+        const isReviewerOnly = isReviewer && !isTacMember;
         // acquire the state setters for proposal title and investigator name.
         const [proposalTitleFilter, setProposalTitleFilter] = useHistoryState(
             "proposalTitle", "");
@@ -421,8 +423,24 @@ function App2(): ReactElement {
                                     <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
-                                    {isReviewerOrTacMember &&  (<Tooltip
-                                        label={"go to proposal TAC management view"}
+                                    {isReviewerOnly
+                                        &&  (<Tooltip
+                                        label={"Go to proposal reviews view"}
+                                        openDelay={OPEN_DELAY}
+                                    >
+                                        <Button
+                                            color={"pink"}
+                                            variant={"subtle"}
+                                            rightSection={<IconBookmarkEdit />}
+                                            onClick={(e: SyntheticEvent)=>{
+                                                e.preventDefault();
+                                                navigate("/manager")}}
+                                        >
+                                            Review Proposals
+                                        </Button>
+                                    </Tooltip>)}
+                                    {isTacMember &&  (<Tooltip
+                                        label={"Go to proposal TAC management view"}
                                         openDelay={OPEN_DELAY}
                                     >
                                         <Button
