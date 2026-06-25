@@ -68,7 +68,7 @@ import EditorLandingPage from "./ProposalEditorView/landingPage/editorLandingPag
 import TitleSummaryKind from "./ProposalEditorView/proposal/TitleSummaryKind.tsx";
 import {notifyError} from "./commonPanel/notifications.tsx";
 import JSZip from "jszip";
-import {HaveRole} from "./auth/Roles.tsx";
+import {useHasRole} from "./auth/Roles.tsx";
 import AddTargetPanel from "./ProposalEditorView/targets/New.tsx";
 import PassFailPanel from "./ProposalManagerView/passFail/PassFailPanel.tsx";
 import UserMenu from "./userMenu.tsx";
@@ -314,6 +314,7 @@ function App2(): ReactElement {
         const queryClient = useQueryClient();
         const [opened, {toggle}] = useDisclosure();
         const navigate = useNavigate();
+        const isReviewerOrTacMember = useHasRole(["reviewer","tac_member"]);
         // acquire the state setters for proposal title and investigator name.
         const [proposalTitleFilter, setProposalTitleFilter] = useHistoryState(
             "proposalTitle", "");
@@ -420,7 +421,7 @@ function App2(): ReactElement {
                                     <img src={"/pst/gui/polaris4.png"}
                                          alt="Polaris"
                                          width={60}/>
-                                    {HaveRole(["tac_member", "reviewer"]) &&  (<Tooltip
+                                    {isReviewerOrTacMember &&  (<Tooltip
                                         label={"go to proposal TAC management view"}
                                         openDelay={OPEN_DELAY}
                                     >

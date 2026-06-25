@@ -19,7 +19,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
 import {ExportButton} from "../../commonButtons/export.tsx";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 
 /*
     We will likely want to add metadata about submitted proposals, the most useful of this being the
@@ -63,6 +63,7 @@ type SubmittedTableRowProps = {
 }
 
 function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElement {
+    const isTacAdmin = useHasRole(["tac_admin"]);
     const codeMutation = useSubmittedProposalResourceReplaceCode();
     const {fetcherOptions} = useProposalToolContext();
 
@@ -171,14 +172,14 @@ function SubmittedProposalTableRow(rowProps: SubmittedTableRowProps) : ReactElem
                 </form>
             </Modal>
             <Table.Td>
-                {HaveRole(["tac_admin"]) ? (<EditButton
+                {isTacAdmin ? (<EditButton
                     toolTipLabel={'Change proposal code'}
                     label={submittedProposal.data?.proposalCode}
                     onClick={() => setEditModalOpen(true)}
                 />) : (submittedProposal.data?.proposalCode) }
             </Table.Td>
             <Table.Td>{submittedProposal.data?.title}</Table.Td>
-            {HaveRole(["tac_admin"]) && (<Table.Td>
+            {isTacAdmin && (<Table.Td>
                 <ExportButton
                     onClick={() => downloadProposal(submittedProposal.data!, rowProps.cycleCode, fetcherOptions.headers?.authorization)}
                     toolTipLabel={"Download a zip file of the PDF proposal and it's supporting documents"}
@@ -204,12 +205,13 @@ function SubmittedProposalsTable(submittedProposals: ObjectIdentifier[]) : React
     const {selectedCycleCode} = useParams();
 
     const SubmittedProposalsTableHeader = () : ReactElement => {
+        const isTacAdmin = useHasRole(["tac_admin"]);
         return (
             <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Code</Table.Th>
                     <Table.Th>Title</Table.Th>
-                    {HaveRole(["tac_admin"]) && (<Table.Th>Download</Table.Th>)}
+                    {isTacAdmin && (<Table.Th>Download</Table.Th>)}
                     <Table.Th>Current Status</Table.Th>
                 </Table.Tr>
             </Table.Thead>

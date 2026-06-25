@@ -12,7 +12,7 @@ import {JSON_SPACES, MAX_CHARS_FOR_INPUTS} from "../../constants.tsx";
 import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import MaxCharsForInputRemaining from "../../commonInputs/remainingCharacterCount.tsx";
 
@@ -25,11 +25,8 @@ export default function CycleDatesPanel() : ReactElement {
         sessionEnd: string | null
     }
 
-    if(!HaveRole(["tac_admin", "tac_member"])) {
-        return <>Not authorised</>
-    }
-
     const {selectedCycleCode} = useParams();
+    const hasRole = useHasRole(["tac_admin", "tac_member"]);
     const [cycleTitle, setCycleTitle] = useState("Loading...")
     const [submitting, setSubmitting] = useState(false);
     const details =
@@ -65,25 +62,6 @@ export default function CycleDatesPanel() : ReactElement {
 
     const queryClient = useQueryClient()
 
-    useEffect(() => {
-        if (details.status === 'success') {
-            setCycleTitle(details.data?.title!);
-            form.values.title = details.data.title!;
-            form.values.code = details.data?.code!;
-            form.values.submissionDeadline = details.data?.submissionDeadline!;
-            form.values.sessionStart = details.data?.observationSessionStart!;
-            form.values.sessionEnd = details.data?.observationSessionEnd!;
-        }
-    }, [details.status,details.data]);
-
-    if (details.error) {
-        return (
-            <PanelFrame>
-                <pre>{JSON.stringify(details.error, null, JSON_SPACES)}</pre>
-            </PanelFrame>
-        );
-    }
-
     const updateCycleDetailsMutation = useProposalCyclesResourceUpdateProposalCycleDetails({
         onMutate: () => {
             setSubmitting(true);
@@ -101,6 +79,29 @@ export default function CycleDatesPanel() : ReactElement {
             setSubmitting(false);
         }
     });
+
+    useEffect(() => {
+        if (details.status === 'success') {
+            setCycleTitle(details.data?.title!);
+            form.values.title = details.data.title!;
+            form.values.code = details.data?.code!;
+            form.values.submissionDeadline = details.data?.submissionDeadline!;
+            form.values.sessionStart = details.data?.observationSessionStart!;
+            form.values.sessionEnd = details.data?.observationSessionEnd!;
+        }
+    }, [details.status,details.data]);
+
+    if(!hasRole) {
+        return <>Not authorised</>
+    }
+
+    if (details.error) {
+        return (
+            <PanelFrame>
+                <pre>{JSON.stringify(details.error, null, JSON_SPACES)}</pre>
+            </PanelFrame>
+        );
+    }
 
     const handleSave = form.onSubmit(() => {
         updateCycleDetailsMutation.mutate({

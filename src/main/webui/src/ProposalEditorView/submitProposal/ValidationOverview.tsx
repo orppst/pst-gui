@@ -112,10 +112,10 @@ export default function ValidationOverview(props: {
         >
             <Stack>
                 <Text>
-                    {observatory.data?.name}: {cycleTitle.data} - Proposal Check
+                    {observatory.data?.name}: {cycleTitle.data!} - Proposal Check
                 </Text>
                 <Divider/>
-                Validation overview for {validateProposal.data?.title} submitting to {cycleTitle.data}
+                Validation overview for {validateProposal.data?.title} submitting to {cycleTitle.data!}
                 <Text
                     size={"sm"}
                     c={"teal"}

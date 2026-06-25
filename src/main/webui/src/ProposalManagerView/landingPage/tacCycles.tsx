@@ -9,7 +9,7 @@ import {
 import {JSON_SPACES} from "../../constants.tsx";
 import {PanelHeader} from "../../commonPanel/appearance.tsx";
 import {randomId} from "@mantine/hooks";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 
 type CycleRowProps = {
     cycleId: number
@@ -107,7 +107,7 @@ function TacCycles (): ReactElement {
         {queryParams: {includeClosed: true}}
     );
 
-    if(!HaveRole(["tac_admin", "tac_member"])) {
+    if(!useHasRole(["tac_admin", "tac_member"])) {
         return <>Not authorised</>
     }
 

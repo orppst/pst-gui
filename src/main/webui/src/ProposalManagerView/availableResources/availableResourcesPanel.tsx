@@ -15,7 +15,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import ResourceTypeModal from "./resourceType.modal.tsx";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
-import {HaveRole} from "../../auth/Roles.tsx";
+import {useHasRole} from "../../auth/Roles.tsx";
 
 
 export type AvailableResourcesProps  = {
@@ -34,9 +34,7 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
 
-    if(!HaveRole(["tac_admin", "tac_member"])) {
-        return <>Not authorised</>
-    }
+    const hasRole = useHasRole(["tac_admin", "tac_member"]);
 
     const removeCycleResource =
         useAvailableResourcesResourceRemoveCycleResource();
@@ -50,6 +48,10 @@ export default function CycleAvailableResourcesPanel() : ReactElement {
         useAvailableResourcesResourceGetCycleResourceTypes({
             pathParams: {cycleCode: Number(selectedCycleCode)}
         })
+
+    if(!hasRole) {
+        return <>Not authorised</>
+    }
 
     if (availableResources.error) {
         notifyError("Error loading available resources", getErrorMessage(availableResources.error));
