@@ -56,7 +56,7 @@
     "eslint-plugin-react-refresh": "^0.3.4",
     "sass": "^1.64.1",
     "typescript": "^5.1.6",
-    "vite": "^4.5.14"
+    "vite": "^6.4.3"
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0 --base=/pst/gui/",
