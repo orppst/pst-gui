@@ -119,7 +119,7 @@ export default function CycleList() : ReactElement {
                         data={observatoryList}
                         onChange={(_value) => {
                         if(_value)
-                            setSelectedObservatory(+_value)
+                            setSelectedObservatory(_value as number)
                             }
                         }
                     />

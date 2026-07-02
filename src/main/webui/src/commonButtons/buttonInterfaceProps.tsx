@@ -4,7 +4,7 @@ Input property for common buttons:
 - onClick function (optional)
  */
 import { SyntheticEvent } from 'react';
-import { TablerIconsProps } from '@tabler/icons-react';
+import { IconProps } from '@tabler/icons-react';
 import {ButtonVariant, FloatingPosition} from "@mantine/core";
 import {UseFormReturnType} from "@mantine/form";
 
@@ -92,7 +92,7 @@ export interface DownloadRequestInterfaceProps extends BasicButtonInterfaceProps
  * @param {number} p CSS variable: element padding (left, top, right, and bottom)
  * @param {number} ml CSS variable: element margin-left
  * @param {string} to the destination to route the user to when clicked.
- * @param {(props: TablerIconsProps) => JSX.Element} icon the mantine icon to
+ * @param {(props: IconProps) => JSX.Element} icon the mantine icon to
  * present.
  */
 export interface NavigationButtonInterfaceProps
@@ -100,5 +100,5 @@ export interface NavigationButtonInterfaceProps
     p: number
     ml: number
     to: string
-    icon: (props: TablerIconsProps) => JSX.Element
+    icon: (props: IconProps) => JSX.Element
 }

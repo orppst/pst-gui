@@ -71,7 +71,7 @@ export default function SpectralWindowsSection(
         //spans work out the proportional amount of space for each element and
         //provide responsiveness in terms of view-port width
         return (
-            <Grid columns={TOTAL_COLUMNS} gutter={0}>
+            <Grid columns={TOTAL_COLUMNS}>
                 <Grid.Col span={{base: TOTAL_COLUMNS, xl: TOTAL_COLUMNS / 4}}>
                     <NumberInputPlusUnit
                         color={IS_LIGHT ? "teal.3" :"teal.7"}

@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token  = useRef<string>("")//TODO what to do if token bad....
     const expiry = useRef(new Date(Date.now())) //seems to be overwritten regardless
     const apiURL = useRef("")
-    const expiryTimer = useRef<NodeJS.Timeout>()
+    const expiryTimer = useRef<NodeJS.Timeout>(null)
 
     const uuid =  useRef<string>("")
 
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const s = await updateToken()
                 updateAuth(s) // make sure that there will be an up to date token if the user decides to carry on
                 console.log("clear expiryTimer during timeout", expiryTimer.current)
-                clearTimeout(expiryTimer.current) // but do not auto update it.
+                clearTimeout(expiryTimer.current!) // but do not auto update it.
                 setExpiring(true)
             }
         }
@@ -142,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         console.log("trying authentication");
         console.log("clear expiryTimer", expiryTimer.current)
-        clearTimeout(expiryTimer.current)
+        clearTimeout(expiryTimer.current!)
         //request the authentication mapping object
         const s = await getUser();
         //handle the auth mapping object

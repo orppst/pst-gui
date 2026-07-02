@@ -352,7 +352,7 @@ function ObservationModeDetailsShow(p: {
                     </Group>
                 </Grid.Col>
             </Grid>
-            <Collapse in={opened}>
+            <Collapse expanded={false}>
             {
                 mode ?
                     <ActualDetails
