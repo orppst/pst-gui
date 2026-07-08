@@ -1,6 +1,5 @@
 import {ReactElement, useState} from "react";
 import {
-    ActionIcon,
     Anchor,
     Badge, Box, Button, Checkbox,
     Collapse,
@@ -9,7 +8,7 @@ import {
     Select,
     Stack,
     Text,
-    Textarea, Tooltip
+    Textarea
 } from "@mantine/core";
 import {
     useObservingModeResourceGetCycleObservingMode,
@@ -24,12 +23,9 @@ import {
     ObjectIdentifier,
     RealQuantity,
 } from "../../generated/proposalToolSchemas.ts";
-import {useDisclosure} from "@mantine/hooks";
-import {IconEye, IconEyeClosed} from "@tabler/icons-react";
 import {UseFormReturnType} from "@mantine/form";
 import {SubmissionFormValues} from "./submitPanel.tsx";
 import ObservingModeTelescopes from "./observingModeTelescopes.tsx";
-import {CLOSE_DELAY, OPEN_DELAY} from "../../constants.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 
@@ -283,7 +279,7 @@ function ObservationModeDetailsShow(p: {
 
     const [mode, setMode] = useState<{value: string, label: string}>()
 
-    const [opened, {toggle}] = useDisclosure(false)
+    //const [opened, {toggle}] = useDisclosure(false)
 
     const setAllObservations = () => {
         p.form.setValues({
@@ -331,17 +327,6 @@ function ObservationModeDetailsShow(p: {
                 </Grid.Col>
                 <Grid.Col span={3}>
                     <Group mt={3}>
-                        <Tooltip
-                            label={opened ? "Close mode details" : "Show mode details"}
-                            openDelay={OPEN_DELAY}
-                            closeDelay={CLOSE_DELAY}
-                        >
-                            <ActionIcon
-                                onClick={toggle}
-                            >
-                                {opened ? <IconEyeClosed /> : <IconEye />}
-                            </ActionIcon>
-                        </Tooltip>
                         <Button
                             onClick={setAllObservations}
                             size={"compact-md"}
@@ -367,4 +352,18 @@ function ObservationModeDetailsShow(p: {
         </Stack>
     )
 }
+
+/*
+                        <Tooltip
+                            label={opened ? "Close mode details" : "Show mode details"}
+                            openDelay={OPEN_DELAY}
+                            closeDelay={CLOSE_DELAY}
+                        >
+                            <ActionIcon
+                                onClick={toggle}
+                            >
+                                {opened ? <IconEyeClosed /> : <IconEye />}
+                            </ActionIcon>
+                        </Tooltip>
+ */
 
