@@ -39,8 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loggedOn, setLoggedOn] = useState(false)
     const [expiringSoon, setExpiring] = useState(false)
     const [isNewUser, setIsNewUser] = useState(false);
-    const [user, setUser ] = useState({fullName:"Unknown"} as Person)
+    const [firstToken, setFirstToken] = useState(false);
 
+    const user = useRef({fullName:"Unknown"} as Person)
     const token  = useRef<string>("")//TODO what to do if token bad....
     const expiry = useRef(new Date(Date.now())) //seems to be overwritten regardless
     const apiURL = useRef("")
@@ -79,12 +80,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
              }})
         apiResponse.then((r) => {
             if(r.ok) {
-                setLoggedOn(true)
                 r.text().then(localbaseUrl => {
                     setFetcherApiURL(localbaseUrl.replace(/\/$/, "")) // remove the trailing / from the api location if it is there.
                     apiURL.current = localbaseUrl
 
                 })
+                setLoggedOn(true)
             }
         })
 
@@ -99,7 +100,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }});
         let error;
         if (response.ok) {
-
             return await response.json() as AuthMapping
         } else if(response.redirected) {
             console.log("redirected" )
@@ -158,15 +158,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }, expDelay)
            console.log("setting new expiry reminder", expiryTimer.current)
 
+            if(!firstToken){setFirstToken(true);}
+
             if(s.subjectMap.inKeycloakRealm && s.subjectMap.person) {
-                setUser(s.subjectMap.person)
+                user.current = s.subjectMap.person;
             }
             else {
                 console.warn("authenticated person ",s.nameFromAuth," is not registered with database")
                 setIsNewUser(true)
-                setUser({fullName: s.nameFromAuth, eMail: s.emailFromAuth})
+                user.current = {fullName: s.nameFromAuth, eMail: s.emailFromAuth} as Person;
                 uuid.current = s.kc_uuid
-                console.log("new user", user)
+                console.log("new user", user.current)
             }
             return s
 
@@ -199,7 +201,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     function userConfirmed(p :Person)
     {
-        setUser(p)
+        //setUser(p)
+        user.current = p;
         setIsNewUser(false)
     }
 
@@ -240,13 +243,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <ProposalContext.Provider value={{user:user, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
+        <ProposalContext.Provider value={{user:user.current, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
             {loggedOn ? ( isNewUser ? (
 
-                  <NewUser proposed={user} uuid={uuid.current} userConfirmed={userConfirmed}/>
+                  <NewUser proposed={user.current} uuid={uuid.current} userConfirmed={userConfirmed}/>
 
                 ) :  ( getToken().length > 1 ? (
-
                 expiringSoon ? (
                     <>
                     <LogoutWarning startCount={ secondsAllowedToReauthenticate }/>
