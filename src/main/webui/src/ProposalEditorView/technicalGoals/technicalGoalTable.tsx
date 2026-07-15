@@ -107,7 +107,12 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
         });
 
     if (theGoal.error) {
-        return <pre>{getErrorMessage(theGoal.error)}</pre>
+        return (
+            <Table.Tr>
+                <Table.Td>
+                    {getErrorMessage(theGoal.error)}
+                </Table.Td>
+            </Table.Tr>)
     }
 
     /**
