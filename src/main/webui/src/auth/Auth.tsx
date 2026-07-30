@@ -22,7 +22,7 @@ export type AuthMapping = {
 // quarkus.oidc.token.refresh-token-time-skew=60
 // quarkus.oidc.token.refresh-expired=true
 // which means that quarkus will attempt to refresh 60s before actual expiry - we need that as we cannot have a redirect happen
-// for the javascript fetch because of CORS so we make the call 10s before expiry.
+// for the JavaScript fetch because of CORS so we make the call 10s before expiry.
 //
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -39,9 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loggedOn, setLoggedOn] = useState(false)
     const [expiringSoon, setExpiring] = useState(false)
     const [isNewUser, setIsNewUser] = useState(false);
-    const [firstToken, setFirstToken] = useState(false);
+    const [user, setUser ] = useState({fullName:"Unknown"} as Person)
 
-    const user = useRef({fullName:"Unknown"} as Person)
     const token  = useRef<string>("")//TODO what to do if token bad....
     const expiry = useRef(new Date(Date.now())) //seems to be overwritten regardless
     const apiURL = useRef("")
@@ -54,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log("activity change = " + presence.type + " at " + new Date().toISOString())
             if (presence.type === "idle") {
                 const s = await updateToken()
-                updateAuth(s) // make sure that there will be an up to date token if the user decides to carry on
+                updateAuth(s) // make sure that there will be an up-to-date token if the user decides to carry on
                 console.log("clear expiryTimer during timeout", expiryTimer.current)
                 clearTimeout(expiryTimer.current!) // but do not auto update it.
                 setExpiring(true)
@@ -65,19 +64,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const getToken = ():string => {return token.current}
 
+    const setToken = (newToken: string):void => {token.current = newToken}
+
     const idleTimer = useIdleTimer({
         onPresenceChange,
         timeout: minuteAsMS * minutesUntilIdleTriggered,
         throttle: 500
     })
 
-     function checkLoggedOn(){ // and also get the base URL as a by-product
+    function checkLoggedOn(){ // and also get the base URL as a by-product
 
-         const apiResponse = fetch("/pst/gui/api-info", {
-             method: "GET",
-             headers: {
-                 "X-Requested-With": "JavaScript" //this hooks up with the OIDC backend processing - makes sure redirects never happen
-             }})
+        const apiResponse = fetch("/pst/gui/api-info", {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "JavaScript" //this hooks up with the OIDC backend processing - makes sure redirects never happen
+            }})
         apiResponse.then((r) => {
             if(r.ok) {
                 r.text().then(localbaseUrl => {
@@ -95,11 +96,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const response = await window.fetch("/pst/gui/aai/",
             { method: "GET",
-            headers: {
-            "X-Requested-With": "JavaScript"
-        }});
+                headers: {
+                    "X-Requested-With": "JavaScript"
+                }});
         let error;
         if (response.ok) {
+
             return await response.json() as AuthMapping
         } else if(response.redirected) {
             console.log("redirected" )
@@ -134,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     function updateAuth(s: AuthMapping) {
-        token.current = s.token
+        setToken(s.token);
         setLoggedOn(true)
     }
 
@@ -149,28 +151,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         expiry.current = new Date(s.expiry)
         console.log("token: " + s.token)
         console.log("access token will expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
-            const expDelay =  expiry.current.getTime()-Date.now() - secondsBeforeExpiryToReauthenticate*1000
-            console.log("expiry delay =" + expDelay)
-            expiryTimer.current = setTimeout(() =>{
-                console.log("access token about to expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
-                console.log("last time active ", idleTimer.getLastActiveTime()?.toISOString())
-                    updateToken().then(updateAuth).catch(console.log)
-            }, expDelay)
-           console.log("setting new expiry reminder", expiryTimer.current)
+        const expDelay =  expiry.current.getTime()-Date.now() - secondsBeforeExpiryToReauthenticate*1000
+        console.log("expiry delay =" + expDelay)
+        expiryTimer.current = setTimeout(() =>{
+            console.log("access token about to expire - "+ expiry.current.toISOString()+" ("+expiry.current.getHours()+":"+expiry.current.getMinutes()+":"+expiry.current.getSeconds()+" Local)")
+            console.log("last time active ", idleTimer.getLastActiveTime()?.toISOString())
+            updateToken().then(updateAuth).catch(console.log)
+        }, expDelay)
+        console.log("setting new expiry reminder", expiryTimer.current)
 
-            if(!firstToken){setFirstToken(true);}
-
-            if(s.subjectMap.inKeycloakRealm && s.subjectMap.person) {
-                user.current = s.subjectMap.person;
-            }
-            else {
-                console.warn("authenticated person ",s.nameFromAuth," is not registered with database")
-                setIsNewUser(true)
-                user.current = {fullName: s.nameFromAuth, eMail: s.emailFromAuth} as Person;
-                uuid.current = s.kc_uuid
-                console.log("new user", user.current)
-            }
-            return s
+        if(s.subjectMap.inKeycloakRealm && s.subjectMap.person) {
+            setUser(s.subjectMap.person)
+        }
+        else {
+            console.warn("authenticated person ",s.nameFromAuth," is not registered with database")
+            setIsNewUser(true)
+            setUser({fullName: s.nameFromAuth, eMail: s.emailFromAuth})
+            uuid.current = s.kc_uuid
+            console.log("new user", user)
+        }
+        return s
 
 
     }
@@ -178,13 +178,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function renewAfterSessionWarning()
     {
         const s = await updateToken();
-        token.current=s.token
+        setToken(s.token);
         setExpiring(false)
     }
 
     const doUpdateToken = useCallback( async () =>{
-       const s = await updateToken();
-        token.current=s.token
+        const s = await updateToken();
+        setToken(s.token);
     }, [])
 
     if (!loggedOn) {
@@ -193,16 +193,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
     useEffect(() => {
-        if(loggedOn && token.current == "") {
-            doUpdateToken()
+        if(loggedOn && getToken() == "") {
+            doUpdateToken().then()
         }
     },[loggedOn]);
 
 
     function userConfirmed(p :Person)
     {
-        //setUser(p)
-        user.current = p;
+        setUser(p)
         setIsNewUser(false)
     }
 
@@ -222,62 +221,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         }, [count]);
         return (
-        <Modal
-            opened={true}
-            zIndex={201}
-            onClose={logout}
-            title="Idle Warning"
-            overlayProps={{
-                backgroundOpacity: 0.55,
-                blur: 3,
-            }}
-        >
-            {
-                <>
-                    <div>Session about to time out in {count} seconds</div>
-                    <Button onClick={()=> {renewAfterSessionWarning().catch(console.log)}}>Click to continue</Button>
-                </>
-            }
-        </Modal>
+            <Modal
+                opened={true}
+                zIndex={201}
+                onClose={logout}
+                title="Idle Warning"
+                overlayProps={{
+                    backgroundOpacity: 0.55,
+                    blur: 3,
+                }}
+            >
+                {
+                    <>
+                        <div>Session about to time out in {count} seconds</div>
+                        <Button onClick={()=> {renewAfterSessionWarning().catch(console.log)}}>Click to continue</Button>
+                    </>
+                }
+            </Modal>
         )
     }
 
     return (
-        <ProposalContext.Provider value={{user:user.current, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
+        <ProposalContext.Provider value={{user:user, getToken:getToken, authenticated:loggedOn, selectedProposalCode:0, apiUrl:apiURL.current}}>
             {loggedOn ? ( isNewUser ? (
 
-                  <NewUser proposed={user.current} uuid={uuid.current} userConfirmed={userConfirmed}/>
+                <NewUser proposed={user} uuid={uuid.current} userConfirmed={userConfirmed}/>
 
-                ) :  ( getToken().length > 1 ? (
-                expiringSoon ? (
-                    <>
-                    <LogoutWarning startCount={ secondsAllowedToReauthenticate }/>
-                    {children}
-                    </>
-                ) : (
-                    <>
-                        {children}
-                    </>
-                    )
+            ) :  ( getToken().length > 1 ? (
 
+                    expiringSoon ? (
+                        <>
+                            <LogoutWarning startCount={ secondsAllowedToReauthenticate }/>
+                            {children}
+                        </>
                     ) : (
                         <>
-                                    <Paper shadow="sm" p="xl">
-                                        <Text>Loading....</Text>
-                                    </Paper>
+                            {children}
                         </>
                     )
-                ) ) : (
+
+                ) : (
                     <>
-                        <div className='introback'>
+                        <Paper shadow="sm" p="xl">
+                            <Text>Loading....</Text>
+                        </Paper>
+                    </>
+                )
+            ) ) : (
+                <>
+                    <div className='introback'>
                         <div className='greeting'>
 
                             <img className="intromessage" src="/pst/gui/polaris4.png"/>
                             <h1 className='intromessage'><a href={'/pst/gui/login/'}>Login</a></h1>
 
                         </div>
-                        </div>
-                    </>
+                    </div>
+                </>
             )
             }
         </ProposalContext.Provider>
