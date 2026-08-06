@@ -82,6 +82,7 @@ export const err_green_str = "green.6"
 /* this constant is the expected name of the file which contains the json data.
  */
 export const JSON_FILE_NAME = 'proposal.json';
+export const XML_FILE_NAME = 'proposal.xml';
 
 /* the filename of the overview pdf to be exported, but not imported. */
 export const OVERVIEW_PDF_FILENAME = 'ProposalOverview.pdf';

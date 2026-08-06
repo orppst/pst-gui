@@ -359,7 +359,7 @@ export type CycleObservingTimeTotal = {
 
 /**
  * @format date
- * @example "2026-05-28T08:34:46.632Z"
+ * @example "2026-08-06T15:02:44.458Z"
  */
 export type Date = string;
 

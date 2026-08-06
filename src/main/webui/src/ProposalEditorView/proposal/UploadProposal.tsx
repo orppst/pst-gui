@@ -1,10 +1,10 @@
 import JSZip from 'jszip';
 import { ObservingProposal } from 'src/generated/proposalToolSchemas.ts';
 import {
-    JSON_FILE_NAME, OVERVIEW_PDF_FILENAME, MAX_SUPPORTING_DOCUMENT_SIZE
+    JSON_FILE_NAME, OVERVIEW_PDF_FILENAME, MAX_SUPPORTING_DOCUMENT_SIZE, XML_FILE_NAME
 } from 'src/constants.tsx';
 import {
-    fetchProposalResourceImportProposal,
+    fetchProposalResourceImportProposal, fetchProposalResourceImportProposalXml,
     fetchSupportingDocumentResourceUploadSupportingDocument,
 } from 'src/generated/proposalToolComponents.ts';
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
@@ -51,33 +51,21 @@ const UploadADocument =
         });
 };
 
-/**
- * sends the proposal json to API, then uploads all other documents in the zip.
- *
- * @param {ObservingProposal} observingProposal the observing proposal to be imported
- * @param {JSZip} zip zip file containing any supporting documents
- * @param {string} authToken authorization token from caller
- * @param {QueryClient} queryClient the query client from caller
- */
-export
-function SendToImportAPI(
-    observingProposal: ObservingProposal,
+const skipFiles = new RegExp("^Thumbs.db$|^__MACOS|^.DS_Store$|^" + OVERVIEW_PDF_FILENAME + "$");
+
+function sendImportedProposal(
     zip: JSZip,
     authToken: string,
-    queryClient: QueryClient
+    queryClient: QueryClient,
+    importProposal: Promise<ObservingProposal>,
 ) {
-    //Files to skip
-    const skipFiles
-        = new RegExp("^Thumbs.db$|^__MACOS|^.DS_Store$|^"
-        + OVERVIEW_PDF_FILENAME + "$");
-
-    fetchProposalResourceImportProposal({
-        body: observingProposal,
-        headers: {authorization: `Bearer ${authToken}`}
-    })
+    importProposal
         .then((uploadedProposal) => {
+            if (uploadedProposal._id === undefined || uploadedProposal._id === null) {
+                throw {message: "Imported proposal did not return a proposal id"};
+            }
             Object.keys(zip.files).forEach(function (filename) {
-                if (filename !== JSON_FILE_NAME && !skipFiles.test(filename)) {
+                if (filename !== JSON_FILE_NAME && filename !== XML_FILE_NAME && !skipFiles.test(filename)) {
                     UploadADocument(Number(uploadedProposal._id), zip, filename, authToken);
                 }
             })
@@ -94,3 +82,50 @@ function SendToImportAPI(
         })
 }
 
+/**
+ * sends the proposal JSON to API, then uploads all other documents in the zip.
+ *
+ * @param {ObservingProposal} observingProposal the observing proposal to be imported
+ * @param {JSZip} zip zip file containing any supporting documents
+ * @param {string} authToken authorization token from caller
+ * @param {QueryClient} queryClient the query client from caller
+ */
+export
+function SendXmlToImportAPI(
+    observingProposal: string,
+    zip: JSZip,
+    authToken: string,
+    queryClient: QueryClient
+) {
+    console.log("About to send: " + observingProposal);
+    sendImportedProposal(
+        zip,
+        authToken,
+        queryClient,
+        fetchProposalResourceImportProposalXml({
+            //@ts-ignore
+            body: observingProposal,
+            //@ts-ignore
+            headers: {authorization: `Bearer ${authToken}`, "Content-Type": "application/xml"}
+        }),
+    );
+}
+
+export
+function SendToImportAPI(
+    observingProposal: ObservingProposal,
+    zip: JSZip,
+    authToken: string,
+    queryClient: QueryClient
+) {
+    console.log("About to send: " + observingProposal);
+    sendImportedProposal(
+        zip,
+        authToken,
+        queryClient,
+        fetchProposalResourceImportProposal({
+            body: observingProposal,
+            headers: {authorization: `Bearer ${authToken}`}
+        }),
+    );
+}

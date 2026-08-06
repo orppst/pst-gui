@@ -8980,6 +8980,55 @@ export const useProposalResourceImportProposal = (
   });
 };
 
+export type ProposalResourceImportProposalXmlError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceImportProposalXmlVariables =
+  ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceImportProposalXml = (
+  variables: ProposalResourceImportProposalXmlVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    Schemas.ObservingProposal,
+    ProposalResourceImportProposalXmlError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/pst/api/proposals/importXml",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceImportProposalXml = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ObservingProposal,
+      ProposalResourceImportProposalXmlError,
+      ProposalResourceImportProposalXmlVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    Schemas.ObservingProposal,
+    ProposalResourceImportProposalXmlError,
+    ProposalResourceImportProposalXmlVariables
+  >({
+    mutationFn: (variables: ProposalResourceImportProposalXmlVariables) =>
+      fetchProposalResourceImportProposalXml({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type ProposalResourceGetObservingProposalPathParams = {
   /**
    * @format int64
@@ -9218,6 +9267,71 @@ export const useProposalResourceExportProposal = <TData = undefined,>(
     }),
     queryFn: ({ signal }) =>
       fetchProposalResourceExportProposal(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ProposalResourceExportProposalXmlPathParams = {
+  /**
+   * @format int64
+   */
+  proposalCode: number;
+};
+
+export type ProposalResourceExportProposalXmlError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalResourceExportProposalXmlVariables = {
+  pathParams: ProposalResourceExportProposalXmlPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalResourceExportProposalXml = (
+  variables: ProposalResourceExportProposalXmlVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    undefined,
+    ProposalResourceExportProposalXmlError,
+    undefined,
+    {},
+    {},
+    ProposalResourceExportProposalXmlPathParams
+  >({
+    url: "/pst/api/proposals/{proposalCode}/exportXml",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalResourceExportProposalXml = <TData = undefined,>(
+  variables: ProposalResourceExportProposalXmlVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      undefined,
+      ProposalResourceExportProposalXmlError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    undefined,
+    ProposalResourceExportProposalXmlError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposals/{proposalCode}/exportXml",
+      operationId: "proposalResourceExportProposalXml",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalResourceExportProposalXml(
         { ...fetcherOptions, ...variables },
         signal,
       ),
@@ -14861,6 +14975,11 @@ export type QueryOperation =
       path: "/pst/api/proposals/{proposalCode}/export";
       operationId: "proposalResourceExportProposal";
       variables: ProposalResourceExportProposalVariables;
+    }
+  | {
+      path: "/pst/api/proposals/{proposalCode}/exportXml";
+      operationId: "proposalResourceExportProposalXml";
+      variables: ProposalResourceExportProposalXmlVariables;
     }
   | {
       path: "/pst/api/proposals/{proposalCode}/exportZip";

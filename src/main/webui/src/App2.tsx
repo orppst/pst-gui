@@ -46,9 +46,9 @@ import AddButton from './commonButtons/add';
 import {
     APP_HEADER_HEIGHT, CLOSE_DELAY, JSON_FILE_NAME,
     NAV_BAR_DEFAULT_WIDTH, NAV_BAR_LARGE_WIDTH,
-    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY,
+    NAV_BAR_MEDIUM_WIDTH, OPEN_DELAY, XML_FILE_NAME,
 } from './constants';
-import {SendToImportAPI} from './ProposalEditorView/proposal/UploadProposal';
+import {SendToImportAPI, SendXmlToImportAPI} from './ProposalEditorView/proposal/UploadProposal';
 import UploadButton from './commonButtons/upload';
 import AdminPanel from "./admin/adminPanel";
 import JustificationsPanel from "./ProposalEditorView/justifications/JustificationsPanel";
@@ -360,27 +360,46 @@ function App2(): ReactElement {
                 // all simple checks done. Time to verify the internals of the zip.
                 if (chosenFile !== null) {
                     JSZip.loadAsync(chosenFile).then(function (zip) {
-                        // check the json file exists.
-                        if (!Object.keys(zip.files).includes(JSON_FILE_NAME)) {
-                            notifyError("Upload failed",
-                                "There was no file called '"+JSON_FILE_NAME+"' within the zip")
-                        }
+                        const extractAndImport = (
+                            fileName: string,
+                            emptyFileMessage: string,
+                            importFile: (fileData: string) => void,
+                        ) => {
+                            zip.files[fileName].async('text')
+                                .then(function (fileData) {
+                                    if (fileData) {
+                                        importFile(fileData);
+                                    } else {
+                                        notifyError("Upload failed", emptyFileMessage)
+                                    }
+                                })
+                                .catch(() => {
+                                    console.log("Unable to extract " + fileName + " from zip file");
+                                    notifyError("Upload failed",
+                                        "Unable to extract " + fileName + " from zip file");
+                                })
+                        };
 
-                        // extract json data to import proposal definition.
-                        zip.files[JSON_FILE_NAME].async('text').then(function (fileData) {
-                            const jsonObject: ObservingProposal = JSON.parse(fileData)
-                            // ensure not undefined
-                            if (jsonObject) {
-                                SendToImportAPI(jsonObject, zip, authToken, queryClient);
-                            } else {
-                                notifyError("Upload failed", "The JSON file failed to load correctly")
-                            }
-                        })
-                            .catch(() => {
-                                console.log("Unable to extract " + JSON_FILE_NAME + " from zip file");
-                                notifyError("Upload failed",
-                                    "Unable to extract " + JSON_FILE_NAME + " from zip file");
-                            })
+                        if (zip.file(XML_FILE_NAME)) {
+                            // extract xml data to import proposal definition.
+                            extractAndImport(
+                                XML_FILE_NAME,
+                                "The XML file failed to load correctly",
+                                (fileData) => SendXmlToImportAPI(fileData, zip, authToken, queryClient),
+                            );
+                        } else if (zip.file(JSON_FILE_NAME)) {
+                            extractAndImport(
+                                JSON_FILE_NAME,
+                                "The JSON file failed to load correctly",
+                                (fileData) => {
+                                    const jsonObject: ObservingProposal = JSON.parse(fileData)
+                                    SendToImportAPI(jsonObject, zip, authToken, queryClient);
+                                },
+                            );
+                        } else {
+                            notifyError("Upload failed",
+                                "There was no file called '"+ XML_FILE_NAME+ "' or '"+JSON_FILE_NAME+"' within the zip")
+                        }
                     })
                 }
             }
