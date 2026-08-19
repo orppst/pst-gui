@@ -141,7 +141,7 @@ export default function TargetTypeForm (p: {
                 </Text>
                 {
                     <Table.ScrollContainer
-                        h={targets?.length &&  targets.length < 5 ? 100 : TABLE_SCROLL_HEIGHT}
+                        maxHeight={TABLE_SCROLL_HEIGHT}
                         minWidth={TABLE_MIN_WIDTH}
                     >
                         <TargetTable
@@ -189,8 +189,7 @@ export default function TargetTypeForm (p: {
                 </Text>
                 {
                     <Table.ScrollContainer
-                        h={technicalGoals?.length &&  technicalGoals.length < 5 ?
-                            100 : TABLE_SCROLL_HEIGHT}
+                        maxHeight={TABLE_SCROLL_HEIGHT}
                         minWidth={TABLE_MIN_WIDTH}
                     >
                         <TechnicalGoalsTable

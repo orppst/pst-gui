@@ -25,6 +25,7 @@ import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGo
 import TechnicalGoalEditPanel from "./ProposalEditorView/technicalGoals/edit.panel.tsx";
 import { TargetPanel } from "./ProposalEditorView/targets/targetPanel.tsx";
 import ObservationsPanel from "./ProposalEditorView/observations/observationPanel.tsx";
+import ObservationEditPanel from "./ProposalEditorView/observations/edit.panel.tsx";
 import DocumentsPanel from "./ProposalEditorView/proposal/Documents.tsx";
 import SubmitPanel from "./ProposalEditorView/submitProposal/submitPanel.tsx";
 
@@ -277,6 +278,16 @@ function App2(): ReactElement {
                     {
                         path: "proposal/:selectedProposalCode/observations",
                         element:<ObservationsPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/observations/new",
+                        element: <ObservationEditPanel />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/observations/:observationId/edit",
+                        element: <ObservationEditPanel />,
                         errorElement: <ErrorPage />,
                     },
                     {

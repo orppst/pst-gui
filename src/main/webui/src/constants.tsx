@@ -8,7 +8,7 @@ export const NO_ROW_SELECTED = -1;
 
 /*the expected size of a table before adding a scroll bar. Aims to show 5.5
  rows. */
-export const TABLE_SCROLL_HEIGHT = 200;
+export const TABLE_SCROLL_HEIGHT = 300;
 
 /* enforced min width needed by scrollable containers. */
 export const TABLE_MIN_WIDTH = 500;

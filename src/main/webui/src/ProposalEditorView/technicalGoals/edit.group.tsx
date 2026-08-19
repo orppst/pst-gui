@@ -195,7 +195,10 @@ export default function TechnicalGoalEditGroup(
 
     function handleCancel(event: SyntheticEvent) {
         event.preventDefault();
-        navigate("../../", {relative: "path"});
+        if(newTechnicalGoal)
+            navigate("../", {relative: "path"});
+        else
+            navigate("../../", {relative: "path"});
     }
 
     const handleSubmit = form.onSubmit((values) => {
@@ -290,6 +293,7 @@ export default function TechnicalGoalEditGroup(
                 })
             }
         }
+        form.resetDirty(values);
     })
 
 
