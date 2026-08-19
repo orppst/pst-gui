@@ -3,25 +3,23 @@ import {
     useTechnicalGoalResourceGetTechnicalGoals,
 } from 'src/generated/proposalToolComponents.ts';
 import {Grid, Space} from '@mantine/core';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {TechnicalGoalsTable } from './technicalGoalTable.tsx';
 import { TechnicalGoal } from 'src/generated/proposalToolSchemas.ts';
-import TechnicalGoalEditModal from './edit.modal.tsx';
 import { ReactElement } from 'react';
 import { JSON_SPACES } from 'src/constants.tsx';
 import {EditorPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
+import AddButton from "src/commonButtons/add.tsx";
 
 /**
  * the data type shared by the edit components.
  *
  * @param {TechnicalGoal | undefined} technicalGoal the technical goal data,
  * or undefined if new technical goal.
- * @param {() => void}} closeModal the modal to use when closing.
  */
 export type TechnicalGoalProps = {
     technicalGoal: TechnicalGoal | undefined,
-    closeModal?: () => void
 }
 
 /**
@@ -33,6 +31,7 @@ export type TechnicalGoalProps = {
 function TechnicalGoalsPanel(): ReactElement {
 
     const { selectedProposalCode } = useParams();
+    const navigate = useNavigate();
 
     // needed to track which targets are locked into observations.
     const { data: proposalsData } =
@@ -65,7 +64,7 @@ function TechnicalGoalsPanel(): ReactElement {
             </PanelFrame>
         );
     }
-    //<TechnicalGoalEditModal technicalGoal={undefined}/> is an alias for the "Add +" button,
+    //<AddButton> navigates to the new technical goal panel
     // the "view/edit" button is found in TechnicalGoalsTable, specifically one per row
     return (
         <PanelFrame fluid>
@@ -81,7 +80,8 @@ function TechnicalGoalsPanel(): ReactElement {
             <Space h={"xl"}/>
             <Grid>
                <Grid.Col span={10}></Grid.Col>
-                   <TechnicalGoalEditModal technicalGoal={undefined}/>
+                   <AddButton toolTipLabel={"new technical goal"}
+                              onClick={() => navigate("new")} />
             </Grid>
         </PanelFrame>
     );

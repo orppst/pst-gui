@@ -3,7 +3,7 @@ import SpectralWindowsSection from "./spectrum.form.tsx";
 import {Group, Space, Tabs} from "@mantine/core";
 import {TechnicalGoalProps} from "./technicalGoalsPanel.tsx";
 import {ReactElement, SyntheticEvent} from 'react';
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import {
     convertToScienceSpectralWindow,
@@ -54,6 +54,7 @@ export default function TechnicalGoalEditGroup(
 
     const {selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const newTechnicalGoal = !props.technicalGoal;
 
     const addSpectrumMutation =
@@ -194,7 +195,7 @@ export default function TechnicalGoalEditGroup(
 
     function handleCancel(event: SyntheticEvent) {
         event.preventDefault();
-        props.closeModal!();
+        navigate("../../", {relative: "path"});
     }
 
     const handleSubmit = form.onSubmit((values) => {
@@ -219,7 +220,7 @@ export default function TechnicalGoalEditGroup(
             }, {
                 onSuccess: () => {
                     queryClient.invalidateQueries().then();
-                    props.closeModal!();
+                    navigate("../", {relative: "path"});
                 },
                 onError: (error) =>
                     notifyError("Failed to add technical goal", getErrorMessage(error))

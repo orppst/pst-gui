@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     Badge, DefaultMantineColor,
     Group, Loader,
@@ -7,7 +7,7 @@ import {
     Text
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import TechnicalGoalEditModal from './edit.modal.tsx';
+import ViewEditButton from 'src/commonButtons/viewEdit.tsx';
 import getErrorMessage from 'src/errorHandling/getErrorMessage.tsx';
 import CloneButton from 'src/commonButtons/clone.tsx';
 import DeleteButton from 'src/commonButtons/delete.tsx';
@@ -90,6 +90,7 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
     ReactElement {
 
     const { selectedProposalCode} = useParams();
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
 
     const addMutation =
@@ -349,7 +350,11 @@ function TechnicalGoalRow(technicalGoalRowProps: TechnicalGoalRowProps):
                     <Group align={"right"}>
                         {
                             theGoal.isLoading ? 'Loading...' :
-                                <TechnicalGoalEditModal technicalGoal={theGoal.data} />
+                                <ViewEditButton
+                                    toolTipLabel={"view/edit"}
+                                    onClick={() => navigate(
+                                        `${theGoal.data?._id}/edit`)}
+                                />
                         }
                         <CloneButton
                             toolTipLabel={"clone"}

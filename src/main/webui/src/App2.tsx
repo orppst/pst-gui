@@ -22,6 +22,7 @@ import {
 } from 'react-router-dom';
 import { useHistoryState } from "./useHistoryState";
 import TechnicalGoalsPanel from "./ProposalEditorView/technicalGoals/technicalGoalsPanel.tsx";
+import TechnicalGoalEditPanel from "./ProposalEditorView/technicalGoals/edit.panel.tsx";
 import { TargetPanel } from "./ProposalEditorView/targets/targetPanel.tsx";
 import ObservationsPanel from "./ProposalEditorView/observations/observationPanel.tsx";
 import DocumentsPanel from "./ProposalEditorView/proposal/Documents.tsx";
@@ -264,11 +265,14 @@ function App2(): ReactElement {
                         errorElement: <ErrorPage />,
                     },
                     {
-                        /*
-                        path: "proposal/:selectedProposalCode/observationFields",
-                        element: <ObservationFieldsPanel />,
+                        path: "proposal/:selectedProposalCode/goals/new",
+                        element: <TechnicalGoalEditPanel />,
                         errorElement: <ErrorPage />,
-                         */
+                    },
+                    {
+                        path: "proposal/:selectedProposalCode/goals/:goalId/edit",
+                        element: <TechnicalGoalEditPanel />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "proposal/:selectedProposalCode/observations",
