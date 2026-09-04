@@ -24,12 +24,19 @@ import ValidationOverview from "./ValidationOverview.tsx";
 import DisplaySubmissionDetails from "./displaySubmissionDetails.tsx";
 import {IconCheck} from "@tabler/icons-react";
 import {useProposalToolContext} from "../../generated/proposalToolContext.ts";
+ import ObservatoryQuestions from "./observatoryQuestions.tsx";
 
 export default
 function SubmissionForm() :
     ReactElement {
 
-    const maxSteps = 4;
+    const maxSteps = 5;
+
+    const proposalCycleStep = 0;
+    const proposalCheckStep = 1;
+    const observationModeStep = 2;
+    //const observatoryQuestionsStep = 3;
+    const submissionStep = 4;
 
     const {selectedProposalCode} = useParams();
 
@@ -76,14 +83,14 @@ function SubmissionForm() :
             selectedModes: initialModeTuple
         },
         validate: (values) => {
-            if (activeStep === 0) {
+            if (activeStep === proposalCycleStep) {
                 return {
                     selectedCycle: values.selectedCycle === null || values.selectedCycle === 0 ?
                         'Please select a cycle' : null
                 }
             }
 
-            if (activeStep === 2) {
+            if (activeStep === observationModeStep) {
                 return {
                     selectedModes: values.selectedModes.some(e => e.modeId === 0) ?
                         'All observations required a mode' : null
@@ -131,8 +138,6 @@ function SubmissionForm() :
 
             form.setFieldValue('selectedModes', initialModeTuple)
         }
-        //on initial load this does not seem to trigger on the 'status's alone,
-        //use 'activeStep' as a dependency to get it to work
     }, [targetObservations.status, calibrationObservations.status]);
 
     useEffect(() => {
@@ -155,8 +160,7 @@ function SubmissionForm() :
         setActiveStep((current: number) => {
 
             //prevents advancement to the next step on invalid proposal
-            if (current == 1 && !proposalCheck) {
-
+            if (current == proposalCheckStep && !proposalCheck) {
                 return current;
             }
 
@@ -278,6 +282,7 @@ function SubmissionForm() :
                 size={"md"}
                 orientation={smallScreen ? 'vertical' : 'horizontal'}
             >
+                {/* Step 0: Proposal Cycle */}
                 <Stepper.Step
                     label={"Proposal Cycle"}
                     description={"Choose a cycle"}
@@ -290,6 +295,7 @@ function SubmissionForm() :
                     />
                 </Stepper.Step>
 
+                {/* Step 1: Proposal Check */}
                 <Stepper.Step
                     label={"Proposal Check"}
                     description={"Is your proposal ready?"}
@@ -301,6 +307,7 @@ function SubmissionForm() :
                     />
                 </Stepper.Step>
 
+                {/* Step 2: Observing Modes */}
                 <Stepper.Step
                     label={"Observing Modes"}
                     description={"Select modes for your observations"}
@@ -308,6 +315,15 @@ function SubmissionForm() :
                     <ObservationModeSelect form={form} smallScreen={smallScreen}/>
                 </Stepper.Step>
 
+                {/* Step 3: Observatory Questions */}
+                <Stepper.Step
+                    label={"Observatory Questions"}
+                    description={"Answer observatory-specific questions"}
+                >
+                    <ObservatoryQuestions cycleCode={form.getValues().selectedCycle} />
+                </Stepper.Step>
+
+                {/* Step 4: Submission */}
                 <Stepper.Step
                     label={"Submit Proposal"}
                     description={"Submit to the chosen cycle"}
@@ -326,6 +342,7 @@ function SubmissionForm() :
                     }
                 </Stepper.Step>
 
+                {/* Step 5: Completed */}
                 <Stepper.Completed>
                     <Space h={"xl"}/>
                     <Alert
@@ -351,7 +368,7 @@ function SubmissionForm() :
                             <Button onClick={done}>Done</Button>
                         </Tooltip>
                         :
-                    activeStep !== 0 &&
+                    activeStep !== proposalCycleStep &&
                         <Button
                             variant="default"
                             onClick={prevStep}
@@ -360,7 +377,7 @@ function SubmissionForm() :
                         </Button>
                 }
                 {
-                    activeStep === 3 ?
+                    activeStep === submissionStep ?
                         <SubmitButton
                             variant={"filled"}
                             disabled={!form.isValid()}
@@ -371,9 +388,9 @@ function SubmissionForm() :
                         activeStep !== maxSteps &&
                         <Tooltip
                             label={form.getValues().selectedCycle === 0 ? 'Please select a cycle' :
-                                (activeStep === 1 && !proposalCheck) ?
+                                (activeStep === proposalCheckStep && !proposalCheck) ?
                                     'Your proposal is not ready, please check the errors' :
-                                    (activeStep == 2 && form.getValues().selectedModes.some(
+                                    (activeStep == observationModeStep && form.getValues().selectedModes.some(
                                         e => e.modeId === 0)) ?
                                         'All observations require a mode' :
                                         'Go to next step'}
@@ -383,8 +400,8 @@ function SubmissionForm() :
                             <Button
                                 onClick={nextStep}
                                 disabled={form.getValues().selectedCycle === 0 ||
-                                    (activeStep === 1 && !proposalCheck) ||
-                                    (activeStep == 2 && form.getValues().selectedModes.some(
+                                    (activeStep === proposalCheckStep && !proposalCheck) ||
+                                    (activeStep == observationModeStep && form.getValues().selectedModes.some(
                                             e => e.modeId === 0)
                                     )}
                             >
