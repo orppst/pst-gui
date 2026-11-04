@@ -204,6 +204,9 @@ export type CartesianPoint = {
  * a point on the celestial sphere
  */
 export type CelestialPosition = {
+  /**
+   * The actual position
+   */
   sourceCoordinates?: Point;
   /**
    * the reference frame
@@ -356,12 +359,6 @@ export type CycleObservingTimeTotal = {
    */
   totalTime?: number;
 };
-
-/**
- * @format date
- * @example "2026-08-06T15:02:44.458Z"
- */
-export type Date = string;
 
 /**
  * Represents a time duration - string serialization to conform to ISO 8601
@@ -691,6 +688,25 @@ export type Observatory = {
   arrays?: TelescopeArray[];
 };
 
+export type ObservatoryQuestion = {
+  /**
+   * @format int32
+   */
+  id?: number;
+  label?: string;
+  description?: string;
+  query?: string;
+  response?: string;
+  /**
+   * @format int32
+   */
+  minChar?: number;
+  /**
+   * @format int32
+   */
+  maxChar?: number;
+};
+
 /**
  * a form of constraint on the observation
  */
@@ -910,32 +926,20 @@ export type ProposalCycle = {
   instructions?: string;
   /**
    * the date by which observing proposals must be submitted to be considered for this cycle
-   *
-   * @format date
-   * @example "2022-03-10T00:00:00.000Z"
    */
-  submissionDeadline?: Date;
+  submissionDeadline?: ZonedDateTime;
   /**
    * the start date of the observing cycle
-   *
-   * @format date
-   * @example "2022-03-10T00:00:00.000Z"
    */
-  observationSessionStart?: Date;
+  observationSessionStart?: ZonedDateTime;
   /**
    * the end date of the observing cycle
-   *
-   * @format date
-   * @example "2022-03-10T00:00:00.000Z"
    */
-  observationSessionEnd?: Date;
+  observationSessionEnd?: ZonedDateTime;
   /**
    * the possible observing modes offered in the cycle
    */
   observingModes?: ObservingMode[];
-  /**
-   * The list of resources that are available
-   */
   availableResources?: AvailableResources;
   /**
    * The possible grades that can be allocated for this cycle
@@ -958,9 +962,9 @@ export type ProposalCycle = {
 export type ProposalCycleSynopsis = {
   title?: string;
   code?: string;
-  submissionDeadline?: Date;
-  observationSessionStart?: Date;
-  observationSessionEnd?: Date;
+  submissionDeadline?: ZonedDateTime;
+  observationSessionStart?: ZonedDateTime;
+  observationSessionEnd?: ZonedDateTime;
   observatory?: Observatory;
 };
 
@@ -995,7 +999,7 @@ export type ProposalReview = {
    * @format date
    * @example "2022-03-10T00:00:00.000Z"
    */
-  reviewDate?: Date;
+  reviewDate?: ZonedDateTime;
 };
 
 export type ProposalSynopsis = {
@@ -1302,7 +1306,7 @@ export type SubmittedProposal = {
    * @format date
    * @example "2022-03-10T00:00:00.000Z"
    */
-  submissionDate?: Date;
+  submissionDate?: ZonedDateTime;
   /**
    * the proposal can go on to allocation
    */
@@ -1313,7 +1317,7 @@ export type SubmittedProposal = {
    * @format date
    * @example "2022-03-10T00:00:00.000Z"
    */
-  reviewsCompleteDate?: Date;
+  reviewsCompleteDate?: ZonedDateTime;
   /**
    * the reviews
    */
@@ -1336,7 +1340,7 @@ export type SubmittedProposalSynopsis = {
    * @format int64
    */
   cycleId?: number;
-  submissionDate?: Date;
+  submissionDate?: ZonedDateTime;
   reviewStatus?: string;
 };
 
@@ -1489,16 +1493,8 @@ export type TimingWindow = {
 
   note?: string;
   isAvoidConstraint?: boolean;
-  /**
-   * @format date
-   * @example "2022-03-10T00:00:00.000Z"
-   */
-  startTime?: Date;
-  /**
-   * @format date
-   * @example "2022-03-10T00:00:00.000Z"
-   */
-  endTime?: Date;
+  startTime?: ZonedDateTime;
+  endTime?: ZonedDateTime;
 };
 
 /**
@@ -1633,3 +1629,9 @@ export type Uuid = {
 export type WikiDataId = {
   value?: string;
 };
+
+/**
+ * @format date-time
+ * @example "2026-11-04T13:37:23.734Z"
+ */
+export type ZonedDateTime = string;
