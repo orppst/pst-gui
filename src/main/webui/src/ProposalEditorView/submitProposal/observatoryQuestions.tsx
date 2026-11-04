@@ -12,11 +12,12 @@ import {
 import {ObservatoryQuestion} from "../../generated/proposalToolSchemas.ts";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 
-interface Props {
+interface observatoryQuestionsProps {
+    proposalId: number;
     cycleCode: number;
 }
 
-export default function ObservatoryQuestions({ cycleCode }: Props): ReactElement {
+export default function ObservatoryQuestions({ proposalId, cycleCode }: observatoryQuestionsProps): ReactElement {
     const queryClient = useQueryClient();
 
     // ---- Fetch questions from the backend ----
@@ -24,7 +25,7 @@ export default function ObservatoryQuestions({ cycleCode }: Props): ReactElement
     const questions =
         useProposalCyclesResourceGetObservatoryQuestions({
             pathParams: { cycleCode: cycleCode },
-            queryParams: { proposalId: 0}
+            queryParams: { proposalId: proposalId}
         })
 
     const [responses, setResponses] = useState<ObservatoryQuestion[]>([]);
@@ -42,7 +43,7 @@ export default function ObservatoryQuestions({ cycleCode }: Props): ReactElement
 
     const handleSaveResponses = () => {
         submitMutation.mutate({
-            pathParams: { cycleCode: cycleCode, proposalId: 0 },
+            pathParams: { cycleCode: cycleCode, proposalId: proposalId },
             body: responses,
         }, {
             onSuccess: () => {

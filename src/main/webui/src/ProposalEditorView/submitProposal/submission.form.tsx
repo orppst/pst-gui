@@ -307,20 +307,23 @@ function SubmissionForm() :
                     />
                 </Stepper.Step>
 
-                {/* Step 2: Observing Modes */}
+                {/* Step 2: Observatory Questions */}
+                <Stepper.Step
+                    label={"Observatory Questions"}
+                    description={"Answer observatory-specific questions"}
+                >
+                    <ObservatoryQuestions
+                        proposalId={Number(selectedProposalCode)}
+                        cycleCode={form.getValues().selectedCycle}
+                    />
+                </Stepper.Step>
+
+                {/* Step 3: Observing Modes */}
                 <Stepper.Step
                     label={"Observing Modes"}
                     description={"Select modes for your observations"}
                 >
                     <ObservationModeSelect form={form} smallScreen={smallScreen}/>
-                </Stepper.Step>
-
-                {/* Step 3: Observatory Questions */}
-                <Stepper.Step
-                    label={"Observatory Questions"}
-                    description={"Answer observatory-specific questions"}
-                >
-                    <ObservatoryQuestions cycleCode={form.getValues().selectedCycle} />
                 </Stepper.Step>
 
                 {/* Step 4: Submission */}
