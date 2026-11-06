@@ -30,12 +30,12 @@ export default
 function SubmissionForm() :
     ReactElement {
 
-    const maxSteps = 5;
+    const maxSteps = 5; //cycle, proposal check, observatory questions, observing modes, submission
 
     const proposalCycleStep = 0;
     const proposalCheckStep = 1;
-    const observationModeStep = 2;
-    //const observatoryQuestionsStep = 3;
+   // const observatoryQuestionsStep = 2;
+    const observationModeStep = 3
     const submissionStep = 4;
 
     const {selectedProposalCode} = useParams();
@@ -202,7 +202,7 @@ function SubmissionForm() :
 
             distinctModeIds.forEach((distinctModeId) => {
                 // as 'distinctModeId' has come from 'selectedModes' this will always give an array 'obsIds'
-                // of at least length 1
+                // of at least length 1 i.e., it will never be undefined, so the '@ts-ignore' is safe here
                 //@ts-ignore
                 let obsIds : number [] = values.selectedModes.map((modeTuple) => {
                     if (distinctModeId === modeTuple.modeId)
@@ -220,6 +220,8 @@ function SubmissionForm() :
                     proposalId: Number(selectedProposalCode),
                     config: observationConfigMap
                 },
+                // Suppressed warning: 'Object literal may only specify known properties, and
+                // "Content-Type" does not exist in type { authorization?: string | undefined; }'
                 // @ts-ignore
                 headers: {"Content-Type": "application/json", ...fetcherOptions.headers}
             };
