@@ -398,6 +398,8 @@ function SubmissionForm() :
                             label={form.getValues().selectedCycle === 0 ? 'Please select a cycle' :
                                 (activeStep === proposalCheckStep && !proposalCheck) ?
                                     'Your proposal is not ready, please check the errors' :
+                                (activeStep === observatoryQuestionsStep && !observatoryQuestionsCheck) ?
+                                    'Answer all observatory-specific questions and save your responses' :
                                     (activeStep == observationModeStep && form.getValues().selectedModes.some(
                                         e => e.modeId === 0)) ?
                                         'All observations require a mode' :
