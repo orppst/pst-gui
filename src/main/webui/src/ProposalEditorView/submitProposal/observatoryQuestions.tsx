@@ -83,7 +83,7 @@ export default function ObservatoryQuestions({ proposalId, cycleCode }: observat
                                     description={q.description}
                                     minLength={q.minChar}
                                     maxLength={q.maxChar}
-                                    value={q.response}
+                                    value={responses[index]?.response ?? ""}
                                     onChange={(event) => {
                                         const newResponses = [...responses];
                                         newResponses[index] =
@@ -92,7 +92,7 @@ export default function ObservatoryQuestions({ proposalId, cycleCode }: observat
                                     }}
                                 />
                                 <MaxCharsForInputRemaining
-                                    length={questions.data[index].response?.length ?? 0}
+                                    length={responses[index]?.response?.length ?? 0}
                                     limit={q.maxChar}
                                 />
                             </Fieldset>
