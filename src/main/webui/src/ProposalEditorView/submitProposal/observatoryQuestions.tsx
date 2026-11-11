@@ -94,9 +94,10 @@ export default function ObservatoryQuestions(
         >
             <Title order={4} mb="md">Observatory-Specific Questions</Title>
             {questions.data?.length === 0 ? (
-                <Text c="dimmed">No observatory-specific questions for this proposal cycle.</Text>
+                <Text c="dimmed">There are no observatory-specific questions for this proposal cycle.</Text>
             ) : (
                 <Fieldset legend="Please answer the following questions">
+                    { unsavedChanges && <Text size="sm" c="red">You have unsaved changes</Text> }
                     <Stack>
                         {questions.data?.map((q, index) => (
                             <Fieldset key={q.id} legend={q.label}>
