@@ -34,7 +34,7 @@ function SubmissionForm() :
 
     const proposalCycleStep = 0;
     const proposalCheckStep = 1;
-   // const observatoryQuestionsStep = 2;
+    const observatoryQuestionsStep = 2;
     const observationModeStep = 3
     const submissionStep = 4;
 
@@ -56,6 +56,7 @@ function SubmissionForm() :
     const [initialModeTuple, setInitialModeTuple] = useState<ObservationModeTuple[]>([]);
 
     const [proposalCheck, setProposalCheck] = useState<boolean>(false);
+    const [observatoryQuestionsCheck, setObservatoryQuestionsCheck] = useState<boolean>(false);
 
     const {fetcherOptions} = useProposalToolContext();
 
@@ -317,6 +318,8 @@ function SubmissionForm() :
                     <ObservatoryQuestions
                         proposalId={Number(selectedProposalCode)}
                         cycleCode={form.getValues().selectedCycle}
+                        setAllQuestionsAnswered={setObservatoryQuestionsCheck}
+                        smallScreen={smallScreen}
                     />
                 </Stepper.Step>
 
@@ -406,7 +409,8 @@ function SubmissionForm() :
                                 onClick={nextStep}
                                 disabled={form.getValues().selectedCycle === 0 ||
                                     (activeStep === proposalCheckStep && !proposalCheck) ||
-                                    (activeStep == observationModeStep && form.getValues().selectedModes.some(
+                                    (activeStep === observatoryQuestionsStep && !observatoryQuestionsCheck) ||
+                                    (activeStep === observationModeStep && form.getValues().selectedModes.some(
                                             e => e.modeId === 0)
                                     )}
                             >

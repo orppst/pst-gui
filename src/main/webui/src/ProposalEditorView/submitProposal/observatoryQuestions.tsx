@@ -15,9 +15,18 @@ import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 interface observatoryQuestionsProps {
     proposalId: number;
     cycleCode: number;
+    setAllQuestionsAnswered: React.Dispatch<React.SetStateAction<boolean>>;
+    smallScreen?: boolean;
 }
 
-export default function ObservatoryQuestions({ proposalId, cycleCode }: observatoryQuestionsProps): ReactElement {
+export default function ObservatoryQuestions(
+    {
+        proposalId,
+        cycleCode,
+        setAllQuestionsAnswered,
+        smallScreen
+    }: observatoryQuestionsProps): ReactElement {
+
     const queryClient = useQueryClient();
 
     // ---- Fetch questions from the backend ----
@@ -28,11 +37,19 @@ export default function ObservatoryQuestions({ proposalId, cycleCode }: observat
             queryParams: { proposalId: proposalId}
         })
 
+    const [unsavedChanges, setUnsavedChanges] = useState(false);
     const [responses, setResponses] = useState<ObservatoryQuestion[]>([]);
+    const [questionsAnswered, setQuestionsAnswered] = useState<boolean[]>([]);
 
     useEffect(() => {
         if (questions.data) {
             setResponses(questions.data);
+            setQuestionsAnswered(questions.data.map(q =>
+                q.response ? q.response.length >= q.minChar! : q.minChar! < 1)
+            );
+            setAllQuestionsAnswered(questions.data.every(q =>
+                q.response ? q.response.length >= q.minChar! : q.minChar! < 1)
+            );
         }
     }, [questions.data])
 
@@ -47,6 +64,8 @@ export default function ObservatoryQuestions({ proposalId, cycleCode }: observat
             body: responses,
         }, {
             onSuccess: () => {
+                setUnsavedChanges(false);
+                setAllQuestionsAnswered(questionsAnswered.every(answered => answered));
                 queryClient.invalidateQueries().then(() =>
                     notifySuccess("Responses Saved",
                         "Your responses to the observatory-specific questions have been saved.")
@@ -69,7 +88,10 @@ export default function ObservatoryQuestions({ proposalId, cycleCode }: observat
         );
 
     return (
-        <Box>
+        <Box
+            maw={smallScreen ? "100%": "75%"}
+            ml={smallScreen ? "" : "10%"}
+        >
             <Title order={4} mb="md">Observatory-Specific Questions</Title>
             {questions.data?.length === 0 ? (
                 <Text c="dimmed">No observatory-specific questions for this proposal cycle.</Text>
@@ -89,6 +111,12 @@ export default function ObservatoryQuestions({ proposalId, cycleCode }: observat
                                         newResponses[index] =
                                             { ...newResponses[index], response: event.target.value };
                                         setResponses(newResponses);
+                                        const newQuestionsAnswered = [...questionsAnswered];
+                                        newQuestionsAnswered[index] = event.target.value.length >= q.minChar!;
+                                        setQuestionsAnswered(newQuestionsAnswered);
+                                        // prevent the user from proceeding to the next step if there are unsaved changes
+                                        setAllQuestionsAnswered(false);
+                                        setUnsavedChanges(true);
                                     }}
                                 />
                                 <MaxCharsForInputRemaining
@@ -103,6 +131,8 @@ export default function ObservatoryQuestions({ proposalId, cycleCode }: observat
                         <Button
                             loading={submitMutation.isPending}
                             onClick={handleSaveResponses}
+                            disabled={!unsavedChanges}
+                            color={"blue"}
                         >
                             Save Responses
                         </Button>
