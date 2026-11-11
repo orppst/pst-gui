@@ -27,6 +27,9 @@ export type AbstractProposal = {
    * the person(s) making the proposal
    */
   investigators?: Investigator[];
+  /**
+   * the type of proposal
+   */
   kind?: ProposalKind;
   relatedProposals?: RelatedProposal[];
   /**
@@ -104,31 +107,10 @@ export type AllocationGrade = {
 };
 
 /**
- * The AstroCoordSystem object holds a collection of component coordinate system descriptions across all represented physical domains.
- */
-export type AstroCoordSystem = {
-  xmlId?: string;
-  /**
-   * Coordinate system description for each physical domain (Space, Time, etc).
-   */
-  coordSys?: PhysicalCoordSys[];
-};
-
-/**
  * The list of resources that are available
  */
 export type AvailableResources = {
   resources?: Resource[];
-};
-
-/**
- * The abstract parent class for all coordinate axis types. We provide concrete classes for the most common types of data, Continuous, Binned, and Discrete, but allow extension for other types as needed.
- */
-export type Axis = {
-  /**
-   * Freeform string, provides the name or label for the axis.
-   */
-  name?: string;
 };
 
 /**
@@ -148,35 +130,17 @@ export type Backend = {
 };
 
 /**
- * Axis description for binned data, where values along the axis correspond to a bin number.
+ * a simple bounding box
  */
-export type BinnedAxis = {
+export type Box = {
   /**
-   * Freeform string, provides the name or label for the axis.
+   * south-west edge of the box
    */
-  name?: string;
+  pos_sw?: Point;
   /**
-   * The length, or number of bins, along the axis.
-   *
-   * @format int32
+   * north-east edge of the box
    */
-  length?: number;
-};
-
-/**
- * Coordinate value type specifically intended for binned data (e.g.: pixel indexes).
- */
-export type BinnedCoordinate = {
-  /**
-   * Abstract head of the coordinate system object tree.
-   */
-  coordSys?: CoordSys;
-  /**
-   * The binned coordinate value, expressed as an integer. e.g.: bin number, pixel index.
-   *
-   * @format int32
-   */
-  cval?: number;
+  pos_ne?: Point;
 };
 
 /**
@@ -201,6 +165,9 @@ export type CalibrationObservation = {
    * any constraints on the observation
    */
   constraints?: ObservingConstraint[];
+  /**
+   * The use of the calibration observation
+   */
   intent?: CalibrationTargetIntendedUse;
 };
 
@@ -214,17 +181,6 @@ export type CalibrationTargetIntendedUse =
   | "Polarization"
   | "Delay";
 
-/**
- * Spatial domain, three-dimensional cartesian coordinate space. The particulars of the axis descriptions depend on the physical constraints of the instance. In Appendix B, we provide the description of a Standard Cartesian Coordinate Space instance which applies to many Astronomical cases, and may be referenced in serializations.
- */
-export type CartesianCoordSpace = {
-  "@type"?: string; // coords:CartesianCoordSpace
-  axis?: Axis[];
-};
-
-/**
- * A spatial coordinate in a Cartesian coordinate space. Any associated CoordSpace MUST be a CartesianCoordSpace. If no CoordSpace is provided, a Standard Cartesian CoordSpace is assumed. Values for unused/undefined dimensions need not be provided.
- */
 export type CartesianPoint = {
   /**
    * A real value with a unit.
@@ -238,6 +194,25 @@ export type CartesianPoint = {
    * A real value with a unit.
    */
   z?: RealQuantity;
+  /**
+   * The reference position for this coordinate system
+   */
+  refpos?: string;
+};
+
+/**
+ * a point on the celestial sphere
+ */
+export type CelestialPosition = {
+  sourceCoordinates?: Point;
+  /**
+   * the reference frame
+   */
+  referenceFrame?: string;
+  /**
+   * the equinox when needed - not for modern reference frames
+   */
+  equinox?: Mjd;
 };
 
 /**
@@ -253,27 +228,35 @@ export type CelestialTarget = {
   /**
    * A Point on the Unit Sphere
    */
-  sourceCoordinates?: EquatorialPoint;
+  coord?: CelestialPosition;
   /**
-   * We define epoch as a primitive data type with the expected form '{type}{year}' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
+   * the unit for the coordinates
    */
-  positionEpoch?: Epoch;
+  coordUnit?: Unit;
   /**
-   * A real value with a unit.
+   * the epoch at which the position was measured
    */
+  positionEpoch?: Mjd;
   pmRA?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
   pmDec?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
   parallax?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
   sourceVelocity?: RealQuantity;
+};
+
+/**
+ * a circular region on the sky
+ */
+export type Circle = {
+  /**
+   * the centre of the circle
+   */
+  center?: Point;
+  /**
+   * the radius of the circle
+   *
+   * @format double
+   */
+  radius?: number;
 };
 
 /**
@@ -306,62 +289,6 @@ export type Composites = {
   };
 };
 
-/**
- * Axis description for continuous data. This object describes the domain for a particular axis of the domain space. It allows for the specification of the legal domain range (min,max), and a flag indicating if the axis is cyclic.
- */
-export type ContinuousAxis = {
-  /**
-   * Freeform string, provides the name or label for the axis.
-   */
-  name?: string;
-  /**
-   * A real value with a unit.
-   */
-  domainMin?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  domainMax?: RealQuantity;
-  /**
-   * Flag indicating if the axis is cyclic in nature. If not provided, it is assumed to be FALSE.
-   */
-  cyclic?: boolean;
-};
-
-/**
- * This is the abstract, empty, base class for all coordinate frames. Coordinate frames provide metadata associated with the coordinate domain space. Typically, this will be related to the origin and orientation of the axes, but might include any metadata which pertains to the definition of the domain.
- */
-export type CoordFrame = Record<string, any>;
-
-/**
- * This object defines a domain space. i.e.: it describes the set of possible coordinate values.
- */
-export type CoordSpace = {
-  /**
-   * Describes an axis of the coordinate space.
-   */
-  axis?: Axis[];
-};
-
-/**
- * Abstract head of the coordinate system object tree.
- */
-export type CoordSys = {
-  "@type"?: string;
-  xmlId?: string;
-  frame?: CoordFrame;
-};
-
-/**
- * Abstract base class for the Coordinate data types which represent an absolute location within a coordinate space. Coordinates MUST refer to a coordinate system, providing additional metadata relevant to interpreting the coordinate value, and its representation.
- */
-export type Coordinate = {
-  /**
-   * Abstract head of the coordinate system object tree.
-   */
-  coordSys?: CoordSys;
-};
-
 export type CredentialRepresentation = {
   id?: string;
   type?: string;
@@ -391,13 +318,13 @@ export type CredentialRepresentation = {
    */
   salt?: string;
   /**
-   * @format int32
    * @deprecated true
+   * @format int32
    */
   hashIterations?: number;
   /**
-   * @format int32
    * @deprecated true
+   * @format int32
    */
   counter?: number;
   /**
@@ -405,37 +332,20 @@ export type CredentialRepresentation = {
    */
   algorithm?: string;
   /**
-   * @format int32
    * @deprecated true
+   * @format int32
    */
   digits?: number;
   /**
-   * @format int32
    * @deprecated true
+   * @format int32
    */
   period?: number;
   /**
    * @deprecated true
    */
   config?: MultivaluedHashMapStringString;
-};
-
-/**
- * A custom reference location in phase space (position and velocity). Position and velocity are given as coordinates with an associated SpaceFrame. An epoch MAY be provided to further refine the location.
- */
-export type CustomRefLocation = {
-  /**
-   * We define epoch as a primitive data type with the expected form '{type}{year}' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
-   */
-  epoch?: Epoch;
-  /**
-   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata.
-   */
-  position?: Point1;
-  /**
-   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata.
-   */
-  velocity?: Point1;
+  federationLink?: string;
 };
 
 export type CycleObservingTimeTotal = {
@@ -449,19 +359,9 @@ export type CycleObservingTimeTotal = {
 
 /**
  * @format date
- * @example "2022-03-10T00:00:00.000Z"
+ * @example "2026-05-28T08:34:46.632Z"
  */
 export type Date = string;
-
-/**
- * Axis type specifically intended for enumerated coordinates. Since the content and nature of this axis type is heavily dependent on the use case, we define no additional metadata here. Extensions of this type may include additional metadata relevant to the particular use cases. For example, an extension could include the allowed set of values.
- */
-export type DiscreteSetAxis = {
-  /**
-   * Freeform string, provides the name or label for the axis.
-   */
-  name?: string;
-};
 
 /**
  * Represents a time duration - string serialization to conform to ISO 8601
@@ -474,69 +374,38 @@ export type Duration = {
  * Specialization of a Field for an elliptical map.
  */
 export type Ellipse = {
-  xmlId?: string;
-  name?: string;
   /**
-   * A real value with a unit.
+   * major axis size in radians
+   *
+   * @format double
    */
-  semiMajor?: RealQuantity;
+  major_axis?: number;
   /**
-   * A real value with a unit.
+   * minor axis size in radians
+   *
+   * @format double
    */
-  semiMinor?: RealQuantity;
+  minor_axis?: number;
   /**
-   * A real value with a unit.
+   * the centre of the circle
    */
-  pAMajor?: RealQuantity;
-};
-
-/**
- * We define epoch as a primitive data type with the expected form '{type}{year}' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
- */
-export type Epoch = {
-  value?: string;
-};
-
-/**
- * A Point on the Unit Sphere
- */
-export type EquatorialPoint = {
-  "@type": string; // coords:EquatorialPoint
-  coordSys: CoordSys;
+  center?: Point;
   /**
-   * A real value with a unit.
+   * The position angle pos is defined as a counterclockwise rotation around the ellipse center and is zero, if the ellipse is “parallel to the equator”
+   *
+   * @format double
    */
-  lon?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  lat?: RealQuantity;
+  pos_angle?: number;
 };
 
 /**
  * Brief description of a spectral line.
  */
 export type ExpectedSpectralLine = {
-  /**
-   * A real value with a unit.
-   */
   restFrequency?: RealQuantity;
   transition?: string;
-  /**
-   * a string identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
-   */
   splatalogId?: StringIdentifier;
   description?: string;
-};
-
-/**
- * Extension of TimeInstant for time expressed as a structured datetime string. The string representation of a datetime value should follow the FITS convention for representing dates (Hanish and Farris et al, 2001). The FITS standard is effectively ISO8601 format without the 'Z' tag to indicate UTC: YYYY-MM-DD['T'hh:mm:ss[.SSS]]. The TimeScale is provided in the associated TimeFrame.
- */
-export type FITSTime = {
-  /**
-   * The FITSTime coordinate value.
-   */
-  date?: string;
 };
 
 export type FederatedIdentityRepresentation = {
@@ -555,10 +424,8 @@ export type Field = {
   _id?: number;
 };
 
-export type FileUpload = Record<string, any>;
-
 /**
- * Available filters /bandpasses for intruments
+ * Available filters /bandpasses for instruments
  */
 export type Filter = {
   _id?: number
@@ -571,68 +438,10 @@ export type Filter = {
    */
   description?: string;
   /**
-   * Science oriented definition of a spectral window.
+   * the frequency range that the instrument covers
    */
   frequencyCoverage?: SpectralWindowSetup;
 };
-
-/**
- * Generic, one-dimensional coordinate space suitable for use with most non-spatial properties. In Appendix B, we provide the description of a Standard 1D Coordinate Space instance which may be referenced in serializations.
- */
-export type GenericCoordSpace = {
-  /**
-   * Describes an axis of the coordinate space.
-   */
-  axis?: Axis[];
-};
-
-/**
- * The generic coordinate frame is for cases where a domain-specific frame (e.g.: Space, Time), is not required, but the relevant reference metadata is still needed (e.g.: for Redshift or Spectral data)
- */
-export type GenericFrame = {
-  /**
-   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
-   */
-  refPosition?: RefLocation;
-  /**
-   * A planetary ephemeris MAY be provided, and SHOULD be provided whenever appropriate, to indicate which solar system ephemeris was used. If needed, but not provided, it is assumed to be 'DE405'
-   */
-  planetaryEphem?: string;
-};
-
-/**
- * GenericPoint supports the representation of spatial coordinates in a custom coordinate space, or any space which is not covered by the other specializations. The coordinate values map, in order, to the axes described by the associated CoordSpace. If no CoordSpace is provided, the behavior is undefined. Values for unused/undefined dimensions need not be provided.
- */
-export type GenericPoint = {
-  /**
-   * A real value with a unit.
-   */
-  axis1?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  axis2?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  axis3?: RealQuantity;
-};
-
-/**
- * Specialized coordinate system for generic, one-dimensional domains not covered by other, more concrete objects. If a CoordSpace is not provided, it is assumed to be represented by a Standard 1-Dimensional Coordinate Space as described in Appendix B.
- */
-export type GenericSys = {
-  xmlId?: string;
-  /**
-   * Abstract head of coordinate spaces related to physical properties.
-   */
-  coordSpace?: PhysicalCoordSpace;
-};
-
-/**
- * The handedness of a coordinate space. For most cases, this will be a fixed value in the specification of the coordinate space. We provide this element to allow this flexibility when needed. In this document, it is used in the Pixel domain.
- */
-export type Handedness = "left" | "right";
 
 /**
  * An instrument that can be attached to a telescope - e.g. CCD, Radio Receiver
@@ -648,13 +457,16 @@ export type Instrument = {
    */
   description?: string;
   /**
-   * a WikiData identifier
+   * the wikidata id for the Instrument
    */
   wikiId?: WikiDataId;
   /**
    * a URL that points to a more detailed description of the instrument
    */
   reference?: string;
+  /**
+   * the kind of instrument
+   */
   kind?: InstrumentKind;
   xmlId?: string;
 };
@@ -687,12 +499,29 @@ export type IntegerQuantity = {
   value?: number;
 };
 
+/**
+ * a set of numeric values defined by a lower and upper bound (bounds included: [a,b])
+ */
+export type Interval = {
+  /**
+   * @format double
+   */
+  lower?: number;
+  /**
+   * @format double
+   */
+  upper?: number;
+};
+
 export type Investigator = {
   _id?: number;
   /**
    * person connected with the proposal
    */
   person?: Person;
+  /**
+   * the investigator type
+   */
   type?: InvestigatorKind;
   /**
    * is the investigator making proposal for their PhD
@@ -710,18 +539,6 @@ export type Ivoid = {
 };
 
 /**
- * Extension of TimeInstant for time expressed in Julian days. Note that JD does not properly specify a time stamp unless it is related to a time scale and reference position. Precision can easily become an issue with JD, as the numbers tend to be large.
- */
-export type Jd = {
-  /**
-   * The JD coordinate value. JD dates are dimensionless, with implied units in days.
-   *
-   * @format double
-   */
-  date?: number;
-};
-
-/**
  * The justification for the proposal. Note that the justification is for reading by humans and is not parsed to extract things like source lists - that sort of information must be entered in the correct place in the model.
  */
 export type Justification = {
@@ -736,33 +553,34 @@ export type Justification = {
 };
 
 /**
- * A spatial coordinate in a Spherical coordinate space defining a Celestial position in Latitude and Longitude. Any associated CoordSpace MUST conform to this description. If no CoordSpace is provided, a Standard Spherical CoordSpace is assumed. Values for unused/undefined dimensions need not be provided.
+ * A line defined on the celestial sphere. If the distance between begin and end is 180° (π), this function returns an error because the location of the line is undefined. However, if longitudes of begin and end are equal, pgSphere assumes a meridian and returns the corresponding spherical line.
  */
-export type LonLatPoint = {
+export type Line = {
   /**
-   * A real value with a unit.
+   * start point of line
    */
-  lon?: RealQuantity;
+  begin?: Point;
   /**
-   * A real value with a unit.
+   * end point of line
    */
-  lat?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  dist?: RealQuantity;
+  end?: Point;
 };
 
 /**
- * Extension of TimeInstant for time expressed in Modified Julian Days. T(MJD) = T(JD) - 2400000.5.
+ * modified julian date
  */
 export type Mjd = {
   /**
-   * The MJD coordinate value. MJD dates are dimensionless, with implied units in days.
-   *
    * @format double
    */
-  date?: number;
+  value?: number;
+};
+
+/**
+ * multiple simple shapes describing regions as a single value
+ */
+export type MultiShape = {
+  shapes?: Shape[];
 };
 
 export type MultivaluedHashMapStringString = {
@@ -848,7 +666,7 @@ export type Observatory = {
    */
   ivoid?: Ivoid;
   /**
-   * a WikiData identifier
+   * the wikidata id for the Organization
    */
   wikiId?: WikiDataId;
   /**
@@ -944,6 +762,9 @@ export type ObservingProposal = {
    * the person(s) making the proposal
    */
   investigators?: Investigator[];
+  /**
+   * the type of proposal
+   */
   kind?: ProposalKind;
   relatedProposals?: RelatedProposal[];
   /**
@@ -980,11 +801,11 @@ export type Organization = {
   name?: string;
   address?: string;
   /**
-   * an identifier that can be used as a key to look up in an IVOA registry - see https://www.ivoa.net/documents/IVOAIdentifiers/
+   * the registry identifier for the organization
    */
   ivoid?: Ivoid;
   /**
-   * a WikiData identifier
+   * the wikidata id for the Organization
    */
   wikiId?: WikiDataId;
   xmlId?: string;
@@ -994,24 +815,12 @@ export type Organization = {
  * The parameters required for observation to be useful for the science goal
  */
 export type PerformanceParameters = {
-  /**
-   * A real value with a unit.
-   */
   desiredAngularResolution?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
   desiredLargestScale?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
   desiredSensitivity?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
   desiredDynamicRange?: RealQuantity;
   /**
-   * A real value with a unit.
+   * the the point in the EM where these parameters should be evaluated
    */
   representativeSpectralPoint?: RealQuantity;
 };
@@ -1029,11 +838,11 @@ export type Person = {
    */
   eMail?: string;
   /**
-   * An institution that is a collection of people
+   * A reference to -
    */
   homeInstitute?: Organization;
   /**
-   * a string identifier that can be used as a key for lookup of an entity that is *outside this datamodel*
+   * orcid id see https://orcid.org
    */
   orcidId?: StringIdentifier;
   xmlId?: string;
@@ -1041,98 +850,22 @@ export type Person = {
 };
 
 /**
- * Abstract head of coordinate spaces related to physical properties.
- */
-export type PhysicalCoordSpace = {
-  /**
-   * Describes an axis of the coordinate space.
-   */
-  axis?: Axis[];
-};
-
-/**
- * Coordinate system description for any physical domain, such as Time, Space, Redshift, Temperature, Flux, etc.
- */
-export type PhysicalCoordSys = {
-  xmlId?: string;
-  /**
-   * Abstract head of coordinate spaces related to physical properties.
-   */
-  coordSpace?: PhysicalCoordSpace;
-  /**
-   * This is the abstract, empty, base class for all coordinate frames. Coordinate frames provide metadata associated with the coordinate domain space. Typically, this will be related to the origin and orientation of the axes, but might include any metadata which pertains to the definition of the domain.
-   */
-  frame?: CoordFrame;
-};
-
-/**
- * The most common type of coordinate value. This type is appropriate for any data whose values can be described by an ivoa:RealQuantity (numeric, with unit).
- */
-export type PhysicalCoordinate = {
-  /**
-   * Abstract head of the coordinate system object tree.
-   */
-  coordSys?: CoordSys;
-  /**
-   * A real value with a unit.
-   */
-  cval?: RealQuantity;
-};
-
-/**
- * The PixelCoordSystem provides a complete description of the pixel coordinate space. It SHALL contain one PixelSpace instance describing each pixel axis.
- */
-export type PixelCoordSystem = {
-  xmlId?: string;
-  /**
-   * A PixelSpace SHALL include one or more BinnedAxis objects describing the pixel coordinate space. A handedness value MAY be provided to specify the relative orientation of the axes.
-   */
-  pixelSpace?: PixelSpace;
-};
-
-/**
- * Specialized BinnedCoordinate for the pixel domain for a 1-dimensional pixel index. PixelIndex MUST refer to a PixelCoordSystem.
- */
-export type PixelIndex = {
-  /**
-   * Abstract head of the coordinate system object tree.
-   */
-  coordSys?: CoordSys;
-  /**
-   * The binned coordinate value, expressed as an integer. e.g.: bin number, pixel index.
-   *
-   * @format int32
-   */
-  cval?: number;
-};
-
-/**
- * A PixelSpace SHALL include one or more BinnedAxis objects describing the pixel coordinate space. A handedness value MAY be provided to specify the relative orientation of the axes.
- */
-export type PixelSpace = {
-  /**
-   * The handedness of a coordinate space. For most cases, this will be a fixed value in the specification of the coordinate space. We provide this element to allow this flexibility when needed. In this document, it is used in the Pixel domain.
-   */
-  handedness?: Handedness;
-  axis?: Axis[];
-};
-
-/**
- * Single point on the sky
+ * location on the sky in spherical coordinates
  */
 export type Point = {
-  xmlId?: string;
-  name?: string;
   /**
-   * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata.
+   * longitude angle
+   *
+   * @format double
    */
-  centre?: Point1;
+  alpha?: number;
+  /**
+   * latitude angle
+   *
+   * @format double
+   */
+  delta?: number;
 };
-
-/**
- * Multi-dimensional spatial coordinate. The Point MUST refer to a spatial coordinate system (SpaceSys) which associates the point with corresponding coordinate domain space and frame metadata.
- */
-export type Point1 = Record<string, any>;
 
 /**
  * A constraint that limits the telescope pointing
@@ -1140,59 +873,18 @@ export type Point1 = Record<string, any>;
 export type PointingConstaint = Record<string, any>;
 
 /**
- * Abstract head of the polarization coordinate types. Current use cases only require support for discrete polarization states, however, we include this head class to facilitate extension for other types (eg: polarization fraction and angle).
+ * description of polarization
  */
-export type PolCoordinate = {
-  /**
-   * Abstract head of the coordinate system object tree.
-   */
-  coordSys?: CoordSys;
-};
+export type Polarization = "Linear" | "Circular";
 
 /**
- * Coordinate type for discrete polarization states.
- */
-export type PolState = {
-  /**
-   * Abstract head of the coordinate system object tree.
-   */
-  coordSys?: CoordSys;
-  /**
-   * Polarization states: Stokes, Circular, Linear and Vector states
-   */
-  cval?: PolStateEnum;
-};
-
-/**
- * Polarization states: Stokes, Circular, Linear and Vector states
- */
-export type PolStateEnum =
-  | "I"
-  | "Q"
-  | "U"
-  | "V"
-  | "RR"
-  | "LL"
-  | "RL"
-  | "LR"
-  | "XX"
-  | "YY"
-  | "XY"
-  | "YX"
-  | "PF"
-  | "PP"
-  | "PA";
-
-/**
- * Polygonal map
+ * a simple polygon region on the sky defined a sequence of points connected by great-circle segments
  */
 export type Polygon = {
-  xmlId?: string;
-  name?: string;
   /**
-   * an array of points....
+   * the points that make up the polygon
    */
-  points?: EquatorialPoint[];
+  points?: Point[];
 };
 
 /**
@@ -1201,7 +893,7 @@ export type Polygon = {
 export type ProposalCycle = {
   _id?: number
   /**
-   * An organisation that can perform astronomical observations
+   * A reference to -
    */
   observatory?: Observatory;
   /**
@@ -1250,7 +942,7 @@ export type ProposalCycle = {
    */
   possibleGrades?: AllocationGrade[];
   /**
-   * time allocation committee
+   * The time allocation committee
    */
   tac?: Tac;
   /**
@@ -1344,7 +1036,7 @@ export type Quantity = {
 export type RealQuantity = {
   "@type"?: string; // ivoa:RealQuantity
   /**
-   * Must conform to definition of unit in VOUnit spec.
+   * The unit of this quantity.
    */
   unit?: Unit;
   /**
@@ -1354,11 +1046,6 @@ export type RealQuantity = {
    */
   value?: number;
 };
-
-/**
- * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
- */
-export type RefLocation = Record<string, any>;
 
 /**
  * a related proposal
@@ -1457,11 +1144,28 @@ export type ScienceSpectralWindow = {
 };
 
 /**
+ * base type of all shapes
+ */
+export type Shape = Record<string, any>;
+
+/**
  * A constraint that requires that two observations occur simultaneously
  */
 export type SimultaneityConstraint = {
   note?: string;
   isAvoidConstraint?: boolean;
+};
+
+/**
+ * Single point on the sky
+ */
+export type SinglePointing = {
+  xmlId?: string;
+  name?: string;
+  /**
+   * Where to point
+   */
+  centre?: CelestialPosition;
 };
 
 export type SocialLinkRepresentation = {
@@ -1479,54 +1183,19 @@ export type SolarSystemTarget = {
 };
 
 /**
- * A SpaceFrame is specified by its reference frame (orientation), and a reference position (origin). Currently only standard reference frames are allowed. An equinox MUST be provided for pre-ICRS reference frames. A planetary ephemeris MAY be provided if relevant. If needed, but not provided, it is assumed to be 'DE405'.
- */
-export type SpaceFrame = {
-  "@type": string; // coords:SpaceFrame
-  /**
-   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
-   */
-  refPosition?: RefLocation;
-  /**
-   * The spatial reference frame. Values MUST be selected from the controlled vocabulary at the given URL.
-   */
-  spaceRefFrame?: string;
-  /**
-   * We define epoch as a primitive data type with the expected form '{type}{year}' where type = 'J' or 'B' for Julian or Besselian respectively, and year is expressed as a decimal year. e.g.: 'B1950', 'J2000.0'
-   */
-  equinox?: Epoch;
-  /**
-   * Ephemeris file for solar system objects SHOULD be specified whenever relevant.
-   */
-  planetaryEphem?: string;
-};
-
-/**
- * Specialized coordinate system for the Spatial domain. This object SHOULD include an appropriate SpaceFrame. In Appendix B, we define two standard spatial coordinate space instances (Spherical and Cartesian), which may be referenced in serializations. If a CoordSpace is not provided, it is assumed to be represented by a Standard Spherical Coordinate Space.
- */
-export type SpaceSys = {
-  "@type": string; // coords:SpaceSys
-  xmlId?: string;
-  /**
-   * Abstract head of coordinate spaces related to physical properties.
-   */
-  coordSpace?: PhysicalCoordSpace;
-};
-
-/**
  * Science oriented definition of a spectral window.
  */
 export type SpectralWindowSetup = {
   /**
-   * A real value with a unit.
+   * The start of the spectral window
    */
   start?: RealQuantity;
   /**
-   * A real value with a unit.
+   * The end of the spectral window
    */
   end?: RealQuantity;
   /**
-   * A real value with a unit.
+   * channel width
    */
   spectralResolution?: RealQuantity;
   /**
@@ -1534,44 +1203,9 @@ export type SpectralWindowSetup = {
    */
   isSkyFrequency?: boolean;
   /**
-   * Polarization states: Stokes, Circular, Linear and Vector states
+   * desired polarization
    */
-  polarization?: PolStateEnum;
-};
-
-/**
- * Spatial domain, three-dimensional spherical coordinate space. The particulars of the axis descriptions depend on the flavor of space being instantiated. In Appendix B., we provide a Standard Spherical Coordinate Space instance which applies to many Astronomical use cases. It provides the default space for SpaceSys instances, and may be referenced in serializations.
- */
-export type SphericalCoordSpace = {
-  axis?: Axis[];
-};
-
-/**
- * A point in space expressed in spherical coordinates
- */
-export type SphericalPoint = {
-  /**
-   * A real value with a unit.
-   */
-  r?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  theta?: RealQuantity;
-  /**
-   * A real value with a unit.
-   */
-  phi?: RealQuantity;
-};
-
-/**
- * An absolute a-priori known location in phase space (position and velocity). Values are selected from the StdRefPosition vocabulary. Considering that the GEOCENTER is really the only place for which we know the absolute location at all times, all other locations require the specification of a planetary ephemeris. LSR[KD] are reserved for spectral and reshift frames. TOPOCENTER (location of the observer) is special in that it assumes that the observing location is available through other means (e.g. a geographic location or an orbit ephemeris). RELOCATABLE is available for simulations. UNKNOWN should only be used if absolutely necessary.
- */
-export type StdRefLocation = {
-  /**
-   * Standard reference location. Values MUST be selected from the controlled vocabulary at the given URL.
-   */
-  position?: string;
+  polarization?: Polarization;
 };
 
 /**
@@ -1632,6 +1266,9 @@ export type SubmittedProposal = {
    * the person(s) making the proposal
    */
   investigators?: Investigator[];
+  /**
+   * the type of proposal
+   */
   kind?: ProposalKind;
   relatedProposals?: RelatedProposal[];
   /**
@@ -1765,11 +1402,11 @@ export type TargetObservation = {
    */
   target?: Target[];
   /**
-   * Definition of an observing field pointing
+   * A reference to - The Field for the observation
    */
   field?: Field;
   /**
-   * collects together the technical goals of the proposal
+   * A reference to - The technical goals of the observation
    */
   technicalGoal?: TechnicalGoal;
   /**
@@ -1800,11 +1437,11 @@ export type Telescope = {
    */
   name?: string;
   /**
-   * a WikiData identifier
+   * the wikidata id for the Telescope
    */
   wikiId?: WikiDataId;
   /**
-   * A spatial coordinate in a Cartesian coordinate space. Any associated CoordSpace MUST be a CartesianCoordSpace. If no CoordSpace is provided, a Standard Cartesian CoordSpace is assumed. Values for unused/undefined dimensions need not be provided.
+   * the location of the telescope
    */
   location?: CartesianPoint;
 };
@@ -1833,41 +1470,6 @@ export type TelescopeArrayMember = {
  * acceptable text formats for document submission
  */
 export type TextFormats = "latex" | "rst" | "asciidoc";
-
-/**
- * A TimeFrame SHALL include a time scale and reference position. It MAY also include a reference direction.
- */
-export type TimeFrame = {
-  /**
-   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
-   */
-  refPosition?: RefLocation;
-  /**
-   * The time scale sets the reference frame. The value MUST be selected from the controlled vocabulary at the given URL.
-   */
-  timescale?: string;
-  /**
-   * RefLocation defines the origin of the spatial coordinate space. This location is represented either by a standard reference position (for which the absolute location in phase space is known by definition), or a specified point in another Spatial frame. This object is used as the origin of the SpaceFrame here, but also to specify the Spatial Reference Position (refPosition) associated with other domain Frames. For example, in the Time domain, the Spatial Reference Position indicates that the 'time' values are the time that the 'event' occured at that location, which might be different from the detector location.
-   */
-  refDirection?: RefLocation;
-};
-
-/**
- * TimeStamps which specify a specific instant in time. We define three subtypes (FITSTime, JD, MJD), which allow users to explicitly identify the representation and interpretation of the TimeInstant.
- */
-export type TimeInstant = Record<string, any>;
-
-/**
- * This is the abstract basis for a set of simple time domain coordinates which are expected to accommodate the vast majority of use cases. All TimeStamps, by definition, exist in a standard 1-D coordinate space, with domainMin|Max of +/-Infinity. All TimeStamps MUST refer to an appropriate TimeSys.
- */
-export type TimeStamp = Record<string, any>;
-
-/**
- * Specialized coordinate system for the Temporal domain. This object SHOULD include an appropriate TimeFrame. If a CoordSpace is not provided, it is assumed to be represented by a Standard 1-Dimensional Coordinate Space as described in Appendix B.
- */
-export type TimeSys = {
-  xmlId?: string;
-};
 
 /**
  * Any specific timing requirements for the observing
@@ -1957,6 +1559,7 @@ export type UserProfileAttributeMetadata = {
   };
   group?: string;
   multivalued?: boolean;
+  defaultValue?: string;
 };
 
 export type UserProfileMetadata = {
@@ -1975,13 +1578,13 @@ export type UserRepresentation = {
     [key: string]: string[];
   };
   userProfileMetadata?: UserProfileMetadata;
+  enabled?: boolean;
   self?: string;
   origin?: string;
   /**
    * @format int64
    */
   createdTimestamp?: number;
-  enabled?: boolean;
   totp?: boolean;
   federationLink?: string;
   serviceAccountClientId?: string;

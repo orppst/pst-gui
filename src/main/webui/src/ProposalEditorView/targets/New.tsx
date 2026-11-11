@@ -8,12 +8,10 @@ import {
 } from 'react';
 import {
     CelestialTarget,
-    EquatorialPoint,
 } from "src/generated/proposalToolSchemas.ts";
 import {
     useProposalResourceAddNewTarget,
-    useProposalResourceGetTargets,
-    useSpaceSystemResourceGetSpaceSystem
+    useProposalResourceGetTargets
 } from "src/generated/proposalToolComponents.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useNavigate, useParams} from "react-router-dom";
@@ -55,11 +53,12 @@ const initialConfig: IAladinConfig = {
     reticleColor: 'rgb(150, 255, 75)'
 };
 
+// future update: add optional fields for proper motions, parallax, and radial velocity
+
 export interface NewTargetFormValues {
     targetName: string
     ra: string
     dec: string
-    selectedEpoch: 'J2000'  // | 'B1950' | etc ??
     sexagesimal: string
     objectDescription?: string
 }
@@ -81,16 +80,23 @@ const generateTargetDefaultName = () : string => {
 export default
 function AddTargetPanel(): ReactElement {
 
-    useEffect(() => {
-        const bodyElement =
-            document.getElementsByTagName('BODY')[0] as HTMLElement;
+    const aladinLiteDiv = document.getElementById("aladin-lite-div")
 
-        LoadScriptIntoDOM(
-            bodyElement, ALADIN_SRC_URL,
-            () => {
-                Aladin = A.aladin('#aladin-lite-div', initialConfig);
-            })
-    }, []);
+    const [skyAtlasReady, setSkyAtlasReady] = useState(false);
+
+    useEffect(() => {
+        if (aladinLiteDiv) {
+            const bodyElement =
+                document.getElementsByTagName('BODY')[0] as HTMLElement;
+
+            LoadScriptIntoDOM(
+                bodyElement, ALADIN_SRC_URL,
+                () => {
+                    Aladin = A.aladin('#aladin-lite-div', initialConfig);
+                })
+            setSkyAtlasReady(true);
+        }
+    }, [aladinLiteDiv]);
 
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -104,10 +110,6 @@ function AddTargetPanel(): ReactElement {
         pathParams: {proposalCode: Number(selectedProposalCode)}
     });
 
-    const spaceSystem = useSpaceSystemResourceGetSpaceSystem({
-        pathParams: {frameCode: 'ICRS'}
-    })
-
     //media queries to attempt to make the page look okay at different screen widths
     const isTablet = useMediaQuery('(max-width: 90em)');
     const isWide = useMediaQuery("(max-width: 2000px)");
@@ -117,7 +119,6 @@ function AddTargetPanel(): ReactElement {
                 targetName: "",
                 ra: "",
                 dec: "",
-                selectedEpoch: "J2000",
                 sexagesimal: "00:00:00 +00:00:00"
             },
             validate: {
@@ -151,25 +152,27 @@ function AddTargetPanel(): ReactElement {
         setNameUnique(!targets.data?.find(t => t.name === form.getValues().targetName));
     }, [form.getValues().targetName]);
 
+    /*
+        DEV NOTE: We have simpilfied this by ASSUMING a reference frame of 'ICRS' which in turn uses
+        the J2000.0 (or 51544.5 MJD equivalent) epoch. In future updates, we may have a selection of
+        refrence frames, which then would include a selection of epochs (or equinoxs, I'm not quite
+        clear on the difference).
+     */
+
     const handleSubmission = form.onSubmit((val: NewTargetFormValues) => {
         //remember to convert the sexagesimal to decimal
-        const sourceCoords: EquatorialPoint = {
-            "@type": "coords:EquatorialPoint",
-            coordSys: spaceSystem.data!,
-            lat: {
-                "@type": "ivoa:RealQuantity",
-                value: AstroLib.DmsToDeg(val.dec), unit: { value: "degrees" }
-            },
-            lon: {
-                "@type": "ivoa:RealQuantity",
-                value: AstroLib.HmsToDeg(val.ra), unit: { value: "degrees" }
-            }
-        }
         const Target: CelestialTarget = {
             "@type": "proposal:CelestialTarget",
             sourceName: val.targetName,
-            sourceCoordinates: sourceCoords,
-            positionEpoch: { value: "J2000"}
+            coord: {
+                sourceCoordinates: {
+                    alpha: AstroLib.HmsToDeg(val.ra),
+                    delta: AstroLib.DmsToDeg(val.dec)
+                },
+                referenceFrame: "ICRS" // see ivoa.net/rdf/refframe for acceptable strings
+            },
+            coordUnit: {value: "degrees"}, // always use degrees in DB
+            positionEpoch: {value: 51544.5} //MJD equivalent of J2000.0
         };
 
         newTargetMutation.mutate({
@@ -234,7 +237,7 @@ function AddTargetPanel(): ReactElement {
         setNameUnique(true);
     }
 
-    if (targets.isLoading || spaceSystem.isLoading) {
+    if (targets.isLoading) {
         return (
             <Loader />
         )
@@ -302,6 +305,7 @@ function AddTargetPanel(): ReactElement {
                             id="aladin-lite-div"
                             onDoubleClick={handleDoubleClick}
                         >
+                            { !skyAtlasReady &&  <Loader />}
                         </div>
                     </Fieldset>
                 </Grid.Col>

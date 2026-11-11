@@ -28,9 +28,9 @@ function TargetTableHeader(props: TargetTableProps): ReactElement {
         <Table.Thead>
             <Table.Tr>
                 <Table.Th>Name</Table.Th>
-                <Table.Th>Reference system</Table.Th>
                 <Table.Th>RA</Table.Th>
                 <Table.Th>Dec</Table.Th>
+                <Table.Th>Ref. frame</Table.Th>
                 <Table.Th>Epoch</Table.Th>
                 { props.showButtons && <Table.Th></Table.Th> }
             </Table.Tr>
@@ -50,7 +50,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
     const removeTargetMutation =
         useProposalResourceRemoveTarget();
 
-    const {data, error, isLoading}
+    const theTarget
         = useProposalResourceGetTarget(
         {pathParams:
                 {
@@ -59,7 +59,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
                 },
         });
 
-    if(error) {
+    if(theTarget.isError) {
         return <Table.Tr><Table.Td>Error loading target</Table.Td></Table.Tr>
     }
 
@@ -126,6 +126,16 @@ function TargetTableRow(props: TargetProps): ReactElement {
         }
     }
 
+    const convertMJDToEpoch = (input : number | undefined) : string => {
+        //this is not done properly, so beware future dev.
+        if (input && input > 50000) {
+            return "J2000.0"
+        } else {
+            return "Unknown"
+        }
+    }
+
+
     /**
      * offers the end user a verification if they wish to remove a target.
      */
@@ -135,7 +145,7 @@ function TargetTableRow(props: TargetProps): ReactElement {
             centered: true,
             children: (
                 <Text size="sm">
-                    Are you sure you want to remove '{data?.sourceName}'
+                    Are you sure you want to remove '{theTarget.data?.sourceName}'
                     from this proposal?
                 </Text>
             ),
@@ -144,62 +154,61 @@ function TargetTableRow(props: TargetProps): ReactElement {
             onConfirm: () => handleRemove()
         });
 
-    let spaceFrame : string | undefined = "unknown";
+    let refFrame : string | undefined = "unknown";
     let ra : string | undefined = "unknown";
     let dec : string | undefined = "unknown";
     let epoch : string | undefined = "unknown";
 
-    if(data?.["@type"] === "proposal:CelestialTarget") {
+    if(theTarget.data?.["@type"] === "proposal:CelestialTarget") {
         //console.log(JSON.stringify(data, null, 2));
-        const celestialTarget: CelestialTarget = data as CelestialTarget;
+        const celestialTarget: CelestialTarget = theTarget.data as CelestialTarget;
         //console.log(data);
-        if(celestialTarget.sourceCoordinates?.lon?.unit?.value === "degrees")
+        if(celestialTarget.coordUnit?.value === "degrees") {
             //DJW: Astrolib DegToHms prepend sign issue
-            ra = AstroLib.DegToHms(celestialTarget.sourceCoordinates?.lon?.value ?? 0,3).slice(1);
-        else
-            ra = celestialTarget.sourceCoordinates?.lon?.value + " " +
-                celestialTarget.sourceCoordinates?.lon?.unit?.value;
-
-        if(celestialTarget.sourceCoordinates?.lat?.unit?.value === "degrees")
-            //dec = celestialTarget.sourceCoordinates?.lon?.value+"°";
-            dec =AstroLib.DegToDms( celestialTarget.sourceCoordinates?.lat?.value ??0,3);
-        else
-            dec = celestialTarget.sourceCoordinates?.lat?.value + " " +
-                celestialTarget.sourceCoordinates?.lat?.unit?.value;
-
-        if(celestialTarget.sourceCoordinates?.coordSys?.["@type"] === "coords:SpaceSys") {
-            spaceFrame = celestialTarget.sourceCoordinates?.coordSys?.frame?.spaceRefFrame;
+            ra = AstroLib.DegToHms(celestialTarget.coord?.sourceCoordinates?.alpha ?? 0,3).slice(1);
+            dec =AstroLib.DegToDms( celestialTarget.coord?.sourceCoordinates?.delta ??0,3);
+        } else {
+            ra = celestialTarget.coord?.sourceCoordinates?.alpha + " " + celestialTarget.coordUnit?.value;
+            dec = celestialTarget.coord?.sourceCoordinates?.delta + " " + celestialTarget.coordUnit?.value;
         }
-        epoch = celestialTarget.positionEpoch?.value;
+
+        refFrame = celestialTarget.coord?.referenceFrame;
+
+        //Bizarre behaviour - positionEpoch: MJD == {value?: number} but using 'value' results in undefined
+        // argument being passed - using 'positionEpoch as number' works
+        epoch = convertMJDToEpoch(celestialTarget.positionEpoch as number);
     }
 
     // handle error states.
-    if (isLoading) {
+    if (theTarget.isLoading) {
         return (<Table.Tr><Table.Td>Loading...</Table.Td></Table.Tr>);
     }
 
     // generate the full row.
     return (
-        <Table.Tr onClick={() => {RowSelector(data?._id);}}
-                  bg={data?._id !== undefined && props.selectedTargets?.includes(data?._id) ?
+        <Table.Tr onClick={() => {RowSelector(theTarget.data?._id);}}
+                  bg={theTarget.data?._id !== undefined && props.selectedTargets?.includes(theTarget.data?._id) ?
                       TABLE_HIGH_LIGHT_COLOR :
                       undefined}>
             <Table.Td>
-                {data?.sourceName}
+                {theTarget.data?.sourceName}
             </Table.Td>
-                {data?.["@type"] ===
+                {theTarget.data?.["@type"] ===
                 "proposal:CelestialTarget" ?
-                    (<><Table.Td>{spaceFrame}</Table.Td>
-                    <Table.Td>{ra}</Table.Td>
-                    <Table.Td>{dec}</Table.Td>
-                    <Table.Td>{epoch}</Table.Td></>
+                    (
+                        <>
+                        <Table.Td>{ra}</Table.Td>
+                        <Table.Td>{dec}</Table.Td>
+                        <Table.Td>{refFrame}</Table.Td>
+                        <Table.Td>{epoch}</Table.Td>
+                        </>
                     )
                     :(<Table.Td colSpan={4}>Unknown</Table.Td>)}
             <Table.Td>
                     {props.showButtons && <
-                        DeleteButton toolTipLabel={DeleteToolTip(data?._id)}
+                        DeleteButton toolTipLabel={DeleteToolTip(theTarget.data?._id)}
                                      onClick={openRemoveModal}
-                                     disabled={IsBound(data?._id)?
+                                     disabled={IsBound(theTarget.data?._id)?
                                          true :
                                          undefined}/>}
             </Table.Td>
