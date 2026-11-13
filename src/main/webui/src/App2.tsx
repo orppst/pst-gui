@@ -77,6 +77,7 @@ import UserMenu from "./userMenu.tsx";
 import UserManagement from "./userManagement.tsx";
 import CycleTACAddReviewerPanel from "./ProposalManagerView/TAC/tacNewReviewer.tsx";
 import ReviewsEditPanel from "./ProposalManagerView/reviews/reviews.edit.panel.tsx";
+import ObservatoryQuestionsPanel from "./ProposalManagerView/observatoryQuestions/observatoryQuestionsPanel.tsx";
 
 /**
  * defines the user context type.
@@ -169,6 +170,11 @@ function App2(): ReactElement {
                     {
                         path: "cycle/:selectedCycleCode/tac/newReviewer",
                         element: <CycleTACAddReviewerPanel />,
+                        errorElement: <ErrorPage />
+                    },
+                    {
+                        path: "cycle/:selectedCycleCode/observatoryQuestions",
+                        element: <ObservatoryQuestionsPanel />,
                         errorElement: <ErrorPage />
                     },
                     {
