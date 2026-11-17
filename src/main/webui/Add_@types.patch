@@ -1,5 +1,5 @@
---- proposalToolSchemas.ts.orig	2026-08-05 16:03:15
-+++ proposalToolSchemas.ts	2026-08-06 16:02:53
+--- proposalToolSchemas.ts.orig	2026-11-04 13:37:24
++++ proposalToolSchemas.ts	2026-11-04 13:50:15
 @@ -16,11 +16,11 @@
     */
    summary?: string;
@@ -63,7 +63,28 @@
    /**
     * the backend name
     */
-@@ -143,16 +148,17 @@
+@@ -128,20 +133,6 @@
+  * a simple bounding box
+  */
+ export type Box = {
+-  /**
+-   * south-west edge of the box
+-   */
+-  pos_sw?: Point;
+-  /**
+-   * north-east edge of the box
+-   */
+-  pos_ne?: Point;
+-};
+-
+-/**
+- * a simple bounding box
+- */
+-export type Box1 = {
+   /**
+    * south-west edge of the box
+    */
+@@ -157,16 +148,17 @@
   */
  export type CalibrationObservation = {
    xmlId?: string;
@@ -83,7 +104,7 @@
     */
    technicalGoal?: TechnicalGoal;
    /**
-@@ -177,15 +183,15 @@
+@@ -191,15 +183,15 @@
  
  export type CartesianPoint = {
    /**
@@ -102,7 +123,7 @@
     */
    z?: RealQuantity;
    /**
-@@ -214,12 +220,13 @@
+@@ -231,12 +223,13 @@
   */
  export type CelestialTarget = {
    xmlId?: string;
@@ -117,7 +138,27 @@
     */
    coord?: CelestialPosition;
    /**
-@@ -257,9 +264,12 @@
+@@ -270,29 +263,16 @@
+ };
+ 
+ /**
+- * a circular region on the sky
+- */
+-export type Circle1 = {
+-  /**
+-   * the centre of the circle
+-   */
+-  center?: Point;
+-  /**
+-   * the radius of the circle
+-   *
+-   * @format double
+-   */
+-  radius?: number;
+-};
+-
+-/**
+  * a member of the TAC
   */
  export type CommitteeMember = {
    /**
@@ -131,16 +172,7 @@
    role?: TacRole;
  };
  
-@@ -349,7 +359,7 @@
- 
- /**
-  * @format date
-- * @example "2026-08-05T15:03:15.176Z"
-+ * @example "2026-08-06T15:02:44.458Z"
-  */
- export type Date = string;
- 
-@@ -361,7 +371,7 @@
+@@ -388,7 +368,7 @@
  };
  
  /**
@@ -149,7 +181,45 @@
   */
  export type Ellipse = {
    /**
-@@ -408,14 +418,17 @@
+@@ -409,37 +389,9 @@
+   center?: Point;
+   /**
+    * The position angle pos is defined as a counterclockwise rotation around the ellipse center and is zero, if the ellipse is “parallel to the equator”
+-   *
+-   * @format double
+-   */
+-  pos_angle?: number;
+-};
+-
+-/**
+- * an elliptical region on the sky
+- */
+-export type Ellipse1 = {
+-  /**
+-   * major axis size in radians
+-   *
+-   * @format double
+-   */
+-  major_axis?: number;
+-  /**
+-   * minor axis size in radians
+    *
+    * @format double
+    */
+-  minor_axis?: number;
+-  /**
+-   * the centre of the circle
+-   */
+-  center?: Point;
+-  /**
+-   * The position angle pos is defined as a counterclockwise rotation around the ellipse center and is zero, if the ellipse is 'parallel to the equator'
+-   *
+-   * @format double
+-   */
+   pos_angle?: number;
+ };
+ 
+@@ -463,14 +415,17 @@
   * Definition of an observing field pointing
   */
  export type Field = {
@@ -168,7 +238,7 @@
    /**
     * human readable name
     */
-@@ -434,6 +447,7 @@
+@@ -489,6 +444,7 @@
   * An instrument that can be attached to a telescope - e.g. CCD, Radio Receiver
   */
  export type Instrument = {
@@ -176,7 +246,7 @@
    /**
     * the instrument name - human readable
     */
-@@ -474,7 +488,7 @@
+@@ -529,7 +485,7 @@
   */
  export type IntegerQuantity = {
    /**
@@ -185,7 +255,7 @@
     */
    unit?: Unit;
    /**
-@@ -500,8 +514,9 @@
+@@ -555,8 +511,9 @@
  };
  
  export type Investigator = {
@@ -196,7 +266,7 @@
     */
    person?: Person;
    /**
-@@ -532,7 +547,7 @@
+@@ -587,7 +544,7 @@
     */
    text?: string;
    /**
@@ -205,7 +275,7 @@
     */
    format?: TextFormats;
  };
-@@ -587,16 +602,18 @@
+@@ -642,16 +599,18 @@
   * An observation - a pointing of the telescope at a part of the sky, occurs in a single non-overlapping time period
   */
  export type Observation = {
@@ -226,7 +296,7 @@
     */
    technicalGoal?: TechnicalGoal;
    /**
-@@ -626,7 +643,7 @@
+@@ -681,7 +640,7 @@
     */
    observation?: Observation[];
    /**
@@ -235,7 +305,7 @@
     */
    mode?: ObservingMode;
  };
-@@ -635,6 +652,9 @@
+@@ -690,6 +649,9 @@
   * An organisation that can perform astronomical observations
   */
  export type Observatory = {
@@ -245,7 +315,7 @@
    xmlId?: string;
    /**
     * The name of the organization
-@@ -642,7 +662,7 @@
+@@ -697,7 +659,7 @@
    name?: string;
    address?: string;
    /**
@@ -254,7 +324,7 @@
     */
    ivoid?: Ivoid;
    /**
-@@ -680,6 +700,7 @@
+@@ -754,6 +716,7 @@
   * a configuration can be used to observe with.
   */
  export type ObservingMode = {
@@ -262,7 +332,7 @@
    /**
     * human readable name for the mode
     */
-@@ -689,19 +710,19 @@
+@@ -763,19 +726,19 @@
     */
    description?: string;
    /**
@@ -286,7 +356,7 @@
     */
    backend?: Backend;
    xmlId?: string;
-@@ -711,6 +732,7 @@
+@@ -785,6 +748,7 @@
   * base type of a telescope or array of telescopes
   */
  export type ObservingPlatform = {
@@ -294,7 +364,7 @@
    xmlId?: string;
  };
  
-@@ -718,6 +740,7 @@
+@@ -792,6 +756,7 @@
   * a complete proposal
   */
  export type ObservingProposal = {
@@ -302,7 +372,7 @@
    xmlId?: string;
    /**
     * the proposal title
-@@ -728,11 +751,11 @@
+@@ -802,11 +767,11 @@
     */
    summary?: string;
    /**
@@ -316,7 +386,7 @@
     */
    technicalJustification?: Justification;
    /**
-@@ -770,6 +793,8 @@
+@@ -844,6 +809,8 @@
   * An institution that is a collection of people
   */
  export type Organization = {
@@ -325,7 +395,7 @@
    /**
     * The name of the organization
     */
-@@ -821,6 +846,7 @@
+@@ -895,6 +862,7 @@
     */
    orcidId?: StringIdentifier;
    xmlId?: string;
@@ -333,7 +403,20 @@
  };
  
  /**
-@@ -865,6 +891,7 @@
+@@ -936,19 +904,10 @@
+ };
+ 
+ /**
+- * a simple polygon region on the sky defined a sequence of points connected by great-circle segments
+- */
+-export type Polygon1 = {
+-  /**
+-   * the points that make up the polygon
+-   */
+-  points?: Point[];
+-};
+-
+-/**
   * Defines collection of resources and proposals for a particular observing season
   */
  export type ProposalCycle = {
@@ -341,40 +424,7 @@
    /**
     * A reference to -
     */
-@@ -883,20 +910,32 @@
-   instructions?: string;
-   /**
-    * the date by which observing proposals must be submitted to be considered for this cycle
-+   *
-+   * @format date
-+   * @example "2022-03-10T00:00:00.000Z"
-    */
-   submissionDeadline?: Date;
-   /**
-    * the start date of the observing cycle
-+   *
-+   * @format date
-+   * @example "2022-03-10T00:00:00.000Z"
-    */
-   observationSessionStart?: Date;
-   /**
-    * the end date of the observing cycle
-+   *
-+   * @format date
-+   * @example "2022-03-10T00:00:00.000Z"
-    */
-   observationSessionEnd?: Date;
-   /**
-    * the possible observing modes offered in the cycle
-    */
-   observingModes?: ObservingMode[];
-+  /**
-+   * The list of resources that are available
-+   */
-   availableResources?: AvailableResources;
-   /**
-    * The possible grades that can be allocated for this cycle
-@@ -931,8 +970,9 @@
+@@ -1015,8 +974,9 @@
   * A review of a proposal
   */
  export type ProposalReview = {
@@ -385,7 +435,7 @@
     */
    reviewer?: Reviewer;
    /**
-@@ -951,6 +991,9 @@
+@@ -1035,6 +995,9 @@
    technicalFeasibility?: boolean;
    /**
     * the date that the review is submitted
@@ -393,9 +443,9 @@
 +   * @format date
 +   * @example "2022-03-10T00:00:00.000Z"
     */
-   reviewDate?: Date;
+   reviewDate?: ZonedDateTime;
  };
-@@ -982,7 +1025,7 @@
+@@ -1066,7 +1029,7 @@
   */
  export type Quantity = {
    /**
@@ -404,7 +454,7 @@
     */
    unit?: Unit;
  };
-@@ -991,6 +1034,7 @@
+@@ -1075,6 +1038,7 @@
   * A real value with a unit.
   */
  export type RealQuantity = {
@@ -412,7 +462,7 @@
    /**
     * The unit of this quantity.
     */
-@@ -1008,7 +1052,7 @@
+@@ -1092,7 +1056,7 @@
   */
  export type RelatedProposal = {
    /**
@@ -421,7 +471,7 @@
     */
    proposal?: AbstractProposal;
  };
-@@ -1017,8 +1061,9 @@
+@@ -1101,8 +1065,9 @@
   * A resource that will be consumed by allocating an observation from a proposal
   */
  export type Resource = {
@@ -432,7 +482,7 @@
     */
    type?: ResourceType;
    /**
-@@ -1034,11 +1079,11 @@
+@@ -1118,11 +1083,11 @@
   */
  export type ResourceBlock = {
    /**
@@ -446,7 +496,7 @@
     */
    resource?: Resource;
  };
-@@ -1047,6 +1092,7 @@
+@@ -1131,6 +1096,7 @@
   * a type of resource
   */
  export type ResourceType = {
@@ -454,7 +504,7 @@
    /**
     * the name of the resource type
     */
-@@ -1059,8 +1105,9 @@
+@@ -1143,8 +1109,9 @@
   * assigned to review the proposal
   */
  export type Reviewer = {
@@ -465,7 +515,7 @@
     */
    person?: Person;
    xmlId?: string;
-@@ -1087,6 +1134,11 @@
+@@ -1171,6 +1138,11 @@
   * A spectral window for science use.
   */
  export type ScienceSpectralWindow = {
@@ -477,7 +527,19 @@
    spectralWindowSetup?: SpectralWindowSetup;
    expectedSpectralLine?: ExpectedSpectralLine[];
  };
-@@ -1169,7 +1221,7 @@
+@@ -1181,11 +1153,6 @@
+ export type Shape = Record<string, any>;
+ 
+ /**
+- * base type of all shapes
+- */
+-export type Shape1 = Record<string, any>;
+-
+-/**
+  * A constraint that requires that two observations occur simultaneously
+  */
+ export type SimultaneityConstraint = {
+@@ -1258,7 +1225,7 @@
     */
    _id?: number;
    /**
@@ -486,7 +548,7 @@
     */
    person?: Person;
    uid?: string;
-@@ -1191,6 +1243,8 @@
+@@ -1280,6 +1247,8 @@
   * an instance of a proposal that has been submitted
   */
  export type SubmittedProposal = {
@@ -495,7 +557,7 @@
    xmlId?: string;
    /**
     * the proposal title
-@@ -1201,11 +1255,11 @@
+@@ -1290,11 +1259,11 @@
     */
    summary?: string;
    /**
@@ -509,7 +571,7 @@
     */
    technicalJustification?: Justification;
    /**
-@@ -1244,6 +1298,9 @@
+@@ -1333,6 +1302,9 @@
    config?: ObservationConfiguration[];
    /**
     * the date that the proposal was submitted
@@ -517,9 +579,9 @@
 +   * @format date
 +   * @example "2022-03-10T00:00:00.000Z"
     */
-   submissionDate?: Date;
+   submissionDate?: ZonedDateTime;
    /**
-@@ -1252,6 +1309,9 @@
+@@ -1341,6 +1313,9 @@
    successful?: boolean;
    /**
     * the date when all the proposals are due
@@ -527,9 +589,9 @@
 +   * @format date
 +   * @example "2022-03-10T00:00:00.000Z"
     */
-   reviewsCompleteDate?: Date;
+   reviewsCompleteDate?: ZonedDateTime;
    /**
-@@ -1313,17 +1373,20 @@
+@@ -1402,17 +1377,20 @@
   * A target source
   */
  export type Target = {
@@ -550,7 +612,7 @@
    xmlId?: string;
    name?: string;
  };
-@@ -1332,6 +1395,7 @@
+@@ -1421,6 +1399,7 @@
   * an observation of the scientific target
   */
  export type TargetObservation = {
@@ -558,7 +620,7 @@
    xmlId?: string;
    /**
     * A reference to - The actual target of the observation
-@@ -1355,12 +1419,18 @@
+@@ -1444,12 +1423,18 @@
   * collects together the technical goals of the proposal
   */
  export type TechnicalGoal = {
@@ -577,7 +639,7 @@
    xmlId?: string;
    /**
     * telescope name
-@@ -1380,6 +1450,7 @@
+@@ -1469,6 +1454,7 @@
   * a set of telescopes that are operated together for an observation
   */
  export type TelescopeArray = {
@@ -585,7 +647,7 @@
    xmlId?: string;
    /**
     * the array name
-@@ -1392,9 +1463,6 @@
+@@ -1481,9 +1467,6 @@
  };
  
  export type TelescopeArrayMember = {
@@ -595,7 +657,7 @@
    telescope?: Telescope;
  };
  
-@@ -1415,9 +1483,21 @@
+@@ -1504,6 +1487,10 @@
   * particular time range
   */
  export type TimingWindow = {
@@ -605,15 +667,4 @@
 +
    note?: string;
    isAvoidConstraint?: boolean;
-+  /**
-+   * @format date
-+   * @example "2022-03-10T00:00:00.000Z"
-+   */
-   startTime?: Date;
-+  /**
-+   * @format date
-+   * @example "2022-03-10T00:00:00.000Z"
-+   */
-   endTime?: Date;
- };
- 
+   startTime?: ZonedDateTime;

@@ -155,6 +155,20 @@ export const contextualHelpMessages = [
         "Notice that if you specify all three items you will limit the choice of modes to one (or fewer*); " +
         "an Observing Mode is uniquely defined as a combination of instrument, backend, and filter. " +
         "*Observatories define their observing modes and some combinations will be incompatible."
+  }, {
+    id: "ObservatoryQuestions-eng",
+    message: "To add questions for the observatory, click the Add button and edit the fields." +
+        "The 'label' is a human readable quick reference to the question.\n" +
+        "The 'description' is a more detailed explanation of the question and what is expected in the answer.\n" +
+        "The 'query' is the actual question you want to ask.\n" +
+        "The 'minChar' field is the minimum number of characters you expect in the answer, " +
+        "with the intention that a value of zero implies the question is optional.\n" +
+        "The 'maxChar' field is the maximum number of characters you expect in the answer, " +
+        "this value must be greater than the 'minChar' value, and never zero.\n" +
+        "The 'Save' button will save the questions. It can be clicked at any time, " +
+        "but we recommend saving after each question is filled in, and definitively before you leave the page.\n" +
+        "\nYou may copy questions from previous cycles by clicking the 'Copy from ...' button, " +
+        "which, if they have questions, will present a list of previous cycles to choose from."
   }
 ];
 

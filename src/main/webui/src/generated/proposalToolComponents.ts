@@ -3564,6 +3564,7 @@ export const usePersonResourceCreatePersonFromKeycloak = (
 };
 
 export type ProposalCyclesResourceGetProposalCyclesQueryParams = {
+  hasQuestionsTemplate?: boolean;
   includeClosed?: boolean;
   /**
    * @format int64
@@ -5719,6 +5720,69 @@ export const useProposalCyclesResourceGetProposalCycleCode = <TData = void,>(
   });
 };
 
+export type ProposalCyclesResourceCopyObservatoryQuestionsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  sourceCycleCode: number;
+};
+
+export type ProposalCyclesResourceCopyObservatoryQuestionsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceCopyObservatoryQuestionsVariables = {
+  pathParams: ProposalCyclesResourceCopyObservatoryQuestionsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceCopyObservatoryQuestions = (
+  variables: ProposalCyclesResourceCopyObservatoryQuestionsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    void,
+    ProposalCyclesResourceCopyObservatoryQuestionsError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceCopyObservatoryQuestionsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/copyObservatoryQuestions/{sourceCycleCode}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceCopyObservatoryQuestions = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      void,
+      ProposalCyclesResourceCopyObservatoryQuestionsError,
+      ProposalCyclesResourceCopyObservatoryQuestionsVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    void,
+    ProposalCyclesResourceCopyObservatoryQuestionsError,
+    ProposalCyclesResourceCopyObservatoryQuestionsVariables
+  >({
+    mutationFn: (
+      variables: ProposalCyclesResourceCopyObservatoryQuestionsVariables,
+    ) =>
+      fetchProposalCyclesResourceCopyObservatoryQuestions({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type ProposalCyclesResourceReplaceCycleDeadlinePathParams = {
   /**
    * @format int64
@@ -5730,7 +5794,7 @@ export type ProposalCyclesResourceReplaceCycleDeadlineError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ProposalCyclesResourceReplaceCycleDeadlineVariables = {
-  body?: Schemas.Date;
+  body?: Schemas.ZonedDateTime;
   pathParams: ProposalCyclesResourceReplaceCycleDeadlinePathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -5741,7 +5805,7 @@ export const fetchProposalCyclesResourceReplaceCycleDeadline = (
   proposalToolFetch<
     void,
     ProposalCyclesResourceReplaceCycleDeadlineError,
-    Schemas.Date,
+    Schemas.ZonedDateTime,
     {},
     {},
     ProposalCyclesResourceReplaceCycleDeadlinePathParams
@@ -5790,7 +5854,7 @@ export type ProposalCyclesResourceReplaceCycleSessionEndError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ProposalCyclesResourceReplaceCycleSessionEndVariables = {
-  body?: Schemas.Date;
+  body?: Schemas.ZonedDateTime;
   pathParams: ProposalCyclesResourceReplaceCycleSessionEndPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -5801,7 +5865,7 @@ export const fetchProposalCyclesResourceReplaceCycleSessionEnd = (
   proposalToolFetch<
     void,
     ProposalCyclesResourceReplaceCycleSessionEndError,
-    Schemas.Date,
+    Schemas.ZonedDateTime,
     {},
     {},
     ProposalCyclesResourceReplaceCycleSessionEndPathParams
@@ -5850,7 +5914,7 @@ export type ProposalCyclesResourceReplaceCycleSessionStartError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type ProposalCyclesResourceReplaceCycleSessionStartVariables = {
-  body?: Schemas.Date;
+  body?: Schemas.ZonedDateTime;
   pathParams: ProposalCyclesResourceReplaceCycleSessionStartPathParams;
 } & ProposalToolContext["fetcherOptions"];
 
@@ -5861,7 +5925,7 @@ export const fetchProposalCyclesResourceReplaceCycleSessionStart = (
   proposalToolFetch<
     void,
     ProposalCyclesResourceReplaceCycleSessionStartError,
-    Schemas.Date,
+    Schemas.ZonedDateTime,
     {},
     {},
     ProposalCyclesResourceReplaceCycleSessionStartPathParams
@@ -6610,6 +6674,214 @@ export const useProposalCyclesResourceGetProposalCycleObservatory = <
   });
 };
 
+export type ProposalCyclesResourceSaveObservatoryQuestionsTemplatePathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceSaveObservatoryQuestionsTemplateError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceSaveObservatoryQuestionsTemplateRequestBody =
+  Schemas.ObservatoryQuestion[];
+
+export type ProposalCyclesResourceSaveObservatoryQuestionsTemplateVariables = {
+  body?: ProposalCyclesResourceSaveObservatoryQuestionsTemplateRequestBody;
+  pathParams: ProposalCyclesResourceSaveObservatoryQuestionsTemplatePathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceSaveObservatoryQuestionsTemplate = (
+  variables: ProposalCyclesResourceSaveObservatoryQuestionsTemplateVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    void,
+    ProposalCyclesResourceSaveObservatoryQuestionsTemplateError,
+    ProposalCyclesResourceSaveObservatoryQuestionsTemplateRequestBody,
+    {},
+    {},
+    ProposalCyclesResourceSaveObservatoryQuestionsTemplatePathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/observatoryQuestions",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceSaveObservatoryQuestionsTemplate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      void,
+      ProposalCyclesResourceSaveObservatoryQuestionsTemplateError,
+      ProposalCyclesResourceSaveObservatoryQuestionsTemplateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    void,
+    ProposalCyclesResourceSaveObservatoryQuestionsTemplateError,
+    ProposalCyclesResourceSaveObservatoryQuestionsTemplateVariables
+  >({
+    mutationFn: (
+      variables: ProposalCyclesResourceSaveObservatoryQuestionsTemplateVariables,
+    ) =>
+      fetchProposalCyclesResourceSaveObservatoryQuestionsTemplate({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type ProposalCyclesResourceGetObservatoryQuestionsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+};
+
+export type ProposalCyclesResourceGetObservatoryQuestionsQueryParams = {
+  /**
+   * @format int64
+   */
+  proposalId?: number;
+};
+
+export type ProposalCyclesResourceGetObservatoryQuestionsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceGetObservatoryQuestionsResponse =
+  Schemas.ObservatoryQuestion[];
+
+export type ProposalCyclesResourceGetObservatoryQuestionsVariables = {
+  pathParams: ProposalCyclesResourceGetObservatoryQuestionsPathParams;
+  queryParams?: ProposalCyclesResourceGetObservatoryQuestionsQueryParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceGetObservatoryQuestions = (
+  variables: ProposalCyclesResourceGetObservatoryQuestionsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    ProposalCyclesResourceGetObservatoryQuestionsResponse,
+    ProposalCyclesResourceGetObservatoryQuestionsError,
+    undefined,
+    {},
+    ProposalCyclesResourceGetObservatoryQuestionsQueryParams,
+    ProposalCyclesResourceGetObservatoryQuestionsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/observatoryQuestions",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceGetObservatoryQuestions = <
+  TData = ProposalCyclesResourceGetObservatoryQuestionsResponse,
+>(
+  variables: ProposalCyclesResourceGetObservatoryQuestionsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ProposalCyclesResourceGetObservatoryQuestionsResponse,
+      ProposalCyclesResourceGetObservatoryQuestionsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useProposalToolContext(options);
+  return reactQuery.useQuery<
+    ProposalCyclesResourceGetObservatoryQuestionsResponse,
+    ProposalCyclesResourceGetObservatoryQuestionsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/pst/api/proposalCycles/{cycleCode}/observatoryQuestions",
+      operationId: "proposalCyclesResourceGetObservatoryQuestions",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchProposalCyclesResourceGetObservatoryQuestions(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ProposalCyclesResourceSaveObservatoryQuestionsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  proposalId: number;
+};
+
+export type ProposalCyclesResourceSaveObservatoryQuestionsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceSaveObservatoryQuestionsRequestBody =
+  Schemas.ObservatoryQuestion[];
+
+export type ProposalCyclesResourceSaveObservatoryQuestionsVariables = {
+  body?: ProposalCyclesResourceSaveObservatoryQuestionsRequestBody;
+  pathParams: ProposalCyclesResourceSaveObservatoryQuestionsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceSaveObservatoryQuestions = (
+  variables: ProposalCyclesResourceSaveObservatoryQuestionsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    void,
+    ProposalCyclesResourceSaveObservatoryQuestionsError,
+    ProposalCyclesResourceSaveObservatoryQuestionsRequestBody,
+    {},
+    {},
+    ProposalCyclesResourceSaveObservatoryQuestionsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/observatoryQuestions/{proposalId}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceSaveObservatoryQuestions = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      void,
+      ProposalCyclesResourceSaveObservatoryQuestionsError,
+      ProposalCyclesResourceSaveObservatoryQuestionsVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    void,
+    ProposalCyclesResourceSaveObservatoryQuestionsError,
+    ProposalCyclesResourceSaveObservatoryQuestionsVariables
+  >({
+    mutationFn: (
+      variables: ProposalCyclesResourceSaveObservatoryQuestionsVariables,
+    ) =>
+      fetchProposalCyclesResourceSaveObservatoryQuestions({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type ProposalCyclesResourceGetCycleObservingTimeTotalsPathParams = {
   /**
    * @format int64
@@ -7186,7 +7458,7 @@ export const fetchSubmittedProposalResourceGetReviewsCompleteDate = (
   signal?: AbortSignal,
 ) =>
   proposalToolFetch<
-    Schemas.Date,
+    Schemas.ZonedDateTime,
     SubmittedProposalResourceGetReviewsCompleteDateError,
     undefined,
     {},
@@ -7200,12 +7472,12 @@ export const fetchSubmittedProposalResourceGetReviewsCompleteDate = (
   });
 
 export const useSubmittedProposalResourceGetReviewsCompleteDate = <
-  TData = Schemas.Date,
+  TData = Schemas.ZonedDateTime,
 >(
   variables: SubmittedProposalResourceGetReviewsCompleteDateVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.Date,
+      Schemas.ZonedDateTime,
       SubmittedProposalResourceGetReviewsCompleteDateError,
       TData
     >,
@@ -7215,7 +7487,7 @@ export const useSubmittedProposalResourceGetReviewsCompleteDate = <
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useProposalToolContext(options);
   return reactQuery.useQuery<
-    Schemas.Date,
+    Schemas.ZonedDateTime,
     SubmittedProposalResourceGetReviewsCompleteDateError,
     TData
   >({
@@ -14880,6 +15152,11 @@ export type QueryOperation =
       path: "/pst/api/proposalCycles/{cycleCode}/observatory";
       operationId: "proposalCyclesResourceGetProposalCycleObservatory";
       variables: ProposalCyclesResourceGetProposalCycleObservatoryVariables;
+    }
+  | {
+      path: "/pst/api/proposalCycles/{cycleCode}/observatoryQuestions";
+      operationId: "proposalCyclesResourceGetObservatoryQuestions";
+      variables: ProposalCyclesResourceGetObservatoryQuestionsVariables;
     }
   | {
       path: "/pst/api/proposalCycles/{cycleCode}/observingTimeTotals";

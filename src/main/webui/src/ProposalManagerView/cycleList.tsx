@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import {
     IconBike,
-    IconCalendar, IconEdit,
+    IconCalendar, IconEdit, IconQuestionMark,
     IconSquareChevronsRight, IconThumbUp,
     IconUfo, IconUserPin,
     IconUsersGroup
@@ -140,7 +140,8 @@ export default function CycleList() : ReactElement {
 function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
     const cycle = props.cycle;
     const [active, setActive] = useState("");
-    const isTacMemberOrObsAdmin = useHasRole(["tac_member", "obs_administration"]);
+    const isTacMember = useHasRole(["tac_member"]);
+    const isObsAdmin = useHasRole(["obs_administration"]);
     const isTacAdmin = useHasRole(["tac_admin"]);
     const isReviewer = useHasRole(["reviewer"]);
 
@@ -153,7 +154,7 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                 </Group>
             </Accordion.Control>
             <Accordion.Panel>
-                {isTacMemberOrObsAdmin &&
+                {isTacMember || isObsAdmin &&
                 <NavLink to={"cycle/" + cycle.dbid}
                          component={Link}
                          key={"Overview"}
@@ -179,6 +180,15 @@ function CycleItem(props:{cycle: ObjectIdentifier}): ReactElement {
                          leftSection={<IconUsersGroup/>}
                          active={"TAC" + cycle.code === active}
                          onClick={()=>setActive("TAC" + cycle.code)}
+                />}
+                {isTacAdmin &&
+                <NavLink to={"cycle/" + cycle.dbid + "/observatoryQuestions"}
+                         component={Link}
+                         key={"ObservatoryQuestions"}
+                         label={"Observatory Questions"}
+                         leftSection={<IconQuestionMark/>}
+                         active={"ObservatoryQuestions" + cycle.code === active}
+                         onClick={()=>setActive("ObservatoryQuestions" + cycle.code)}
                 />}
                 {isTacAdmin &&
                 <NavLink to={"cycle/" + cycle.dbid + "/assignReviewers"}
