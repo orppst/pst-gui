@@ -91,6 +91,7 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
                     <Text size="sm">
                         Are you sure you want to delete the question "{label}"?
                     </Text>
+                    <Text size={"sm"} c={"gray.5"}>This is permanent and cannot be undone.</Text>
                 </Stack>
             ),
             labels: { confirm: "Delete", cancel: "No, don't delete" },
