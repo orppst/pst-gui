@@ -28,7 +28,7 @@ import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
-import {useDisclosure} from "@mantine/hooks";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import CopyQuestionsContent from "./copyQuestionsContent.tsx";
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
@@ -37,6 +37,8 @@ interface observatoryQuestionsInterface {
 }
 
 export default function ObservatoryQuestionsPanel(): ReactElement {
+
+    const smallScreen = useMediaQuery("(max-width: 1000px)");
 
     const queryClient = useQueryClient();
 
@@ -236,7 +238,7 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
                     opened={copyModalOpened}
                     onClose={close}
                     title={"Copy Observatory Questions"}
-                    size={"40%"}
+                    size={smallScreen ? "100%" : "40%"}
                 >
                     <CopyQuestionsContent
                         closeModal={close}
