@@ -3564,6 +3564,7 @@ export const usePersonResourceCreatePersonFromKeycloak = (
 };
 
 export type ProposalCyclesResourceGetProposalCyclesQueryParams = {
+  hasQuestionsTemplate?: boolean;
   includeClosed?: boolean;
   /**
    * @format int64
@@ -5716,6 +5717,69 @@ export const useProposalCyclesResourceGetProposalCycleCode = <TData = void,>(
       ),
     ...options,
     ...queryOptions,
+  });
+};
+
+export type ProposalCyclesResourceCopyObservatoryQuestionsPathParams = {
+  /**
+   * @format int64
+   */
+  cycleCode: number;
+  /**
+   * @format int64
+   */
+  sourceCycleCode: number;
+};
+
+export type ProposalCyclesResourceCopyObservatoryQuestionsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type ProposalCyclesResourceCopyObservatoryQuestionsVariables = {
+  pathParams: ProposalCyclesResourceCopyObservatoryQuestionsPathParams;
+} & ProposalToolContext["fetcherOptions"];
+
+export const fetchProposalCyclesResourceCopyObservatoryQuestions = (
+  variables: ProposalCyclesResourceCopyObservatoryQuestionsVariables,
+  signal?: AbortSignal,
+) =>
+  proposalToolFetch<
+    void,
+    ProposalCyclesResourceCopyObservatoryQuestionsError,
+    undefined,
+    {},
+    {},
+    ProposalCyclesResourceCopyObservatoryQuestionsPathParams
+  >({
+    url: "/pst/api/proposalCycles/{cycleCode}/copyObservatoryQuestions/{sourceCycleCode}",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useProposalCyclesResourceCopyObservatoryQuestions = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      void,
+      ProposalCyclesResourceCopyObservatoryQuestionsError,
+      ProposalCyclesResourceCopyObservatoryQuestionsVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useProposalToolContext();
+  return reactQuery.useMutation<
+    void,
+    ProposalCyclesResourceCopyObservatoryQuestionsError,
+    ProposalCyclesResourceCopyObservatoryQuestionsVariables
+  >({
+    mutationFn: (
+      variables: ProposalCyclesResourceCopyObservatoryQuestionsVariables,
+    ) =>
+      fetchProposalCyclesResourceCopyObservatoryQuestions({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
   });
 };
 

@@ -2,10 +2,22 @@ import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
 import {useParams} from "react-router-dom";
 import {ReactElement, useEffect, useState} from "react";
 import {
-    useProposalCyclesResourceGetObservatoryQuestions,
+    useProposalCyclesResourceGetObservatoryQuestions, useProposalCyclesResourceGetProposalCycleObservatory,
     useProposalCyclesResourceSaveObservatoryQuestionsTemplate
 } from "../../generated/proposalToolComponents.ts";
-import {Accordion, Fieldset, Group, Loader, NumberInput, Space, Stack, Text, TextInput} from "@mantine/core";
+import {
+    Accordion,
+    Button,
+    Fieldset,
+    Group,
+    Loader,
+    Modal,
+    NumberInput,
+    Space,
+    Stack,
+    Text,
+    TextInput
+} from "@mantine/core";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {ObservatoryQuestion} from "../../generated/proposalToolSchemas.ts";
 import {useForm, UseFormReturnType} from "@mantine/form";
@@ -16,6 +28,8 @@ import {FormSubmitButton} from "../../commonButtons/save.tsx";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
+import {useDisclosure} from "@mantine/hooks";
+import CopyQuestionsContent from "./copyQuestionsContent.tsx";
 
 interface observatoryQuestionsInterface {
     questions: ObservatoryQuestion[];
@@ -29,6 +43,8 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
 
     const [maxId, setMaxId] = useState(0);
 
+    const [copyModalOpened, {close, open}] = useDisclosure();
+
     const newObservatoryQuestion : ObservatoryQuestion = {
         label: "**EDIT ME**: Please provide a label for this question.",
         description: "**EDIT ME**: Please provide a description for this question.",
@@ -37,6 +53,10 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
         minChar: 0,
         maxChar: 1 // default maxChar of 1 (must be > 0)
     };
+
+    const observatory = useProposalCyclesResourceGetProposalCycleObservatory({
+        pathParams: { cycleCode: Number(selectedCycleCode) }
+    });
 
     // ---- Fetch questions from the backend if they exist ----
     const questions =
@@ -158,7 +178,7 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
             })
         })
 
-    if (questions.isLoading) {
+    if (questions.isLoading || observatory.isLoading) {
         return ( <Loader /> );
     }
 
@@ -166,6 +186,13 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
         return <AlertErrorMessage
             title={"Error fetching observatory questions"}
             error={getErrorMessage(questions.error)}
+        />
+    }
+
+    if (observatory.isError) {
+        return <AlertErrorMessage
+            title={"Error fetching observatory"}
+            error={getErrorMessage(observatory.error)}
         />
     }
 
@@ -198,6 +225,23 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
                     <FormSubmitButton form={form} toolTipLabel={"Save observatory questions"}/>
                 </Group>
             </form>
+            <Group justify={"flex-end"}>
+                <Button onClick={open} variant={"subtle"} color={"blue"}>
+                    Copy Questions From ...
+                </Button>
+                <Modal
+                    opened={copyModalOpened}
+                    onClose={close}
+                    title={"Copy Observatory Questions"}
+                    size={"40%"}
+                >
+                    <CopyQuestionsContent
+                        closeModal={close}
+                        cycleCode={Number(selectedCycleCode)}
+                        observatoryId={observatory.data?._id || 0}
+                    />
+                </Modal>
+            </Group>
         </PanelFrame>
     );
 

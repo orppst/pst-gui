@@ -1632,6 +1632,6 @@ export type WikiDataId = {
 
 /**
  * @format date-time
- * @example "2026-11-04T13:37:23.734Z"
+ * @example "2026-11-16T10:36:05.900Z"
  */
 export type ZonedDateTime = string;
