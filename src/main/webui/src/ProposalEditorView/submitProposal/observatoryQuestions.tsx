@@ -106,7 +106,7 @@ export default function ObservatoryQuestions(
                                     description={q.description}
                                     minLength={q.minChar}
                                     maxLength={q.maxChar}
-                                    value={responses[index]?.response ?? ""}
+                                    value={responses[index]?.response === "null" ? "" : responses[index]?.response ?? ""}
                                     onChange={(event) => {
                                         const newResponses = [...responses];
                                         newResponses[index] =
@@ -121,7 +121,7 @@ export default function ObservatoryQuestions(
                                     }}
                                 />
                                 <MaxCharsForInputRemaining
-                                    length={responses[index]?.response?.length ?? 0}
+                                    length={responses[index]?.response === "null" ? 0 : responses[index]?.response?.length ?? 0}
                                     limit={q.maxChar}
                                 />
                             </Fieldset>
