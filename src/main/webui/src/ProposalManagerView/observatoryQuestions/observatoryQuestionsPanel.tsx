@@ -30,6 +30,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import {ManagerPanelHeader, PanelFrame} from "../../commonPanel/appearance.tsx";
 import {useDisclosure} from "@mantine/hooks";
 import CopyQuestionsContent from "./copyQuestionsContent.tsx";
+import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx";
 
 interface observatoryQuestionsInterface {
     questions: ObservatoryQuestion[];
@@ -202,6 +203,7 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
                 proposalCycleCode={Number(selectedCycleCode)}
                 panelHeading={"Observatory Questions"}
             />
+            <ContextualHelpButton messageId={"ObservatoryQuestions"} />
             <form onSubmit={handleSubmit}>
                 <Fieldset legend="List of questions">
                     <Accordion chevronPosition={"left"}>
@@ -226,8 +228,8 @@ export default function ObservatoryQuestionsPanel(): ReactElement {
                 </Group>
             </form>
             <Group justify={"flex-end"}>
-                <Button onClick={open} variant={"subtle"} color={"blue"}>
-                    Copy Questions From ...
+                <Button onClick={open} variant={"subtle"} color={"pink"}>
+                    Copy from ...
                 </Button>
                 <Modal
                     opened={copyModalOpened}

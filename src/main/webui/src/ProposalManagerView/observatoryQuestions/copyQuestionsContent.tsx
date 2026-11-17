@@ -3,7 +3,7 @@ import {
     useProposalCyclesResourceCopyObservatoryQuestions,
     useProposalCyclesResourceGetProposalCycles
 } from "../../generated/proposalToolComponents.ts";
-import {Button, Loader, Select, Stack, Text} from "@mantine/core";
+import {Alert, Button, Loader, Select, Stack, Text} from "@mantine/core";
 import {notifyError, notifySuccess} from "../../commonPanel/notifications.tsx";
 import getErrorMessage from "../../errorHandling/getErrorMessage.tsx";
 import {useQueryClient} from "@tanstack/react-query";
@@ -79,15 +79,22 @@ export default function CopyQuestionsContent(props: {
             {availableCycles.length === 0 ?
                 <Text>No previous cycles have questions to copy.</Text>
                 :
-                <Select
-                    data={availableCycles}
-                    placeholder="Select a cycle to copy questions from"
-                    onChange={(value) => setSourceCycleCode(Number(value))}
-                />
+                <>
+                    <Alert variant={"info"}>
+                        Warning: Copying questions will overwrite any existing questions for the current cycle.
+                    </Alert>
+                    <Select
+                        data={availableCycles}
+                        placeholder="Select a cycle to copy questions from"
+                        onChange={(value) => setSourceCycleCode(Number(value))}
+                    />
+                </>
+
             }
             <Button
                 onClick={handleCopy}
                 disabled={!sourceCycleCode}
+                color={"pink"}
             >
                 Copy Questions
             </Button>
