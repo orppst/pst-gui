@@ -143,8 +143,7 @@ export default function TimingWindowsForm(
                         }}
                     />
                     <Accordion.Panel>
-                        <Grid columns={MAX_COLUMNS_WINDOW_TABLE}
-                              gutter={"md"}>
+                        <Grid columns={MAX_COLUMNS_WINDOW_TABLE}>
                             <Grid.Col span={{
                                 base: MAX_COLUMNS_WINDOW_TABLE,
                                 lg: MAX_COLUMNS_RANGE}}>

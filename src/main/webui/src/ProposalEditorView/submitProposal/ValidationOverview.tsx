@@ -112,10 +112,10 @@ export default function ValidationOverview(props: {
         >
             <Stack>
                 <Text>
-                    {observatory.data?.name}: {cycleTitle.data} - Proposal Check
+                    {observatory.data?.name}: {cycleTitle.data!} - Proposal Check
                 </Text>
                 <Divider/>
-                Validation overview for {validateProposal.data?.title} submitting to {cycleTitle.data}
+                Validation overview for {validateProposal.data?.title} submitting to {cycleTitle.data!}
                 <Text
                     size={"sm"}
                     c={"teal"}
@@ -132,12 +132,10 @@ export default function ValidationOverview(props: {
                                     (<IconInfoCircle size={ICON_SIZE} color={'orange'}/>)
                                 }
                             </Table.Td>
-                            <Table.Td>
-                                {validateProposal.data?.info &&
-                                    formatTextWithLinks({text: validateProposal.data?.info,
-                                        color: validateProposal.data?.isValid ? 'green' : 'orange'})
-                                }
-                            </Table.Td>
+                            {validateProposal.data && validateProposal.data.info &&
+                                formatTextWithLinks({text: validateProposal.data.info,
+                                    color: validateProposal.data.isValid ? 'green' : 'orange'})
+                            }
                         </Table.Tr>
                         {validateProposal.data?.warnings !== undefined &&
                             (<Table.Tr>

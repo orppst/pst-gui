@@ -17,8 +17,8 @@ import {
     PerformanceParameters,
     TargetObservation,
 } from "src/generated/proposalToolSchemas.ts";
-import ObservationEditModal from "./edit.modal.tsx";
-import {useParams} from "react-router-dom";
+import ViewEditButton from "src/commonButtons/viewEdit.tsx";
+import {useNavigate, useParams} from "react-router-dom";
 import {useQueryClient} from "@tanstack/react-query";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import CloneButton from "src/commonButtons/clone.tsx";
@@ -37,6 +37,7 @@ export type ObservationId = {id: number}
 export default function ObservationRow(observationId: ObservationId): ReactElement {
 
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     //mutation hooks
     const addObservation =
@@ -282,7 +283,10 @@ export default function ObservationRow(observationId: ObservationId): ReactEleme
                 <Group align={"right"}>
                     {
                         observationLoading ? 'Loading...' :
-                        <ObservationEditModal observation={observation}/>
+                        <ViewEditButton
+                            toolTipLabel={"view/edit"}
+                            onClick={() => navigate(`${observationId.id}/edit`)}
+                        />
                     }
                     <CloneButton toolTipLabel={"clone"}
                                  onClick={confirmClone} />

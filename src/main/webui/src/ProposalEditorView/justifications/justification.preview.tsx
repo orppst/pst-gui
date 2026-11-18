@@ -1,7 +1,5 @@
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import Latex from "react-latex-next";
-import "katex/dist/katex.min.css";
-import {Badge, Box} from "@mantine/core";
+import {Badge, Box, Text} from "@mantine/core";
 import {TextFormats} from "../../generated/proposalToolSchemas.ts";
 
 
@@ -32,9 +30,9 @@ export const PreviewJustification = (format: TextFormats, content: string) => {
                         {
                             //This is useful for displaying maths stuff but not an entire document
                         }
-                        <Latex>
+                        <Text>
                             {content}
-                        </Latex>
+                        </Text>
                     </Box>
                 </>);
 

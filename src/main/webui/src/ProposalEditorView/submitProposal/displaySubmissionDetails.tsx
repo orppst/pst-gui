@@ -108,7 +108,7 @@ function DisplaySubmissionDetails(props: {
             ml={props.smallScreen ? "" : "10%"}>
             <Stack>
                 <Text>
-                    {observatory.data?.name}: {cycleTitle.data} - Review Details
+                    {observatory.data?.name}: {cycleTitle.data!} - Review Details
                 </Text>
                 <Divider/>
                 <Text size={"sm"} c={"grey"}>
@@ -118,7 +118,7 @@ function DisplaySubmissionDetails(props: {
                     <Stack>
                         <Text>
                             Submitting to: <Text span c={"blue"}>
-                                {cycleTitle.data}
+                                {cycleTitle.data!}
                             </Text>
                         </Text>
                         <Text>

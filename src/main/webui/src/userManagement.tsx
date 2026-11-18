@@ -367,7 +367,7 @@ function UserManagement() : ReactElement {
                                         </Tooltip>
                                     </Grid.Col>
                                 </Grid>
-                                <Collapse in={showInstitute}>
+                                <Collapse expanded={false}>
                                     <DisplayOrganisationDetails
                                         organisationId={Number(homeInstituteForm.getValues().homeInstitute)}
                                     />

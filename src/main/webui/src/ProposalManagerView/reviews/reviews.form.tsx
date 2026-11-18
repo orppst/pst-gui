@@ -233,7 +233,7 @@ function ReviewsForm(props: {
     }
 
     return (
-        <Grid columns={10} gutter={"xl"}>
+        <Grid columns={10}>
             <Grid.Col span={{base: 10, lg: 6}}>
                 {commentInput()}
             </Grid.Col>

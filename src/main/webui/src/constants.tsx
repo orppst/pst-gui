@@ -8,7 +8,7 @@ export const NO_ROW_SELECTED = -1;
 
 /*the expected size of a table before adding a scroll bar. Aims to show 5.5
  rows. */
-export const TABLE_SCROLL_HEIGHT = 200;
+export const TABLE_SCROLL_HEIGHT = 300;
 
 /* enforced min width needed by scrollable containers. */
 export const TABLE_MIN_WIDTH = 500;
@@ -82,6 +82,7 @@ export const err_green_str = "green.6"
 /* this constant is the expected name of the file which contains the json data.
  */
 export const JSON_FILE_NAME = 'proposal.json';
+export const XML_FILE_NAME = 'proposal.xml';
 
 /* the filename of the overview pdf to be exported, but not imported. */
 export const OVERVIEW_PDF_FILENAME = 'ProposalOverview.pdf';

@@ -18,7 +18,7 @@ import {
 } from 'src/generated/proposalToolComponents.ts';
 import {FormSubmitButton} from 'src/commonButtons/save.tsx';
 import CancelButton from "src/commonButtons/cancel.tsx";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {ReactElement, SyntheticEvent, useState} from 'react';
 import { TimingWindowGui } from './timingWindowGui.tsx';
@@ -103,6 +103,7 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
 
     const { selectedProposalCode} = useParams();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const [fieldName, setFieldName] = useState<string>("");
 
@@ -252,14 +253,14 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                         onSuccess: () => {
                             queryClient.invalidateQueries().then();
                             notifySuccess("Observation Added", "new observation added to proposal")
-                            props.closeModal!();
+                            navigate("../", {relative: "path"});
                         },
                         onError: (error) =>
                             notifyError("Failed to add Observation", getErrorMessage(error)),
                     })
                 })
                     .catch(error => {
-                        notifyError("Cannot create Observation: Failed to add Observation Field",
+                        notifyError("Cannot create Observation: Failed to add Observation",
                             getErrorMessage(error));
                     })
             }
@@ -409,11 +410,15 @@ function ObservationEditGroup(props: ObservationProps): ReactElement {
                     })
                 }
             }
+            form.resetDirty(values);
     });
 
   function handleCancel(event: SyntheticEvent) {
       event.preventDefault();
-      props.closeModal!();
+      if(newObservation)
+          navigate("../", {relative: "path"});
+      else
+          navigate("../../", {relative: "path"});
   }
 
   return (
