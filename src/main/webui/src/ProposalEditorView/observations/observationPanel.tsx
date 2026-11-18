@@ -1,13 +1,13 @@
 import {
     useProposalResourceGetObservingProposal,
 } from 'src/generated/proposalToolComponents';
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import ObservationRow, { observationTableHeader } from './observationTable.tsx';
 import {Container, Group, List, Space, Table} from "@mantine/core";
 import {Observation} from "src/generated/proposalToolSchemas.ts";
 import getErrorMessage from "src/errorHandling/getErrorMessage.tsx";
 import { ReactElement } from 'react';
-import ObservationEditModal from './edit.modal.tsx';
+import AddButton from 'src/commonButtons/add.tsx';
 import NavigationButton from 'src/commonButtons/navigation.tsx';
 import {ContextualHelpButton} from "../../commonButtons/contextualHelp.tsx"
 import {IconTarget, IconChartLine} from '@tabler/icons-react';
@@ -17,11 +17,9 @@ import {PanelFrame, PanelHeader} from "../../commonPanel/appearance.tsx";
 /**
  * the observation props.
  * @param {Observation} observation the observation object or undefined if not populated
- * @param {() => void}} closeModal an optional close modal - optional
  */
 export type ObservationProps = {
     observation?: Observation,
-    closeModal?: () => void
 }
 
 /**
@@ -38,6 +36,7 @@ function ObservationsPanel(): ReactElement {
 // on child objects.
 function Observations() {
     const { selectedProposalCode} = useParams();
+    const navigate = useNavigate();
 
     const proposal = useProposalResourceGetObservingProposal({
         pathParams: {proposalCode: Number(selectedProposalCode)}
@@ -171,7 +170,8 @@ function Observations() {
                 <TableGenerator/>
                 <Space h={"xl"}/>
                 <Group justify={'flex-end'}>
-                    <ObservationEditModal/>
+                    <AddButton toolTipLabel={"new observation"}
+                               onClick={() => navigate("new")} />
                 </Group>
             </PanelFrame>
         )

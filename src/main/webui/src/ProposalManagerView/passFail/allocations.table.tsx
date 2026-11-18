@@ -81,7 +81,7 @@ function AllocationsTableRow(rowProps: AllocationTableRowProps) : ReactElement {
     if (submittedProposal.isLoading) {
         //return a single loader for the entire table
         return (
-            rowProps.index === 0 ? <Loader/> : <></>
+            rowProps.index === 0 ? <Table.Tr><Table.Td><Loader/></Table.Td></Table.Tr> : <></>
         )
     }
 

@@ -16,7 +16,9 @@ function AvailableResourcesRow(p: {available: Resource, cycleCode: number}) : Re
     if (allocated.isLoading) {
         return (
             <Table.Tr>
-                <Loader/>
+                <Table.Td>
+                    <Loader/>
+                </Table.Td>
             </Table.Tr>
         )
     }

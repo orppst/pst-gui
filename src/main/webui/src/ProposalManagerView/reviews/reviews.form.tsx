@@ -133,8 +133,8 @@ function ReviewsForm(props: {
             rows={10}
             maxLength={MAX_CHARS_FOR_REVIEW}
             description={
-                (props.theReview.comment?.length ?
-                    MAX_CHARS_FOR_REVIEW - props.theReview.comment?.length!
+                (comment?.length ?
+                    MAX_CHARS_FOR_REVIEW - comment?.length!
                         : MAX_CHARS_FOR_REVIEW
                 )
                 + "/" + String(MAX_CHARS_FOR_REVIEW)}
@@ -233,7 +233,7 @@ function ReviewsForm(props: {
     }
 
     return (
-        <Grid columns={10} gutter={"xl"}>
+        <Grid columns={10}>
             <Grid.Col span={{base: 10, lg: 6}}>
                 {commentInput()}
             </Grid.Col>

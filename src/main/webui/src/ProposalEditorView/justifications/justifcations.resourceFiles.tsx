@@ -142,7 +142,16 @@ function JustificationsResourceFiles(
                 <ScrollArea h={vpHeight * 0.42}>
                     <Table>
                         {resourceFilesHeader()}
-                        {resourceFiles.isLoading ? <Loader/> : resourceFilesBody()}
+                        {resourceFiles.isLoading ?
+                            <Table.Tbody>
+                                <Table.Tr>
+                                    <Table.Td>
+                                        <Loader/>
+                                    </Table.Td>
+                                </Table.Tr>
+                            </Table.Tbody> :
+                            resourceFilesBody()
+                        }
                     </Table>
                 </ScrollArea>
                 <FileButton

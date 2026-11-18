@@ -3,8 +3,7 @@ import {
     NumberUnitType
 } from 'src/commonInputs/NumberInputPlusUnit.tsx';
 import {
-    ExpectedSpectralLine,
-    PolStateEnum,
+    ExpectedSpectralLine, Polarization,
     ScienceSpectralWindow
 } from 'src/generated/proposalToolSchemas.ts';
 
@@ -37,9 +36,9 @@ export type ExpectedSpectralLineGui = {
  * @param {NumberUnitType} end the end of the window.
  * @param {NumberUnitType} spectralResolution the resolution of the window.
  * @param {boolean} isSkyFrequency if the window is in sky frequency mode.
- * @param {PolStateEnum | null} polarization the type of polarization used
+ * @param {Polarization | null} polarization the type of polarization wanted either LINEAR | CIRCULAR
  * in this window.
- * @param {ExpectedSpectralLineGui []} the array of line guis.
+ * @param {ExpectedSpectralLineGui []} expectedSpectralLines the array of lines.
  * @param {string} key: the database key.
  */
 export type ScienceSpectralWindowGui = {
@@ -47,7 +46,7 @@ export type ScienceSpectralWindowGui = {
     end: NumberUnitType,
     spectralResolution: NumberUnitType,
     isSkyFrequency: boolean,
-    polarization: PolStateEnum | null
+    polarization: Polarization | null
     expectedSpectralLines: ExpectedSpectralLineGui [],
     key: string,
     id: number
@@ -140,7 +139,7 @@ export function convertToScienceSpectralWindow(
             end: convertToRealQuantity(input.end),
             spectralResolution: convertToRealQuantity(input.spectralResolution),
             isSkyFrequency: input.isSkyFrequency,
-            polarization: input.polarization as PolStateEnum
+            polarization: input.polarization as Polarization
         },
         expectedSpectralLine: input.expectedSpectralLines.map((lineAlt) => {
             return convertToExpectedSpectralLine(lineAlt)

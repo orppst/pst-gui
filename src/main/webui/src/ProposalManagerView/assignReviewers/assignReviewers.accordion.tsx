@@ -65,7 +65,15 @@ function SubmittedProposalItem(props: SubmittedProposalItemProp) : ReactElement 
                                         size={"sm"}
                                         c={"gray.6"}
                                     >
-                                        {review.reviewer?.person?.fullName}
+                                        {review.reviewer?.person?.fullName ?
+                                            review.reviewer?.person?.fullName
+                                            :
+                                            proposal.data.investigators?.map(investigator => {
+                                                if (investigator.person?._id === review.reviewer?.person) {
+                                                    return investigator.person?.fullName;
+                                                }
+                                            })
+                                        }
                                     </Text>
                                 )
                             )

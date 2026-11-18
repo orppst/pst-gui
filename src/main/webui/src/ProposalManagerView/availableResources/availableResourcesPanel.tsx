@@ -33,6 +33,7 @@ export type ResourceTypeProps = {
 export default function CycleAvailableResourcesPanel() : ReactElement {
     const {selectedCycleCode} = useParams();
     const queryClient = useQueryClient();
+
     const hasRole = useHasRole(["tac_admin", "tac_member"]);
 
     const removeCycleResource =

@@ -26,13 +26,13 @@ function ReviewersRow(p: {reviewerID: number}) : ReactElement {
 
     if (theReviewer.isLoading) {
         return (
-            <Loader />
+            <Table.Tr><Table.Td><Loader /></Table.Td></Table.Tr>
         )
     }
 
     if (theReviewer.isError) {
         return (
-            <>Error loading this reviewer</>
+            <Table.Tr><Table.Td>Error loading this reviewer</Table.Td></Table.Tr>
         )
     }
 

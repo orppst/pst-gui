@@ -94,7 +94,7 @@ export function NumberInputPlusUnit(
     const baseCols = totalCols / 2;
 
     return (
-        <Grid columns={totalCols} gutter={props.gap}>
+        <Grid columns={totalCols}>
             <Grid.Col span={{base: baseCols, sm: 7}}>
                 <Tooltip
                     disabled={props.toolTip == undefined}

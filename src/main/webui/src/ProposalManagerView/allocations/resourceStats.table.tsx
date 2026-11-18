@@ -33,7 +33,7 @@ function ResourceStatsRow(p: {
 
     if (resourceUsed.isLoading ||
         resourceRemaining.isLoading) {
-        return <Loader/>
+        return <Table.Tr><Table.Td><Loader/></Table.Td></Table.Tr>
     }
 
     if (resourceUsed.error) {
