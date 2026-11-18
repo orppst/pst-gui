@@ -1,5 +1,6 @@
 import {ReactElement, useEffect, useState} from "react";
 import {
+    Alert,
     Box, Button, Fieldset, Group, Loader, Stack, Text, TextInput, Title
 } from "@mantine/core";
 import AlertErrorMessage from "../../errorHandling/alertErrorMessage.tsx";
@@ -99,6 +100,15 @@ export default function ObservatoryQuestions(
                 <Fieldset legend="Please answer the following questions">
                     { unsavedChanges && <Text size="sm" c="red">You have unsaved changes</Text> }
                     <Stack>
+                        <Alert>
+                            <Text c="dimmed" size={"sm"}>
+                                We recommend that you keep an external copy of your responses to these questions
+                                for three reasons: (1) to ensure you have a copy of your responses in case of any
+                                technical issues, (2) have a reference of your responses (they currently can't be
+                                viewed in Polaris once submitted), and (3) to allow you to reuse your responses
+                                for future proposals.
+                            </Text>
+                        </Alert>
                         {questions.data?.map((q, index) => (
                             <Fieldset key={q.id} legend={q.label}>
                                 <TextInput
