@@ -163,7 +163,7 @@ function AllocatedBlocksContent(p: {
 
     if (resourceRemaining.isLoading) {
         return (
-            <Loader />
+            <Table.Tr><Table.Td><Loader /></Table.Td></Table.Tr>
         )
     }
 
